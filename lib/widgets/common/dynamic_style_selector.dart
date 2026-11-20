@@ -66,7 +66,7 @@ class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {
             child: Column(
               children: [
                 AnymeXText(
-                  'LIVE PREVIEW'.tr,
+                  'LIVE PREVIEW',
                   style: TextStyle(
                     fontFamily: 'Linotte',
                     fontSize: 10,

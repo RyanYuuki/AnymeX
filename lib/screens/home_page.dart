@@ -288,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                           horizontal: isDesktop ? 24.0 : 20.0,
                         ),
                         child: AnymeXText(
-                          'Find your favourite anime or manga, manhwa or whatever you like!'.tr,
+                          'Find your favourite anime or manga, manhwa or whatever you like!',
                           style: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme

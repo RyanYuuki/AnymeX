@@ -130,7 +130,7 @@ Widget _buildDynamicTabBar({
                                   ),
                                   child: AnymeXText(t.label,
                                       overflow: TextOverflow.ellipsis,
-                                      maxLines: 1),
+                                      maxLines: 1, translate: false),
                                 ),
                               ),
                             ],
@@ -310,13 +310,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
             AnymeXText(
-              'Choose Download Folder'.tr,
+              'Choose Download Folder',
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.'.tr,
+              'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -335,7 +335,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 onPressed: _pickDownloadDirectory,
                 icon: const Icon(Icons.folder_open_rounded),
                 label: AnymeXText(
-                  'Select Folder'.tr,
+                  'Select Folder',
                   variant: TextVariant.semiBold,
                 ),
               ),
@@ -357,13 +357,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
             AnymeXText(
-              'Permissions Required'.tr,
+              'Permissions Required',
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Manage device storage and notifications to download and manage your media offline.'.tr,
+              'Manage device storage and notifications to download and manage your media offline.',
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -379,7 +379,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _checkPermissions,
-                child: AnymeXText('Grant Permissions'.tr,
+                child: AnymeXText('Grant Permissions',
                     variant: TextVariant.semiBold),
               ),
             ),
@@ -515,7 +515,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(meta.title,
-                      variant: TextVariant.semiBold, size: 13, maxLines: 2),
+                      variant: TextVariant.semiBold, size: 13, maxLines: 2, translate: false),
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -524,7 +524,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       const SizedBox(width: 4),
                       Expanded(
                         child: AnymeXText(meta.extensionName,
-                            size: 11, color: theme.primary, maxLines: 1),
+                            size: 11, color: theme.primary, maxLines: 1, translate: false),
                       ),
                     ],
                   ),
@@ -595,7 +595,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 color: Colors.white,
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
-              ),
+              ), translate: false,
             ),
           ],
         ),
@@ -727,13 +727,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
             message,
             size: 16,
             variant: TextVariant.semiBold,
-            color: theme.onSurface.opaque(0.5),
+            color: theme.onSurface.opaque(0.5), translate: false,
           ),
           const SizedBox(height: 4),
           AnymeXText(
             subtitle,
             size: 13,
-            color: theme.onSurface.opaque(0.3),
+            color: theme.onSurface.opaque(0.3), translate: false,
           ),
         ],
       ),
@@ -779,7 +779,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 Icon(Icons.extension_rounded, size: 16, color: theme.primary),
                 const SizedBox(width: 8),
                 AnymeXText(sourceDisplayName,
-                    variant: TextVariant.bold, size: 15),
+                    variant: TextVariant.bold, size: 15, translate: false),
                 const SizedBox(width: 12),
                 const SizedBox(
                     width: 14, height: 14, child: AnymeXProgressIndicator()),
@@ -804,7 +804,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   Expanded(
                       child: AnymeXText(
                     sourceDisplayName,
-                    variant: TextVariant.bold,
+                    variant: TextVariant.bold, translate: false,
                   )),
                   if (isLoading)
                     const SizedBox(
@@ -982,7 +982,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymeXText("Range".tr,
+                        AnymeXText("Range",
                             variant: TextVariant.bold, size: 14),
                         EpisodeChunkSelector(
                           chunks: chunkedEpisodes,
@@ -1104,7 +1104,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                   child: AnymeXText(ep.number,
                                       size: 12,
                                       variant: TextVariant.semiBold,
-                                      color: theme.primary),
+                                      color: theme.primary, translate: false),
                                 ),
                               ),
                             const SizedBox(width: 12),
@@ -1125,7 +1125,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                   if (sortLabel != null)
                                     AnymeXText(sortLabel,
                                         size: 10,
-                                        color: theme.primary.opaque(0.7)),
+                                        color: theme.primary.opaque(0.7), translate: false),
                                 ],
                               ),
                             ),
@@ -1388,7 +1388,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                     maxLines: 1,
                                     variant: isSelected
                                         ? TextVariant.semiBold
-                                        : TextVariant.regular,
+                                        : TextVariant.regular, translate: false,
                                   ),
                                   if (chapter.title != null &&
                                       chapter.title!.isNotEmpty &&
@@ -1397,14 +1397,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                       chapter.title!,
                                       size: 11,
                                       color: theme.onSurface.opaque(0.5),
-                                      maxLines: 1,
+                                      maxLines: 1, translate: false,
                                     ),
                                   if (chapter.releaseDate != null &&
                                       chapter.releaseDate!.isNotEmpty)
                                     AnymeXText(
                                       chapter.releaseDate!,
                                       size: 10,
-                                      color: theme.primary.opaque(0.6),
+                                      color: theme.primary.opaque(0.6), translate: false,
                                     ),
                                 ],
                               ),
@@ -1519,7 +1519,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    'Search Extensions'.tr,
+                    'Search Extensions',
                     variant: TextVariant.bold,
                     size: 20,
                   ),
@@ -1615,7 +1615,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                 variant: TextVariant.semiBold,
                                 color: isEnabled
                                     ? theme.primary
-                                    : theme.onSurface.opaque(0.5),
+                                    : theme.onSurface.opaque(0.5), translate: false,
                               ),
                             ),
                           ],
@@ -1647,7 +1647,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 elevation: 0,
               ),
               child: AnymeXText(
-                'Done'.tr,
+                'Done',
                 variant: TextVariant.bold,
               ),
             ),
@@ -1673,7 +1673,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
           label,
           size: 12,
           color: theme.onSurface,
-          variant: TextVariant.semiBold,
+          variant: TextVariant.semiBold, translate: false,
         ),
       ),
     );
@@ -1756,7 +1756,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
             label,
             size: 12,
             color: isSelected ? theme.onPrimary : theme.onSurface,
-            variant: isSelected ? TextVariant.semiBold : TextVariant.regular,
+            variant: isSelected ? TextVariant.semiBold : TextVariant.regular, translate: false,
           ),
         ),
       ),

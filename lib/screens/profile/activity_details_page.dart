@@ -74,7 +74,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: AnymeXText('Please login first'.tr),
+          content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -113,7 +113,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: AnymeXText('Please login first'.tr),
+          content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -141,18 +141,18 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
-        title: AnymeXText('Delete Reply'.tr),
+        title: AnymeXText('Delete Reply'),
         content:
-            AnymeXText('Are you sure you want to delete this reply?'.tr),
+            AnymeXText('Are you sure you want to delete this reply?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AnymeXText('Cancel'.tr,
+            child: AnymeXText('Cancel',
                 style: TextStyle(color: context.theme.colorScheme.primary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: AnymeXText('Delete'.tr,
+            child: AnymeXText('Delete',
                 style: TextStyle(color: context.theme.colorScheme.error)),
           ),
         ],
@@ -289,7 +289,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               padding: EdgeInsets.all(32.0),
                               child: Center(
                                 child:
-                                    AnymeXText("No replies yet. Be the first!".tr),
+                                    AnymeXText("No replies yet. Be the first!"),
                               ),
                             )
                           else
@@ -403,7 +403,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                       style: TextStyle(
                         fontSize: 11,
                         color: subtleText,
-                      ),
+                      ), translate: false,
                     ),
                   ],
                 ),
@@ -497,7 +497,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               style: TextStyle(
                                 fontSize: 11,
                                 color: reply.isLiked ? Colors.red : subtleText,
-                              ),
+                              ), translate: false,
                             ),
                           ],
                         ),
@@ -560,7 +560,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                         const Icon(Icons.favorite, color: Colors.red, size: 20),
                         const SizedBox(width: 8),
                         AnymeXText(
-                          'Liked by'.tr,
+                          'Liked by',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -574,7 +574,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             fontSize: 14,
                             color:
                                 dragContext.theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -672,7 +672,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                           color: context.theme.colorScheme.onSurface,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: true, translate: false,
                         ),
                       ),
                     ],

@@ -377,7 +377,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                           ? colors.onPrimary
                                           : colors.onSurfaceVariant,
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, translate: false,
                                     ),
                                   ),
                                 ],
@@ -481,7 +481,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     name,
                     variant: TextVariant.bold,
                     size: 13.5,
-                    color: colors.onSurface,
+                    color: colors.onSurface, translate: false,
                   ),
                   const Spacer(),
                   if (!_isPluginInstalled)
@@ -543,7 +543,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     name,
                     variant: TextVariant.bold,
                     size: 13.5,
-                    color: colors.onSurface,
+                    color: colors.onSurface, translate: false,
                   ),
                   const Spacer(),
                   Container(
@@ -662,7 +662,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                 AnymeXRuntimeBridge.controller.error.value,
                 variant: TextVariant.regular,
                 size: 12,
-                color: colors.error,
+                color: colors.error, translate: false,
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
@@ -832,7 +832,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     style: TextStyle(
                       fontFamily: 'monospace',
                       color: colors.onSurface,
-                    ),
+                    ), translate: false,
                   ),
                   if (host != null) ...[
                     const SizedBox(height: 2),
@@ -842,7 +842,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                       size: 10.5,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      color: colors.onSurfaceVariant,
+                      color: colors.onSurfaceVariant, translate: false,
                     ),
                   ],
                 ],
@@ -1007,7 +1007,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                       '${widget.manager.name} • $label',
                       variant: TextVariant.bold,
                       size: 13,
-                      color: c.onSurface,
+                      color: c.onSurface, translate: false,
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
@@ -1023,7 +1023,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
           ),
           const SizedBox(height: 18),
           AnymeXText(
-            'REPOSITORY URL'.tr,
+            'REPOSITORY URL',
             variant: TextVariant.bold,
             size: 10,
             style: TextStyle(
@@ -1084,7 +1084,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 ),
                 const SizedBox(width: 12),
                 AnymeXText(
-                  'Adding repository & fetching extensions...'.tr,
+                  'Adding repository & fetching extensions...',
                   variant: TextVariant.regular,
                   size: 12,
                   color: c.onSurfaceVariant,
@@ -1098,7 +1098,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
               _error!,
               variant: TextVariant.regular,
               size: 12,
-              color: c.error,
+              color: c.error, translate: false,
             ),
           ],
         ],

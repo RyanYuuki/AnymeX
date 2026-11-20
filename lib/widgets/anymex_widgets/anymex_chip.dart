@@ -47,7 +47,7 @@ class AnymeXChip extends StatelessWidget {
         selected: isSelected,
         onSelected: onSelected,
         avatar: avatar,
-        label: AnymeXText(label),
+        label: AnymeXText(label, translate: false),
         labelStyle: TextStyle(
           color: isSelected
               ? context.colors.onPrimary

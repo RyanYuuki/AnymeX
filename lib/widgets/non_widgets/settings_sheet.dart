@@ -226,7 +226,7 @@ class SettingsSheet extends StatelessWidget {
                 userName,
                 size: 19,
                 variant: TextVariant.bold,
-                color: colors.onSurface,
+                color: colors.onSurface, translate: false,
               ),
               const SizedBox(height: 4),
               if (serviceHandler.serviceType.value != ServicesType.extensions)
@@ -313,7 +313,7 @@ class SettingsSheet extends StatelessWidget {
                       ),
                       constraints:
                           const BoxConstraints(minWidth: 16, minHeight: 16),
-                      child: Text(
+                      child: AnymeXText(
                         unread > 99 ? '99+' : '$unread',
                         style: const TextStyle(
                           color: Colors.white,
@@ -321,7 +321,7 @@ class SettingsSheet extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           height: 1.2,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.center, maxLines: null, translate: false,
                       ),
                     ),
                   ),

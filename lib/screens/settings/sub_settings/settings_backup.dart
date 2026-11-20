@@ -220,7 +220,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXText(
-                "Conflict Handling".tr,
+                "Conflict Handling",
                 variant: TextVariant.bold,
                 size: 18,
               ),
@@ -228,10 +228,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ListTile(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
-                title: AnymeXText("Merge".tr,
+                title: AnymeXText("Merge",
                     variant: TextVariant.bold, size: 15),
                 subtitle: AnymeXText(
-                    "Combine backup data with existing data on this device".tr,
+                    "Combine backup data with existing data on this device",
                     size: 12),
                 trailing: _conflictMode == 'Merge'
                     ? Icon(Icons.check_circle_rounded,
@@ -245,10 +245,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ListTile(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
-                title: AnymeXText("Overwrite".tr,
+                title: AnymeXText("Overwrite",
                     variant: TextVariant.bold, size: 15),
                 subtitle: AnymeXText(
-                    "Replace existing data on this device with backup".tr,
+                    "Replace existing data on this device with backup",
                     size: 12),
                 trailing: _conflictMode == 'Overwrite'
                     ? Icon(Icons.check_circle_rounded,
@@ -292,7 +292,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: AnymeXText(
-                    "Missing Runtime Host".tr,
+                    "Missing Runtime Host",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -326,7 +326,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: AnymeXText(
-            "EXPORT".tr,
+            "EXPORT",
             size: 12,
             variant: TextVariant.bold,
             color: theme.colorScheme.onSurfaceVariant.opaque(0.7),
@@ -448,7 +448,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: AnymeXText(
-            "IMPORT".tr,
+            "IMPORT",
             size: 12,
             variant: TextVariant.bold,
             color: theme.colorScheme.onSurfaceVariant.opaque(0.7),
@@ -568,7 +568,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       AnymeXText(
-                        _conflictMode.tr,
+                        _conflictMode,
                         size: 13,
                         variant: TextVariant.semiBold,
                         color: theme.colorScheme.primary,
@@ -793,7 +793,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                               color: theme.colorScheme.onPrimary, size: 20),
                           const SizedBox(width: 8),
                           AnymeXText(
-                            "Import Backup".tr,
+                            "Import Backup",
                             variant: TextVariant.bold,
                             color: theme.colorScheme.onPrimary,
                             size: 15,
@@ -810,7 +810,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         const SizedBox(height: 12),
         Center(
           child: AnymeXText(
-            "External backups restore metadata and configurations safely.".tr,
+            "External backups restore metadata and configurations safely.",
             size: 12,
             color: theme.colorScheme.onSurfaceVariant.opaque(0.6),
           ),

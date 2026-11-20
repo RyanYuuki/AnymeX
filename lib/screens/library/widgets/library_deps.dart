@@ -171,7 +171,7 @@ class CustomSliderTile extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: context.colors.onSurface,
-                        ),
+                        ), translate: false,
                       ),
                       const SizedBox(height: 5),
                       AnymeXText(
@@ -182,7 +182,7 @@ class CustomSliderTile extends StatelessWidget {
                               .colorScheme
                               .onSurface
                               .opaque(0.6, iReallyMeanIt: true),
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -219,7 +219,7 @@ class CustomSliderTile extends StatelessWidget {
                   AnymeXText(max % 1 == 0
                         ? max.toInt().toString()
                         : max.toStringAsFixed(1),
-                    variant: TextVariant.semiBold,
+                    variant: TextVariant.semiBold, translate: false,
                   )
                 ],
               ),

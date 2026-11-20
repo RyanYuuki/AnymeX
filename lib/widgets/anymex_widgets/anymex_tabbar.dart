@@ -127,7 +127,7 @@ class AnymeXTabBar extends StatelessWidget {
                                   color: selected
                                       ? (activeTextColor ?? colors.onSecondary)
                                       : (inactiveTextColor ??
-                                          colors.onSurfaceVariant),
+                                          colors.onSurfaceVariant), translate: false,
                                 ),
                               ),
                             ],

@@ -235,7 +235,7 @@ class _AnymeXModerationActionSheetState
         _currentAction != ModerationActionType.unmute) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: AnymeXText('Please provide a reason for this action'.tr)),
+            content: AnymeXText('Please provide a reason for this action')),
       );
       return;
     }
@@ -299,7 +299,7 @@ class _AnymeXModerationActionSheetState
                               widget.targetUsername,
                               variant: TextVariant.bold,
                               size: 16,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis, translate: false,
                             ),
                           ),
                           if (widget.targetClientType != null) ...[
@@ -314,7 +314,7 @@ class _AnymeXModerationActionSheetState
                                 widget.targetClientType!.toUpperCase(),
                                 size: 10,
                                 variant: TextVariant.bold,
-                                color: colorScheme.primary,
+                                color: colorScheme.primary, translate: false,
                               ),
                             ),
                           ],
@@ -341,7 +341,7 @@ class _AnymeXModerationActionSheetState
                     _getActionTitle(),
                     color: actionColor,
                     variant: TextVariant.bold,
-                    size: 12,
+                    size: 12, translate: false,
                   ),
                 ),
               ],
@@ -352,7 +352,7 @@ class _AnymeXModerationActionSheetState
           // Duration Selector (for Mute, Ban, Shadow Ban)
           if (_requiresDuration) ...[
             AnymeXText(
-              'Penalty Duration'.tr,
+              'Penalty Duration',
               variant: TextVariant.bold,
               size: 14,
               color: colorScheme.onSurface,
@@ -366,7 +366,7 @@ class _AnymeXModerationActionSheetState
                   final isSelected = !_isCustomDuration &&
                       _selectedDurationHours == preset.hours;
                   return ChoiceChip(
-                    label: AnymeXText(preset.label),
+                    label: AnymeXText(preset.label, translate: false),
                     selected: isSelected,
                     selectedColor: actionColor.withValues(alpha: 0.2),
                     labelStyle: TextStyle(
@@ -385,7 +385,7 @@ class _AnymeXModerationActionSheetState
                   );
                 }),
                 ChoiceChip(
-                  label: AnymeXText('Custom...'.tr),
+                  label: AnymeXText('Custom...'),
                   selected: _isCustomDuration,
                   selectedColor: actionColor.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
@@ -428,8 +428,8 @@ class _AnymeXModerationActionSheetState
                   const SizedBox(width: 10),
                   SegmentedButton<String>(
                     segments: [
-                      ButtonSegment(value: 'hours', label: AnymeXText('Hours'.tr)),
-                      ButtonSegment(value: 'days', label: AnymeXText('Days'.tr)),
+                      ButtonSegment(value: 'hours', label: AnymeXText('Hours')),
+                      ButtonSegment(value: 'days', label: AnymeXText('Days')),
                     ],
                     selected: {_customUnit},
                     onSelectionChanged: (selection) {
@@ -465,7 +465,7 @@ class _AnymeXModerationActionSheetState
                       _getExpirationPreview(),
                       size: 12,
                       variant: TextVariant.semiBold,
-                      color: actionColor,
+                      color: actionColor, translate: false,
                     ),
                   ),
                 ],
@@ -476,7 +476,7 @@ class _AnymeXModerationActionSheetState
 
           // Quick Reasons
           AnymeXText(
-            'Reason'.tr,
+            'Reason',
             variant: TextVariant.bold,
             size: 14,
             color: colorScheme.onSurface,
@@ -490,7 +490,7 @@ class _AnymeXModerationActionSheetState
                 return Padding(
                   padding: const EdgeInsets.only(right: 6),
                   child: ActionChip(
-                    label: AnymeXText(reason),
+                    label: AnymeXText(reason, translate: false),
                     avatar: isCurrent
                         ? Icon(Icons.check, size: 14, color: actionColor)
                         : null,

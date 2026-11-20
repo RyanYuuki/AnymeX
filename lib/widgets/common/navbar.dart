@@ -357,7 +357,7 @@ class BlurredContainerItem extends StatelessWidget {
               color: isSelected
                   ? theme.colorScheme.primary
                   : theme.colorScheme.onSurface,
-            ),
+            ), translate: false,
           ),
         ],
       ),

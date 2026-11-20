@@ -194,7 +194,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 size: 40, color: colors.onSurfaceVariant),
             const SizedBox(height: 12),
             AnymeXText(
-              'Bot URL not configured'.tr,
+              'Bot URL not configured',
               style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
             ),
           ],
@@ -385,7 +385,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  AnymeXText('Edit Reason'.tr,
+                  AnymeXText('Edit Reason',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -444,7 +444,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: AnymeXText('Save Changes'.tr),
+                    label: AnymeXText('Save Changes'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -467,7 +467,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: AnymeXText('Delete Recommendation?'.tr),
+        title: AnymeXText('Delete Recommendation?'),
         content: AnymeXText(
           _isAdmin
               ? 'This entry will be deleted immediately.'
@@ -476,12 +476,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: AnymeXText('Cancel'.tr),
+            child: AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: AnymeXText('Delete'.tr),
+            child: AnymeXText('Delete'),
           ),
         ],
       ),
@@ -514,7 +514,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: AnymeXText('Remove Your Reason?'.tr),
+        title: AnymeXText('Remove Your Reason?'),
         content: AnymeXText(
           _isAdmin
               ? 'This reason will be removed immediately.'
@@ -523,12 +523,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: AnymeXText('Cancel'.tr),
+            child: AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: AnymeXText('Remove'.tr),
+            child: AnymeXText('Remove'),
           ),
         ],
       ),
@@ -591,7 +591,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  AnymeXText('Edit Reason'.tr,
+                  AnymeXText('Edit Reason',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -650,7 +650,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: AnymeXText('Save Changes'.tr),
+                    label: AnymeXText('Save Changes'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -671,18 +671,18 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: AnymeXText('Delete Reason?'.tr),
-        content: AnymeXText('This reason will be deleted immediately.'.tr),
+        title: AnymeXText('Delete Reason?'),
+        content: AnymeXText('This reason will be deleted immediately.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: AnymeXText('Cancel'.tr),
+            child: AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: AnymeXText('Delete'.tr),
+            child: AnymeXText('Delete'),
           ),
         ],
       ),
@@ -804,14 +804,14 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             fontSize: 14,
                             color: colors.onSurface),
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
+                        overflow: TextOverflow.ellipsis, translate: false),
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(Icons.check_circle_rounded,
                             size: 14, color: colors.primary),
                         const SizedBox(width: 4),
-                        AnymeXText('Already recommended'.tr,
+                        AnymeXText('Already recommended',
                             style:
                                 TextStyle(fontSize: 12, color: colors.primary)),
                       ],
@@ -851,7 +851,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             : null,
                       ),
                       const SizedBox(width: 8),
-                      AnymeXText('Your Recommendation'.tr,
+                      AnymeXText('Your Recommendation',
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -878,7 +878,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             onPressed: () => _editReason(
                                 userReason['text']?.toString() ?? ''),
                             icon: const Icon(Icons.edit_rounded, size: 16),
-                            label: AnymeXText('Edit Reason'.tr),
+                            label: AnymeXText('Edit Reason'),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
@@ -892,7 +892,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             onPressed: _deleteReason,
                             icon: const Icon(Icons.delete_outline_rounded,
                                 size: 16),
-                            label: AnymeXText('Remove'.tr),
+                            label: AnymeXText('Remove'),
                             style: FilledButton.styleFrom(
                               backgroundColor: colors.error,
                               foregroundColor: colors.onError,
@@ -916,7 +916,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           // Other users' recommendations
           if (otherReasons.isNotEmpty) ...[
             const SizedBox(height: 16),
-            AnymeXText('Other Recommendations'.tr,
+            AnymeXText('Other Recommendations',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -971,7 +971,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
-                                  color: colors.onSurface)),
+                                  color: colors.onSurface), translate: false),
                           if (rIsAdmin) ...[
                             const SizedBox(width: 4),
                             Icon(Icons.verified_rounded,
@@ -994,7 +994,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                           size: 13,
                                           color: colors.onSurfaceVariant),
                                       const SizedBox(width: 2),
-                                      AnymeXText('Edit'.tr,
+                                      AnymeXText('Edit',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: colors.onSurfaceVariant,
@@ -1019,7 +1019,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                       Icon(Icons.delete_outline_rounded,
                                           size: 13, color: colors.error),
                                       const SizedBox(width: 2),
-                                      AnymeXText('Delete'.tr,
+                                      AnymeXText('Delete',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: colors.error,
@@ -1042,7 +1042,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                               fontStyle: FontStyle.italic,
                               height: 1.4),
                           maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ],
                     ],
@@ -1072,7 +1072,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             children: [
               Icon(Icons.add_comment_rounded, color: colors.primary, size: 18),
               const SizedBox(width: 8),
-              AnymeXText('Add Your Recommendation'.tr,
+              AnymeXText('Add Your Recommendation',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -1156,7 +1156,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
         ),
         const SizedBox(height: 4),
         AnymeXText(
-          'Tell the community why this deserves more attention.'.tr,
+          'Tell the community why this deserves more attention.',
           style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 16),

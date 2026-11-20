@@ -321,7 +321,7 @@ class AnymeXTile extends StatelessWidget {
               formatValue(value),
               size: 12,
               variant: TextVariant.semiBold,
-              color: primary,
+              color: primary, translate: false,
             ),
           );
         },
@@ -712,7 +712,7 @@ class AnymeXTile extends StatelessWidget {
                       color: enabled
                           ? colors.onSurface
                           : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-                      style: titleStyle,
+                      style: titleStyle, translate: false,
                     ),
                     if (subtitleWidget != null) ...[
                       const SizedBox(height: 2),
@@ -729,7 +729,7 @@ class AnymeXTile extends StatelessWidget {
                                 .opaque(0.45, iReallyMeanIt: true),
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
-                        style: subtitleStyle,
+                        style: subtitleStyle, translate: false,
                       ),
                     ],
                   ],
@@ -897,7 +897,7 @@ Widget _buildPillsSelectorContent<T>({
           currentDescription,
           size: 11.5,
           color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
-          maxLines: 4,
+          maxLines: 4, translate: false,
         ),
       ],
     ],

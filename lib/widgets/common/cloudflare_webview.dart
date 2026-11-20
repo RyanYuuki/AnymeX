@@ -224,7 +224,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Bypass Cloudflare'.tr,
+                          'Bypass Cloudflare',
                           style: TextStyle(
                             color: colors.onSurface,
                             fontSize: 15,
@@ -238,7 +238,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                             fontSize: 11,
                           ),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ],
                     ),
@@ -301,7 +301,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: AnymeXText(
-                      'Complete any Cloudflare challenge, then tap "Sync Cookies" to pass the session to extensions.'.tr,
+                      'Complete any Cloudflare challenge, then tap "Sync Cookies" to pass the session to extensions.',
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onPrimaryContainer.withValues(alpha: 0.8),

@@ -83,6 +83,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:anymex/l10n/app_translations.dart';
 import 'package:anymex/l10n/locale_controller.dart';
 import 'package:anymex/l10n/locale_keys.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 late Isar isar;
 final appLinks = AppLinks();
@@ -262,9 +263,9 @@ void main(List<String> args) async {
                 const Icon(Icons.error_outline_rounded,
                     size: 36, color: Colors.redAccent),
                 const SizedBox(height: 12),
-                const Text(
+                const AnymeXText(
                   'Something went wrong',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), maxLines: null,
                 ),
                 const SizedBox(height: 8),
                 TextButton(
@@ -272,7 +273,7 @@ void main(List<String> args) async {
                     Clipboard.setData(
                         ClipboardData(text: details.exceptionAsString()));
                   },
-                  child: const Text('Copy error details'),
+                  child: const AnymeXText('Copy error details', maxLines: null),
                 ),
               ],
             ),

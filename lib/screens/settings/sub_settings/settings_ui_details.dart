@@ -342,7 +342,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
         ),
         const SizedBox(width: 6),
         AnymeXText(
-          'LIVE PREVIEW'.tr,
+          'LIVE PREVIEW',
           size: 11,
           variant: TextVariant.bold,
           color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -642,7 +642,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                                 maxLines: 4,
                                 overflow: TextOverflow.ellipsis,
                                 variant: TextVariant.regular,
-                                color: colors.onSurfaceVariant,
+                                color: colors.onSurfaceVariant, translate: false,
                               ),
                             ],
                           ),

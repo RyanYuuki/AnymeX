@@ -642,12 +642,12 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: AnymeXText('Control Theme'.tr),
+        title: AnymeXText('Control Theme'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ReaderControlThemeRegistry.themes
               .map((t) => RadioListTile<String>(
-                    title: AnymeXText(t.name),
+                    title: AnymeXText(t.name, translate: false),
                     value: t.id,
                     groupValue: settings.readerControlThemeRx.value,
                     onChanged: (id) {

@@ -41,7 +41,7 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            "This backup is encrypted. Please enter the password to continue.".tr,
+            "This backup is encrypted. Please enter the password to continue.",
             textAlign: TextAlign.center,
             style: TextStyle(
               color: theme.colorScheme.onSurfaceVariant,
@@ -148,7 +148,7 @@ class LoadingDialog extends StatelessWidget {
                     style: TextStyle(
                       color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
-                    ),
+                    ), translate: false,
                   )),
               const SizedBox(height: 8),
               Obx(() => AnymeXText(
@@ -156,7 +156,7 @@ class LoadingDialog extends StatelessWidget {
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontSize: 12,
-                    ),
+                    ), translate: false,
                   )),
             ],
           ),
@@ -206,10 +206,10 @@ class LibraryDashboard extends StatelessWidget {
               const SizedBox(height: 12),
               AnymeXText(count.toString(),
                   style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold)),
+                      fontSize: 22, fontWeight: FontWeight.bold), translate: false),
               AnymeXText(label,
                   style: TextStyle(
-                      color: context.colors.onSurfaceVariant, fontSize: 12)),
+                      color: context.colors.onSurfaceVariant, fontSize: 12), translate: false),
             ],
           ),
         ),
@@ -322,7 +322,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    "Backup Owner".tr,
+                    "Backup Owner",
                     style: TextStyle(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 12,
@@ -336,7 +336,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                       color: theme.colorScheme.onSurface,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                    ),
+                    ), translate: false,
                   ),
                   const SizedBox(height: 4),
                   Row(
@@ -352,7 +352,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 12,
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -397,7 +397,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onSurface,
-              ),
+              ), translate: false,
             ),
           ),
           Column(
@@ -409,7 +409,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: color,
-                ),
+                ), translate: false,
               ),
               AnymeXText(
                 "$listCount lists",
@@ -458,7 +458,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 ),
                 const SizedBox(width: 8),
                 AnymeXText(
-                  "Library Statistics".tr,
+                  "Library Statistics",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -485,10 +485,10 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.primary,
-                        ),
+                        ), translate: false,
                       ),
                       AnymeXText(
-                        "Total Items".tr,
+                        "Total Items",
                         style: TextStyle(
                           fontSize: 12,
                           color: theme.colorScheme.onSurfaceVariant,
@@ -509,10 +509,10 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.primary,
-                        ),
+                        ), translate: false,
                       ),
                       AnymeXText(
-                        "Custom Lists".tr,
+                        "Custom Lists",
                         style: TextStyle(
                           fontSize: 12,
                           color: theme.colorScheme.onSurfaceVariant,
@@ -576,7 +576,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
           const SizedBox(width: 12),
           Expanded(
             child: AnymeXText(
-              "Restoring will overwrite your selected local library items and settings with the contents of this backup.".tr,
+              "Restoring will overwrite your selected local library items and settings with the contents of this backup.",
               style: TextStyle(
                 color: theme.colorScheme.error,
                 fontSize: 13,
@@ -848,7 +848,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 padding: const EdgeInsets.all(24),
                 children: [
                   AnymeXText(
-                    "Restore Preview".tr,
+                    "Restore Preview",
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -864,7 +864,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                         ),
                         const SizedBox(width: 4),
                         AnymeXText(
-                          "Encrypted • ".tr,
+                          "Encrypted • ",
                           style: TextStyle(
                             color: theme.colorScheme.primary,
                             fontSize: 13,
@@ -883,7 +883,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -895,7 +895,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   _buildWarningBanner(context),
                   const SizedBox(height: 24),
                   AnymeXText(
-                    "DATA TO RESTORE".tr,
+                    "DATA TO RESTORE",
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontSize: 11,
@@ -924,7 +924,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                       ),
                     ),
                     child: AnymeXText(
-                      "CONFIRM & RESTORE".tr,
+                      "CONFIRM & RESTORE",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
@@ -1081,14 +1081,14 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        "Export Backup".tr,
+                        "Export Backup",
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        "Select data to include in this backup".tr,
+                        "Select data to include in this backup",
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
@@ -1454,7 +1454,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                       color: theme.colorScheme.onPrimary, size: 20),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    "Export Backup".tr,
+                    "Export Backup",
                     variant: TextVariant.bold,
                     color: theme.colorScheme.onPrimary,
                     size: 15,

@@ -312,7 +312,7 @@ class _CommunityRecommendationsPageState
                         color:
                             context.colors.onSurfaceVariant.withOpacity(0.5)),
                     const SizedBox(height: 12),
-                    AnymeXText('No recommendations found'.tr,
+                    AnymeXText('No recommendations found',
                       color: context.colors.onSurfaceVariant.withOpacity(0.7),
                       variant: TextVariant.semiBold,
                     ),
@@ -707,7 +707,7 @@ class _VoteBtn extends StatelessWidget {
                   fontSize: 10,
                   color: active ? activeColor : colors.onSurfaceVariant,
                   fontFamily: 'Linotte',
-                ),
+                ), translate: false,
               ),
             ],
           ),
@@ -756,7 +756,7 @@ class _AuthorAvatar extends StatelessWidget {
                   fontSize: size * 0.52,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
+                ), translate: false,
               ),
             ),
     );
@@ -801,7 +801,7 @@ class _ReasonCountBadge extends StatelessWidget {
                 fontSize: 10,
                 fontFamily: 'Linotte',
                 color: theme.colorScheme.onTertiaryContainer,
-              ),
+              ), translate: false,
             ),
           ),
         ],
@@ -929,7 +929,7 @@ class _SeeAllListTile extends StatelessWidget {
                     AnymeXText(item.displayTitle,
                       variant: TextVariant.semiBold,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis, translate: false,
                     ),
                     if (item.reason != null && item.reason!.isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -937,7 +937,7 @@ class _SeeAllListTile extends StatelessWidget {
                         variant: TextVariant.regular,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        color: colors.onSurfaceVariant,
+                        color: colors.onSurfaceVariant, translate: false,
                       ),
                     ],
                     if (author != null && author.isNotEmpty) ...[
@@ -959,7 +959,7 @@ class _SeeAllListTile extends StatelessWidget {
                             const SizedBox(width: 4),
                             AnymeXText(author,
                               variant: TextVariant.semiBold,
-                              color: colors.primary,
+                              color: colors.primary, translate: false,
                             ),
                             if (item.isFirstReasonAdmin) ...[
                               const SizedBox(width: 3),

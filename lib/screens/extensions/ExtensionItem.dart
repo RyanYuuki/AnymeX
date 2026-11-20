@@ -223,7 +223,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                       fontSize: 14.5,
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis, translate: false,
                   ),
                   const SizedBox(height: 5),
                   Wrap(
@@ -256,7 +256,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                                 color: theme.secondary.computeLuminance() > 0.5
                                     ? Colors.black
                                     : Colors.white,
-                              ),
+                              ), translate: false,
                             ),
                           ),
                           Container(
@@ -277,7 +277,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                                 color: theme.tertiary.computeLuminance() > 0.5
                                     ? Colors.black
                                     : Colors.white,
-                              ),
+                              ), translate: false,
                             ),
                           ),
                         ],

@@ -1002,7 +1002,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                         ? context.colors.primary
                         : context.colors.onSurface,
                     fontWeight: FontWeight.w600,
-                  ),
+                  ), translate: false,
             ),
             const SizedBox(width: 8),
             AnimatedContainer(
@@ -1075,7 +1075,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                         ? context.colors.primary
                         : context.colors.onSurface,
                     fontWeight: FontWeight.w600,
-                  ),
+                  ), translate: false,
             ),
           ],
         ),
@@ -1247,7 +1247,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: context.colors.primary,
                     fontWeight: FontWeight.w600,
-                  ),
+                  ), translate: false,
             ),
             const SizedBox(width: 4),
             Icon(
@@ -1343,7 +1343,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'Searching...'.tr,
+            'Searching...',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context)
                       .colorScheme
@@ -1558,7 +1558,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     if (media.rating != "??") ...[
                       const SizedBox(height: 8),
@@ -1603,7 +1603,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: context.colors.primary,
                   fontWeight: FontWeight.w600,
-                ),
+                ), translate: false,
           ),
         ],
       ),

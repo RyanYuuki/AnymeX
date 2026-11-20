@@ -677,7 +677,7 @@ class _LoaderLogSession {
                     const SizedBox(width: 12),
                     Expanded(
                       child: AnymeXText(
-                        'Preparing stream'.tr,
+                        'Preparing stream',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -702,7 +702,7 @@ class _LoaderLogSession {
                           padding: const EdgeInsets.only(bottom: 6),
                           child: AnymeXText(
                             _logs[index],
-                            style: const TextStyle(fontSize: 13),
+                            style: const TextStyle(fontSize: 13), translate: false,
                           ),
                         );
                       },
@@ -717,7 +717,7 @@ class _LoaderLogSession {
                       onPressed: () {
                         cancel();
                       },
-                      child: AnymeXText('Cancel'.tr),
+                      child: AnymeXText('Cancel'),
                     ),
                   ],
                 ),

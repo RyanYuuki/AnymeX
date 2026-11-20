@@ -196,7 +196,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: AnymeXText(
-                  'Connect'.tr,
+                  'Connect',
                   variant: TextVariant.bold,
                   size: 12,
                   color: colors.primary,

@@ -250,7 +250,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                         ? 10.0
                                         : 12,
                                 color: colorScheme.primary,
-                                maxLines: 1,
+                                maxLines: 1, translate: false,
                               );
                             },
                           ),
@@ -401,7 +401,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     shape: BoxShape.circle,
                     alignment: Alignment.center,
                     child: isTop3
-                        ? AnymeXText(rankBadge, size: 16)
+                        ? AnymeXText(rankBadge, size: 16, translate: false)
                         : AnymeXText(
                             rankBadge,
                             variant: TextVariant.bold,
@@ -411,7 +411,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                     ? 10.0
                                     : 12,
                             color: rankColor,
-                            maxLines: 1,
+                            maxLines: 1, translate: false,
                           ),
                   ),
                   const SizedBox(width: 12),
@@ -436,7 +436,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                 entry.username,
                                 variant: TextVariant.bold,
                                 size: 14,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis, translate: false,
                               ),
                             ),
                             if (entry.badges != null &&
@@ -457,7 +457,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                   entry.role!,
                                   size: 9.5,
                                   variant: TextVariant.bold,
-                                  color: colorScheme.primary,
+                                  color: colorScheme.primary, translate: false,
                                 ),
                               ),
                             ],
@@ -467,14 +467,14 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                         Row(
                           children: [
                             if (entry.tierEmoji.isNotEmpty) ...[
-                              AnymeXText(entry.tierEmoji, size: 11),
+                              AnymeXText(entry.tierEmoji, size: 11, translate: false),
                               const SizedBox(width: 4),
                             ],
                             AnymeXText(
                               entry.tierLabel,
                               size: 11,
                               variant: TextVariant.semiBold,
-                              color: colorScheme.onSurfaceVariant,
+                              color: colorScheme.onSurfaceVariant, translate: false,
                             ),
                             if (entry.currentStreak > 0) ...[
                               const SizedBox(width: 8),
@@ -524,7 +524,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                               entry.displayPoints,
                               variant: TextVariant.bold,
                               size: 12,
-                              color: isTop3 ? rankColor : colorScheme.primary,
+                              color: isTop3 ? rankColor : colorScheme.primary, translate: false,
                             ),
                           ],
                         ),
@@ -576,7 +576,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
               tag.text,
               variant: TextVariant.bold,
               size: 11,
-              color: tagColor,
+              color: tagColor, translate: false,
             ),
           ],
         ),

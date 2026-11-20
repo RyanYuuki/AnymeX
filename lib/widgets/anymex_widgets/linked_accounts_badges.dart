@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class LinkedAccountsBadges extends StatelessWidget {
   final Map<String, dynamic>? linkedAccounts;
@@ -96,14 +97,14 @@ class LinkedAccountsBadges extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: borderColor, width: 0.8),
       ),
-      child: Text(
+      child: AnymeXText(
         label,
         style: TextStyle(
           color: textColor,
           fontSize: fontSize,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
-        ),
+        ), maxLines: null, translate: false,
       ),
     );
 

@@ -155,7 +155,7 @@ class FavoritesSection extends StatelessWidget {
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: context.theme.colorScheme.onSurface,
-                          ),
+                          ), translate: false,
                         ),
                       ),
                     ),

@@ -262,14 +262,14 @@ class AnilistExternalTile extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: context.theme.colorScheme.onSurface,
-                    ),
+                    ), translate: false,
                   ),
                   AnymeXText(
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
                       color: context.theme.colorScheme.onSurfaceVariant,
-                    ),
+                    ), translate: false,
                   ),
                 ],
               ),

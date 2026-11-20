@@ -355,7 +355,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: AnymeXText(
-                    'Login'.tr,
+                    'Login',
                     variant: TextVariant.bold,
                     size: 13,
                     color: Colors.white,
@@ -438,7 +438,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AnymeXText(
-              'Dynamic variables will be replaced automatically. You can also use a static phrase.'.tr,
+              'Dynamic variables will be replaced automatically. You can also use a static phrase.',
               size: 12,
               color: colors.onSurfaceVariant,
               textAlign: TextAlign.center,
@@ -466,7 +466,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                   });
                 },
                 icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: AnymeXText('Reset to default'.tr, size: 12),
+                label: AnymeXText('Reset to default', size: 12),
               ),
             ),
           ],

@@ -185,7 +185,7 @@ class CompactEpisodeWidget extends StatelessWidget {
                       variant: TextVariant.bold,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                   ],
                 ),

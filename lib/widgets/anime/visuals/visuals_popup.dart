@@ -374,7 +374,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                     ),
                   )
                 : Center(
-                    child: AnymeXText("No Visuals found for this Anime (╥﹏╥)".tr,
+                    child: AnymeXText("No Visuals found for this Anime (╥﹏╥)",
                       color: Colors.white,
                     ),
                   ),
@@ -419,7 +419,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                           ]),
                       child: AnymeXText("${effectiveIndex + 1} / ${currentList.length}",
                         color: Colors.white,
-                        variant: TextVariant.bold,
+                        variant: TextVariant.bold, translate: false,
                       ),
                     ),
                   if (currentImage != null)
@@ -547,7 +547,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
               AnymeXText(label,
                 color: Colors.white,
                 variant: TextVariant.bold,
-                size: 14,
+                size: 14, translate: false,
               ),
             ]
           ],

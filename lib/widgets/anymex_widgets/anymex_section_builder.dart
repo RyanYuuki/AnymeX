@@ -209,7 +209,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
                 title!.toUpperCase(),
                 size: 11.5,
                 variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.45, iReallyMeanIt: true),
+                color: colors.onSurface.opaque(0.45, iReallyMeanIt: true), translate: false,
               ),
             ),
           ],

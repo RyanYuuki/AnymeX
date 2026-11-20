@@ -14,6 +14,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class MediaModeSelector extends StatelessWidget {
   final bool isVertical;
@@ -529,14 +530,14 @@ class MediaModeSelector extends StatelessWidget {
                 ? Row(
                     children: [
                       const SizedBox(width: 4),
-                      Text(
+                      AnymeXText(
                         label,
                         style: TextStyle(
                           fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                           color: theme.colorScheme.onPrimary,
-                        ),
+                        ), maxLines: null, translate: false,
                       ),
                     ],
                   )
@@ -575,14 +576,14 @@ class MediaModeSelector extends StatelessWidget {
               size: 16,
             ),
             const SizedBox(width: 8),
-            Text(
+            AnymeXText(
               text,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 fontSize: 11,
                 color: theme.colorScheme.onPrimary,
-              ),
+              ), maxLines: null, translate: false,
             ),
           ],
         ),
@@ -654,14 +655,14 @@ class MediaModeSelector extends StatelessWidget {
                 ? Row(
                     children: [
                       const SizedBox(width: 4),
-                      Text(
+                      AnymeXText(
                         label,
                         style: TextStyle(
                           fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                           color: theme.colorScheme.onPrimary,
-                        ),
+                        ), maxLines: null, translate: false,
                       ),
                     ],
                   )

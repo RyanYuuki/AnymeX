@@ -248,7 +248,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
           label,
           size: 13.5,
           variant: TextVariant.bold,
-          color: textCol,
+          color: textCol, translate: false,
         ),
       ),
     );
@@ -284,7 +284,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: AnymeXText(
-                    'Reset to Default'.tr,
+                    'Reset to Default',
                     size: 13,
                     color: Theme.of(context).colorScheme.primary,
                     variant: TextVariant.semiBold,
@@ -340,7 +340,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: AnymeXText(
-                          'DNS-over-HTTPS'.tr,
+                          'DNS-over-HTTPS',
                           size: 17,
                           variant: TextVariant.bold,
                         ),
@@ -355,7 +355,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'CUSTOM DOH URL'.tr,
+                      'CUSTOM DOH URL',
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -395,7 +395,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                         ),
                         const SizedBox(width: 6),
                         AnymeXText(
-                          'PRESET PROVIDERS'.tr,
+                          'PRESET PROVIDERS',
                           size: 11,
                           variant: TextVariant.bold,
                           color:
@@ -481,7 +481,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                                       size: 16, color: colors.primary),
                                 const SizedBox(width: 6),
                                 AnymeXText(
-                                  'Test'.tr,
+                                  'Test',
                                   size: 12,
                                   variant: TextVariant.semiBold,
                                   color: colors.primary,
@@ -595,7 +595,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: AnymeXText(
-                          'Proxy Configuration'.tr,
+                          'Proxy Configuration',
                           size: 17,
                           variant: TextVariant.bold,
                         ),
@@ -610,7 +610,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'PROTOCOL'.tr,
+                      'PROTOCOL',
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -647,7 +647,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'SERVER DETAILS'.tr,
+                      'SERVER DETAILS',
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -685,7 +685,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'AUTHENTICATION (OPTIONAL)'.tr,
+                      'AUTHENTICATION (OPTIONAL)',
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -803,7 +803,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                                       size: 16, color: colors.primary),
                                 const SizedBox(width: 6),
                                 AnymeXText(
-                                  'Test'.tr,
+                                  'Test',
                                   size: 12,
                                   variant: TextVariant.semiBold,
                                   color: colors.primary,

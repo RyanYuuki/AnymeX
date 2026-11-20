@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 // ---------------------------------------------------------------------------
 // DiscordMarkdown – main renderer
@@ -758,9 +759,9 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: widget.imageUrls.length > 1
-            ? Text(
+            ? AnymeXText(
                 '${_currentIndex + 1} / ${widget.imageUrls.length}',
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14), maxLines: null, translate: false,
               )
             : null,
         actions: [
@@ -809,10 +810,10 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                       size: 48,
                     ),
                     const SizedBox(height: 12),
-                    Text(
+                    AnymeXText(
                       'Failed to load image',
                       style:
-                          TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                          TextStyle(color: Colors.white.withValues(alpha: 0.6)), maxLines: null,
                     ),
                   ],
                 ),
@@ -861,13 +862,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               label: 'Bold'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('**', '**'),
-              child: Text(
+              child: AnymeXText(
                 'B',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: colorScheme.onSurfaceVariant,
-                ),
+                ), maxLines: null,
               ),
             ),
             const SizedBox(width: 4),
@@ -875,13 +876,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               label: 'Italic'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('*', '*'),
-              child: Text(
+              child: AnymeXText(
                 'I',
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
                   fontSize: 14,
                   color: colorScheme.onSurfaceVariant,
-                ),
+                ), maxLines: null,
               ),
             ),
             const SizedBox(width: 4),
@@ -889,7 +890,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               label: 'Strikethrough'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('~~', '~~'),
-              child: Text(
+              child: AnymeXText(
                 'S',
                 style: TextStyle(
                   decoration: TextDecoration.lineThrough,
@@ -897,7 +898,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                       colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   fontSize: 14,
                   color: colorScheme.onSurfaceVariant,
-                ),
+                ), maxLines: null,
               ),
             ),
             const SizedBox(width: 4),
@@ -905,13 +906,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               label: 'Code'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('`', '`'),
-              child: Text(
+              child: AnymeXText(
                 '< >',
                 style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 12,
                   color: colorScheme.onSurface,
-                ),
+                ), maxLines: null,
               ),
             ),
             const SizedBox(width: 4),
@@ -919,13 +920,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               label: 'Spoiler'.tr,
               colorScheme: colorScheme,
               onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
-              child: Text(
+              child: AnymeXText(
                 '||S||',
                 style: TextStyle(
                   fontSize: 12,
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
-                ),
+                ), maxLines: null,
               ),
             ),
             const SizedBox(width: 4),
@@ -933,13 +934,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               label: 'Quote'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('> ', ''),
-              child: Text(
+              child: AnymeXText(
                 '“ ”',
                 style: TextStyle(
                   fontSize: 14,
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
-                ),
+                ), maxLines: null,
               ),
             ),
             const SizedBox(width: 4),
@@ -976,13 +977,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                     color: colorScheme.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     'GIF',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: colorScheme.primary,
-                    ),
+                    ), maxLines: null,
                   ),
                 ),
               ),

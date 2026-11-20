@@ -240,7 +240,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
           OutlinedButton.icon(
             onPressed: _showCreateListDialog,
             icon: const Icon(Icons.add, size: 18),
-            label: AnymeXText('New Collection'.tr),
+            label: AnymeXText('New Collection'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(

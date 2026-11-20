@@ -522,7 +522,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXText(
-                'Edit Media Entry'.tr,
+                'Edit Media Entry',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colors.onSurface,
@@ -535,7 +535,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
-                    ),
+                    ), translate: false,
               ),
             ],
           ),
@@ -582,7 +582,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           '$_localSeason',
           size: 12,
           variant: TextVariant.semiBold,
-          color: colors.primary,
+          color: colors.primary, translate: false,
         ),
       ),
       customContent: Padding(
@@ -682,7 +682,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           '$_localProgress',
           size: 12,
           variant: TextVariant.semiBold,
-          color: colors.primary,
+          color: colors.primary, translate: false,
         ),
       ),
       customContent: Padding(
@@ -816,7 +816,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               border: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
               child: AnymeXText(
-                'Delete'.tr,
+                'Delete',
                 style: TextStyle(
                   color: colors.error,
                   fontWeight: FontWeight.w600,
@@ -864,7 +864,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     Opacity(
                       opacity: _isSaving ? 0 : 1,
                       child: AnymeXText(
-                        'Save changes'.tr,
+                        'Save changes',
                         style: TextStyle(
                           color: colors.onPrimary,
                           fontWeight: FontWeight.w600,

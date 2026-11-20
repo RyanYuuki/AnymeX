@@ -157,7 +157,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           size: 20,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: true, translate: false,
                         ),
                       ),
                       Obx(() => GestureDetector(
@@ -230,7 +230,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     variant: TextVariant.bold,
                                     color: isFav.value
                                         ? Colors.red
-                                        : theme.onSurface,
+                                        : theme.onSurface, translate: false,
                                   ),
                                 ],
                               ),
@@ -254,7 +254,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                   Padding(
                     padding: const EdgeInsets.all(40),
                     child: Center(
-                      child: AnymeXText('No media found for this studio'.tr,
+                      child: AnymeXText('No media found for this studio',
                         variant: TextVariant.regular,
                         size: 16,
                         color: theme.onSurface.withValues(alpha: 0.6),
@@ -327,7 +327,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           : null,
                     ),
                     const SizedBox(width: 10),
-                    AnymeXText("On My List".tr,
+                    AnymeXText("On My List",
                       size: 14,
                       color: theme.onSurface.withOpacity(0.7),
                       variant: TextVariant.bold,
@@ -371,7 +371,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           child: AnymeXText("$year (${mediaList.length})",
                             variant: TextVariant.bold,
                             size: 18,
-                            color: theme.primary,
+                            color: theme.primary, translate: false,
                           ),
                         ),
                         Expanded(
@@ -484,7 +484,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                   AnymeXText(media.rating,
                                     variant: TextVariant.bold,
                                     size: 10,
-                                    color: Colors.white,
+                                    color: Colors.white, translate: false,
                                   ),
                                 ],
                               ),
@@ -502,7 +502,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               variant: TextVariant.semiBold,
               size: 12,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.ellipsis, translate: false,
             ),
           ],
         ),

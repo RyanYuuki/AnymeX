@@ -73,7 +73,7 @@ class AnymeXSegmentedButton extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         color: isSelected ? activeText : inactiveText,
-                      ),
+                      ), translate: false,
                     ),
                 ],
               ),

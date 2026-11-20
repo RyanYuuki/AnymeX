@@ -317,7 +317,7 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                     themeObj.name,
                     size: 12,
                     color: colors.primary,
-                    variant: TextVariant.semiBold,
+                    variant: TextVariant.semiBold, translate: false,
                   ),
                 ],
               ),
@@ -465,7 +465,7 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                     themeObj.name,
                     size: 12,
                     color: ctx.colors.primary,
-                    variant: TextVariant.semiBold,
+                    variant: TextVariant.semiBold, translate: false,
                   ),
                   SegmentedButton<bool>(
                     showSelectedIcon: false,
@@ -784,13 +784,13 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
             size: 10,
             variant: TextVariant.semiBold,
             color: Colors.white,
-            maxLines: 1,
+            maxLines: 1, translate: false,
           ),
           AnymeXText(
             '$percent%',
             size: 11,
             variant: TextVariant.bold,
-            color: Colors.white,
+            color: Colors.white, translate: false,
           ),
         ],
       ),
@@ -818,9 +818,9 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: AnymeXText(label, size: 12, variant: TextVariant.semiBold),
+              child: AnymeXText(label, size: 12, variant: TextVariant.semiBold, translate: false),
             ),
-            AnymeXText('$percent%', size: 12, variant: TextVariant.bold),
+            AnymeXText('$percent%', size: 12, variant: TextVariant.bold, translate: false),
           ],
         ),
         Slider(
@@ -999,10 +999,10 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                 tooltip: 'Move to slot',
                 onSelected: (target) => _moveControlToSlot(control.id, target),
                 itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'top', child: Text('Top Bar')),
-                  PopupMenuItem(value: 'left', child: Text('Bottom Left')),
-                  PopupMenuItem(value: 'right', child: Text('Bottom Right')),
-                  PopupMenuItem(value: 'hidden', child: Text('Hidden')),
+                  PopupMenuItem(value: 'top', child: AnymeXText('Top Bar', maxLines: null)),
+                  PopupMenuItem(value: 'left', child: AnymeXText('Bottom Left', maxLines: null)),
+                  PopupMenuItem(value: 'right', child: AnymeXText('Bottom Right', maxLines: null)),
+                  PopupMenuItem(value: 'hidden', child: AnymeXText('Hidden', maxLines: null)),
                 ],
                 child: Container(
                   padding:
@@ -1018,7 +1018,7 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                         slotLabel,
                         size: 11,
                         variant: TextVariant.semiBold,
-                        color: colors.onPrimaryContainer,
+                        color: colors.onPrimaryContainer, translate: false,
                       ),
                       const SizedBox(width: 4),
                       Icon(

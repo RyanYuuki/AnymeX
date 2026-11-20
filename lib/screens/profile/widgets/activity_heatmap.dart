@@ -168,7 +168,7 @@ class _ActivityHeatmapState extends State<ActivityHeatmap> {
                     return SizedBox(
                       height: cellStep,
                       child: Center(
-                        child: AnymeXText(dayLabels[row], style: dayLabelStyle),
+                        child: AnymeXText(dayLabels[row], style: dayLabelStyle, translate: false),
                       ),
                     );
                   }),
@@ -194,7 +194,7 @@ class _ActivityHeatmapState extends State<ActivityHeatmap> {
                             left: monthOffsets[i],
                             child: AnymeXText(
                               monthLabels[i],
-                              style: TextStyle(fontSize: 9, color: subtleText),
+                              style: TextStyle(fontSize: 9, color: subtleText), translate: false,
                             ),
                           );
                         }),

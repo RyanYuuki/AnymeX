@@ -100,7 +100,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                                 CommentumRoleConfig.getRoleLabel(role).toUpperCase(),
                                 color: roleColor,
                                 variant: TextVariant.bold,
-                                size: 12,
+                                size: 12, translate: false,
                               ),
                             ),
                           ],
@@ -323,7 +323,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             radius: 2,
           ),
           AnymeXText(
-            'Search User'.tr,
+            'Search User',
             variant: TextVariant.bold,
             size: 16,
           ),
@@ -358,15 +358,15 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          'By User ID'.tr,
+                        child: AnymeXText(
+                          'By User ID',
                           style: TextStyle(
                             fontFamily: 'Poppins-Bold',
                             fontSize: 14,
                             color: _searchMode == 0
                                 ? colorScheme.onPrimary
                                 : colorScheme.onSurfaceVariant,
-                          ),
+                          ), maxLines: null,
                         ),
                       ),
                     ),
@@ -402,15 +402,15 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          'By Username'.tr,
+                        child: AnymeXText(
+                          'By Username',
                           style: TextStyle(
                             fontFamily: 'Poppins-Bold',
                             fontSize: 14,
                             color: _searchMode == 1
                                 ? colorScheme.onPrimary
                                 : colorScheme.onSurfaceVariant,
-                          ),
+                          ), maxLines: null,
                         ),
                       ),
                     ),
@@ -486,7 +486,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                                     : TextVariant.regular,
                                 color: isSelected
                                     ? colorScheme.primary
-                                    : colorScheme.onSurface,
+                                    : colorScheme.onSurface, translate: false,
                               ),
                             ),
                             if (isSelected)
@@ -581,7 +581,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : Text('View User'.tr),
+                    : AnymeXText('View User', maxLines: null),
               ),
             ),
           ],
@@ -591,12 +591,12 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
               widget.searchController.text.trim().length < 2)
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: Text(
-                'Type at least 2 characters to search'.tr,
+              child: AnymeXText(
+                'Type at least 2 characters to search',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
-                ),
+                ), maxLines: null,
               ),
             ),
           if (_searchMode == 1 &&
@@ -611,12 +611,12 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                   Icon(Icons.search_off_rounded,
                       size: 16, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
-                  Text(
-                    'No users found'.tr,
+                  AnymeXText(
+                    'No users found',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontStyle: FontStyle.italic,
-                    ),
+                    ), maxLines: null,
                   ),
                 ],
               ),
@@ -625,12 +625,12 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             const SizedBox(height: 12),
             const Divider(height: 1),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               '${_searchResults.length} result(s)',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
-              ),
+              ), maxLines: null,
             ),
             const SizedBox(height: 8),
             Flexible(
@@ -694,7 +694,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                                               username,
                                               variant: TextVariant.semiBold,
                                               size: 14,
-                                              overflow: TextOverflow.ellipsis,
+                                              overflow: TextOverflow.ellipsis, translate: false,
                                             ),
                                           ),
                                           if (role != 'user') ...[
@@ -713,7 +713,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                                                     .replaceAll('_', ' '),
                                                 color: _getRoleColor(role),
                                                 size: 9,
-                                                variant: TextVariant.bold,
+                                                variant: TextVariant.bold, translate: false,
                                               ),
                                             ),
                                           ],
@@ -726,13 +726,13 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                                         ],
                                       ),
                                       const SizedBox(height: 2),
-                                      Text(
+                                      AnymeXText(
                                         'ID: $userId${clientType.isNotEmpty ? ' · $clientType' : ''}',
                                         style:
                                             theme.textTheme.bodySmall?.copyWith(
                                           color: colorScheme.onSurfaceVariant,
                                           fontSize: 11,
-                                        ),
+                                        ), maxLines: null,
                                       ),
                                     ],
                                   ),
@@ -821,18 +821,18 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                       Icon(Icons.check_circle_outline_rounded,
                           size: 64, color: colorScheme.primary),
                       const SizedBox(height: 16),
-                      Text(
-                        'No pending reports'.tr,
+                      AnymeXText(
+                        'No pending reports',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
-                        ),
+                        ), maxLines: null,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'All clear! No reports to review.'.tr,
+                      AnymeXText(
+                        'All clear! No reports to review.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
-                        ),
+                        ), maxLines: null,
                       ),
                     ],
                   ),
@@ -911,19 +911,19 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           authorName,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w700,
-                          ),
+                          ), maxLines: null, translate: false,
                         ),
                         if (mediaTitle.isNotEmpty)
-                          Text(
+                          AnymeXText(
                             '$mediaTitle ${mediaType.isNotEmpty ? "($mediaType)" : ""}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontSize: 12,
-                            ),
+                            ), maxLines: null, translate: false,
                           ),
                       ],
                     ),
@@ -943,7 +943,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           '$totalReports',
                           color: colorScheme.error,
                           size: 12,
-                          variant: TextVariant.bold,
+                          variant: TextVariant.bold, translate: false,
                         ),
                       ],
                     ),
@@ -965,7 +965,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                 variant: TextVariant.regular,
                 size: 13,
                 maxLines: 4,
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, translate: false,
               ),
             ),
           ),
@@ -995,35 +995,35 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              AnymeXText(
                                 reason,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: colorScheme.onSurface,
                                   fontWeight: FontWeight.w600,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis, maxLines: null, translate: false,
                               ),
                               if (reporterUsername.isNotEmpty ||
                                   reporterId.isNotEmpty)
-                                Text(
+                                AnymeXText(
                                   'by ${reporterUsername.isNotEmpty ? reporterUsername : reporterId}',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontSize: 10,
-                                  ),
+                                  ), maxLines: null,
                                 ),
                             ],
                           ),
                         ),
                         if (notes.isNotEmpty)
-                          Text(
+                          AnymeXText(
                             '($notes)',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontSize: 11,
                               fontStyle: FontStyle.italic,
                             ),
-                            overflow: TextOverflow.ellipsis,
+                            overflow: TextOverflow.ellipsis, maxLines: null, translate: false,
                           ),
                       ],
                     ),
@@ -1034,12 +1034,12 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
           if (createdAt.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Text(
+              child: AnymeXText(
                 timeago.format(DateTime.parse(createdAt)),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontSize: 11,
-                ),
+                ), maxLines: null, translate: false,
               ),
             ),
           const Divider(height: 24),
@@ -1073,7 +1073,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               );
                             },
                             icon: const Icon(Icons.shield_outlined, size: 15),
-                            label: Text('User'.tr),
+                            label: AnymeXText('User', maxLines: null),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: colorScheme.primary,
                               side: BorderSide(
@@ -1098,7 +1098,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           ),
                           icon: const Icon(Icons.delete_outline_rounded,
                               size: 15),
-                          label: Text('Delete'.tr),
+                          label: AnymeXText('Delete', maxLines: null),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: colorScheme.error,
                             side: BorderSide(
@@ -1130,7 +1130,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text('Dismiss'.tr),
+                          child: AnymeXText('Dismiss', maxLines: null),
                         ),
                         const SizedBox(width: 8),
                         FilledButton(
@@ -1152,7 +1152,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text('Resolve'.tr),
+                          child: AnymeXText('Resolve', maxLines: null),
                         ),
                       ],
                     ),
@@ -1193,7 +1193,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: AnymeXText(
-                        'Delete Reported Comment'.tr,
+                        'Delete Reported Comment',
                         variant: TextVariant.bold,
                         size: 16,
                         color: colorScheme.error,
@@ -1203,7 +1203,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                 ),
                 const SizedBox(height: 14),
                 AnymeXText(
-                  'Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.'.tr,
+                  'Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.',
                   variant: TextVariant.regular,
                   size: 13,
                   color: colorScheme.onSurfaceVariant,
@@ -1215,7 +1215,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: AnymeXText('Cancel'.tr,
+                      child: AnymeXText('Cancel',
                           color: colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(width: 8),
@@ -1237,7 +1237,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           deleteComment: true,
                         );
                       },
-                      child: Text('Delete Comment'.tr),
+                      child: AnymeXText('Delete Comment', maxLines: null),
                     ),
                   ],
                 ),
@@ -1440,12 +1440,12 @@ class _UserListPageState extends State<UserListPage> {
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
+                  child: AnymeXText(
                     '${users.length} of $totalUsers users',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
-                    ),
+                    ), maxLines: null,
                   ),
                 ),
               )),
@@ -1463,18 +1463,18 @@ class _UserListPageState extends State<UserListPage> {
                       Icon(Icons.people_outline_rounded,
                           size: 64, color: colorScheme.onSurfaceVariant),
                       const SizedBox(height: 16),
-                      Text(
-                        'No users found'.tr,
+                      AnymeXText(
+                        'No users found',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
-                        ),
+                        ), maxLines: null,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Try adjusting your filters'.tr,
+                      AnymeXText(
+                        'Try adjusting your filters',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
-                        ),
+                        ), maxLines: null,
                       ),
                     ],
                   ),
@@ -1516,7 +1516,7 @@ class _UserListPageState extends State<UserListPage> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
-                    label: AnymeXText(statusFilters[index]),
+                    label: AnymeXText(statusFilters[index], translate: false),
                     selected: selectedStatusFilter.value == index,
                     onSelected: (selected) {
                       if (selected) {
@@ -1545,14 +1545,14 @@ class _UserListPageState extends State<UserListPage> {
                   hint: 'Role: All'.tr,
                   items: [
                     DropdownMenuItem<String?>(
-                        value: null, child: Text('All'.tr)),
-                    DropdownMenuItem(value: 'user', child: Text('User'.tr)),
+                        value: null, child: AnymeXText('All', maxLines: null)),
+                    DropdownMenuItem(value: 'user', child: AnymeXText('User', maxLines: null)),
                     DropdownMenuItem(
-                        value: 'moderator', child: Text('Moderator'.tr)),
+                        value: 'moderator', child: AnymeXText('Moderator', maxLines: null)),
                     DropdownMenuItem(
-                        value: 'admin', child: Text('Admin'.tr)),
+                        value: 'admin', child: AnymeXText('Admin', maxLines: null)),
                     DropdownMenuItem(
-                        value: 'super_admin', child: Text('Super Admin'.tr)),
+                        value: 'super_admin', child: AnymeXText('Super Admin', maxLines: null)),
                   ],
                   onChanged: (value) {
                     selectedRoleFilter.value = value ?? '';
@@ -1569,12 +1569,12 @@ class _UserListPageState extends State<UserListPage> {
                   hint: 'Client: All'.tr,
                   items: [
                     DropdownMenuItem<String?>(
-                        value: null, child: Text('All'.tr)),
+                        value: null, child: AnymeXText('All', maxLines: null)),
                     DropdownMenuItem(
-                        value: 'anilist', child: Text('AniList'.tr)),
-                    DropdownMenuItem(value: 'mal', child: Text('MAL'.tr)),
+                        value: 'anilist', child: AnymeXText('AniList', maxLines: null)),
+                    DropdownMenuItem(value: 'mal', child: AnymeXText('MAL', maxLines: null)),
                     DropdownMenuItem(
-                        value: 'simkl', child: Text('Simkl'.tr)),
+                        value: 'simkl', child: AnymeXText('Simkl', maxLines: null)),
                   ],
                   onChanged: (value) {
                     selectedClientTypeFilter.value = value ?? '';
@@ -1664,12 +1664,12 @@ class _UserListPageState extends State<UserListPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
+                          child: AnymeXText(
                             username,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
-                            overflow: TextOverflow.ellipsis,
+                            overflow: TextOverflow.ellipsis, maxLines: null, translate: false,
                           ),
                         ),
                       ],
@@ -1689,7 +1689,7 @@ class _UserListPageState extends State<UserListPage> {
                             role.toUpperCase().replaceAll('_', ' '),
                             color: _getRoleColor(role),
                             variant: TextVariant.bold,
-                            size: 10,
+                            size: 10, translate: false,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -1720,13 +1720,13 @@ class _UserListPageState extends State<UserListPage> {
                         if (clientType.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(left: 4),
-                            child: Text(
+                            child: AnymeXText(
                               clientType.toUpperCase(),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                              ),
+                              ), maxLines: null, translate: false,
                             ),
                           ),
                       ],
@@ -1845,11 +1845,11 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 ? const Center(child: ExpressiveLoadingIndicator())
                 : userInfo == null
                     ? Center(
-                        child: Text(
+                        child: AnymeXText(
                           'User not found (ID: ${widget.targetUserId})',
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
-                          ),
+                          ), maxLines: null,
                         ),
                       )
                     : SingleChildScrollView(
@@ -1879,12 +1879,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                     size: 72,
                                   ),
                                   const SizedBox(height: 12),
-                                  Text(
+                                  AnymeXText(
                                     userInfo?['username']?.toString() ??
                                         'Unknown',
                                     style: theme.textTheme.titleLarge?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                    ),
+                                    ), maxLines: null,
                                   ),
                                   const SizedBox(height: 6),
                                   Row(
@@ -1915,7 +1915,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                                 color: colorScheme.primary,
                                               ),
                                               const SizedBox(width: 6),
-                                              Text(
+                                              AnymeXText(
                                                 userInfo!['client_type']
                                                     .toString()
                                                     .toUpperCase(),
@@ -1923,7 +1923,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                                   color: colorScheme.primary,
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 12,
-                                                ),
+                                                ), maxLines: null,
                                               ),
                                             ],
                                           ),
@@ -1967,12 +1967,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                             const SizedBox(height: 20),
 
                             // Role Change Section
-                            Text(
-                              'Change Role'.tr,
+                            AnymeXText(
+                              'Change Role',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: colorScheme.onSurfaceVariant,
-                              ),
+                              ), maxLines: null,
                             ),
                             const SizedBox(height: 8),
                             AnymeXCard(
@@ -1994,7 +1994,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               size: 20,
                                               color: colorScheme.primary),
                                           const SizedBox(width: 12),
-                                          Text('User'.tr),
+                                          AnymeXText('User', maxLines: null),
                                         ],
                                       ),
                                     ),
@@ -2006,7 +2006,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               size: 20,
                                               color: Colors.blue.shade400),
                                           const SizedBox(width: 12),
-                                          Text('Moderator'.tr),
+                                          AnymeXText('Moderator', maxLines: null),
                                         ],
                                       ),
                                     ),
@@ -2018,7 +2018,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               size: 20,
                                               color: Colors.amber.shade400),
                                           const SizedBox(width: 12),
-                                          Text('Admin'.tr),
+                                          AnymeXText('Admin', maxLines: null),
                                         ],
                                       ),
                                     ),
@@ -2034,12 +2034,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                             const SizedBox(height: 20),
 
                             // Moderation Actions Section
-                            Text(
-                              'Moderation Actions'.tr,
+                            AnymeXText(
+                              'Moderation Actions',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: colorScheme.onSurfaceVariant,
-                              ),
+                              ), maxLines: null,
                             ),
                             const SizedBox(height: 8),
                             AnymeXCard(
@@ -2135,7 +2135,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             CommentumRoleConfig.getRoleLabel(role).toUpperCase(),
             color: color,
             variant: TextVariant.bold,
-            size: 12,
+            size: 12, translate: false,
           ),
         ),
       ],
@@ -2184,12 +2184,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
         children: [
           SizedBox(
             width: 110,
-            child: Text(
+            child: AnymeXText(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
-              ),
+              ), maxLines: null, translate: false,
             ),
           ),
           Expanded(
@@ -2207,7 +2207,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     ? (value == 'Yes'
                         ? colorScheme.error
                         : colorScheme.primary)
-                    : null,
+                    : null, translate: false,
               ),
             ),
           ),
@@ -2245,7 +2245,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             AnymeXText(
               label,
               size: 16,
-              variant: TextVariant.semiBold,
+              variant: TextVariant.semiBold, translate: false,
             ),
           ],
         ),

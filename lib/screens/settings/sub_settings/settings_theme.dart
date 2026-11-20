@@ -745,7 +745,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ),
                   const SizedBox(height: 20),
                   AnymeXText(
-                    'Hue'.tr,
+                    'Hue',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
@@ -787,7 +787,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ),
                   const SizedBox(height: 14),
                   AnymeXText(
-                    'Saturation'.tr,
+                    'Saturation',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
@@ -824,7 +824,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ),
                   const SizedBox(height: 14),
                   AnymeXText(
-                    'Lightness'.tr,
+                    'Lightness',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
@@ -964,7 +964,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           : colors.onSurface.opaque(0.7, iReallyMeanIt: true),
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis, translate: false,
                   ),
                 ],
               ),

@@ -195,7 +195,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                                             fontSize: 22,
                                             color: context
                                                 .theme.colorScheme.onSurface,
-                                          ),
+                                          ), translate: false,
                                         ),
                                       ),
                                       IconButton(
@@ -418,7 +418,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                                 color: widget.isSelected
                                     ? context.theme.colorScheme.primary
                                     : context.theme.colorScheme.onSurface,
-                              ),
+                              ), translate: false,
                             ),
                             if (widget.item.subtitle != null)
                               Padding(
@@ -429,7 +429,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                                       ?.copyWith(
                                     color: context.theme.colorScheme.onSurface
                                         .opaque(0.6, iReallyMeanIt: true),
-                                  ),
+                                  ), translate: false,
                                 ),
                               ),
                           ],

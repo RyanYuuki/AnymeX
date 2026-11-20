@@ -88,7 +88,7 @@ class EpisodeSection extends StatelessWidget {
                   const SizedBox(height: 16),
                 ],
                 AnymeXText(
-                  'Layout Style'.tr,
+                  'Layout Style',
                   variant: TextVariant.bold,
                   size: 14,
                 ),
@@ -299,13 +299,13 @@ class _ProviderOptionTile extends StatelessWidget {
                     AnymeXText(
                       title,
                       variant: TextVariant.semiBold,
-                      size: 13,
+                      size: 13, translate: false,
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
                       subtitle,
                       size: 11,
-                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
+                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true), translate: false,
                     ),
                   ],
                 ),

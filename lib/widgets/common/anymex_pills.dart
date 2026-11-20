@@ -238,7 +238,7 @@ class AnymeXPills extends StatelessWidget {
         AnymeXText.semiBold(
           item.label,
           size: 12,
-          color: foregroundColor,
+          color: foregroundColor, translate: false,
         ),
         if (item.countText != null || item.count != null) ...[
           const SizedBox(width: 6),
@@ -252,7 +252,7 @@ class AnymeXPills extends StatelessWidget {
               item.countText ?? item.count.toString(),
               size: 10,
               variant: TextVariant.bold,
-              color: countTextColor,
+              color: countTextColor, translate: false,
             ),
           ),
         ],

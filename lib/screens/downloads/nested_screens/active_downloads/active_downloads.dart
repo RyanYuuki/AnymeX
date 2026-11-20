@@ -96,7 +96,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                   DownloadController.formatSpeed(totalActiveSpeed),
                   size: 11,
                   variant: TextVariant.bold,
-                  color: theme.primary,
+                  color: theme.primary, translate: false,
                 ),
               ],
             ),
@@ -151,14 +151,14 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
           Icon(HugeIcons.strokeRoundedDownload04,
               size: 64, color: context.colors.onSurface.opaque(0.15)),
           const SizedBox(height: 16),
-          AnymeXText('No active downloads'.tr,
+          AnymeXText('No active downloads',
               size: 16,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface.opaque(0.4)),
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: AnymeXText('Start a new download from the "New Download" tab'.tr,
+            child: AnymeXText('Start a new download from the "New Download" tab',
                 size: 13,
                 color: context.colors.onSurface.opaque(0.3),
                 textAlign: TextAlign.center),
@@ -255,7 +255,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                                 group.mediaTitle,
                                 variant: TextVariant.bold,
                                 size: 15,
-                                maxLines: 2,
+                                maxLines: 2, translate: false,
                               ),
                               const SizedBox(height: 6),
                               Wrap(
@@ -291,7 +291,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                                     child: AnymeXText(
                                       group.extensionName,
                                       size: 10.5,
-                                      color: theme.onSurface.opaque(0.7),
+                                      color: theme.onSurface.opaque(0.7), translate: false,
                                     ),
                                   ),
                                   Container(
@@ -584,7 +584,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                         task.displayId,
                         variant: TextVariant.semiBold,
                         size: 13.5,
-                        maxLines: 1,
+                        maxLines: 1, translate: false,
                       ),
                     ),
                     if (task.qualityOrStatus.isNotEmpty) ...[
@@ -599,7 +599,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                         child: AnymeXText(
                           task.qualityOrStatus,
                           size: 10,
-                          color: theme.primary,
+                          color: theme.primary, translate: false,
                         ),
                       ),
                     ],
@@ -711,7 +711,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                 statusLabel,
                 size: 11.5,
                 color: statusColor,
-                variant: TextVariant.semiBold,
+                variant: TextVariant.semiBold, translate: false,
               ),
               const Spacer(),
               if (task.isDownloading)
@@ -732,7 +732,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                         DownloadController.formatSpeed(taskSpeed),
                         size: 10.5,
                         variant: TextVariant.bold,
-                        color: theme.primary,
+                        color: theme.primary, translate: false,
                       ),
                     ],
                   ),
@@ -752,7 +752,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                       color: theme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: AnymeXText('Select Server'.tr,
+                    child: AnymeXText('Select Server',
                         size: 10.5,
                         color: theme.onTertiaryContainer,
                         variant: TextVariant.bold),
@@ -773,7 +773,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                       color: theme.primary,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: AnymeXText('Select Server'.tr,
+                    child: AnymeXText('Select Server',
                         size: 10.5,
                         color: theme.onPrimary,
                         variant: TextVariant.bold),
@@ -788,7 +788,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
               task.errorMessage!,
               size: 11,
               color: theme.error.opaque(0.75),
-              maxLines: 2,
+              maxLines: 2, translate: false,
             ),
           ],
         ],
@@ -954,7 +954,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnymeXText('Select Server'.tr,
+                AnymeXText('Select Server',
                     variant: TextVariant.bold, size: 18),
                 if (isLoading) ...[
                   const SizedBox(width: 10),
@@ -979,7 +979,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
             SizedBox(
               height: 180,
               child: Center(
-                child: AnymeXText('No servers found.'.tr,
+                child: AnymeXText('No servers found.',
                     color: theme.onSurface.opaque(0.5)),
               ),
             )
@@ -997,7 +997,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                     subtitle: AnymeXText(
                       server.originalUrl ?? server.url ?? '',
                       size: 12,
-                      maxLines: 1,
+                      maxLines: 1, translate: false,
                     ),
                     onTap: () {
                       Get.find<DownloadController>()

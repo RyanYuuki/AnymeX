@@ -210,7 +210,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
         style: TextStyle(
           fontSize: 13.5,
           color: context.theme.colorScheme.onSurfaceVariant,
-        ),
+        ), translate: false,
       );
     }
 

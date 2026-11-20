@@ -393,7 +393,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                       AnymeXText(
                         p.dialogMessage!,
                         size: 14,
-                        color: theme.onSurfaceVariant,
+                        color: theme.onSurfaceVariant, translate: false,
                       ),
                       const SizedBox(height: 12),
                     ],

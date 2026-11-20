@@ -91,7 +91,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    'Description'.tr,
+                    'Description',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
@@ -119,7 +119,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
                           height: 1.75,
                           letterSpacing: 0.1,
                           color: colors.onSurfaceVariant,
-                        ),
+                        ), translate: false,
                       ),
               ),
             ),
@@ -150,7 +150,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No Description Available'.tr,
+              'No Description Available',
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,

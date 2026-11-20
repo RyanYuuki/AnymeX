@@ -299,7 +299,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
               children: [
                 // Header
                 AnymeXText(
-                  'Page Animation Demo'.tr,
+                  'Page Animation Demo',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
@@ -307,7 +307,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                 ),
                 const SizedBox(height: 8),
                 AnymeXText(
-                  'Try different animation styles for page entrances'.tr,
+                  'Try different animation styles for page entrances',
                   style: TextStyle(color: Colors.grey[600], fontSize: 16),
                 ),
 
@@ -367,7 +367,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Usage:'.tr,
+                        'Usage:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[700],
@@ -430,7 +430,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                    ),
+                    ), translate: false,
                   ),
                   const SizedBox(height: 4),
                   AnymeXText(
@@ -438,7 +438,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
-                    ),
+                    ), translate: false,
                   ),
                 ],
               ),

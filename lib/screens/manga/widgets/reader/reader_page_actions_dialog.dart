@@ -244,7 +244,7 @@ class _ActionButton extends StatelessWidget {
             Icon(icon, size: 28, color: context.colors.primary),
             const SizedBox(height: 6),
             AnymeXText(label,
-                style: TextStyle(fontSize: 12, color: context.colors.onSurface)),
+                style: TextStyle(fontSize: 12, color: context.colors.onSurface), translate: false),
           ],
         ),
       ),

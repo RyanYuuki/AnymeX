@@ -115,13 +115,13 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No search results'.tr,
+              'No search results',
               size: 16,
               color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
             ),
             const SizedBox(height: 6),
             AnymeXText(
-              'Try a different keyword'.tr,
+              'Try a different keyword',
               size: 13,
               color: context.colors.onSurface.opaque(0.3, iReallyMeanIt: true),
             ),

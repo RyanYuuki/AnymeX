@@ -384,7 +384,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             variant: TextVariant.bold,
                             color: selectedTag == tagText
                                 ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant,
+                                : colorScheme.onSurfaceVariant, translate: false,
                           ),
                         ],
                       ),
@@ -426,7 +426,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             : TextVariant.regular,
                         color: isSelected
                             ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant,
+                            : colorScheme.onSurfaceVariant, translate: false,
                       ),
                     ),
                   ),

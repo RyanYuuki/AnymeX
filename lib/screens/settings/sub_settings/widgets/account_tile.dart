@@ -66,7 +66,7 @@ class ProfileTile extends StatelessWidget {
             10.height(),
             Center(
               child: AnymeXText(userData.name!,
-                variant: TextVariant.semiBold,
+                variant: TextVariant.semiBold, translate: false,
               ),
             ),
             Container(

@@ -82,7 +82,7 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
                                 fontFamily: 'Linotte',
                                 fontSize: 14,
                                 color: theme.colorScheme.error,
-                              ),
+                              ), translate: false,
                             ),
                             const SizedBox(height: 2),
                             AnymeXText(
@@ -94,7 +94,7 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface
                                     .opaque(0.7, iReallyMeanIt: true),
-                              ),
+                              ), translate: false,
                             ),
                           ],
                         ),

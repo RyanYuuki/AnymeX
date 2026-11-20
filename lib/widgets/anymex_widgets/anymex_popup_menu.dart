@@ -402,7 +402,7 @@ class _AnymeXPopupMenuOverlay<T> extends StatelessWidget {
                         fontSize: 10,
                         letterSpacing: 1.0,
                         color: theme.colorScheme.onSurfaceVariant.opaque(0.7, iReallyMeanIt: true),
-                      ),
+                      ), translate: false,
                     ),
                   ),
                   Divider(
@@ -467,7 +467,7 @@ class _AnymeXPopupMenuOverlay<T> extends StatelessWidget {
             fontSize: 9.5,
             letterSpacing: 1.0,
             color: theme.colorScheme.onSurfaceVariant.opaque(0.65, iReallyMeanIt: true),
-          ),
+          ), translate: false,
         ),
       );
     }
@@ -517,7 +517,7 @@ class _AnymeXPopupMenuOverlay<T> extends StatelessWidget {
                         color: item.enabled
                             ? foregroundColor
                             : theme.colorScheme.onSurface.opaque(0.38, iReallyMeanIt: true),
-                      ),
+                      ), translate: false,
                     ),
                     if (item.subtitle != null) ...[
                       const SizedBox(height: 1),
@@ -526,7 +526,7 @@ class _AnymeXPopupMenuOverlay<T> extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10.0,
                           color: theme.colorScheme.onSurfaceVariant.opaque(0.7, iReallyMeanIt: true),
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ],

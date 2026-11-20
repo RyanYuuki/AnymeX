@@ -186,7 +186,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: AnymeXText(
-            "Tap a zone to change its action".tr,
+            "Tap a zone to change its action",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                 ),
@@ -269,7 +269,7 @@ class VisualZoneEditor extends StatelessWidget {
                     Icon(Icons.touch_app_rounded, color: theme.colorScheme.primary, size: 22),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      "Tap Action".tr,
+                      "Tap Action",
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,
@@ -303,7 +303,7 @@ class VisualZoneEditor extends StatelessWidget {
                         style: TextStyle(
                           color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        ),
+                        ), translate: false,
                       ),
                       trailing: isSelected
                           ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary)
@@ -421,7 +421,7 @@ class VisualZoneEditor extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 color: Theme.of(context).colorScheme.primary,
                                 letterSpacing: 0.5,
-                              ),
+                              ), translate: false,
                             ),
                           ),
                         ],
@@ -540,7 +540,7 @@ class _ElegantSegmentedControl extends StatelessWidget {
                                     ? Theme.of(context).colorScheme.onPrimary 
                                     : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
                               ),
-                              child: AnymeXText(item.title),
+                              child: AnymeXText(item.title, translate: false),
                             ),
                           ],
                         ),

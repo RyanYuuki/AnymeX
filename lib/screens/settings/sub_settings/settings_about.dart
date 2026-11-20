@@ -384,7 +384,7 @@ class _ForksPage extends StatelessWidget {
                     ),
                     title: AnymeXText(
                       fork.name,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600), translate: false,
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,7 +394,7 @@ class _ForksPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: colors.onSurface.withOpacity(0.6),
-                          ),
+                          ), translate: false,
                         ),
                         AnymeXText(
                           'by ${fork.devName}',

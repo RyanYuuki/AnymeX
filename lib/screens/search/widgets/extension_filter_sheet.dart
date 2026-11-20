@@ -244,7 +244,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
       padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
       child: AnymeXText.bold(f.name,
         size: 15,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.primary, translate: false,
       ),
     );
   }
@@ -252,7 +252,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   Widget _buildCheckbox(int i, CheckBoxFilter f) {
     return CheckboxListTile(
       dense: true,
-      title: AnymeXText(f.name, size: 14),
+      title: AnymeXText(f.name, size: 14, translate: false),
       value: f.state,
       onChanged: (v) {
         setState(() {
@@ -296,7 +296,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
 
     return ListTile(
       dense: true,
-      title: AnymeXText(f.name, size: 14),
+      title: AnymeXText(f.name, size: 14, translate: false),
       trailing: GestureDetector(
         onTap: () {
           setState(() {
@@ -320,7 +320,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
           ),
           child: AnymeXText.semiBold(labels[f.state],
             size: 12,
-            color: textColor,
+            color: textColor, translate: false,
           ),
         ),
       ),
@@ -412,7 +412,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       AnymeXText((f.values[j] as SelectFilterOption).name,
-                        size: 12,
+                        size: 12, translate: false,
                       ),
                       if (state.index == j) ...[
                         const SizedBox(width: 4),
@@ -502,7 +502,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
           size: 12,
           color: isSelected
               ? theme.colorScheme.primary
-              : theme.colorScheme.onSurface,
+              : theme.colorScheme.onSurface, translate: false,
         ),
       ),
     );
@@ -805,7 +805,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
         ),
         child: AnymeXText(tri.name,
           size: 12,
-          color: textColor,
+          color: textColor, translate: false,
         ),
       ),
     );
@@ -860,7 +860,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
           size: 12,
           color: isSelected
               ? theme.colorScheme.primary
-              : theme.colorScheme.onSurface,
+              : theme.colorScheme.onSurface, translate: false,
         ),
       ),
     );

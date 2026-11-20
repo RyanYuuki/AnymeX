@@ -226,7 +226,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                             offset: const Offset(0, 4),
                                           ),
                                         ],
-                                      ),
+                                      ), translate: false,
                                     ),
                                   ),
                                   if (widget.userPoints?.badges != null &&
@@ -272,7 +272,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                 color: donatorTier > 0
                                                     ? const Color(0xFFE85D75)
                                                     : Colors.white,
-                                              ),
+                                              ), translate: false,
                                             ),
                                           ],
                                         ),
@@ -422,7 +422,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           ),
                                           const SizedBox(height: 16),
                                           AnymeXText(
-                                            'More Options'.tr,
+                                            'More Options',
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontFamily: 'Linotte',
@@ -467,7 +467,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                     .showSnackBar(
                                                   SnackBar(
                                                     content: AnymeXText(
-                                                        'User ID copied to clipboard'.tr),
+                                                        'User ID copied to clipboard'),
                                                     backgroundColor: context
                                                         .theme
                                                         .colorScheme

@@ -401,7 +401,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
               Container(width: 44, height: 4, margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(color: context.colors.outline.opaque(0.45), borderRadius: BorderRadius.circular(999))),
               Align(alignment: Alignment.centerLeft,
-                child: AnymeXText(title, style: TextStyle(color: context.colors.onSurface, fontSize: 17, fontWeight: FontWeight.w700))),
+                child: AnymeXText(title, style: TextStyle(color: context.colors.onSurface, fontSize: 17, fontWeight: FontWeight.w700), translate: false)),
               const SizedBox(height: 12),
               ConstrainedBox(
                 constraints: BoxConstraints(maxHeight: (maxH - 90).clamp(120.0, 560.0)),
@@ -422,7 +422,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                           child: Row(children: [
                             Expanded(child: AnymeXText(itemLabel(item),
                               style: TextStyle(color: context.colors.onSurface, fontSize: 15,
-                                fontWeight: sel ? FontWeight.w700 : FontWeight.w500))),
+                                fontWeight: sel ? FontWeight.w700 : FontWeight.w500), translate: false)),
                             Icon(sel ? Icons.check_circle_rounded : Icons.circle_outlined, size: 19,
                               color: sel ? context.colors.primary : context.colors.onSurface.opaque(0.5)),
                           ]),
@@ -456,10 +456,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Row(children: [
                 Expanded(child: AnymeXText('$title Section Order', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
-                TextButton(onPressed: () { onApply(order); Navigator.pop(context); }, child: AnymeXText('Done'.tr)),
+                TextButton(onPressed: () { onApply(order); Navigator.pop(context); }, child: AnymeXText('Done')),
               ]),
               const SizedBox(height: 8),
-              AnymeXText('Drag to reorder status sections'.tr,
+              AnymeXText('Drag to reorder status sections',
                 style: TextStyle(fontSize: 13, color: context.colors.onSurface.opaque(0.65))),
               const SizedBox(height: 12),
               SizedBox(
@@ -475,7 +475,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                   itemBuilder: (_, i) => Card(
                     key: ValueKey('section-${order[i]}'),
                     margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(leading: const Icon(Icons.drag_indicator_rounded), title: AnymeXText(_pretty(order[i]))),
+                    child: ListTile(leading: const Icon(Icons.drag_indicator_rounded), title: AnymeXText(_pretty(order[i]), translate: false)),
                   ),
                 ),
               ),
@@ -515,8 +515,8 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 Container(width: 44, height: 4, margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(color: context.colors.outline.opaque(0.45), borderRadius: BorderRadius.circular(999))),
                 Row(children: [
-                  Expanded(child: AnymeXText(title, style: TextStyle(color: context.colors.onSurface, fontSize: 18, fontWeight: FontWeight.w700))),
-                  TextButton(onPressed: () { onApply(local); Navigator.pop(sheetContext); }, child: AnymeXText('Done'.tr)),
+                  Expanded(child: AnymeXText(title, style: TextStyle(color: context.colors.onSurface, fontSize: 18, fontWeight: FontWeight.w700), translate: false)),
+                  TextButton(onPressed: () { onApply(local); Navigator.pop(sheetContext); }, child: AnymeXText('Done')),
                 ]),
                 const SizedBox(height: 10),
                 Row(children: [
@@ -543,14 +543,14 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                   child: local.isEmpty
                       ? Container(width: double.infinity, padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(color: context.colors.surfaceContainer.opaque(0.6), borderRadius: BorderRadius.circular(14)),
-                          child: AnymeXText('No custom lists yet.'.tr, style: TextStyle(color: context.colors.onSurface.opaque(0.65))))
+                          child: AnymeXText('No custom lists yet.', style: TextStyle(color: context.colors.onSurface.opaque(0.65))))
                       : ListView.separated(
                           shrinkWrap: true, itemCount: local.length,
                           separatorBuilder: (_, __) => const SizedBox(height: 8),
                           itemBuilder: (_, index) => Material(
                             color: context.colors.surfaceContainer.opaque(0.72),
                             borderRadius: BorderRadius.circular(14),
-                            child: ListTile(dense: true, title: AnymeXText(local[index]),
+                            child: ListTile(dense: true, title: AnymeXText(local[index], translate: false),
                               trailing: IconButton(
                                 icon: Icon(Icons.delete_outline_rounded, color: context.colors.error),
                                 onPressed: () => setModalState(() { local = List.from(local)..removeAt(index); }),
@@ -930,11 +930,11 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
         const SizedBox(width: 20),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Expanded(child: AnymeXText('About'.tr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.onSurface))),
+            Expanded(child: AnymeXText('About', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.onSurface))),
             SegmentedButton<bool>(
               segments: [
-                ButtonSegment(value: false, label: AnymeXText('Edit'.tr)),
-                ButtonSegment(value: true, label: AnymeXText('Preview'.tr)),
+                ButtonSegment(value: false, label: AnymeXText('Edit')),
+                ButtonSegment(value: true, label: AnymeXText('Preview')),
               ],
               selected: {_aboutPreview}, showSelectedIcon: false,
               onSelectionChanged: (v) => setState(() => _aboutPreview = v.first),
@@ -1010,7 +1010,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 ]),
                 if (_aboutPreviewExpanded)
                   _aboutController.text.trim().isEmpty
-                      ? AnymeXText('Nothing to preview yet.'.tr,
+                      ? AnymeXText('Nothing to preview yet.',
                           style: TextStyle(color: context.colors.onSurface.opaque(0.6), fontSize: 14))
                       : AnilistAboutMe(about: _previewAbout(_aboutController.text)),
               ]),
@@ -1023,10 +1023,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
   Widget _buildError() => Center(child: Padding(
     padding: const EdgeInsets.all(24),
     child: Column(mainAxisSize: MainAxisSize.min, children: [
-      AnymeXText(_error!, textAlign: TextAlign.center, style: TextStyle(color: context.colors.error)),
+      AnymeXText(_error!, textAlign: TextAlign.center, style: TextStyle(color: context.colors.error), translate: false),
       const SizedBox(height: 12),
       ElevatedButton.icon(onPressed: _loadSettings,
-        icon: const Icon(Icons.refresh_rounded), label: AnymeXText('Retry'.tr)),
+        icon: const Icon(Icons.refresh_rounded), label: AnymeXText('Retry')),
     ]),
   ));
 
@@ -1035,7 +1035,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     margin: const EdgeInsets.only(bottom: 12),
     child: ListTile(
       leading: Icon(Icons.error_outline_rounded, color: context.colors.error),
-      title: AnymeXText(_error!, style: TextStyle(color: context.colors.onErrorContainer)),
+      title: AnymeXText(_error!, style: TextStyle(color: context.colors.onErrorContainer), translate: false),
       trailing: IconButton(
         onPressed: () => setState(() => _error = null),
         icon: const Icon(Icons.close_rounded)),

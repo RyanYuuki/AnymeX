@@ -121,7 +121,7 @@ class _ActivityCardState extends State<ActivityCard> {
     if (!anilistAuth.isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: AnymeXText('Please login first'.tr),
+          content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -192,7 +192,7 @@ class _ActivityCardState extends State<ActivityCard> {
                     if (error != null && mounted) {
                       setState(() => activity.isPinned = !activity.isPinned);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: AnymeXText(error)),
+                        SnackBar(content: AnymeXText(error, translate: false)),
                       );
                     }
                   },
@@ -221,7 +221,7 @@ class _ActivityCardState extends State<ActivityCard> {
               ),
               ListTile(
                 leading: const Icon(Icons.open_in_browser),
-                title: AnymeXText("Open in Browser".tr),
+                title: AnymeXText("Open in Browser"),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   launchUrlString('https://anilist.co/activity/${activity.id}');
@@ -231,7 +231,7 @@ class _ActivityCardState extends State<ActivityCard> {
                   (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
                 ListTile(
                   leading: const Icon(Icons.edit_outlined),
-                  title: AnymeXText("Edit Activity".tr),
+                  title: AnymeXText("Edit Activity"),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _showEditSheet();
@@ -240,7 +240,7 @@ class _ActivityCardState extends State<ActivityCard> {
               if (isOwner)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: AnymeXText("Delete Activity".tr,
+                  title: AnymeXText("Delete Activity",
                       style: TextStyle(color: Colors.red)),
                   onTap: () async {
                     Navigator.pop(sheetContext);
@@ -309,7 +309,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             color: Colors.red, size: 20),
                         const SizedBox(width: 8),
                         AnymeXText(
-                          'Liked by'.tr,
+                          'Liked by',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -323,7 +323,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             fontSize: 14,
                             color: dragContext
                                 .theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -430,7 +430,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             fontFamily: 'Linotte',
                             fontWeight: FontWeight.w600,
                             color: context.theme.colorScheme.onSurface,
-                          ),
+                          ), translate: false,
                         ),
                       ),
                     ],
@@ -470,7 +470,7 @@ class _ActivityCardState extends State<ActivityCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    "Edit Activity".tr,
+                    "Edit Activity",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -683,7 +683,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                   Icon(Icons.lock, size: 10, color: subtleText),
                                   const SizedBox(width: 4),
                                   AnymeXText(
-                                    'Private'.tr,
+                                    'Private',
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: subtleText,
@@ -698,7 +698,7 @@ class _ActivityCardState extends State<ActivityCard> {
                               style: TextStyle(
                                 fontSize: 11,
                                 color: subtleText,
-                              ),
+                              ), translate: false,
                             ),
                           ],
                         ),
@@ -808,7 +808,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                         color: context
                                             .theme.colorScheme.onSurface
                                             .withOpacity(0.9),
-                                      ),
+                                      ), translate: false,
                                     ),
                                   ],
                                   const SizedBox(height: 6),
@@ -919,7 +919,7 @@ class _ActivityCardState extends State<ActivityCard> {
           style: TextStyle(
             fontSize: 14,
             color: context.theme.colorScheme.onSurface,
-          ),
+          ), translate: false,
         );
       }
     }
@@ -1037,7 +1037,7 @@ class _ActivityActionChip extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: foreground,
-                    ),
+                    ), translate: false,
                   ),
                 ],
               ),
@@ -1157,7 +1157,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: context.theme.colorScheme.onSurface,
-                        ),
+                        ), translate: false,
                       ),
                       if (format.isNotEmpty) ...[
                         const SizedBox(height: 4),
@@ -1168,7 +1168,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
                           style: TextStyle(
                             fontSize: 11,
                             color: context.theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ],

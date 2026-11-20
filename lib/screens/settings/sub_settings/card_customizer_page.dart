@@ -181,7 +181,7 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
                       activeStyleName,
                       size: 11,
                       variant: TextVariant.bold,
-                      color: context.colors.primary,
+                      color: context.colors.primary, translate: false,
                     ),
                   ),
                 ],

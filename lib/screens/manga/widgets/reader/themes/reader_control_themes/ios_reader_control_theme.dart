@@ -223,7 +223,7 @@ class _PagePill extends StatelessWidget {
             fontSize: 12,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.2,
-          ),
+          ), translate: false,
         ),
       );
     });

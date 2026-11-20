@@ -343,7 +343,7 @@ class _Badge extends StatelessWidget {
           fontFamily: 'Linotte',
           fontWeight: FontWeight.w700,
           color: textColor,
-        ),
+        ), translate: false,
       ),
     );
   }
@@ -420,7 +420,7 @@ class _EmptySourceState extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 AnymeXText(
-                  'Go to Extensions to get started'.tr,
+                  'Go to Extensions to get started',
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'Linotte',
@@ -692,7 +692,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                       ),
                       const SizedBox(height: 8),
                       AnymeXText(
-                        'No sources found'.tr,
+                        'No sources found',
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Linotte',
@@ -895,7 +895,7 @@ class _LangSubPicker extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               AnymeXText(
-                'Language Variant'.tr,
+                'Language Variant',
                 style: TextStyle(
                   fontSize: 12,
                   fontFamily: 'Linotte',
@@ -943,7 +943,7 @@ class _LangSubPicker extends StatelessWidget {
                         fontFamily: 'Linotte',
                         fontWeight: FontWeight.w600,
                         color: isActive ? colors.onPrimary : colors.onSurface,
-                      ),
+                      ), translate: false,
                     ),
                   ),
                 );

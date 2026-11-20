@@ -175,7 +175,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
         title: AnymeXText(
           title,
           variant: TextVariant.semiBold,
-          size: 14,
+          size: 14, translate: false,
         ),
         trailing: const Icon(Icons.chevron_right_rounded, size: 20),
       ),
@@ -208,14 +208,14 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 14),
           AnymeXText(
-            'Support AnymeX'.tr,
+            'Support AnymeX',
             variant: TextVariant.bold,
             size: 20,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            'AnymeX is 100% free, open-source, and ad-free. your support helps keep me motivated to continuously maintain and improve the app!'.tr,
+            'AnymeX is 100% free, open-source, and ad-free. your support helps keep me motivated to continuously maintain and improve the app!',
             variant: TextVariant.regular,
             size: 13,
             color: colors.onSurfaceVariant,
@@ -265,7 +265,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Watch an Ad to Support'.tr,
+                          'Watch an Ad to Support',
                           variant: TextVariant.bold,
                           size: 15,
                         ),
@@ -351,7 +351,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                           ),
                           const SizedBox(width: 4),
                           AnymeXText(
-                            'Watch Ad'.tr,
+                            'Watch Ad',
                             variant: TextVariant.bold,
                             size: 13,
                             color: colors.onPrimary,
@@ -413,7 +413,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AnymeXText(
-                        'Copy'.tr,
+                        'Copy',
                         size: 12,
                         variant: TextVariant.bold,
                         color: context.colors.primary,

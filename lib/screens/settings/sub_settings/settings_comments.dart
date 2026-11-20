@@ -323,7 +323,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Commentum v2 is an advanced comment system that provides:'.tr,
+            'Commentum v2 is an advanced comment system that provides:',
             variant: TextVariant.semiBold,
             size: 14,
           ),
@@ -363,7 +363,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'How to use the comment system:'.tr,
+            'How to use the comment system:',
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -378,7 +378,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
               context, 'Report inappropriate content to moderators'),
           const SizedBox(height: 16),
           AnymeXText(
-            'Need help?'.tr,
+            'Need help?',
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -402,7 +402,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Your privacy is important:'.tr,
+            'Your privacy is important:',
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -417,7 +417,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
               context, 'Reported content is reviewed by moderators'),
           const SizedBox(height: 16),
           AnymeXText(
-            'Safety features:'.tr,
+            'Safety features:',
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -441,7 +441,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'You can use Discord-style markdown to format your comments:'.tr,
+          'You can use Discord-style markdown to format your comments:',
           variant: TextVariant.regular,
           size: 13,
           color: theme.onSurfaceVariant,
@@ -466,7 +466,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
             label: 'Image (shows thumbnail)'.tr),
         const SizedBox(height: 8),
         AnymeXText(
-          'Tip: You can combine these! e.g. **bold and *italic* together**'.tr,
+          'Tip: You can combine these! e.g. **bold and *italic* together**',
           variant: TextVariant.regular,
           size: 12,
           fontStyle: FontStyle.italic,
@@ -497,7 +497,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
                   label,
                   variant: TextVariant.bold,
                   size: 11,
-                  color: theme.onPrimaryContainer,
+                  color: theme.onPrimaryContainer, translate: false,
                 ),
               ),
             ],
@@ -546,7 +546,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
               variant: TextVariant.regular,
               size: 13,
               color: theme.onSurface,
-              maxLines: 4,
+              maxLines: 4, translate: false,
             ),
           ),
         ],

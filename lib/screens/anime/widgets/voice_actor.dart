@@ -30,7 +30,7 @@ class CharactersCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: AnymeXText("Characters".tr,
+          child: AnymeXText("Characters",
               style: TextStyle(
                   fontFamily: 'Linotte',
                   fontSize: isDesktop ? 20 : 17,
@@ -113,7 +113,7 @@ class CharactersCarousel extends StatelessWidget {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .inverseSurface
-                                              .opaque(0.9)),
+                                              .opaque(0.9)), translate: false,
                                     ),
                                     const SizedBox(width: 3),
                                   ],
@@ -130,7 +130,7 @@ class CharactersCarousel extends StatelessWidget {
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           ),
                         )
                       ],
@@ -144,7 +144,7 @@ class CharactersCarousel extends StatelessWidget {
         if (!isManga) ...[
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: AnymeXText("Voice Actors".tr,
+            child: AnymeXText("Voice Actors",
                 style: TextStyle(
                     fontFamily: 'Linotte',
                     fontSize: 18,
@@ -296,7 +296,7 @@ class StaffCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: AnymeXText("Staff".tr,
+          child: AnymeXText("Staff",
               style: TextStyle(
                   fontFamily: 'Linotte',
                   fontSize: 18,
@@ -390,7 +390,7 @@ class StaffCarousel extends StatelessWidget {
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           ),
                         ),
                         if (itemData.primaryOccupations != null &&
@@ -400,7 +400,7 @@ class StaffCarousel extends StatelessWidget {
                             size: 10,
                             color: context.colors.onSurface.withOpacity(0.7),
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           )
                       ],
                     ),

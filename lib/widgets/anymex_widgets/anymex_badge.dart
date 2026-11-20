@@ -47,7 +47,7 @@ class AnymeXBadge extends StatelessWidget {
               variant: TextVariant.bold,
               size: fontSize ?? 9.0,
               color: textColor ?? theme.colorScheme.onPrimary,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, translate: false,
             ),
           ),
         ),

@@ -1087,7 +1087,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                         fontSize: 12,
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.bold,
-                      ),
+                      ), translate: false,
                     ),
                   ),
                 ),

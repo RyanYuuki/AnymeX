@@ -43,7 +43,7 @@ class NoSourceSelectedWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          AnymeXText('No Source Installed'.tr,
+          AnymeXText('No Source Installed',
             variant: TextVariant.bold,
             size: 16,
             textAlign: TextAlign.center,

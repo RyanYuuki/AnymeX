@@ -291,7 +291,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                     ? cs.primary
                     : cs.onSurface.opaque(0.6, iReallyMeanIt: true),
                 variant:
-                    isSelected ? TextVariant.semiBold : TextVariant.regular,
+                    isSelected ? TextVariant.semiBold : TextVariant.regular, translate: false,
               ),
             ],
           ),

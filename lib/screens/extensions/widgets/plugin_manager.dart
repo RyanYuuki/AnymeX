@@ -457,7 +457,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Fetching latest release details...'.tr,
+              'Fetching latest release details...',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -489,7 +489,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             _buildVersionCard(colors, bridge, isBusy, isComplete),
             const SizedBox(height: 14),
             AnymeXText(
-              'CHANGELOG'.tr,
+              'CHANGELOG',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -527,7 +527,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 bridge.error.value,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.error,
-                ),
+                ), translate: false,
               ),
             ],
           ],
@@ -583,7 +583,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.primary,
                   fontWeight: FontWeight.w600,
-                ),
+                ), translate: false,
               ),
             ],
           ),
@@ -714,7 +714,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             style: TextStyle(
               color: colors.onSurfaceVariant,
               fontSize: 13,
-            ),
+            ), translate: false,
           ),
         ),
         const SizedBox(width: 12),
@@ -725,7 +725,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             style: TextStyle(
               color: colors.onSurface,
               fontWeight: FontWeight.w600,
-            ),
+            ), translate: false,
           ),
         ),
       ],
@@ -745,7 +745,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
           color: colors.onSurfaceVariant,
           fontSize: 12,
           fontWeight: FontWeight.w600,
-        ),
+        ), translate: false,
       ),
     );
   }

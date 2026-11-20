@@ -226,7 +226,7 @@ class _TorrentServerOverlayWidgetState
         '$percentage%',
         variant: TextVariant.bold,
         size: 12.5,
-        color: theme.primary,
+        color: theme.primary, translate: false,
       );
     }
 
@@ -309,7 +309,7 @@ class _TorrentServerOverlayWidgetState
                                           CrossAxisAlignment.start,
                                       children: [
                                         AnymeXText(
-                                          'Torrent Server'.tr,
+                                          'Torrent Server',
                                           variant: TextVariant.bold,
                                           size: 13.5,
                                           color: theme.onSurface,
@@ -322,7 +322,7 @@ class _TorrentServerOverlayWidgetState
                                               ? theme.error
                                               : theme.onSurfaceVariant,
                                           maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                          overflow: TextOverflow.ellipsis, translate: false,
                                         ),
                                       ],
                                     ),

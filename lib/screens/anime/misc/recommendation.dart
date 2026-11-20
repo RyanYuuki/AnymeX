@@ -273,7 +273,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     borderRadius: BorderRadius.circular(12.multiplyRadius()),
                   ),
                   child: AnymeXText(
-                    "Search".tr,
+                    "Search",
                     variant: TextVariant.semiBold,
                     color: context.colors.onPrimary,
                   ),
@@ -316,7 +316,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
                     child: AnymeXText(
-                      'No more recommendations'.tr,
+                      'No more recommendations',
                       style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme
@@ -436,7 +436,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                       size: 14,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     const SizedBox(height: 5),
                     if (metaPills.isNotEmpty) ...[
@@ -454,7 +454,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                         color: colors.onSurfaceVariant.opaque(0.75, iReallyMeanIt: true),
                         size: 11.5,
                         maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis, translate: false,
                       ),
                     ),
                     if (data.genres.isNotEmpty) ...[

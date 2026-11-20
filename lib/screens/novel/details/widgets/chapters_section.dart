@@ -276,7 +276,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                         child: SizedBox(
                           height: 240,
                           child: Center(
-                            child: AnymeXText("No Chapters Found".tr),
+                            child: AnymeXText("No Chapters Found"),
                           ),
                         ),
                       )
@@ -336,7 +336,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                     color: title.contains('No Match Found')
                         ? context.colors.error
                         : context.colors.primary,
-                    maxLines: 1,
+                    maxLines: 1, translate: false,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -374,7 +374,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                             .opaque(0.3),
                       ),
                     ),
-                    child: AnymeXText('Wrong Title?'.tr,
+                    child: AnymeXText('Wrong Title?',
                       size: 12,
                       variant: TextVariant.semiBold,
                       color: Theme.of(context).colorScheme.primary,
@@ -387,7 +387,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
           const SizedBox(height: 10),
           Row(
             children: [
-              AnymeXText('Chapters'.tr,
+              AnymeXText('Chapters',
                 variant: TextVariant.bold,
                 size: 18,
               ),

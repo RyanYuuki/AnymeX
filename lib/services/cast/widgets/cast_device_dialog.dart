@@ -78,7 +78,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                       AnymeXText(
                         active.name,
                         variant: TextVariant.bold,
-                        size: 14,
+                        size: 14, translate: false,
                       ),
                       AnymeXText(
                         'Casting via ${_getProtocolLabel(active.protocol)} (${active.host})',
@@ -121,7 +121,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                 AnymeXText(
                   _formatDuration(position),
                   size: 11,
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant, translate: false,
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -159,7 +159,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                 AnymeXText(
                   _formatDuration(duration.inMilliseconds > 0 ? duration : widget.controller.episodeDuration.value),
                   size: 11,
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant, translate: false,
                 ),
               ],
             ),
@@ -224,7 +224,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                 ),
                 title: AnymeXText(
                   device.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), translate: false,
                 ),
                 subtitle: Row(
                   children: [
@@ -239,14 +239,14 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                         _getProtocolLabel(device.protocol),
                         size: 10,
                         variant: TextVariant.bold,
-                        color: theme.colorScheme.primary,
+                        color: theme.colorScheme.primary, translate: false,
                       ),
                     ),
                     Expanded(
                       child: AnymeXText(
                         device.host,
                         size: 12,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: theme.colorScheme.onSurfaceVariant, translate: false,
                       ),
                     ),
                   ],

@@ -254,7 +254,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                               color: hasRole
                                   ? _getRoleColor(comment.userRole!)
                                   : colorScheme.onSurface,
-                              maxLines: 1,
+                              maxLines: 1, translate: false,
                             ),
                           ),
                         ),
@@ -304,7 +304,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                           _formatTime(comment.createdAt),
                           size: 11,
                           color: colorScheme.onSurfaceVariant.opaque(0.6),
-                          maxLines: 1,
+                          maxLines: 1, translate: false,
                         ),
                       ],
                     ),
@@ -325,7 +325,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                         color: isSpoiler
                             ? colorScheme.error
                             : colorScheme.primary,
-                        maxLines: 1,
+                        maxLines: 1, translate: false,
                       ),
                     ),
                   ],
@@ -795,7 +795,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                   size: 11,
                   variant: TextVariant.bold,
                   color: colorScheme.primary.withValues(alpha: 0.85),
-                  maxLines: 1,
+                  maxLines: 1, translate: false,
                 ),
                 const SizedBox(width: 4),
                 Expanded(
@@ -804,7 +804,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                     size: 10.5,
                     color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis, translate: false,
                   ),
                 ),
               ],

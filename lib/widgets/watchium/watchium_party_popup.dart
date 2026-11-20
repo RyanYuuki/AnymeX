@@ -398,7 +398,7 @@ class _WatchiumPartyPopupContentState
                                         msg.username,
                                         size: 10,
                                         variant: TextVariant.semiBold,
-                                        color: cs.primary,
+                                        color: cs.primary, translate: false,
                                       ),
                                     ],
                                   ),
@@ -433,7 +433,7 @@ class _WatchiumPartyPopupContentState
                                 child: AnymeXText(
                                   msg.text,
                                   size: 13,
-                                  color: cs.onSurface,
+                                  color: cs.onSurface, translate: false,
                                 ),
                               ),
                             ],
@@ -507,7 +507,7 @@ class _WatchiumPartyPopupContentState
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.opaque(0.5, iReallyMeanIt: true),
-            ),
+            ), translate: false,
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
@@ -515,7 +515,7 @@ class _WatchiumPartyPopupContentState
               subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: cs.onSurface.opaque(0.35, iReallyMeanIt: true),
-              ),
+              ), translate: false,
             ),
           ],
         ],
@@ -564,7 +564,7 @@ class _WatchiumPartyPopupContentState
                   alignment: Alignment.center,
                   child: AnymeXText(
                     emoji,
-                    style: const TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18), translate: false,
                   ),
                 ),
               );
@@ -772,13 +772,13 @@ class _WatchiumPartyPopupContentState
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AnymeXText(r.emoji, style: const TextStyle(fontSize: 18)),
+              AnymeXText(r.emoji, style: const TextStyle(fontSize: 18), translate: false),
               const SizedBox(width: 6),
               AnymeXText(
                 r.username,
                 size: 11,
                 variant: TextVariant.semiBold,
-                color: cs.primary,
+                color: cs.primary, translate: false,
               ),
             ],
           ),
@@ -1116,7 +1116,7 @@ class _WatchiumPartyPopupContentState
           value: emoji,
           height: 40,
           child: Center(
-            child: AnymeXText(emoji, style: const TextStyle(fontSize: 24)),
+            child: AnymeXText(emoji, style: const TextStyle(fontSize: 24), translate: false),
           ),
         );
       }).toList(),
@@ -1156,7 +1156,7 @@ class _WatchiumPartyPopupContentState
                   size: 14,
                   variant: TextVariant.semiBold,
                   color: cs.onSurface,
-                  style: const TextStyle(letterSpacing: 2),
+                  style: const TextStyle(letterSpacing: 2), translate: false,
                 ),
                 trailing: _buildCopyButton(
                   cs,
@@ -1174,7 +1174,7 @@ class _WatchiumPartyPopupContentState
                   size: 12,
                   color: cs.primary,
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+                  maxLines: 1, translate: false,
                 ),
                 trailing: _buildCopyButton(
                   cs,
