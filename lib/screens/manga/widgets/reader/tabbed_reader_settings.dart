@@ -57,11 +57,11 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   late final TabController _tabController;
   int _selectedIndex = 0;
 
-  static const _tabs = [
+  static final _tabs = [
     Tab(text: 'Reading Mode'.tr),
     Tab(text: 'General'.tr),
     Tab(text: 'Color Filter'.tr),
-    Tab(text: 'Upscale'),
+    Tab(text: 'Upscale'.tr),
   ];
 
   void _onTabChanged() {
@@ -115,7 +115,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
                 const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
             child: AnymeXTabBar(
               minTabWidth: 105,
-              selectTabs: const [
+              selectTabs: [
                 'Reading Mode'.tr,
                 'General'.tr,
                 'Color Filter'.tr,

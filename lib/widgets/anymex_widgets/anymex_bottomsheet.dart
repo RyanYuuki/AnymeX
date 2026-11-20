@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_border.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';

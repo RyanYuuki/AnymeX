@@ -127,7 +127,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Center(
+                Center(
                   child: AnymeXText(
                       'Display mode tuning is not applicable on desktop platforms.'.tr),
                 ),
