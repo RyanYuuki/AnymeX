@@ -65,7 +65,7 @@ class AboutSection extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: context.theme.colorScheme.surfaceContainerLow,
+              color: context.theme.colorScheme.surfaceContainerLow.withOpacity(0.35),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color:

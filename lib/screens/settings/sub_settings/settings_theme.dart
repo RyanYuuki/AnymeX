@@ -17,8 +17,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-
-import 'package:provider/provider.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsTheme extends StatefulWidget {
@@ -54,7 +52,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   void handleThemeMode(String theme) {
-    final provider = Provider.of<ThemeProvider>(context, listen: false);
+    final provider = Get.find<ThemeController>();
 
     switch (theme) {
       case "Light":
@@ -84,11 +82,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   void _initializeDbVars() {
-    final provider = Provider.of<ThemeProvider>(context, listen: false);
+    final provider = Get.find<ThemeController>();
     defaultTheme = provider.currentThemeMode == "default";
     materialTheme = provider.currentThemeMode == "material";
     customTheme = provider.currentThemeMode == "custom";
-    selectedColorIndex = ThemeKeys.customColorIndex.get<int>(0);
+    selectedColorIndex =
+        ThemeKeys.customColorIndex.get<int>(colorKeys.indexOf("DeepPurple"));
     isOled = provider.isOled;
     themeMode = provider.isSystemMode
         ? "System"
@@ -128,7 +127,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
         materialTheme = false;
         customTheme = false;
       });
-      Provider.of<ThemeProvider>(context, listen: false).setDefaultTheme();
+      Get.find<ThemeController>().setDefaultTheme();
     }
   }
 
@@ -139,7 +138,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
         defaultTheme = false;
         customTheme = false;
       });
-      Provider.of<ThemeProvider>(context, listen: false).loadDynamicTheme();
+      Get.find<ThemeController>().loadDynamicTheme();
     }
   }
 
@@ -150,7 +149,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
         defaultTheme = false;
         materialTheme = false;
       });
-      Provider.of<ThemeProvider>(context, listen: false)
+      Get.find<ThemeController>()
           .setCustomSeedColor(selectedColorIndex);
     }
   }
@@ -159,7 +158,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
     setState(() {
       selectedVariantIndex = index;
     });
-    Provider.of<ThemeProvider>(context, listen: false)
+    Get.find<ThemeController>()
         .updateSchemeVariant(selectedVariantIndex);
   }
 
@@ -167,35 +166,37 @@ class _SettingsThemeState extends State<SettingsTheme> {
     setState(() {
       isOled = value;
     });
-    Provider.of<ThemeProvider>(context, listen: false).toggleOled(value);
+    Get.find<ThemeController>().toggleOled(value);
   }
 
   void handleColorSelection(int index) {
     setState(() {
       selectedColorIndex = index;
     });
-    Provider.of<ThemeProvider>(context, listen: false)
+    Get.find<ThemeController>()
         .setCustomSeedColor(selectedColorIndex);
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnymeXScaffold(
-      showHeader: true,
-      headerTitle: 'Theme'.tr,
-      body: Builder(
-        builder: (ctx) => SingleChildScrollView(
-          padding:
-              EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildThemeTab(),
-              const SizedBox(height: 20),
-              _buildWallpaperTab(),
-              const SizedBox(height: 20),
-              _buildExtrasTab(),
-            ],
+    return GetBuilder<ThemeController>(
+      builder: (_) => AnymeXScaffold(
+        showHeader: true,
+        headerTitle: 'Theme'.tr,
+        body: Builder(
+          builder: (ctx) => SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+                16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildThemeTab(),
+                const SizedBox(height: 20),
+                _buildWallpaperTab(),
+                const SizedBox(height: 20),
+                _buildExtrasTab(),
+              ],
+            ),
           ),
         ),
       ),
@@ -332,13 +333,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   "Enable this if you want to retain the original color of your wallpaper".tr,
               onChanged: (e) => settings.retainOriginalColor = e,
             ),
-            AnymeXTile.toggle(
-              value: settings.usePosterColor,
-              icon: HugeIcons.strokeRoundedImageDownload,
-              title: "Use Poster Color".tr,
-              subtitle: "Applies anime/manga poster color on details page".tr,
-              onChanged: (e) => settings.usePosterColor = e,
-            ),
             AnymeXTile(
               icon: HugeIcons.strokeRoundedRefresh,
               title: "Reset to Default Picture".tr,
@@ -392,20 +386,34 @@ class _SettingsThemeState extends State<SettingsTheme> {
     ).show(context);
   }
 
+  static final Map<String, ColorScheme> _seedSchemeCache = {};
+
+  static ColorScheme _getSeedScheme(Color color, Brightness brightness) {
+    final key = '${color.toARGB32()}_${brightness.name}';
+    return _seedSchemeCache.putIfAbsent(
+      key,
+      () => ColorScheme.fromSeed(seedColor: color, brightness: brightness),
+    );
+  }
+
   Widget _buildModeTemplates() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: themeModes.map<Widget>((theme) {
-          final ColorScheme colorScheme = ColorScheme.fromSeed(
-              seedColor: context.colors.primary,
-              brightness: theme['label'] == "Dark"
-                  ? Brightness.dark
-                  : Brightness.light);
-          final ColorScheme lightScheme = ColorScheme.fromSeed(
-              seedColor: context.colors.primary, brightness: Brightness.light);
-          final ColorScheme darkScheme = ColorScheme.fromSeed(
-              seedColor: context.colors.primary, brightness: Brightness.dark);
+          final isDark = theme['label'] == "Dark";
+          final ColorScheme colorScheme = _getSeedScheme(
+            context.colors.primary,
+            isDark ? Brightness.dark : Brightness.light,
+          );
+          final ColorScheme lightScheme = _getSeedScheme(
+            context.colors.primary,
+            Brightness.light,
+          );
+          final ColorScheme darkScheme = _getSeedScheme(
+            context.colors.primary,
+            Brightness.dark,
+          );
           bool isSelected = themeMode == theme['label'];
           bool isSystem = theme['label'] == "System";
           return AnymexOnTap(
@@ -654,7 +662,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
     setState(() {
       selectedColorIndex = -1;
     });
-    Provider.of<ThemeProvider>(context, listen: false)
+    Get.find<ThemeController>()
         .setCustomSeedColor(-1, customColor: color);
   }
 
@@ -894,22 +902,23 @@ class _SettingsThemeState extends State<SettingsTheme> {
             seedColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
             label = "Custom";
             isSelected = selectedColorIndex == -1;
-            colorScheme = ColorScheme.fromSeed(
-              seedColor: seedColor,
-              brightness: Theme.of(context).brightness,
+            colorScheme = _getSeedScheme(
+              seedColor,
+              Theme.of(context).brightness,
             );
           } else {
             final entry = colorMap.entries.toList()[index - 1];
             seedColor = entry.value;
             label = entry.key;
             isSelected = selectedColorIndex == index - 1;
-            colorScheme = ColorScheme.fromSeed(
-              seedColor: seedColor,
-              brightness: Theme.of(context).brightness,
+            colorScheme = _getSeedScheme(
+              seedColor,
+              Theme.of(context).brightness,
             );
           }
 
           return GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               if (index == 0) {
                 if (!isSelected) handleColorSelection(-1);

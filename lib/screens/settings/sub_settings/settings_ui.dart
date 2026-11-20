@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/settings/sub_settings/card_customizer_page.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui_components.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui_details.dart';
-import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
@@ -13,7 +13,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
@@ -56,7 +55,7 @@ class _SettingsUiState extends State<SettingsUi> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'UI Settings'.tr,
+      headerTitle: 'Interface & Layout',
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -72,9 +71,17 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: HugeIcons.strokeRoundedShapes,
                             title: 'UI Components'.tr,
                             subtitle:
-                                'Customize card, history card, carousel & nav bar styles'.tr,
+                                'Customize history card, carousel & nav bar styles',
                             onTap: () =>
                                 navigate(() => const SettingsUiComponents()),
+                          ),
+                          AnymeXTile(
+                            icon: Icons.tune_rounded,
+                            title: 'Card Customizer',
+                            subtitle:
+                                'Customize carousel card styles, geometry, and layout',
+                            onTap: () =>
+                                navigate(() => const CardCustomizerPage()),
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedPlaySquare,
@@ -87,7 +94,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Navigation Layout'.tr,
+                        title: 'Navigation & Home Layout',
                         children: [
                           AnymeXTile.pills<bool>(
                             icon: Icons.view_sidebar_rounded,
@@ -103,20 +110,12 @@ class _SettingsUiState extends State<SettingsUi> {
                               settings.useLegacyNavbar = isLegacy;
                             },
                           ),
-                        ],
-                      ),
-                      AnymeXSectionBuilder(
-                        title: 'Common'.tr,
-                        children: [
-                          AnymeXTile.toggle(
-                            icon: HugeIcons.strokeRoundedBounceRight,
-                            title: "Enable Animation".tr,
+                          AnymeXTile(
+                            icon: Icons.reorder_rounded,
+                            title: 'Reorder Navigation Tabs',
                             subtitle:
-                                "Enable animation on carousels for smooth motion".tr,
-                            value: settings.enableAnimation,
-                            onChanged: (val) {
-                              settings.enableAnimation = val;
-                            },
+                                'Drag and drop to reorder navigation bar tabs',
+                            onTap: () => _showReorderTabsDialog(context),
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.colorize,
@@ -127,6 +126,32 @@ class _SettingsUiState extends State<SettingsUi> {
                               settings.transculentBar = val;
                             },
                           ),
+                          PlatformBuilder(
+                            androidBuilder: AnymeXTile.slider(
+                              icon: Icons.margin_rounded,
+                              title: 'Bottom Nav Bar Margin',
+                              subtitle:
+                                  'Adjust horizontal margin of bottom navigation bar',
+                              value: settings.bottomNavBarMargin,
+                              min: 0,
+                              max: 100,
+                              divisions: 100,
+                              onChanged: (value) => handleSliderChange(
+                                  'bottomNavBarMargin', value),
+                            ),
+                            desktopBuilder: AnymeXTile.slider(
+                              icon: Icons.margin_rounded,
+                              title: 'Bottom Nav Bar Margin',
+                              subtitle:
+                                  'Adjust bottom bar margin (media details page only)',
+                              value: settings.bottomNavBarMargin,
+                              min: 0,
+                              max: 100,
+                              divisions: 100,
+                              onChanged: (value) => handleSliderChange(
+                                  'bottomNavBarMargin', value),
+                            ),
+                          ),
                           AnymeXTile.toggle(
                             icon: Icons.view_headline_rounded,
                             title: "Use Legacy Header".tr,
@@ -135,6 +160,31 @@ class _SettingsUiState extends State<SettingsUi> {
                             value: settings.useLegacyHeader,
                             onChanged: (val) {
                               settings.useLegacyHeader = val;
+                            },
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.play_circle_outline_rounded,
+                            title: 'Show Continue Watching on Home',
+                            subtitle:
+                                'Display a continue watching bar above the bottom navigation bar on home',
+                            value: settings.showHomeContinueWatching.value,
+                            onChanged: (e) {
+                              settings.saveShowHomeContinueWatching(e);
+                            },
+                          ),
+                        ],
+                      ),
+                      AnymeXSectionBuilder(
+                        title: 'Motion & Display',
+                        children: [
+                          AnymeXTile.toggle(
+                            icon: HugeIcons.strokeRoundedBounceRight,
+                            title: "Enable Animation",
+                            subtitle:
+                                "Enable animation on carousels for smooth motion",
+                            value: settings.enableAnimation,
+                            onChanged: (val) {
+                              settings.enableAnimation = val;
                             },
                           ),
                           if (Platform.isAndroid || Platform.isIOS)
@@ -148,47 +198,10 @@ class _SettingsUiState extends State<SettingsUi> {
                                 settings.enableImmersiveMode = val;
                               },
                             ),
-                          AnymeXTile(
-                            icon: Icons.font_download_rounded,
-                            title: 'Font Family'.tr,
-                            subtitle: settings.appFontFamily.isEmpty
-                                ? 'Default (Linotte)'
-                                : settings.appFontFamily,
-                            onTap: () => _showFontFamilyPicker(context),
-                          ),
-                          AnymeXTile(
-                            icon: Icons.reorder_rounded,
-                            title: 'Reorder Navigation Tabs'.tr,
-                            subtitle:
-                                'Drag and drop to reorder navigation bar tabs'.tr,
-                            onTap: () => _showReorderTabsDialog(context),
-                          ),
-                          PlatformBuilder(
-                            androidBuilder: AnymeXTile.slider(
-                              icon: Icons.margin_rounded,
-                              title: 'Bottom Nav Bar Margin'.tr,
-                              subtitle: 'Adjust horizontal margin of bottom navigation bar'.tr,
-                              value: settings.bottomNavBarMargin,
-                              min: 0,
-                              max: 100,
-                              divisions: 100,
-                              onChanged: (value) => handleSliderChange('bottomNavBarMargin', value),
-                            ),
-                            desktopBuilder: AnymeXTile.slider(
-                              icon: Icons.margin_rounded,
-                              title: 'Bottom Nav Bar Margin'.tr,
-                              subtitle: 'Adjust bottom bar margin (media details page only)'.tr,
-                              value: settings.bottomNavBarMargin,
-                              min: 0,
-                              max: 100,
-                              divisions: 100,
-                              onChanged: (value) => handleSliderChange('bottomNavBarMargin', value),
-                            ),
-                          ),
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Extras'.tr,
+                        title: 'Visual Effects & Tuning',
                         children: [
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedLighthouse,
@@ -542,276 +555,4 @@ class _SettingsUiState extends State<SettingsUi> {
       },
     );
   }
-
-  void _showFontFamilyPicker(BuildContext context) {
-    AnymeXDialog(
-      title: 'Font Family'.tr,
-      showCancelButton: false,
-      confirmText: 'Close'.tr,
-      onConfirm: () {},
-      contentWidget: _buildFontFamilyPickerContent(context),
-    ).show(context);
-  }
-
-  Widget _buildFontFamilyPickerContent(BuildContext context) {
-    final downloadingFonts = <String>{};
-    final downloadedStatus = <String, bool>{};
-    List<String> customFonts = [];
-    bool isInit = false;
-
-    return StatefulBuilder(
-      builder: (dialogContext, setDialogState) {
-        if (!isInit) {
-          isInit = true;
-          Future.microtask(() async {
-            for (final font in ExternalFontLoader.appFonts) {
-              final isDownloaded =
-                  await ExternalFontLoader.isAppFontDownloaded(font.name);
-              downloadedStatus[font.name] = isDownloaded;
-            }
-            final customs = await ExternalFontLoader.getCustomFontNames();
-            customFonts = customs;
-            setDialogState(() {});
-          });
-        }
-
-        final theme = Theme.of(context);
-        final currentFont = settings.appFontFamily;
-
-        return Container(
-          width: double.maxFinite,
-          constraints: const BoxConstraints(maxHeight: 450),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnymeXSectionBuilder(
-                  title: 'Default'.tr,
-                  children: [
-                    AnymeXTile(
-                      title: 'Linotte (Default)'.tr,
-                      subtitle: 'The quick brown fox jumps over the lazy dog'.tr,
-                      titleStyle: const TextStyle(
-                        fontFamily: 'Linotte',
-                        fontWeight: FontWeight.w600,
-                      ),
-                      subtitleStyle: const TextStyle(
-                        fontFamily: 'Linotte',
-                        fontSize: 11,
-                      ),
-                      showChevron: false,
-                      trailing: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Center(
-                          child: (currentFont.isEmpty || currentFont == 'Linotte')
-                              ? Icon(
-                                  Icons.check_circle_rounded,
-                                  size: 22,
-                                  color: theme.colorScheme.primary,
-                                )
-                              : null,
-                        ),
-                      ),
-                      onTap: () {
-                        settings.appFontFamily = '';
-                        setDialogState(() {});
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                AnymeXSectionBuilder(
-                  title: 'App Fonts'.tr,
-                  children: ExternalFontLoader.appFonts.map((font) {
-                    final isDownloaded = downloadedStatus[font.name] ?? false;
-                    final isDownloading = downloadingFonts.contains(font.name);
-                    final isSelected = currentFont == font.name;
-
-                    Widget trailingWidget;
-                    if (isDownloading) {
-                      trailingWidget = const SizedBox(
-                        key: ValueKey('downloading'),
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      );
-                    } else if (isDownloaded) {
-                      if (isSelected) {
-                        trailingWidget = Icon(
-                          key: const ValueKey('selected'),
-                          Icons.check_circle_rounded,
-                          size: 22,
-                          color: theme.colorScheme.primary,
-                        );
-                      } else {
-                        trailingWidget = const SizedBox.shrink(
-                          key: ValueKey('unselected'),
-                        );
-                      }
-                    } else {
-                      trailingWidget = IconButton(
-                        key: const ValueKey('download'),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        iconSize: 22,
-                        icon: const Icon(Icons.download_rounded),
-                        onPressed: () async {
-                          downloadingFonts.add(font.name);
-                          setDialogState(() {});
-                          final success =
-                              await ExternalFontLoader.downloadAppFont(
-                                  font.name);
-                          downloadingFonts.remove(font.name);
-                          if (success) {
-                            downloadedStatus[font.name] = true;
-                            settings.appFontFamily = font.name;
-                            snackBar('Downloaded and applied ${font.name}');
-                          } else {
-                            snackBar('Failed to download ${font.name}');
-                          }
-                          setDialogState(() {});
-                        },
-                      );
-                    }
-
-                    return AnymeXTile(
-                      title: font.label,
-                      subtitle: 'The quick brown fox jumps over the lazy dog'.tr,
-                      titleStyle: TextStyle(
-                        fontFamily: isDownloaded ? font.name : 'Linotte',
-                        fontWeight: FontWeight.w600,
-                      ),
-                      subtitleStyle: TextStyle(
-                        fontFamily: isDownloaded ? font.name : 'Linotte',
-                        fontSize: 11,
-                      ),
-                      showChevron: false,
-                      trailing: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Center(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            child: trailingWidget,
-                          ),
-                        ),
-                      ),
-                      onTap: () async {
-                        if (isDownloaded) {
-                          settings.appFontFamily = font.name;
-                          setDialogState(() {});
-                        } else if (!isDownloading) {
-                          downloadingFonts.add(font.name);
-                          setDialogState(() {});
-                          final success =
-                              await ExternalFontLoader.downloadAppFont(font.name);
-                          downloadingFonts.remove(font.name);
-                          if (success) {
-                            downloadedStatus[font.name] = true;
-                            settings.appFontFamily = font.name;
-                            snackBar('Downloaded and applied ${font.name}');
-                          } else {
-                            snackBar('Failed to download ${font.name}');
-                          }
-                          setDialogState(() {});
-                        }
-                      },
-                    );
-                  }).toList(),
-                ),
-                if (customFonts.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  AnymeXSectionBuilder(
-                    title: 'Custom Fonts'.tr,
-                    children: customFonts.map((customName) {
-                      final isSelected = currentFont == customName;
-                      return AnymeXTile(
-                        title: customName,
-                        subtitle: 'The quick brown fox jumps over the lazy dog'.tr,
-                        titleStyle: TextStyle(
-                          fontFamily: customName,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        subtitleStyle: TextStyle(
-                          fontFamily: customName,
-                          fontSize: 11,
-                        ),
-                        showChevron: false,
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isSelected) ...[
-                              Icon(
-                                Icons.check_circle_rounded,
-                                size: 22,
-                                color: theme.colorScheme.primary,
-                              ),
-                              const SizedBox(width: 8),
-                            ],
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              iconSize: 22,
-                              icon: Icon(
-                                Icons.delete_outline_rounded,
-                                color: theme.colorScheme.error,
-                              ),
-                              onPressed: () async {
-                                await ExternalFontLoader.deleteCustomFont(
-                                    customName);
-                                if (settings.appFontFamily == customName) {
-                                  settings.appFontFamily = '';
-                                }
-                                customFonts =
-                                    await ExternalFontLoader.getCustomFontNames();
-                                setDialogState(() {});
-                                snackBar('Deleted "$customName"');
-                              },
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          settings.appFontFamily = customName;
-                          setDialogState(() {});
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
-                const SizedBox(height: 10),
-                AnymeXTile(
-                  icon: Icons.upload_file_rounded,
-                  title: 'Import Custom Font'.tr,
-                  subtitle: 'Support .ttf and .otf files'.tr,
-                  showChevron: false,
-                  onTap: () async {
-                    final result = await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ['ttf', 'otf'],
-                    );
-                    if (result != null && result.files.single.path != null) {
-                      final fontName = await ExternalFontLoader.importCustomFont(
-                        result.files.single.path!,
-                      );
-                      if (fontName != null) {
-                        settings.appFontFamily = fontName;
-                        customFonts =
-                            await ExternalFontLoader.getCustomFontNames();
-                        setDialogState(() {});
-                        snackBar('Imported font "$fontName"');
-                      } else {
-                        snackBar('Failed to load font file'.tr);
-                      }
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
-

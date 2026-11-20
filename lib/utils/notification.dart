@@ -4,12 +4,16 @@ import 'dart:typed_data';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/details/media_details_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/media_comments_page.dart';
+import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/notifications/announcement_sheet.dart';
+import 'package:anymex/screens/notifications/notification_screen.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/notification_image_helper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +100,12 @@ String _getChannelName(String channelId) {
       return 'Announcements';
     case 'mentions':
       return 'Mentions';
+    case 'anilist_airing':
+      return 'Airing Anime';
+    case 'anilist_social':
+      return 'Social & Activity';
+    case 'downloads':
+      return 'Downloads';
     default:
       return 'Comments';
   }
@@ -107,6 +117,7 @@ Importance _getChannelImportance(String channelId) {
     case 'moderation':
     case 'announcements':
     case 'mentions':
+    case 'anilist_airing':
       return Importance.high;
     default:
       return Importance.defaultImportance;
@@ -214,6 +225,27 @@ class NotificationService extends GetxController {
         'Mentions',
         description: 'When someone @mentions you in a comment',
         importance: Importance.high,
+      ));
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
+        'anilist_airing',
+        'Airing Anime',
+        description: 'Notifications for new anime episode releases',
+        importance: Importance.high,
+      ));
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
+        'anilist_social',
+        'Social & Activity',
+        description: 'Notifications for follows, mentions, and likes',
+        importance: Importance.defaultImportance,
+      ));
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
+        'downloads',
+        'Downloads',
+        description: 'Notifications for completed episode and chapter downloads',
+        importance: Importance.defaultImportance,
       ));
     }
   }
@@ -327,6 +359,31 @@ class NotificationService extends GetxController {
 
     if (effectiveUrl != null && effectiveUrl.isNotEmpty) {
       Deeplink.openUrlOrDeepLink(effectiveUrl);
+      return;
+    }
+
+    if (data['source'] == 'anilist') {
+      final mediaId = data['media_id']?.toString();
+      final isManga = data['is_manga'] == true ||
+          data['media_type']?.toString().toLowerCase() == 'manga';
+      if (mediaId != null && mediaId.isNotEmpty) {
+        final media = Media(
+          id: mediaId,
+          serviceType: ServicesType.anilist,
+          mediaType: isManga ? ItemType.manga : ItemType.anime,
+        );
+        navigate(() => MediaDetailsPage(
+              media: media,
+              tag: 'notification_$mediaId',
+            ));
+        return;
+      }
+      navigate(() => const NotificationScreen());
+      return;
+    }
+
+    if (data['type'] == 'download_complete') {
+      navigate(() => const DownloadScreen());
       return;
     }
 
@@ -476,6 +533,81 @@ class NotificationService extends GetxController {
       Logger.e('Failed to unregister token: $e');
       return false;
     }
+  }
+
+  Future<void> showRichNotification({
+    required String title,
+    required String body,
+    String? imageUrl,
+    String channelId = 'anilist_airing',
+    String? payload,
+    int? id,
+    bool isLargePicture = false,
+  }) async {
+    final local = _localNotifications;
+    if (local == null) return;
+
+    final imagePath =
+        await NotificationImageHelper.getCachedImagePath(imageUrl);
+
+    StyleInformation? styleInfo;
+    FilePathAndroidBitmap? largeIconBitmap;
+
+    if (imagePath != null && imagePath.isNotEmpty) {
+      largeIconBitmap = FilePathAndroidBitmap(imagePath);
+      if (isLargePicture) {
+        styleInfo = BigPictureStyleInformation(
+          largeIconBitmap,
+          largeIcon: largeIconBitmap,
+          contentTitle: title,
+          summaryText: body,
+        );
+      } else {
+        styleInfo = BigTextStyleInformation(
+          body,
+          contentTitle: title,
+        );
+      }
+    } else {
+      styleInfo = BigTextStyleInformation(
+        body,
+        contentTitle: title,
+      );
+    }
+
+    final androidDetails = AndroidNotificationDetails(
+      channelId,
+      _getChannelName(channelId),
+      importance: _getChannelImportance(channelId),
+      priority: channelId == 'anilist_airing'
+          ? Priority.high
+          : Priority.defaultPriority,
+      icon: '@drawable/ic_stat_anymex',
+      largeIcon: largeIconBitmap,
+      styleInformation: styleInfo,
+      playSound: true,
+      enableVibration: true,
+    );
+
+    final iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      attachments: imagePath != null
+          ? [DarwinNotificationAttachment(imagePath)]
+          : null,
+    );
+
+    final notificationId =
+        id ?? (DateTime.now().millisecondsSinceEpoch.remainder(100000));
+
+    await local.show(
+      notificationId,
+      title,
+      body,
+      NotificationDetails(android: androidDetails, iOS: iosDetails),
+      payload: payload,
+    );
   }
 
   void _onNotificationTapped(NotificationResponse response) {

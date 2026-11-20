@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -16,7 +18,6 @@ import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/manga/widgets/chapter_section.dart';
-import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/ui_extensions/sizing.dart';
@@ -33,7 +34,6 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/baked_blur_image.dart';
-import 'package:anymex/widgets/helper/keep_alive_wrapper.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
@@ -42,11 +42,13 @@ import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
 import 'package:anymex/widgets/animation/widget_animations.dart';
+import 'package:anymex/widgets/common/sliver_slide_fade_transition.dart';
 
 class MediaDetailsPage extends StatefulWidget {
   final Media media;
@@ -68,11 +70,27 @@ class MediaDetailsPage extends StatefulWidget {
   State<MediaDetailsPage> createState() => _MediaDetailsPageState();
 }
 
-class _MediaDetailsPageState extends State<MediaDetailsPage> {
+class _MediaDetailsPageState extends State<MediaDetailsPage>
+    with TickerProviderStateMixin {
   late final MediaDetailsController controller;
-  late final PageController pageController;
   late final RxString _posterColor;
-  bool _isAnimatingPage = false;
+  bool _isRouteAnimating = true;
+  late final AnimationController _tabTransitionController;
+  late final Tween<Offset> _slideOffsetTween;
+  late final Animation<Offset> _tabPositionAnimation;
+  late final Animation<double> _tabOpacityAnimation;
+  double _dragDistanceX = 0.0;
+  int _lastTrackpadScrollTime = 0;
+
+  static final Map<String, ColorScheme> _posterSchemeCache = {};
+  static ColorScheme? _getPosterScheme(Color? seed, Brightness brightness) {
+    if (seed == null) return null;
+    final key = '${seed.value}_${brightness.name}';
+    return _posterSchemeCache.putIfAbsent(
+      key,
+      () => ColorScheme.fromSeed(brightness: brightness, seedColor: seed),
+    );
+  }
 
   CommentSectionController get _commentController {
     final media = widget.media;
@@ -94,23 +112,53 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
     );
   }
 
-  void _resolvePosterColor(Media media) {
-    if (media.color.isNotEmpty) {
-      if (_posterColor.value != media.color) {
-        _posterColor.value = media.color;
+  String? _lastExtractedUrl;
+  Worker? _mediaColorWorker;
+
+  void _resolveDynamicColor(Media media, {bool allowExtract = false}) {
+    final usePoster = settingsController.usePosterForBlur;
+    final effectiveCover =
+        (media.cover?.isNotEmpty == true ? media.cover! : media.poster);
+    final targetUrl = usePoster ? media.poster : effectiveCover;
+
+    if (_posterColor.value.isEmpty && media.color.isNotEmpty) {
+      _posterColor.value = media.color;
+    }
+
+    if (targetUrl.isEmpty) {
+      if (!usePoster && _posterColor.value.isNotEmpty) {
+        _posterColor.value = '';
       }
       return;
     }
-    final poster = media.poster;
-    if (poster.isEmpty) return;
-    final cached = ImageColorExtractor.getCachedColor(poster);
+
+    final cached = ImageColorExtractor.getCachedColor(targetUrl);
     if (cached != null) {
-      _posterColor.value = '#${cached.value.toRadixString(16).padLeft(8, '0')}';
+      final hex = '#${cached.value.toRadixString(16).padLeft(8, '0')}';
+      if (_posterColor.value != hex) {
+        _posterColor.value = hex;
+      }
+      _lastExtractedUrl = targetUrl;
       return;
     }
-    ImageColorExtractor.extractColor(poster).then((c) {
+
+    if (!allowExtract || _isRouteAnimating || _lastExtractedUrl == targetUrl) {
+      return;
+    }
+
+    _lastExtractedUrl = targetUrl;
+    ImageColorExtractor.extractColor(targetUrl).then((c) {
       if (c != null && mounted) {
-        _posterColor.value = '#${c.value.toRadixString(16).padLeft(8, '0')}';
+        final hex = '#${c.value.toRadixString(16).padLeft(8, '0')}';
+        if (_isRouteAnimating) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_isRouteAnimating) {
+              _posterColor.value = hex;
+            }
+          });
+        } else {
+          _posterColor.value = hex;
+        }
       }
     });
   }
@@ -118,13 +166,31 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _posterColor =
-        (widget.media.color.isNotEmpty ? widget.media.color : '').obs;
-    _resolvePosterColor(widget.media);
+    _tabTransitionController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    )..value = 1.0;
+
+    final curve = CurvedAnimation(
+      parent: _tabTransitionController,
+      curve: Curves.easeOutCubic,
+    );
+    _tabOpacityAnimation = curve;
+    _slideOffsetTween = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset.zero,
+    );
+    _tabPositionAnimation = _slideOffsetTween.animate(curve);
+
+    final usePoster = settingsController.usePosterForBlur;
+    _posterColor = (usePoster && widget.media.color.isNotEmpty
+            ? widget.media.color
+            : '')
+        .obs;
+    _resolveDynamicColor(widget.media, allowExtract: false);
     final initialPage = widget.scrollToCommentId != null
         ? 2
         : widget.initialTabIndex;
-    pageController = PageController(initialPage: initialPage);
     controller = Get.put(
       MediaDetailsController(
         initialMedia: widget.media,
@@ -134,11 +200,41 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       ),
       tag: widget.tag,
     );
+    _mediaColorWorker = ever(controller.media, (m) {
+      if (!_isRouteAnimating) {
+        _resolveDynamicColor(m, allowExtract: true);
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Platform.isWindows && mounted) {
+        AnymeXTitleBar.isTransparent.value = true;
+      }
+      final route = ModalRoute.of(context);
+      if (route != null && route.animation != null) {
+        if (route.animation!.isCompleted) {
+          _isRouteAnimating = false;
+          _resolveDynamicColor(controller.media.value, allowExtract: true);
+          if (mounted) setState(() {});
+        } else {
+          route.animation!.addStatusListener((status) {
+            if (status == AnimationStatus.completed && mounted) {
+              setState(() => _isRouteAnimating = false);
+              _resolveDynamicColor(controller.media.value, allowExtract: true);
+            }
+          });
+        }
+      } else {
+        _isRouteAnimating = false;
+        _resolveDynamicColor(controller.media.value, allowExtract: true);
+        if (mounted) setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
-    pageController.dispose();
+    _tabTransitionController.dispose();
+    _mediaColorWorker?.dispose();
     Get.delete<MediaDetailsController>(tag: widget.tag);
     final isPreloaded = CommentPreloader.to.isPreloaded(widget.media.uniqueId);
     if (!isPreloaded &&
@@ -146,56 +242,75 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             tag: widget.media.uniqueId)) {
       Get.delete<CommentSectionController>(tag: widget.media.uniqueId);
     }
+    if (Platform.isWindows) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AnymeXTitleBar.isTransparent.value = false;
+      });
+    }
     super.dispose();
   }
 
   void _onTabSelected(int index) {
     if (controller.selectedPage.value == index) return;
+    final direction = index > controller.selectedPage.value ? 1.0 : -1.0;
+    _slideOffsetTween.begin = Offset(0.06 * direction, 0.0);
     controller.selectedPage.value = index;
-    _isAnimatingPage = true;
-    pageController
-        .animateToPage(
-      index,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-    )
-        .then((_) {
-      _isAnimatingPage = false;
-    });
+    _tabTransitionController.forward(from: 0.0);
+  }
+
+  void _nextTab() {
+    final current = controller.selectedPage.value;
+    if (current < 2) {
+      _onTabSelected(current + 1);
+    }
+  }
+
+  void _previousTab() {
+    final current = controller.selectedPage.value;
+    if (current > 0) {
+      _onTabSelected(current - 1);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final currentMedia = controller.media.value;
-      if (currentMedia.color.isNotEmpty &&
-          _posterColor.value != currentMedia.color) {
-        _posterColor.value = currentMedia.color;
-      } else if (_posterColor.value.isEmpty && currentMedia.poster.isNotEmpty) {
-        _resolvePosterColor(currentMedia);
+      if (!_isRouteAnimating && _lastExtractedUrl == null) {
+        _resolveDynamicColor(currentMedia, allowExtract: true);
       }
 
-      final activeColor = currentMedia.color.isNotEmpty
-          ? currentMedia.color
-          : _posterColor.value;
+      final activeColor = _posterColor.value.isNotEmpty
+          ? _posterColor.value
+          : (settingsController.usePosterForBlur ? currentMedia.color : '');
+      final isDetailsOled = settingsController.detailsOledMode;
       final posterSeed =
           (activeColor.isNotEmpty && settingsController.usePosterColor)
               ? AnymeXScaffold.parseColor(activeColor)
               : null;
-      final posterScheme = posterSeed != null
-          ? ColorScheme.fromSeed(
-              brightness: Theme.of(context).brightness,
-              seedColor: posterSeed,
-            )
+      final basePosterScheme = posterSeed != null
+          ? _getPosterScheme(posterSeed, Theme.of(context).brightness)
           : null;
+      final posterScheme = (basePosterScheme != null && isDetailsOled)
+          ? basePosterScheme.copyWith(
+              surface: Colors.black,
+              surfaceDim: Colors.black,
+              surfaceBright: Colors.black,
+              surfaceContainerLowest: Colors.black,
+            )
+          : basePosterScheme;
 
       Widget buildScaffold(BuildContext themedContext) {
         return AnymeXScaffold(
-          color: _posterColor.value,
+          disabled: true,
+          extendBehindTitleBar: true,
+          color: isDetailsOled ? '' : _posterColor.value,
+          isOled: isDetailsOled,
           extendBody: true,
           resizeToAvoidBottomInset: false,
           bottomNavigationBar: buildBottomNavBar(themedContext),
           body: Obx(() {
+            final isDetailsOled = settingsController.detailsOledMode;
             final blurScope = settingsController.detailsBlurScope;
             final isMesh = settingsController.detailsBlurStyle == 1;
             final isBaked = isMesh || settingsController.useComputedBlur;
@@ -205,14 +320,11 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                 UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
             final media = controller.media.value;
             final posterUrl = media.poster;
-            final coverUrl =
+            final effectiveCover =
                 (media.cover?.isNotEmpty == true ? media.cover! : posterUrl);
             final usePoster = settingsController.usePosterForBlur;
-            final blurSourceUrl = usePoster ? posterUrl : coverUrl;
-            final initialPoster = widget.media.poster;
-            final blurFallbackUrl = initialPoster.isNotEmpty
-                ? initialPoster
-                : (usePoster ? coverUrl : posterUrl);
+            final blurSourceUrl = usePoster ? posterUrl : effectiveCover;
+            final blurFallbackUrl = usePoster ? effectiveCover : posterUrl;
             final tintBlur = settingsController.tintBlur;
             final colors = themedContext.colors;
             final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
@@ -232,55 +344,114 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                   .copyWith(scrollbars: false),
               child: Align(
                 alignment: Alignment.topCenter,
-                child: NestedScrollView(
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverToBoxAdapter(
-                      child: Obx(() => MediaHeader(
-                            tag: widget.tag,
-                            data: controller.media.value,
-                            posterUrl: controller.media.value.poster,
-                            userStatus: controller.mediaStatus.value,
-                            userProgress: '${controller.mediaProgress.value}',
-                            onShare: () => MediaShare.showOptions(
-                              context: themedContext,
-                              baseMedia: controller.media.value,
-                              hydratedMedia: controller.media.value,
-                              isManga: controller.isManga || controller.isNovel,
-                            ),
-                          )),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Center(
-                        child: Column(
-                          children: [
-                            buildMediaQuickActions(themedContext, controller)
-                                .animateSpring(
-                                    delay: const Duration(milliseconds: 100)),
-                            const SizedBox(height: 12),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                  body: PageView(
-                    controller: pageController,
-                    physics: const BouncingScrollPhysics(),
-                    onPageChanged: (index) {
-                      if (!_isAnimatingPage) {
-                        controller.selectedPage.value = index;
+                child: Listener(
+                  onPointerSignal: (signal) {
+                    if (signal is PointerScrollEvent) {
+                      final dx = signal.scrollDelta.dx;
+                      final dy = signal.scrollDelta.dy;
+                      if (dx.abs() > 30 && dx.abs() > dy.abs()) {
+                        final now = DateTime.now().millisecondsSinceEpoch;
+                        if (now - _lastTrackpadScrollTime > 350) {
+                          _lastTrackpadScrollTime = now;
+                          if (dx > 30) {
+                            _nextTab();
+                          } else if (dx < -30) {
+                            _previousTab();
+                          }
+                        }
                       }
+                    }
+                  },
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onHorizontalDragStart: (_) {
+                      _dragDistanceX = 0.0;
                     },
-                    children: [
-                      KeepAliveWrapper(child: _buildOverviewTab(themedContext)),
-                      KeepAliveWrapper(child: _buildContentTab(themedContext)),
-                      KeepAliveWrapper(child: _buildCommentsTab(themedContext)),
-                    ],
+                    onHorizontalDragUpdate: (details) {
+                      _dragDistanceX += details.primaryDelta ?? 0.0;
+                    },
+                    onHorizontalDragEnd: (details) {
+                      final velocity = details.primaryVelocity ?? 0.0;
+                      if (velocity < -200 || _dragDistanceX < -50) {
+                        _nextTab();
+                      } else if (velocity > 200 || _dragDistanceX > 50) {
+                        _previousTab();
+                      }
+                      _dragDistanceX = 0.0;
+                    },
+                    onHorizontalDragCancel: () {
+                      _dragDistanceX = 0.0;
+                    },
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Obx(() => MediaHeader(
+                                tag: widget.tag,
+                                data: controller.media.value,
+                                posterUrl: controller.media.value.poster,
+                                userStatus: controller.mediaStatus.value,
+                                userProgress:
+                                    '${controller.mediaProgress.value}',
+                                extendBehindTitleBar: Platform.isWindows,
+                                quickActions: buildMediaQuickActions(
+                                  themedContext,
+                                  controller,
+                                  padding: EdgeInsets.zero,
+                                  height: 40,
+                                ),
+                                onShare: () => MediaShare.showOptions(
+                                  context: themedContext,
+                                  baseMedia: controller.media.value,
+                                  hydratedMedia: controller.media.value,
+                                  isManga:
+                                      controller.isManga || controller.isNovel,
+                                ),
+                              )),
+                        ),
+                        Obx(() {
+                          final selected = controller.selectedPage.value;
+                          return SliverSlideFadeTransition(
+                            opacity: _tabOpacityAnimation,
+                            position: _tabPositionAnimation,
+                            sliver: SliverMainAxisGroup(
+                              slivers: [
+                                SliverVisibility(
+                                  visible: selected == 0,
+                                  maintainState: true,
+                                  sliver: _buildOverviewTab(themedContext),
+                                ),
+                                SliverVisibility(
+                                  visible: selected == 1,
+                                  maintainState: true,
+                                  sliver: _buildContentTab(themedContext),
+                                ),
+                                SliverVisibility(
+                                  visible: selected == 2,
+                                  maintainState: true,
+                                  sliver: _buildCommentsTab(themedContext),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
               ),
             );
 
             Widget buildBlurredImage({double? height}) {
+              if (blurSourceUrl.isEmpty || _isRouteAnimating) {
+                return Container(
+                  height: height ?? double.infinity,
+                  width: double.infinity,
+                  color: gradientBgColor,
+                );
+              }
               return isBaked
                   ? BakedBlurImage(
                       url: blurSourceUrl,
@@ -292,6 +463,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                       fit: BoxFit.cover,
                       height: height,
                       width: double.infinity,
+                      fadeBottom: true,
                       isMesh: isMesh,
                     )
                   : ColorFiltered(
@@ -317,7 +489,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     );
             }
 
-            if (blurScope == 0 || coverUrl.isEmpty) {
+            if (isDetailsOled || blurScope == 0) {
               return scrollView;
             }
 
@@ -337,16 +509,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     left: 0,
                     right: 0,
                     height: washHeight,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                              color: Colors.transparent, width: 2.0),
-                        ),
-                      ),
-                      child: RepaintBoundary(
-                        child: buildBlurredImage(height: washHeight),
-                      ),
+                    child: RepaintBoundary(
+                      child: buildBlurredImage(height: washHeight),
                     ),
                   ),
                   Positioned(
@@ -356,10 +520,6 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     height: washHeight + 1.0,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        border: const Border(
-                          bottom: BorderSide(
-                              color: Colors.transparent, width: 2.0),
-                        ),
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -455,7 +615,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       final child = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (selected == 1) _buildContinueButton(context),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            child: selected == 1
+                ? _buildContinueButton(context)
+                : const SizedBox.shrink(),
+          ),
           SafeArea(
             child: ResponsiveNavBar(
               isDesktop: false,
@@ -506,8 +672,10 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             const SizedBox(height: 12),
             SizedBox(
               height: 180,
+              width: double.infinity,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
                 itemCount: 5,
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 itemBuilder: (context, index) {
@@ -579,89 +747,98 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
 
       final rels = (mediaData.relations ?? []);
 
-      return CustomScrollView(
-        key: const PageStorageKey<String>('Overview'),
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
+      return SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildStatsShimmer(context).bottomSpacing(16);
-                    }
-                    return KeyedSubtree(
-                      key: ValueKey('media_stats_${controller.selectedPage.value}'),
-                      child: buildMediaStatsSection(context, controller)
-                          .bottomSpacing(16)
-                          .animateSection(onScroll: false),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    return KeyedSubtree(
-                      key: const ValueKey('media_characters'),
-                      child: buildCharactersSection(context, mediaData),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    if (rels.isEmpty) return const SizedBox.shrink();
-                    return KeyedSubtree(
-                      key: const ValueKey('media_relations'),
-                      child: ReusableCarousel(
-                        data: rels,
-                        title: 'Relations'.tr,
-                        variant: DataVariant.relation,
-                      ).bottomSpacing(16),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isSecondaryLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    if (mediaData.staff == null || mediaData.staff!.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
-                    return KeyedSubtree(
-                      key: const ValueKey('media_staff'),
-                      child: StaffCarousel(staff: mediaData.staff!)
-                          .bottomSpacing(16),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    final recs = mediaData.recommendations;
-                    if (recs.isEmpty) return const SizedBox.shrink();
-                    return KeyedSubtree(
-                      key: const ValueKey('media_recommendations'),
-                      child: ReusableCarousel(
-                        data: recs,
-                        title: controller.isNovel
-                            ? 'Recommended Novels'
-                            : (controller.isAnime
-                                ? 'Recommended Anime'
-                                : 'Recommended Manga'),
-                        variant: DataVariant.recommendation,
-                        type: controller.isNovel
-                            ? ItemType.novel
-                            : (controller.isAnime
-                                ? ItemType.anime
-                                : ItemType.manga),
-                      ),
-                    );
-                  }),
-                ],
-              ),
+            child: Obx(() {
+              if (controller.isAnilistLoading.value) {
+                return _buildStatsShimmer(context).bottomSpacing(16);
+              }
+              return KeyedSubtree(
+                key: const ValueKey('media_stats'),
+                child: buildMediaStatsSection(context, controller)
+                    .bottomSpacing(16)
+                    .animateSection(onScroll: false),
+              );
+            }),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isAnilistLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                return KeyedSubtree(
+                  key: const ValueKey('media_characters'),
+                  child: buildCharactersSection(context, mediaData),
+                );
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isAnilistLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                if (rels.isEmpty) return const SizedBox.shrink();
+                return KeyedSubtree(
+                  key: const ValueKey('media_relations'),
+                  child: ReusableCarousel(
+                    data: rels,
+                    title: 'Relations'.tr,
+                    variant: DataVariant.relation,
+                  ).bottomSpacing(16),
+                );
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isSecondaryLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                if (mediaData.staff == null || mediaData.staff!.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return KeyedSubtree(
+                  key: const ValueKey('media_staff'),
+                  child: ReusableCarousel(
+                    data: mediaData.staff!,
+                    title: 'Staff',
+                    variant: DataVariant.staff,
+                  ).bottomSpacing(16),
+                );
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isAnilistLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                final recs = mediaData.recommendations;
+                if (recs.isEmpty) return const SizedBox.shrink();
+                return KeyedSubtree(
+                  key: const ValueKey('media_recommendations'),
+                  child: ReusableCarousel(
+                    data: recs,
+                    title: controller.isNovel
+                        ? 'Recommended Novels'
+                        : (controller.isAnime
+                            ? 'Recommended Anime'
+                            : 'Recommended Manga'),
+                    variant: DataVariant.recommendation,
+                    type: controller.isNovel
+                        ? ItemType.novel
+                        : (controller.isAnime
+                            ? ItemType.anime
+                            : ItemType.manga),
+                  ),
+                );
+              }),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 250)),
@@ -672,10 +849,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
 
   Widget _buildContentTab(BuildContext context) {
     if (controller.isAnime) {
-      return CustomScrollView(
-        key: const PageStorageKey<String>('Content'),
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
+      return SliverMainAxisGroup(
         slivers: [
           EpisodeSection(
             searchedTitle: controller.searchedTitle,
@@ -697,10 +871,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       );
     }
 
-    return CustomScrollView(
-      key: const PageStorageKey<String>('Content'),
-      physics:
-          const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+    return SliverMainAxisGroup(
       slivers: [
         ChapterSection(
           searchedTitle: controller.searchedTitle,
@@ -732,12 +903,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
         break;
     }
 
-    return CustomScrollView(
-      key: const PageStorageKey<String>('Comments'),
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
-      ),
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+    return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
           child: Padding(

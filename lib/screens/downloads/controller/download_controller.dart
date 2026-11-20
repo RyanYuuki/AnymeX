@@ -32,6 +32,7 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/background_service_handler.dart';
 import 'package:anymex/controllers/services/torrent/torrent_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/utils/notification.dart';
 
 class DownloadController extends GetxController {
   final RxList<ActiveDownloadTask> activeTasks = <ActiveDownloadTask>[].obs;
@@ -130,9 +131,7 @@ class DownloadController extends GetxController {
         return entry.value;
       }
     }
-    final direct = await getMediaMeta(ext, title);
-    if (direct != null && direct.episodes.isNotEmpty) return direct;
-    return getMediaMeta('AnymeX', title);
+    return await getMediaMeta(ext, title);
   }
 
   Future<DownloadedMangaMeta?> ensureMangaMetaLoaded(
@@ -151,9 +150,7 @@ class DownloadController extends GetxController {
         return entry.value;
       }
     }
-    final direct = await getMangaMeta(ext, title);
-    if (direct != null && direct.chapters.isNotEmpty) return direct;
-    return getMangaMeta('AnymeX', title);
+    return await getMangaMeta(ext, title);
   }
 
   DownloadItemState getEpisodeState(
@@ -608,6 +605,14 @@ class DownloadController extends GetxController {
     );
     await _writeEpisodeMeta(task, fileName);
     await _loadIndex();
+    _notifyDownloadComplete(
+      title: task.mediaTitle,
+      subtitle: 'Episode ${task.episode.number}',
+      posterUrl: task.media?.poster ?? task.media?.cover,
+      isManga: false,
+      mediaId: task.media?.id.toString(),
+      episodeOrChapter: task.episode.number,
+    );
   }
 
   Future<void> _onForegroundMangaTaskFinished(
@@ -618,6 +623,41 @@ class DownloadController extends GetxController {
         mediaDir, MediaDownloader.sanitizePathSegment(task.chapterDisplay)));
     await _writeChapterMeta(task, chapterDir.path, pageCount);
     await _loadIndex();
+    _notifyDownloadComplete(
+      title: task.mediaTitle,
+      subtitle: task.chapterDisplay,
+      posterUrl: task.media?.poster ?? task.media?.cover,
+      isManga: true,
+      mediaId: task.media?.id.toString(),
+      episodeOrChapter: task.chapter.number?.toString(),
+    );
+  }
+
+  void _notifyDownloadComplete({
+    required String title,
+    required String subtitle,
+    String? posterUrl,
+    required bool isManga,
+    String? mediaId,
+    String? episodeOrChapter,
+  }) {
+    final enabled = KvHelper.get<bool>('download_notifications_enabled',
+        defaultVal: true);
+    if (!enabled) return;
+    NotificationService.instance.showRichNotification(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: 'Download Completed',
+      body: '$title - $subtitle',
+      imageUrl: posterUrl,
+      channelId: 'downloads',
+      payload: jsonEncode({
+        'type': 'download_complete',
+        'is_manga': isManga,
+        'media_id': mediaId,
+        'title': title,
+        'number': episodeOrChapter,
+      }),
+    );
   }
 
   final List<String> _pendingPayloads = [];
@@ -643,6 +683,14 @@ class DownloadController extends GetxController {
     await _writeEpisodeMeta(task, fileName);
     await _loadIndex();
     _saveActiveTasks();
+    _notifyDownloadComplete(
+      title: task.mediaTitle,
+      subtitle: 'Episode ${task.episode.number}',
+      posterUrl: task.media?.poster ?? task.media?.cover,
+      isManga: false,
+      mediaId: task.media?.id.toString(),
+      episodeOrChapter: task.episode.number,
+    );
   }
 
   Future<void> _saveActiveTasks() async {
@@ -1007,7 +1055,11 @@ class DownloadController extends GetxController {
       );
 
       final rootDir = await _getRootDir();
-      final subDir = p.join('Anime', task.extensionName, task.mediaTitle);
+      final subDir = p.join(
+        'Anime',
+        MediaDownloader.sanitizePathSegment(task.extensionName),
+        MediaDownloader.sanitizePathSegment(task.mediaTitle),
+      );
       final fullDirPath = p.join(rootDir.path, subDir);
 
       final mDownloader = MediaDownloader(
@@ -1376,13 +1428,17 @@ class DownloadController extends GetxController {
 
   Future<DownloadedMangaMeta?> getMangaMeta(String ext, String title) async {
     final root = await _getRootDir();
-    var mediaDir = p.join(root.path, 'Manga', ext, title);
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
+    var mediaDir = p.join(root.path, 'Manga', sExt, sTitle);
     var targetExt = ext;
     if (!await Directory(mediaDir).exists()) {
-      final unifiedDir = p.join(root.path, 'Manga', 'AnymeX', title);
+      final unifiedDir = p.join(root.path, 'Manga', 'AnymeX', sTitle);
       if (await Directory(unifiedDir).exists()) {
         mediaDir = unifiedDir;
         targetExt = 'AnymeX';
+      } else {
+        return null;
       }
     }
     await _syncMediaFolderMeta(
@@ -1577,15 +1633,18 @@ class DownloadController extends GetxController {
   }
 
   Future<String> _getMediaDirPath(String title, String sourceName,
-      {String mediaType = 'Anime'}) async {
+      {String mediaType = 'Anime', bool create = true}) async {
     final root = await _getRootDir();
-    final dir = Directory(p.join(root.path, mediaType, sourceName, title));
-    if (!await dir.exists()) await dir.create(recursive: true);
+    final sExt = MediaDownloader.sanitizePathSegment(sourceName);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
+    final dir = Directory(p.join(root.path, mediaType, sExt, sTitle));
+    if (create && !await dir.exists()) await dir.create(recursive: true);
     return dir.path;
   }
 
-  Future<String> _getMangaMediaDirPath(String title, String sourceName) =>
-      _getMediaDirPath(title, sourceName, mediaType: 'Manga');
+  Future<String> _getMangaMediaDirPath(String title, String sourceName,
+          {bool create = true}) =>
+      _getMediaDirPath(title, sourceName, mediaType: 'Manga', create: create);
 
   Future<void> _writeEpisodeMeta(
       ActiveDownloadTask task, String fileName) async {
@@ -2281,6 +2340,8 @@ class DownloadController extends GetxController {
     required String title,
     required String mediaType,
   }) async {
+    final dir = Directory(mediaDir);
+    if (!await dir.exists()) return false;
     final metaFile = File(p.join(mediaDir, 'metadata.json'));
 
     if (mediaType == 'Anime') {
@@ -2327,8 +2388,9 @@ class DownloadController extends GetxController {
                   quality: epMeta.quality,
                   subtitles: epMeta.subtitles,
                 ));
-          if (epMeta.fileName.isNotEmpty)
+          if (epMeta.fileName.isNotEmpty) {
             existingFileNames.add(epMeta.fileName);
+          }
           existingFilePaths.add(epFilePath);
         }
       }
@@ -2549,21 +2611,19 @@ class DownloadController extends GetxController {
     int durationMs,
   ) async {
     final root = await _getRootDir();
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
     var targetExt = ext;
-    var mediaDir = p.join(root.path, 'Anime', ext, title);
+    var mediaDir = p.join(root.path, 'Anime', sExt, sTitle);
     var metaFile = File(p.join(mediaDir, 'metadata.json'));
     if (!await metaFile.exists()) {
-      final unifiedDir = p.join(root.path, 'Anime', 'AnymeX', title);
+      final unifiedDir = p.join(root.path, 'Anime', 'AnymeX', sTitle);
       final unifiedMeta = File(p.join(unifiedDir, 'metadata.json'));
       if (await unifiedMeta.exists()) {
         mediaDir = unifiedDir;
         metaFile = unifiedMeta;
         targetExt = 'AnymeX';
       }
-    }
-    if (!await metaFile.exists()) {
-      mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Anime');
-      metaFile = File(p.join(mediaDir, 'metadata.json'));
     }
     if (!await metaFile.exists()) return;
 
@@ -2598,21 +2658,19 @@ class DownloadController extends GetxController {
     int totalPages,
   ) async {
     final root = await _getRootDir();
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
     var targetExt = ext;
-    var mediaDir = p.join(root.path, 'Manga', ext, title);
+    var mediaDir = p.join(root.path, 'Manga', sExt, sTitle);
     var metaFile = File(p.join(mediaDir, 'metadata.json'));
     if (!await metaFile.exists()) {
-      final unifiedDir = p.join(root.path, 'Manga', 'AnymeX', title);
+      final unifiedDir = p.join(root.path, 'Manga', 'AnymeX', sTitle);
       final unifiedMeta = File(p.join(unifiedDir, 'metadata.json'));
       if (await unifiedMeta.exists()) {
         mediaDir = unifiedDir;
         metaFile = unifiedMeta;
         targetExt = 'AnymeX';
       }
-    }
-    if (!await metaFile.exists()) {
-      mediaDir = await _getMangaMediaDirPath(title, ext);
-      metaFile = File(p.join(mediaDir, 'metadata.json'));
     }
     if (!await metaFile.exists()) return;
 
@@ -2640,13 +2698,17 @@ class DownloadController extends GetxController {
 
   Future<DownloadedMediaMeta?> getMediaMeta(String ext, String title) async {
     final root = await _getRootDir();
-    var mediaDir = p.join(root.path, 'Anime', ext, title);
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
+    var mediaDir = p.join(root.path, 'Anime', sExt, sTitle);
     var targetExt = ext;
     if (!await Directory(mediaDir).exists()) {
-      final unifiedDir = p.join(root.path, 'Anime', 'AnymeX', title);
+      final unifiedDir = p.join(root.path, 'Anime', 'AnymeX', sTitle);
       if (await Directory(unifiedDir).exists()) {
         mediaDir = unifiedDir;
         targetExt = 'AnymeX';
+      } else {
+        return null;
       }
     }
     await _syncMediaFolderMeta(
@@ -2667,13 +2729,15 @@ class DownloadController extends GetxController {
   Future<void> deleteMedia(String ext, String title,
       {String mediaType = 'Anime'}) async {
     final root = await _getRootDir();
-    final directDir = Directory(p.join(root.path, mediaType, ext, title));
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
+    final directDir = Directory(p.join(root.path, mediaType, sExt, sTitle));
     if (await directDir.exists()) {
       await directDir.delete(recursive: true);
     }
-    if (ext != 'AnymeX') {
+    if (sExt != 'AnymeX') {
       final unifiedDir =
-          Directory(p.join(root.path, mediaType, 'AnymeX', title));
+          Directory(p.join(root.path, mediaType, 'AnymeX', sTitle));
       if (await unifiedDir.exists()) {
         await unifiedDir.delete(recursive: true);
       }
@@ -2692,21 +2756,19 @@ class DownloadController extends GetxController {
   Future<void> deleteEpisode(String ext, String title, String epNumber,
       Map<String, String> sortMap) async {
     final root = await _getRootDir();
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
     var targetExt = ext;
-    var mediaDir = p.join(root.path, 'Anime', ext, title);
+    var mediaDir = p.join(root.path, 'Anime', sExt, sTitle);
     var metaFile = File(p.join(mediaDir, 'metadata.json'));
     if (!await metaFile.exists()) {
-      final unifiedDir = p.join(root.path, 'Anime', 'AnymeX', title);
+      final unifiedDir = p.join(root.path, 'Anime', 'AnymeX', sTitle);
       final unifiedMeta = File(p.join(unifiedDir, 'metadata.json'));
       if (await unifiedMeta.exists()) {
         mediaDir = unifiedDir;
         metaFile = unifiedMeta;
         targetExt = 'AnymeX';
       }
-    }
-    if (!await metaFile.exists()) {
-      mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Anime');
-      metaFile = File(p.join(mediaDir, 'metadata.json'));
     }
     if (!await metaFile.exists()) return;
 
@@ -2739,21 +2801,19 @@ class DownloadController extends GetxController {
   Future<void> deleteChapter(
       String ext, String title, double? chapterNum) async {
     final root = await _getRootDir();
+    final sExt = MediaDownloader.sanitizePathSegment(ext);
+    final sTitle = MediaDownloader.sanitizePathSegment(title);
     var targetExt = ext;
-    var mediaDir = p.join(root.path, 'Manga', ext, title);
+    var mediaDir = p.join(root.path, 'Manga', sExt, sTitle);
     var metaFile = File(p.join(mediaDir, 'metadata.json'));
     if (!await metaFile.exists()) {
-      final unifiedDir = p.join(root.path, 'Manga', 'AnymeX', title);
+      final unifiedDir = p.join(root.path, 'Manga', 'AnymeX', sTitle);
       final unifiedMeta = File(p.join(unifiedDir, 'metadata.json'));
       if (await unifiedMeta.exists()) {
         mediaDir = unifiedDir;
         metaFile = unifiedMeta;
         targetExt = 'AnymeX';
       }
-    }
-    if (!await metaFile.exists()) {
-      mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Manga');
-      metaFile = File(p.join(mediaDir, 'metadata.json'));
     }
     if (!await metaFile.exists()) return;
 
@@ -2842,8 +2902,8 @@ class DownloadController extends GetxController {
       final subsDir = Directory(p.join(
         root.path,
         'Anime',
-        task.extensionName,
-        task.mediaTitle,
+        MediaDownloader.sanitizePathSegment(task.extensionName),
+        MediaDownloader.sanitizePathSegment(task.mediaTitle),
         'Episode_${task.episode.number}_subs',
       ));
       if (!await subsDir.exists()) await subsDir.create(recursive: true);

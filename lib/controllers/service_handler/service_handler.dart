@@ -135,7 +135,8 @@ class ServiceHandler extends GetxController {
   Future<void> updateListEntry(
     UpdateListEntryParams params,
   ) async {
-    if (Get.isRegistered<Settings>() && Get.find<Settings>().isIncognito.value) {
+    if (Get.isRegistered<Settings>() &&
+        Get.find<Settings>().isIncognito.value) {
       return;
     }
     await onlineService.updateListEntry(params);
@@ -180,10 +181,10 @@ class ServiceHandler extends GetxController {
   Future<Media> fetchDetails(FetchDetailsParams params) async {
     try {
       if (serviceType.value == ServicesType.extensions) {
-        return service.fetchDetails(params);
+        return await service.fetchDetails(params);
       }
       Media? data = cacheController.getCacheById(params.id, serviceType.value);
-      return data ?? service.fetchDetails(params);
+      return await (data ?? service.fetchDetails(params));
     } catch (e) {
       Logger.i("Cache Error => $e");
       return service.fetchDetails(params);

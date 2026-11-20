@@ -24,6 +24,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:anymex/utils/number_extensions.dart';
 
 class UserStatsPage extends StatefulWidget {
   const UserStatsPage({super.key});
@@ -302,7 +303,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
     final daysCard = _buildSmallInfoCard(
       title: 'DAYS ACTIVE'.tr,
-      value: "${controller.totalDaysActive}",
+      value: controller.totalDaysActive.toFormattedNumber(),
       icon: IconlyLight.calendar,
     );
 
@@ -368,7 +369,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: AnymeXText(
-                  '$points XP',
+                  '${points.toFormattedNumber()} XP',
                   size: 11,
                   variant: TextVariant.bold,
                   color: context.colors.primary,

@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -18,14 +19,16 @@ class DefaultCardStyle implements MediaCardStyle {
       'Container card layout with poster, title, extension info, and progress count.';
 
   @override
-  double getHeight(bool isDesktop) => isDesktop ? 300 : 240;
+  double getHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getCardHeight(0, isDesktop);
 
   @override
-  double getExtraHeight(bool isDesktop) => 25;
+  double getExtraHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getExtraHeight(0, isDesktop);
 
   @override
   double getAspectRatio(bool isDesktop) =>
-      isDesktop ? (150 / getHeight(isDesktop)) : (108 / getHeight(isDesktop));
+      settingsController.customCardStyle.getCardAspectRatio(0, isDesktop);
 
   @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
@@ -54,6 +57,7 @@ class DefaultCard extends CarouselCard {
   Widget build(BuildContext context) {
     final desktop = isDesktop(context);
     final theme = context.colors;
+    final config = settingsController.customCardStyle;
 
     final isLibrary = variant == DataVariant.library;
     final progress = (itemData.source != null && itemData.source!.isNotEmpty)
@@ -70,14 +74,18 @@ class DefaultCard extends CarouselCard {
         ? (type == ItemType.anime ? Iconsax.play5 : Iconsax.book)
         : getIconForVariant(itemData.extraData ?? '', variant, type);
 
+    final cardW = config.cardWidth(desktop, 0);
+    final bottomH = config.getBottomHeight(0, desktop);
+    final titleLines = config.titleLines;
+
     return Container(
+      width: cardW,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         color: theme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: theme.outline.opaque(0.15, iReallyMeanIt: true)),
       ),
-      constraints: BoxConstraints(maxWidth: desktop ? 160 : 130),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -95,19 +103,24 @@ class DefaultCard extends CarouselCard {
             ),
           ),
           Container(
-            height: 62,
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+            height: bottomH,
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AnymeXText(
-                  itemData.title ?? '?',
-                  variant: TextVariant.semiBold,
-                  size: 13,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: AnymeXText(
+                      itemData.title ?? '?',
+                      variant: TextVariant.semiBold,
+                      size: 13,
+                      maxLines: titleLines,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 4),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

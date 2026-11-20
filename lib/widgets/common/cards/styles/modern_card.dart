@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_components.dart';
@@ -15,13 +16,16 @@ class ModernCardStyle implements MediaCardStyle {
   String get description => 'Full cover card with dark gradient title overlay at the bottom.';
 
   @override
-  double getHeight(bool isDesktop) => isDesktop ? 230 : 170;
+  double getHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getCardHeight(4, isDesktop);
 
   @override
-  double getExtraHeight(bool isDesktop) => 0;
+  double getExtraHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getExtraHeight(4, isDesktop);
 
   @override
-  double getAspectRatio(bool isDesktop) => isDesktop ? (150 / 230) : (108 / 170);
+  double getAspectRatio(bool isDesktop) =>
+      settingsController.customCardStyle.getCardAspectRatio(4, isDesktop);
 
   @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
@@ -49,10 +53,13 @@ class ModernCard extends CarouselCard {
   @override
   Widget build(BuildContext context) {
     final desktop = isDesktop(context);
+    final config = settingsController.customCardStyle;
+    final cardW = config.cardWidth(desktop, 4);
+    final titleLines = config.titleLines;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: desktop ? 150 : 108),
+      constraints: BoxConstraints(maxWidth: cardW),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12.toDouble().multiplyRoundness()),
         child: Stack(
@@ -73,6 +80,7 @@ class ModernCard extends CarouselCard {
                   title: itemData.title ?? '?',
                   isDesktop: desktop,
                   overlay: true,
+                  maxLines: titleLines,
                 ),
               ),
             buildCardBadgeV2(context, variant, type),

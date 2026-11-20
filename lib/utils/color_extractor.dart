@@ -1,16 +1,16 @@
-import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
+import 'package:image/image.dart' as img;
 
 final Map<String, Color> _colorCache = {};
 
 class ImageColorExtractor {
-  static const int _maxCacheSize = 50;
+  static const int _maxCacheSize = 60;
 
   static Future<Color?> extractColor(
     String imageUrl, {
@@ -18,128 +18,119 @@ class ImageColorExtractor {
     int maximumColorCount = 10,
     Size? targetSize,
   }) async {
+    if (imageUrl.isEmpty) return null;
+
     if (_colorCache.containsKey(imageUrl)) {
       return _colorCache[imageUrl];
     }
 
     try {
-      ImageProvider imageProvider;
+      Uint8List? bytes;
 
       if (isBase64) {
-        imageProvider = MemoryImage(_base64ToBytes(imageUrl));
+        bytes = base64Decode(imageUrl);
+      } else if (imageUrl.startsWith('http://') ||
+          imageUrl.startsWith('https://')) {
+        final fileInfo =
+            await AnymeXCacheManager.instance.getFileFromCache(imageUrl);
+        if (fileInfo != null) {
+          bytes = await fileInfo.file.readAsBytes();
+        } else {
+          final file = await AnymeXCacheManager.instance
+              .getSingleFile(imageUrl)
+              .timeout(const Duration(seconds: 4));
+          bytes = await file.readAsBytes();
+        }
       } else {
-        imageProvider = CachedNetworkImageProvider(
-          imageUrl,
-          cacheManager: AnymeXCacheManager.instance,
-        );
+        final file = File(imageUrl);
+        if (await file.exists()) {
+          bytes = await file.readAsBytes();
+        }
       }
 
-      final size = targetSize ?? const Size(100, 100);
+      if (bytes == null || bytes.isEmpty) return null;
 
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        imageProvider,
-        size: size,
-        maximumColorCount: maximumColorCount,
-        timeout: const Duration(seconds: 5),
-      );
-
-      final dominantColor = paletteGenerator.dominantColor?.color ??
-          paletteGenerator.vibrantColor?.color ??
-          paletteGenerator.mutedColor?.color;
-
-      if (dominantColor != null) {
+      final colorInt =
+          await Isolate.run(() => _extractDominantColorInt(bytes!));
+      if (colorInt != null) {
+        final dominantColor = Color(colorInt);
         _cacheColor(imageUrl, dominantColor);
         return dominantColor;
       }
-    } catch (e) {
-      debugPrint('Color extraction failed for $imageUrl: $e');
-    }
+    } catch (_) {}
 
     return null;
   }
 
-  static Future<Color?> extractColorIsolate(
-    String imageUrl, {
-    bool isBase64 = false,
-  }) async {
-    if (_colorCache.containsKey(imageUrl)) {
-      return _colorCache[imageUrl];
-    }
+  static int? _extractDominantColorInt(Uint8List sourceBytes) {
+    final decoded = img.decodeImage(sourceBytes);
+    if (decoded == null) return null;
 
-    try {
-      final imageProvider = isBase64
-          ? MemoryImage(_base64ToBytes(imageUrl))
-          : CachedNetworkImageProvider(
-              imageUrl,
-              cacheManager: AnymeXCacheManager.instance,
-            ) as ImageProvider;
+    final small = img.copyResize(decoded, width: 32, height: 32,
+        interpolation: img.Interpolation.average);
+    final rgba = small.convert(numChannels: 4);
+    final pixels = rgba.getBytes(order: img.ChannelOrder.rgba);
 
-      final imageStream = imageProvider.resolve(const ImageConfiguration());
-      final completer = Completer<ui.Image>();
-
-      imageStream.addListener(
-        ImageStreamListener((ImageInfo info, bool _) {
-          completer.complete(info.image);
-        }),
-      );
-
-      final image = await completer.future.timeout(
-        const Duration(seconds: 5),
-      );
-
-      final byteData =
-          await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-      if (byteData == null) return null;
-
-      final color = await _extractDominantColorFromBytes(
-        byteData,
-        image.width,
-        image.height,
-      );
-
-      return color;
-    } catch (e) {
-      debugPrint('Color extraction failed for $imageUrl: $e');
-      return null;
-    }
+    return _findDominantColorInt(pixels);
   }
 
-  static Future<Color> _extractDominantColorFromBytes(
-    ByteData byteData,
-    int width,
-    int height,
-  ) async {
-    final pixels = byteData.buffer.asUint8List();
-    final Map<int, int> colorCount = {};
+  static int? _findDominantColorInt(Uint8List pixels) {
+    if (pixels.isEmpty) return null;
+    final Map<int, int> counts = {};
 
-    const step = 10;
-
-    for (int i = 0; i < pixels.length; i += 4 * step) {
+    for (int i = 0; i < pixels.length; i += 4) {
+      final a = pixels[i + 3];
+      if (a < 128) continue;
       final r = pixels[i];
       final g = pixels[i + 1];
       final b = pixels[i + 2];
-      final a = pixels[i + 3];
-
-      if (a < 128) continue;
-
-      final colorKey = ((r ~/ 32) << 10) | ((g ~/ 32) << 5) | (b ~/ 32);
-      colorCount[colorKey] = (colorCount[colorKey] ?? 0) + 1;
+      final key = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+      counts[key] = (counts[key] ?? 0) + 1;
     }
 
-    if (colorCount.isEmpty) {
-      return Colors.grey;
+    if (counts.isEmpty) return null;
+
+    int bestKey = counts.keys.first;
+    double bestScore = -1.0;
+    int maxPop = 0;
+    int mostCommonKey = bestKey;
+
+    for (final entry in counts.entries) {
+      final key = entry.key;
+      final count = entry.value;
+
+      if (count > maxPop) {
+        maxPop = count;
+        mostCommonKey = key;
+      }
+
+      final r = ((key >> 10) & 0x1F) * 8;
+      final g = ((key >> 5) & 0x1F) * 8;
+      final b = (key & 0x1F) * 8;
+
+      final maxC = (r > g ? (r > b ? r : b) : (g > b ? g : b)) / 255.0;
+      final minC = (r < g ? (r < b ? r : b) : (g < b ? g : b)) / 255.0;
+      final l = (maxC + minC) / 2.0;
+      final delta = maxC - minC;
+      final s = delta == 0 ? 0.0 : delta / (1.0 - (2.0 * l - 1.0).abs());
+
+      if (l < 0.12 || l > 0.90 || s < 0.10) {
+        continue;
+      }
+
+      final score = count * (1.0 + s * 1.5) * (1.0 - (l - 0.5).abs());
+      if (score > bestScore) {
+        bestScore = score;
+        bestKey = key;
+      }
     }
 
-    final mostCommon = colorCount.entries.reduce(
-      (a, b) => a.value > b.value ? a : b,
-    );
+    final chosenKey = bestScore > 0 ? bestKey : mostCommonKey;
+    final r = (((chosenKey >> 10) & 0x1F) * 8 + 4).clamp(0, 255);
+    final g = (((chosenKey >> 5) & 0x1F) * 8 + 4).clamp(0, 255);
+    final b = ((chosenKey & 0x1F) * 8 + 4).clamp(0, 255);
 
-    final r = ((mostCommon.key >> 10) & 0x1F) * 32;
-    final g = ((mostCommon.key >> 5) & 0x1F) * 32;
-    final b = (mostCommon.key & 0x1F) * 32;
-
-    return Color.fromARGB(255, r, g, b);
+    return (255 << 24) | (r << 16) | (g << 8) | b;
   }
 
   static Color? getCachedColor(String imageUrl) {
@@ -166,9 +157,5 @@ class ImageColorExtractor {
 
   static void clearCachedColor(String imageUrl) {
     _colorCache.remove(imageUrl);
-  }
-
-  static Uint8List _base64ToBytes(String base64String) {
-    throw UnimplementedError('Implement base64ToBytes');
   }
 }

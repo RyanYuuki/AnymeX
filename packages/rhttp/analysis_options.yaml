@@ -8,3 +8,9 @@ analyzer:
     - 'example/**'
     - 'cargokit/**'
     - 'rust/**'
+    - build/**
+    - android/**
+    - ios/**
+    - windows/**
+    - macos/**
+    - linux/**

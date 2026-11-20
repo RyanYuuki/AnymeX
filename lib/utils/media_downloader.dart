@@ -476,8 +476,13 @@ class MediaDownloader {
     return 'Episode $episodeNumber$ext';
   }
 
-  static String sanitizePathSegment(String input) =>
-      input.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
+  static String sanitizePathSegment(String input) {
+    final sanitized = input
+        .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
+        .replaceAll(RegExp(r'\.+$'), '')
+        .trim();
+    return sanitized.isEmpty ? 'unknown' : sanitized;
+  }
 
   static String buildTaskId({
     required String extensionName,

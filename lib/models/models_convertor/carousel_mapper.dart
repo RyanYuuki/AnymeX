@@ -4,6 +4,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
+import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -116,5 +117,22 @@ extension CommunityMediaMapper on CommunityMedia {
         malUserId: malUserId,
         author: author,
         reason: reason);
+  }
+}
+
+extension StaffMapper on Staff {
+  CarouselData toCarouselData(
+      {DataVariant variant = DataVariant.staff, bool isManga = false}) {
+    return CarouselData(
+      id: id?.toString() ?? '',
+      title: name ?? '',
+      romajiTitle: nativeName ?? (name ?? ''),
+      englishTitle: name ?? '',
+      poster: image ??
+          'https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg',
+      servicesType: ServicesType.anilist,
+      extraData: role ?? '',
+      releasing: false,
+    );
   }
 }

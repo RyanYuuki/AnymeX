@@ -1,83 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:get/get.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 
-class SlideAndScaleAnimation extends StatefulWidget {
+class SlideAndScaleAnimation extends StatelessWidget {
   final Widget child;
   final Duration duration;
+  final Duration? delay;
   final double initialScale;
   final double finalScale;
   final Offset initialOffset;
   final Offset finalOffset;
+  final Curve curve;
 
   const SlideAndScaleAnimation({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 200),
+    this.delay,
     this.initialScale = 0.0,
     this.finalScale = 1.0,
     this.initialOffset = const Offset(1.0, 0.0),
     this.finalOffset = const Offset(0.0, 0.0),
+    this.curve = Curves.easeInOut,
   });
 
   @override
-  SlideAndScaleAnimationState createState() => SlideAndScaleAnimationState();
-}
-
-class SlideAndScaleAnimationState extends State<SlideAndScaleAnimation>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController;
-  late final Animation<double> _scaleAnimation;
-  late final Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
-
-    _scaleAnimation = Tween<double>(
-      begin: widget.initialScale,
-      end: widget.finalScale,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: widget.initialOffset,
-      end: widget.finalOffset,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _animationController.forward();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return SlideTransition(
-          position: _slideAnimation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: widget.child,
-          ),
+    if (Get.isRegistered<Settings>()) {
+      final s = Get.find<Settings>();
+      if (!s.enableAnimation || s.animationDuration <= 0) {
+        return child;
+      }
+    }
+
+    return child
+        .animate(delay: delay)
+        .scale(
+          begin: Offset(initialScale, initialScale),
+          end: Offset(finalScale, finalScale),
+          alignment: Alignment.center,
+          duration: duration,
+          curve: curve,
+        )
+        .slide(
+          begin: initialOffset,
+          end: finalOffset,
+          duration: duration,
+          curve: curve,
         );
-      },
-    );
   }
 }

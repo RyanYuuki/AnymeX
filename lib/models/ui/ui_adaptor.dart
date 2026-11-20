@@ -33,7 +33,9 @@ class UISettings {
   double grainIntensity;
   bool enableImmersiveMode;
   int navBarStyle;
+  int tileStyle;
   String appFontFamily;
+  double appFontScale;
   double bottomNavBarMargin;
   bool useLegacyNavbar;
   bool useComputedBlur;
@@ -42,6 +44,7 @@ class UISettings {
   bool usePosterForBlur;
   int detailsBlurStyle;
   int detailsBlurScope;
+  bool detailsOledMode;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -74,15 +77,18 @@ class UISettings {
     this.grainIntensity = 0.05,
     this.enableImmersiveMode = false,
     this.navBarStyle = 1,
+    this.tileStyle = 1,
     this.appFontFamily = '',
+    this.appFontScale = 1.0,
     this.bottomNavBarMargin = 32.0,
     this.useLegacyNavbar = true,
     this.useComputedBlur = true,
     this.fullScreenBlur = false,
     this.tintBlur = true,
     this.usePosterForBlur = true,
-    this.detailsBlurStyle = 1,
-    this.detailsBlurScope = 2,
+    this.detailsBlurStyle = 0,
+    this.detailsBlurScope = 1,
+    this.detailsOledMode = false,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -144,7 +150,8 @@ class UISettings {
     }
 
     homePageCardsSimkl = Map<String, bool>.from(homePageCardsSimkl);
-    if (homePageCardsSimkl.isNotEmpty && !homePageCardsSimkl.values.any((v) => v)) {
+    if (homePageCardsSimkl.isNotEmpty &&
+        !homePageCardsSimkl.values.any((v) => v)) {
       homePageCardsSimkl[homePageCardsSimkl.keys.first] = true;
     }
   }
@@ -216,24 +223,28 @@ class UISettings {
       enableImmersiveMode: UISettingsKeys.enableImmersiveMode
           .get<bool>(uiDefaults.enableImmersiveMode),
       navBarStyle: UISettingsKeys.navBarStyle.get<int>(uiDefaults.navBarStyle),
+      tileStyle: UISettingsKeys.tileStyle.get<int>(uiDefaults.tileStyle),
       appFontFamily:
           UISettingsKeys.appFontFamily.get<String>(uiDefaults.appFontFamily),
+      appFontScale:
+          UISettingsKeys.appFontScale.get<double>(uiDefaults.appFontScale),
       bottomNavBarMargin: UISettingsKeys.bottomNavBarMargin
           .get<double>(uiDefaults.bottomNavBarMargin),
-      useLegacyNavbar: UISettingsKeys.useLegacyNavbar
-          .get<bool>(uiDefaults.useLegacyNavbar),
-      useComputedBlur: UISettingsKeys.useComputedBlur
-          .get<bool>(uiDefaults.useComputedBlur),
-      fullScreenBlur: UISettingsKeys.fullScreenBlur
-          .get<bool>(uiDefaults.fullScreenBlur),
-      tintBlur:
-          UISettingsKeys.tintBlur.get<bool>(uiDefaults.tintBlur),
+      useLegacyNavbar:
+          UISettingsKeys.useLegacyNavbar.get<bool>(uiDefaults.useLegacyNavbar),
+      useComputedBlur:
+          UISettingsKeys.useComputedBlur.get<bool>(uiDefaults.useComputedBlur),
+      fullScreenBlur:
+          UISettingsKeys.fullScreenBlur.get<bool>(uiDefaults.fullScreenBlur),
+      tintBlur: UISettingsKeys.tintBlur.get<bool>(uiDefaults.tintBlur),
       usePosterForBlur: UISettingsKeys.usePosterForBlur
           .get<bool>(uiDefaults.usePosterForBlur),
-      detailsBlurStyle: UISettingsKeys.detailsBlurStyle
-          .get<int>(uiDefaults.detailsBlurStyle),
-      detailsBlurScope: UISettingsKeys.detailsBlurScope
-          .get<int>(uiDefaults.detailsBlurScope),
+      detailsBlurStyle:
+          UISettingsKeys.detailsBlurStyle.get<int>(uiDefaults.detailsBlurStyle),
+      detailsBlurScope:
+          UISettingsKeys.detailsBlurScope.get<int>(uiDefaults.detailsBlurScope),
+      detailsOledMode: UISettingsKeys.detailsOledMode
+          .get<bool>(uiDefaults.detailsOledMode),
     );
   }
 }

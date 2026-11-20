@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/kv_helper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
@@ -101,9 +104,36 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
       return AnymeXScaffold(
         showHeader: true,
         headerTitle: 'Performance'.tr,
-        body: Center(
-          child: AnymeXText(
-              'Display mode tuning is not applicable on desktop platforms.'.tr),
+        body: Builder(
+          builder: (ctx) => SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+                16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
+            child: Column(
+              children: [
+                AnymeXSectionBuilder(
+                  title: 'Monitoring',
+                  children: [
+                    AnymeXTile.toggle(
+                      icon: HugeIcons.strokeRoundedDashboardSpeed01,
+                      title: 'FPS Meter',
+                      subtitle: 'Show draggable real-time FPS overlay',
+                      value: KvHelper.get<bool>('show_fps_meter', defaultVal: false),
+                      onChanged: (val) {
+                        KvHelper.set('show_fps_meter', val);
+                        FpsMeter.isVisible.value = val;
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Center(
+                  child: AnymeXText(
+                      'Display mode tuning is not applicable on desktop platforms.'.tr),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -174,6 +204,23 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                AnymeXSectionBuilder(
+                  title: 'Monitoring',
+                  children: [
+                    AnymeXTile.toggle(
+                      icon: HugeIcons.strokeRoundedDashboardSpeed01,
+                      title: 'FPS Meter',
+                      subtitle: 'Show draggable real-time FPS overlay',
+                      value: KvHelper.get<bool>('show_fps_meter', defaultVal: false),
+                      onChanged: (val) {
+                        KvHelper.set('show_fps_meter', val);
+                        FpsMeter.isVisible.value = val;
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 if (_isLoading) ...[
                   const Center(
                     child: Padding(
@@ -222,11 +269,11 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   ),
                   const SizedBox(height: 20),
                   AnymeXSectionBuilder(
-                    title: 'Info'.tr,
+                    title: 'Detected Modes & Display',
                     children: [
                       AnymeXTile(
                         icon: Icons.monitor_rounded,
-                        title: 'Display Mode'.tr,
+                        title: 'Current Display Mode',
                         subtitle: active != null
                             ? '${active.width}x${active.height} @ ${active.refreshRate.round()}Hz'
                             : 'Unknown',

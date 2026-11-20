@@ -1,8 +1,10 @@
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -13,8 +15,12 @@ import 'package:get/get.dart';
 String sourceTypeName(Source source) {
   if (source.managerId != null && source.managerId!.isNotEmpty) {
     final mid = source.managerId!;
-    final em = Get.isRegistered<ExtensionManager>() ? Get.find<ExtensionManager>() : null;
-    final m = em?.managers.firstWhereOrNull((mgr) => mgr.id.toLowerCase() == mid.toLowerCase() || mgr.name.toLowerCase() == mid.toLowerCase());
+    final em = Get.isRegistered<ExtensionManager>()
+        ? Get.find<ExtensionManager>()
+        : null;
+    final m = em?.managers.firstWhereOrNull((mgr) =>
+        mgr.id.toLowerCase() == mid.toLowerCase() ||
+        mgr.name.toLowerCase() == mid.toLowerCase());
     if (m != null) return m.name;
     return mid[0].toUpperCase() + mid.substring(1);
   }
@@ -47,6 +53,8 @@ class SourceSelectorWidget extends StatelessWidget {
 
   final String? label;
 
+  final Widget? bottomWidget;
+
   const SourceSelectorWidget({
     super.key,
     required this.activeSource,
@@ -57,32 +65,37 @@ class SourceSelectorWidget extends StatelessWidget {
     this.onPreferencesTap,
     this.isManga = false,
     this.label,
+    this.bottomWidget,
   });
 
   void _openSheet(BuildContext context) {
     FocusManager.instance.primaryFocus?.unfocus();
+    final theme = Theme.of(context);
     AnymeXSheet.custom(
-      _SourceSheetContent(
-        activeSource: activeSource,
-        installedSources: installedSources,
-        isManga: isManga,
-        label: label,
-        onSourceSelected: (source) {
-          FocusManager.instance.primaryFocus?.unfocus();
-          Navigator.of(context, rootNavigator: true).pop();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            onSourceSelected(source);
-          });
-        },
-        onSubSourceSelected: onSubSourceSelected != null
-            ? (sub) {
-                FocusManager.instance.primaryFocus?.unfocus();
-                Navigator.of(context, rootNavigator: true).pop();
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  onSubSourceSelected!(sub);
-                });
-              }
-            : null,
+      Theme(
+        data: theme,
+        child: _SourceSheetContent(
+          activeSource: activeSource,
+          installedSources: installedSources,
+          isManga: isManga,
+          label: label,
+          onSourceSelected: (source) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            Navigator.of(context, rootNavigator: true).pop();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              onSourceSelected(source);
+            });
+          },
+          onSubSourceSelected: onSubSourceSelected != null
+              ? (sub) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  Navigator.of(context, rootNavigator: true).pop();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    onSubSourceSelected!(sub);
+                  });
+                }
+              : null,
+        ),
       ),
       context,
       showDragHandle: true,
@@ -102,86 +115,110 @@ class SourceSelectorWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => _openSheet(context),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainer.withOpacity(0.35),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.outline.withOpacity(0.15)),
-          ),
-          child: Row(
-            children: [
-              _SourceIcon(source: hasSource ? activeSource! : null),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnymeXText(
-                      hasSource
-                          ? (activeSource!.name?.toUpperCase() ??
-                              'UNKNOWN SOURCE')
-                          : 'SELECT SOURCE',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontFamily: 'Linotte',
-                        fontWeight: FontWeight.w600,
-                        color: hasSource
-                            ? colors.onSurface
-                            : colors.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    if (hasSource)
-                      Row(
-                        children: [
-                          _TypeBadge(source: activeSource!),
-                          const SizedBox(width: 5),
-                          if ((activeSource!.lang ?? '').isNotEmpty)
-                            _LangBadge(lang: activeSource!.lang!),
-                          if (activeSource!.isNsfw == true) ...[
-                            const SizedBox(width: 5),
-                            const _NsfwBadge(),
-                          ],
-                        ],
-                      )
-                    else
-                      AnymeXText(
-                        'Tap to choose a source'.tr,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontFamily: 'Linotte',
-                          color: colors.onSurfaceVariant.withOpacity(0.55),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color:
+              colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+              color: colors.outline.opaque(0.12, iReallyMeanIt: true)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _openSheet(context),
+              child: Row(
+                children: [
+                  _SourceIcon(source: hasSource ? activeSource! : null),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnymeXText(
+                          hasSource
+                              ? (activeSource!.name?.toUpperCase() ??
+                                  'UNKNOWN SOURCE')
+                              : 'SELECT SOURCE',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Linotte',
+                            fontWeight: FontWeight.w700,
+                            color: hasSource
+                                ? colors.onSurface
+                                : colors.onSurfaceVariant,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 4),
+                        if (hasSource)
+                          Row(
+                            children: [
+                              _TypeBadge(source: activeSource!),
+                              const SizedBox(width: 5),
+                              if ((activeSource!.lang ?? '').isNotEmpty)
+                                _LangBadge(lang: activeSource!.lang!),
+                              if (activeSource!.isNsfw == true) ...[
+                                const SizedBox(width: 5),
+                                const _NsfwBadge(),
+                              ],
+                            ],
+                          )
+                        else
+                          AnymeXText(
+                            'Tap to choose a source',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontFamily: 'Linotte',
+                              color: colors.onSurfaceVariant
+                                  .opaque(0.55, iReallyMeanIt: true),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (hasSource) ...[
+                    Icon(
+                      Icons.unfold_more_rounded,
+                      size: 20,
+                      color: colors.onSurfaceVariant
+                          .opaque(0.7, iReallyMeanIt: true),
+                    ),
+                    if (onCloudflareBypass != null) ...[
+                      const SizedBox(width: 4),
+                      _ActionIconButton(
+                        icon: Icons.shield_outlined,
+                        onTap: onCloudflareBypass!,
                       ),
-                  ],
-                ),
+                    ],
+                    if (onPreferencesTap != null) ...[
+                      const SizedBox(width: 4),
+                      _ActionIconButton(
+                        icon: Icons.tune_rounded,
+                        onTap: onPreferencesTap!,
+                      ),
+                    ],
+                  ] else
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 22,
+                      color: colors.onSurfaceVariant
+                          .opaque(0.55, iReallyMeanIt: true),
+                    ),
+                ],
               ),
-              if (hasSource) ...[
-                if (onCloudflareBypass != null)
-                  _ActionIconButton(
-                    icon: Icons.security_rounded,
-                    onTap: onCloudflareBypass!,
-                  ),
-                if (onPreferencesTap != null)
-                  _ActionIconButton(
-                    icon: Icons.settings_outlined,
-                    onTap: onPreferencesTap!,
-                  ),
-              ],
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 22,
-                color: colors.onSurfaceVariant.withOpacity(0.55),
-              ),
+            ),
+            if (bottomWidget != null) ...[
+              const SizedBox(height: 12),
+              bottomWidget!,
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -200,7 +237,7 @@ class _SourceIcon extends StatelessWidget {
         height: 36,
         width: 36,
         decoration: BoxDecoration(
-          color: colors.primaryContainer.withOpacity(0.5),
+          color: colors.primaryContainer.opaque(0.5, iReallyMeanIt: true),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(Icons.extension_rounded, size: 20, color: colors.primary),
@@ -246,7 +283,7 @@ class _TypeBadge extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return _Badge(
       label: sourceTypeName(source),
-      bgColor: colors.primaryContainer.withOpacity(0.55),
+      bgColor: colors.primaryContainer.opaque(0.55, iReallyMeanIt: true),
       textColor: colors.primary,
     );
   }
@@ -261,7 +298,7 @@ class _LangBadge extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return _Badge(
       label: lang.toUpperCase(),
-      bgColor: colors.secondaryContainer.withOpacity(0.55),
+      bgColor: colors.secondaryContainer.opaque(0.55, iReallyMeanIt: true),
       textColor: colors.secondary,
     );
   }
@@ -272,10 +309,11 @@ class _NsfwBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return _Badge(
-      label: 'NSFW'.tr,
-      bgColor: Colors.red.withOpacity(0.14),
-      textColor: Colors.red,
+      label: '18+',
+      bgColor: colors.error.opaque(0.14, iReallyMeanIt: true),
+      textColor: colors.error,
     );
   }
 }
@@ -329,7 +367,9 @@ class _ActionIconButton extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(6),
-            child: Icon(icon, size: 18, color: colors.primary.withOpacity(0.8)),
+            child: Icon(icon,
+                size: 18,
+                color: colors.primary.opaque(0.8, iReallyMeanIt: true)),
           ),
         ),
       ),
@@ -348,16 +388,17 @@ class _EmptySourceState extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: colors.surfaceContainer.withOpacity(0.3),
+        color: colors.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outline.withOpacity(0.15)),
+        border:
+            Border.all(color: colors.outline.opaque(0.15, iReallyMeanIt: true)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.extension_off_rounded,
             size: 22,
-            color: colors.onSurfaceVariant.withOpacity(0.45),
+            color: colors.onSurfaceVariant.opaque(0.45, iReallyMeanIt: true),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -383,7 +424,8 @@ class _EmptySourceState extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'Linotte',
-                    color: colors.onSurfaceVariant.withOpacity(0.55),
+                    color: colors.onSurfaceVariant
+                        .opaque(0.55, iReallyMeanIt: true),
                   ),
                 ),
               ],
@@ -448,6 +490,60 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
     }).toList();
   }
 
+  String? _getManagerIcon(String type) {
+    if (type.toLowerCase() == 'all') return null;
+    final lower = type.toLowerCase();
+    if (Get.isRegistered<ExtensionManager>()) {
+      final em = Get.find<ExtensionManager>();
+      final manager = em.managers.firstWhereOrNull(
+        (m) =>
+            m.name.toLowerCase() == lower ||
+            m.id.toLowerCase() == lower ||
+            m.name.toLowerCase().contains(lower) ||
+            lower.contains(m.name.toLowerCase()),
+      );
+      if (manager != null && manager.icon.isNotEmpty) {
+        return manager.icon;
+      }
+    }
+    final match = widget.installedSources.firstWhereOrNull((s) {
+      if (s.managerId != null && s.managerId!.isNotEmpty) {
+        if (s.managerId!.toLowerCase() == lower) return true;
+      }
+      return sourceTypeName(s).toLowerCase() == lower;
+    });
+    if (match != null && match.managerIcon.isNotEmpty) {
+      return match.managerIcon;
+    }
+    return null;
+  }
+
+  Widget? _buildManagerAvatar(
+      String type, bool isSelected, BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final iconUrl = _getManagerIcon(type);
+    if (iconUrl != null && iconUrl.isNotEmpty) {
+      return AnymeXImage(
+        imageUrl: iconUrl,
+        width: 16,
+        height: 16,
+        radius: 4,
+      );
+    }
+    if (type.toLowerCase() == 'all') {
+      return Icon(
+        Icons.apps_rounded,
+        size: 16,
+        color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+      );
+    }
+    return Icon(
+      Icons.extension_rounded,
+      size: 16,
+      color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+    );
+  }
+
   bool get _hasLangs {
     final src = widget.activeSource;
     if (src is! ASource) return false;
@@ -459,7 +555,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
     final colors = Theme.of(context).colorScheme;
     final tabs = _tabs();
     final filtered = _filtered(tabs);
-    final showTabs = tabs.length > 2;
+    final showTabs = tabs.length > 1;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -471,7 +567,8 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             children: [
               Icon(Icons.extension_rounded, size: 20, color: colors.primary),
               const SizedBox(width: 10),
-              AnymeXText(widget.label ??
+              AnymeXText(
+                widget.label ??
                     (widget.isManga
                         ? 'Select Manga Source'
                         : 'Select Anime Source'),
@@ -482,7 +579,8 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: colors.primaryContainer.withOpacity(0.4),
+                  color:
+                      colors.primaryContainer.opaque(0.4, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: AnymeXText(
@@ -511,12 +609,12 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             hintStyle: TextStyle(
               fontSize: 14,
               fontFamily: 'Linotte',
-              color: colors.onSurfaceVariant.withOpacity(0.5),
+              color: colors.onSurfaceVariant.opaque(0.5, iReallyMeanIt: true),
             ),
             prefixIcon: Icon(
               Icons.search_rounded,
               size: 20,
-              color: colors.onSurfaceVariant.withOpacity(0.5),
+              color: colors.onSurfaceVariant.opaque(0.5, iReallyMeanIt: true),
             ),
             suffixIcon: _query.isNotEmpty
                 ? IconButton(
@@ -532,7 +630,8 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                   )
                 : null,
             filled: true,
-            fillColor: colors.surfaceContainerHighest.withOpacity(0.4),
+            fillColor:
+                colors.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 10,
@@ -548,7 +647,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
-                color: colors.primary.withOpacity(0.4),
+                color: colors.primary.opaque(0.4, iReallyMeanIt: true),
                 width: 1.5,
               ),
             ),
@@ -556,16 +655,21 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
         ),
         if (showTabs) ...[
           const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AnymeXTabBar(
-              selectTabs: tabs,
-              selectedIndex: _tabIndex,
-              height: 40,
-              onTabSelected: (i) => setState(() {
-                _tabIndex = i;
-              }),
-              minTabWidth: 80,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: AnymeXPills(
+              items: tabs
+                  .map((tab) => PillItem(
+                        label: tab,
+                        isSelected: _tabIndex == tabs.indexOf(tab),
+                        iconUrl: _getManagerIcon(tab),
+                        onTap: () {
+                          setState(() {
+                            _tabIndex = tabs.indexOf(tab);
+                          });
+                        },
+                      ))
+                  .toList(),
             ),
           ),
         ],
@@ -583,7 +687,8 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                       Icon(
                         Icons.search_off_rounded,
                         size: 38,
-                        color: colors.onSurfaceVariant.withOpacity(0.35),
+                        color: colors.onSurfaceVariant
+                            .opaque(0.35, iReallyMeanIt: true),
                       ),
                       const SizedBox(height: 8),
                       AnymeXText(
@@ -591,7 +696,8 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Linotte',
-                          color: colors.onSurfaceVariant.withOpacity(0.55),
+                          color: colors.onSurfaceVariant
+                              .opaque(0.55, iReallyMeanIt: true),
                         ),
                       ),
                     ],
@@ -615,7 +721,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
         ),
         if (_hasLangs && widget.onSubSourceSelected != null) ...[
           Divider(
-            color: colors.outline.withOpacity(0.1),
+            color: colors.outline.opaque(0.1, iReallyMeanIt: true),
             height: 1,
             indent: 16,
             endIndent: 16,
@@ -659,13 +765,14 @@ class _SourceTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: isSelected
-                ? colors.primary.withOpacity(0.10)
-                : colors.surfaceContainerHighest.withOpacity(0.3),
+                ? colors.primary.opaque(0.10, iReallyMeanIt: true)
+                : colors.surfaceContainerHighest
+                    .opaque(0.3, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
-                  ? colors.primary.withOpacity(0.35)
-                  : Colors.transparent,
+                  ? colors.primary.opaque(0.35, iReallyMeanIt: true)
+                  : colors.surface.opaque(0, iReallyMeanIt: true),
               width: 1.5,
             ),
           ),
@@ -747,7 +854,8 @@ class _SourceTile extends StatelessWidget {
                         Icons.radio_button_unchecked_rounded,
                         key: const ValueKey('emp'),
                         size: 22,
-                        color: colors.onSurfaceVariant.withOpacity(0.28),
+                        color: colors.onSurfaceVariant
+                            .opaque(0.28, iReallyMeanIt: true),
                       ),
               ),
             ],
@@ -783,7 +891,7 @@ class _LangSubPicker extends StatelessWidget {
               Icon(
                 Icons.language_rounded,
                 size: 15,
-                color: colors.onSurfaceVariant.withOpacity(0.7),
+                color: colors.onSurfaceVariant.opaque(0.7, iReallyMeanIt: true),
               ),
               const SizedBox(width: 6),
               AnymeXText(
@@ -792,7 +900,8 @@ class _LangSubPicker extends StatelessWidget {
                   fontSize: 12,
                   fontFamily: 'Linotte',
                   fontWeight: FontWeight.w600,
-                  color: colors.onSurfaceVariant.withOpacity(0.7),
+                  color:
+                      colors.onSurfaceVariant.opaque(0.7, iReallyMeanIt: true),
                 ),
               ),
             ],
@@ -818,12 +927,13 @@ class _LangSubPicker extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isActive
                           ? colors.primary
-                          : colors.surfaceContainerHighest.withOpacity(0.5),
+                          : colors.surfaceContainerHighest
+                              .opaque(0.5, iReallyMeanIt: true),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isActive
                             ? colors.primary
-                            : colors.outline.withOpacity(0.2),
+                            : colors.outline.opaque(0.2, iReallyMeanIt: true),
                       ),
                     ),
                     child: AnymeXText(

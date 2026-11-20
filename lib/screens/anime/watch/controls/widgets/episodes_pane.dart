@@ -1,10 +1,10 @@
+import 'dart:io' show Platform;
 import 'dart:ui';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/screens/anime/widgets/episode/episode_style_registry.dart';
 import 'package:anymex/utils/string_extensions.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -99,6 +99,10 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final panelWidth = size.width * (isDesktop ? 0.4 : 0.6);
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -111,7 +115,8 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  color: Colors.black.opaque(_overlayAnimation.value),
+                  color: context.theme.colorScheme.scrim
+                      .withValues(alpha: _overlayAnimation.value),
                 ),
               ),
               Positioned(
@@ -123,48 +128,49 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                   child: FadeTransition(
                     opacity: _fadeAnimation,
                     child: Container(
-                      width: context.width *
-                          getResponsiveSize(context,
-                              mobileSize: 0.6, desktopSize: 0.4),
+                      width: panelWidth,
                       height: double.infinity,
                       decoration: BoxDecoration(
                         color: widget.backgroundColor ??
-                            context.theme.colorScheme.surfaceContainer.withOpacity(0.75),
+                            context.theme.colorScheme.surfaceContainer
+                                .withValues(alpha: 0.82),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           bottomLeft: Radius.circular(24),
                         ),
                         border: Border(
                           left: BorderSide(
-                            color: context.theme.colorScheme.onSurface.withOpacity(0.08),
+                            color: context.theme.colorScheme.outlineVariant
+                                .withValues(alpha: 0.2),
                             width: 1.0,
                           ),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                widget.shadowColor ?? Colors.black.opaque(0.3),
+                            color: widget.shadowColor ??
+                                context.theme.colorScheme.shadow
+                                    .withValues(alpha: 0.3),
                             blurRadius: 20,
                             offset: const Offset(-4, 0),
                           ),
                           BoxShadow(
-                            color:
-                                context.theme.colorScheme.primary.opaque(0.1),
+                            color: context.theme.colorScheme.primary
+                                .withValues(alpha: 0.1),
                             blurRadius: 30,
                             offset: const Offset(-8, 0),
                           ),
                         ],
                       ),
-                       child: ClipRRect(
+                      child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           bottomLeft: Radius.circular(24),
                         ),
-                        child: _controller.value > 0.95
+                        child: _controller.status == AnimationStatus.completed
                             ? BackdropFilter(
                                 filter: ImageFilter.blur(
-                                  sigmaX: 8.0 * ((_controller.value - 0.95) / 0.05),
-                                  sigmaY: 8.0 * ((_controller.value - 0.95) / 0.05),
+                                  sigmaX: 16.0,
+                                  sigmaY: 16.0,
                                 ),
                                 child: widget.child,
                               )

@@ -433,90 +433,81 @@ class _ListEditorModalState extends State<ListEditorModal> {
         ? (widget.isManga ? 'Reading' : 'Watching')
         : statusLabel;
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 16,
-        bottom: 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context),
-          const SizedBox(height: 20),
-          AnymeXSectionBuilder(
-            margin: EdgeInsets.zero,
-            children: [
-              AnymeXTile(
-                icon: Icons.info_outline_rounded,
-                title: 'Status'.tr,
-                subtitle: displayStatus,
-                onTap: () => _showStatusSelectionDialog(context),
-              ),
-              if (widget.media.serviceType == ServicesType.simkl &&
-                  !widget.isManga) ...[
-                if (_isLoadingSeasons)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else
-                  _buildSeasonRow(context),
-              ],
-              _buildProgressRow(context),
-              AnymeXTile.slider(
-                icon: Icons.star_rounded,
-                title: 'Score'.tr,
-                subtitle: _getScoreDisplayLabel(_localScore),
-                value: _localScore,
-                min: _minScore,
-                max: _maxScore,
-                divisions: _divisions,
-                onChanged: (v) => setState(() => _localScore = v),
-              ),
-              AnymeXTile(
-                icon: Icons.calendar_today_rounded,
-                title: 'Start Date'.tr,
-                subtitle: _startedAt != null ? _formatDate(_startedAt!) : 'Not set',
-                onTap: () => _pickDate(context, isStart: true),
-                trailing: _startedAt != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 18),
-                        onPressed: () => setState(() => _startedAt = null),
-                      )
-                    : null,
-                showChevron: _startedAt == null,
-              ),
-              AnymeXTile(
-                icon: Icons.event_available_rounded,
-                title: 'Finish Date'.tr,
-                subtitle: _completedAt != null ? _formatDate(_completedAt!) : 'Not set',
-                onTap: () => _pickDate(context, isStart: false),
-                trailing: _completedAt != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 18),
-                        onPressed: () => setState(() => _completedAt = null),
-                      )
-                    : null,
-                showChevron: _completedAt == null,
-              ),
-              if (widget.media.serviceType.isAL)
-                AnymeXTile.toggle(
-                  icon: Icons.lock_rounded,
-                  title: 'Private Entry'.tr,
-                  subtitle: 'Hidden from your public profile'.tr,
-                  value: _isPrivate,
-                  onChanged: (val) => setState(() => _isPrivate = val),
-                ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(context),
+        const SizedBox(height: 14),
+        AnymeXSectionBuilder(
+          margin: EdgeInsets.zero,
+          children: [
+            AnymeXTile(
+              icon: Icons.info_outline_rounded,
+              title: 'Status'.tr,
+              subtitle: displayStatus,
+              onTap: () => _showStatusSelectionDialog(context),
+            ),
+            if (widget.media.serviceType == ServicesType.simkl &&
+                !widget.isManga) ...[
+              if (_isLoadingSeasons)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                _buildSeasonRow(context),
             ],
-          ),
-          const SizedBox(height: 24),
-          _buildActionButtons(context),
-        ],
-      ),
+            _buildProgressRow(context),
+            AnymeXTile.slider(
+              icon: Icons.star_rounded,
+              title: 'Score',
+              subtitle: _getScoreDisplayLabel(_localScore),
+              value: _localScore,
+              min: _minScore,
+              max: _maxScore,
+              divisions: _divisions,
+              onChanged: (v) => setState(() => _localScore = v),
+            ),
+            AnymeXTile(
+              icon: Icons.calendar_today_rounded,
+              title: 'Start Date',
+              subtitle: _startedAt != null ? _formatDate(_startedAt!) : 'Not set',
+              onTap: () => _pickDate(context, isStart: true),
+              trailing: _startedAt != null
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18),
+                      onPressed: () => setState(() => _startedAt = null),
+                    )
+                  : null,
+              showChevron: _startedAt == null,
+            ),
+            AnymeXTile(
+              icon: Icons.event_available_rounded,
+              title: 'Finish Date',
+              subtitle: _completedAt != null ? _formatDate(_completedAt!) : 'Not set',
+              onTap: () => _pickDate(context, isStart: false),
+              trailing: _completedAt != null
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18),
+                      onPressed: () => setState(() => _completedAt = null),
+                    )
+                  : null,
+              showChevron: _completedAt == null,
+            ),
+            if (widget.media.serviceType.isAL)
+              AnymeXTile.toggle(
+                icon: Icons.lock_rounded,
+                title: 'Private Entry',
+                subtitle: 'Hidden from your public profile',
+                value: _isPrivate,
+                onChanged: (val) => setState(() => _isPrivate = val),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildActionButtons(context),
+      ],
     );
   }
 
@@ -576,53 +567,48 @@ class _ListEditorModalState extends State<ListEditorModal> {
         ? validSeasons.reduce((a, b) => a > b ? a : b)
         : null;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AnymeXText(
-                'Season'.tr,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-              ),
-              AnymeXText(
-                maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: colors.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _buildStepButton(
-                context,
-                icon: Icons.remove_rounded,
-                onTap:
-                    _localSeason > 1 ? () => _setSeason(_localSeason - 1) : null,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildSeasonInput(context),
-              ),
-              const SizedBox(width: 10),
-              _buildStepButton(
-                context,
-                icon: Icons.add_rounded,
-                onTap: (maxSeason == null || _localSeason < maxSeason)
-                    ? () => _setSeason(_localSeason + 1)
-                    : null,
-              ),
-            ],
-          ),
-        ],
+    return AnymeXTile(
+      icon: Icons.layers_rounded,
+      title: 'Season'.tr,
+      subtitle: maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
+      showChevron: false,
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: colors.primary.opaque(0.12, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: AnymeXText(
+          '$_localSeason',
+          size: 12,
+          variant: TextVariant.semiBold,
+          color: colors.primary,
+        ),
+      ),
+      customContent: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(
+          children: [
+            _buildStepButton(
+              context,
+              icon: Icons.remove_rounded,
+              onTap:
+                  _localSeason > 1 ? () => _setSeason(_localSeason - 1) : null,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildSeasonInput(context),
+            ),
+            const SizedBox(width: 10),
+            _buildStepButton(
+              context,
+              icon: Icons.add_rounded,
+              onTap: (maxSeason == null || _localSeason < maxSeason)
+                  ? () => _setSeason(_localSeason + 1)
+                  : null,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -675,81 +661,73 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final pct = max != null ? (_localProgress / max).clamp(0.0, 1.0) : null;
     final overall = _overallTotal;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AnymeXText(
-                'Progress'.tr,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-              ),
-              RichText(
-                text: TextSpan(
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: colors.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                  children: [
-                    TextSpan(text: '$_localProgress / $_displayTotal'),
-                    if (overall != null && _simklSeasons.isNotEmpty)
-                      TextSpan(
-                        text: '  ($overall total)',
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 11,
-                        ),
-                      ),
-                  ],
+    final extraTotal =
+        (overall != null && _simklSeasons.isNotEmpty) ? '  ($overall total)' : '';
+    final subtitleText = '$_localProgress / $_displayTotal$extraTotal';
+
+    return AnymeXTile(
+      icon: widget.isManga
+          ? Icons.menu_book_rounded
+          : Icons.play_circle_outline_rounded,
+      title: 'Progress'.tr,
+      subtitle: subtitleText,
+      showChevron: false,
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: colors.primary.opaque(0.12, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: AnymeXText(
+          '$_localProgress',
+          size: 12,
+          variant: TextVariant.semiBold,
+          color: colors.primary,
+        ),
+      ),
+      customContent: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                _buildStepButton(
+                  context,
+                  icon: Icons.remove_rounded,
+                  onTap: _localProgress > 0
+                      ? () => _setProgress(_localProgress - 1)
+                      : null,
                 ),
-              ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: pct != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: LinearProgressIndicator(
+                            value: pct,
+                            minHeight: 4,
+                            backgroundColor: colors.surfaceContainerHighest,
+                            valueColor: AlwaysStoppedAnimation(colors.primary),
+                          ),
+                        )
+                      : _buildProgressInput(context),
+                ),
+                const SizedBox(width: 10),
+                _buildStepButton(
+                  context,
+                  icon: Icons.add_rounded,
+                  onTap: (max == null || _localProgress < max)
+                      ? () => _setProgress(_localProgress + 1)
+                      : null,
+                ),
+              ],
+            ),
+            if (pct != null) ...[
+              const SizedBox(height: 8),
+              _buildProgressInput(context),
             ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _buildStepButton(
-                context,
-                icon: Icons.remove_rounded,
-                onTap: _localProgress > 0
-                    ? () => _setProgress(_localProgress - 1)
-                    : null,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: pct != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(3),
-                        child: LinearProgressIndicator(
-                          value: pct,
-                          minHeight: 4,
-                          backgroundColor: colors.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation(colors.primary),
-                        ),
-                      )
-                    : _buildProgressInput(context),
-              ),
-              const SizedBox(width: 10),
-              _buildStepButton(
-                context,
-                icon: Icons.add_rounded,
-                onTap: (max == null || _localProgress < max)
-                    ? () => _setProgress(_localProgress + 1)
-                    : null,
-              ),
-            ],
-          ),
-          if (pct != null) ...[
-            const SizedBox(height: 8),
-            _buildProgressInput(context),
           ],
-        ],
+        ),
       ),
     );
   }

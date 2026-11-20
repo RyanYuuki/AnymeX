@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_border.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
@@ -18,6 +19,8 @@ class AnymeXContainer extends StatelessWidget {
   final Clip clipBehavior;
   final bool enableGlow;
   final BoxShape shape;
+  final bool useIosBorder;
+  final double iosBorderWidth;
 
   const AnymeXContainer({
     super.key,
@@ -36,6 +39,8 @@ class AnymeXContainer extends StatelessWidget {
     this.clipBehavior = Clip.none,
     this.enableGlow = false,
     this.shape = BoxShape.rectangle,
+    this.useIosBorder = false,
+    this.iosBorderWidth = 0.75,
   });
 
   @override
@@ -46,12 +51,17 @@ class AnymeXContainer extends StatelessWidget {
             ? BorderRadius.circular(radius!.multiplyRadius())
             : borderRadius);
 
+    final BoxBorder? effectiveBorder = border ??
+        (useIosBorder
+            ? AnymeXBorder.boxBorder(context, width: iosBorderWidth)
+            : null);
+
     final BoxDecoration effectiveDecoration = decoration ??
         BoxDecoration(
           color: color,
           shape: shape,
           borderRadius: shape == BoxShape.circle ? null : effectiveRadius,
-          border: border,
+          border: effectiveBorder,
           boxShadow: enableGlow
               ? [
                   BoxShadow(

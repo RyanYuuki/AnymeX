@@ -105,7 +105,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
               ),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'Cache & Storage'.tr,
+                title: 'Cookies & Storage',
                 children: [
                   AnymeXTile(
                     icon: Icons.cookie_outlined,

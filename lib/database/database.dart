@@ -62,7 +62,8 @@ class Database {
           isar = _openIsar(dir);
         }
       } catch (e2) {
-        Logger.e('Lock recovery failed: $e2. Creating backup before recovery...');
+        Logger.e(
+            'Lock recovery failed: $e2. Creating backup before recovery...');
         try {
           dir = await getDatabaseDirectory();
           final dbFile = File(path.join(dir!.path, 'AnymeX.isar'));
@@ -109,8 +110,8 @@ class Database {
       AnymeXExtensionBridge.onLog = (log, show) {
         if (show) {
           snackBar(log);
-          print(log);
         }
+        print(log);
       };
       AnymeXRuntimeBridge.onSolveCloudflare = (url) async {
         if (Get.context == null) return false;
@@ -207,8 +208,9 @@ class Database {
       if (await legacySupport.exists() && !await newSupport.exists()) {
         // Collect the listing up front: _moveAcross deletes as it goes, and
         // mutating the tree while the walk is still streaming skips entries.
-        final entities =
-            await legacySupport.list(recursive: true, followLinks: false).toList();
+        final entities = await legacySupport
+            .list(recursive: true, followLinks: false)
+            .toList();
         for (final entity in entities) {
           if (entity is! File) continue;
           final relative = path.relative(entity.path, from: legacySupport.path);

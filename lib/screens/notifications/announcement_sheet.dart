@@ -8,18 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-/// Dedicated bottom sheet for announcements.
-///
-/// Shows ALL announcement information: title, category, pinned/featured
-/// badges, author, publish date, view count and the full markdown content.
-/// Opens from an announcement push notification tap or a notification-list
-/// tap — never routed through the comment/media navigation flow.
 class AnnouncementSheet extends StatefulWidget {
   final String announcementId;
-
-  /// Used when the announcement id is unavailable (e.g. legacy pushes sent
-  /// before the backend attached announcement_id): the sheet still opens and
-  /// shows whatever the push itself carried.
   final String? fallbackTitle;
   final String? fallbackBody;
 
@@ -40,11 +30,25 @@ class AnnouncementSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => AnnouncementSheet(
-        announcementId: announcementId,
-        fallbackTitle: fallbackTitle,
-        fallbackBody: fallbackBody,
+      enableDrag: true,
+      showDragHandle: true,
+      sheetAnimationStyle: const AnimationStyle(
+        duration: Duration(milliseconds: 350),
+        reverseDuration: Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        child: AnnouncementSheet(
+          announcementId: announcementId,
+          fallbackTitle: fallbackTitle,
+          fallbackBody: fallbackBody,
+        ),
       ),
     );
   }

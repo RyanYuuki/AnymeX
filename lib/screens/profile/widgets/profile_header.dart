@@ -1,8 +1,7 @@
-import 'dart:ui';
+import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +81,7 @@ class DesktopProfileHeader extends StatelessWidget {
         : user.cover;
     final hasBanner =
         effectiveCover != null && effectiveCover.trim().isNotEmpty;
-    final imageUrl = hasBanner ? effectiveCover : '';
+    final imageUrl = hasBanner ? effectiveCover : (user.avatar ?? '');
     final name = user.name ?? 'Guest';
 
     final donatorTier =
@@ -100,8 +99,12 @@ class DesktopProfileHeader extends StatelessWidget {
       desktopValue: true,
     );
 
+    final double topPad = MediaQuery.paddingOf(context).top;
+    final double desktopTopPad = Platform.isWindows ? 40.0 : 0.0;
+    final double headerHeight = 330.0 + desktopTopPad;
+
     return SizedBox(
-      height: 330,
+      height: headerHeight,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -109,7 +112,7 @@ class DesktopProfileHeader extends StatelessWidget {
             top: 0,
             left: 0,
             right: 0,
-            height: 330,
+            height: headerHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.zero,
               child: Stack(
@@ -117,48 +120,19 @@ class DesktopProfileHeader extends StatelessWidget {
                 children: [
                   if (imageUrl.isNotEmpty)
                     GestureDetector(
+                      behavior: HitTestBehavior.translucent,
                       onTap: () {
-                        bannerController.stop();
-                        Navigator.of(context, rootNavigator: true)
-                            .push(
+                        Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
                             builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
                           ),
-                        )
-                            .then((_) {
-                          bannerController.repeat(reverse: true);
-                        });
+                        );
                       },
-                      child: Hero(
-                        tag: 'profile_banner_$name',
-                        child: AnymeXImage(
-                          imageUrl: imageUrl,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                        ),
-                      ),
-                    )
-                  else
-                    Container(
-                      color: context.theme.colorScheme.surfaceContainerHighest,
+                      child: const SizedBox.expand(),
                     ),
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            context.theme.colorScheme.surface.withOpacity(0.3),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                   Obx(() {
                     final commentum = Get.isRegistered<CommentumService>()
                         ? Get.find<CommentumService>()
@@ -185,29 +159,24 @@ class DesktopProfileHeader extends StatelessWidget {
                       ),
                     );
                   }),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 10),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.4),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: topPad + desktopTopPad + 12,
+            left: isDesktop ? 40.0 : 20.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ),
           ),
@@ -655,18 +624,26 @@ class MobileProfileHeaderSliver extends StatelessWidget {
       }
     }
 
+    final double desktopTopPad = Platform.isWindows ? 40.0 : 0.0;
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final bannerHeight = (screenHeight * 0.36).clamp(250.0, 390.0);
+    final bannerHeight =
+        (screenHeight * 0.36).clamp(250.0, 390.0) + desktopTopPad;
 
     return SliverAppBar(
       expandedHeight: bannerHeight,
+      toolbarHeight: kToolbarHeight + desktopTopPad,
       floating: false,
       pinned: true,
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: context.theme.colorScheme.surface,
+      backgroundColor: Colors.transparent,
       leading: Container(
-        margin: const EdgeInsets.all(8),
+        margin: EdgeInsets.only(
+          top: 8 + desktopTopPad,
+          bottom: 8,
+          left: 8,
+          right: 8,
+        ),
         decoration: BoxDecoration(
           color: context.theme.colorScheme.surface.withOpacity(0.5),
           shape: BoxShape.circle,
@@ -679,7 +656,12 @@ class MobileProfileHeaderSliver extends StatelessWidget {
       actions: [
         if (commentum != null)
           Container(
-            margin: const EdgeInsets.all(8),
+            margin: EdgeInsets.only(
+              top: 8 + desktopTopPad,
+              bottom: 8,
+              left: 4,
+              right: 8,
+            ),
             decoration: BoxDecoration(
               color: context.theme.colorScheme.surface.withOpacity(0.5),
               shape: BoxShape.circle,
@@ -691,7 +673,12 @@ class MobileProfileHeaderSliver extends StatelessWidget {
             ),
           ),
         Container(
-          margin: const EdgeInsets.all(8),
+          margin: EdgeInsets.only(
+            top: 8 + desktopTopPad,
+            bottom: 8,
+            left: 4,
+            right: 8,
+          ),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surface.withOpacity(0.5),
             shape: BoxShape.circle,
@@ -703,7 +690,12 @@ class MobileProfileHeaderSliver extends StatelessWidget {
           ),
         ),
         Container(
-          margin: const EdgeInsets.all(8),
+          margin: EdgeInsets.only(
+            top: 8 + desktopTopPad,
+            bottom: 8,
+            left: 4,
+            right: 8,
+          ),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surface.withOpacity(0.5),
             shape: BoxShape.circle,
@@ -838,69 +830,21 @@ class MobileProfileHeaderSliver extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            AnimatedBuilder(
-              animation: bannerAnim,
-              builder: (context, child) {
-                return SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (imageUrl.isNotEmpty) {
-                        bannerController.stop();
-                        Navigator.of(context, rootNavigator: true)
-                            .push(
-                          MaterialPageRoute(
-                            builder: (_) => AnymeXFullscreenImageViewer(
-                              imageUrl: imageUrl,
-                              tag: 'profile_banner_$name',
-                            ),
-                          ),
-                        )
-                            .then((_) {
-                          bannerController.repeat(reverse: true);
-                        });
-                      }
-                    },
-                    child: Hero(
-                      tag: 'profile_banner_$name',
-                      child: AnymeXImage(
+            if (imageUrl.isNotEmpty)
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                      builder: (_) => AnymeXFullscreenImageViewer(
                         imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        alignment:
-                            hasBanner ? bannerAnim.value : Alignment.center,
-                        radius: 0,
+                        tag: 'profile_banner_$name',
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-            if (!hasBanner)
-              IgnorePointer(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Container(
-                    color: context.theme.colorScheme.surface.withOpacity(0.2),
-                  ),
-                ),
+                  );
+                },
+                child: const SizedBox.expand(),
               ),
-            IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      context.theme.colorScheme.surface.withOpacity(0.8),
-                      context.theme.colorScheme.surface,
-                    ],
-                    stops: const [0.0, 0.85, 1.0],
-                  ),
-                ),
-              ),
-            ),
             Obx(() {
               final effectUrl = commentum?.currentUserProfileEffect.value;
               final renderEffect =

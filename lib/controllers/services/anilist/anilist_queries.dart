@@ -78,45 +78,6 @@ const detailsPrimaryQuery = '''
             }
           }
         }
-        relations {
-          edges {
-            relationType
-            node {
-              id
-              title {
-          userPreferred
-                romaji
-                english
-              }
-              coverImage {
-                large
-              }
-              bannerImage
-              type
-              status
-              averageScore
-            }
-          }
-        }
-        recommendations {
-          edges {
-            node {
-              mediaRecommendation {
-                id
-                title {
-          userPreferred
-                  romaji
-                  english
-                }
-                coverImage {
-                  large
-                }
-                type
-                averageScore
-              }
-            }
-          }
-        }
         nextAiringEpisode {
           airingAt
           timeUntilAiring
@@ -126,6 +87,8 @@ const detailsPrimaryQuery = '''
           rank
           type
           year
+          allTime
+          context
         }
       }
     }
@@ -154,6 +117,47 @@ const detailsSecondaryQuery = '''
         externalLinks {
           url
           site
+        }
+        relations {
+          edges {
+            relationType
+            node {
+              id
+              title {
+                userPreferred
+                romaji
+                english
+              }
+              coverImage {
+                large
+                color
+              }
+              bannerImage
+              type
+              status
+              averageScore
+            }
+          }
+        }
+        recommendations {
+          edges {
+            node {
+              mediaRecommendation {
+                id
+                title {
+                  userPreferred
+                  romaji
+                  english
+                }
+                coverImage {
+                  large
+                  color
+                }
+                type
+                averageScore
+              }
+            }
+          }
         }
       }
       Page(page: 1) {
@@ -209,6 +213,7 @@ const characterDetailsQuery = '''
             }
             coverImage {
               large
+              color
             }
             type
             format
@@ -310,6 +315,7 @@ const staffDetailsQuery = '''
             }
             coverImage {
               large
+              color
             }
             type
             format

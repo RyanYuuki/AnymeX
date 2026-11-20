@@ -24,6 +24,7 @@ class AnymeXDialog extends StatelessWidget {
   final dynamic Function()? cancelResultGetter;
   final String cancelText;
   final bool autoDismiss;
+  final double? width;
 
   const AnymeXDialog({
     super.key,
@@ -43,10 +44,11 @@ class AnymeXDialog extends StatelessWidget {
     this.cancelResultGetter,
     this.cancelText = 'Cancel',
     this.autoDismiss = true,
+    this.width,
   });
 
-  void show(BuildContext context) {
-    showDialog(
+  Future<void> show(BuildContext context) {
+    return showDialog(
       context: context,
       barrierDismissible: !forceAction,
       builder: (context) => AnymeXDialog(
@@ -65,6 +67,7 @@ class AnymeXDialog extends StatelessWidget {
         confirmResultGetter: confirmResultGetter,
         cancelResultGetter: cancelResultGetter,
         autoDismiss: autoDismiss,
+        width: width,
       ),
     );
   }
@@ -98,11 +101,12 @@ class AnymeXDialog extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {},
                 child: Container(
-                  width: getResponsiveValue(
-                    context,
-                    mobileValue: Get.width * 0.9,
-                    desktopValue: 440.0,
-                  ),
+                  width: width ??
+                      getResponsiveValue(
+                        context,
+                        mobileValue: Get.width * 0.9,
+                        desktopValue: 440.0,
+                      ),
                   constraints: BoxConstraints(
                     maxHeight: MediaQuery.sizeOf(context).height *
                         (isLandscape ? 0.95 : 0.85),

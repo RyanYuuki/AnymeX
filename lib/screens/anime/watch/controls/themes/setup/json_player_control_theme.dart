@@ -6,7 +6,6 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:flutter/material.dart';
@@ -1265,22 +1264,8 @@ class ThemeRenderer {
   }
 
   void _popSettingsSheet() {
-    controller.showSheetWithPause(
-      () => showModalBottomSheet(
-        context: Get.context ?? context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (sheetCtx) => Container(
-          height: MediaQuery.of(sheetCtx).size.height,
-          clipBehavior: Clip.antiAlias,
-          decoration: const BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: const SettingsPlayer(isModal: true),
-        ),
-      ),
-    );
+    controller.isSettingsPaneOpened.value =
+        !controller.isSettingsPaneOpened.value;
   }
 
   Color _resolveColor(String? raw, {required Color fallback}) {

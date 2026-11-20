@@ -1,8 +1,11 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
@@ -43,6 +46,31 @@ class ReusableCarousel extends StatefulWidget {
 }
 
 class _ReusableCarouselState extends State<ReusableCarousel> {
+  bool _canScroll = true;
+  bool _hasScrolled = false;
+  bool _isAtEnd = false;
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.axis != Axis.horizontal) return false;
+    final maxScroll = notification.metrics.maxScrollExtent;
+    final pixels = notification.metrics.pixels;
+
+    final canScroll = maxScroll > 0;
+    final hasScrolled = pixels > 12.0;
+    final isAtEnd = pixels >= maxScroll - 12.0;
+
+    if (canScroll != _canScroll ||
+        hasScrolled != _hasScrolled ||
+        isAtEnd != _isAtEnd) {
+      setState(() {
+        _canScroll = canScroll;
+        _hasScrolled = hasScrolled;
+        _isAtEnd = isAtEnd;
+      });
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isEmptyOrOffline) {
@@ -73,8 +101,8 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
   Widget _buildHeaderTitle() {
     return Padding(
-      padding: const EdgeInsets.only(left: 20.0),
-      child: AnymeXText(widget.title.tr,
+      padding: const EdgeInsets.only(left: 20.0, bottom: 2.0),
+      child: AnymeXText(widget.title,
         variant: TextVariant.semiBold,
         size: 17,
         color: context.colors.primary,
@@ -118,9 +146,10 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
           convertData(widget.data, variant: widget.variant);
       final enableAnimation = settingsController.enableAnimation;
       final cardStyleIndex = settingsController.cardStyle;
+      final _ = settingsController.customCardStyle;
 
-      return SizedBox(
-        height: getCardHeight(cardStyleIndex, getPlatform(context)),
+      final listView = NotificationListener<ScrollNotification>(
+        onNotification: _handleScrollNotification,
         child: ListView.builder(
           key: PageStorageKey<String>('carousel-${widget.title}'),
           itemCount: processedData.length,
@@ -130,6 +159,51 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
               _buildCarouselItem(processedData[index], enableAnimation, index),
         ),
       );
+
+      final shouldMask = _canScroll && processedData.length > 2;
+
+      final content = shouldMask
+          ? ShaderMask(
+              shaderCallback: (Rect bounds) {
+                final colors = <Color>[];
+                final stops = <double>[];
+
+                if (_hasScrolled) {
+                  colors.add(Colors.transparent);
+                  colors.add(Colors.black);
+                  stops.add(0.0);
+                  stops.add(0.06);
+                } else {
+                  colors.add(Colors.black);
+                  stops.add(0.0);
+                }
+
+                if (!_isAtEnd) {
+                  colors.add(Colors.black);
+                  colors.add(Colors.transparent);
+                  stops.add(0.92);
+                  stops.add(1.0);
+                } else {
+                  colors.add(Colors.black);
+                  stops.add(1.0);
+                }
+
+                return LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: colors,
+                  stops: stops,
+                ).createShader(bounds);
+              },
+              blendMode: BlendMode.dstIn,
+              child: listView,
+            )
+          : listView;
+
+      return SizedBox(
+        height: getCardHeight(cardStyleIndex, getPlatform(context)) + 15,
+        child: content,
+      );
     });
   }
 
@@ -137,7 +211,13 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final tag = '${widget.title}-${itemData.id}-$index';
 
     final card = enableAnimation
-        ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
+        ? SlideAndScaleAnimation(
+            initialScale: 0.0,
+            finalScale: 1.0,
+            initialOffset: const Offset(1.0, 0.0),
+            duration: Duration(milliseconds: getAnimationDuration()),
+            child: _buildCard(itemData, tag),
+          )
         : _buildCard(itemData, tag);
 
     final child = AnymexOnTap(
@@ -154,6 +234,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   void _showPeekPopup(BuildContext context, CarouselData itemData, String tag) {
+    if (widget.variant == DataVariant.staff) return;
     final ItemType mediaType = _determineItemType(itemData);
     final media = Media.fromCarouselData(itemData, mediaType);
     if (media.userStatus != null && media.userStatus!.isNotEmpty) return;
@@ -169,6 +250,23 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   void _navigateToDetailsPage(CarouselData itemData, String tag) {
+    if (widget.variant == DataVariant.staff) {
+      final staffItem = widget.data.firstWhereOrNull(
+            (element) =>
+                element is Staff && element.id?.toString() == itemData.id,
+          ) ??
+          Staff(
+            id: itemData.id,
+            name: itemData.title,
+            nativeName: itemData.romajiTitle,
+            image: itemData.poster,
+            role: itemData.extraData,
+          );
+      showCharacterStaffSheet(context,
+          item: staffItem, isCharacter: false, heroTag: tag);
+      return;
+    }
+
     final controller = Get.find<SourceController>();
     final ItemType mediaType = _determineItemType(itemData);
     final media = Media.fromCarouselData(itemData, mediaType);
@@ -201,6 +299,9 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   ItemType _determineItemType(CarouselData itemData) {
+    if (widget.variant == DataVariant.staff) {
+      return ItemType.anime;
+    }
     if (widget.variant == DataVariant.recommendation) {
       return widget.type;
     }

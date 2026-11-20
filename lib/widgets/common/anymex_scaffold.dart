@@ -7,7 +7,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:anymex/widgets/common/grain_texture.dart';
 
@@ -51,6 +50,8 @@ class AnymeXScaffold extends StatelessWidget {
   final String color;
   final bool disabled;
   final bool isTabScreen;
+  final bool extendBehindTitleBar;
+  final bool? isOled;
 
   final bool showHeader;
   final String? headerTitle;
@@ -93,6 +94,7 @@ class AnymeXScaffold extends StatelessWidget {
     this.color = '',
     this.disabled = false,
     this.isTabScreen = false,
+    this.extendBehindTitleBar = false,
     this.showHeader = false,
     this.headerTitle,
     this.headerSubtitle,
@@ -105,6 +107,7 @@ class AnymeXScaffold extends StatelessWidget {
     this.onHeaderSearchSubmitted,
     this.onHeaderSearchClear,
     this.headerSearchHint = 'Search...',
+    this.isOled,
   });
 
   static final Map<String, ColorScheme> _colorSchemeCache = {};
@@ -146,7 +149,7 @@ class AnymeXScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
     final isDesktop = Platform.isWindows;
-    final isOled = Provider.of<ThemeProvider>(context).isOled;
+    final isOled = this.isOled ?? Get.find<ThemeController>().isOled;
 
     final resolvedBody = showHeader
         ? _HeaderBodyShell(
@@ -189,7 +192,7 @@ class AnymeXScaffold extends StatelessWidget {
       restorationId: restorationId,
     );
 
-    final ch = (isDesktop && !disabled)
+    final ch = (isDesktop && !disabled && !extendBehindTitleBar)
         ? Container(
             margin: const EdgeInsets.only(top: 40),
             child: scaffold,
@@ -208,7 +211,7 @@ class AnymeXScaffold extends StatelessWidget {
             )
           : ch;
 
-      if (disabled || (isOled && isDesktop)) {
+      if (disabled || isOled) {
         return Container(
           color: isOled
               ? Colors.black

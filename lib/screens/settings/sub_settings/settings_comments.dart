@@ -1,4 +1,6 @@
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_moderation.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
@@ -73,7 +75,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Comment System'.tr,
+      headerTitle: 'Community & Comments',
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -86,32 +88,21 @@ class _SettingsCommentsState extends State<SettingsComments> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXSectionBuilder(
-                title: 'General'.tr,
+                title: 'Closet & Community',
                 children: [
                   AnymeXTile(
-                    icon: Icons.info_outline_rounded,
-                    title: 'About Commentum v2'.tr,
+                    icon: Icons.checkroom_rounded,
+                    title: 'Open Closet',
                     subtitle:
-                        'Powered by Commentum v2 - Advanced comment system with moderation'.tr,
-                    onTap: _showAboutDialog,
+                        'Avatar decorations, nameplates, banners & profile effects',
+                    onTap: () => DecorationClosetSheet.show(context),
                   ),
                   AnymeXTile(
-                    icon: Icons.code_rounded,
-                    title: 'Markdown Guide'.tr,
-                    subtitle: 'Learn how to format your comments'.tr,
-                    onTap: _showMarkdownGuide,
-                  ),
-                  AnymeXTile(
-                    icon: Icons.help_outline_rounded,
-                    title: 'Help & Support'.tr,
-                    subtitle: 'Get help with the comment system'.tr,
-                    onTap: _showHelpDialog,
-                  ),
-                  AnymeXTile(
-                    icon: Icons.privacy_tip_outlined,
-                    title: 'Privacy & Safety'.tr,
-                    subtitle: 'Privacy settings and safety features'.tr,
-                    onTap: _showPrivacyDialog,
+                    icon: Icons.emoji_events_rounded,
+                    title: 'Leaderboard',
+                    subtitle:
+                        'View user rankings, top contributors & reputation',
+                    onTap: () => LeaderboardSheet.show(context),
                   ),
                 ],
               ),
@@ -262,6 +253,37 @@ class _SettingsCommentsState extends State<SettingsComments> {
                   ],
                 );
               }),
+              const SizedBox(height: 16),
+              AnymeXSectionBuilder(
+                title: 'Help & Information',
+                children: [
+                  AnymeXTile(
+                    icon: Icons.info_outline_rounded,
+                    title: 'About Commentum v2',
+                    subtitle:
+                        'Powered by Commentum v2 - Advanced comment system with moderation',
+                    onTap: _showAboutDialog,
+                  ),
+                  AnymeXTile(
+                    icon: Icons.code_rounded,
+                    title: 'Markdown Guide',
+                    subtitle: 'Learn how to format your comments',
+                    onTap: _showMarkdownGuide,
+                  ),
+                  AnymeXTile(
+                    icon: Icons.help_outline_rounded,
+                    title: 'Help & Support',
+                    subtitle: 'Get help with the comment system',
+                    onTap: _showHelpDialog,
+                  ),
+                  AnymeXTile(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'Privacy & Safety',
+                    subtitle: 'Privacy settings and safety features',
+                    onTap: _showPrivacyDialog,
+                  ),
+                ],
+              ),
               Obx(() {
                 if (commentumService.currentUserRole.value == 'user') {
                   return const SizedBox.shrink();

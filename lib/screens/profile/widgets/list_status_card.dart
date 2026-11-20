@@ -45,7 +45,7 @@ class ListStatusCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLow,
+        color: context.theme.colorScheme.surfaceContainerLow.withOpacity(0.35),
         borderRadius: BorderRadius.circular(isDesktop ? 16 : 12),
         border: Border.all(
           color: context.theme.colorScheme.outlineVariant.withOpacity(0.3),

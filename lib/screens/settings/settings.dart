@@ -10,8 +10,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/dialogs/donation_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:get/get.dart';
@@ -183,12 +183,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   description: cat.description.tr,
                   destination: cat.destination,
                 ),
-              if (entry.key == 'About' && kDebugMode)
-                _buildTile(
-                  icon: HugeIcons.strokeRoundedBug01,
-                  title: 'Test'.tr,
-                  description: 'Debug stuffs'.tr,
-                  customTap: () async {},
+              if (entry.key == 'About & Support')
+                Builder(
+                  builder: (tileContext) => _buildTile(
+                    icon: HugeIcons.strokeRoundedBug01,
+                    title: 'Test'.tr,
+                    description: 'Debug stuffs'.tr,
+                    customTap: () async {
+                      final file = await rootBundle.loadString('.env');
+                      print('ENV FILE CONTENTS:\n$file');
+                    },
+                  ),
                 ),
             ],
           ),

@@ -338,6 +338,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: pwController,
+                    textInputAction: TextInputAction.done,
                     obscureText: obscure,
                     enabled: !joining,
                     autofocus: true,
@@ -697,6 +698,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     child: TextField(
                       controller: _joinCodeController,
                       focusNode: _codeFocusNode,
+                      textInputAction: TextInputAction.go,
                       onChanged: (v) => setState(() => _error = null),
                       textCapitalization: TextCapitalization.characters,
                       inputFormatters: [

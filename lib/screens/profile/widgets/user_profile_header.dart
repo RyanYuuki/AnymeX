@@ -1,7 +1,7 @@
+import 'dart:io';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +66,8 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
         (widget.customBanner != null && widget.customBanner!.trim().isNotEmpty)
             ? widget.customBanner!
             : (user.cover ?? '');
-    final imageUrl = effectiveBanner;
+    final hasBanner = effectiveBanner.trim().isNotEmpty;
+    final imageUrl = hasBanner ? effectiveBanner : (user.avatar ?? '');
     final name = user.name ?? 'Guest';
 
     final donatorTier = user.donatorTier ?? 0;
@@ -79,17 +80,20 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
     final isDesktop =
         getResponsiveValue(context, mobileValue: false, desktopValue: true);
 
+    final double topPad = MediaQuery.paddingOf(context).top;
+    final double desktopTopPad = Platform.isWindows ? 40.0 : 0.0;
+    final double headerHeight = 330.0 + desktopTopPad;
+
     return SizedBox(
-      height: 330,
+      height: headerHeight,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Banner
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            height: 330,
+            height: headerHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.zero,
               child: Stack(
@@ -97,49 +101,19 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                 children: [
                   if (imageUrl.isNotEmpty)
                     GestureDetector(
+                      behavior: HitTestBehavior.translucent,
                       onTap: () {
-                        widget.bannerController.stop();
-                        Navigator.of(context, rootNavigator: true)
-                            .push(
+                        Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
                             builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
                           ),
-                        )
-                            .then((_) {
-                          widget.bannerController.repeat(reverse: true);
-                        });
+                        );
                       },
-                      child: Hero(
-                        tag: 'profile_banner_$name',
-                        child: AnymeXImage(
-                          imageUrl: imageUrl,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                        ),
-                      ),
-                    )
-                  else
-                    Container(
-                        color:
-                            context.theme.colorScheme.surfaceContainerHighest),
-
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            context.theme.colorScheme.surface.withOpacity(0.3),
-                          ],
-                        ),
-                      ),
+                      child: const SizedBox.expand(),
                     ),
-                  ),
                   if ((Get.isRegistered<CommentumService>() &&
                           Get.find<CommentumService>()
                               .renderProfileEffects
@@ -159,28 +133,21 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                         ),
                       ),
                     ),
-                  // Back Button
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 10),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.4),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.white),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: topPad + desktopTopPad + 12,
+            left: isDesktop ? 40.0 : 20.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ),
           ),

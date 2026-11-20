@@ -21,10 +21,12 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
   late TapZoneLayout _pagedVerticalLayout;
   late TapZoneLayout _webtoonLayout;
   late TapZoneLayout _webtoonHorizontalLayout;
-  final ReaderController _readerController = Get.find<ReaderController>();
+  final ReaderController? _readerController =
+      Get.isRegistered<ReaderController>() ? Get.find<ReaderController>() : null;
 
   bool _isWebtoon = false;
   bool _isVertical = false;
+  bool _tapZonesEnabled = true;
   
   @override
   void initState() {
@@ -36,30 +38,32 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
     
     _isWebtoon = _repo.getActiveIsWebtoon();
     _isVertical = _repo.getActiveIsVertical();
+    _tapZonesEnabled =
+        _readerController?.tapZonesEnabled.value ?? _repo.getTapZonesEnabled();
   }
 
   void _savePaged(TapZoneLayout layout) {
     setState(() => _pagedLayout = layout);
     _repo.savePagedLayout(layout);
-    _readerController.pagedProfile.value = layout;
+    _readerController?.pagedProfile.value = layout;
   }
 
   void _savePagedVertical(TapZoneLayout layout) {
     setState(() => _pagedVerticalLayout = layout);
     _repo.savePagedVerticalLayout(layout);
-    _readerController.pagedVerticalProfile.value = layout;
+    _readerController?.pagedVerticalProfile.value = layout;
   }
 
   void _saveWebtoon(TapZoneLayout layout) {
     setState(() => _webtoonLayout = layout);
     _repo.saveWebtoonLayout(layout);
-    _readerController.webtoonProfile.value = layout;
+    _readerController?.webtoonProfile.value = layout;
   }
 
   void _saveWebtoonHorizontal(TapZoneLayout layout) {
     setState(() => _webtoonHorizontalLayout = layout);
     _repo.saveWebtoonHorizontalLayout(layout);
-    _readerController.webtoonHorizontalProfile.value = layout;
+    _readerController?.webtoonHorizontalProfile.value = layout;
   }
 
   void _resetDefaults() {
@@ -100,6 +104,11 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Tap Zones'.tr,
+      headerAction: IconButton(
+        icon: const Icon(Icons.refresh_rounded),
+        tooltip: 'Reset to default',
+        onPressed: _resetDefaults,
+      ),
       body: Builder(
         builder: (ctx) => Column(
                   children: [
@@ -116,7 +125,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                           final val = index == 1;
                           setState(() => _isWebtoon = val);
                           _repo.saveActiveIsWebtoon(val);
-                          _readerController.activeTapIsWebtoon.value = val;
+                          _readerController?.activeTapIsWebtoon.value = val;
                         },
                       ),
                     ),
@@ -132,30 +141,37 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                           final val = index == 1;
                           setState(() => _isVertical = val);
                           _repo.saveActiveIsVertical(val);
-                          _readerController.activeTapIsVertical.value = val;
+                          _readerController?.activeTapIsVertical.value = val;
                         },
                       ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Obx(() => AnymeXTile.toggle(
+                      child: AnymeXTile.toggle(
                         icon: Icons.touch_app_rounded,
                         title: "Enable Tap Zones".tr,
                         subtitle: "Use custom gestures for reader navigation".tr,
-                        value: _readerController.tapZonesEnabled.value,
-                        onChanged: (val) => _readerController.toggleTapZones(val),
-                      )),
+                        value: _tapZonesEnabled,
+                        onChanged: (val) {
+                          setState(() => _tapZonesEnabled = val);
+                          if (_readerController != null) {
+                            _readerController.toggleTapZones(val);
+                          } else {
+                            _repo.saveTapZonesEnabled(val);
+                          }
+                        },
+                      ),
                     ),
                     Expanded(
-                      child: Obx(() => IgnorePointer(
-                        ignoring: !_readerController.tapZonesEnabled.value,
+                      child: IgnorePointer(
+                        ignoring: !_tapZonesEnabled,
                         child: AnimatedOpacity(
-                          opacity: _readerController.tapZonesEnabled.value ? 1.0 : 0.4,
+                          opacity: _tapZonesEnabled ? 1.0 : 0.4,
                           duration: const Duration(milliseconds: 200),
                           child: _buildEditor(currentLayout, onSave),
                         ),
-                      )),
+                      ),
                     ),
                   ],
                 )

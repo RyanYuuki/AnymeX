@@ -19,6 +19,8 @@ import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.da
 import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/player_settings_pane.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -223,6 +225,20 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
                 bottom: 0,
                 left: 0,
                 child: SpeedPopup(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: PlayerSettingsPane(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: CastDevicePane(controller: _controller),
               ),
             ],
           ),

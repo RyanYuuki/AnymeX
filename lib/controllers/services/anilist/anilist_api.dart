@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
+import 'package:anymex/controllers/services/anilist/anilist_cache.dart';
 import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -19,6 +20,7 @@ class AnilistApi {
     String query, {
     Map<String, dynamic>? variables,
     String? token,
+    int maxRetries = 2,
   }) async {
     final tokenn = token ?? AuthKeys.authToken.get<String?>();
     final headers = {
@@ -27,43 +29,76 @@ class AnilistApi {
       if (tokenn != null && tokenn.isNotEmpty) 'Authorization': 'Bearer $tokenn',
     };
 
-    try {
-      final response = await _client.post(
-        Uri.parse(_url),
-        headers: headers,
-        body: json.encode({
-          'query': query,
-          if (variables != null) 'variables': variables,
-        }),
-      );
+    for (int attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        final response = await _client.post(
+          Uri.parse(_url),
+          headers: headers,
+          body: json.encode({
+            'query': query,
+            if (variables != null) 'variables': variables,
+          }),
+        );
 
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body) as Map<String, dynamic>?;
-        if (decoded != null && decoded['errors'] != null) {
-          AnilistErrorHandler.handleResponse(response);
+        if (response.statusCode == 200) {
+          final decoded = json.decode(response.body) as Map<String, dynamic>?;
+          if (decoded != null && decoded['errors'] != null) {
+            AnilistErrorHandler.handleResponse(response);
+          }
+          return decoded;
         }
-        return decoded;
-      } else {
+
+        if (response.statusCode == 429 && attempt < maxRetries) {
+          final retryAfter = response.headers['retry-after'];
+          final waitSeconds = retryAfter != null
+              ? (int.tryParse(retryAfter) ?? (2 << attempt))
+              : (2 << attempt);
+          await Future.delayed(Duration(seconds: waitSeconds));
+          continue;
+        }
+
         AnilistErrorHandler.handleResponse(response);
         Logger.i('AniList GraphQL Error: ${response.statusCode} - ${response.body}');
+        return null;
+      } catch (e) {
+        if (attempt >= maxRetries) {
+          AnilistErrorHandler.handleError(e);
+          Logger.i('Error posting AniList query: $e');
+          return null;
+        }
+        await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
       }
-    } catch (e) {
-      AnilistErrorHandler.handleError(e);
-      Logger.i('Error posting AniList query: $e');
     }
     return null;
   }
 
   Future<Character?> getCharacterDetails(String id) async {
+    final cached = await AnilistCache.instance.get('character_$id');
+    if (cached != null) {
+      return Character.fromJson(cached);
+    }
+
     final variables = {'id': int.tryParse(id)};
     final data = await postQuery(characterDetailsQuery, variables: variables);
     if (data != null && data['data'] != null && data['data']['Character'] != null) {
-      return Character.fromJson(data['data']['Character']);
+      final charJson = data['data']['Character'] as Map<String, dynamic>;
+      AnilistCache.instance.put(
+        'character_$id',
+        charJson,
+        ttl: const Duration(days: 7),
+        persist: true,
+      );
+      return Character.fromJson(charJson);
     }
     return null;
   }
 
   Future<Staff?> getStaffDetails(String id) async {
+    final cached = await AnilistCache.instance.get('staff_$id');
+    if (cached != null) {
+      return Staff.fromDetailJson(cached);
+    }
+
     int charPage = 1;
     int staffPage = 1;
     bool charHasNext = true;
@@ -74,7 +109,7 @@ class AnilistApi {
     int loopCount = 0;
 
     try {
-      while (staffHasNext && loopCount < 20) {
+      while (staffHasNext && loopCount < 3) {
         final variables = {
           'id': int.tryParse(id),
           'characterPage': charPage,
@@ -126,6 +161,12 @@ class AnilistApi {
         finalData['characters']['edges'] = allCharacterEdges;
         if (finalData['staffMedia'] == null) finalData['staffMedia'] = {};
         finalData['staffMedia']['edges'] = allStaffEdges;
+        AnilistCache.instance.put(
+          'staff_$id',
+          finalData,
+          ttl: const Duration(days: 7),
+          persist: true,
+        );
         return Staff.fromDetailJson(finalData);
       }
     } catch (e) {

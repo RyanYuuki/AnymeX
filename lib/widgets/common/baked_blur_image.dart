@@ -6,12 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as p;
 import 'package:anymex/utils/mesh_blur_helper.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 
 typedef _BakedRaster = ({int width, int height, Uint8List pixels});
 
-_BakedRaster _processFrostedBackdrop((Uint8List, double, double) task) {
+_BakedRaster _processLegacyFrostedBackdrop((Uint8List, double, double) task) {
   final (sourceBytes, vibrancy, blurAmount) = task;
   final decoded = img.decodeImage(sourceBytes);
   if (decoded == null) {
@@ -19,7 +20,7 @@ _BakedRaster _processFrostedBackdrop((Uint8List, double, double) task) {
   }
 
   final isTall = decoded.height > decoded.width;
-  const targetShortSide = 240;
+  const targetShortSide = 200;
   var scaled = img.copyResize(
     decoded,
     width: isTall ? targetShortSide : null,
@@ -40,6 +41,14 @@ _BakedRaster _processFrostedBackdrop((Uint8List, double, double) task) {
     width: rgbaImage.width,
     height: rgbaImage.height,
     pixels: rgbaImage.getBytes(order: img.ChannelOrder.rgba),
+  );
+}
+
+Future<_BakedRaster> _generateFrostedRaster(
+    Uint8List rawBytes, double saturation, double blurAmount) {
+  return compute(
+    _processLegacyFrostedBackdrop,
+    (rawBytes, saturation, blurAmount),
   );
 }
 
@@ -85,7 +94,20 @@ class BakedBlurImage extends StatefulWidget {
 
   static final Map<String, ui.Image> _cacheStore = {};
   static final Map<String, Future<ui.Image?>> _pendingRequests = {};
-  static const int _cacheCapacity = 24;
+  static const int _cacheCapacity = 80;
+
+  static Future<File?> _getDiskCacheFile(String cacheKey) async {
+    try {
+      final dir = await AnymeXCacheManager.getResizedCacheDirectory();
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+      final hash = cacheKey.hashCode.toRadixString(16);
+      return File(p.join(dir.path, 'blur_$hash.png'));
+    } catch (_) {
+      return null;
+    }
+  }
 
   static void _storeInCache(String key, ui.Image image) {
     _cacheStore.remove(key);
@@ -93,6 +115,69 @@ class BakedBlurImage extends StatefulWidget {
       _cacheStore.remove(_cacheStore.keys.first);
     }
     _cacheStore[key] = image;
+  }
+
+  static Future<ui.Image?> _bakeBlurImage({
+    required Uint8List rawBytes,
+    required double saturation,
+    required double blurAmount,
+    required bool isMesh,
+    required String url,
+  }) async {
+    try {
+      if (isMesh) {
+        final raster = await compute(
+          MeshBlurHelper.processMeshBackdrop,
+          (rawBytes, saturation, blurAmount, url.hashCode),
+        );
+        return await _inflateNativeImage(raster);
+      }
+
+      final codec = await ui.instantiateImageCodec(
+        rawBytes,
+        targetWidth: 160,
+      );
+      final frame = await codec.getNextFrame();
+      final downscaled = frame.image;
+
+      final width = downscaled.width;
+      final height = downscaled.height;
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+
+      final paint = Paint()
+        ..imageFilter = ui.ImageFilter.blur(
+          sigmaX: (blurAmount * 0.4).clamp(1.5, 25.0),
+          sigmaY: (blurAmount * 0.4).clamp(1.5, 25.0),
+          tileMode: TileMode.clamp,
+        )
+        ..filterQuality = FilterQuality.low;
+
+      if (saturation != 1.0) {
+        final s = saturation;
+        paint.colorFilter = ColorFilter.matrix([
+          0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0,
+          0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0,
+          0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0,
+          0, 0, 0, 1, 0,
+        ]);
+      }
+
+      canvas.drawImage(downscaled, Offset.zero, paint);
+      final picture = recorder.endRecording();
+      final baked = await picture.toImage(width, height);
+      downscaled.dispose();
+      picture.dispose();
+      return baked;
+    } catch (_) {
+      try {
+        final raster =
+            await _generateFrostedRaster(rawBytes, saturation, blurAmount);
+        return await _inflateNativeImage(raster);
+      } catch (_) {
+        return null;
+      }
+    }
   }
 
   static Future<Uint8List?> getCachedBytesOnly(String url) async {
@@ -162,21 +247,38 @@ class BakedBlurImage extends StatefulWidget {
       return existingImage;
     }
 
+    final diskFile = await _getDiskCacheFile(cacheKey);
+    if (diskFile != null && await diskFile.exists()) {
+      try {
+        final diskBytes = await diskFile.readAsBytes();
+        final codec = await ui.instantiateImageCodec(diskBytes);
+        final frame = await codec.getNextFrame();
+        _storeInCache(cacheKey, frame.image);
+        return frame.image;
+      } catch (_) {}
+    }
+
     final rawBytes = await getCachedBytesOnly(url);
     if (rawBytes == null || rawBytes.isEmpty) return null;
 
     try {
-      final raster = isMesh
-          ? await compute(
-              MeshBlurHelper.processMeshBackdrop,
-              (rawBytes, saturation, blurAmount, url.hashCode),
-            )
-          : await compute(
-              _processFrostedBackdrop,
-              (rawBytes, saturation, blurAmount),
-            );
-      final nativeImage = await _inflateNativeImage(raster);
-      _storeInCache(cacheKey, nativeImage);
+      final nativeImage = await _bakeBlurImage(
+        rawBytes: rawBytes,
+        saturation: saturation,
+        blurAmount: blurAmount,
+        isMesh: isMesh,
+        url: url,
+      );
+      if (nativeImage != null) {
+        _storeInCache(cacheKey, nativeImage);
+        if (diskFile != null) {
+          nativeImage.toByteData(format: ui.ImageByteFormat.png).then((byteData) {
+            if (byteData != null) {
+              diskFile.writeAsBytes(byteData.buffer.asUint8List()).ignore();
+            }
+          }).ignore();
+        }
+      }
       return nativeImage;
     } catch (_) {
       return null;
@@ -203,19 +305,38 @@ class BakedBlurImage extends StatefulWidget {
 
     return _pendingRequests[cacheKey] = () async {
       try {
+        final diskFile = await _getDiskCacheFile(cacheKey);
+        if (diskFile != null && await diskFile.exists()) {
+          try {
+            final diskBytes = await diskFile.readAsBytes();
+            final codec = await ui.instantiateImageCodec(diskBytes);
+            final frame = await codec.getNextFrame();
+            _storeInCache(cacheKey, frame.image);
+            return frame.image;
+          } catch (_) {}
+        }
+
         final rawBytes = await _getBytesForUrl(url);
         if (rawBytes == null || rawBytes.isEmpty) return null;
-        final raster = isMesh
-            ? await compute(
-                MeshBlurHelper.processMeshBackdrop,
-                (rawBytes, saturation, blurAmount, url.hashCode),
-              )
-            : await compute(
-                _processFrostedBackdrop,
-                (rawBytes, saturation, blurAmount),
-              );
-        final nativeImage = await _inflateNativeImage(raster);
-        _storeInCache(cacheKey, nativeImage);
+
+        final nativeImage = await _bakeBlurImage(
+          rawBytes: rawBytes,
+          saturation: saturation,
+          blurAmount: blurAmount,
+          isMesh: isMesh,
+          url: url,
+        );
+
+        if (nativeImage != null) {
+          _storeInCache(cacheKey, nativeImage);
+          if (diskFile != null) {
+            nativeImage.toByteData(format: ui.ImageByteFormat.png).then((byteData) {
+              if (byteData != null) {
+                diskFile.writeAsBytes(byteData.buffer.asUint8List()).ignore();
+              }
+            }).ignore();
+          }
+        }
         return nativeImage;
       } catch (e) {
         return null;
@@ -375,14 +496,8 @@ class _BakedBlurImageState extends State<BakedBlurImage> {
 
     if (image != null && widget.fadeBottom) {
       final fadeDistance = (widget.blurAmount * 2.5).clamp(32.0, 140.0);
-      content = Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.transparent, width: 2.0),
-          ),
-        ),
-        child: ClipRect(
-          child: ShaderMask(
+      content = ClipRect(
+        child: ShaderMask(
             shaderCallback: (bounds) {
               if (bounds.height <= 0) {
                 return const LinearGradient(
@@ -408,11 +523,10 @@ class _BakedBlurImageState extends State<BakedBlurImage> {
             blendMode: BlendMode.dstIn,
             child: content,
           ),
-        ),
-      );
-    } else {
-      content = ClipRect(child: content);
-    }
+        );
+      } else {
+        content = ClipRect(child: content);
+      }
 
     return AnimatedOpacity(
       opacity: image == null ? 0.0 : 1.0,

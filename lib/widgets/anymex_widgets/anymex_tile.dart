@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -6,6 +7,33 @@ import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+
+enum TileStyle { classic, modern }
+
+class AnymeXTileScope extends InheritedWidget {
+  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final TileStyle? style;
+
+  const AnymeXTileScope({
+    super.key,
+    this.borderRadius,
+    this.backgroundColor,
+    this.style,
+    required super.child,
+  });
+
+  static AnymeXTileScope? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AnymeXTileScope>();
+  }
+
+  @override
+  bool updateShouldNotify(AnymeXTileScope oldWidget) {
+    return borderRadius != oldWidget.borderRadius ||
+        backgroundColor != oldWidget.backgroundColor ||
+        style != oldWidget.style;
+  }
+}
 
 class AnymeXTile extends StatelessWidget {
   final IconData? icon;
@@ -29,6 +57,8 @@ class AnymeXTile extends StatelessWidget {
   final bool autoResize;
   final bool isCheckbox;
   final bool isRadio;
+  final TileStyle? style;
+  final Color? backgroundColor;
 
   const AnymeXTile({
     super.key,
@@ -53,7 +83,62 @@ class AnymeXTile extends StatelessWidget {
     this.isRadio = false,
     this.titleStyle,
     this.subtitleStyle,
+    this.style,
+    this.backgroundColor,
   });
+
+  AnymeXTile copyWith({
+    IconData? icon,
+    Widget? leading,
+    String? title,
+    String? subtitle,
+    Widget? subtitleWidget,
+    Widget? trailing,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    Color? iconColor,
+    Color? iconBackgroundColor,
+    bool? showChevron,
+    BorderRadius? borderRadius,
+    EdgeInsetsGeometry? padding,
+    bool? enabled,
+    Widget? customContent,
+    TextStyle? titleStyle,
+    TextStyle? subtitleStyle,
+    int? maxLines,
+    bool? autoResize,
+    bool? isCheckbox,
+    bool? isRadio,
+    TileStyle? style,
+    Color? backgroundColor,
+  }) {
+    return AnymeXTile(
+      key: key,
+      icon: icon ?? this.icon,
+      leading: leading ?? this.leading,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      subtitleWidget: subtitleWidget ?? this.subtitleWidget,
+      trailing: trailing ?? this.trailing,
+      onTap: onTap ?? this.onTap,
+      onLongPress: onLongPress ?? this.onLongPress,
+      iconColor: iconColor ?? this.iconColor,
+      iconBackgroundColor: iconBackgroundColor ?? this.iconBackgroundColor,
+      showChevron: showChevron ?? this.showChevron,
+      borderRadius: borderRadius ?? this.borderRadius,
+      padding: padding ?? this.padding,
+      enabled: enabled ?? this.enabled,
+      customContent: customContent ?? this.customContent,
+      titleStyle: titleStyle ?? this.titleStyle,
+      subtitleStyle: subtitleStyle ?? this.subtitleStyle,
+      maxLines: maxLines ?? this.maxLines,
+      autoResize: autoResize ?? this.autoResize,
+      isCheckbox: isCheckbox ?? this.isCheckbox,
+      isRadio: isRadio ?? this.isRadio,
+      style: style ?? this.style,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+    );
+  }
 
   static Widget _buildSwitch(
     BuildContext context,
@@ -109,6 +194,8 @@ class AnymeXTile extends StatelessWidget {
     EdgeInsetsGeometry? padding,
     bool enabled = true,
     Widget? child,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
     return AnymeXTile(
       key: key,
@@ -122,6 +209,8 @@ class AnymeXTile extends StatelessWidget {
       padding: padding,
       enabled: enabled,
       showChevron: false,
+      style: style,
+      backgroundColor: backgroundColor,
       onTap: enabled && onChanged != null ? () => onChanged(!value) : null,
       trailing: Builder(
         builder: (context) => _buildSwitch(context, value, enabled, onChanged),
@@ -156,6 +245,8 @@ class AnymeXTile extends StatelessWidget {
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? padding,
     bool enabled = true,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
     return AnymeXTile.toggle(
       key: key,
@@ -170,6 +261,8 @@ class AnymeXTile extends StatelessWidget {
       borderRadius: borderRadius,
       padding: padding,
       enabled: enabled,
+      style: style,
+      backgroundColor: backgroundColor,
       child: child,
     );
   }
@@ -191,6 +284,8 @@ class AnymeXTile extends StatelessWidget {
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? padding,
     bool enabled = true,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
     String formatValue(double v) => valueTransformer != null
         ? valueTransformer(v)
@@ -211,13 +306,15 @@ class AnymeXTile extends StatelessWidget {
           const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 8),
       enabled: enabled,
       showChevron: false,
+      style: style,
+      backgroundColor: backgroundColor,
       trailing: Builder(
         builder: (context) {
           final primary = Theme.of(context).colorScheme.primary;
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: primary.withOpacity(0.12),
+              color: primary.opaque(0.12, iReallyMeanIt: true),
               borderRadius: BorderRadius.circular(10),
             ),
             child: AnymeXText(
@@ -267,6 +364,8 @@ class AnymeXTile extends StatelessWidget {
     bool enabled = true,
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
     return AnymeXTile(
       key: key,
@@ -285,6 +384,8 @@ class AnymeXTile extends StatelessWidget {
       titleStyle: titleStyle,
       subtitleStyle: subtitleStyle,
       isRadio: true,
+      style: style,
+      backgroundColor: backgroundColor,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;
@@ -297,7 +398,7 @@ class AnymeXTile extends StatelessWidget {
               border: Border.all(
                 color: selected
                     ? colors.primary
-                    : colors.onSurface.withOpacity(0.24),
+                    : colors.onSurface.opaque(0.24, iReallyMeanIt: true),
                 width: 2,
               ),
               color: selected ? colors.primary : Colors.transparent,
@@ -335,6 +436,8 @@ class AnymeXTile extends StatelessWidget {
     bool enabled = true,
     TextStyle? titleStyle,
     TextStyle? subtitleStyle,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
     return AnymeXTile(
       key: key,
@@ -352,6 +455,8 @@ class AnymeXTile extends StatelessWidget {
       titleStyle: titleStyle,
       subtitleStyle: subtitleStyle,
       isCheckbox: true,
+      style: style,
+      backgroundColor: backgroundColor,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;
@@ -362,8 +467,9 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color:
-                    value ? colors.primary : colors.onSurface.withOpacity(0.24),
+                color: value
+                    ? colors.primary
+                    : colors.onSurface.opaque(0.24, iReallyMeanIt: true),
                 width: 2,
               ),
               color: value ? colors.primary : Colors.transparent,
@@ -396,6 +502,8 @@ class AnymeXTile extends StatelessWidget {
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? padding,
     bool enabled = true,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
     return AnymeXTile(
       key: key,
@@ -409,6 +517,8 @@ class AnymeXTile extends StatelessWidget {
       padding: padding,
       enabled: enabled,
       showChevron: false,
+      style: style,
+      backgroundColor: backgroundColor,
       customContent: _SegmentedContent<T>(
         value: value,
         options: options,
@@ -433,6 +543,8 @@ class AnymeXTile extends StatelessWidget {
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? padding,
     bool enabled = true,
+    TileStyle? style,
+    Color? backgroundColor,
   }) =>
       AnymeXTile.segmented<T>(
         key: key,
@@ -449,9 +561,11 @@ class AnymeXTile extends StatelessWidget {
         borderRadius: borderRadius,
         padding: padding,
         enabled: enabled,
+        style: style,
+        backgroundColor: backgroundColor,
       );
 
-  static Widget pills<T>({
+  static AnymeXTile pills<T>({
     Key? key,
     IconData? icon,
     Widget? leading,
@@ -470,21 +584,25 @@ class AnymeXTile extends StatelessWidget {
     bool expand = true,
     bool wrap = false,
     PillStyle pillStyle = PillStyle.connective,
+    TileStyle? style,
+    Color? backgroundColor,
   }) {
-    return Builder(
-      builder: (context) => AnymeXTile(
-        key: key,
-        icon: icon,
-        leading: leading,
-        title: title,
-        subtitle: subtitle,
-        iconColor: iconColor,
-        iconBackgroundColor: iconBackgroundColor,
-        borderRadius: borderRadius,
-        padding: padding,
-        enabled: enabled,
-        showChevron: false,
-        customContent: _buildPillsSelectorContent<T>(
+    return AnymeXTile(
+      key: key,
+      icon: icon,
+      leading: leading,
+      title: title,
+      subtitle: subtitle,
+      iconColor: iconColor,
+      iconBackgroundColor: iconBackgroundColor,
+      borderRadius: borderRadius,
+      padding: padding,
+      enabled: enabled,
+      showChevron: false,
+      style: style,
+      backgroundColor: backgroundColor,
+      customContent: Builder(
+        builder: (context) => _buildPillsSelectorContent<T>(
           context: context,
           value: value,
           options: options,
@@ -502,40 +620,71 @@ class AnymeXTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final tileScope = AnymeXTileScope.of(context);
+    final effectiveStyle = style ??
+        tileScope?.style ??
+        (settingsController.tileStyle == 1
+            ? TileStyle.modern
+            : TileStyle.classic);
+    final isModern = effectiveStyle == TileStyle.modern;
 
     final Widget leadingWidget = leading ??
         (icon != null
             ? Container(
-                width: 36,
-                height: 36,
+                width: isModern ? 42 : 36,
+                height: isModern ? 42 : 36,
                 decoration: BoxDecoration(
                   color: iconBackgroundColor ??
-                      colors.primary.opaque(0.12, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(10),
+                      (isModern
+                          ? colors.surfaceContainerHighest.opaque(0.5)
+                          : colors.primary.opaque(0.12, iReallyMeanIt: true)),
+                  shape: isModern ? BoxShape.circle : BoxShape.rectangle,
+                  borderRadius: isModern ? null : BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: iconColor ?? colors.primary,
+                child: Center(
+                  child: Icon(
+                    icon,
+                    size: isModern ? 19 : 20,
+                    color: iconColor ?? colors.primary,
+                  ),
                 ),
               )
             : const SizedBox.shrink());
 
     final Widget trailingWidget = trailing ??
         (showChevron && onTap != null
-            ? Icon(
-                Icons.chevron_right_rounded,
-                size: 20,
-                color: colors.onSurface.opaque(0.35, iReallyMeanIt: true),
-              )
+            ? (isModern
+                ? CustomPaint(
+                    size: const Size(14, 14),
+                    painter: _ModernTileChevronPainter(
+                      color: colors.onSurface.opaque(0.35, iReallyMeanIt: true),
+                      strokeWidth: 1.8,
+                    ),
+                  )
+                : Icon(
+                    Icons.chevron_right_rounded,
+                    size: 20,
+                    color: colors.onSurface.opaque(0.35, iReallyMeanIt: true),
+                  ))
             : const SizedBox.shrink());
 
-    final radius = borderRadius ?? BorderRadius.zero;
+    final radius = borderRadius ??
+        tileScope?.borderRadius ??
+        (isModern ? BorderRadius.circular(18.0) : BorderRadius.zero);
+    final cardBg = backgroundColor ??
+        tileScope?.backgroundColor ??
+        (isModern
+            ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
+            : null);
 
     final contentWidget = Container(
-      padding:
-          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: padding ??
+          EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: isModern ? 13 : 12,
+          ),
       decoration: BoxDecoration(
+        color: cardBg,
         borderRadius: radius,
       ),
       child: Column(
@@ -558,22 +707,26 @@ class AnymeXTile extends StatelessWidget {
                       size: 14.5,
                       maxLines: maxLines ?? 4,
                       autoResize: autoResize,
-                      variant: TextVariant.semiBold,
+                      variant:
+                          isModern ? TextVariant.bold : TextVariant.semiBold,
                       color: enabled
                           ? colors.onSurface
                           : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
                       style: titleStyle,
                     ),
                     if (subtitleWidget != null) ...[
+                      const SizedBox(height: 2),
                       subtitleWidget!,
                     ] else if (subtitle != null && subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       AnymeXText(
                         subtitle!,
-                        size: 12,
+                        size: isModern ? 11.5 : 12,
                         variant: TextVariant.regular,
-                        color:
-                            colors.onSurface.opaque(0.45, iReallyMeanIt: true),
+                        color: isModern
+                            ? colors.onSurface.opaque(0.6, iReallyMeanIt: true)
+                            : colors.onSurface
+                                .opaque(0.45, iReallyMeanIt: true),
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
                         style: subtitleStyle,
@@ -582,7 +735,7 @@ class AnymeXTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               trailingWidget,
             ],
           ),
@@ -594,17 +747,28 @@ class AnymeXTile extends StatelessWidget {
     );
 
     final tileWidget = ((onTap != null || onLongPress != null) && enabled)
-        ? Material(
-            color: Colors.transparent,
-            borderRadius: radius,
-            child: AnymexOnTap(
-              margin: 0,
-              scale: 0.98,
-              onTap: onTap,
-              onLongPress: onLongPress,
-              child: contentWidget,
-            ),
-          )
+        ? (isModern
+            ? Material(
+                color: Colors.transparent,
+                borderRadius: radius,
+                child: InkWell(
+                  borderRadius: radius,
+                  onTap: onTap,
+                  onLongPress: onLongPress,
+                  child: contentWidget,
+                ),
+              )
+            : Material(
+                color: Colors.transparent,
+                borderRadius: radius,
+                child: AnymexOnTap(
+                  margin: 0,
+                  scale: 0.98,
+                  onTap: onTap,
+                  onLongPress: onLongPress,
+                  child: contentWidget,
+                ),
+              ))
         : Material(
             color: Colors.transparent,
             borderRadius: radius,
@@ -615,6 +779,37 @@ class AnymeXTile extends StatelessWidget {
       title: title,
       child: tileWidget,
     );
+  }
+}
+
+class _ModernTileChevronPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  const _ModernTileChevronPainter({
+    required this.color,
+    this.strokeWidth = 1.8,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final path = Path();
+    path.moveTo(size.width * 0.35, size.height * 0.22);
+    path.lineTo(size.width * 0.65, size.height * 0.5);
+    path.lineTo(size.width * 0.35, size.height * 0.78);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ModernTileChevronPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
   }
 }
 

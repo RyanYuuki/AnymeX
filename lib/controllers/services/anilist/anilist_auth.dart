@@ -11,12 +11,16 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/Anilist/anilist_notification.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Anilist/anilist_user_settings.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
+import 'package:anymex/controllers/services/anilist/anilist_cache.dart';
+import 'package:anymex/controllers/services/anilist/anilist_rate_limiter.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
@@ -33,6 +37,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 class AnilistAuth extends GetxController {
   http.Client get _client => NetworkManager.instance.compatibleClient;
   RxBool isLoggedIn = false.obs;
+  final RxInt unreadAnilistCount = 0.obs;
   Rx<Profile> profileData = Profile().obs;
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -43,7 +48,8 @@ class AnilistAuth extends GetxController {
 
   RxList<TrackedMedia> currentlyReading = <TrackedMedia>[].obs;
   RxList<TrackedMedia> mangaList = <TrackedMedia>[].obs;
-  DateTime? _rateLimitUntil;
+  DateTime? get _rateLimitUntil => AnilistRateLimiter.instance.rateLimitUntil;
+  set _rateLimitUntil(DateTime? val) {}
   AnilistUserSettings? cachedSettings;
   AnilistSettingsMetadata? cachedMetadata;
 
@@ -174,6 +180,10 @@ class AnilistAuth extends GetxController {
         await commentumService.getUserRole();
       } catch (e) {
         Logger.i('Error checking Commentum role during auto login: $e');
+      }
+
+      if (Get.isRegistered<NotificationController>()) {
+        Get.find<NotificationController>().loadAnilistNotifications();
       }
     }
   }
@@ -339,6 +349,9 @@ class AnilistAuth extends GetxController {
                   } catch (e) {
                     Logger.i('Error checking Commentum role: $e');
                   }
+                  if (Get.isRegistered<NotificationController>()) {
+                    Get.find<NotificationController>().loadAnilistNotifications();
+                  }
                 } catch (e) {
                   Logger.i('Error saving token: $e');
                 }
@@ -392,12 +405,15 @@ class AnilistAuth extends GetxController {
       } catch (e) {
         Logger.i('Error checking Commentum role: $e');
       }
+      if (Get.isRegistered<NotificationController>()) {
+        Get.find<NotificationController>().loadAnilistNotifications();
+      }
     } else {
       throw Exception('Failed to exchange code for token: ${response.body}');
     }
   }
 
-  Future<void> fetchUserProfile() async {
+  Future<void> fetchUserProfile({bool force = false}) async {
     final token = AuthKeys.authToken.get<String?>();
 
     if (token == null) {
@@ -405,10 +421,25 @@ class AnilistAuth extends GetxController {
       return;
     }
 
+    if (!force) {
+      final cached = await AnilistCache.instance.get('user_profile');
+      if (cached != null) {
+        final userProfile = Profile.fromJson(cached);
+        userProfile.tokenExpiry = getExpiryFromToken(token);
+        profileData.value = userProfile;
+        unreadAnilistCount.value =
+            cached['unreadNotificationCount'] as int? ?? 0;
+        isLoggedIn.value = true;
+        CommentsDatabase().login();
+        return;
+      }
+    }
+
     const query = '''
   query {
     Viewer {
       id
+      unreadNotificationCount
       name
       about(asHtml: true)
       aboutMarkdown: about
@@ -532,13 +563,24 @@ class AnilistAuth extends GetxController {
         final userProfile = Profile.fromJson(viewerData);
         userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
+        unreadAnilistCount.value =
+            viewerData['unreadNotificationCount'] as int? ?? 0;
         isLoggedIn.value = true;
 
         Logger.i(
             'User profile fetched: ${userProfile.name} (ID: ${userProfile.id})');
 
-        // fetchFollowersAndFollowing(userProfile.id ?? '');
+        AnilistCache.instance.put(
+          'user_profile',
+          viewerData,
+          ttl: const Duration(minutes: 15),
+          persist: true,
+        );
+
         CommentsDatabase().login();
+        if (Get.isRegistered<NotificationController>()) {
+          Get.find<NotificationController>().loadAnilistNotifications();
+        }
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -1957,10 +1999,58 @@ class AnilistAuth extends GetxController {
     }
   }
 
-  Future<void> fetchUserAnimeList() async {
+  void _setAnimeListData(Map<String, dynamic> data) {
+    if (data['data'] != null &&
+        data['data']['MediaListCollection'] != null) {
+      final lists =
+          data['data']['MediaListCollection']['lists'] as List<dynamic>;
+
+      final animeListt =
+          lists.expand((list) => list['entries'] as List<dynamic>).toList();
+
+      currentlyWatching.value = animeListt
+          .where((animeEntry) => animeEntry['status'] == 'CURRENT')
+          .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
+          .toList()
+          .reversed
+          .toList()
+          .removeDupes();
+
+      currentlyWatching.value = currentlyWatching.value.removeDupes();
+
+      animeList.value = animeListt
+          .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
+          .toList()
+          .reversed
+          .toList()
+          .removeDupes();
+      Logger.i("Anime List Fetched Successfully!");
+    }
+  }
+
+  Future<void> fetchUserAnimeList({bool force = false}) async {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       return;
+    }
+
+    if (profileData.value.id == null) {
+      Logger.i('User ID is not available. Fetching user profile first.');
+      await fetchUserProfile();
+    }
+
+    final userId = profileData.value.id;
+    if (userId == null) {
+      return;
+    }
+
+    final cacheKey = 'user_anime_list_$userId';
+    if (!force) {
+      final cached = await AnilistCache.instance.get(cacheKey);
+      if (cached != null) {
+        _setAnimeListData(cached);
+        return;
+      }
     }
 
     const query = '''
@@ -2046,34 +2136,13 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['data'] != null &&
-            data['data']['MediaListCollection'] != null) {
-          final lists =
-              data['data']['MediaListCollection']['lists'] as List<dynamic>;
-
-          final animeListt =
-              lists.expand((list) => list['entries'] as List<dynamic>).toList();
-
-          currentlyWatching.value = animeListt
-              .where((animeEntry) => animeEntry['status'] == 'CURRENT')
-              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
-              .toList()
-              .reversed
-              .toList()
-              .removeDupes();
-
-          currentlyWatching.value = currentlyWatching.value.removeDupes();
-
-          animeList.value = animeListt
-              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
-              .toList()
-              .reversed
-              .toList()
-              .removeDupes();
-          Logger.i("Anime List Fetched Successfully!");
-        } else {
-          Logger.i('Unexpected response structure: ${response.body}');
-        }
+        _setAnimeListData(data);
+        AnilistCache.instance.put(
+          cacheKey,
+          data,
+          ttl: const Duration(minutes: 15),
+          persist: true,
+        );
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -2169,10 +2238,13 @@ class AnilistAuth extends GetxController {
         snackBar(
             "${isAnime ? "Anime" : "Manga"} successfully deleted from your list!");
         currentMedia.value = TrackedMedia();
+        AnilistCache.instance.invalidatePrefix('user_anime_list');
+        AnilistCache.instance.invalidatePrefix('user_manga_list');
+        AnilistCache.instance.invalidate('user_profile');
         if (isAnime) {
-          fetchUserAnimeList();
+          fetchUserAnimeList(force: true);
         } else {
-          fetchUserMangaList();
+          fetchUserMangaList(force: true);
         }
 
         if (serviceHandler.malService.isLoggedIn.value) {
@@ -2308,10 +2380,13 @@ class AnilistAuth extends GetxController {
           ..watchingStatus = status
           ..score = score.toString();
         currentMedia.value = newMedia;
+        AnilistCache.instance.invalidatePrefix('user_anime_list');
+        AnilistCache.instance.invalidatePrefix('user_manga_list');
+        AnilistCache.instance.invalidate('user_profile');
         if (isAnime) {
-          await fetchUserAnimeList();
+          await fetchUserAnimeList(force: true);
         } else {
-          await fetchUserMangaList();
+          await fetchUserMangaList(force: true);
         }
         setCurrentMedia(listId, isManga: !isAnime);
       } else if (response.statusCode == 403) {
@@ -2325,10 +2400,57 @@ class AnilistAuth extends GetxController {
     }
   }
 
-  Future<void> fetchUserMangaList() async {
+  void _setMangaListData(Map<String, dynamic> data) {
+    if (data['data'] != null &&
+        data['data']['MediaListCollection'] != null) {
+      final lists =
+          data['data']['MediaListCollection']['lists'] as List<dynamic>;
+
+      final animeListt =
+          lists.expand((list) => list['entries'] as List<dynamic>).toList();
+
+      currentlyReading.value = animeListt
+          .where((animeEntry) =>
+              animeEntry['status'] == 'CURRENT' ||
+              animeEntry['status'] == 'REPEATING')
+          .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
+          .toList()
+          .reversed
+          .toList()
+          .removeDupes();
+
+      mangaList.value = animeListt
+          .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
+          .toList()
+          .reversed
+          .toList()
+          .removeDupes();
+    }
+  }
+
+  Future<void> fetchUserMangaList({bool force = false}) async {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null) {
       return;
+    }
+
+    if (profileData.value.id == null) {
+      Logger.i('User ID is not available. Fetching user profile first.');
+      await fetchUserProfile();
+    }
+
+    final userId = profileData.value.id;
+    if (userId == null) {
+      return;
+    }
+
+    final cacheKey = 'user_manga_list_$userId';
+    if (!force) {
+      final cached = await AnilistCache.instance.get(cacheKey);
+      if (cached != null) {
+        _setMangaListData(cached);
+        return;
+      }
     }
 
     const query = '''
@@ -2401,33 +2523,13 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['data'] != null &&
-            data['data']['MediaListCollection'] != null) {
-          final lists =
-              data['data']['MediaListCollection']['lists'] as List<dynamic>;
-
-          final animeListt =
-              lists.expand((list) => list['entries'] as List<dynamic>).toList();
-
-          currentlyReading.value = animeListt
-              .where((animeEntry) =>
-                  animeEntry['status'] == 'CURRENT' ||
-                  animeEntry['status'] == 'REPEATING')
-              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
-              .toList()
-              .reversed
-              .toList()
-              .removeDupes();
-
-          mangaList.value = animeListt
-              .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
-              .toList()
-              .reversed
-              .toList()
-              .removeDupes();
-        } else {
-          Logger.i('Unexpected response structure: ${response.body}');
-        }
+        _setMangaListData(data);
+        AnilistCache.instance.put(
+          cacheKey,
+          data,
+          ttl: const Duration(minutes: 15),
+          persist: true,
+        );
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -2483,6 +2585,8 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         Logger.i('Anime status updated successfully: ${response.body}');
+        AnilistCache.instance.invalidatePrefix('user_anime_list');
+        AnilistCache.instance.invalidate('user_profile');
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -2538,6 +2642,8 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         Logger.i('Manga status updated successfully: ${response.body}');
+        AnilistCache.instance.invalidatePrefix('user_manga_list');
+        AnilistCache.instance.invalidate('user_profile');
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -2636,7 +2742,400 @@ class AnilistAuth extends GetxController {
   Future<void> logout() async {
     AuthKeys.authToken.delete();
     profileData.value = Profile();
+    unreadAnilistCount.value = 0;
     isLoggedIn.value = false;
+    if (Get.isRegistered<NotificationController>()) {
+      Get.find<NotificationController>().anilistNotifications.clear();
+    }
+  }
+
+  Future<List<AnilistNotificationItem>> getNotifications({
+    int page = 1,
+    int perPage = 30,
+    bool resetCount = false,
+    List<String>? typeIn,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null || token.isEmpty) {
+      return [];
+    }
+
+    const query = r'''
+    query ($page: Int, $perPage: Int, $resetCount: Boolean, $typeIn: [NotificationType]) {
+      Viewer {
+        unreadNotificationCount
+      }
+      Page(page: $page, perPage: $perPage) {
+        pageInfo {
+          total
+          perPage
+          currentPage
+          lastPage
+          hasNextPage
+        }
+        notifications(resetNotificationCount: $resetCount, type_in: $typeIn) {
+          ... on AiringNotification {
+            id
+            type
+            animeId
+            episode
+            contexts
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on FollowingNotification {
+            id
+            type
+            userId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityLikeNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityReplyNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityMentionNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityMessageNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityReplySubscribedNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityReplyLikeNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentMentionNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentReplyNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentSubscribedNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentLikeNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadLikeNotification {
+            id
+            type
+            userId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on RelatedMediaAdditionNotification {
+            id
+            type
+            mediaId
+            context
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on MediaDataChangeNotification {
+            id
+            type
+            mediaId
+            context
+            reason
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on MediaMergeNotification {
+            id
+            type
+            mediaId
+            deletedMediaTitles
+            context
+            reason
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on MediaDeletionNotification {
+            id
+            type
+            deletedMediaTitle
+            context
+            reason
+            createdAt
+          }
+        }
+      }
+    }
+    ''';
+
+    try {
+      final response = await _client.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'query': query,
+          'variables': {
+            'page': page,
+            'perPage': perPage,
+            'resetCount': resetCount,
+            if (typeIn != null && typeIn.isNotEmpty) 'typeIn': typeIn,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final viewerCount = data['data']?['Viewer']?['unreadNotificationCount'] as int?;
+        if (viewerCount != null && !resetCount) {
+          unreadAnilistCount.value = viewerCount;
+        } else if (resetCount) {
+          unreadAnilistCount.value = 0;
+        }
+        final list = data['data']?['Page']?['notifications'] as List<dynamic>?;
+        if (list == null) return [];
+        return list
+            .whereType<Map<String, dynamic>>()
+            .map((item) => AnilistNotificationItem.fromJson(item))
+            .toList();
+      }
+    } catch (e) {
+      Logger.i('Error fetching AniList notifications: $e');
+    }
+    return [];
+  }
+
+  Future<int> getUnreadNotificationCount() async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null || token.isEmpty) return 0;
+    const query = r'''
+    query {
+      Viewer {
+        unreadNotificationCount
+      }
+    }
+    ''';
+    try {
+      final response = await _client.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({'query': query}),
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final count =
+            data['data']?['Viewer']?['unreadNotificationCount'] as int? ?? 0;
+        unreadAnilistCount.value = count;
+        return count;
+      }
+    } catch (e) {
+      Logger.i('Error getting unread notification count: $e');
+    }
+    return unreadAnilistCount.value;
   }
 }
 

@@ -4,7 +4,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/animation/animations.dart';
+import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
@@ -74,7 +74,7 @@ class ChapterListItem extends StatelessWidget {
       alreadyRead = isPageComplete || isOffsetComplete;
     }
 
-    return StaggeredAnimatedItemWrapper(
+    return SlideAndScaleAnimation(
       child: AnymexOnTap(
         onTap: onTap,
         child: Opacity(

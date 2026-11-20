@@ -110,7 +110,7 @@ class _AboutPageState extends State<AboutPage> {
                                     future: PackageInfo.fromPlatform(),
                                     builder: (context, snapshot) {
                                       final version = snapshot.hasData
-                                          ? snapshot.data!.version
+                                          ? '${snapshot.data!.version}+${snapshot.data!.buildNumber}'
                                           : '';
                                       return ProfileInfo(
                                         username: "AnymeX",

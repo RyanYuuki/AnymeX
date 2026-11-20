@@ -11,6 +11,7 @@ import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -776,17 +777,12 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Avatar (staff / VA)
                 if (showAvatar && item.image != null) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(item.image!,
-                        width: 36,
-                        height: 36,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => CircleAvatar(
-                            radius: 18,
-                            backgroundColor: c.surfaceContainerHigh)),
+                  AnymeXImage(
+                    imageUrl: item.image!,
+                    width: 36,
+                    height: 36,
+                    radius: 18,
                   ),
                   const SizedBox(width: 10),
                 ],

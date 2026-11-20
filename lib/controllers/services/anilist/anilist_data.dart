@@ -45,6 +45,7 @@ import 'package:http/http.dart';
 import 'package:anymex/controllers/network/network_manager.dart';
 
 import 'package:anymex/controllers/services/anilist/anilist_api.dart';
+import 'package:anymex/controllers/services/anilist/anilist_cache.dart';
 
 Map<String, dynamic> _parseJson(String body) {
   return jsonDecode(body) as Map<String, dynamic>;
@@ -440,7 +441,33 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     }
   }
 
-  Future<void> fetchAnilistHomepage() async {
+  Future<void> fetchAnilistHomepage({bool force = false}) async {
+    if (!force) {
+      final cached = await AnilistCache.instance.get('anilist_anime_home');
+      if (cached != null) {
+        if (cached['upcomingAnimes']?['media'] != null) {
+          upcomingAnimes.value =
+              parseMediaList(cached['upcomingAnimes']['media']);
+        }
+        if (cached['popularAnimes']?['media'] != null) {
+          popularAnimes.value =
+              parseMediaList(cached['popularAnimes']['media']);
+        }
+        if (cached['trendingAnimes']?['media'] != null) {
+          trendingAnimes.value =
+              parseMediaList(cached['trendingAnimes']['media']);
+        }
+        if (cached['latestAnimes']?['media'] != null) {
+          latestAnimes.value =
+              parseMediaList(cached['latestAnimes']['media']);
+        }
+        if (cached['recentlyUpdatedAnimes']?['media'] != null) {
+          recentlyUpdatedAnimes.value =
+              parseMediaList(cached['recentlyUpdatedAnimes']['media']);
+        }
+        if (trendingAnimes.isNotEmpty) return;
+      }
+    }
     const String url = 'https://graphql.anilist.co';
 
     const String query = '''
@@ -458,6 +485,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
       }
     }
@@ -475,6 +503,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
       }
     }
@@ -495,6 +524,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         coverImage {
           large
           extraLarge
+          color
         }
       }
     }
@@ -517,6 +547,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
       }
     }
@@ -539,6 +570,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
         updatedAt
       }
@@ -561,8 +593,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     );
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body)['data'];
+      final Map<String, dynamic> responseJson =
+          await compute(_parseJson, response.body);
+      final responseData = responseJson['data'];
       ColdCache.write('anilist_anime_home', responseData);
+      AnilistCache.instance.put(
+        'anilist_anime_home',
+        responseData,
+        ttl: const Duration(hours: 2),
+        persist: true,
+      );
       upcomingAnimes.value =
           parseMediaList(responseData['upcomingAnimes']['media']);
       popularAnimes.value =
@@ -580,7 +620,44 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     }
   }
 
-  Future<void> fetchAnilistMangaPage() async {
+  Future<void> fetchAnilistMangaPage({bool force = false}) async {
+    if (!force) {
+      final cached = await AnilistCache.instance.get('anilist_manga_home');
+      if (cached != null) {
+        if (cached['popularMangas']?['media'] != null) {
+          popularMangas.value =
+              parseMediaList(cached['popularMangas']['media']);
+        }
+        if (cached['morePopularMangas']?['media'] != null) {
+          morePopularMangas.value =
+              parseMediaList(cached['morePopularMangas']['media']);
+        }
+        if (cached['latestMangas']?['media'] != null) {
+          latestMangas.value =
+              parseMediaList(cached['latestMangas']['media']);
+        }
+        if (cached['mostFavoriteMangas']?['media'] != null) {
+          mostFavoriteMangas.value =
+              parseMediaList(cached['mostFavoriteMangas']['media']);
+        }
+        if (cached['topRated']?['media'] != null) {
+          topRatedMangas.value = parseMediaList(cached['topRated']['media']);
+        }
+        if (cached['topUpdated']?['media'] != null) {
+          topUpdatedMangas.value =
+              parseMediaList(cached['topUpdated']['media']);
+        }
+        if (cached['topOngoing']?['media'] != null) {
+          topOngoingMangas.value =
+              parseMediaList(cached['topOngoing']['media']);
+        }
+        if (cached['trendingManga']?['media'] != null) {
+          trendingMangas.value =
+              parseMediaList(cached['trendingManga']['media']);
+        }
+        if (trendingMangas.isNotEmpty) return;
+      }
+    }
     const String url = 'https://graphql.anilist.co';
 
     const String query = '''
@@ -732,6 +809,7 @@ averageScore
         coverImage {
           large
           extraLarge
+          color
         }
         type
 averageScore
@@ -758,9 +836,16 @@ averageScore
     );
 
     if (response.statusCode == 200) {
-      final dynamic responsee = json.decode(response.body);
+      final Map<String, dynamic> responsee =
+          await compute(_parseJson, response.body);
       final responseData = responsee['data'];
       ColdCache.write('anilist_manga_home', responseData);
+      AnilistCache.instance.put(
+        'anilist_manga_home',
+        responseData,
+        ttl: const Duration(hours: 2),
+        persist: true,
+      );
       popularMangas.value =
           parseMediaList(responseData['popularMangas']['media']);
       morePopularMangas.value =
@@ -848,7 +933,8 @@ averageScore
         break;
       }
 
-      final data = json.decode(response.body);
+      final Map<String, dynamic> data =
+          await compute(_parseJson, response.body);
       final studio = data['data']?['Studio'];
       if (studio == null) break;
 
@@ -938,7 +1024,8 @@ averageScore
       return null;
     }
 
-    final data = json.decode(response.body);
+    final Map<String, dynamic> data =
+        await compute(_parseJson, response.body);
     final studios = data['data']?['Page']?['studios'] as List?;
     if (studios == null || studios.isEmpty) return null;
     final studioId = studios.first['id'] as int?;
@@ -1165,7 +1252,8 @@ averageScore
           Uri.parse(url), headers: headers, body: jsonEncode(body));
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final Map<String, dynamic> jsonData =
+            await compute(_parseJson, response.body);
         final mediaList = jsonData['data']['Page']['media'];
 
         final mappedData = mediaList.map<Media>((media) {
@@ -1190,6 +1278,12 @@ averageScore
     Media? data = cacheController.getCacheById(params.id, ServicesType.anilist);
 
     if (data != null) return data;
+
+    final cached = await AnilistCache.instance.get('media_details_${params.id}');
+    if (cached != null) {
+      cacheController.addCache(cached, ServicesType.anilist);
+      return Media.fromJson(cached);
+    }
 
     const String url = 'https://graphql.anilist.co/';
     final Map<String, dynamic> variables = {
@@ -1216,9 +1310,16 @@ averageScore
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final Map<String, dynamic> data =
+          await compute(_parseJson, response.body);
         final media = data['data']['Media'];
         cacheController.addCache(media, ServicesType.anilist);
+        AnilistCache.instance.put(
+          'media_details_${params.id}',
+          media,
+          ttl: const Duration(hours: 12),
+          persist: true,
+        );
         Logger.i('Primary Data Loaded for id: ${params.id}');
         print('Fetched details for id: ${params.id}, media: $media');
         return Media.fromJson(media);
@@ -1260,10 +1361,29 @@ averageScore
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final Map<String, dynamic> data =
+          await compute(_parseJson, response.body);
         final mediaJson = data['data']['Media'];
         final page = data['data']['Page'];
         media.mergeSecondaryData(mediaJson, pageJson: page);
+        final cached = await AnilistCache.instance.get('media_details_$id');
+        if (cached is Map<String, dynamic>) {
+          if (mediaJson['relations'] != null) {
+            cached['relations'] = mediaJson['relations'];
+          }
+          if (mediaJson['recommendations'] != null) {
+            cached['recommendations'] = mediaJson['recommendations'];
+          }
+          if (mediaJson['staffPreview'] != null) {
+            cached['staffPreview'] = mediaJson['staffPreview'];
+          }
+          AnilistCache.instance.put(
+            'media_details_$id',
+            cached,
+            ttl: const Duration(hours: 12),
+            persist: true,
+          );
+        }
         Logger.i('Secondary Data Loaded for id: $id');
       } else {
         AnilistErrorHandler.handleResponse(response);
@@ -1368,7 +1488,8 @@ averageScore
       }
 
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final Map<String, dynamic> body =
+            await compute(_parseJson, response.body);
 
         final errors = body['errors'] as List?;
         if (errors != null && errors.isNotEmpty) {
@@ -1573,7 +1694,8 @@ averageScore
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final Map<String, dynamic> data =
+            await compute(_parseJson, response.body);
         final list = data['data'] as List?;
         if (list != null) {
           genres = list.map<String>((g) => g['name'] as String).toList()
@@ -1649,7 +1771,16 @@ averageScore
 
   @override
   Future<void> refresh() async {
-    await anilistAuth.fetchUserAnimeList();
-    await anilistAuth.fetchUserMangaList();
+    AnilistCache.instance.invalidatePrefix('user_anime_list');
+    AnilistCache.instance.invalidatePrefix('user_manga_list');
+    AnilistCache.instance.invalidate('user_profile');
+    AnilistCache.instance.invalidate('anilist_anime_home');
+    AnilistCache.instance.invalidate('anilist_manga_home');
+    await Future.wait([
+      anilistAuth.fetchUserAnimeList(force: true),
+      anilistAuth.fetchUserMangaList(force: true),
+      fetchAnilistHomepage(force: true),
+      fetchAnilistMangaPage(force: true),
+    ]);
   }
 }

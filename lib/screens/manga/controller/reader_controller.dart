@@ -17,12 +17,18 @@ import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_toast.dart';
+import 'package:anymex/utils/shaders.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as p;
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
+import 'package:anymex/services/upscale/page_upscale_service.dart';
+import 'package:anymex/services/upscale/mode_chains.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vibration/vibration.dart';
@@ -101,10 +107,29 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxList<ReaderPage> spreads = RxList();
   late ServicesType serviceHandler;
   final bool shouldTrack;
+  final bool isPreview;
 
   ReaderController({
     required this.shouldTrack,
+    this.isPreview = false,
   });
+
+  factory ReaderController.preview() {
+    final c = ReaderController(shouldTrack: false, isPreview: true);
+    c.media = Media(
+      id: '0',
+      title: 'Attack on Titan',
+      poster: '',
+      serviceType: ServicesType.anilist,
+    );
+    c.chapterList = [Chapter(number: 138), Chapter(number: 139, title: 'Freedom', totalPages: 24)];
+    c.currentChapter.value = c.chapterList.last;
+    c.pageList.value = List.generate(24, (_) => PageUrl(''));
+    c.currentPageIndex.value = 6;
+    c.showControls.value = true;
+    c.loadingState.value = LoadingState.loaded;
+    return c;
+  }
 
   final SourceController sourceController = Get.find<SourceController>();
   final OfflineStorageController offlineStorageController =
@@ -180,6 +205,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxInt displayRefreshInterval = 1.obs;
   final RxString displayRefreshColor = 'black'.obs;
   final RxInt imageFilterQuality = 2.obs;
+  final RxBool upscalingEnabled = false.obs;
+  final RxString selectedUpscalerShader = 'Manga: Crisp Lines'.obs;
+  final RxString upscalerProfile = 'MID-END'.obs;
+  final RxDouble upscalerSharpness = 1.0.obs;
+  final RxBool upscalerDenoise = true.obs;
+  final RxList<String> customGlslShaders = <String>[].obs;
   final RxBool showingTransition = false.obs;
   final RxBool transitionIsNext = true.obs;
   final Rx<Chapter?> transitionTargetChapter = Rx<Chapter?>(null);
@@ -425,6 +456,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    if (isPreview) {
+      showControls.value = true;
+      return;
+    }
     WakelockPlus.enable();
     WidgetsBinding.instance.addObserver(this);
     _performSave(reason: 'Page opened');
@@ -588,7 +623,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    if (isPreview) {
+      super.onClose();
+      return;
+    }
     WidgetsBinding.instance.removeObserver(this);
+    PageUpscaleService.instance.cancelAll();
 
     _performFinalSave();
 
@@ -1015,6 +1055,23 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     displayRefreshColor.value =
         ReaderKeys.displayRefreshColor.get<String>('black');
     imageFilterQuality.value = ReaderKeys.imageFilterQuality.get<int>(2);
+    upscalingEnabled.value = ReaderKeys.upscalingEnabled.get<bool>(false);
+    final savedShader =
+        ReaderKeys.upscalerShader.get<String>('Manga: Crisp Lines');
+    selectedUpscalerShader.value = (savedShader.contains('Anime4K') ||
+            !superResolutionPresets.any((p) => p.id == savedShader))
+        ? 'Manga: Crisp Lines'
+        : savedShader;
+    upscalerProfile.value =
+        ReaderKeys.upscalerProfile.get<String>('MID-END');
+    upscalerSharpness.value =
+        ReaderKeys.upscalerSharpness.get<double>(1.0);
+    upscalerDenoise.value =
+        ReaderKeys.upscalerDenoise.get<bool>(true);
+    final customList = ReaderKeys.customGlslShaders.get<List<String>?>();
+    if (customList != null) {
+      customGlslShaders.assignAll(customList);
+    }
 
     if (!keepScreenOn.value) WakelockPlus.disable();
 
@@ -1061,6 +1118,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.displayRefreshInterval.set(displayRefreshInterval.value);
     ReaderKeys.displayRefreshColor.set(displayRefreshColor.value);
     ReaderKeys.imageFilterQuality.set(imageFilterQuality.value);
+    ReaderKeys.upscalingEnabled.set(upscalingEnabled.value);
+    ReaderKeys.upscalerShader.set(selectedUpscalerShader.value);
+    ReaderKeys.upscalerProfile.set(upscalerProfile.value);
+    ReaderKeys.upscalerSharpness.set(upscalerSharpness.value);
+    ReaderKeys.upscalerDenoise.set(upscalerDenoise.value);
+    ReaderKeys.customGlslShaders.set(customGlslShaders.toList());
   }
 
   void _setupPositionListener() {
@@ -1447,6 +1510,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (activeChapter == null) return;
 
     _updatePageStateForSpread(index, activeChapter);
+    prefetchVisiblePages();
   }
 
   void preloadNextPages(int currentIndex) {
@@ -1679,6 +1743,105 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleGrayscale() {
     grayscaleEnabled.value = !grayscaleEnabled.value;
+    savePreferences();
+  }
+
+  UpscaleConfig get currentUpscaleConfig => UpscaleConfig(
+        mode: selectedUpscalerShader.value,
+        profile: upscalerProfile.value,
+        sharpness: upscalerSharpness.value,
+        denoise: upscalerDenoise.value,
+      );
+
+  void prefetchVisiblePages() {
+    if (!upscalingEnabled.value || pageList.isEmpty) return;
+    final context = Get.context;
+    final targetW = context != null
+        ? (MediaQuery.sizeOf(context).width *
+                MediaQuery.devicePixelRatioOf(context))
+            .round()
+        : 1080;
+    final curIdx = currentPageIndex.value;
+    final nextPages = pageList.skip(curIdx).take(3).toList();
+    PageUpscaleService.instance.prefetch(
+      nextPages,
+      currentUpscaleConfig,
+      targetWidthPx: targetW,
+    );
+  }
+
+  void toggleUpscaling() {
+    upscalingEnabled.value = !upscalingEnabled.value;
+    savePreferences();
+    PageUpscaleService.instance.cancelAll();
+    prefetchVisiblePages();
+  }
+
+  void setUpscalerShader(String shader) {
+    selectedUpscalerShader.value = shader;
+    savePreferences();
+    PageUpscaleService.instance.cancelAll();
+    prefetchVisiblePages();
+  }
+
+  void setUpscalerProfile(String profile) {
+    upscalerProfile.value = profile;
+    savePreferences();
+    PageUpscaleService.instance.cancelAll();
+    prefetchVisiblePages();
+  }
+
+  void setUpscalerSharpness(double value) {
+    upscalerSharpness.value = value;
+    savePreferences();
+    PageUpscaleService.instance.cancelAll();
+    prefetchVisiblePages();
+  }
+
+  void toggleUpscalerDenoise() {
+    upscalerDenoise.value = !upscalerDenoise.value;
+    savePreferences();
+    PageUpscaleService.instance.cancelAll();
+    prefetchVisiblePages();
+  }
+
+  Future<void> pickCustomGlslShader() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['glsl'],
+        allowMultiple: false,
+      );
+      if (result != null &&
+          result.files.isNotEmpty &&
+          result.files.single.path != null) {
+        final filePath = result.files.single.path!;
+        final fileName = p.basename(filePath);
+        try {
+          final basePath = await PlayerShaders.getShaderBasePath();
+          final targetFile = File('$basePath$fileName');
+          final sourceFile = File(filePath);
+          if (await sourceFile.exists()) {
+            await targetFile.writeAsBytes(await sourceFile.readAsBytes());
+          }
+        } catch (_) {}
+        if (!customGlslShaders.contains(fileName)) {
+          customGlslShaders.add(fileName);
+        }
+        selectedUpscalerShader.value = fileName;
+        savePreferences();
+        AnymeXToast.show(message: 'Shader added: $fileName');
+      }
+    } catch (e) {
+      AnymeXToast.show(message: 'Error importing shader: $e');
+    }
+  }
+
+  void removeCustomGlslShader(String name) {
+    customGlslShaders.remove(name);
+    if (selectedUpscalerShader.value == name) {
+      selectedUpscalerShader.value = 'Manga: Crisp Lines';
+    }
     savePreferences();
   }
 

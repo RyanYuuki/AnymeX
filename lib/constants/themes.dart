@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
-const Color seedColor = Colors.red;
+const Color seedColor = Colors.deepPurple;
 
 ThemeData lightMode = ThemeData(
   useMaterial3: true,
@@ -12,6 +13,11 @@ ThemeData lightMode = ThemeData(
   colorScheme: ColorScheme.fromSeed(
     seedColor: seedColor,
     brightness: Brightness.light,
+  ),
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: seedColor,
+    selectionColor: seedColor.withValues(alpha: 0.35),
+    selectionHandleColor: seedColor,
   ),
   pageTransitionsTheme: PageTransitionsTheme(
     builders: {
@@ -71,12 +77,16 @@ ThemeData darkMode = ThemeData(
     seedColor: seedColor,
     brightness: Brightness.dark,
   ),
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: seedColor,
+    selectionColor: seedColor.withValues(alpha: 0.35),
+    selectionHandleColor: seedColor,
+  ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.white),
     bodyMedium: TextStyle(color: Colors.white),
     titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    bodySmall: TextStyle(
-        color: Colors.grey, fontSize: 12), // Updated to a lighter color
+    bodySmall: TextStyle(color: Colors.grey, fontSize: 12),
   ),
   pageTransitionsTheme: PageTransitionsTheme(
     builders: {

@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -24,6 +25,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final int? maxLines;
   final bool autoResize;
   final bool lazy;
+  final TileStyle? style;
 
   final List<Widget>? headerChildren;
   final List<Widget>? children;
@@ -52,6 +54,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.getTitleStyle,
     this.getSubtitleStyle,
     this.lazy = false,
+    this.style,
     this.headerChildren,
     this.children,
     this.footerChildren,
@@ -64,10 +67,152 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     final colors = context.colors;
     final resolvedHeaderChildren = headerChildren ?? children ?? [];
     final footerItems = footerChildren ?? [];
+    final effectiveStyle = style ??
+        (settingsController.tileStyle == 1
+            ? TileStyle.modern
+            : TileStyle.classic);
+    final isModern = effectiveStyle == TileStyle.modern;
 
     if (lazy) {
       final totalCount =
           resolvedHeaderChildren.length + items.length + footerItems.length;
+
+      final listView = ListView.separated(
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        itemCount: totalCount,
+        separatorBuilder: (context, index) => isModern
+            ? const SizedBox(height: 2.0)
+            : Divider(
+                height: 1,
+                thickness: 0.6,
+                indent: separatorIndent,
+                endIndent: 16,
+                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+              ),
+        itemBuilder: (context, index) {
+          BorderRadius radius;
+          if (isModern) {
+            if (totalCount == 1) {
+              radius = BorderRadius.circular(18.0);
+            } else if (index == 0) {
+              radius = const BorderRadius.vertical(
+                top: Radius.circular(18.0),
+                bottom: Radius.circular(4.0),
+              );
+            } else if (index == totalCount - 1) {
+              radius = const BorderRadius.vertical(
+                top: Radius.circular(4.0),
+                bottom: Radius.circular(18.0),
+              );
+            } else {
+              radius = BorderRadius.circular(4.0);
+            }
+          } else {
+            if (totalCount == 1) {
+              radius = BorderRadius.circular(18.0);
+            } else if (index == 0) {
+              radius = const BorderRadius.vertical(top: Radius.circular(18.0));
+            } else if (index == totalCount - 1) {
+              radius =
+                  const BorderRadius.vertical(bottom: Radius.circular(18.0));
+            } else {
+              radius = BorderRadius.zero;
+            }
+          }
+
+          if (index < resolvedHeaderChildren.length) {
+            final child = resolvedHeaderChildren[index];
+            return AnymeXTileScope(
+              borderRadius: radius,
+              backgroundColor: isModern
+                  ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
+                  : null,
+              style: effectiveStyle,
+              child: ClipRRect(
+                borderRadius: radius,
+                child: child,
+              ),
+            );
+          }
+
+          final footerStartIndex =
+              resolvedHeaderChildren.length + items.length;
+          if (index >= footerStartIndex) {
+            final child = footerItems[index - footerStartIndex];
+            return AnymeXTileScope(
+              borderRadius: radius,
+              backgroundColor: isModern
+                  ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
+                  : null,
+              style: effectiveStyle,
+              child: ClipRRect(
+                borderRadius: radius,
+                child: child,
+              ),
+            );
+          }
+
+          final itemIndex = index - resolvedHeaderChildren.length;
+          final item = items[itemIndex];
+
+          if (!isSelection) {
+            return AnymeXTile(
+              title: getTitle(item),
+              subtitle: getSubtitle?.call(item),
+              subtitleWidget: getSubtitleWidget?.call(item),
+              icon: getIcon?.call(item),
+              leading: getLeading?.call(item),
+              trailing: getTrailing?.call(item),
+              onTap: () => onItemPressed(item),
+              enabled: isEnabled?.call(item) ?? true,
+              showChevron: showChevron?.call(item) ?? false,
+              maxLines: maxLines,
+              autoResize: autoResize,
+              titleStyle: getTitleStyle?.call(item),
+              subtitleStyle: getSubtitleStyle?.call(item),
+              borderRadius: radius,
+              style: effectiveStyle,
+            );
+          }
+
+          final checked = isSelected != null
+              ? isSelected!(item)
+              : (selectedItems != null
+                  ? selectedItems!.contains(item)
+                  : item == selectedItem);
+
+          if (isRadio) {
+            return AnymeXTile.radio(
+              title: getTitle(item),
+              subtitle: getSubtitle?.call(item),
+              icon: getIcon?.call(item),
+              selected: checked,
+              onTap: () => onItemPressed(item),
+              titleStyle: getTitleStyle?.call(item),
+              subtitleStyle: getSubtitleStyle?.call(item),
+              borderRadius: radius,
+              style: effectiveStyle,
+            );
+          } else {
+            return AnymeXTile.checkbox(
+              title: getTitle(item),
+              subtitle: getSubtitle?.call(item),
+              icon: getIcon?.call(item),
+              value: checked,
+              onChanged: (_) => onItemPressed(item),
+              titleStyle: getTitleStyle?.call(item),
+              subtitleStyle: getSubtitleStyle?.call(item),
+              borderRadius: radius,
+              style: effectiveStyle,
+            );
+          }
+        },
+      );
+
+      if (isModern) {
+        return listView;
+      }
 
       return Container(
         margin: EdgeInsets.zero,
@@ -81,100 +226,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(18.0),
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            itemCount: totalCount,
-            separatorBuilder: (context, index) => Divider(
-              height: 1,
-              thickness: 0.6,
-              indent: separatorIndent,
-              endIndent: 16,
-              color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-            ),
-            itemBuilder: (context, index) {
-              BorderRadius radius;
-              if (totalCount == 1) {
-                radius = BorderRadius.circular(18.0);
-              } else if (index == 0) {
-                radius =
-                    const BorderRadius.vertical(top: Radius.circular(18.0));
-              } else if (index == totalCount - 1) {
-                radius =
-                    const BorderRadius.vertical(bottom: Radius.circular(18.0));
-              } else {
-                radius = BorderRadius.zero;
-              }
-
-              if (index < resolvedHeaderChildren.length) {
-                return ClipRRect(
-                  borderRadius: radius,
-                  child: resolvedHeaderChildren[index],
-                );
-              }
-
-              final footerStartIndex =
-                  resolvedHeaderChildren.length + items.length;
-              if (index >= footerStartIndex) {
-                return ClipRRect(
-                  borderRadius: radius,
-                  child: footerItems[index - footerStartIndex],
-                );
-              }
-
-              final itemIndex = index - resolvedHeaderChildren.length;
-              final item = items[itemIndex];
-
-              if (!isSelection) {
-                return AnymeXTile(
-                  title: getTitle(item),
-                  subtitle: getSubtitle?.call(item),
-                  subtitleWidget: getSubtitleWidget?.call(item),
-                  icon: getIcon?.call(item),
-                  leading: getLeading?.call(item),
-                  trailing: getTrailing?.call(item),
-                  onTap: () => onItemPressed(item),
-                  enabled: isEnabled?.call(item) ?? true,
-                  showChevron: showChevron?.call(item) ?? false,
-                  maxLines: maxLines,
-                  autoResize: autoResize,
-                  titleStyle: getTitleStyle?.call(item),
-                  subtitleStyle: getSubtitleStyle?.call(item),
-                  borderRadius: radius,
-                );
-              }
-
-              final checked = isSelected != null
-                  ? isSelected!(item)
-                  : (selectedItems != null
-                      ? selectedItems!.contains(item)
-                      : item == selectedItem);
-
-              if (isRadio) {
-                return AnymeXTile.radio(
-                  title: getTitle(item),
-                  subtitle: getSubtitle?.call(item),
-                  icon: getIcon?.call(item),
-                  selected: checked,
-                  onTap: () => onItemPressed(item),
-                  titleStyle: getTitleStyle?.call(item),
-                  subtitleStyle: getSubtitleStyle?.call(item),
-                  borderRadius: radius,
-                );
-              } else {
-                return AnymeXTile.checkbox(
-                  title: getTitle(item),
-                  subtitle: getSubtitle?.call(item),
-                  icon: getIcon?.call(item),
-                  value: checked,
-                  onChanged: (_) => onItemPressed(item),
-                  titleStyle: getTitleStyle?.call(item),
-                  subtitleStyle: getSubtitleStyle?.call(item),
-                  borderRadius: radius,
-                );
-              }
-            },
-          ),
+          child: listView,
         ),
       );
     }
@@ -195,6 +247,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
           autoResize: autoResize,
           titleStyle: getTitleStyle?.call(item),
           subtitleStyle: getSubtitleStyle?.call(item),
+          style: effectiveStyle,
         ) as Widget;
       }
 
@@ -213,6 +266,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
           onTap: () => onItemPressed(item),
           titleStyle: getTitleStyle?.call(item),
           subtitleStyle: getSubtitleStyle?.call(item),
+          style: effectiveStyle,
         ) as Widget;
       } else {
         return AnymeXTile.checkbox(
@@ -223,6 +277,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
           onChanged: (_) => onItemPressed(item),
           titleStyle: getTitleStyle?.call(item),
           subtitleStyle: getSubtitleStyle?.call(item),
+          style: effectiveStyle,
         ) as Widget;
       }
     }).toList();
@@ -230,6 +285,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     return AnymeXSectionBuilder(
       margin: EdgeInsets.zero,
       separatorIndent: separatorIndent,
+      style: effectiveStyle,
       children: [
         ...resolvedHeaderChildren,
         ...itemWidgets,

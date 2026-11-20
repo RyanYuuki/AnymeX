@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -221,22 +222,93 @@ class _AnymeXExpansionTileState extends State<AnymeXExpansionTile>
       ),
     );
 
+    final effectiveStyle =
+        settingsController.tileStyle == 1 ? TileStyle.modern : TileStyle.classic;
+    final isModern = effectiveStyle == TileStyle.modern;
+
+    Widget formattedContent = widget.content;
+    if (widget.content is Column) {
+      final col = widget.content as Column;
+      if (col.children.isNotEmpty) {
+        final List<Widget> separated = [];
+        final totalCount = col.children.length;
+        for (int i = 0; i < totalCount; i++) {
+          final child = col.children[i];
+          if (isModern) {
+            BorderRadius radius;
+            if (totalCount == 1) {
+              radius = BorderRadius.circular(14.0);
+            } else if (i == 0) {
+              radius = const BorderRadius.vertical(
+                top: Radius.circular(14.0),
+                bottom: Radius.circular(4.0),
+              );
+            } else if (i == totalCount - 1) {
+              radius = const BorderRadius.vertical(
+                top: Radius.circular(4.0),
+                bottom: Radius.circular(14.0),
+              );
+            } else {
+              radius = BorderRadius.circular(4.0);
+            }
+            separated.add(
+              AnymeXTileScope(
+                borderRadius: radius,
+                style: effectiveStyle,
+                child: child,
+              ),
+            );
+            if (i < totalCount - 1) {
+              separated.add(const SizedBox(height: 2.0));
+            }
+          } else {
+            separated.add(child);
+            if (i < totalCount - 1) {
+              separated.add(
+                Divider(
+                  height: 1,
+                  thickness: 0.6,
+                  indent: 56,
+                  endIndent: 16,
+                  color: colors.onSurface.opaque(0.06, iReallyMeanIt: true),
+                ),
+              );
+            }
+          }
+        }
+        formattedContent = Column(
+          mainAxisSize: col.mainAxisSize,
+          crossAxisAlignment: col.crossAxisAlignment,
+          mainAxisAlignment: col.mainAxisAlignment,
+          children: separated,
+        );
+      }
+    }
+
     final Widget effectiveContent = widget.useContentContainer
         ? Container(
             margin: widget.contentMargin ??
                 const EdgeInsets.fromLTRB(12, 0, 12, 8),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest
-                  .opaque(0.25, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: colors.onSurface.opaque(0.06, iReallyMeanIt: true),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: widget.content,
-            ),
+            decoration: isModern
+                ? null
+                : BoxDecoration(
+                    color: colors.surfaceContainerHighest
+                        .opaque(0.25, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: colors.onSurface.opaque(0.06, iReallyMeanIt: true),
+                    ),
+                  ),
+            child: isModern
+                ? formattedContent
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: AnymeXTileScope(
+                      borderRadius: BorderRadius.zero,
+                      backgroundColor: Colors.transparent,
+                      child: formattedContent,
+                    ),
+                  ),
           )
         : widget.content;
 

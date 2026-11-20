@@ -7,8 +7,6 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
-import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
-import 'package:anymex/screens/manga/widgets/scanlators_ranges.dart';
 import 'package:anymex/screens/novel/reader/novel_reader.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -26,7 +24,7 @@ import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/screens/manga/widgets/track_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
-import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_popup_menu.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +38,6 @@ typedef _BatchOption = ({
   bool enabled,
   VoidCallback onTap,
 });
-
 
 class _ChapterTileData {
   final double progressValue;
@@ -66,9 +63,12 @@ _ChapterTileData _computeTileData({
   final readChaptersList = savedMedia?.readChapters ?? <Chapter>[];
   Chapter? savedChap;
   if (chapter.link != null && chapter.link!.isNotEmpty) {
-    savedChap = readChaptersList.firstWhereOrNull((c) => c.link == chapter.link);
+    savedChap =
+        readChaptersList.firstWhereOrNull((c) => c.link == chapter.link);
   }
-  savedChap ??= readChaptersList.firstWhereOrNull((c) => c.number == chapter.number) ?? chapter;
+  savedChap ??=
+      readChaptersList.firstWhereOrNull((c) => c.number == chapter.number) ??
+          chapter;
 
   final totalPages = savedChap.totalPages ?? 0;
   final currentPage = savedChap.pageNumber ?? 0;
@@ -91,10 +91,9 @@ _ChapterTileData _computeTileData({
 
   final bool isRead;
   if (isLoggedInOnline) {
-    isRead =
-        (chapter.number != null && chapter.number! <= onlineProgress) ||
-            isPageComplete ||
-            isReadInHistory;
+    isRead = (chapter.number != null && chapter.number! <= onlineProgress) ||
+        isPageComplete ||
+        isReadInHistory;
   } else {
     isRead = isPageComplete || isReadInHistory;
   }
@@ -103,9 +102,11 @@ _ChapterTileData _computeTileData({
   Chapter? continueChapter;
   if (lastRead != null) {
     if (lastRead.link != null && lastRead.link!.isNotEmpty) {
-      continueChapter = allChapters.firstWhereOrNull((c) => c.link == lastRead.link);
+      continueChapter =
+          allChapters.firstWhereOrNull((c) => c.link == lastRead.link);
     }
-    continueChapter ??= allChapters.firstWhereOrNull((c) => c.number == lastRead.number);
+    continueChapter ??=
+        allChapters.firstWhereOrNull((c) => c.number == lastRead.number);
   }
   continueChapter ??= allChapters.isNotEmpty ? allChapters.first : null;
 
@@ -144,7 +145,10 @@ class ChapterListBuilder extends StatefulWidget {
   State<ChapterListBuilder> createState() => _ChapterListBuilderState();
 }
 
-class _ChapterListBuilderState extends State<ChapterListBuilder> {
+class _ChapterListBuilderState extends State<ChapterListBuilder>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final RxInt selectedChunkIndex = 0.obs;
   final RxInt selectedViewTab = 0.obs;
   late final RxInt selectedScanlatorIndex;
@@ -221,8 +225,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     if (_isLoggedInOnline && widget.anilistData != null) {
       final item = _auth.onlineService.mangaList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
-      _onlineProgress =
-          double.tryParse(item?.episodeCount ?? '')?.toInt() ?? 0;
+      _onlineProgress = double.tryParse(item?.episodeCount ?? '')?.toInt() ?? 0;
     } else {
       _onlineProgress = 0;
     }
@@ -269,8 +272,9 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       if (mounted) setState(() {});
     } else {
       final mediaData = widget.anilistData!;
-      final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-      
+      final dbId =
+          '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
+
       bool shouldTrackValue = false;
       final isLoggedInOnline = _auth.isLoggedIn.value &&
           _auth.serviceType.value != ServicesType.extensions;
@@ -310,8 +314,160 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     }
   }
 
+  Widget _buildDropdownPill({
+    required BuildContext context,
+    required String label,
+  }) {
+    final colors = context.colors;
+    final containerBg = Color.lerp(
+            colors.surfaceContainerHighest, colors.primaryContainer, 0.1)!
+        .opaque(0.3, iReallyMeanIt: true);
+    return Container(
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: containerBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colors.outline.opaque(0.12, iReallyMeanIt: true),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnymeXText(
+            label,
+            size: 12.5,
+            variant: TextVariant.semiBold,
+            color: colors.onSurface,
+          ),
+          const SizedBox(width: 5),
+          Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 16,
+            color: colors.onSurface.opaque(0.7, iReallyMeanIt: true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSegmentedTabs({
+    required BuildContext context,
+    required int onlineCount,
+    required int downloadedCount,
+    required bool isDownloadedTab,
+  }) {
+    final colors = context.colors;
+    final containerBg = Color.lerp(
+            colors.surfaceContainerHighest, colors.primaryContainer, 0.1)!
+        .opaque(0.3, iReallyMeanIt: true);
+    final activeTabBg = Color.lerp(
+            colors.surfaceContainerHighest, colors.primaryContainer, 0.15)!
+        .opaque(0.65, iReallyMeanIt: true);
+
+    return Container(
+      height: 38,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: containerBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: colors.outline.opaque(0.12, iReallyMeanIt: true),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => selectedViewTab.value = 0,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: !isDownloadedTab ? activeTabBg : Colors.transparent,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: AnymeXText(
+                  'Online $onlineCount',
+                  size: 12,
+                  variant:
+                      !isDownloadedTab ? TextVariant.bold : TextVariant.regular,
+                  color: !isDownloadedTab
+                      ? colors.onSurface
+                      : colors.onSurface.opaque(0.5, iReallyMeanIt: true),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => selectedViewTab.value = 1,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: isDownloadedTab ? activeTabBg : Colors.transparent,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: AnymeXText(
+                  'Downloaded $downloadedCount',
+                  size: 12,
+                  variant:
+                      isDownloadedTab ? TextVariant.bold : TextVariant.regular,
+                  color: isDownloadedTab
+                      ? colors.onSurface
+                      : colors.onSurface.opaque(0.5, iReallyMeanIt: true),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderActionButton({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    final colors = context.colors;
+    final containerBg = Color.lerp(
+            colors.surfaceContainerHighest, colors.primaryContainer, 0.1)!
+        .opaque(0.3, iReallyMeanIt: true);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: 38,
+          width: 38,
+          decoration: BoxDecoration(
+            color: containerBg,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: colors.outline.opaque(0.12, iReallyMeanIt: true),
+            ),
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color: colors.onSurface.opaque(0.85, iReallyMeanIt: true),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (widget.chapterList.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
@@ -350,138 +506,143 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       return SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: context.colors.surfaceContainerHighest
-                    .opaque(0.2, iReallyMeanIt: true),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: context.colors.onSurface
-                      .opaque(0.08, iReallyMeanIt: true),
-                ),
-              ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Expanded(
-                        child: AnymeXPills(
-                          scrollPadding: EdgeInsets.zero,
-                          items: [
-                            PillItem(
-                              label: 'Online'.tr,
-                              count: widget.chapterList.length,
-                              isSelected: selectedViewTab.value == 0,
-                              onTap: () => selectedViewTab.value = 0,
-                            ),
-                            PillItem(
-                              label: 'Downloaded'.tr,
-                              count: downloadedChapters.length,
-                              isSelected: selectedViewTab.value == 1,
-                              onTap: () => selectedViewTab.value = 1,
-                            ),
-                          ],
+                        child: _buildSegmentedTabs(
+                          context: context,
+                          onlineCount: widget.chapterList.length,
+                          downloadedCount: downloadedChapters.length,
+                          isDownloadedTab: isDownloadedTab,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => _showBatchDownloadSheet(
-                            context,
-                            extName: extName,
-                            mediaTitle: mediaTitle,
-                            filteredChapters: filtered,
-                            currentChunkChapters: currentChapters,
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: context.colors.surfaceContainerHighest
-                                  .opaque(0.35, iReallyMeanIt: true),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: context.colors.outline
-                                    .opaque(0.15, iReallyMeanIt: true),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.file_download_outlined,
-                              size: 16,
-                              color: context.colors.primary,
-                            ),
-                          ),
+                      _buildHeaderActionButton(
+                        context: context,
+                        icon: Icons.file_download_outlined,
+                        onTap: () => _showBatchDownloadSheet(
+                          context,
+                          extName: extName,
+                          mediaTitle: mediaTitle,
+                          filteredChapters: filtered,
+                          currentChunkChapters: currentChapters,
                         ),
                       ),
                       if (widget.onSettingsTap != null) ...[
                         const SizedBox(width: 8),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: widget.onSettingsTap,
-                            borderRadius: BorderRadius.circular(14),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: context.colors.surfaceContainerHighest
-                                    .opaque(0.35, iReallyMeanIt: true),
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: context.colors.outline
-                                      .opaque(0.15, iReallyMeanIt: true),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.settings_outlined,
-                                    size: 16,
-                                    color: context.colors.primary,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  AnymeXText(
-                                    'Settings'.tr,
-                                    size: 12,
-                                    color: context.colors.primary,
-                                    variant: TextVariant.bold,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        _buildHeaderActionButton(
+                          context: context,
+                          icon: Icons.tune_rounded,
+                          onTap: widget.onSettingsTap!,
                         ),
                       ],
                     ],
                   ),
                   if (!isDownloadedTab) ...[
-                    if (scanlatorsList.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: ScanlatorsRanges(
-                          scanlators: scanlatorsList,
-                          selectedScanIndex: selectedScanlatorIndex,
-                          onScanIndexChanged: () {
-                            selectedChunkIndex.value = 0;
-                          },
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (scanlatorsList.length > 1) ...[
+                                  AnymeXPopupMenuButton<int>(
+                                    title: 'Scanlators',
+                                    theme: Theme.of(context),
+                                    items: List.generate(scanlatorsList.length,
+                                        (i) {
+                                      final isSelected =
+                                          selectedScanlatorIndex.value == i;
+                                      return AnymeXMenuItem<int>(
+                                        title: scanlatorsList[i],
+                                        value: i,
+                                        trailing: isSelected
+                                            ? Icon(Icons.check_rounded,
+                                                size: 16,
+                                                color: context.colors.primary)
+                                            : null,
+                                        color: isSelected
+                                            ? context.colors.primary
+                                            : null,
+                                        onTap: () {
+                                          selectedScanlatorIndex.value = i;
+                                          selectedChunkIndex.value = 0;
+                                        },
+                                      );
+                                    }),
+                                    child: _buildDropdownPill(
+                                      context: context,
+                                      label: scanlatorsList[
+                                          selectedScanlatorIndex.value.clamp(
+                                              0, scanlatorsList.length - 1)],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                ],
+                                if (chunks.isNotEmpty) ...[
+                                  Builder(builder: (context) {
+                                    final safeChunkIndex = selectedChunkIndex
+                                        .value
+                                        .clamp(0, chunks.length - 1);
+                                    final chunkLabel = safeChunkIndex == 0
+                                        ? 'All'
+                                        : 'Ch ${chunks[safeChunkIndex].first.formattedNumber}–${chunks[safeChunkIndex].last.formattedNumber}';
+
+                                    return AnymeXPopupMenuButton<int>(
+                                      title: 'Chapter Range',
+                                      theme: Theme.of(context),
+                                      items: List.generate(chunks.length,
+                                          (index) {
+                                        final isSelected =
+                                            safeChunkIndex == index;
+                                        final label = index == 0
+                                            ? 'All (${filtered.length})'
+                                            : 'Ch ${chunks[index].first.formattedNumber}–${chunks[index].last.formattedNumber} (${chunks[index].length})';
+                                        return AnymeXMenuItem<int>(
+                                          title: label,
+                                          value: index,
+                                          trailing: isSelected
+                                              ? Icon(Icons.check_rounded,
+                                                  size: 16,
+                                                  color: context.colors.primary)
+                                              : null,
+                                          color: isSelected
+                                              ? context.colors.primary
+                                              : null,
+                                          onTap: () {
+                                            selectedChunkIndex.value = index;
+                                          },
+                                        );
+                                      }),
+                                      child: _buildDropdownPill(
+                                        context: context,
+                                        label: chunkLabel,
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    if (chunks.length > 1)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: ChapterRanges(
-                          chunks: chunks,
-                          selectedChunkIndex: selectedChunkIndex,
-                          onChunkSelected: (index) =>
-                              selectedChunkIndex.value = index,
+                        const SizedBox(width: 8),
+                        AnymeXText(
+                          '${filtered.length} chapters',
+                          size: 12,
+                          variant: TextVariant.regular,
+                          color: context.colors.primary
+                              .opaque(0.85, iReallyMeanIt: true),
                         ),
-                      ),
+                      ],
+                    ),
                   ],
                 ],
               ),
@@ -657,18 +818,22 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     if (settings.chapterStyle == 'compact') {
       return _buildCompactTile(context, chapter, data, colors, onTap,
-          downloadButton: downloadButton).animatePop(index: index);
+              downloadButton: downloadButton)
+          .animatePop(index: index, slideX: 0.0, slideY: 1.0);
     }
     if (settings.chapterStyle == 'grid') {
       return _buildGridTile(chapter, data, colors, onTap,
-          downloadButton: downloadButton).animatePop(index: index, isGrid: true);
+              downloadButton: downloadButton)
+          .animatePop(index: index, isGrid: true, slideX: 0.0, slideY: 1.0);
     }
     if (settings.chapterStyle == 'detailed') {
       return _buildDetailedTile(context, chapter, data, colors, onTap,
-          downloadButton: downloadButton).animatePop(index: index);
+              downloadButton: downloadButton)
+          .animatePop(index: index, slideX: 0.0, slideY: 1.0);
     }
     return _buildDefaultTile(chapter, data, colors, onTap,
-        downloadButton: downloadButton).animatePop(index: index);
+            downloadButton: downloadButton)
+        .animatePop(index: index, slideX: 0.0, slideY: 1.0);
   }
 
   Widget _buildCompactTile(
@@ -740,8 +905,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                       AnymeXText(
                         chapter.scanlator!,
                         size: 10,
-                        color: colors.onSurface
-                            .opaque(0.6, iReallyMeanIt: true),
+                        color:
+                            colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                       ),
                     ],
                   ],
@@ -868,8 +1033,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(16.multiplyRadius()),
+                    borderRadius: BorderRadius.circular(16.multiplyRadius()),
                   ),
                   child: Stack(
                     alignment: Alignment.center,
@@ -906,8 +1070,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: colors.primary,
-                    borderRadius:
-                        BorderRadius.circular(16.multiplyRadius()),
+                    borderRadius: BorderRadius.circular(16.multiplyRadius()),
                     boxShadow: [glowingShadow(context)],
                   ),
                   child: AnymeXText(
@@ -947,8 +1110,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
               ],
               const SizedBox(width: 8),
               Container(
-                decoration:
-                    BoxDecoration(boxShadow: [glowingShadow(context)]),
+                decoration: BoxDecoration(boxShadow: [glowingShadow(context)]),
                 child: AnymeXContainerButton(
                   onTap: onTap,
                   radius: 12,
@@ -989,8 +1151,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       ),
       child: ListTile(
         onTap: onTap,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: data.progressPercentage > 0
             ? SizedBox(
                 width: 32,
@@ -1045,8 +1206,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                 ? Icon(Icons.check_circle_rounded,
                     color: colors.primary, size: 20)
                 : Icon(Icons.circle_outlined,
-                    color:
-                        colors.onSurface.opaque(0.3, iReallyMeanIt: true),
+                    color: colors.onSurface.opaque(0.3, iReallyMeanIt: true),
                     size: 20),
           ],
         ),
@@ -1243,10 +1403,10 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           );
         case DownloadItemStatus.failed:
           return Tooltip(
-            message: state.errorMessage != null &&
-                    state.errorMessage!.isNotEmpty
-                ? 'Download failed: ${state.errorMessage}. Tap to retry.'
-                : 'Download failed. Tap to retry.',
+            message:
+                state.errorMessage != null && state.errorMessage!.isNotEmpty
+                    ? 'Download failed: ${state.errorMessage}. Tap to retry.'
+                    : 'Download failed. Tap to retry.',
             child: Material(
               color: Colors.transparent,
               child: InkWell(

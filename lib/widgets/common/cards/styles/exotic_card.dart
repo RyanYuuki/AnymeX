@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -18,13 +19,16 @@ class ExoticCardStyle implements MediaCardStyle {
   String get description => 'Bordered card with glowing shadow and vibrant action banner.';
 
   @override
-  double getHeight(bool isDesktop) => isDesktop ? 300 : 240;
+  double getHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getCardHeight(2, isDesktop);
 
   @override
-  double getExtraHeight(bool isDesktop) => isDesktop ? 70 : 65;
+  double getExtraHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getExtraHeight(2, isDesktop);
 
   @override
-  double getAspectRatio(bool isDesktop) => isDesktop ? (160 / 300) : (118 / 240);
+  double getAspectRatio(bool isDesktop) =>
+      settingsController.customCardStyle.getCardAspectRatio(2, isDesktop);
 
   @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
@@ -53,10 +57,15 @@ class ExoticCard extends CarouselCard {
   Widget build(BuildContext context) {
     final primaryColor = context.colors.primary;
     final desktop = isDesktop(context);
+    final config = settingsController.customCardStyle;
+    final cardW = config.cardWidth(desktop, 2);
+    final titleLines = config.titleLines;
+    final lineHeight = desktop ? 22.0 : 20.0;
+    final titleH = titleLines * lineHeight;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: desktop ? 160 : 118),
+      constraints: BoxConstraints(maxWidth: cardW),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.toDouble().multiplyRoundness()),
         boxShadow: [
@@ -87,16 +96,24 @@ class ExoticCard extends CarouselCard {
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: AnymeXText(itemData.title ?? '?',
-                maxLines: 1,
-                size: desktop ? 14 : 12,
-                variant: TextVariant.semiBold,
-                overflow: TextOverflow.ellipsis,
-                isMarquee: false,
+              child: SizedBox(
+                height: titleH,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: AnymeXText(
+                    itemData.title ?? '?',
+                    maxLines: titleLines,
+                    size: desktop ? 14 : 12,
+                    variant: TextVariant.semiBold,
+                    overflow: TextOverflow.ellipsis,
+                    isMarquee: false,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             _buildBottomBanner(context),
+            const SizedBox(height: 6),
           ],
         ],
       ),

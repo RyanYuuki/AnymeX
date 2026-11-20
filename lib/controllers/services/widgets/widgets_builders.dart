@@ -207,7 +207,7 @@ class _UnderratedCarousel extends StatelessWidget {
             final cardHeight = getCardHeight(
                 settingsController.cardStyle, getPlatform(context));
             return SizedBox(
-              height: cardHeight,
+              height: cardHeight + 15,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),

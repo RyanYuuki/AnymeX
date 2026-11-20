@@ -80,3 +80,14 @@ extension StringExtensions on String {
     ].any((extension) => toLowerCase().endsWith(extension));
   }
 }
+
+extension SafeStringDisplay on String? {
+  String orPlaceholder([String placeholder = '-']) {
+    if (this == null) return placeholder;
+    final trimmed = this!.trim();
+    if (trimmed.isEmpty || trimmed.toLowerCase() == 'null' || trimmed == '??') {
+      return placeholder;
+    }
+    return trimmed;
+  }
+}

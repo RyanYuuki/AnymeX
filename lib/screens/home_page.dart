@@ -236,19 +236,23 @@ class _HomePageState extends State<HomePage> {
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-            CustomScrollView(
+            PrimaryScrollController(
               controller: _scrollController,
-              cacheExtent: 200.0,
+              child: CustomScrollView(
+                controller: _scrollController,
+                cacheExtent: 200.0,
               slivers: [
                 SliverToBoxAdapter(
                   child: SizedBox(
-                    height: isDesktop ? 10 : statusBarHeight + appBarHeight + 10,
+                    height: isDesktop ? 24.0 : statusBarHeight + appBarHeight + 10,
                   ),
                 ),
                 SliverToBoxAdapter(
                   child: Obx(
                     () => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isDesktop ? 24.0 : 20.0,
+                      ),
                       child: AnymeXTextSpans(
                         fontSize: 27,
                         spans: [
@@ -280,7 +284,9 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       const SizedBox(height: 10),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isDesktop ? 24.0 : 20.0,
+                        ),
                         child: AnymeXText(
                           'Find your favourite anime or manga, manhwa or whatever you like!'.tr,
                           style: TextStyle(
@@ -323,6 +329,7 @@ class _HomePageState extends State<HomePage> {
                   child: SizedBox(height: bottomNavBarHeight + 150),
                 ),
               ],
+            ),
             ),
             if (!isDesktop)
               CustomAnimatedAppBar(

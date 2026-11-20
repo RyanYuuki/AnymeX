@@ -5,7 +5,7 @@ import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/player_control_buttons.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -214,50 +214,32 @@ class TopControls extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           const DecoderQuickButton(isMobile: true),
-          const SizedBox(width: 8),
-          ControlButton(
-            icon: Icons.lock_rounded,
-            onPressed: () => controller.isLocked.value = true,
-            tooltip: 'Lock Controls'.tr,
-            compact: true,
-          ),
-          const SizedBox(width: 8),
-          if (Platform.isAndroid || Platform.isIOS)
-            ControlButton(
-              icon: Icons.picture_in_picture_rounded,
-              onPressed: () => controller.enterPip(),
-              tooltip: 'Picture in Picture'.tr,
-              compact: true,
-            ),
-          const SizedBox(width: 8),
-          ControlButton(
-            icon: Icons.settings_rounded,
-            onPressed: () {
-              Get.find<PlayerController>().showSheetWithPause(
-                () => showModalBottomSheet(
-                    context: Get.context!,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => Container(
-                          height: MediaQuery.sizeOf(context).height,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: const BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(28)),
-                          ),
-                          child: const SettingsPlayer(
-                            isModal: true,
-                          ),
-                        )),
-              );
-            },
-            tooltip: 'Settings'.tr,
-            compact: true,
-          ),
+          ..._buildConfiguredTopButtons(Get.context ?? Get.overlayContext!, controller),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildConfiguredTopButtons(
+      BuildContext context, PlayerController controller) {
+    final decoded = readPlayerControlConfig();
+    final topIds = resolvePlayerTopButtonIds(decoded);
+    final buttonConfigs =
+        Map<String, dynamic>.from(decoded['buttonConfigs'] ?? {});
+    final buttonMap = buildPlayerControlButtonMap(context, controller);
+    final widgets = <Widget>[];
+
+    for (final id in topIds) {
+      final visible = (buttonConfigs[id]?['visible'] as bool?) ?? true;
+      if (!visible) continue;
+      if (!shouldDisplayPlayerControl(id, controller)) continue;
+      final btn = buttonMap[id];
+      if (btn != null) {
+        widgets.add(const SizedBox(width: 8));
+        widgets.add(btn);
+      }
+    }
+    return widgets;
   }
 
   Widget _buildLayout(ThemeData theme) {
@@ -404,24 +386,9 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  Get.find<PlayerController>().showSheetWithPause(
-                    () => showModalBottomSheet(
-                        context: Get.context!,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => Container(
-                              height: MediaQuery.sizeOf(context).height,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(28)),
-                              ),
-                              child: const SettingsPlayer(
-                                isModal: true,
-                              ),
-                            )),
-                  );
+                  final player = Get.find<PlayerController>();
+                  player.isSettingsPaneOpened.value =
+                      !player.isSettingsPaneOpened.value;
                 },
                 tooltip: 'Settings'.tr,
                 compact: true,
@@ -483,23 +450,9 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  Get.find<PlayerController>().showSheetWithPause(
-                    () => showModalBottomSheet(
-                      context: Get.context!,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => Container(
-                        height: MediaQuery.sizeOf(context).height,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(28)),
-                        ),
-                        child: const SettingsPlayer(isModal: true),
-                      ),
-                    ),
-                  );
+                  final player = Get.find<PlayerController>();
+                  player.isSettingsPaneOpened.value =
+                      !player.isSettingsPaneOpened.value;
                 },
                 tooltip: 'Settings'.tr,
                 compact: true,

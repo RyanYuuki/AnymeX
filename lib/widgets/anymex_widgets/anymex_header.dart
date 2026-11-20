@@ -65,34 +65,38 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
     VoidCallback? onTap,
   }) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final radius = BorderRadius.circular(30.multiplyRadius());
+
+    final pillContent = Container(
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainer
+            .withValues(alpha: isDark ? 0.55 : 0.80),
+        borderRadius: radius,
+        border: Border.all(
+          color: theme.colorScheme.onSurface
+              .withValues(alpha: isDark ? 0.08 : 0.12),
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.08 : 0.05),
+            blurRadius: 24,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
 
     Widget content = ClipRRect(
       borderRadius: radius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding:
-              padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainer.opaque(0.55),
-            borderRadius: radius,
-            border: Border.all(
-              color:
-                  theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-              width: 0.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.opaque(0.08, iReallyMeanIt: true),
-                blurRadius: 24,
-                spreadRadius: 0,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: child,
-        ),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: pillContent,
       ),
     );
 
@@ -210,9 +214,11 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                         constraints: BoxConstraints(
                           maxWidth: maxHeaderWidth,
                         ),
-                        child: AnymeXText(widget.title,
+                        child: AnymeXText(
+                          widget.title,
                           variant: TextVariant.bold,
                           size: 16.0,
+                          color: theme.colorScheme.onSurface,
                           maxLines: 1,
                           autoResize: true,
                           isMarquee: isLongTitle,

@@ -7,6 +7,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Media/relation.dart';
+import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
@@ -534,7 +535,8 @@ enum DataVariant {
   extension,
   offline,
   library,
-  underrated
+  underrated,
+  staff
 }
 
 List<CarouselData> convertData(List<dynamic> data,
@@ -552,6 +554,8 @@ List<CarouselData> convertData(List<dynamic> data,
       case DataVariant.anilist:
         return (e as TrackedMedia)
             .toCarouselData(variant: variant, isManga: isManga);
+      case DataVariant.staff:
+        return (e as Staff).toCarouselData(variant: variant, isManga: isManga);
       default:
         return (e as Media).toCarouselData(variant: variant, isManga: isManga);
     }
@@ -783,7 +787,24 @@ Future<void> navigate(dynamic page) async {
 }
 
 Future<void> navigateWithAnimation(dynamic page) async {
-  navigate(page);
+  await Navigator.push(
+    Get.context!,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page(),
+      transitionDuration: const Duration(milliseconds: 260),
+      reverseTransitionDuration: const Duration(milliseconds: 220),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final fadeAnim = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOut,
+        );
+        return FadeTransition(
+          opacity: fadeAnim,
+          child: child,
+        );
+      },
+    ),
+  );
 }
 
 Future<void> navigateWithSlide(dynamic page) async {

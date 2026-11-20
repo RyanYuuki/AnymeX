@@ -10,6 +10,7 @@ class AnymeXChip extends StatelessWidget {
   final bool isSelected;
   final Function(bool e) onSelected;
   final bool showCheck;
+  final Widget? avatar;
 
   const AnymeXChip({
     super.key,
@@ -17,20 +18,21 @@ class AnymeXChip extends StatelessWidget {
     required this.isSelected,
     required this.onSelected,
     this.showCheck = true,
+    this.avatar,
   });
 
   BoxShadow glowingShadow(BuildContext context) {
     final controller = Get.find<Settings>();
     if (controller.glowMultiplier == 0.0) {
-      return const BoxShadow(color: Colors.transparent);
+      return BoxShadow(color: context.colors.surface.opaque(0, iReallyMeanIt: true));
     } else {
       return BoxShadow(
         color: context.colors.primary.opaque(
-            Theme.of(context).brightness == Brightness.dark ? 0.1 : 0.2),
+            Theme.of(context).brightness == Brightness.dark ? 0.1 : 0.2,
+            iReallyMeanIt: true),
         blurRadius: 20.0.multiplyBlur(),
-        spreadRadius:
-            -1.0.multiplyGlow(), // Negative spread makes shadow smaller
-        offset: const Offset(0, 0), // Centered shadow
+        spreadRadius: -1.0.multiplyGlow(),
+        offset: const Offset(0, 0),
       );
     }
   }
@@ -44,6 +46,7 @@ class AnymeXChip extends StatelessWidget {
       child: FilterChip(
         selected: isSelected,
         onSelected: onSelected,
+        avatar: avatar,
         label: AnymeXText(label),
         labelStyle: TextStyle(
           color: isSelected

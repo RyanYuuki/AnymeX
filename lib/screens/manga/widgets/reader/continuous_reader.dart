@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/services/upscale/page_upscale_service.dart';
 import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/utils/extension_utils.dart';
@@ -399,10 +400,22 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
         if (isDesktop) {
           calculatedWidth = math.min(screenWidth, 700.0) * multiplier;
         } else {
-          calculatedWidth = multiplier != 1.0 ? screenWidth * multiplier : null;
+          calculatedWidth = screenWidth * multiplier;
         }
       }
       final fitMode = isFitToScreen ? BoxFit.fitWidth : BoxFit.contain;
+
+      final dpr = MediaQuery.devicePixelRatioOf(context);
+      final targetWidth = (calculatedWidth * dpr).round();
+
+      final upscaleFuture = ctrl.upscalingEnabled.value
+          ? PageUpscaleService.instance.upscaled(
+              page,
+              ctrl.currentUpscaleConfig,
+              targetWidthPx: targetWidth,
+              priority: 0,
+            )
+          : null;
 
       return Padding(
         padding: EdgeInsets.symmetric(
@@ -413,6 +426,7 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
               page.url,
               headers: getPageImageHeaders(page.headers),
             ),
+            upscaledFileFuture: upscaleFuture,
             width: calculatedWidth,
             fit: fitMode,
             alignment: Alignment.center,

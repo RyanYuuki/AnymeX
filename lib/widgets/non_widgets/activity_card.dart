@@ -532,18 +532,11 @@ class _ActivityCardState extends State<ActivityCard> {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
-          color: context.theme.colorScheme.surfaceContainer,
+          color: context.theme.colorScheme.surfaceContainer.withOpacity(0.35),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: context.theme.colorScheme.outlineVariant.withOpacity(0.22),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: context.theme.colorScheme.shadow.withOpacity(0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(

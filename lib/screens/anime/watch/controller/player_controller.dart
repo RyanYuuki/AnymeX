@@ -30,7 +30,6 @@ import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_media_session/flutter_media_session.dart';
-import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
@@ -111,6 +110,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final String? itemName;
   final String? offlineVideoPath;
   final bool shouldTrack;
+  final bool isPreview;
 
   PlayerController(model.Video video, Episode episode, this.episodeList,
       this.anilistData, List<model.Video> episodes,
@@ -118,11 +118,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       this.folderName,
       this.itemName,
       this.offlineVideoPath,
-      this.shouldTrack = false}) {
+      this.shouldTrack = false,
+      this.isPreview = false}) {
     selectedVideo.value = video;
     currentEpisode.value = episode;
     episodeTracks.value = episodes;
     isOffline.value = offline;
+  }
+
+  factory PlayerController.preview() {
+    final ep = Episode(number: '87', title: 'The Dawn of Humanity');
+    final previewVideo = model.Video(
+      url: '',
+      quality: '1080p',
+      originalUrl: '',
+      headerKeys: [],
+      headerValues: [],
+    );
+    return PlayerController(
+      previewVideo,
+      ep,
+      [Episode(number: '86'), ep, Episode(number: '88')],
+      anymex.Media(
+        id: '0',
+        title: 'Attack on Titan',
+        poster: '',
+        serviceType: ServicesType.anilist,
+      ),
+      [previewVideo],
+      isPreview: true,
+    );
   }
 
   factory PlayerController.offline({
@@ -226,6 +251,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<bool> isAudioPaneOpened = false.obs;
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
   final Rx<bool> isSettingsPaneOpened = false.obs;
+  final Rx<bool> isCastPaneOpened = false.obs;
   final RxList<model.Track> localSubtitles = <model.Track>[].obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
@@ -393,6 +419,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    if (isPreview) {
+      _initDatabaseVars();
+      currentPosition.value = const Duration(minutes: 8, seconds: 24);
+      episodeDuration.value = const Duration(minutes: 23, seconds: 40);
+      bufferred.value = const Duration(minutes: 12, seconds: 10);
+      showControls.value = true;
+      canGoForward.value = true;
+      canGoBackward.value = true;
+      isPlaying.value = false;
+      return;
+    }
     PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
@@ -645,6 +682,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    if (isPreview) {
+      super.onClose();
+      return;
+    }
     WidgetsBinding.instance.removeObserver(this);
     PipController.setAutoEnter(enabled: false);
     _accelerometerSub?.cancel();
@@ -1625,7 +1666,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             !isSyncSubsPaneOpened.value &&
             !isEpisodePaneOpened.value &&
             !isTorrentFilesPaneOpened.value &&
-            !isWatchTogetherPaneOpened.value) {
+            !isWatchTogetherPaneOpened.value &&
+            !isSpeedPaneOpened.value &&
+            !isSettingsPaneOpened.value &&
+            !isCastPaneOpened.value) {
           showControls.value = false;
         }
       });
@@ -1707,6 +1751,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isSpeedPaneOpened.value = false;
       isWatchTogetherPaneOpened.value = false;
       isTorrentFilesPaneOpened.value = false;
+      isSettingsPaneOpened.value = false;
+      isCastPaneOpened.value = false;
       currentEpisode.value = episode;
       _hasTrackedCompletedOnline = false;
       final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
@@ -2280,12 +2326,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     const sensitivity = 200.0;
+    final brightnessWidth = PlayerUiKeys.brightnessGestureWidth
+        .get<double>(0.35)
+        .clamp(0.10, 0.45);
+    final volumeWidth =
+        PlayerUiKeys.volumeGestureWidth.get<double>(0.35).clamp(0.10, 0.45);
 
     final delta = e.delta.dy;
-    if (position.dx <= size.width / 2) {
+    if (position.dx <= size.width * brightnessWidth) {
       final bright = brightness.value - delta / sensitivity;
       setBrightness(bright.clamp(0.0, 1.0), isDragging: true);
-    } else {
+    } else if (position.dx >= size.width * (1.0 - volumeWidth)) {
       final vol = (volume.value - delta / sensitivity).toPrecision(2);
       if (volume.value != vol) {
         final newVol = vol.clamp(0.0, 2.0);
@@ -2823,6 +2874,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isSpeedPaneOpened.value = false;
     isWatchTogetherPaneOpened.value = false;
     isTorrentFilesPaneOpened.value = false;
+    isSettingsPaneOpened.value = false;
+    isCastPaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
     _updateMediaSessionMetadata();
@@ -2833,6 +2886,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     currentPosition.value = Duration.zero;
     episodeDuration.value = Duration.zero;
     bufferred.value = Duration.zero;
+  }
+
+  void closePanes() {
+    isEpisodePaneOpened.value = false;
+    isSourcePaneOpened.value = false;
+    isTracksPaneOpened.value = false;
+    isAudioPaneOpened.value = false;
+    isSyncSubsPaneOpened.value = false;
+    isSpeedPaneOpened.value = false;
+    isWatchTogetherPaneOpened.value = false;
+    isTorrentFilesPaneOpened.value = false;
+    isSettingsPaneOpened.value = false;
+    isCastPaneOpened.value = false;
   }
 
   void openColorProfileBottomSheet(BuildContext context) {
