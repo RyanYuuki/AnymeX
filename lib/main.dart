@@ -81,7 +81,6 @@ import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:anymex/l10n/app_localizations.dart';
-import 'package:anymex/l10n/english_framework_delegates.dart';
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/l10n/locale_controller.dart';
 
@@ -435,11 +434,7 @@ class _MainAppState extends State<MainApp> {
           scrollBehavior: MyCustomScrollBehavior(),
           debugShowCheckedModeBanner: false,
           title: "AnymeX",
-          localizationsDelegates: const [
-            ...AppLocalizations.localizationsDelegates,
-            EnglishMaterialDelegate(),
-            EnglishCupertinoDelegate(),
-          ],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: themeCtrl.lightTheme,
           darkTheme: themeCtrl.darkTheme,
