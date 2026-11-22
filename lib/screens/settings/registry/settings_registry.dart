@@ -178,35 +178,68 @@ abstract final class SettingsRegistry {
           category: 'Interface & Layout',
           section: 'Styling',
           icon: HugeIcons.strokeRoundedShapes,
-          searchTags: ['cards', 'carousel', 'history', 'navbar', 'styles', 'preview'],
+          searchTags: [
+            'cards',
+            'carousel',
+            'history',
+            'navbar',
+            'styles',
+            'preview'
+          ],
         ),
         SettingItem(
           title: 'Details Page',
           category: 'Interface & Layout',
           section: 'Styling',
           icon: HugeIcons.strokeRoundedPlaySquare,
-          searchTags: ['details', 'header', 'blur', 'backdrop', 'tint', 'poster', 'cover'],
+          searchTags: [
+            'details',
+            'header',
+            'blur',
+            'backdrop',
+            'tint',
+            'poster',
+            'cover'
+          ],
         ),
         SettingItem(
           title: 'Use Poster Color',
           category: 'Interface & Layout',
           section: 'Details Page',
           icon: Icons.color_lens_outlined,
-          searchTags: ['palette extract', 'cover', 'poster', 'color', 'details'],
+          searchTags: [
+            'palette extract',
+            'cover',
+            'poster',
+            'color',
+            'details'
+          ],
         ),
         SettingItem(
           title: 'Show Continue Watching on Home',
           category: 'Interface & Layout',
           section: 'Navigation & Home Layout',
           icon: Icons.play_circle_outline_rounded,
-          searchTags: ['home', 'resume', 'quick play', 'continue watching', 'bar'],
+          searchTags: [
+            'home',
+            'resume',
+            'quick play',
+            'continue watching',
+            'bar'
+          ],
         ),
         SettingItem(
           title: 'Poster Blur Mode',
           category: 'Interface & Layout',
           section: 'Details Page',
           icon: Icons.blur_on_rounded,
-          searchTags: ['computed blur', 'live blur', 'baked blur', 'lag free', 'stutter'],
+          searchTags: [
+            'computed blur',
+            'live blur',
+            'baked blur',
+            'lag free',
+            'stutter'
+          ],
         ),
         SettingItem(
           title: 'Poster Blur Scope',
@@ -1106,7 +1139,14 @@ abstract final class SettingsRegistry {
           category: 'Community & Comments',
           section: 'Closet & Community',
           icon: Icons.checkroom_rounded,
-          searchTags: ['closet', 'cosmetics', 'avatar', 'decorations', 'banners', 'nameplates'],
+          searchTags: [
+            'closet',
+            'cosmetics',
+            'avatar',
+            'decorations',
+            'banners',
+            'nameplates'
+          ],
         ),
         SettingItem(
           title: 'Leaderboard',
@@ -1198,10 +1238,28 @@ abstract final class SettingsRegistry {
       id: 'common',
       groupTitle: 'Accounts & Social',
       title: 'Content & Preferences',
-      description: 'NSFW filter, unified library, recommendations & lists',
+      description:
+          'Language, NSFW filter, unified library, recommendations & lists',
       icon: HugeIcons.strokeRoundedBulb,
       destination: () => const SettingsCommon(),
       items: [
+        SettingItem(
+          title: 'App Language',
+          category: 'Content & Preferences',
+          section: 'Library & Content Safety',
+          icon: Icons.language_rounded,
+          searchTags: [
+            'language',
+            'locale',
+            'translation',
+            'weblate',
+            'english',
+            'spanish',
+            'japanese',
+            'idioma',
+            'sprache',
+          ],
+        ),
         SettingItem(
           title: 'Unified Library',
           category: 'Content & Preferences',
@@ -1395,7 +1453,8 @@ abstract final class SettingsRegistry {
               '120hz',
               '144hz',
               'refresh rate',
-              'smoothness'
+              'smoothness',
+              'performance'
             ],
           ),
           SettingItem(
@@ -1566,6 +1625,15 @@ abstract final class SettingsRegistry {
     for (final cat in categories) {
       map.putIfAbsent(cat.groupTitle, () => []).add(cat);
     }
-    return map;
+    final sorted = <String, List<SettingsCategory>>{};
+    if (map.containsKey('Accounts & Social')) {
+      sorted['Accounts & Social'] = map['Accounts & Social']!;
+    }
+    for (final entry in map.entries) {
+      if (entry.key != 'Accounts & Social') {
+        sorted[entry.key] = entry.value;
+      }
+    }
+    return sorted;
   }
 }

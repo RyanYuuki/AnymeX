@@ -42,6 +42,7 @@ class AnymeXTile extends StatelessWidget {
   final String? subtitle;
   final Widget? subtitleWidget;
   final Widget? trailing;
+  final Widget? badge;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final Color? iconColor;
@@ -68,6 +69,7 @@ class AnymeXTile extends StatelessWidget {
     this.subtitle,
     this.subtitleWidget,
     this.trailing,
+    this.badge,
     this.onTap,
     this.onLongPress,
     this.iconColor,
@@ -94,6 +96,7 @@ class AnymeXTile extends StatelessWidget {
     String? subtitle,
     Widget? subtitleWidget,
     Widget? trailing,
+    Widget? badge,
     VoidCallback? onTap,
     VoidCallback? onLongPress,
     Color? iconColor,
@@ -120,6 +123,7 @@ class AnymeXTile extends StatelessWidget {
       subtitle: subtitle ?? this.subtitle,
       subtitleWidget: subtitleWidget ?? this.subtitleWidget,
       trailing: trailing ?? this.trailing,
+      badge: badge ?? this.badge,
       onTap: onTap ?? this.onTap,
       onLongPress: onLongPress ?? this.onLongPress,
       iconColor: iconColor ?? this.iconColor,
@@ -702,18 +706,45 @@ class AnymeXTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnymeXText(
-                      title,
-                      size: 14.5,
-                      maxLines: maxLines ?? 4,
-                      autoResize: autoResize,
-                      variant:
-                          isModern ? TextVariant.bold : TextVariant.semiBold,
-                      color: enabled
-                          ? colors.onSurface
-                          : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-                      style: titleStyle,
-                    ),
+                    if (badge != null)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: AnymeXText(
+                              title,
+                              size: 14.5,
+                              maxLines: maxLines ?? 4,
+                              autoResize: autoResize,
+                              variant: isModern
+                                  ? TextVariant.bold
+                                  : TextVariant.semiBold,
+                              color: enabled
+                                  ? colors.onSurface
+                                  : colors.onSurface
+                                      .opaque(0.4, iReallyMeanIt: true),
+                              style: titleStyle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          badge!,
+                        ],
+                      )
+                    else
+                      AnymeXText(
+                        title,
+                        size: 14.5,
+                        maxLines: maxLines ?? 4,
+                        autoResize: autoResize,
+                        variant: isModern
+                            ? TextVariant.bold
+                            : TextVariant.semiBold,
+                        color: enabled
+                            ? colors.onSurface
+                            : colors.onSurface
+                                .opaque(0.4, iReallyMeanIt: true),
+                        style: titleStyle,
+                      ),
                     if (subtitleWidget != null) ...[
                       const SizedBox(height: 2),
                       subtitleWidget!,

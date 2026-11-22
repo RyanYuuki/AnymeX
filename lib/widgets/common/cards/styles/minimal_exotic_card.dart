@@ -96,6 +96,7 @@ class MinimalExoticCard extends CarouselCard {
                       radius: 10,
                       sourceId: itemData.source,
                       isAnime: type == ItemType.anime,
+                      cacheWidth: (cardW * 3.0).round(),
                     ),
                     if (variant == DataVariant.library)
                       buildCardBadgeV2(context, variant, type),

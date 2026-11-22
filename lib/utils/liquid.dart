@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
 
+import 'package:anymex/database/database.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'dart:isolate';
@@ -176,8 +177,8 @@ class Liquid {
       progressController.updateProgress('Clearing previous background...', 0.1);
       await _clearLiquidBackground();
 
-      final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final String savedPath = path.join(appDocDir.path,
+      final Directory targetDir = await getLiquidBackgroundDirectory();
+      final String savedPath = path.join(targetDir.path,
           'liquid_background_${DateTime.now().microsecondsSinceEpoch}.jpg');
 
       progressController.updateProgress(
@@ -460,6 +461,26 @@ class Liquid {
       debugPrint('CPU blur error: $e');
       return null;
     }
+  }
+
+  static Future<Directory> getLiquidBackgroundDirectory() async {
+    final databaseDir = await Database().getDatabaseDirectory();
+    final Directory baseDir;
+    if (databaseDir != null) {
+      if (databaseDir.path.endsWith('databases')) {
+        baseDir = databaseDir.parent;
+      } else {
+        baseDir = Directory(path.join(databaseDir.path, 'AnymeX'));
+      }
+    } else {
+      final docs = await getApplicationDocumentsDirectory();
+      baseDir = Directory(path.join(docs.path, 'AnymeX'));
+    }
+
+    if (!await baseDir.exists()) {
+      await baseDir.create(recursive: true);
+    }
+    return baseDir;
   }
 
   static Future<void> _clearLiquidBackground() async {

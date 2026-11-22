@@ -27,7 +27,7 @@
     <key>NSMainNibFile</key>
     <string>MainMenu</string>
     <key>FLTEnableImpeller</key>
-    <false/>
+    <true/>
     
     <key>CFBundleURLTypes</key>
     <array>

@@ -73,17 +73,18 @@ class ThemeController extends GetxController {
       dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex],
     );
 
-    final effectiveFont = appFontFamily.isEmpty
-        ? 'Linotte'
-        : (appFontFamily == 'System' ? null : appFontFamily);
+    final hasCustomFont = appFontFamily.isNotEmpty;
+    final customFontFamily = appFontFamily == 'System' ? null : appFontFamily;
 
     _lightTheme = lightMode.copyWith(
       scaffoldBackgroundColor: isOled ? Colors.white : Colors.transparent,
       canvasColor: isOled ? Colors.white : lightSeed.surface,
       colorScheme: lightSeed,
-      textTheme: effectiveFont != null
-          ? lightMode.textTheme.apply(fontFamily: effectiveFont)
-          : lightMode.textTheme,
+      textTheme: hasCustomFont
+          ? (customFontFamily != null
+              ? lightMode.textTheme.apply(fontFamily: customFontFamily)
+              : lightMode.textTheme)
+          : null,
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: lightSeed.primary,
         selectionColor: lightSeed.primary.withValues(alpha: 0.35),
@@ -95,9 +96,11 @@ class ThemeController extends GetxController {
       scaffoldBackgroundColor: isOled ? Colors.black : Colors.transparent,
       canvasColor: isOled ? Colors.black : darkSeed.surface,
       colorScheme: darkSeed,
-      textTheme: effectiveFont != null
-          ? darkMode.textTheme.apply(fontFamily: effectiveFont)
-          : darkMode.textTheme,
+      textTheme: hasCustomFont
+          ? (customFontFamily != null
+              ? darkMode.textTheme.apply(fontFamily: customFontFamily)
+              : darkMode.textTheme)
+          : null,
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: darkSeed.primary,
         selectionColor: darkSeed.primary.withValues(alpha: 0.35),

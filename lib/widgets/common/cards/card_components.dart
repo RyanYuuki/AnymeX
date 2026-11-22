@@ -49,6 +49,8 @@ class MediaPoster extends StatelessWidget {
   final BoxBorder? border;
   final String? sourceId;
   final bool? isAnime;
+  final int? cacheWidth;
+  final int? cacheHeight;
 
   const MediaPoster({
     super.key,
@@ -58,6 +60,8 @@ class MediaPoster extends StatelessWidget {
     this.border,
     this.sourceId,
     this.isAnime,
+    this.cacheWidth,
+    this.cacheHeight,
   });
 
   @override
@@ -67,6 +71,8 @@ class MediaPoster extends StatelessWidget {
       radius: radius,
       height: double.infinity,
       width: double.infinity,
+      memCacheWidth: cacheWidth ?? 500,
+      memCacheHeight: cacheHeight,
       fadeInDuration: Duration.zero,
       fadeOutDuration: Duration.zero,
       sourceId: sourceId,

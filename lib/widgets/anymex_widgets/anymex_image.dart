@@ -49,6 +49,8 @@ class AnymeXImage extends StatefulWidget {
   final bool? isAnime;
   final Duration? fadeInDuration;
   final Duration? fadeOutDuration;
+  final int? memCacheWidth;
+  final int? memCacheHeight;
 
   const AnymeXImage({
     super.key,
@@ -67,6 +69,8 @@ class AnymeXImage extends StatefulWidget {
     this.isAnime,
     this.fadeInDuration,
     this.fadeOutDuration,
+    this.memCacheWidth,
+    this.memCacheHeight,
   });
 
   static Widget heroFlightShuttleBuilder(
@@ -254,12 +258,16 @@ class _AnymeXImageState extends State<AnymeXImage> {
     final dpr = PlatformDispatcher.instance.views.isEmpty
         ? 2.0
         : PlatformDispatcher.instance.views.first.devicePixelRatio.clamp(1.0, 3.0);
-    final decodeWidth = widget.width != null && widget.width!.isFinite && widget.width! > 0
-        ? (widget.width! * dpr).round()
-        : (widget.height != null && widget.height!.isFinite && widget.height! > 0 ? null : 1440);
-    final decodeHeight = widget.height != null && widget.height!.isFinite && widget.height! > 0
-        ? (widget.height! * dpr).round()
-        : null;
+    final decodeWidth = widget.memCacheWidth ??
+        (widget.width != null && widget.width!.isFinite && widget.width! > 0
+            ? (widget.width! * dpr).round()
+            : (widget.height != null && widget.height!.isFinite && widget.height! > 0
+                ? null
+                : (widget.memCacheHeight != null ? null : 1440)));
+    final decodeHeight = widget.memCacheHeight ??
+        (widget.height != null && widget.height!.isFinite && widget.height! > 0
+            ? (widget.height! * dpr).round()
+            : null);
     return CachedNetworkImage(
       cacheManager: AnymeXCacheManager.instance,
       imageUrl: imageUrl,
@@ -288,10 +296,23 @@ class _AnymeXImageState extends State<AnymeXImage> {
   }
 
   Widget _fileImage(String imagePath) {
+    final dpr = PlatformDispatcher.instance.views.isEmpty
+        ? 2.0
+        : PlatformDispatcher.instance.views.first.devicePixelRatio.clamp(1.0, 3.0);
+    final decodeWidth = widget.memCacheWidth ??
+        (widget.width != null && widget.width!.isFinite && widget.width! > 0
+            ? (widget.width! * dpr).round()
+            : null);
+    final decodeHeight = widget.memCacheHeight ??
+        (widget.height != null && widget.height!.isFinite && widget.height! > 0
+            ? (widget.height! * dpr).round()
+            : null);
     return Image.file(
       _fileFromPath(imagePath),
       width: widget.width,
       height: widget.height,
+      cacheWidth: decodeWidth,
+      cacheHeight: decodeWidth == null ? decodeHeight : null,
       fit: widget.fit,
       alignment: widget.alignment,
       color: widget.color,

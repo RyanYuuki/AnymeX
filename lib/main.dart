@@ -385,7 +385,7 @@ class _MainAppState extends State<MainApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         const assetImages = [
-          'assets/images/bg_glass.webp',
+          'assets/images/bg_glass.png',
           'assets/images/logo.png',
           'assets/images/logo_transparent.webp',
           'assets/images/anilist-icon.png',
@@ -448,47 +448,59 @@ class _MainAppState extends State<MainApp> {
               _showMainApp ? const FilterScreen() : const AnymeXSplashScreen(),
           builder: (context, child) {
             if (child == null) return const SizedBox.shrink();
-            final mediaQuery = MediaQuery.of(context);
+            final isDesktop = Platform.isWindows;
             final userScale = themeCtrl.fontScale;
+            final isDefaultScale = (userScale - 1.0).abs() < 0.001;
+
+            if (PlatformDispatcher.instance.views.length > 1) {
+              if (isDefaultScale) return child;
+              final mediaQuery = MediaQuery.of(context);
+              final clampedMediaQuery = mediaQuery.copyWith(
+                textScaler: TextScaler.linear(
+                  (mediaQuery.textScaler.scale(1.0) * userScale)
+                      .clamp(0.70, 1.80),
+                ),
+              );
+              return MediaQuery(
+                data: clampedMediaQuery,
+                child: child,
+              );
+            }
+
+            final content = isDesktop
+                ? Stack(
+                    children: [
+                      RepaintBoundary(child: child),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: AnymeXTitleBar.titleBar(),
+                      ),
+                      const FpsMeter(),
+                    ],
+                  )
+                : Stack(
+                    children: [
+                      child,
+                      const FpsMeter(),
+                    ],
+                  );
+
+            if (isDefaultScale) {
+              return content;
+            }
+
+            final mediaQuery = MediaQuery.of(context);
             final clampedMediaQuery = mediaQuery.copyWith(
               textScaler: TextScaler.linear(
                 (mediaQuery.textScaler.scale(1.0) * userScale)
                     .clamp(0.70, 1.80),
               ),
             );
-            if (PlatformDispatcher.instance.views.length > 1) {
-              return MediaQuery(
-                data: clampedMediaQuery,
-                child: child,
-              );
-            }
-            final isDesktop = Platform.isWindows;
-
-            if (isDesktop) {
-              return MediaQuery(
-                data: clampedMediaQuery,
-                child: Stack(
-                  children: [
-                    RepaintBoundary(child: child),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: AnymeXTitleBar.titleBar(),
-                    ),
-                    const FpsMeter(),
-                  ],
-                ),
-              );
-            }
             return MediaQuery(
               data: clampedMediaQuery,
-              child: Stack(
-                children: [
-                  child,
-                  const FpsMeter(),
-                ],
-              ),
+              child: content,
             );
           },
           enableLog: true,
