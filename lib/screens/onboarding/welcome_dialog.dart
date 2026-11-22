@@ -175,7 +175,7 @@ void showWelcomeDialogg(BuildContext context) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AnymeXText(
-                                'Welcome to AnymeX',
+                                'Welcome to AnymeX'.tr,
                                 style: TextStyle(
                                   fontFamily: 'Linotte',
                                   fontSize: 18,
@@ -184,7 +184,7 @@ void showWelcomeDialogg(BuildContext context) {
                               ),
                               const SizedBox(height: 2),
                               AnymeXText(
-                                'Set up your preferences for the best experience',
+                                'Set up your preferences for the best experience'.tr,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context.colors.onSurfaceVariant
@@ -326,7 +326,7 @@ void showWelcomeDialogg(BuildContext context) {
                           Navigator.of(context).pop();
                         },
                         label: AnymeXText(
-                          'Get Started',
+                          'Get Started'.tr,
                           style: TextStyle(
                             fontFamily: 'Linotte',
                             fontSize: 15,
@@ -404,7 +404,7 @@ void showDiscordJoinDialog(BuildContext context) {
                           Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           AnymeXText(
-                            'Join New Discord',
+                            'Join New Discord'.tr,
                             color: Colors.white,
                             variant: TextVariant.bold,
                             size: 13,
@@ -436,7 +436,7 @@ void showDiscordJoinDialog(BuildContext context) {
                           Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           AnymeXText(
-                            'Join Telegram Channel',
+                            'Join Telegram Channel'.tr,
                             color: Colors.white,
                             variant: TextVariant.bold,
                             size: 13,

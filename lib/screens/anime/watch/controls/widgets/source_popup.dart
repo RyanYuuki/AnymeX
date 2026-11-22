@@ -172,7 +172,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),
-            ), translate: false,
+            ),
           ),
         ],
       ),

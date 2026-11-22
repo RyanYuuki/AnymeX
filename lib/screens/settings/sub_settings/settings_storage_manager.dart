@@ -206,7 +206,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AnymeXText(
-                                        'Temporary App Cache',
+                                        'Temporary App Cache'.tr,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
@@ -220,7 +220,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                           color: context.colors.primary,
-                                        ), translate: false,
+                                        ),
                                       ),
                                       const SizedBox(height: 10),
                                       ClipRRect(

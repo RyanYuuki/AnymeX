@@ -148,7 +148,7 @@ class MinimalExoticCard extends CarouselCard {
             AnymeXText(itemData.source ?? '',
               color: context.colors.onPrimary,
               size: 12,
-              variant: TextVariant.bold, translate: false,
+              variant: TextVariant.bold,
             ),
           ] else ...[
             Icon(
@@ -165,7 +165,7 @@ class MinimalExoticCard extends CarouselCard {
             AnymeXText((itemData.extraData ?? '').replaceAll('_', ' '),
               color: context.colors.onPrimary,
               size: 12,
-              variant: TextVariant.bold, translate: false,
+              variant: TextVariant.bold,
             ),
           ],
         ],

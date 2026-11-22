@@ -152,7 +152,7 @@ class AnymeXDialog extends StatelessWidget {
                                   size: 20,
                                   variant: TextVariant.semiBold,
                                   color: context.colors.onSurface,
-                                  textAlign: TextAlign.center, translate: false,
+                                  textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 12),
                               ],
@@ -170,7 +170,7 @@ class AnymeXDialog extends StatelessWidget {
                                             color: context
                                                 .colors.onSurfaceVariant,
                                             textAlign: TextAlign.center,
-                                            maxLines: 100, translate: false,
+                                            maxLines: 100,
                                           ),
                                         )
                                       : (contentWidget ??
@@ -214,7 +214,7 @@ class AnymeXDialog extends StatelessWidget {
                                             cancelText,
                                             size: 14,
                                             color: context.colors.onSurface,
-                                            variant: TextVariant.bold, translate: false,
+                                            variant: TextVariant.bold,
                                           ),
                                         ),
                                       ),
@@ -273,7 +273,7 @@ class AnymeXDialog extends StatelessWidget {
                                               ? context.colors.onPrimary
                                               : context.colors.onSurface
                                                   .withOpacity(0.4),
-                                          variant: TextVariant.bold, translate: false,
+                                          variant: TextVariant.bold,
                                         ),
                                       ),
                                     ),

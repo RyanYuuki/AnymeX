@@ -783,7 +783,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               ),
               const SizedBox(width: 8),
               AnymeXText(
-                'FILTERS',
+                'FILTERS'.tr,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.w800,
@@ -811,7 +811,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
-                    ), translate: false,
+                    ),
                   ),
                 ),
               ],
@@ -852,7 +852,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1,
-                ), translate: false,
+                ),
               ),
             ],
           ),
@@ -951,7 +951,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnymeXText(
-              'Use Year Range',
+              'Use Year Range'.tr,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
@@ -1118,7 +1118,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               color: colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
             ),
             child: AnymeXText(
-              'No genres available. AniList API may be temporarily down.',
+              'No genres available. AniList API may be temporarily down.'.tr,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
               ),
@@ -1180,7 +1180,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
-          ), translate: false,
+          ),
         ),
         selected: isSelected,
         checkmarkColor: colorScheme.onPrimary,
@@ -1219,7 +1219,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                       label: AnymeXText(t,
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w600), translate: false),
+                              fontWeight: FontWeight.w600)),
                       backgroundColor: colorScheme.primary,
                       deleteIconColor: colorScheme.onPrimary,
                       onDeleted: () => setState(() => selectedTags.remove(t)),
@@ -1291,7 +1291,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                       label: AnymeXText(name,
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w600), translate: false),
+                              fontWeight: FontWeight.w600)),
                       backgroundColor: colorScheme.primary,
                       deleteIconColor: colorScheme.onPrimary,
                       onDeleted: () => setState(() {
@@ -1417,7 +1417,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     color: value
                         ? colorScheme.primary
                         : colorScheme.onSurface
-                            .opaque(0.7, iReallyMeanIt: true)), translate: false),
+                            .opaque(0.7, iReallyMeanIt: true))),
           ],
         ),
       ),
@@ -1471,7 +1471,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: AnymeXText(label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.primary, fontWeight: FontWeight.w700), translate: false),
+                  color: colorScheme.primary, fontWeight: FontWeight.w700)),
         ),
         RangeSlider(
           values: values,
@@ -1498,7 +1498,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       children: [
         AnymeXText(label,
             style: theme.textTheme.bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w600), translate: false),
+                ?.copyWith(fontWeight: FontWeight.w600)),
         Switch(
             value: value,
             activeColor: colorScheme.primary,
@@ -1569,7 +1569,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               .opaque(0.7, iReallyMeanIt: true),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
-                        ), translate: false,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
@@ -1580,7 +1580,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               ? colorScheme.onSurface
                               : colorScheme.onSurface
                                   .opaque(0.5, iReallyMeanIt: true),
-                        ), translate: false,
+                        ),
                       ),
                     ],
                   ),
@@ -1638,7 +1638,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'SORT BY',
+                        'SORT BY'.tr,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.opaque(0.7),
                           fontWeight: FontWeight.w600,
@@ -1654,7 +1654,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               ? colorScheme.onSurface
                               : colorScheme.onSurface
                                   .opaque(0.5, iReallyMeanIt: true),
-                        ), translate: false,
+                        ),
                       ),
                     ],
                   ),
@@ -1703,7 +1703,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             child: Column(
               children: [
                 AnymeXText(
-                  'ORDER',
+                  'ORDER'.tr,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color:
                         colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
@@ -1734,7 +1734,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             ? colorScheme.onSurface
                             : colorScheme.onSurface
                                 .opaque(0.5, iReallyMeanIt: true),
-                      ), translate: false,
+                      ),
                     ),
                   ],
                 ),
@@ -1833,7 +1833,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     color: isPrimary
                         ? colorScheme.onPrimary
                         : colorScheme.onSurface,
-                  ), translate: false,
+                  ),
                 ),
               ],
             ),
@@ -1909,7 +1909,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             Icon(Icons.label_rounded,
                                 color: colorScheme.primary, size: 24),
                             const SizedBox(width: 8),
-                            AnymeXText('SELECT TAGS',
+                            AnymeXText('SELECT TAGS'.tr,
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.5,
@@ -1957,7 +1957,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             return CheckboxListTile(
                               title: AnymeXText(tag,
                                   style: theme.textTheme.bodyMedium
-                                      ?.copyWith(fontWeight: FontWeight.w500), translate: false),
+                                      ?.copyWith(fontWeight: FontWeight.w500)),
                               value: isSelected,
                               activeColor: colorScheme.primary,
                               onChanged: (v) => setModalState(() => setState(() =>
@@ -1990,7 +1990,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
     return CheckboxListTile(
       title: AnymeXText(entry.key,
           style: theme.textTheme.bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w500), translate: false),
+              ?.copyWith(fontWeight: FontWeight.w500)),
       value: selectedStreamingOn.contains(entry.value) ||
           (entry.value is List &&
               selectedStreamingOn.contains((entry.value as List).first)),
@@ -2028,7 +2028,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             color: colorScheme.primary,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.5,
-          ), translate: false,
+          ),
         ),
       ));
       for (var entry in langEntry.value.entries) {
@@ -2159,7 +2159,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
-              ), translate: false,
+              ),
             ),
             const SizedBox(height: 6),
             AnymeXText(
@@ -2167,7 +2167,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
-              ), translate: false,
+              ),
             ),
           ],
         ),
@@ -2270,7 +2270,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.5,
                               color: colorScheme.onSurface,
-                            ), translate: false,
+                            ),
                           ),
                         ],
                       ),

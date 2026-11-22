@@ -968,7 +968,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                                 formatName,
                                 size: 10,
                                 variant: TextVariant.bold,
-                                color: colorScheme.primary, translate: false,
+                                color: colorScheme.primary,
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -1003,7 +1003,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            AnymeXText('Top comments', maxLines: null),
+                            AnymeXText('Top comments'.tr, maxLines: null),
                           ],
                         ),
                       ),
@@ -1017,7 +1017,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            AnymeXText('Newest first', maxLines: null),
+                            AnymeXText('Newest first'.tr, maxLines: null),
                           ],
                         ),
                       ),
@@ -1031,7 +1031,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            AnymeXText('Oldest first', maxLines: null),
+                            AnymeXText('Oldest first'.tr, maxLines: null),
                           ],
                         ),
                       ),
@@ -1117,7 +1117,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
           const SizedBox(width: 12),
           Expanded(
             child: AnymeXText(
-              'Log in to join the conversation and comment.',
+              'Log in to join the conversation and comment.'.tr,
               size: 13,
               color: colorScheme.onSurfaceVariant,
               maxLines: 2,
@@ -1134,7 +1134,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: AnymeXText(
-                'Log In',
+                'Log In'.tr,
                 size: 13,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onPrimary,
@@ -1339,7 +1339,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                           variant: TextVariant.semiBold,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true, translate: false,
+                          isMarquee: true,
                         ),
                         const SizedBox(height: 5),
                         ClipRRect(

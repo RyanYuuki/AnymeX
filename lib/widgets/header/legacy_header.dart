@@ -57,12 +57,12 @@ class Header extends StatelessWidget {
                   children: [
                     if (type == PageType.library) ...[
                       AnymeXText(
-                        "Library",
+                        "Library".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "All your local shi",
+                        "All your local shi".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -70,12 +70,12 @@ class Header extends StatelessWidget {
                       ),
                     ] else if (type == PageType.history) ...[
                       AnymeXText(
-                        "History",
+                        "History".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Your watch & read history",
+                        "Your watch & read history".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -83,12 +83,12 @@ class Header extends StatelessWidget {
                       ),
                     ] else if (type == PageType.stats) ...[
                       AnymeXText(
-                        "Stats",
+                        "Stats".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Your watch & read statistics",
+                        "Your watch & read statistics".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -96,12 +96,12 @@ class Header extends StatelessWidget {
                       ),
                     ] else if (type == PageType.extensions) ...[
                       AnymeXText(
-                        "Extensions",
+                        "Extensions".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Manage plugins & sources",
+                        "Manage plugins & sources".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -111,7 +111,7 @@ class Header extends StatelessWidget {
                       Obx(() => AnymeXText(
                             "${greetingController.currentGreeting.value.tr},",
                             autoResize: true,
-                            maxLines: 1, translate: false,
+                            maxLines: 1,
                           )),
                       AnymeXText(
                         profileData.profileData.value.name ?? 'Guest',
@@ -348,7 +348,7 @@ class Header extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        "Find your favourite Anime, Manga, Manhwa or whatever you like!",
+                        "Find your favourite Anime, Manga, Manhwa or whatever you like!".tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: context.colors.onSurface.withOpacity(0.7),

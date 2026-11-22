@@ -234,7 +234,7 @@ class AnymeXButton2 extends StatelessWidget {
                     color: context.colors.onSurface,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                  ), translate: false,
+                  ),
                 ),
             ],
           ),

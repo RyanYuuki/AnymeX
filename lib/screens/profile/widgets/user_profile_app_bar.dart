@@ -168,7 +168,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         ),
                         const SizedBox(height: 16),
                         AnymeXText(
-                          'More Options',
+                          'More Options'.tr,
                           style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Linotte',
@@ -208,7 +208,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: AnymeXText(
-                                    'User ID copied to clipboard',
+                                    'User ID copied to clipboard'.tr,
                                   ),
                                   backgroundColor: context.theme.colorScheme
                                       .surfaceContainerHighest,
@@ -411,7 +411,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                               ? context
                                                   .theme.colorScheme.onPrimary
                                               : Colors.white,
-                                        ), translate: false,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -485,7 +485,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                           color: donatorTier > 0
                                               ? const Color(0xFFE85D75)
                                               : Colors.white,
-                                        ), translate: false,
+                                        ),
                                       ),
                                     ),
                                   ],

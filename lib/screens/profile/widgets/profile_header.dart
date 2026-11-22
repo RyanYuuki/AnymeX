@@ -46,7 +46,7 @@ Widget _buildBottomSheetOption(
             style: const TextStyle(
               fontSize: 16,
               fontFamily: 'Linotte',
-            ), translate: false,
+            ),
           ),
         ],
       ),
@@ -246,7 +246,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
-                                ), translate: false,
+                                ),
                               ),
                               Flexible(
                                 child: Wrap(
@@ -283,7 +283,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                               color: donatorTier > 0
                                                   ? const Color(0xFFE85D75)
                                                   : Colors.white,
-                                            ), translate: false,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -330,7 +330,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.white,
-                                                  ), translate: false,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -451,7 +451,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           ),
                                           const SizedBox(height: 16),
                                           AnymeXText(
-                                            'More Options',
+                                            'More Options'.tr,
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontFamily: 'Linotte',
@@ -500,7 +500,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                 ).showSnackBar(
                                                   SnackBar(
                                                     content: AnymeXText(
-                                                      'User ID copied to clipboard',
+                                                      'User ID copied to clipboard'.tr,
                                                     ),
                                                     backgroundColor: context
                                                         .theme
@@ -729,7 +729,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         AnymeXText(
-                          'More Options',
+                          'More Options'.tr,
                           style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Linotte',
@@ -779,7 +779,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: AnymeXText(
-                                    'User ID copied to clipboard',
+                                    'User ID copied to clipboard'.tr,
                                   ),
                                   backgroundColor: context.theme.colorScheme
                                       .surfaceContainerHighest,
@@ -922,7 +922,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                     offset: Offset(0, 2),
                                   ),
                                 ],
-                              ), translate: false,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 7),
@@ -958,7 +958,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                         color: donatorTier > 0
                                             ? const Color(0xFFE85D75)
                                             : Colors.white,
-                                      ), translate: false,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -988,7 +988,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                           fontSize: 10,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white,
-                                        ), translate: false,
+                                        ),
                                       ),
                                     ],
                                   ),

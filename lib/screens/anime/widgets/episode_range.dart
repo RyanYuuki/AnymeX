@@ -71,7 +71,7 @@ class EpisodeSortKeySelector extends StatelessWidget {
               fontFamily: 'Linotte',
               fontWeight: FontWeight.w700,
               color: Theme.of(context).colorScheme.onSurface,
-            ), translate: false,
+            ),
           ),
         ),
         Obx(() {

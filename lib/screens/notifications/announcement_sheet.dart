@@ -138,7 +138,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: AnymeXText(
-                      'Announcement',
+                      'Announcement'.tr,
                       size: 16,
                       variant: TextVariant.semiBold,
                     ),
@@ -204,7 +204,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
             size: 20,
             variant: TextVariant.bold,
             maxLines: 20,
-            softWrap: true, translate: false,
+            softWrap: true,
           ),
           const SizedBox(height: 8),
           Row(
@@ -216,7 +216,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                 AnymeXText(
                   announcement.authorName!,
                   size: 12,
-                  color: colors.onSurface.withOpacity(0.6), translate: false,
+                  color: colors.onSurface.withOpacity(0.6),
                 ),
                 const SizedBox(width: 6),
                 AnymeXText('•',
@@ -231,7 +231,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                     ? timeago.format(announcement.publishedAt!)
                     : '',
                 size: 12,
-                color: colors.onSurface.withOpacity(0.6), translate: false,
+                color: colors.onSurface.withOpacity(0.6),
               ),
               const SizedBox(width: 6),
               AnymeXText('•',
@@ -243,7 +243,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
               AnymeXText(
                 '${announcement.viewCount}',
                 size: 12,
-                color: colors.onSurface.withOpacity(0.6), translate: false,
+                color: colors.onSurface.withOpacity(0.6),
               ),
             ],
           ),
@@ -300,7 +300,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
             label,
             size: 11,
             variant: TextVariant.semiBold,
-            color: color, translate: false,
+            color: color,
           ),
         ],
       ),
@@ -346,7 +346,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                   Icon(Icons.campaign_outlined,
                       size: 44, color: colors.onSurface.withOpacity(0.3)),
                   const SizedBox(height: 12),
-                  AnymeXText('Announcement unavailable', size: 16,
+                  AnymeXText('Announcement unavailable'.tr, size: 16,
                       variant: TextVariant.semiBold),
                   const SizedBox(height: 6),
                   AnymeXText(
@@ -362,7 +362,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                     FilledButton.icon(
                       onPressed: _retry,
                       icon: const Icon(Icons.refresh_rounded, size: 18),
-                      label: AnymeXText('Retry', size: 13),
+                      label: AnymeXText('Retry'.tr, size: 13),
                     ),
                   ],
                 ],

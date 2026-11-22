@@ -292,7 +292,7 @@ class _BigCarouselPortraitState
                                         fontSize: 11.5,
                                         fontWeight: FontWeight.w800,
                                         color: colors.onTertiaryContainer,
-                                      ), translate: false,
+                                      ),
                                     ),
                                   ],
                                 ),

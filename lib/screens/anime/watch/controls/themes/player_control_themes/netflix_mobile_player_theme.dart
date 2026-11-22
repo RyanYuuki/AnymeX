@@ -72,7 +72,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                 shadows: [
                                   Shadow(color: Colors.black87, blurRadius: 4)
                                 ],
-                              ), translate: false,
+                              ),
                             )),
                       ),
                     ),
@@ -204,7 +204,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                             color: Colors.black87,
                                             blurRadius: 2)
                                       ],
-                                    ), translate: false,
+                                    ),
                                   )),
                               const SizedBox(width: 12),
                               const Expanded(
@@ -236,7 +236,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                       Shadow(
                                           color: Colors.black87, blurRadius: 2)
                                     ],
-                                  ), translate: false,
+                                  ),
                                 );
                               }),
                             ],

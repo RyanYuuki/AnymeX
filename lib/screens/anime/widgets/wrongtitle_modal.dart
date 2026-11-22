@@ -166,7 +166,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     child: AnymeXText(
                       searchStatus.value,
                       variant: TextVariant.semiBold,
-                      color: Theme.of(context).colorScheme.primary, translate: false,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   )
                 : const SizedBox.shrink()),
@@ -189,7 +189,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 
                     if (results.isEmpty) {
                       return Center(
-                        child: AnymeXText('No results found.'),
+                        child: AnymeXText('No results found.'.tr),
                       );
                     }
 
@@ -310,7 +310,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     );
                   } else {
                     return Center(
-                      child: AnymeXText('No data available.'),
+                      child: AnymeXText('No data available.'.tr),
                     );
                   }
                 },

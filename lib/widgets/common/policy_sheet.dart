@@ -139,7 +139,7 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.5,
                           color: context.colors.onSurface,
-                        ), translate: false,
+                        ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),

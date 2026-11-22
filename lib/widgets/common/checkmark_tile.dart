@@ -51,12 +51,12 @@ class ListTileWithCheckMark extends StatelessWidget {
               AnymeXText(
                 title!,
                 style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold), translate: false,
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
           if (subtitle != '')
             AnymeXText(
               subtitle,
-              maxLines: 1, translate: false,
+              maxLines: 1,
             )
         ],
       ),

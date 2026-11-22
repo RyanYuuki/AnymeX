@@ -128,7 +128,7 @@ class Liquid {
                                   ?.copyWith(
                                     color: context.colors.primary,
                                     fontWeight: FontWeight.bold,
-                                  ), translate: false,
+                                  ),
                             ),
                           ),
                       ],
@@ -727,7 +727,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                               style: TextStyle(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
-                              ), translate: false,
+                              ),
                             ),
                           ],
                         ),
@@ -759,7 +759,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                               style: TextStyle(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
-                              ), translate: false,
+                              ),
                             ),
                           ],
                         ),

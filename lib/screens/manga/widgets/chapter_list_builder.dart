@@ -339,7 +339,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
             label,
             size: 12.5,
             variant: TextVariant.semiBold,
-            color: colors.onSurface, translate: false,
+            color: colors.onSurface,
           ),
           const SizedBox(width: 5),
           Icon(
@@ -473,7 +473,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(24),
-            child: AnymeXText('No chapters found'),
+            child: AnymeXText('No chapters found'.tr),
           ),
         ),
       );
@@ -665,7 +665,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                         ),
                         const SizedBox(height: 12),
                         AnymeXText(
-                          'No downloaded chapters found for this manga',
+                          'No downloaded chapters found for this manga'.tr,
                           size: 14,
                           variant: TextVariant.semiBold,
                           color: context.colors.onSurface.opaque(0.7),
@@ -679,7 +679,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: AnymeXText(
-                              'Switch to Online',
+                              'Switch to Online'.tr,
                               color: context.colors.onPrimary,
                               variant: TextVariant.bold,
                             ),
@@ -884,7 +884,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                   chNum,
                   size: 13,
                   variant: TextVariant.bold,
-                  color: data.isSelected ? colors.onPrimary : colors.primary, translate: false,
+                  color: data.isSelected ? colors.onPrimary : colors.primary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -898,7 +898,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                       size: 13,
                       variant: TextVariant.semiBold,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (chapter.scanlator?.isNotEmpty == true) ...[
                       const SizedBox(height: 2),
@@ -906,7 +906,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                         chapter.scanlator!,
                         size: 10,
                         color:
-                            colors.onSurface.opaque(0.6, iReallyMeanIt: true), translate: false,
+                            colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                       ),
                     ],
                   ],
@@ -974,7 +974,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                 chapter.formattedNumber,
                 variant: TextVariant.bold,
                 size: 13,
-                color: data.isSelected ? colors.onPrimary : colors.onSurface, translate: false,
+                color: data.isSelected ? colors.onPrimary : colors.onSurface,
               ),
               if (downloadButton != null)
                 Positioned(
@@ -1058,7 +1058,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                       AnymeXText(
                         '${data.progressPercentage}%',
                         size: 9,
-                        variant: TextVariant.bold, translate: false,
+                        variant: TextVariant.bold,
                       ),
                     ],
                   ),
@@ -1076,7 +1076,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                   child: AnymeXText(
                     chapter.formattedNumber,
                     variant: TextVariant.bold,
-                    color: colors.onPrimary, translate: false,
+                    color: colors.onPrimary,
                   ),
                 ),
               const SizedBox(width: 15),
@@ -1090,7 +1090,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                       variant: TextVariant.semiBold,
                       size: 13,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 5),
                     AnymeXText(
@@ -1099,7 +1099,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                       color: colors.inverseSurface.opaque(0.7),
                       fontStyle: FontStyle.italic,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -1118,7 +1118,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                   height: 38,
                   color: colors.primary,
                   child: AnymeXText(
-                    'Read',
+                    'Read'.tr,
                     variant: TextVariant.semiBold,
                     color: colors.onPrimary,
                   ),
@@ -1168,7 +1168,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                     AnymeXText(
                       '${data.progressPercentage}%',
                       size: 9,
-                      variant: TextVariant.bold, translate: false,
+                      variant: TextVariant.bold,
                     ),
                   ],
                 ),
@@ -1192,7 +1192,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
             ? AnymeXText(
                 chapter.scanlator!,
                 size: 11,
-                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true), translate: false,
+                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
               )
             : null,
         trailing: Row(
@@ -1528,17 +1528,17 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: AnymeXText('Delete Chapter', variant: TextVariant.bold),
+        title: AnymeXText('Delete Chapter'.tr, variant: TextVariant.bold),
         content: AnymeXText(
             'Are you sure you want to delete Chapter ${chMeta.chapter.formattedNumber}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: AnymeXText('Cancel'),
+            child: AnymeXText('Cancel'.tr),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: AnymeXText('Delete', color: ctx.colors.error),
+            child: AnymeXText('Delete'.tr, color: ctx.colors.error),
           ),
         ],
       ),

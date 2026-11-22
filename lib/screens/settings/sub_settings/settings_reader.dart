@@ -392,7 +392,7 @@ class _SettingsReaderState extends State<SettingsReader> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText(
+                Text(
                   'The wind swept quietly across the lantern-lit courtyard as the final bell echoed through the valley.',
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
@@ -401,10 +401,10 @@ class _SettingsReaderState extends State<SettingsReader> {
                     letterSpacing: _novelLetterSpacing,
                     wordSpacing: _novelWordSpacing,
                     color: fgColor,
-                  ), maxLines: null,
+                  ),
                 ),
                 SizedBox(height: _novelParagraphSpacing.clamp(4.0, 24.0)),
-                AnymeXText(
+                Text(
                   'He adjusted his coat and stepped forward into the mist.',
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
@@ -413,7 +413,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                     letterSpacing: _novelLetterSpacing,
                     wordSpacing: _novelWordSpacing,
                     color: fgColor.withValues(alpha: 0.85),
-                  ), maxLines: null,
+                  ),
                 ),
               ],
             ),
@@ -460,7 +460,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                     themeObj.name,
                     size: 12,
                     color: colors.primary,
-                    variant: TextVariant.semiBold, translate: false,
+                    variant: TextVariant.semiBold,
                   ),
                 ],
               ),
@@ -688,8 +688,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                     child: SegmentedButton<bool>(
                       showSelectedIcon: false,
                       segments: const [
-                        ButtonSegment(value: false, label: AnymeXText('Paged', maxLines: null)),
-                        ButtonSegment(value: true, label: AnymeXText('Webtoon', maxLines: null)),
+                        ButtonSegment(value: false, label: Text('Paged')),
+                        ButtonSegment(value: true, label: Text('Webtoon')),
                       ],
                       selected: {isWebtoon},
                       onSelectionChanged: (s) {
@@ -705,8 +705,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                     child: SegmentedButton<bool>(
                       showSelectedIcon: false,
                       segments: const [
-                        ButtonSegment(value: false, label: AnymeXText('Horiz', maxLines: null)),
-                        ButtonSegment(value: true, label: AnymeXText('Vert', maxLines: null)),
+                        ButtonSegment(value: false, label: Text('Horiz')),
+                        ButtonSegment(value: true, label: Text('Vert')),
                       ],
                       selected: {isVertical},
                       onSelectionChanged: (s) {
@@ -787,7 +787,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                                           variant: TextVariant.semiBold,
                                           color: Colors.white,
                                           textAlign: TextAlign.center,
-                                          maxLines: 2, translate: false,
+                                          maxLines: 2,
                                         ),
                                       ),
                                     ),

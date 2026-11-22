@@ -144,7 +144,7 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
                                 ? FontWeight.w600
                                 : FontWeight.w500,
                             fontSize: 16,
-                          ), translate: false,
+                          ),
                         ),
                       ),
                       // Selection indicator

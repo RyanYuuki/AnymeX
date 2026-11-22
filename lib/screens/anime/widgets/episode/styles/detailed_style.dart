@@ -156,7 +156,7 @@ class DetailedEpisodeWidget extends StatelessWidget {
       maxLines: 3,
       fontStyle: FontStyle.italic,
       color: context.colors.inverseSurface.opaque(0.90),
-      overflow: TextOverflow.ellipsis, translate: false,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -206,7 +206,7 @@ class DetailedEpisodeWidget extends StatelessWidget {
                                 border: Border.all(color: Colors.orange.withOpacity(0.5)),
                               ),
                               child: AnymeXText(
-                                "FILLER",
+                                "FILLER".tr,
                                 size: 10,
                                 color: Colors.orange,
                                 variant: TextVariant.bold,
@@ -218,7 +218,7 @@ class DetailedEpisodeWidget extends StatelessWidget {
                           variant: TextVariant.bold,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true, translate: false,
+                          isMarquee: true,
                         ),
                       ],
                     ),

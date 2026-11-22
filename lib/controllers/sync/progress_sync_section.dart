@@ -134,7 +134,7 @@ class _GistSyncCard extends StatelessWidget {
                               ),
                             )
                           : const Icon(Icons.login_rounded),
-                      label: AnymeXText(primaryActionLabel, translate: false),
+                      label: AnymeXText(primaryActionLabel),
                     ),
                   ),
                 if (isLogged)
@@ -164,7 +164,7 @@ class _GistSyncCard extends StatelessWidget {
                                           ? Icons.cloud_upload_rounded
                                           : Icons.sync_rounded,
                                     ),
-                              label: AnymeXText(primaryActionLabel, translate: false),
+                              label: AnymeXText(primaryActionLabel),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -482,14 +482,14 @@ class _GistSyncCard extends StatelessWidget {
                                   children: [
                                     AnymeXText(displayName ?? username,
                                       variant: TextVariant.semiBold,
-                                      size: 14, translate: false,
+                                      size: 14,
                                     ),
                                     if (displayName != null &&
                                         username.isNotEmpty &&
                                         username != 'GitHub User')
                                       AnymeXText('@$username',
                                         size: 11,
-                                        color: ctx.colors.onSurfaceVariant, translate: false,
+                                        color: ctx.colors.onSurfaceVariant,
                                       ),
                                   ],
                                 ),
@@ -517,7 +517,7 @@ class _GistSyncCard extends StatelessWidget {
                               lastSyncError: lastSyncError,
                             ),
                             size: 12,
-                            color: ctx.colors.onSurfaceVariant, translate: false,
+                            color: ctx.colors.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -552,7 +552,7 @@ class _GistSyncCard extends StatelessWidget {
                           isAuthenticating: ctrl.isAuthenticating.value,
                           isSyncing: ctrl.isSyncing.value,
                           needsInitialize: ctrl.hasCloudGist.value == false,
-                        ), translate: false,
+                        ),
                       ),
                     ),
                   ),
@@ -817,7 +817,7 @@ class _StatusPill extends StatelessWidget {
       child: AnymeXText(label,
         size: 10,
         variant: TextVariant.semiBold,
-        color: color, translate: false,
+        color: color,
       ),
     );
   }

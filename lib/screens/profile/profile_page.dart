@@ -195,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: AnymeXText('Activity refreshed'),
+        content: AnymeXText('Activity refreshed'.tr),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -607,7 +607,7 @@ class _ProfilePageState extends State<ProfilePage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AnymeXText(
-                      "Create Status",
+                      "Create Status".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -654,7 +654,7 @@ class _ProfilePageState extends State<ProfilePage>
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: AnymeXText('Status posted successfully!'),
+                              content: AnymeXText('Status posted successfully!'.tr),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -671,7 +671,7 @@ class _ProfilePageState extends State<ProfilePage>
                           }
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: AnymeXText(errorMessage, translate: false),
+                              content: AnymeXText(errorMessage),
                               backgroundColor: context.theme.colorScheme.error,
                             ),
                           );
@@ -902,7 +902,7 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: AnymeXText(
-                          'No more activities',
+                          'No more activities'.tr,
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
@@ -937,7 +937,7 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: AnymeXText('Activity deleted'),
+        content: AnymeXText('Activity deleted'.tr),
         duration: Duration(milliseconds: 1200),
       ),
     );

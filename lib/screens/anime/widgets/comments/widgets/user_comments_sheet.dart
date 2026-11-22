@@ -430,7 +430,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
             color: hasNameplate ? Colors.white : colorScheme.onSurface,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center, translate: false,
+            textAlign: TextAlign.center,
           ),
         ),
         if (comment.badges != null && comment.badges!.isNotEmpty) ...[
@@ -601,7 +601,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
           title,
           size: 13,
           variant: TextVariant.bold,
-          color: colorScheme.onSurface, translate: false,
+          color: colorScheme.onSurface,
         ),
       ],
     );
@@ -632,7 +632,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
             label,
             size: 11.5,
             variant: TextVariant.bold,
-            color: color, translate: false,
+            color: color,
           ),
         ],
       ),
@@ -676,7 +676,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
             variant: TextVariant.bold,
             color: colorScheme.onSurface,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, translate: false,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
           AnymeXText(
@@ -684,7 +684,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
             size: 11,
             color: colorScheme.onSurfaceVariant,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, translate: false,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -733,7 +733,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
             variant: TextVariant.bold,
             color: colorScheme.onSurface,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, translate: false,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
           AnymeXText(
@@ -778,7 +778,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
               '${p.key} +${p.value}',
               size: 11.5,
               variant: TextVariant.semiBold,
-              color: colorScheme.onSurface, translate: false,
+              color: colorScheme.onSurface,
             ),
           ),
     ];
@@ -907,7 +907,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
             child: AnymeXText(
               label,
               size: 13,
-              color: colorScheme.onSurface, translate: false,
+              color: colorScheme.onSurface,
             ),
           ),
           if (value.isNotEmpty)
@@ -915,7 +915,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
               value,
               size: 12,
               variant: TextVariant.bold,
-              color: color, translate: false,
+              color: color,
             ),
         ],
       ),

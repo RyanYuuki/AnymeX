@@ -347,7 +347,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
                   color: theme.onSurface.withValues(alpha: 0.7),
-                ), translate: false,
+                ),
               ),
               const SizedBox(height: 2),
               AnymeXText(
@@ -358,7 +358,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                   fontFamily: 'Linotte',
                 ),
                 overflow: TextOverflow.ellipsis,
-                maxLines: 2, translate: false,
+                maxLines: 2,
               ),
             ],
           ),

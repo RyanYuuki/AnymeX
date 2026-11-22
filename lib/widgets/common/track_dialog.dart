@@ -61,7 +61,7 @@ class _TrackingDialogState extends State<TrackingDialog> {
             ),
           ),
           const SizedBox(height: 16),
-          AnymeXText('Track your progress?',
+          AnymeXText('Track your progress?'.tr,
             size: 18,
             variant: TextVariant.bold,
             textAlign: TextAlign.center,

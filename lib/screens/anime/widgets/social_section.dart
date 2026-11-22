@@ -120,7 +120,7 @@ class SocialSection extends StatelessWidget {
                                     .toStringAsFixed(1),
                             size: 11,
                             color: theme.onPrimary,
-                            variant: TextVariant.bold, translate: false,
+                            variant: TextVariant.bold,
                           ),
                         ],
                       ),
@@ -135,7 +135,7 @@ class SocialSection extends StatelessWidget {
                 size: 12,
                 color: theme.onSurface.withOpacity(0.7),
                 fontStyle: FontStyle.italic,
-                textAlign: TextAlign.center, translate: false,
+                textAlign: TextAlign.center,
               ),
             const SizedBox(height: 2),
             AnymeXText(

@@ -140,7 +140,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                           children: List.generate(
                             _blendModeLabels.length,
                             (i) => ChoiceChip(
-                              label: AnymeXText(_blendModeLabels[i], translate: false),
+                              label: AnymeXText(_blendModeLabels[i]),
                               selected: blendMode == i,
                               onSelected: (_) {
                                 controller.colorFilterMode.value = i;

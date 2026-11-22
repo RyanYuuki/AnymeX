@@ -78,7 +78,7 @@ class MinimalEpisodeWidget extends StatelessWidget {
                   epNum,
                   size: 13,
                   variant: TextVariant.bold,
-                  color: isSelected ? colors.onPrimary : colors.primary, translate: false,
+                  color: isSelected ? colors.onPrimary : colors.primary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -92,12 +92,12 @@ class MinimalEpisodeWidget extends StatelessWidget {
                       size: 13,
                       variant: TextVariant.semiBold,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (isFiller) ...[
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'FILLER',
+                        'FILLER'.tr,
                         size: 10,
                         variant: TextVariant.bold,
                         color: Colors.orange,

@@ -435,7 +435,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),
-            ), translate: false,
+            ),
           ),
         ],
       ),

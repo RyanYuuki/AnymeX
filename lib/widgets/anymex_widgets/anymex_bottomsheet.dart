@@ -205,7 +205,7 @@ class AnymeXSheet extends StatelessWidget {
                     heroTitle!,
                     size: 24,
                     variant: TextVariant.bold,
-                    color: primaryTextColor, translate: false,
+                    color: primaryTextColor,
                   ),
                 ],
                 if (heroSubtitle != null && heroSubtitle!.isNotEmpty) ...[
@@ -214,7 +214,7 @@ class AnymeXSheet extends StatelessWidget {
                     heroSubtitle!,
                     size: 13,
                     variant: TextVariant.regular,
-                    color: secondaryTextColor, translate: false,
+                    color: secondaryTextColor,
                   ),
                 ],
                 if (title != null && heroTitle == null) ...[
@@ -222,7 +222,7 @@ class AnymeXSheet extends StatelessWidget {
                     title!,
                     size: 18,
                     variant: TextVariant.bold,
-                    color: primaryTextColor, translate: false,
+                    color: primaryTextColor,
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -244,7 +244,7 @@ class AnymeXSheet extends StatelessWidget {
                     message!,
                     textAlign: TextAlign.center,
                     size: 14,
-                    color: secondaryTextColor, translate: false,
+                    color: secondaryTextColor,
                   ),
                 ],
                 if (rows.isNotEmpty) ...[
@@ -257,7 +257,7 @@ class AnymeXSheet extends StatelessWidget {
                           AnymeXText(
                             row.label,
                             size: 14,
-                            color: row.labelColor ?? secondaryTextColor, translate: false,
+                            color: row.labelColor ?? secondaryTextColor,
                           ),
                           if (row.labelTrailing != null) ...[
                             const SizedBox(width: 6),
@@ -271,7 +271,7 @@ class AnymeXSheet extends StatelessWidget {
                               row.value!,
                               size: 14,
                               variant: TextVariant.semiBold,
-                              color: row.valueColor ?? primaryTextColor, translate: false,
+                              color: row.valueColor ?? primaryTextColor,
                             ),
                         ],
                       ),
@@ -302,14 +302,14 @@ class AnymeXSheet extends StatelessWidget {
                                   footerCard!.overline.toUpperCase(),
                                   size: 10,
                                   variant: TextVariant.bold,
-                                  color: secondaryTextColor, translate: false,
+                                  color: secondaryTextColor,
                                 ),
                                 const SizedBox(height: 4),
                                 AnymeXText(
                                   footerCard!.title,
                                   size: 14,
                                   variant: TextVariant.bold,
-                                  color: primaryTextColor, translate: false,
+                                  color: primaryTextColor,
                                 ),
                               ],
                             ),
@@ -355,7 +355,7 @@ class AnymeXSheet extends StatelessWidget {
                               primaryButtonText!,
                               size: 16,
                               variant: TextVariant.bold,
-                              color: buttonFg, translate: false,
+                              color: buttonFg,
                             ),
                     ),
                   ),
@@ -368,7 +368,7 @@ class AnymeXSheet extends StatelessWidget {
                       disclaimerText!,
                       size: 12,
                       color: secondaryTextColor,
-                      textAlign: TextAlign.center, translate: false,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],
@@ -410,7 +410,7 @@ Widget loginSheetHelper({
                   fontFamily: 'Linotte',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                ), translate: false,
+                ),
               ),
             ),
             IconButton(
@@ -446,7 +446,7 @@ Widget loginSheetHelper({
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXText(
-                      'Internal Browser',
+                      'Internal Browser'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -454,7 +454,7 @@ Widget loginSheetHelper({
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Login inside the app (Recommended)',
+                      'Login inside the app (Recommended)'.tr,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
@@ -494,7 +494,7 @@ Widget loginSheetHelper({
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXText(
-                      'External Browser',
+                      'External Browser'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -502,7 +502,7 @@ Widget loginSheetHelper({
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Login using your default browser',
+                      'Login using your default browser'.tr,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
@@ -543,7 +543,7 @@ Widget loginSheetHelper({
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Login with Token',
+                        'Login with Token'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -551,7 +551,7 @@ Widget loginSheetHelper({
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Manually paste OAuth access token',
+                        'Manually paste OAuth access token'.tr,
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),

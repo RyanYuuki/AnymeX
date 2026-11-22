@@ -140,27 +140,27 @@ class _SettingsFontsState extends State<SettingsFonts> {
             ],
           ),
           const SizedBox(height: 14),
-          AnymeXText(
+          Text(
             'The Quick Brown Fox',
             style: TextStyle(
               fontFamily: currentFont,
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: colors.onSurface,
-            ), maxLines: null,
+            ),
           ),
           const SizedBox(height: 6),
-          AnymeXText(
+          Text(
             'Jumped over the lazy dog. AnymeX gives you rich, adaptive typography with system-wide live text scaling and crisp rendering.',
             style: TextStyle(
               fontFamily: currentFont,
               fontSize: 13.5,
               height: 1.45,
               color: colors.onSurface.withValues(alpha: 0.75),
-            ), maxLines: null,
+            ),
           ),
           const SizedBox(height: 12),
-          AnymeXText(
+          Text(
             '1234567890 • EP 24 • 1080p • 60 FPS • \$49.99',
             style: TextStyle(
               fontFamily: currentFont,
@@ -168,7 +168,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
               color: colors.primary,
-            ), maxLines: null,
+            ),
           ),
         ],
       ),
@@ -205,7 +205,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
                   AnymeXText.semiBold(
                     '${(scale * 100).round()}%',
                     size: 14,
-                    color: colors.primary, translate: false,
+                    color: colors.primary,
                   ),
                 ],
               ),
@@ -238,7 +238,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
                       child: AnymeXText.semiBold(
                         p.label,
                         size: 12,
-                        color: isSelected ? colors.onPrimary : colors.onSurface, translate: false,
+                        color: isSelected ? colors.onPrimary : colors.onSurface,
                       ),
                     ),
                   );

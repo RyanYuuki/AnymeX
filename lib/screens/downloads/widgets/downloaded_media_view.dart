@@ -103,7 +103,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 Expanded(
                   child: AnymeXText(
                     message,
-                    size: 15, translate: false,
+                    size: 15,
                   ),
                 ),
               ],
@@ -583,7 +583,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.8,
-                        ), translate: false,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -597,7 +597,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         letterSpacing: -0.5,
                       ),
                       maxLines: 3,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -637,7 +637,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                             ),
                           ),
                           child: AnymeXText(
-                            'DOWNLOADED',
+                            'DOWNLOADED'.tr,
                             style: TextStyle(
                               fontFamily: 'Linotte',
                               fontSize: 10.0,
@@ -701,7 +701,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                   color: theme.primary.withOpacity(0.8),
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                ), translate: false,
+                ),
               ),
             ),
         ],
@@ -763,7 +763,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             Icon(Icons.track_changes_rounded, size: 15, color: theme.primary),
             const SizedBox(width: 6),
             AnymeXText(
-              'Track',
+              'Track'.tr,
               style: TextStyle(
                 color: theme.primary,
                 fontSize: 12,
@@ -792,7 +792,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         : theme.onSurface.withOpacity(0.5),
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                  ), translate: false,
+                  ),
                 ),
               );
             }),
@@ -816,7 +816,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           color: color.withOpacity(0.85),
           fontSize: 9.5,
           fontWeight: FontWeight.w600,
-        ), translate: false,
+        ),
       ),
     );
   }
@@ -894,7 +894,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                               theme.onSurface.withOpacity(0.3),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w800,
-                                        ), translate: false,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -1010,7 +1010,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                                       .computeLuminance() >
                                                   0.5
                                               ? Colors.black
-                                              : Colors.white, translate: false,
+                                              : Colors.white,
                                         ),
                                       ),
                                       const SizedBox(width: 2),
@@ -1099,7 +1099,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                   height: 1.3,
                 ),
                 maxLines: 3,
-                overflow: TextOverflow.ellipsis, translate: false,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -1195,7 +1195,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                 letterSpacing: -0.2,
                               ),
                               maxLines: 2,
-                              overflow: TextOverflow.ellipsis, translate: false,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 6),
                             Wrap(
@@ -1223,7 +1223,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                                   0.5
                                               ? Colors.black
                                               : Colors.white,
-                                    ), translate: false,
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -1296,7 +1296,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(height: 14),
             AnymeXText(
-              'Nothing downloaded yet',
+              'Nothing downloaded yet'.tr,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
                 fontSize: 15,
@@ -1306,7 +1306,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(height: 4),
             AnymeXText(
-              'Media you download will appear here.',
+              'Media you download will appear here.'.tr,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.28),
                 fontSize: 13,
@@ -1356,7 +1356,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.2,
-                  ), translate: false,
+                  ),
                 ),
                 AnymeXText(
                   subtitle,
@@ -1364,7 +1364,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     color: theme.onPrimary.withOpacity(0.7),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                  ), translate: false,
+                  ),
                 ),
               ],
             ),

@@ -270,7 +270,7 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),
-            ), translate: false,
+            ),
           ),
         ],
       ),

@@ -101,7 +101,7 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
     return AnymeXText(
       parts.join(' • '),
       size: 12,
-      color: colors.onSurfaceVariant, translate: false,
+      color: colors.onSurfaceVariant,
     );
   }
 

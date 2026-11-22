@@ -126,7 +126,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXText(
-                      'Select Video File',
+                      'Select Video File'.tr,
                       size: 18,
                       variant: TextVariant.bold,
                     ),
@@ -136,7 +136,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                       size: 12,
                       color: colors.onSurfaceVariant,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -176,7 +176,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                   size: 48, color: colors.error),
               const SizedBox(height: 12),
               AnymeXText(
-                'Failed to load torrent metadata',
+                'Failed to load torrent metadata'.tr,
                 size: 15,
                 variant: TextVariant.semiBold,
               ),
@@ -185,7 +185,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 _error!,
                 size: 12,
                 color: colors.onSurfaceVariant,
-                textAlign: TextAlign.center, translate: false,
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               AnymeXButton(
@@ -193,7 +193,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 width: 120,
                 height: 38,
                 borderRadius: BorderRadius.circular(12),
-                child: AnymeXText('Retry', variant: TextVariant.semiBold),
+                child: AnymeXText('Retry'.tr, variant: TextVariant.semiBold),
               ),
             ],
           ),
@@ -212,7 +212,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
               AnymeXText(
-                'Fetching torrent file list...',
+                'Fetching torrent file list...'.tr,
                 size: 13,
                 color: colors.onSurfaceVariant,
               ),

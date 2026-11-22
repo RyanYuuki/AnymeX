@@ -395,7 +395,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
           style: TextStyle(
             fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
             color: isCurrent ? Theme.of(context).colorScheme.primary : null,
-          ), translate: false,
+          ),
         ),
         trailing: isCurrent
             ? Icon(Icons.check_circle_rounded,

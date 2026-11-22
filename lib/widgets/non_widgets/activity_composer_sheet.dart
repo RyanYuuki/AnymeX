@@ -376,13 +376,13 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           color: context.theme.colorScheme.primary.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(5),
         ),
-        child: AnymeXText(
-          'GIF',
+        child: Text(
+          'GIF'.tr,
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w800,
             color: context.theme.colorScheme.primary,
-          ), maxLines: null,
+          ),
         ),
       ),
       onPressed: _openGifPicker,
@@ -417,7 +417,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: AnymeXText('Cancel',
+              child: AnymeXText('Cancel'.tr,
                   style: TextStyle(
                       color: context.theme.colorScheme.onSurfaceVariant)),
             ),
@@ -427,7 +427,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                 foregroundColor: context.theme.colorScheme.onPrimary,
               ),
               onPressed: () => Navigator.pop(context, inputUrl),
-              child: AnymeXText('Insert'),
+              child: AnymeXText('Insert'.tr),
             ),
           ],
         );
@@ -466,7 +466,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                   segments: [
                     ButtonSegment(
                       value: 0,
-                      label: AnymeXText('Compose',
+                      label: AnymeXText('Compose'.tr,
                           style: TextStyle(
                               color: _previewMode
                                   ? context.theme.colorScheme.onSurfaceVariant
@@ -481,7 +481,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                     ),
                     ButtonSegment(
                       value: 1,
-                      label: AnymeXText('Preview',
+                      label: AnymeXText('Preview'.tr,
                           style: TextStyle(
                               color: !_previewMode
                                   ? context.theme.colorScheme.onSurfaceVariant
@@ -596,7 +596,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                       ),
                       child: SingleChildScrollView(
                         child: _textController.text.trim().isEmpty
-                            ? AnymeXText("Nothing to preview",
+                            ? AnymeXText("Nothing to preview".tr,
                                 style: TextStyle(
                                     color: context
                                         .theme.colorScheme.onSurfaceVariant))

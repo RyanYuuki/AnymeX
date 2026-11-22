@@ -221,7 +221,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                           color: theme.colorScheme.onSurface,
                           maxLines: 1,
                           autoResize: true,
-                          isMarquee: isLongTitle, translate: false,
+                          isMarquee: isLongTitle,
                         ),
                       ),
                       if (widget.subtitle != null &&
@@ -232,7 +232,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                           size: 11,
                           color: theme.colorScheme.onSurface.opaque(0.6),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis, translate: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ],

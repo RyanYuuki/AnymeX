@@ -81,7 +81,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           showHeader: true,
           headerTitle: 'Compatibility'.tr,
           body: Center(
-            child: AnymeXText('No result', size: 16),
+            child: AnymeXText('No result'.tr, size: 16),
           ),
         );
       }
@@ -168,7 +168,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                           vertical: 48),
                                       child: Center(
                                         child: AnymeXText(
-                                          'No data available for this section',
+                                          'No data available for this section'.tr,
                                           size: 14,
                                           color: context.colors.onSurfaceVariant
                                               .opaque(0.7),
@@ -210,7 +210,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             Icon(Iconsax.heart5, color: c.primary, size: 20),
             const SizedBox(width: 8),
             AnymeXText(
-              'AniMatch',
+              'AniMatch'.tr,
               size: 18,
               variant: TextVariant.bold,
             ),
@@ -227,7 +227,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               Icon(Icons.share_rounded, size: 15, color: c.onPrimary),
               const SizedBox(width: 6),
               AnymeXText(
-                'Share Match Card',
+                'Share Match Card'.tr,
                 size: 12,
                 variant: TextVariant.bold,
                 color: c.onPrimary,
@@ -292,7 +292,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               Icon(Iconsax.heart5, color: c.primary, size: 16),
               const SizedBox(width: 8),
               AnymeXText(
-                'AniMatch Compatibility',
+                'AniMatch Compatibility'.tr,
                 size: 13,
                 variant: TextVariant.bold,
                 color: c.onSurfaceVariant.opaque(0.9),
@@ -334,7 +334,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               '${val.toStringAsFixed(0)}%',
                               size: 42,
                               variant: TextVariant.bold,
-                              color: c.onSurface, translate: false,
+                              color: c.onSurface,
                             );
                           },
                         ),
@@ -364,7 +364,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               rank.name,
                               size: 26,
                               variant: TextVariant.bold,
-                              color: rankColor, translate: false,
+                              color: rankColor,
                             ),
                           ),
                         ),
@@ -376,7 +376,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       size: 12,
                       textAlign: TextAlign.center,
                       color: c.onSurfaceVariant.opaque(0.85),
-                      maxLines: 2, translate: false,
+                      maxLines: 2,
                     ),
                   ],
                 ),
@@ -449,10 +449,10 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         height: 72,
                         color: c.surfaceContainerHigh,
                         alignment: Alignment.center,
-                        child: AnymeXText(
+                        child: Text(
                           name.isNotEmpty ? name[0].toUpperCase() : '?',
                           style: const TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold), maxLines: null, translate: false,
+                              fontSize: 26, fontWeight: FontWeight.bold),
                         ),
                       ),
               ),
@@ -778,7 +778,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     if (rows.isEmpty) {
       body = Center(
         child: AnymeXText(
-          'No stats available',
+          'No stats available'.tr,
           size: 12,
           color: c.onSurfaceVariant.opaque(0.6),
         ),
@@ -828,7 +828,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                           variant: TextVariant.bold,
                           textAlign: TextAlign.right,
                           color: c.primary,
-                          maxLines: 1, translate: false,
+                          maxLines: 1,
                         ),
                       ),
                       Container(
@@ -853,7 +853,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                           variant: TextVariant.bold,
                           textAlign: TextAlign.left,
                           color: c.secondary,
-                          maxLines: 1, translate: false,
+                          maxLines: 1,
                         ),
                       ),
                     ],
@@ -928,7 +928,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     if (decadeCards.isEmpty) {
       body = Center(
         child: AnymeXText(
-          'No decade breakdown available',
+          'No decade breakdown available'.tr,
           size: 12,
           color: c.onSurfaceVariant.opaque(0.6),
         ),
@@ -1002,7 +1002,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         AnymeXText(
           card.title,
           size: 13,
-          variant: TextVariant.bold, translate: false,
+          variant: TextVariant.bold,
         ),
         const SizedBox(height: 4),
         if (propRow != null)
@@ -1010,7 +1010,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               AnymeXText(propRow.user1Value,
-                  size: 11, variant: TextVariant.bold, color: c.primary, translate: false),
+                  size: 11, variant: TextVariant.bold, color: c.primary),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: AnymeXText('vs',
@@ -1019,7 +1019,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     variant: TextVariant.bold),
               ),
               AnymeXText(propRow.user2Value,
-                  size: 11, variant: TextVariant.bold, color: c.secondary, translate: false),
+                  size: 11, variant: TextVariant.bold, color: c.secondary),
             ],
           ),
       ],
@@ -1190,16 +1190,16 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user1Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.primary, translate: false,
+                                color: c.primary,
                               ),
-                              AnymeXText('Mean Score',
+                              AnymeXText('Mean Score'.tr,
                                   size: 10,
                                   color: c.onSurfaceVariant.opaque(0.75)),
                               AnymeXText(
                                 meanScoreRow.user2Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.secondary, translate: false,
+                                color: c.secondary,
                               ),
                             ],
                           ),
@@ -1212,16 +1212,16 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 countRow.user1Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.primary.opaque(0.9), translate: false,
+                                color: c.primary.opaque(0.9),
                               ),
-                              AnymeXText('Count',
+                              AnymeXText('Count'.tr,
                                   size: 10,
                                   color: c.onSurfaceVariant.opaque(0.75)),
                               AnymeXText(
                                 countRow.user2Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.secondary.opaque(0.9), translate: false,
+                                color: c.secondary.opaque(0.9),
                               ),
                             ],
                           ),
@@ -1510,7 +1510,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                color: c.onSurface, translate: false,
+                                color: c.onSurface,
                               ),
                             ),
                           ],
@@ -1860,7 +1860,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 AnymeXText(meanScoreRow.user1Value,
                                     size: 10,
                                     variant: TextVariant.bold,
-                                    color: c.primary, translate: false),
+                                    color: c.primary),
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 2),
@@ -1872,7 +1872,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 AnymeXText(meanScoreRow.user2Value,
                                     size: 10,
                                     variant: TextVariant.bold,
-                                    color: c.secondary, translate: false),
+                                    color: c.secondary),
                               ],
                             ),
                           ),
@@ -1973,7 +1973,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user1Value,
                                 size: 9.5,
                                 variant: TextVariant.bold,
-                                color: c.primary, translate: false,
+                                color: c.primary,
                               ),
                               Padding(
                                 padding:
@@ -1989,7 +1989,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user2Value,
                                 size: 9.5,
                                 variant: TextVariant.bold,
-                                color: c.secondary, translate: false,
+                                color: c.secondary,
                               ),
                             ],
                           ),
@@ -2251,7 +2251,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 size: 11,
                 color: c.onSurfaceVariant.opaque(0.75),
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis, translate: false,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -2267,7 +2267,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             '${percentage.toStringAsFixed(0)}%',
             size: 11,
             variant: TextVariant.bold,
-            color: c.primary, translate: false,
+            color: c.primary,
           ),
         ),
         const SizedBox(width: 5),
@@ -2301,7 +2301,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             text,
             size: 12,
             color: c.onSurfaceVariant.opaque(0.65),
-            variant: TextVariant.semiBold, translate: false,
+            variant: TextVariant.semiBold,
           ),
         ],
       ),
@@ -2360,7 +2360,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               const SizedBox(width: 10),
               Expanded(
                 child: AnymeXText(
-                  'Mutual Connections',
+                  'Mutual Connections'.tr,
                   variant: TextVariant.bold,
                   size: 15,
                 ),
@@ -2374,7 +2374,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: AnymeXText(
-                    'Mutual Friends',
+                    'Mutual Friends'.tr,
                     size: 11,
                     variant: TextVariant.bold,
                     color: c.primary,
@@ -2398,7 +2398,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   child: AnymeXText(
                     relationshipText,
                     size: 12,
-                    variant: TextVariant.semiBold, translate: false,
+                    variant: TextVariant.semiBold,
                   ),
                 ),
               ],
@@ -2535,7 +2535,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'How it works & Compatibility Ranks',
+                          'How it works & Compatibility Ranks'.tr,
                           variant: TextVariant.bold,
                           size: 14,
                           color: c.onSurface,
@@ -2583,20 +2583,20 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   ),
                   const SizedBox(height: 6),
                   AnymeXText(
-                    'Powered by AniMatch 16-point compatibility analysis in AnymeX',
+                    'Powered by AniMatch 16-point compatibility analysis in AnymeX'.tr,
                     size: 11,
                     color: c.onSurfaceVariant.opaque(0.6),
                   ),
                   const SizedBox(height: 18),
                   AnymeXText(
-                    'Compatibility Ranks',
+                    'Compatibility Ranks'.tr,
                     variant: TextVariant.bold,
                     size: 14,
                     color: c.onSurface,
                   ),
                   const SizedBox(height: 2),
                   AnymeXText(
-                    'Every score is mapped to a rank. The table below shows each bracket, its badge, and what the range represents.',
+                    'Every score is mapped to a rank. The table below shows each bracket, its badge, and what the range represents.'.tr,
                     size: 11,
                     color: c.onSurfaceVariant.opaque(0.75),
                   ),
@@ -2609,7 +2609,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         SizedBox(
                           width: 52,
                           child: AnymeXText(
-                            'Badge',
+                            'Badge'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2618,7 +2618,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         SizedBox(
                           width: 44,
                           child: AnymeXText(
-                            'Rank',
+                            'Rank'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2627,7 +2627,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         SizedBox(
                           width: 68,
                           child: AnymeXText(
-                            'Range',
+                            'Range'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2635,7 +2635,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         ),
                         Expanded(
                           child: AnymeXText(
-                            'Description',
+                            'Description'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2682,7 +2682,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                   r.name,
                                   size: 11,
                                   variant: TextVariant.bold,
-                                  color: rankColor, translate: false,
+                                  color: rankColor,
                                 ),
                               ),
                             ),
@@ -2693,7 +2693,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               r.name,
                               size: 12,
                               variant: TextVariant.bold,
-                              color: c.onSurface, translate: false,
+                              color: c.onSurface,
                             ),
                           ),
                           SizedBox(
@@ -2702,14 +2702,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               rangeStr,
                               size: 11.5,
                               color: c.onSurfaceVariant,
-                              variant: TextVariant.semiBold, translate: false,
+                              variant: TextVariant.semiBold,
                             ),
                           ),
                           Expanded(
                             child: AnymeXText(
                               r.description,
                               size: 11.5,
-                              color: c.onSurfaceVariant.opaque(0.9), translate: false,
+                              color: c.onSurfaceVariant.opaque(0.9),
                             ),
                           ),
                         ],
@@ -2923,7 +2923,7 @@ class _BikeMeterSweepGaugeState extends State<_BikeMeterSweepGauge>
             AnymeXText(
               '$displayPct%',
               size: 11,
-              variant: TextVariant.bold, translate: false,
+              variant: TextVariant.bold,
             ),
           ],
         );

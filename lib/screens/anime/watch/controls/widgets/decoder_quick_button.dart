@@ -92,7 +92,7 @@ class DecoderQuickButton extends StatelessWidget {
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
-                    ), translate: false,
+                    ),
                   ),
                 ),
               ),
@@ -157,7 +157,7 @@ class DecoderQuickButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius),
               border: border,
             ),
-            child: AnymeXText(_label(current), style: style, translate: false),
+            child: AnymeXText(_label(current), style: style),
           ),
         ),
       );

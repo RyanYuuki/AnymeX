@@ -410,7 +410,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                               dialogError!,
                               size: 12,
                               color: cs.error,
-                              maxLines: 3, translate: false,
+                              maxLines: 3,
                             ),
                           ),
                         ],
@@ -541,7 +541,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                   child: AnymeXText('$count',
                                     size: 12,
                                     color: theme
-                                        .colorScheme.onPrimaryContainer, translate: false,
+                                        .colorScheme.onPrimaryContainer,
                                   ),
                                 );
                               }),
@@ -685,7 +685,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                 ? cs.onPrimaryContainer
                                 : hasError && hasChar
                                     ? cs.onErrorContainer
-                                    : cs.onSurface, translate: false,
+                                    : cs.onSurface,
                           ),
                         );
                       }),
@@ -770,7 +770,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       _error!,
                       size: 12,
                       color: cs.error,
-                      maxLines: 3, translate: false,
+                      maxLines: 3,
                     ),
                   ),
                 ],
@@ -824,7 +824,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                 const SizedBox(height: 4),
                 AnymeXText(errorMsg,
                   size: 12,
-                  color: theme.colorScheme.error.opaque(0.8), translate: false,
+                  color: theme.colorScheme.error.opaque(0.8),
                 ),
               ],
               const SizedBox(height: 12),
@@ -913,14 +913,14 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             : null,
                         child: m.avatarUrl == null
                             ? AnymeXText(m.username[0].toUpperCase(),
-                                style: const TextStyle(fontSize: 12), translate: false)
+                                style: const TextStyle(fontSize: 12))
                             : null,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: AnymeXText(m.username,
                             style: const TextStyle(fontSize: 12),
-                            overflow: TextOverflow.ellipsis, translate: false),
+                            overflow: TextOverflow.ellipsis),
                       ),
                       if (m.role == 'host')
                         Container(
@@ -1264,7 +1264,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                          ), translate: false,
+                          ),
                         ),
                       ],
                     ),
@@ -1339,7 +1339,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   height: 1.3,
-                                ), translate: false,
+                                ),
                               )
                             else
                               AnymeXText(
@@ -1390,7 +1390,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                     hostMember.username[0].toUpperCase(),
                                     style: const TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w700), translate: false,
+                                        fontWeight: FontWeight.w700),
                                   )
                                 : null,
                           )
@@ -1451,7 +1451,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                             .toUpperCase(),
                                         style: const TextStyle(
                                             fontSize: 9,
-                                            fontWeight: FontWeight.w700), translate: false,
+                                            fontWeight: FontWeight.w700),
                                       )
                                     : null,
                               ),
@@ -1473,7 +1473,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                     fontSize: 9,
                                     fontWeight: FontWeight.w700,
                                     color: cs.onSurface,
-                                  ), translate: false,
+                                  ),
                                 ),
                               ),
                             ),

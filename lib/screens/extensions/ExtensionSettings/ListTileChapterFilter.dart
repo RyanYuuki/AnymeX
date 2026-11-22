@@ -24,7 +24,7 @@ class ListTileChapterFilter extends StatelessWidget {
               : null,
       title: AnymeXText(
         label,
-        style: const TextStyle(fontSize: 14), translate: false,
+        style: const TextStyle(fontSize: 14),
       ),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (value) {

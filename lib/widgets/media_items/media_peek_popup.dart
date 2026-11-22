@@ -501,7 +501,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 size: 15,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                isMarquee: true, translate: false,
+                isMarquee: true,
               ),
               if (widget.media.romajiTitle.isNotEmpty &&
                   widget.media.romajiTitle != widget.media.title &&
@@ -513,7 +513,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   color: colors.onSurfaceVariant,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  isMarquee: true, translate: false,
+                  isMarquee: true,
                 ),
               ],
               const SizedBox(height: 10),
@@ -602,7 +602,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           AnymeXText(label,
               size: 11,
               color: color,
-              variant: TextVariant.semiBold, translate: false),
+              variant: TextVariant.semiBold),
         ],
       ),
     );
@@ -686,7 +686,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                             variant: TextVariant.semiBold,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: false, translate: false,
+                            isMarquee: false,
                           ),
                         ),
                       ],
@@ -835,7 +835,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return AnymeXText(label,
         variant: TextVariant.bold,
         size: 13,
-        color: colors.primary, translate: false);
+        color: colors.primary);
   }
 
   Widget _buildSynopsis(String text, ColorScheme colors) {
@@ -857,7 +857,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             overflow: _synopsisExpanded
                 ? TextOverflow.visible
                 : TextOverflow.ellipsis,
-            color: colors.onSurface, translate: false,
+            color: colors.onSurface,
           ),
           if (overflows || _synopsisExpanded) ...[
             const SizedBox(height: 6),
@@ -905,7 +905,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration:
           BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: AnymeXText(label, size: 12, color: fg, variant: TextVariant.semiBold, translate: false),
+      child: AnymeXText(label, size: 12, color: fg, variant: TextVariant.semiBold),
     );
 
     if (onTap == null) return chip;
@@ -944,7 +944,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             )
           : Row(
               children: [
-                AnymeXText('Was this helpful?',
+                AnymeXText('Was this helpful?'.tr,
                   size: 13,
                   color: colors.onSurfaceVariant,
                   variant: TextVariant.semiBold,
@@ -1005,7 +1005,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText('Recommended by',
+                    AnymeXText('Recommended by'.tr,
                       size: 11,
                       color: colors.onSurfaceVariant,
                     ),
@@ -1025,7 +1025,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                                 size: 14,
                                 color: colors.primary,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis, translate: false,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             if (widget.reasons?.isNotEmpty == true &&
@@ -1058,7 +1058,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 fontSize: 13,
                 fontStyle: FontStyle.italic,
                 color: colors.onSurface,
-              ), translate: false,
+              ),
             ),
           ],
           if (widget.reasons != null && widget.reasons!.length > 1) ...[
@@ -1161,7 +1161,7 @@ class _PeekAuthorAvatar extends StatelessWidget {
                   fontSize: size * 0.46,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ), translate: false,
+                ),
               ),
             ),
     );
@@ -1258,7 +1258,7 @@ class _PopupVoteButton extends StatelessWidget {
               AnymeXText('$count',
                 size: 13,
                 color: active ? activeColor : colors.onSurfaceVariant,
-                variant: TextVariant.semiBold, translate: false,
+                variant: TextVariant.semiBold,
               ),
             ],
           ),

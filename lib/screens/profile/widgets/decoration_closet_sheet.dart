@@ -245,7 +245,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Total Cost:',
+                'Total Cost:'.tr,
                 variant: TextVariant.semiBold,
                 size: 13,
                 color: colorScheme.onSurfaceVariant,
@@ -263,7 +263,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Your Balance:',
+                'Your Balance:'.tr,
                 variant: TextVariant.semiBold,
                 size: 13,
                 color: colorScheme.onSurfaceVariant,
@@ -554,7 +554,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     color: colorScheme.outline.withOpacity(0.2), width: 0.8),
               ),
               child: AnymeXText(
-                'Live Preview',
+                'Live Preview'.tr,
                 size: 10,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onSurface,
@@ -597,7 +597,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             size: 15,
             color: Colors.white,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, translate: false,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       );
@@ -611,7 +611,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         shadows: [Shadow(color: Colors.black87, blurRadius: 4)],
       ),
       maxLines: 1,
-      overflow: TextOverflow.ellipsis, translate: false,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -634,7 +634,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewDecorationUrl = null),
                   child: AnymeXText(
-                    'Remove Decoration',
+                    'Remove Decoration'.tr,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -708,7 +708,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               ? colorScheme.primary
                               : colorScheme.onSurface,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis, translate: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (!unlocked)
@@ -724,7 +724,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                             '★ ${item.pointsRequired}',
                             size: 9,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary, translate: false,
+                            color: colorScheme.primary,
                           ),
                         ),
                     ],
@@ -757,7 +757,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewNameplateUrl = null),
                   child: AnymeXText(
-                    'Remove Nameplate',
+                    'Remove Nameplate'.tr,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -831,14 +831,14 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                                   ? colorScheme.primary
                                   : colorScheme.onSurface,
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis, translate: false,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             AnymeXText(
                               item.category,
                               size: 9.5,
                               color: colorScheme.onSurfaceVariant,
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis, translate: false,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -855,7 +855,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                             '★ ${item.pointsRequired}',
                             size: 9,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary, translate: false,
+                            color: colorScheme.primary,
                           ),
                         ),
                     ],
@@ -925,7 +925,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: AnymeXText('Apply', style: TextStyle(fontSize: 12), maxLines: null),
+                child: Text('Apply'.tr, style: TextStyle(fontSize: 12)),
               ),
               if (_previewBannerUrl != null) ...[
                 const SizedBox(width: 4),
@@ -956,7 +956,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
               final cat = categories[index];
               final isSelected = _selectedBannerCategory == cat;
               return ChoiceChip(
-                label: AnymeXText(cat, style: const TextStyle(fontSize: 11), maxLines: null, translate: false),
+                label: Text(cat, style: const TextStyle(fontSize: 11)),
                 selected: isSelected,
                 onSelected: (_) {
                   setState(() => _selectedBannerCategory = cat);
@@ -1048,7 +1048,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               overflow: TextOverflow.ellipsis,
                               size: 9.5,
                               color: Colors.white,
-                              variant: TextVariant.semiBold, translate: false,
+                              variant: TextVariant.semiBold,
                             ),
                           ),
                         ),
@@ -1097,7 +1097,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewEffectUrl = null),
                   child: AnymeXText(
-                    'Remove Effect',
+                    'Remove Effect'.tr,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -1172,7 +1172,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               ? colorScheme.primary
                               : colorScheme.onSurface,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis, translate: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (!unlocked)
@@ -1188,7 +1188,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                             '★ ${item.pointsRequired}',
                             size: 9,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary, translate: false,
+                            color: colorScheme.primary,
                           ),
                         ),
                     ],
@@ -1230,7 +1230,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                         ),
                       )
                     : AnymeXText(
-                        'Save & Equip',
+                        'Save & Equip'.tr,
                         color: colorScheme.onPrimary,
                         variant: TextVariant.bold,
                         size: 14,

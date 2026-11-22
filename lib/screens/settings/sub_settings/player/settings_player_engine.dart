@@ -539,7 +539,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                 color: context.colors.onSurface,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-              ), translate: false,
+              ),
             ),
           ),
         ],

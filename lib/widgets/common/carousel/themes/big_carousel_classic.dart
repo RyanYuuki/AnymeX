@@ -257,7 +257,7 @@ Widget buildCarouselCard({
                                       fontSize: 12,
                                       fontWeight: FontWeight.w800,
                                       color: colors.onTertiaryContainer,
-                                    ), translate: false,
+                                    ),
                                   ),
                                 ],
                               ),

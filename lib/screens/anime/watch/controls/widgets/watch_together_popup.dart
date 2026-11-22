@@ -306,7 +306,7 @@ class _WatchTogetherPopupContentState
                 size: 12,
                 color: cs.primary,
                 overflow: TextOverflow.ellipsis,
-                maxLines: 1, translate: false,
+                maxLines: 1,
               ),
               trailing: GestureDetector(
                 onTap: () {
@@ -597,7 +597,7 @@ class _WatchTogetherPopupContentState
               message,
               size: 12,
               color: cs.error,
-              maxLines: 3, translate: false,
+              maxLines: 3,
             ),
           ),
         ],

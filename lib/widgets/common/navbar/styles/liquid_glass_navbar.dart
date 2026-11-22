@@ -289,7 +289,7 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
                 sub.label,
                 size: 11,
                 variant: active ? TextVariant.semiBold : TextVariant.regular,
-                color: color, translate: false,
+                color: color,
               ),
             ],
           ),
@@ -380,7 +380,7 @@ class _LiquidGlassNavBarState extends State<_LiquidGlassNavBar> {
                               ? TextVariant.semiBold
                               : TextVariant.regular,
                           color: color,
-                          maxLines: 1, translate: false,
+                          maxLines: 1,
                         ),
                       ],
                     ),

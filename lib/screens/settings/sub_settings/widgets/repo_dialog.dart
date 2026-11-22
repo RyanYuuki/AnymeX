@@ -163,7 +163,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         ),
                         const SizedBox(height: 2),
                         AnymeXText(
-                          'Enter GitHub repository URL',
+                          'Enter GitHub repository URL'.tr,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -182,7 +182,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    'Repository URL',
+                    'Repository URL'.tr,
                     style: theme.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: colorScheme.onSurface,
@@ -257,7 +257,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.error,
                               fontWeight: FontWeight.w500,
-                            ), translate: false,
+                            ),
                           ),
                         ),
                       ],
@@ -276,7 +276,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: AnymeXText(
-                            'Note: Adding Kotatsu repository will take at least 1-2 minutes because it needs to download and convert the extension plugin on first load.',
+                            'Note: Adding Kotatsu repository will take at least 1-2 minutes because it needs to download and convert the extension plugin on first load.'.tr,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.primary,
                               fontWeight: FontWeight.w500,
@@ -303,7 +303,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                             ),
                           ),
                           child: AnymeXText(
-                            'Cancel',
+                            'Cancel'.tr,
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
@@ -333,7 +333,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                                   ),
                                 )
                               : AnymeXText(
-                                  'Add Repository',
+                                  'Add Repository'.tr,
                                   style: theme.textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: colorScheme.onPrimary,

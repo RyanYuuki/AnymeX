@@ -506,7 +506,7 @@ class NovelSettingsPanel extends StatelessWidget {
           style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: context.colors.onSurface), translate: false,
+              color: context.colors.onSurface),
         ),
         const SizedBox(height: 16),
         ...children,
@@ -599,7 +599,7 @@ class NovelSettingsPanel extends StatelessWidget {
                   color: isSelected
                       ? context.colors.primary
                       : context.colors.onSurface,
-                ), translate: false,
+                ),
               ),
             ],
           ),
@@ -643,7 +643,7 @@ class NovelSettingsPanel extends StatelessWidget {
                       color: value.value
                           ? context.colors.primary
                           : context.colors.onSurface,
-                    ), translate: false,
+                    ),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
@@ -652,7 +652,7 @@ class NovelSettingsPanel extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: context.colors.onSurface.opaque(0.6),
-                      ), translate: false,
+                      ),
                     ),
                   ],
                 ],
@@ -690,7 +690,7 @@ class NovelSettingsPanel extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 color: context.colors.onSurface,
-              ), translate: false,
+              ),
             ),
             Obx(() => Container(
                   padding:
@@ -705,7 +705,7 @@ class NovelSettingsPanel extends StatelessWidget {
                       fontSize: 14,
                       color: context.colors.onPrimary,
                       fontWeight: FontWeight.w500,
-                    ), translate: false,
+                    ),
                   ),
                 )),
           ],
@@ -808,7 +808,7 @@ class NovelSettingsPanel extends StatelessWidget {
                   color: isSelected
                       ? context.colors.primary
                       : context.colors.onSurface,
-                ), translate: false,
+                ),
               ),
             ],
           ),
@@ -834,7 +834,7 @@ class NovelSettingsPanel extends StatelessWidget {
           ),
         ),
         child: AnymeXText(
-          'Reset to Default',
+          'Reset to Default'.tr,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

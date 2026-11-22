@@ -194,7 +194,7 @@ class _HomeContinueWatchingBarState extends State<HomeContinueWatchingBar> {
                     variant: TextVariant.semiBold,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    isMarquee: true, translate: false,
+                    isMarquee: true,
                   ),
                   const SizedBox(height: 5),
                   ClipRRect(

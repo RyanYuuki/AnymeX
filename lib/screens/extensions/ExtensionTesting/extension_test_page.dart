@@ -76,7 +76,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Extension Type',
+          'Extension Type'.tr,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: isSelected ? theme.primary : theme.onSurface,
-            ), translate: false,
+            ),
           ),
         ),
       ),
@@ -160,7 +160,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Test Type',
+          'Test Type'.tr,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -214,7 +214,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: isSelected ? theme.primary : theme.onSurface,
-            ), translate: false,
+            ),
           ),
         ),
       ),
@@ -226,7 +226,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Search Query',
+          'Search Query'.tr,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -275,7 +275,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnymeXText(
-              'Select Extensions',
+              'Select Extensions'.tr,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
@@ -317,7 +317,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               child: Center(
                 child: AnymeXText(
-                  'No extensions installed',
+                  'No extensions installed'.tr,
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
                     fontFamily: 'Linotte',
@@ -433,7 +433,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               elevation: 0,
             ),
             child: AnymeXText(
-              'Start Test',
+              'Start Test'.tr,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
@@ -463,7 +463,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                 ),
                 const SizedBox(height: 16),
                 AnymeXText(
-                  'No tests running',
+                  'No tests running'.tr,
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
                     fontFamily: 'Linotte',
@@ -480,7 +480,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Test Results',
+            'Test Results'.tr,
             style: TextStyle(
               fontFamily: 'Linotte',
               fontWeight: FontWeight.bold,

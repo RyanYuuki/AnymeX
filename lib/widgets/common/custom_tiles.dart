@@ -159,7 +159,7 @@ class CustomSwitchTile extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: context.colors.onSurface,
-                  ), translate: false,
+                  ),
                 ),
                 const SizedBox(height: 5),
                 AnymeXText(
@@ -167,7 +167,7 @@ class CustomSwitchTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.6),
-                  ), translate: false,
+                  ),
                 ),
               ],
             ),
@@ -253,7 +253,7 @@ class CustomTile extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: context.colors.onSurface,
-                          ), translate: false,
+                          ),
                         ),
                         const SizedBox(height: 5),
                         AnymeXText(
@@ -268,7 +268,7 @@ class CustomTile extends StatelessWidget {
                                     .colorScheme
                                     .onSurface
                                     .opaque(0.6, iReallyMeanIt: true),
-                          ), translate: false,
+                          ),
                         ),
                       ],
                     ),
@@ -353,7 +353,7 @@ class CustomSliderTile extends StatelessWidget {
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: context.colors.onSurface,
-                            ), translate: false,
+                            ),
                           ),
                           const SizedBox(height: 5),
                           AnymeXText(
@@ -364,7 +364,7 @@ class CustomSliderTile extends StatelessWidget {
                                   .colorScheme
                                   .onSurface
                                   .opaque(0.6),
-                            ), translate: false,
+                            ),
                           ),
                         ],
                       ),
@@ -379,7 +379,7 @@ class CustomSliderTile extends StatelessWidget {
                       AnymeXText(sliderValue % 1 == 0
                             ? sliderValue.toInt().toString()
                             : sliderValue.toStringAsFixed(1),
-                        variant: TextVariant.semiBold, translate: false,
+                        variant: TextVariant.semiBold,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -406,7 +406,7 @@ class CustomSliderTile extends StatelessWidget {
                       AnymeXText(max % 1 == 0
                             ? max.toInt().toString()
                             : max.toStringAsFixed(1),
-                        variant: TextVariant.semiBold, translate: false,
+                        variant: TextVariant.semiBold,
                       )
                     ],
                   ),

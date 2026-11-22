@@ -453,7 +453,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                                 _error!,
                                 size: 13,
                                 color: colorScheme.onSurfaceVariant,
-                                maxLines: null, translate: false,
+                                maxLines: null,
                               ),
                               const SizedBox(height: 12),
                               OutlinedButton(

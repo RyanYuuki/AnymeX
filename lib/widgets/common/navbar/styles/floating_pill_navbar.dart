@@ -472,7 +472,7 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar>
                 sub.label,
                 size: 11,
                 variant: active ? TextVariant.semiBold : TextVariant.regular,
-                color: iconColor, translate: false,
+                color: iconColor,
               ),
             ],
           ),
@@ -555,7 +555,7 @@ class _FloatingPillNavItem extends StatelessWidget {
                           variant: TextVariant.semiBold,
                           color: theme.colorScheme.onPrimary,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis, translate: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     )
@@ -566,7 +566,7 @@ class _FloatingPillNavItem extends StatelessWidget {
                         AnymeXText(item.label,
                           size: 12,
                           variant: TextVariant.semiBold,
-                          color: theme.colorScheme.onPrimary, translate: false,
+                          color: theme.colorScheme.onPrimary,
                         ),
                       ],
                     ))

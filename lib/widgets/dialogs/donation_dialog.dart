@@ -60,7 +60,7 @@ class DonationDialog extends StatelessWidget {
           _buildHeaderIcon(context),
           const SizedBox(height: 14),
           AnymeXText(
-            'AnymeX is 100% free, open-source, and ad-free. Your support directly helps in server costs and active feature development!',
+            'AnymeX is 100% free, open-source, and ad-free. Your support directly helps in server costs and active feature development!'.tr,
             size: 13.5,
             color: context.colors.onSurfaceVariant,
             textAlign: TextAlign.center,
@@ -144,7 +144,7 @@ class DonationDialog extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: context.colors.primary),
           const SizedBox(width: 6),
-          AnymeXText(label, size: 11.5, variant: TextVariant.semiBold, translate: false),
+          AnymeXText(label, size: 11.5, variant: TextVariant.semiBold),
         ],
       ),
     );
@@ -186,7 +186,7 @@ class DonationDialog extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnymeXText(
-                    "If you can't donate, watch this ad to support",
+                    "If you can't donate, watch this ad to support".tr,
                     size: 12.5,
                     variant: TextVariant.bold,
                     color: context.colors.onSurface,
@@ -240,7 +240,7 @@ class DonationDialog extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             AnymeXText(
-              "Don't show again",
+              "Don't show again".tr,
               size: 12.5,
               variant: TextVariant.regular,
               color: context.colors.onSurface.opaque(0.5, iReallyMeanIt: true),

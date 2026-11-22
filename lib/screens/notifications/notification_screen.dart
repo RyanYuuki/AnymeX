@@ -53,7 +53,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 color: colorScheme.primary,
               ),
               label: AnymeXText(
-                'Mark all read',
+                'Mark all read'.tr,
                 variant: TextVariant.semiBold,
                 size: 12,
                 color: colorScheme.primary,
@@ -165,7 +165,7 @@ class NotificationScreen extends GetView<NotificationController> {
               size: 13,
               color: isSelected
                   ? colorScheme.onPrimary
-                  : colorScheme.onSurfaceVariant, translate: false,
+                  : colorScheme.onSurfaceVariant,
             ),
             if (badgeCount > 0) ...[
               const SizedBox(width: 6),
@@ -182,7 +182,7 @@ class NotificationScreen extends GetView<NotificationController> {
                   badgeCount > 99 ? '99+' : badgeCount.toString(),
                   size: 10,
                   variant: TextVariant.bold,
-                  color: colorScheme.onPrimary, translate: false,
+                  color: colorScheme.onPrimary,
                 ),
               ),
             ],
@@ -226,7 +226,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 ElevatedButton.icon(
                   onPressed: () => anilistAuth.login(context),
                   icon: const Icon(Icons.login_rounded),
-                  label: const AnymeXText('Log In with AniList', maxLines: null),
+                  label: const Text('Log In with AniList'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
@@ -270,11 +270,11 @@ class NotificationScreen extends GetView<NotificationController> {
                         size: 48, color: colorScheme.error),
                     const SizedBox(height: 12),
                     AnymeXText(controller.anilistError.value,
-                        variant: TextVariant.semiBold, size: 14, translate: false),
+                        variant: TextVariant.semiBold, size: 14),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => controller.loadAnilistNotifications(),
-                      child: const AnymeXText('Retry', maxLines: null),
+                      child: const Text('Retry'),
                     ),
                   ],
                 ),
@@ -468,7 +468,7 @@ class NotificationScreen extends GetView<NotificationController> {
                           size: 12,
                           color: isSelected
                               ? colorScheme.onPrimary
-                              : colorScheme.onSurfaceVariant, translate: false,
+                              : colorScheme.onSurfaceVariant,
                         ),
                       ],
                     ),
@@ -644,7 +644,7 @@ class NotificationScreen extends GetView<NotificationController> {
                           size: 12,
                           color: isSelected
                               ? colorScheme.onPrimary
-                              : colorScheme.onSurfaceVariant, translate: false,
+                              : colorScheme.onSurfaceVariant,
                         ),
                         if (unreadCount > 0) ...[
                           const SizedBox(width: 6),
@@ -661,7 +661,7 @@ class NotificationScreen extends GetView<NotificationController> {
                               size: 10,
                               color: isSelected
                                   ? colorScheme.onPrimary
-                                  : colorScheme.onPrimary, translate: false,
+                                  : colorScheme.onPrimary,
                             ),
                           ),
                         ],
@@ -703,7 +703,7 @@ class NotificationScreen extends GetView<NotificationController> {
                     ),
                     const SizedBox(width: 6),
                     AnymeXText(
-                      'Unread only',
+                      'Unread only'.tr,
                       variant: TextVariant.regular,
                       size: 12,
                       color: controller.showUnreadOnly.value
@@ -814,7 +814,7 @@ class NotificationScreen extends GetView<NotificationController> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No notifications yet',
+              'No notifications yet'.tr,
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -851,7 +851,7 @@ class NotificationScreen extends GetView<NotificationController> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Something went wrong',
+              'Something went wrong'.tr,
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -868,7 +868,7 @@ class NotificationScreen extends GetView<NotificationController> {
                   color: colorScheme.primary,
                   radius: 12,
                   child: AnymeXText(
-                    'Retry',
+                    'Retry'.tr,
                     variant: TextVariant.semiBold,
                     size: 13,
                     color: colorScheme.onPrimary,
@@ -1028,7 +1028,7 @@ class _NotificationCard extends StatelessWidget {
                                             overflow: TextOverflow.ellipsis,
                                             color: notification.isRead
                                                 ? colorScheme.onSurface.opaque(0.7)
-                                                : colorScheme.onSurface, translate: false,
+                                                : colorScheme.onSurface,
                                           ),
                                         ),
                                         if (!notification.isRead) ...[
@@ -1048,7 +1048,7 @@ class _NotificationCard extends StatelessWidget {
                                     _formatTimeAgo(notification.createdAt),
                                     variant: TextVariant.regular,
                                     size: 11,
-                                    color: colorScheme.onSurfaceVariant.opaque(0.7), translate: false,
+                                    color: colorScheme.onSurfaceVariant.opaque(0.7),
                                   ),
                                 ],
                               ),
@@ -1093,7 +1093,7 @@ class _NotificationCard extends StatelessWidget {
                                           size: 11,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          color: categoryColor, translate: false,
+                                          color: categoryColor,
                                         ),
                                       ),
                                     ],
@@ -1108,7 +1108,7 @@ class _NotificationCard extends StatelessWidget {
                                   '@${notification.actorUsername}',
                                   variant: TextVariant.regular,
                                   size: 11,
-                                  color: colorScheme.onSurfaceVariant, translate: false,
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                               ],
                             ],
@@ -1167,7 +1167,7 @@ class _NotificationCard extends StatelessWidget {
             initial,
             variant: TextVariant.semiBold,
             size: 18,
-            color: categoryColor, translate: false,
+            color: categoryColor,
           ),
         ),
       );
@@ -1416,7 +1416,7 @@ class _AnilistNotificationCard extends StatelessWidget {
                             variant: TextVariant.semiBold,
                             size: 13,
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis, translate: false,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -1424,7 +1424,7 @@ class _AnilistNotificationCard extends StatelessWidget {
                           notification.timeAgo,
                           variant: TextVariant.regular,
                           size: 11,
-                          color: colorScheme.outline, translate: false,
+                          color: colorScheme.outline,
                         ),
                       ],
                     ),
@@ -1435,7 +1435,7 @@ class _AnilistNotificationCard extends StatelessWidget {
                       size: 12,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      color: colorScheme.onSurfaceVariant, translate: false,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 6),
                     Container(
@@ -1449,7 +1449,7 @@ class _AnilistNotificationCard extends StatelessWidget {
                         _getKindLabel(notification.kind),
                         size: 10,
                         variant: TextVariant.semiBold,
-                        color: badgeColor, translate: false,
+                        color: badgeColor,
                       ),
                     ),
                   ],

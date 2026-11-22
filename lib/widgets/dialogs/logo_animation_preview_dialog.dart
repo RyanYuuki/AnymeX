@@ -175,7 +175,7 @@ class _LogoAnimationPreviewDialogState
                                 ),
                                 const SizedBox(height: 4),
                                 AnymeXText(
-                                  'PNG, JPG, WEBP, GIF (Max 20MB)',
+                                  'PNG, JPG, WEBP, GIF (Max 20MB)'.tr,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color:
@@ -231,7 +231,7 @@ class _LogoAnimationPreviewDialogState
                                       fontSize: 13,
                                     ),
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis, translate: false,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 2),
                                   AnymeXText(
@@ -278,7 +278,7 @@ class _LogoAnimationPreviewDialogState
                       ),
                     const SizedBox(height: 12),
                     AnymeXText(
-                      'Logo Name:',
+                      'Logo Name:'.tr,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
@@ -323,7 +323,7 @@ class _LogoAnimationPreviewDialogState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AnymeXText(
-                            'Size Mode:',
+                            'Size Mode:'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -345,7 +345,7 @@ class _LogoAnimationPreviewDialogState
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AnymeXText(
-                                  'Scale Factor',
+                                  'Scale Factor'.tr,
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 AnymeXText(
@@ -488,7 +488,7 @@ class _LogoAnimationPreviewDialogState
                                     fontSize: 13,
                                   ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis, translate: false,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 2),
                                 AnymeXText(
@@ -497,7 +497,7 @@ class _LogoAnimationPreviewDialogState
                                     fontSize: 11,
                                     color: dialogContext
                                         .colors.onSurfaceVariant,
-                                  ), translate: false,
+                                  ),
                                 ),
                               ],
                             ),
@@ -507,7 +507,7 @@ class _LogoAnimationPreviewDialogState
                     ),
                     const SizedBox(height: 12),
                     AnymeXText(
-                      'Logo Name:',
+                      'Logo Name:'.tr,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
@@ -552,7 +552,7 @@ class _LogoAnimationPreviewDialogState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AnymeXText(
-                            'Size Mode:',
+                            'Size Mode:'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -574,7 +574,7 @@ class _LogoAnimationPreviewDialogState
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AnymeXText(
-                                  'Scale Factor',
+                                  'Scale Factor'.tr,
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 AnymeXText(
@@ -821,7 +821,7 @@ class _LogoAnimationPreviewDialogState
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             icon: const Icon(Icons.replay_rounded, size: 16),
-            label: AnymeXText('Replay',
+            label: AnymeXText('Replay'.tr,
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             onPressed: _replayAnimation,
           ),
@@ -860,7 +860,7 @@ class _LogoAnimationPreviewDialogState
                         color: context.colors.primary, size: 20),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Add Custom Logo (.gif, .webp)',
+                      'Add Custom Logo (.gif, .webp)'.tr,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: context.colors.primary,
@@ -875,7 +875,7 @@ class _LogoAnimationPreviewDialogState
           if (_customLogos.isNotEmpty) ...[
             const SizedBox(height: 16),
             AnymeXText(
-              'Custom Logos',
+              'Custom Logos'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
@@ -914,7 +914,7 @@ class _LogoAnimationPreviewDialogState
                     style: TextStyle(
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.w600,
-                    ), translate: false,
+                    ),
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -925,7 +925,7 @@ class _LogoAnimationPreviewDialogState
                           style: TextStyle(
                             fontSize: 11,
                             color: context.colors.onSurfaceVariant,
-                          ), translate: false,
+                          ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -1015,7 +1015,7 @@ class _LogoAnimationPreviewDialogState
             const Divider(),
             const SizedBox(height: 8),
             AnymeXText(
-              'Built-in Styles',
+              'Built-in Styles'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),

@@ -52,7 +52,7 @@ class WatchSettingsPane extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
                         color: cs.onSurface,
-                      ), translate: false,
+                      ),
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: 2),

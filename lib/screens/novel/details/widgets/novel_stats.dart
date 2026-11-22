@@ -46,7 +46,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              AnymeXText("Statistics",
+              AnymeXText("Statistics".tr,
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -81,7 +81,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              AnymeXText("Synopsis",
+              AnymeXText("Synopsis".tr,
                 variant: TextVariant.bold,
                 size: 16,
               ),
@@ -101,7 +101,7 @@ class NovelStats extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (data.genres.isNotEmpty) ...[
-          AnymeXText("Genres",
+          AnymeXText("Genres".tr,
             variant: TextVariant.bold,
             size: 17,
           ),
@@ -150,7 +150,7 @@ class StateItem extends StatelessWidget {
       children: [
         AnymeXText(label,
           variant: TextVariant.semiBold,
-          color: context.colors.onSurface.opaque(0.9), translate: false,
+          color: context.colors.onSurface.opaque(0.9),
         ),
         Expanded(
           child: AnymeXText(value,
@@ -158,7 +158,7 @@ class StateItem extends StatelessWidget {
             color: context.colors.primary,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.right, translate: false,
+            textAlign: TextAlign.right,
           ),
         ),
       ],
@@ -182,7 +182,7 @@ class AdaptationInfoColumn extends StatelessWidget {
       children: chapters
           .map((chapter) => AnymeXText(
                 chapter,
-                style: TextStyle(color: context.colors.primary), translate: false,
+                style: TextStyle(color: context.colors.primary),
               ))
           .toList(),
     );

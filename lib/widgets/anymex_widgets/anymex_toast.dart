@@ -73,7 +73,7 @@ class AnymeXToast {
                     child: AnymeXText(message,
                       size: 13,
                       color: colorScheme.onSurface,
-                      maxLines: 2, translate: false,
+                      maxLines: 2,
                     ),
                   ),
                 ],

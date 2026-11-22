@@ -346,7 +346,7 @@ class SocialTabState extends State<SocialTab> {
                                           context.theme.colorScheme.onSurface,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      isMarquee: true, translate: false,
+                                      isMarquee: true,
                                     ),
                                   ),
                                 ],
@@ -425,7 +425,7 @@ class SocialTabState extends State<SocialTab> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.center,
-                                isMarquee: true, translate: false,
+                                isMarquee: true,
                               ),
                             ),
                           ],
@@ -447,7 +447,7 @@ class SocialTabState extends State<SocialTab> {
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Center(
               child: AnymeXText(
-                'No more users',
+                'No more users'.tr,
                 style: TextStyle(
                   fontSize: 12,
                   color: context.theme.colorScheme.onSurfaceVariant

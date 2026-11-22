@@ -83,14 +83,14 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: AnymeXText(error!,
-                          textAlign: TextAlign.center, translate: false,
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     );
                   }
                   if (watchOrder.isEmpty) {
                     return Center(
-                        child: AnymeXText("No watch order found."));
+                        child: AnymeXText("No watch order found.".tr));
                   }
 
                   return ListView.builder(
@@ -144,7 +144,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                     color: colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
-                  ), translate: false,
+                  ),
                 ),
               ),
               if (!isLast)
@@ -230,7 +230,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                         child: AnymeXText(item.relationType.toUpperCase(),
                           size: 9,
                           color: colorScheme.onPrimaryContainer,
-                          variant: TextVariant.bold, translate: false,
+                          variant: TextVariant.bold,
                         ),
                       ),
                     AnymeXText(item.nameEnglish ?? item.name,
@@ -238,7 +238,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       size: 15,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true, translate: false,
+                      isMarquee: true,
                     ),
                     if (item.nameEnglish != null &&
                         item.nameEnglish!.isNotEmpty)
@@ -249,7 +249,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                           color: colorScheme.onSurfaceVariant,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true, translate: false,
+                          isMarquee: true,
                         ),
                       ),
                     const SizedBox(height: 8),
@@ -274,7 +274,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       AnymeXText((item.rating),
                         size: 12,
                         variant: TextVariant.semiBold,
-                        color: colorScheme.onSurface, translate: false,
+                        color: colorScheme.onSurface,
                       ),
                   ],
                 ),
@@ -303,7 +303,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
             fontSize: 10,
             fontWeight: FontWeight.bold,
             color: color,
-          ), translate: false,
+          ),
         ),
       ],
     );

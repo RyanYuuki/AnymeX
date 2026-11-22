@@ -95,7 +95,7 @@ class NewsPage extends StatelessWidget {
                                         size: 15,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        isMarquee: true, translate: false,
+                                        isMarquee: true,
                                       ),
                                       if (item.date != null) ...[
                                         const SizedBox(height: 8),
@@ -110,7 +110,7 @@ class NewsPage extends StatelessWidget {
                                             AnymeXText(formatTimeAgo(item.date!.millisecondsSinceEpoch),
                                               variant: TextVariant.regular,
                                               size: 12,
-                                              color: colorScheme.onSurface.opaque(0.6), translate: false,
+                                              color: colorScheme.onSurface.opaque(0.6),
                                             ),
                                           ],
                                         ),
@@ -118,7 +118,7 @@ class NewsPage extends StatelessWidget {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          AnymeXText("Read Article",
+                                          AnymeXText("Read Article".tr,
                                             variant: TextVariant.bold,
                                             size: 12,
                                             color: colorScheme.primary,

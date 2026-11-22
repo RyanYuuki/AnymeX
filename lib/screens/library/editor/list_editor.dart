@@ -229,7 +229,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                               historyTitle,
                               size: 14.5,
                               variant: TextVariant.semiBold,
-                              color: theme.colorScheme.onSurface, translate: false,
+                              color: theme.colorScheme.onSurface,
                             ),
                             const SizedBox(height: 2),
                             AnymeXText(
@@ -394,7 +394,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Custom Lists',
+                'Custom Lists'.tr,
                 style: TextStyle(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
@@ -481,7 +481,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                         listData.listName,
                         size: 14.5,
                         variant: TextVariant.semiBold,
-                        color: theme.colorScheme.onSurface, translate: false,
+                        color: theme.colorScheme.onSurface,
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
@@ -549,7 +549,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'No custom lists yet',
+            'No custom lists yet'.tr,
             style: TextStyle(
               color: theme.colorScheme.onSurface,
               fontSize: 20,
@@ -582,7 +582,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       ),
       icon: const Icon(Icons.add_rounded),
       label: AnymeXText(
-        'New List',
+        'New List'.tr,
         style: TextStyle(
             fontWeight: FontWeight.w600, color: theme.colorScheme.onPrimary),
       ),
@@ -864,7 +864,7 @@ class __ListMediaEditorBottomSheetState
                             letterSpacing: -0.4,
                           ),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis, translate: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         AnymeXText(
@@ -1088,7 +1088,7 @@ class __ListMediaEditorBottomSheetState
                                                   color: colors.primary,
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w700,
-                                                ), translate: false,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -1181,7 +1181,7 @@ class __ListMediaEditorBottomSheetState
                           icon: Icon(Iconsax.trash,
                               color: colors.onError, size: 16),
                           label: AnymeXText(
-                            'Remove',
+                            'Remove'.tr,
                             style: TextStyle(
                               color: colors.onError,
                               fontWeight: FontWeight.w600,

@@ -339,7 +339,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                 children: [
                   AnymeXText(
                     rankIcon,
-                    size: 20, translate: false,
+                    size: 20,
                   ),
                   const SizedBox(width: 8),
                   Column(
@@ -349,11 +349,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
                         title.toUpperCase(),
                         size: 13,
                         variant: TextVariant.bold,
-                        color: context.colors.primary, translate: false,
+                        color: context.colors.primary,
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Otaku Rank Level',
+                        'Otaku Rank Level'.tr,
                         size: 10,
                         color: context.colors.onSurfaceVariant.withOpacity(0.5),
                       ),
@@ -382,7 +382,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Level Progress',
+                'Level Progress'.tr,
                 size: 11,
                 variant: TextVariant.semiBold,
                 color: context.colors.onSurfaceVariant.withOpacity(0.8),
@@ -475,7 +475,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Favorite Title',
+            'Favorite Title'.tr,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -530,7 +530,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   title,
                   size: 9,
                   color: context.colors.onSurfaceVariant.withOpacity(0.5),
-                  maxLines: 1, translate: false,
+                  maxLines: 1,
                 ),
               ),
             ],
@@ -540,7 +540,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             value,
             size: 14,
             variant: TextVariant.bold,
-            color: context.colors.onSurface, translate: false,
+            color: context.colors.onSurface,
           ),
         ],
       ),
@@ -650,7 +650,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Activity Heatmap',
+            'Activity Heatmap'.tr,
             size: 14,
             variant: TextVariant.bold,
           ),
@@ -670,7 +670,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                           height: cellStep,
                           child: Center(
                             child: AnymeXText(dayLabels[row],
-                                style: dayLabelStyle, translate: false),
+                                style: dayLabelStyle),
                           ),
                         );
                       }),
@@ -695,7 +695,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                 child: AnymeXText(
                                   monthLabels[i],
                                   style:
-                                      TextStyle(fontSize: 9, color: subtleText), translate: false,
+                                      TextStyle(fontSize: 9, color: subtleText),
                                 ),
                               );
                             }),
@@ -844,11 +844,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
               AnymeXText(
                 formattedDate,
                 size: 13,
-                variant: TextVariant.bold, translate: false,
+                variant: TextVariant.bold,
               ),
               if (watchMins + readMins == 0)
                 AnymeXText(
-                  'No activity',
+                  'No activity'.tr,
                   size: 11,
                   color: context.colors.onSurfaceVariant.withOpacity(0.5),
                 )
@@ -901,7 +901,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Frequently Revisited',
+            'Frequently Revisited'.tr,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -920,7 +920,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   ),
                   const SizedBox(height: 8),
                   AnymeXText(
-                    'No logged stats yet. Start watching/reading!',
+                    'No logged stats yet. Start watching/reading!'.tr,
                     size: 12,
                     color: context.colors.onSurfaceVariant.withOpacity(0.4),
                   ),
@@ -1002,7 +1002,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                     maxLines: 2,
                                     size: 14,
                                     variant: TextVariant.semiBold,
-                                    overflow: TextOverflow.ellipsis, translate: false,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 6),
                                   AnymeXText(
@@ -1048,7 +1048,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Detailed Insights',
+            'Detailed Insights'.tr,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -1061,7 +1061,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             padding: const EdgeInsets.all(24),
             child: Center(
               child: AnymeXText(
-                'No insights available yet. Add items to your library!',
+                'No insights available yet. Add items to your library!'.tr,
                 size: 12,
                 color: context.colors.onSurfaceVariant.withOpacity(0.4),
               ),
@@ -1121,7 +1121,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
               AnymeXText(
                 title,
                 size: 14,
-                variant: TextVariant.bold, translate: false,
+                variant: TextVariant.bold,
               ),
             ],
           ),
@@ -1139,12 +1139,12 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       AnymeXText(
                         entry.key,
                         size: 12,
-                        variant: TextVariant.semiBold, translate: false,
+                        variant: TextVariant.semiBold,
                       ),
                       AnymeXText(
                         '${entry.value} ${entry.value == 1 ? "title" : "titles"}',
                         size: 11,
-                        color: context.colors.onSurfaceVariant.withOpacity(0.6), translate: false,
+                        color: context.colors.onSurfaceVariant.withOpacity(0.6),
                       ),
                     ],
                   ),

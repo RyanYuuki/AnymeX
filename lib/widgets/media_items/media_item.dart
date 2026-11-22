@@ -330,7 +330,7 @@ class BlurAnimeCard extends StatelessWidget {
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
-                          isMarquee: true, translate: false,
+                          isMarquee: true,
                         ),
                       ],
                     ),

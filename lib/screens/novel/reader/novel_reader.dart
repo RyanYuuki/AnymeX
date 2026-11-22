@@ -328,7 +328,7 @@ class _NovelReaderState extends State<NovelReader>
                         style: TextStyle(
                           fontSize: 12,
                           color: context.colors.onSurface.opaque(0.6),
-                        ), translate: false,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       AnymeXText(displayTitle,
@@ -338,7 +338,7 @@ class _NovelReaderState extends State<NovelReader>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        isMarquee: true, translate: false,
+                        isMarquee: true,
                       ),
                     ],
                   ),

@@ -548,7 +548,7 @@ class MediaHeader extends StatelessWidget {
               size: isDesktop ? 14 : 12.5,
               color: highlighted ? colors.primary : colors.onSurface,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis, translate: false,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

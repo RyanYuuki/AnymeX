@@ -156,7 +156,7 @@ class _FullscreenUpscalePreviewState extends State<FullscreenUpscalePreview> {
                 '${_previewPageIndex + 1} / $totalPages',
                 size: 12,
                 variant: TextVariant.semiBold,
-                color: Colors.white, translate: false,
+                color: Colors.white,
               ),
             ),
             IconButton(
@@ -379,7 +379,7 @@ class _FullscreenUpscalePreviewState extends State<FullscreenUpscalePreview> {
                         '${(sharpness * 100).toInt()}%',
                         size: 12,
                         variant: TextVariant.bold,
-                        color: Colors.white, translate: false,
+                        color: Colors.white,
                       ),
                       Expanded(
                         child: Padding(
@@ -507,7 +507,7 @@ class _FullscreenUpscalePreviewState extends State<FullscreenUpscalePreview> {
                               preset.title,
                               size: 12,
                               variant: TextVariant.bold,
-                              color: isSelected ? Colors.white : Colors.white70, translate: false,
+                              color: isSelected ? Colors.white : Colors.white70,
                             ),
                           ],
                         ),

@@ -139,7 +139,7 @@ class MangaHistoryCard extends StatelessWidget {
                             child: AnymeXText(_formatEpisodeNumber(),
                               size: 12,
                               variant: TextVariant.bold,
-                              color: colorScheme.onPrimary, translate: false,
+                              color: colorScheme.onPrimary,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -150,7 +150,7 @@ class MangaHistoryCard extends StatelessWidget {
                                 mobileValue: 1, desktopValue: 2),
                             variant: TextVariant.bold,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true, translate: false,
+                            isMarquee: true,
                           ),
                           const SizedBox(height: 4),
                           if (data.name != null &&
@@ -161,7 +161,7 @@ class MangaHistoryCard extends StatelessWidget {
                               variant: TextVariant.regular,
                               color: colorScheme.onSurface.opaque(0.7),
                               overflow: TextOverflow.ellipsis,
-                              isMarquee: true, translate: false,
+                              isMarquee: true,
                             ),
                           const Spacer(),
                           // Progress indicator

@@ -174,14 +174,14 @@ class _SettingsAddonsState extends State<SettingsAddons> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AnymeXText(
-                  'Add-on Extensions',
+                  'Add-on Extensions'.tr,
                   variant: TextVariant.bold,
                   size: 15,
                   color: theme.onSurface,
                 ),
                 const SizedBox(height: 4),
                 AnymeXText(
-                  'Add-ons power background services such as the TorrServer torrent streaming engine for direct magnet link playback.',
+                  'Add-ons power background services such as the TorrServer torrent streaming engine for direct magnet link playback.'.tr,
                   variant: TextVariant.regular,
                   size: 13,
                   maxLines: 99,
@@ -290,7 +290,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                             ),
                             const SizedBox(width: 8),
                             AnymeXText(
-                              'Downloading package...',
+                              'Downloading package...'.tr,
                               size: 12.5,
                               variant: TextVariant.semiBold,
                               color: theme.onSurface,
@@ -380,7 +380,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                       ),
                       const SizedBox(width: 8),
                       AnymeXText(
-                        'Update to Latest Version',
+                        'Update to Latest Version'.tr,
                         variant: TextVariant.bold,
                         size: 15,
                         color: theme.onTertiary,
@@ -517,7 +517,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
         label,
         size: 11,
         variant: TextVariant.bold,
-        color: textColor, translate: false,
+        color: textColor,
       ),
     );
   }

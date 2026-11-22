@@ -813,7 +813,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
             label,
             size: 12.5,
             variant: TextVariant.semiBold,
-            color: colors.onSurface, translate: false,
+            color: colors.onSurface,
           ),
           const SizedBox(width: 5),
           Icon(
@@ -1121,7 +1121,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'No downloaded episodes found for this anime',
+              'No downloaded episodes found for this anime'.tr,
               size: 14,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface.opaque(0.7),
@@ -1135,7 +1135,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: AnymeXText(
-                  'Switch to Online',
+                  'Switch to Online'.tr,
                   color: context.colors.onPrimary,
                   variant: TextVariant.bold,
                 ),
@@ -1413,17 +1413,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: AnymeXText('Delete Episode', variant: TextVariant.bold),
+        title: AnymeXText('Delete Episode'.tr, variant: TextVariant.bold),
         content: AnymeXText(
             'Are you sure you want to delete Episode ${epMeta.episode.number}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: AnymeXText('Cancel'),
+            child: AnymeXText('Cancel'.tr),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: AnymeXText('Delete', color: ctx.colors.error),
+            child: AnymeXText('Delete'.tr, color: ctx.colors.error),
           ),
         ],
       ),
@@ -1647,7 +1647,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                             variant: TextVariant.semiBold,
                             color: textColor,
                             textAlign: TextAlign.center,
-                            isMarquee: true, translate: false,
+                            isMarquee: true,
                           ),
                           PlatformBuilder(
                             androidBuilder: const SizedBox.shrink(),
@@ -1978,13 +1978,13 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           AnymeXText(
-            'Scanning for video streams...',
+            'Scanning for video streams...'.tr,
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
           AnymeXText(
-            'This may take a few seconds',
+            'This may take a few seconds'.tr,
             size: 12,
           ),
         ],
@@ -1998,7 +1998,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       children: [
         const SizedBox(height: 10),
         AnymeXText(
-          "Error Occurred",
+          "Error Occurred".tr,
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -2014,7 +2014,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
-            color: Colors.red.opaque(0.8, iReallyMeanIt: true), translate: false,
+            color: Colors.red.opaque(0.8, iReallyMeanIt: true),
           ),
         ),
       ],
@@ -2026,7 +2026,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       height: 200,
       child: Center(
         child: AnymeXText(
-          "No servers available",
+          "No servers available".tr,
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -2072,7 +2072,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                     subsCount.toString(),
                     size: 10,
                     variant: TextVariant.semiBold,
-                    color: theme.onSecondary, translate: false,
+                    color: theme.onSecondary,
                   ),
                 ],
               ),
@@ -2111,7 +2111,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: AnymeXText(
-                      'Default',
+                      'Default'.tr,
                       size: 11,
                       variant: TextVariant.bold,
                     ),
@@ -2160,7 +2160,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                     ),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Scanning for more servers...',
+                      'Scanning for more servers...'.tr,
                       size: 12,
                       color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                     ),

@@ -210,7 +210,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText(
+                Text(
                   'The wind swept quietly across the lantern-lit courtyard as the final bell echoed through the valley.',
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
@@ -219,10 +219,10 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     letterSpacing: _novelLetterSpacing,
                     wordSpacing: _novelWordSpacing,
                     color: fgColor,
-                  ), maxLines: null,
+                  ),
                 ),
                 SizedBox(height: _novelParagraphSpacing.clamp(4.0, 24.0)),
-                AnymeXText(
+                Text(
                   'He adjusted his coat and stepped forward into the mist.',
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
@@ -231,7 +231,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     letterSpacing: _novelLetterSpacing,
                     wordSpacing: _novelWordSpacing,
                     color: fgColor.withValues(alpha: 0.85),
-                  ), maxLines: null,
+                  ),
                 ),
               ],
             ),

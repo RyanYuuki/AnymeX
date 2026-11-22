@@ -79,7 +79,7 @@ class DownloadPermissionDialog extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           AnymeXText(
-            'To download for the first time, grant permissions by visiting the Downloads page first:',
+            'To download for the first time, grant permissions by visiting the Downloads page first:'.tr,
             textAlign: TextAlign.center,
             color: colors.onSurfaceVariant,
             size: 13,
@@ -173,7 +173,7 @@ Widget _buildStepRow(
                   AnymeXText(
                     title,
                     size: 13,
-                    variant: TextVariant.bold, translate: false,
+                    variant: TextVariant.bold,
                   ),
                 ],
               ),
@@ -181,7 +181,7 @@ Widget _buildStepRow(
               AnymeXText(
                 description,
                 size: 11,
-                color: colors.onSurface.opaque(0.7), translate: false,
+                color: colors.onSurface.opaque(0.7),
               ),
             ],
           ),

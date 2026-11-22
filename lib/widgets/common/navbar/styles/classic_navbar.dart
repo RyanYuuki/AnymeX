@@ -424,7 +424,7 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
                 sub.label,
                 size: 11,
                 variant: active ? TextVariant.semiBold : TextVariant.regular,
-                color: iconColor, translate: false,
+                color: iconColor,
               ),
             ],
           ),
@@ -494,7 +494,7 @@ class _ClassicMobileNavItem extends StatelessWidget {
                   color: isSelected
                       ? theme.colorScheme.primary
                       : theme.colorScheme.onSurface
-                          .opaque(0.45, iReallyMeanIt: true), translate: false,
+                          .opaque(0.45, iReallyMeanIt: true),
                 ),
               ),
             ),

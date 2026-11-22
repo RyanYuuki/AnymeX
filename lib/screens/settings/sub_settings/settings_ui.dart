@@ -324,7 +324,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: AnymeXText(
-                          'Visible Tabs',
+                          'Visible Tabs'.tr,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
@@ -334,7 +334,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       if (visibleTabs.isEmpty)
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: AnymeXText('No visible tabs'),
+                          child: AnymeXText('No visible tabs'.tr),
                         )
                       else
                         ReorderableListView.builder(
@@ -401,7 +401,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                     style: theme.textTheme.labelLarge?.copyWith(
                                       color: theme.colorScheme.primary,
                                       fontWeight: FontWeight.bold,
-                                    ), translate: false,
+                                    ),
                                   ),
                                 ),
                                 title: Row(
@@ -463,7 +463,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: AnymeXText(
-                          'Hidden Tabs',
+                          'Hidden Tabs'.tr,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.bold,
@@ -474,7 +474,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: AnymeXText(
-                            'No hidden tabs',
+                            'No hidden tabs'.tr,
                             style: TextStyle(
                               color: theme.colorScheme.onSurfaceVariant
                                   .withOpacity(0.6),

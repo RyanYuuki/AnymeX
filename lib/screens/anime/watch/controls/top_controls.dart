@@ -171,7 +171,7 @@ class TopControls extends StatelessWidget {
                             fontSize: 12,
                           ),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis, translate: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -310,7 +310,7 @@ class TopControls extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis, translate: false,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
@@ -490,7 +490,7 @@ class TopControls extends StatelessWidget {
                       fontSize: 12,
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis, translate: false,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
@@ -570,7 +570,7 @@ class _QualityChip extends StatelessWidget {
               : theme.colorScheme.onPrimaryContainer,
           fontWeight: FontWeight.w600,
           fontSize: isMobile ? 12 : null,
-        ), translate: false,
+        ),
       ),
     );
   }
@@ -640,7 +640,7 @@ class _UnlockButtonState extends State<_UnlockButton> {
               if (_confirm) ...[
                 const SizedBox(width: 8),
                 AnymeXText(
-                  "Are you sure?",
+                  "Are you sure?".tr,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,

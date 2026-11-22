@@ -106,7 +106,7 @@ class ExoticCard extends CarouselCard {
                     size: desktop ? 14 : 12,
                     variant: TextVariant.semiBold,
                     overflow: TextOverflow.ellipsis,
-                    isMarquee: false, translate: false,
+                    isMarquee: false,
                   ),
                 ),
               ),
@@ -143,7 +143,7 @@ class ExoticCard extends CarouselCard {
             AnymeXText(itemData.source ?? '',
               color: context.colors.onPrimary,
               size: 12,
-              variant: TextVariant.bold, translate: false,
+              variant: TextVariant.bold,
             ),
           ] else ...[
             Icon(
@@ -155,7 +155,7 @@ class ExoticCard extends CarouselCard {
             AnymeXText((itemData.extraData ?? '').replaceAll('_', ' '),
               color: context.colors.onPrimary,
               size: 12,
-              variant: TextVariant.bold, translate: false,
+              variant: TextVariant.bold,
             ),
           ],
         ],

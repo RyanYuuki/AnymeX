@@ -123,7 +123,7 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                             color: Colors.white.opaque(0.9),
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,
-                          ), translate: false,
+                          ),
                         ),
                       ],
                     ),

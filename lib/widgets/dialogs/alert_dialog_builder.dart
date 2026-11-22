@@ -113,7 +113,7 @@ class AlertDialogBuilder {
       builder: (BuildContext context) {
         _onShow?.call();
         return AlertDialog(
-          title: _titleWidget ?? AnymeXText(_title ?? '', translate: false),
+          title: _titleWidget ?? AnymeXText(_title ?? ''),
           titleTextStyle: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: theme.primary),
           content: StatefulBuilder(
@@ -183,7 +183,7 @@ class AlertDialogBuilder {
                     key: ValueKey(item),
                     title: AnymeXText(item,
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold), translate: false),
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     value: _checkedItems![index],
                     onChanged: (bool? value) {
                       setState(() {
@@ -215,7 +215,7 @@ class AlertDialogBuilder {
                     key: ValueKey(item),
                     title: AnymeXText(item,
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold), translate: false),
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                   );
                 }).toList(),
               ),
@@ -228,7 +228,7 @@ class AlertDialogBuilder {
         (item) => RadioListTile<int>(
           title: AnymeXText(item,
               style:
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), translate: false),
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           value: _items!.indexOf(item),
           groupValue: _selectedItemIndex,
           onChanged: (int? value) {
@@ -245,7 +245,7 @@ class AlertDialogBuilder {
           return CheckboxListTile(
             title: AnymeXText(item,
                 style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), translate: false),
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             value: _checkedItems![index],
             onChanged: (bool? value) {
               setState(() => _checkedItems![index] = value!);
@@ -270,7 +270,7 @@ class AlertDialogBuilder {
   Widget _buildDefaultContent() => ConstrainedBox(
         constraints:
             BoxConstraints(minWidth: MediaQuery.sizeOf(context).width * 0.7),
-        child: _customView ?? AnymeXText(_message ?? '', translate: false),
+        child: _customView ?? AnymeXText(_message ?? ''),
       );
 
   List<Widget> _buildActions() {
@@ -301,7 +301,7 @@ class AlertDialogBuilder {
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: theme.primary), translate: false),
+                color: theme.primary)),
       );
 
   AlertDialogBuilder _with(VoidCallback action) {

@@ -121,7 +121,7 @@ class _TopLineBar extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.4,
                   ),
-                  textAlign: TextAlign.right, translate: false,
+                  textAlign: TextAlign.right,
                 ),
               );
             },

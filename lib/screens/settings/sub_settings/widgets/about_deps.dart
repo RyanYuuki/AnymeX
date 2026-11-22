@@ -30,7 +30,7 @@ class ProfileInfo extends StatelessWidget {
           style: theme.textTheme.headlineSmall?.copyWith(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
-          ), translate: false,
+          ),
         ),
         const SizedBox(height: 4),
         GestureDetector(
@@ -43,14 +43,14 @@ class ProfileInfo extends StatelessWidget {
             style: theme.textTheme.bodyLarge?.copyWith(
               fontFamily: 'Linotte',
               color: theme.colorScheme.onSurface.opaque(0.7),
-            ), translate: false,
+            ),
           ),
         ),
         AnymeXText(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.opaque(0.5),
-          ), translate: false,
+          ),
         ),
       ],
     );
@@ -115,7 +115,7 @@ class ProfileSection extends StatelessWidget {
             style: theme.textTheme.headlineSmall?.copyWith(
               color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.bold,
-            ), translate: false,
+            ),
           ),
           const SizedBox(height: 4),
           GestureDetector(
@@ -127,14 +127,14 @@ class ProfileSection extends StatelessWidget {
               version,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurface.opaque(0.7),
-              ), translate: false,
+              ),
             ),
           ),
           AnymeXText(
             subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.opaque(0.5),
-            ), translate: false,
+            ),
           ),
           InfoCard(
             onTap: () async {
@@ -203,13 +203,13 @@ class InfoCard extends StatelessWidget {
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
-                      ), translate: false,
+                      ),
                     ),
                     AnymeXText(
                       subtitle,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.opaque(0.7),
-                      ), translate: false,
+                      ),
                     ),
                   ],
                 ),
@@ -264,7 +264,7 @@ class CustomSection extends StatelessWidget {
                       AnymeXText(
                         title,
                         style: const TextStyle(
-                            fontSize: 16, fontFamily: 'Linotte'), translate: false,
+                            fontSize: 16, fontFamily: 'Linotte'),
                       ),
                       if (subtitle != null)
                         AnymeXText(
@@ -272,7 +272,7 @@ class CustomSection extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: theme.colorScheme.onSurface.opaque(0.7),
-                          ), translate: false,
+                          ),
                         ),
                     ],
                   ),
@@ -329,7 +329,7 @@ class CustomListTile extends StatelessWidget {
                       title,
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface.opaque(0.9),
-                          fontFamily: 'Linotte'), translate: false,
+                          fontFamily: 'Linotte'),
                     ),
                     const SizedBox(height: 1),
                     if (subtitle != null)
@@ -337,7 +337,7 @@ class CustomListTile extends StatelessWidget {
                         subtitle!,
                         style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.opaque(0.7)), translate: false,
+                            color: theme.colorScheme.onSurface.opaque(0.7)),
                       )
                   ],
                 ),

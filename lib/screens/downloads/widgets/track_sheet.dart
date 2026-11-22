@@ -202,7 +202,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                           style: TextStyle(
                             color: theme.onSurface.withOpacity(0.5),
                             fontSize: 11,
-                          ), translate: false,
+                          ),
                         ),
                       ],
                     ),
@@ -214,7 +214,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         _searchResults = [];
                         _searchCtrl.clear();
                       }),
-                      child: AnymeXText('Back'),
+                      child: AnymeXText('Back'.tr),
                     ),
                 ],
               ),
@@ -245,7 +245,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           shrinkWrap: true,
           children: [
             AnymeXText(
-              'Logged-in tracking services',
+              'Logged-in tracking services'.tr,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
                 fontSize: 11,
@@ -316,7 +316,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                   child: AnymeXText(
                     tracker.label.substring(0, 1),
                     style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w800), translate: false,
+                        color: Colors.white, fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
@@ -338,7 +338,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                                 color: theme.onSurface,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
-                              ), translate: false,
+                              ),
                             ),
                             const SizedBox(width: 6),
                             Icon(Icons.edit_rounded,
@@ -352,7 +352,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                           style: TextStyle(
                             color: theme.onSurface.withOpacity(0.55),
                             fontSize: 11,
-                          ), translate: false,
+                          ),
                         ),
                       ],
                     ),
@@ -366,11 +366,11 @@ class _TrackSheetState extends State<_TrackSheet> {
                           color: theme.onSurface,
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                        ), translate: false,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Not tracked',
+                        'Not tracked'.tr,
                         style: TextStyle(
                           color: theme.onSurface.withOpacity(0.4),
                           fontSize: 11,
@@ -409,7 +409,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               },
               icon: Icon(Icons.add_link_rounded,
                   size: 16, color: theme.primary),
-              label: AnymeXText('Track',
+              label: AnymeXText('Track'.tr,
                   style: TextStyle(color: theme.primary)),
             ),
         ],
@@ -563,7 +563,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                                       ? Color(tracker.color)
                                       : theme.onSurface.withOpacity(0.6),
                                 ),
-                                overflow: TextOverflow.ellipsis, translate: false,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -674,7 +674,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         child: Padding(
                           padding: const EdgeInsets.all(24),
                           child: AnymeXText(
-                            'No results. Try searching by title.',
+                            'No results. Try searching by title.'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: theme.onSurface.withOpacity(0.4),
@@ -778,14 +778,14 @@ class _TrackSheetState extends State<_TrackSheet> {
             color: theme.onSurface,
             fontSize: 13,
             fontWeight: FontWeight.w700,
-          ), translate: false,
+          ),
         ),
         subtitle: AnymeXText(
           _formatSearchResultSubtitle(r, tracker),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-              color: theme.onSurface.withOpacity(0.5), fontSize: 11), translate: false,
+              color: theme.onSurface.withOpacity(0.5), fontSize: 11),
         ),
         trailing: FilledButton.tonal(
           onPressed: () => _pickResult(tracker, r),
@@ -795,7 +795,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             minimumSize: const Size(0, 34),
           ),
-          child: AnymeXText('Track', style: TextStyle(fontSize: 12)),
+          child: AnymeXText('Track'.tr, style: TextStyle(fontSize: 12)),
         ),
       ),
     );
@@ -811,7 +811,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               size: 36, color: theme.onSurface.withOpacity(0.3)),
           const SizedBox(height: 14),
           AnymeXText(
-            'No tracking service connected',
+            'No tracking service connected'.tr,
             style: TextStyle(
               color: theme.onSurface,
               fontSize: 15,
@@ -836,7 +836,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               navigate(() => const SettingsAccounts());
             },
             icon: const Icon(Icons.settings_rounded, size: 16),
-            label: AnymeXText('Open Settings'),
+            label: AnymeXText('Open Settings'.tr),
           ),
         ],
       ),

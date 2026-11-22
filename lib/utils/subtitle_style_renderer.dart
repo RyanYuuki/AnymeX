@@ -61,7 +61,7 @@ Widget buildStyledSubtitleText({
     text,
     key: key,
     textAlign: TextAlign.center,
-    style: style, translate: false,
+    style: style,
   );
 }
 

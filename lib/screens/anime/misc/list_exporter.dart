@@ -336,12 +336,12 @@ class _ListExporterPageState extends State<ListExporterPage> {
             children: [
               AnymeXText(title,
                 variant: TextVariant.semiBold,
-                size: 15, translate: false,
+                size: 15,
               ),
               const SizedBox(height: 3),
               AnymeXText(subtitle,
                 size: 12,
-                color: Colors.grey, translate: false,
+                color: Colors.grey,
               ),
             ],
           ),
@@ -419,7 +419,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                                   ? AnymeXText(serviceHandler
                                           .profileData.value.name?[0]
                                           .toUpperCase() ??
-                                      '?', translate: false)
+                                      '?')
                                   : null,
                             ),
                             const SizedBox(width: 15),
@@ -459,7 +459,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText("Export Settings",
+                      AnymeXText("Export Settings".tr,
                         variant: TextVariant.bold,
                         size: 16,
                         color: colorScheme.primary,

@@ -214,7 +214,7 @@ class TappableSearchBar extends StatelessWidget {
                           .opaque(0.45, iReallyMeanIt: true),
                       fontSize: 14,
                       fontFamily: 'Linotte',
-                    ), translate: false,
+                    ),
                   ),
                 ),
                 Icon(

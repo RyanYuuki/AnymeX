@@ -105,7 +105,7 @@ class AnymeXTextSpans extends StatelessWidget {
         textAlign: textAlign,
         overflow: overflow,
         maxLines: maxLines,
-        style: _getTextStyle(TextVariant.regular, context), translate: false,
+        style: _getTextStyle(TextVariant.regular, context),
       );
     });
   }

@@ -33,7 +33,7 @@ class OtherFeaturesPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      'Anime',
+                      'Anime'.tr,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -91,7 +91,7 @@ class OtherFeaturesPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      'Manga',
+                      'Manga'.tr,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -193,7 +193,7 @@ class _FeatureCard extends StatelessWidget {
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: cs.onSurface,
-                  ), translate: false,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 AnymeXText(
@@ -203,7 +203,7 @@ class _FeatureCard extends StatelessWidget {
                     height: 1.3,
                   ),
                   maxLines: isFullWidth ? 2 : 3,
-                  overflow: TextOverflow.ellipsis, translate: false,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

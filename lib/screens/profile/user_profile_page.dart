@@ -288,7 +288,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: AnymeXText('Activity refreshed'),
+        content: AnymeXText('Activity refreshed'.tr),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -339,7 +339,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: AnymeXText(
-            'Failed to load profile — account may be private or not found',
+            'Failed to load profile — account may be private or not found'.tr,
             textAlign: TextAlign.center,
           ),
         ),
@@ -712,7 +712,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: AnymeXText('Please login first'),
+                          content: AnymeXText('Please login first'.tr),
                           duration: Duration(milliseconds: 1500),
                         ),
                       );
@@ -864,7 +864,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: AnymeXText(
-                          'No more activities',
+                          'No more activities'.tr,
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
@@ -899,7 +899,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: AnymeXText('Activity deleted'),
+        content: AnymeXText('Activity deleted'.tr),
         duration: Duration(milliseconds: 1200),
       ),
     );

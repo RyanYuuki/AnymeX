@@ -106,7 +106,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
         variant: TextVariant.semiBold,
         size: 17,
         color: context.colors.primary,
-        isMarquee: true, translate: false,
+        isMarquee: true,
       ),
     );
   }

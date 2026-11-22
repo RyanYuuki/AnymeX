@@ -202,7 +202,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
                         fontSize: 32,
                         fontFamily: 'Linotte',
                         color: colors.primary,
-                      ), translate: false,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -267,7 +267,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
                               color: isSel
                                   ? colors.onPrimary
                                   : colors.onSurface,
-                            ), translate: false,
+                            ),
                           ),
                         ),
                       );
@@ -293,7 +293,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
       title: 'Playback Speed'.tr,
       subtitle: AnymeXText(
         '${_fmt(_currentSpeed)} · $_speedLabel',
-        style: TextStyle(fontSize: 12, color: cs.primary), translate: false,
+        style: TextStyle(fontSize: 12, color: cs.primary),
       ),
       onClose: widget.onClose,
       child: Column(
@@ -446,7 +446,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
                       style: TextStyle(
                         fontSize: 14,
                         color: isActive ? cs.onPrimary : cs.onSurface,
-                      ), translate: false,
+                      ),
                     ),
                     if (canDelete &&
                         !isActive &&

@@ -156,7 +156,7 @@ Widget _buildQuickActionButton({
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                   letterSpacing: 0.3,
-                ), translate: false,
+                ),
               ),
             ),
           ],

@@ -249,7 +249,7 @@ class Header extends StatelessWidget {
             Icon(Iconsax.eye_slash, size: 12, color: theme.error),
             const SizedBox(width: 4),
             AnymeXText(
-              'Incognito',
+              'Incognito'.tr,
               size: 11,
               variant: TextVariant.bold,
               color: theme.error,
@@ -620,7 +620,7 @@ class HeaderTitle extends StatelessWidget {
       maxLines: 1,
       size: 15,
       variant: TextVariant.bold,
-      color: color, translate: false,
+      color: color,
     );
   }
 }
@@ -638,7 +638,7 @@ class HeaderSubtitle extends StatelessWidget {
       autoResize: true,
       maxLines: 1,
       size: 11,
-      color: color ?? context.colors.onSurface.withOpacity(0.55), translate: false,
+      color: color ?? context.colors.onSurface.withOpacity(0.55),
     );
   }
 }
@@ -651,7 +651,7 @@ class HeaderGreetingSubtitle extends StatelessWidget {
     final greetingController = Get.find<GreetingController>();
     return Obx(
       () => AnymeXText(
-        greetingController.currentGreeting.value,
+        greetingController.currentGreeting.value.tr,
         autoResize: true,
         maxLines: 1,
         size: 11,
@@ -726,7 +726,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
         mainAxisSize: MainAxisSize.min,
         children: [
           AnymeXText(
-            'Library Settings',
+            'Library Settings'.tr,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -993,7 +993,7 @@ class SortTile extends StatelessWidget {
             color: isSelected
                 ? theme.colorScheme.secondary
                 : theme.colorScheme.onSurface,
-          ), translate: false,
+          ),
         ),
         trailing: isSelected
             ? Container(

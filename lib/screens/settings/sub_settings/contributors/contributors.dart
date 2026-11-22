@@ -395,7 +395,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: colors.onSurface,
-              ), translate: false,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -444,7 +444,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: colors.onSurface,
-                  ), translate: false,
+                  ),
                 ),
               ],
             ),
@@ -457,7 +457,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 style: TextStyle(
                   fontSize: 12,
                   color: colors.onSurface.withOpacity(0.45),
-                ), translate: false,
+                ),
               ),
             ),
           SizedBox(
@@ -591,7 +591,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                           color: colors.onSurface,
                         ),
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis, translate: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
@@ -602,7 +602,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                           color: colors.onSurface.withOpacity(0.7),
                         ),
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis, translate: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
                       if (contributor.commitCount > 0 ||
@@ -701,7 +701,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                             ? colors.primary
                             : colors.onSurface.opaque(0.7),
                       ),
-                      textAlign: TextAlign.center, translate: false,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -729,7 +729,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         color: colors.onSurface,
                       ),
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis, translate: false,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (contributor.commitCount > 0) ...[
@@ -786,7 +786,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           color: colors.primary,
-                        ), translate: false,
+                        ),
                       ),
                     ),
                   ],
@@ -863,7 +863,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                                     color: colors.onSurface,
                                   ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis, translate: false,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 AnymeXText(
                                   member.role,
@@ -872,7 +872,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                                     color: colors.onSurface.withOpacity(0.6),
                                   ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis, translate: false,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -915,13 +915,13 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   child: Center(
                     child: AnymeXText(
                       errorMessage.value,
-                      style: TextStyle(color: colors.error), translate: false,
+                      style: TextStyle(color: colors.error),
                     ),
                   ),
                 )
               else if (coreTeam.isEmpty && communityContributors.isEmpty)
                 SliverFillRemaining(
-                  child: Center(child: AnymeXText('No contributors found.')),
+                  child: Center(child: AnymeXText('No contributors found.'.tr)),
                 )
               else ...[
                 _buildFeaturedSection(

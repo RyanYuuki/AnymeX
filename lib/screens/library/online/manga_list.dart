@@ -337,7 +337,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                   children: [
                     Icon(Icons.sort_rounded, color: colors.primary, size: 20),
                     const SizedBox(width: 10),
-                    AnymeXText('Sort By',
+                    AnymeXText('Sort By'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Linotte',
@@ -391,7 +391,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
                         color: selected ? colors.primary : colors.onSurface,
-                      ), translate: false),
+                      )),
                   trailing: selected
                       ? Icon(Icons.check_rounded,
                           color: colors.primary, size: 20)
@@ -430,7 +430,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                 children: [
                   Icon(Iconsax.filter, color: colors.primary, size: 20),
                   const SizedBox(width: 10),
-                  AnymeXText('Filter by Genre',
+                  AnymeXText('Filter by Genre'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Linotte',
@@ -442,7 +442,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     TextButton(
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
-                      child: AnymeXText('Clear',
+                      child: AnymeXText('Clear'.tr,
                           style: TextStyle(fontSize: 12)),
                     ),
                 ],
@@ -464,7 +464,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                             color: isSelected
                                 ? colors.onPrimaryContainer
                                 : colors.onSurfaceVariant,
-                          ), translate: false),
+                          )),
                       selected: isSelected,
                       onSelected: (val) {
                         setSheetState(() {
@@ -602,7 +602,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                   size: 13,
                   color: isSelected
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface, translate: false,
+                      : theme.colorScheme.onSurface,
                 ),
                 const SizedBox(width: 8),
                 AnimatedContainer(
@@ -622,7 +622,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     size: 11,
                     color: isSelected
                         ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurfaceVariant.opaque(0.8), translate: false,
+                        : theme.colorScheme.onSurfaceVariant.opaque(0.8),
                   ),
                 ),
               ],
@@ -710,7 +710,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               Icon(Iconsax.shuffle,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              AnymeXText('Random'),
+              AnymeXText('Random'.tr),
             ],
           ),
         ),
@@ -734,7 +734,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               Icon(Icons.sort_rounded,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              AnymeXText('Sort'),
+              AnymeXText('Sort'.tr),
             ],
           ),
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:anymex/database/kv_helper.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class FpsMeter extends StatefulWidget {
   const FpsMeter({super.key});
@@ -191,14 +190,14 @@ class _FpsMeterState extends State<FpsMeter> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    AnymeXText(
+                    Text(
                       'FPS',
                       style: TextStyle(
                         color: theme.colorScheme.onSurfaceVariant,
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.1,
-                      ), maxLines: null,
+                      ),
                     ),
                     const SizedBox(width: 7),
                     Container(
@@ -214,7 +213,7 @@ class _FpsMeterState extends State<FpsMeter> {
                           width: 1.0,
                         ),
                       ),
-                      child: AnymeXText(
+                      child: Text(
                         _fps.toStringAsFixed(0),
                         style: TextStyle(
                           color: statusColors.text,
@@ -222,7 +221,7 @@ class _FpsMeterState extends State<FpsMeter> {
                           fontWeight: FontWeight.w800,
                           fontFamily: 'monospace',
                           letterSpacing: 0.3,
-                        ), maxLines: null, translate: false,
+                        ),
                       ),
                     ),
                   ],

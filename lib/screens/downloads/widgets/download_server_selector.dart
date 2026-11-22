@@ -253,7 +253,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText('Choose Quality',
+                AnymeXText('Choose Quality'.tr,
                     variant: TextVariant.bold,
                     size: 16),
                 AnymeXText(
@@ -284,10 +284,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             children: [
               ExpressiveLoadingIndicator(),
               SizedBox(height: 16),
-              AnymeXText('Fetching available servers...',
+              AnymeXText('Fetching available servers...'.tr,
                   style: TextStyle(fontSize: 14, color: Colors.grey)),
               SizedBox(height: 6),
-              AnymeXText('This may take up to 30 seconds',
+              AnymeXText('This may take up to 30 seconds'.tr,
                   style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
@@ -303,13 +303,13 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: theme.error.opaque(0.6)),
               const SizedBox(height: 12),
-              AnymeXText('Failed to fetch servers',
+              AnymeXText('Failed to fetch servers'.tr,
                   variant: TextVariant.semiBold,
                   size: 15),
               const SizedBox(height: 6),
               AnymeXText(_errorMsg.value!,
                   style: TextStyle(color: theme.error, fontSize: 12),
-                  textAlign: TextAlign.center, translate: false),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 16),
               AnymexOnTap(
                 onTap: _fetchServers,
@@ -322,7 +322,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     border: Border.all(color: theme.primary.opaque(0.4)),
                   ),
                   child:
-                      AnymeXText('Retry', size: 14, color: theme.primary),
+                      AnymeXText('Retry'.tr, size: 14, color: theme.primary),
                 ),
               ),
             ],
@@ -339,7 +339,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.cloud_off_rounded,
                   size: 48, color: theme.onSurface.opaque(0.2)),
               const SizedBox(height: 12),
-              AnymeXText('No servers available',
+              AnymeXText('No servers available'.tr,
                   variant: TextVariant.semiBold,
                   size: 15,
                   color: theme.onSurface.opaque(0.4)),
@@ -368,7 +368,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                         height: 16,
                         child: ExpressiveLoadingIndicator()),
                     const SizedBox(width: 8),
-                    AnymeXText('Scanning for more servers...',
+                    AnymeXText('Scanning for more servers...'.tr,
                         size: 12,
                         color: theme.onSurface.opaque(0.5)),
                   ],
@@ -433,7 +433,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                     child: AnymeXText(quality,
                                       variant: TextVariant.semiBold,
                                       size: 14,
-                                      color: isSelected ? theme.primary : theme.onSurface, translate: false,
+                                      color: isSelected ? theme.primary : theme.onSurface,
                                     ),
                                   ),
                                   if (subCount > 0) ...[
@@ -460,7 +460,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                               style: TextStyle(
                                                   fontSize: 10,
                                                   color: theme.primary,
-                                                  fontWeight: FontWeight.w600), translate: false,
+                                                  fontWeight: FontWeight.w600),
                                             ),
                                           ],
                                         ),
@@ -492,7 +492,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                               style: const TextStyle(
                                                   fontSize: 10,
                                                   color: Colors.purple,
-                                                  fontWeight: FontWeight.w600), translate: false,
+                                                  fontWeight: FontWeight.w600),
                                             ),
                                           ],
                                         ),
@@ -524,7 +524,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                         border: Border.all(
                                             color: Colors.orange.withOpacity(0.3)),
                                       ),
-                                      child: AnymeXText('HLS',
+                                      child: AnymeXText('HLS'.tr,
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: Colors.orange,
@@ -540,7 +540,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                         border: Border.all(
                                             color: Colors.green.withOpacity(0.3)),
                                       ),
-                                      child: AnymeXText('Direct',
+                                      child: AnymeXText('Direct'.tr,
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: Colors.green,
@@ -659,7 +659,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                       const SizedBox(height: 8),
                       if (subtitles.isEmpty)
                         AnymeXText(
-                          'No subtitle tracks available',
+                          'No subtitle tracks available'.tr,
                           style: TextStyle(
                               fontSize: 12, color: theme.onSurface.opaque(0.5)),
                         )
@@ -700,7 +700,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                       const SizedBox(height: 8),
                       if (audios.isEmpty)
                         AnymeXText(
-                          'No audio tracks available',
+                          'No audio tracks available'.tr,
                           style: TextStyle(
                               fontSize: 12, color: theme.onSurface.opaque(0.5)),
                         )

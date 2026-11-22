@@ -118,7 +118,7 @@ class ContentErrorWidget extends StatelessWidget {
         _getEmoticon(errorType),
         size: 26,
         variant: TextVariant.bold,
-        color: accentColor, translate: false,
+        color: accentColor,
       ),
     );
   }
@@ -150,7 +150,7 @@ class ContentErrorWidget extends StatelessWidget {
               size: 12,
               color: colors.onSurface.opaque(0.75, iReallyMeanIt: true),
               maxLines: 4,
-              overflow: TextOverflow.ellipsis, translate: false,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -180,7 +180,7 @@ class ContentErrorWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  'Retry',
+                  'Retry'.tr,
                   variant: TextVariant.semiBold,
                   size: 13,
                   color: isError ? colors.onError : colors.onPrimary,
@@ -207,7 +207,7 @@ class ContentErrorWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  'Wrong Title?',
+                  'Wrong Title?'.tr,
                   variant: TextVariant.semiBold,
                   size: 13,
                   color: colors.primary,
@@ -246,7 +246,7 @@ class ContentErrorWidget extends StatelessWidget {
             _getTitle(errorType, isManga),
             variant: TextVariant.bold,
             size: 16,
-            textAlign: TextAlign.center, translate: false,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           _buildDetailsBox(context, accentColor),

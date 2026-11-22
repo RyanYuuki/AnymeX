@@ -273,7 +273,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                     ? FontWeight.bold
                                     : FontWeight.normal,
                                 color: theme.colorScheme.onSurface,
-                              ), translate: false,
+                              ),
                             ),
                             const SizedBox(height: 2),
                             AnymeXText(
@@ -283,7 +283,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface
                                     .withOpacity(0.6),
-                              ), translate: false,
+                              ),
                             ),
                           ],
                         ),
@@ -558,7 +558,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: colors.onSurface,
-                        ), translate: false,
+                        ),
                       ),
                       const SizedBox(height: 3),
                       AnymeXText(
@@ -566,7 +566,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         style: TextStyle(
                           fontSize: 13,
                           color: hasError ? colors.error : colors.onSurfaceVariant,
-                        ), translate: false,
+                        ),
                       ),
                     ],
                   ),
@@ -598,7 +598,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: colors.primary,
-                      ), translate: false,
+                      ),
                     ),
                   ],
                 ],
@@ -618,7 +618,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   style: TextStyle(
                     fontSize: 12,
                     color: colors.error,
-                  ), translate: false,
+                  ),
                 ),
               ),
             ],
@@ -655,7 +655,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: AnymeXText(
-                        'Please restart the app to apply changes.',
+                        'Please restart the app to apply changes.'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -682,7 +682,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           style: TextStyle(
             fontSize: 13,
             color: colors.onSurfaceVariant,
-          ), translate: false,
+          ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -697,7 +697,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
               fontWeight: FontWeight.w600,
               color: colors.onSurface,
               fontFamily: 'monospace',
-            ), translate: false,
+            ),
           ),
         ),
       ],
@@ -775,7 +775,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: AnymeXText(title, translate: false),
+          title: AnymeXText(title),
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
@@ -786,14 +786,14 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: AnymeXText('Cancel'),
+              child: AnymeXText('Cancel'.tr),
             ),
             TextButton(
               onPressed: () {
                 onSave(controller.text);
                 Navigator.of(context).pop();
               },
-              child: AnymeXText('Save'),
+              child: AnymeXText('Save'.tr),
             ),
           ],
         );
