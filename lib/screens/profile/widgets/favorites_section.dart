@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -44,7 +45,7 @@ class FavoritesSection extends StatelessWidget {
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
             child: SectionHeader(
-              title: 'Favourite Anime'.tr,
+              title: context.l10n.favouriteAnime,
               icon: IconlyBold.video,
             ),
           ),
@@ -58,7 +59,7 @@ class FavoritesSection extends StatelessWidget {
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
             child: SectionHeader(
-              title: 'Favourite Manga'.tr,
+              title: context.l10n.favouriteManga,
               icon: IconlyBold.document,
             ),
           ),
@@ -72,7 +73,7 @@ class FavoritesSection extends StatelessWidget {
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
             child: SectionHeader(
-              title: 'Favourite Characters'.tr,
+              title: context.l10n.favouriteCharacters,
               icon: IconlyBold.profile,
             ),
           ),
@@ -92,7 +93,7 @@ class FavoritesSection extends StatelessWidget {
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
             child: SectionHeader(
-              title: 'Favourite Staff'.tr,
+              title: context.l10n.favouriteStaff,
               icon: Icons.people_rounded,
             ),
           ),
@@ -112,7 +113,7 @@ class FavoritesSection extends StatelessWidget {
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
             child: SectionHeader(
-              title: 'Favourite Studios'.tr,
+              title: context.l10n.favouriteStudios,
               icon: Icons.business_rounded,
             ),
           ),

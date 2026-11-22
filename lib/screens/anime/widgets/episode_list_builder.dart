@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -266,7 +267,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
 
   void _initEpisodes() {
     if (widget.episodeList.isEmpty) {
-      final fallback = Episode(number: "1", title: "Episode 1".tr);
+      final fallback = Episode(number: "1", title: context.l10n.episode1);
       savedEpisode.value = fallback;
       selectedEpisode.value = fallback;
       continueEpisode.value = fallback;
@@ -1121,7 +1122,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'No downloaded episodes found for this anime'.tr,
+              context.l10n.noDownloadedEpisodesFoundForThis,
               size: 14,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface.opaque(0.7),
@@ -1135,7 +1136,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: AnymeXText(
-                  'Switch to Online'.tr,
+                  context.l10n.switchToOnline,
                   color: context.colors.onPrimary,
                   variant: TextVariant.bold,
                 ),
@@ -1173,7 +1174,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
       switch (state.status) {
         case DownloadItemStatus.downloaded:
           return Tooltip(
-            message: 'Downloaded'.tr,
+            message: context.l10n.downloaded2,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1249,7 +1250,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
           );
         case DownloadItemStatus.queued:
           return Tooltip(
-            message: 'Queued for download'.tr,
+            message: context.l10n.queuedForDownload,
             child: Container(
               width: 32,
               height: 32,
@@ -1284,7 +1285,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
           );
         case DownloadItemStatus.failed:
           return Tooltip(
-            message: 'Download failed. Tap to retry.'.tr,
+            message: context.l10n.downloadFailedTapToRetry,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1322,7 +1323,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
           );
         case DownloadItemStatus.notDownloaded:
           return Tooltip(
-            message: 'Download Episode'.tr,
+            message: context.l10n.downloadEpisode,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1413,17 +1414,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: AnymeXText('Delete Episode'.tr, variant: TextVariant.bold),
+        title: AnymeXText(context.l10n.deleteEpisode, variant: TextVariant.bold),
         content: AnymeXText(
             'Are you sure you want to delete Episode ${epMeta.episode.number}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: AnymeXText('Cancel'.tr),
+            child: AnymeXText(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: AnymeXText('Delete'.tr, color: ctx.colors.error),
+            child: AnymeXText(context.l10n.delete, color: ctx.colors.error),
           ),
         ],
       ),
@@ -1445,7 +1446,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
   ) {
     final activeSrc = sourceController.activeSource.value;
     if (activeSrc == null) {
-      snackBar('No active source selected'.tr);
+      snackBar(context.l10n.noActiveSourceSelected);
       return;
     }
     final episodesToShow = _cachedEpisodesToShow.isNotEmpty
@@ -1480,7 +1481,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
 
     final options = <_BatchOption>[
       (
-        title: 'Download Unwatched Episodes'.tr,
+        title: context.l10n.downloadUnwatchedEpisodes,
         subtitle: '${unwatched.length} episodes',
         icon: Icons.playlist_play_rounded,
         enabled: unwatched.isNotEmpty,
@@ -1494,7 +1495,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
         },
       ),
       (
-        title: 'Download Current Section'.tr,
+        title: context.l10n.downloadCurrentSection,
         subtitle: '${chunkNotDownloaded.length} episodes',
         icon: Icons.view_carousel_outlined,
         enabled: chunkNotDownloaded.isNotEmpty,
@@ -1508,7 +1509,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
         },
       ),
       (
-        title: 'Download All Episodes'.tr,
+        title: context.l10n.downloadAllEpisodes,
         subtitle: '${allNotDownloaded.length} episodes',
         icon: Icons.file_download_outlined,
         enabled: allNotDownloaded.isNotEmpty,
@@ -1524,7 +1525,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
     ];
 
     AnymeXSheet(
-      title: 'Batch Download'.tr,
+      title: context.l10n.batchDownload,
       message: mediaTitle,
       showDragHandle: true,
       contentWidget: AnymeXTileBuilder<_BatchOption>(
@@ -1795,7 +1796,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
 
     final activeSource = sourceController.activeSource.value;
     if (activeSource == null) {
-      errorSnackBar('No active source selected'.tr);
+      errorSnackBar(context.l10n.noActiveSourceSelected);
       return;
     }
 
@@ -1978,13 +1979,13 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           AnymeXText(
-            'Scanning for video streams...'.tr,
+            context.l10n.scanningForVideoStreams,
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
           AnymeXText(
-            'This may take a few seconds'.tr,
+            context.l10n.thisMayTakeAFewSeconds,
             size: 12,
           ),
         ],
@@ -1998,7 +1999,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       children: [
         const SizedBox(height: 10),
         AnymeXText(
-          "Error Occurred".tr,
+          context.l10n.errorOccurred,
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -2026,7 +2027,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       height: 200,
       child: Center(
         child: AnymeXText(
-          "No servers available".tr,
+          context.l10n.noServersAvailable,
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -2111,7 +2112,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: AnymeXText(
-                      'Default'.tr,
+                      context.l10n.defaultLabel,
                       size: 11,
                       variant: TextVariant.bold,
                     ),
@@ -2133,8 +2134,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             Obx(
               () => AnymeXTile.checkbox(
                 icon: Icons.bookmark_outline_rounded,
-                title: 'Remember Server'.tr,
-                subtitle: 'Auto-select this server quality for this anime'.tr,
+                title: context.l10n.rememberServer,
+                subtitle: context.l10n.autoSelectThisServerQualityFor,
                 value: rememberServer.value,
                 onChanged: (val) {
                   rememberServer.value = val;
@@ -2160,7 +2161,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                     ),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Scanning for more servers...'.tr,
+                      context.l10n.scanningForMoreServers,
                       size: 12,
                       color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                     ),

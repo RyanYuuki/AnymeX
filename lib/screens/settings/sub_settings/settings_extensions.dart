@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -44,9 +45,9 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   final Map<String, bool> _deleting = {};
 
   static List<({String label, IconData icon, ItemType type})> get _typeTabs => [
-    (label: 'Anime'.tr, icon: Icons.movie_creation_outlined, type: ItemType.anime),
-    (label: 'Manga'.tr, icon: Icons.menu_book_outlined, type: ItemType.manga),
-    (label: 'Novel'.tr, icon: Icons.auto_stories_outlined, type: ItemType.novel),
+    (label: Get.context!.l10n.anime, icon: Icons.movie_creation_outlined, type: ItemType.anime),
+    (label: Get.context!.l10n.manga, icon: Icons.menu_book_outlined, type: ItemType.manga),
+    (label: Get.context!.l10n.novel, icon: Icons.auto_stories_outlined, type: ItemType.novel),
   ];
 
   List<Map<String, dynamic>> get _displayManagers {
@@ -202,7 +203,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       await em.removeRepo(repo, type);
       widget.onSave?.call();
     } catch (_) {
-      snackBar('Failed to remove repo'.tr);
+      snackBar(Get.context!.l10n.failedToRemoveRepo);
     } finally {
       if (mounted) setState(() => _deleting.remove(key));
     }
@@ -261,12 +262,12 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnymeXHeader(
-              title: 'Extensions'.tr,
+              title: context.l10n.extensions,
               action: IconButton(
                 onPressed: () =>
                     navigate(() => const SettingsExtensionManager()),
                 icon: const Icon(Icons.settings_rounded),
-                tooltip: 'Extension Manager'.tr,
+                tooltip: context.l10n.extensionManager,
               ),
             ),
             const SizedBox(height: 10),
@@ -851,7 +852,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             _iconBtn(Icons.copy_rounded, colors.onSurfaceVariant, 'Copy URL',
                 () {
               Clipboard.setData(ClipboardData(text: repo.url));
-              snackBar('URL copied to clipboard'.tr);
+              snackBar(context.l10n.urlCopiedToClipboard);
             }),
             const SizedBox(width: 2),
             if (isDeleting)
@@ -976,7 +977,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
     final label = widget.type.name.capitalizeFirst!;
 
     return AnymeXDialog(
-      title: 'Add Repository'.tr,
+      title: context.l10n.addRepository,
       confirmText: _loading ? 'Adding...' : 'Add Repository',
       onConfirm: _loading ? () {} : _submit,
       isConfirmEnabled: !_loading,
@@ -1023,7 +1024,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
           ),
           const SizedBox(height: 18),
           AnymeXText(
-            'REPOSITORY URL'.tr,
+            context.l10n.repositoryUrlUpper,
             variant: TextVariant.bold,
             size: 10,
             style: TextStyle(
@@ -1084,7 +1085,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 ),
                 const SizedBox(width: 12),
                 AnymeXText(
-                  'Adding repository & fetching extensions...'.tr,
+                  context.l10n.addingRepositoryFetchingExtensions,
                   variant: TextVariant.regular,
                   size: 12,
                   color: c.onSurfaceVariant,

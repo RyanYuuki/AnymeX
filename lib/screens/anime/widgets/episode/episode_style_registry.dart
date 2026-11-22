@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -57,14 +58,14 @@ class EpisodeStyleRegistry {
       id: 'minimal',
       name: 'Minimal',
       description:
-          'Simple layout displaying episode number, title, and progress without thumbnail'.tr,
+          Get.context!.l10n.simpleLayoutDisplayingEpisodeNumberTitle,
       styleType: EpisodeStyleType.minimal,
       builder: buildMinimalEpisodeStyle,
     ),
     EpisodeStyle(
       id: 'compact',
       name: 'Compact',
-      description: 'Compact card with episode thumbnail and title'.tr,
+      description: Get.context!.l10n.compactCardWithEpisodeThumbnailAnd,
       styleType: EpisodeStyleType.compact,
       builder: buildCompactEpisodeStyle,
     ),
@@ -72,7 +73,7 @@ class EpisodeStyleRegistry {
       id: 'detailed',
       name: 'Detailed',
       description:
-          'Full-width detailed card with large thumbnail and episode metadata'.tr,
+          Get.context!.l10n.fullWidthDetailedCardWithLarge,
       styleType: EpisodeStyleType.detailed,
       builder: buildDetailedEpisodeStyle,
     ),

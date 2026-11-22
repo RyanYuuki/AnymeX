@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -103,7 +104,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
     if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
       return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'Performance'.tr,
+        headerTitle: context.l10n.performance,
         body: Builder(
           builder: (ctx) => SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
@@ -129,7 +130,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                 const SizedBox(height: 20),
                 Center(
                   child: AnymeXText(
-                      'Display mode tuning is not applicable on desktop platforms.'.tr),
+                      context.l10n.displayModeTuningIsNotApplicable),
                 ),
               ],
             ),
@@ -158,7 +159,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Performance'.tr,
+      headerTitle: context.l10n.performance,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -231,18 +232,18 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                 ] else if (validModes.isEmpty) ...[
                   AnymeXTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'Display Mode'.tr,
+                    title: context.l10n.displayMode,
                     subtitle:
-                        'Hardware display mode switching is not supported by your device.'.tr,
+                        context.l10n.hardwareDisplayModeSwitchingIsNot,
                   ),
                 ] else ...[
                   AnymeXSectionBuilder(
-                    title: 'Display'.tr,
+                    title: context.l10n.display,
                     children: [
                       if (resolutions.length > 1)
                         AnymeXTile.pills<String>(
                           icon: Icons.aspect_ratio_rounded,
-                          title: 'Resolution'.tr,
+                          title: context.l10n.resolution,
                           value: currentRes,
                           options: resolutions,
                           optionLabelTransformer: (res) => res,
@@ -252,12 +253,12 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       else if (resolutions.isNotEmpty)
                         AnymeXTile(
                           icon: Icons.aspect_ratio_rounded,
-                          title: 'Resolution'.tr,
+                          title: context.l10n.resolution,
                           subtitle: resolutions.first,
                         ),
                       AnymeXTile.pills<int>(
                         icon: HugeIcons.strokeRoundedDashboardSpeed01,
-                        title: 'Refresh Rate'.tr,
+                        title: context.l10n.refreshRate,
                         value: currentHz,
                         options: hzOptions,
                         optionLabelTransformer: (hz) =>
@@ -280,7 +281,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       ),
                       AnymeXTile(
                         icon: Icons.layers_outlined,
-                        title: 'Supported Modes'.tr,
+                        title: context.l10n.supportedModes,
                         subtitle: '${validModes.length} modes',
                       ),
                     ],

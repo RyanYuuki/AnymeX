@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/screens/settings/registry/settings_labels.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +58,7 @@ class SettingItem {
     final nQuery = _normalize(query);
     if (nQuery.isEmpty) return false;
 
-    if (_normalize(title).contains(nQuery) || _normalize(title.tr).contains(nQuery)) return true;
+    if (_normalize(title).contains(nQuery) || _normalize(settingsLabel(Get.context!.l10n, title)).contains(nQuery)) return true;
     if (subtitle != null && _normalize(subtitle!).contains(nQuery)) return true;
     if (section != null && _normalize(section!).contains(nQuery)) return true;
     for (final tag in searchTags) {

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -116,7 +117,7 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.arrow_back_ios_rounded,
             onPressed: () => _handleBack(),
-            tooltip: 'Back'.tr,
+            tooltip: Get.context!.l10n.back,
             isPrimary: true,
           ),
           const SizedBox(width: 20),
@@ -256,7 +257,7 @@ class TopControls extends StatelessWidget {
                 ControlButton(
                   icon: Icons.arrow_back_ios_rounded,
                   onPressed: () => _handleBack(),
-                  tooltip: 'Back'.tr,
+                  tooltip: Get.context!.l10n.back,
                   isPrimary: true,
                 ),
                 const SizedBox(width: 24),
@@ -379,7 +380,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.fullscreen_rounded,
                 onPressed: () => controller.toggleFullScreen(),
-                tooltip: 'Fullscreen'.tr,
+                tooltip: Get.context!.l10n.fullscreen,
                 compact: true,
               ),
               const SizedBox(width: 8),
@@ -390,7 +391,7 @@ class TopControls extends StatelessWidget {
                   player.isSettingsPaneOpened.value =
                       !player.isSettingsPaneOpened.value;
                 },
-                tooltip: 'Settings'.tr,
+                tooltip: Get.context!.l10n.settings,
                 compact: true,
               ),
             ],
@@ -423,7 +424,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.arrow_back_ios_rounded,
                 onPressed: () => _handleBack(),
-                tooltip: 'Back'.tr,
+                tooltip: Get.context!.l10n.back,
                 isPrimary: true,
               ),
               const Spacer(),
@@ -435,7 +436,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.lock_rounded,
                 onPressed: () => controller.isLocked.value = true,
-                tooltip: 'Lock Controls'.tr,
+                tooltip: Get.context!.l10n.lockControls,
                 compact: true,
               ),
               const SizedBox(width: 8),
@@ -443,7 +444,7 @@ class TopControls extends StatelessWidget {
                 ControlButton(
                   icon: Icons.picture_in_picture_rounded,
                   onPressed: () => controller.enterPip(),
-                  tooltip: 'Picture in Picture'.tr,
+                  tooltip: Get.context!.l10n.pictureInPicture,
                   compact: true,
                 ),
               const SizedBox(width: 8),
@@ -454,7 +455,7 @@ class TopControls extends StatelessWidget {
                   player.isSettingsPaneOpened.value =
                       !player.isSettingsPaneOpened.value;
                 },
-                tooltip: 'Settings'.tr,
+                tooltip: Get.context!.l10n.settings,
                 compact: true,
               ),
             ],
@@ -640,7 +641,7 @@ class _UnlockButtonState extends State<_UnlockButton> {
               if (_confirm) ...[
                 const SizedBox(width: 8),
                 AnymeXText(
-                  "Are you sure?".tr,
+                  context.l10n.areYouSure,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart' show VoidCallback;
@@ -929,7 +930,7 @@ class MediaDetailsController extends GetxController {
     try {
       await _fetchFullDetails();
     } catch (e) {
-      errorSnackBar('Sync failed'.tr);
+      errorSnackBar(Get.context!.l10n.syncFailed);
     } finally {
       isSyncing.value = false;
     }
@@ -967,9 +968,9 @@ class MediaDetailsController extends GetxController {
       mediaProgress.value = progress;
       mediaScore.value = score;
       isListedMedia.value = true;
-      snackBar('List entry updated successfully!'.tr);
+      snackBar(Get.context!.l10n.listEntryUpdatedSuccessfully);
     } catch (e) {
-      errorSnackBar('Failed to update list entry'.tr);
+      errorSnackBar(Get.context!.l10n.failedToUpdateListEntry);
     }
   }
 
@@ -990,7 +991,7 @@ class MediaDetailsController extends GetxController {
       isListedMedia.value = false;
       trackedMedia.value = null;
     } catch (e) {
-      errorSnackBar('Failed to delete list entry'.tr);
+      errorSnackBar(Get.context!.l10n.failedToDeleteListEntry);
     }
   }
 

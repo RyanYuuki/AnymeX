@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 // ignore_for_file: prefer_const_constructors
 import 'package:anymex/models/Media/media.dart';
@@ -46,7 +47,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              AnymeXText("Statistics".tr,
+              AnymeXText(context.l10n.statistics,
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -54,10 +55,10 @@ class NovelStats extends StatelessWidget {
           ),
           content: Column(
             children: [
-              StateItem(label: "Type".tr, value: 'NOVEL'),
-              StateItem(label: "Status".tr, value: data.status),
+              StateItem(label: context.l10n.typeLabel, value: 'NOVEL'),
+              StateItem(label: context.l10n.status, value: data.status),
               StateItem(
-                  label: "Total Chapters".tr, value: data.totalChapters ?? '??'),
+                  label: context.l10n.totalChapters, value: data.totalChapters ?? '??'),
             ],
           ),
           padding: const EdgeInsets.all(24),
@@ -81,7 +82,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              AnymeXText("Synopsis".tr,
+              AnymeXText(context.l10n.synopsis,
                 variant: TextVariant.bold,
                 size: 16,
               ),
@@ -101,7 +102,7 @@ class NovelStats extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (data.genres.isNotEmpty) ...[
-          AnymeXText("Genres".tr,
+          AnymeXText(context.l10n.genres,
             variant: TextVariant.bold,
             size: 17,
           ),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
@@ -119,7 +120,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
               color: context.theme.colorScheme.primary,
               size: 20,
             ),
-            tooltip: 'Check Compatibility'.tr,
+            tooltip: context.l10n.checkCompatibility,
             onPressed: () {
               navigate(() => CompatibilityInputPage(
                     prefillProfile: user,
@@ -168,7 +169,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         ),
                         const SizedBox(height: 16),
                         AnymeXText(
-                          'More Options'.tr,
+                          context.l10n.moreOptions,
                           style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Linotte',
@@ -180,7 +181,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,
-                          label: 'View on AniList'.tr,
+                          label: context.l10n.viewOnAnilist,
                           onTap: () {
                             Navigator.pop(ctx);
                             launchUrlString('https://anilist.co/user/$name');
@@ -189,7 +190,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Iconsax.export,
-                          label: 'Share Profile'.tr,
+                          label: context.l10n.shareProfile,
                           onTap: () {
                             Navigator.pop(ctx);
                             Share.share('https://anilist.co/user/$name');
@@ -198,7 +199,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Iconsax.copy,
-                          label: 'Copy User ID'.tr,
+                          label: context.l10n.copyUserId,
                           onTap: () async {
                             Navigator.pop(ctx);
                             await Clipboard.setData(
@@ -208,7 +209,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: AnymeXText(
-                                    'User ID copied to clipboard'.tr,
+                                    context.l10n.userIdCopiedToClipboard,
                                   ),
                                   backgroundColor: context.theme.colorScheme
                                       .surfaceContainerHighest,
@@ -221,7 +222,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Iconsax.heart4,
-                          label: 'Check Compatibility'.tr,
+                          label: context.l10n.checkCompatibility,
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => CompatibilityInputPage(
@@ -234,7 +235,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Icons.emoji_events_outlined,
-                          label: 'Community Leaderboard'.tr,
+                          label: context.l10n.communityLeaderboard,
                           onTap: () {
                             Navigator.pop(ctx);
                             LeaderboardSheet.show(context);

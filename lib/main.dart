@@ -80,9 +80,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:anymex/l10n/app_translations.dart';
+import 'package:anymex/l10n/app_localizations.dart';
+import 'package:anymex/l10n/english_framework_delegates.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/l10n/locale_controller.dart';
-import 'package:anymex/l10n/locale_keys.dart';
 
 late Isar isar;
 final appLinks = AppLinks();
@@ -184,9 +185,6 @@ void main(List<String> args) async {
 
     await safeCall(() => dotenv.load(fileName: '.env'),
         errorMessage: 'Failed to load .env file');
-
-    await safeCall(() => AppTranslations.load(),
-        errorMessage: 'Failed to load translations');
 
     if (!Platform.isLinux) {
       await safeCall(
@@ -437,6 +435,12 @@ class _MainAppState extends State<MainApp> {
           scrollBehavior: MyCustomScrollBehavior(),
           debugShowCheckedModeBanner: false,
           title: "AnymeX",
+          localizationsDelegates: const [
+            ...AppLocalizations.localizationsDelegates,
+            EnglishMaterialDelegate(),
+            EnglishCupertinoDelegate(),
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: themeCtrl.lightTheme,
           darkTheme: themeCtrl.darkTheme,
           themeMode: themeCtrl.themeMode,
@@ -639,7 +643,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.home,
           selectedIcon: IconlyBold.home,
           onTap: onTap,
-          label: LocaleKeys.navHome.tr,
+          label: context.l10n.navHome,
           subWidget: subWidget,
         );
       case 'Discover':
@@ -647,7 +651,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Iconsax.discover_13,
           selectedIcon: Iconsax.discover5,
           onTap: onTap,
-          label: LocaleKeys.navDiscover.tr,
+          label: context.l10n.navDiscover,
           subWidget: subWidget,
         );
       case 'Search':
@@ -655,7 +659,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.search,
           selectedIcon: IconlyBold.search,
           onTap: onTap,
-          label: LocaleKeys.navSearch.tr,
+          label: context.l10n.navSearch,
           subWidget: subWidget,
         );
       case 'Library':
@@ -663,7 +667,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: HugeIcons.strokeRoundedLibrary,
           selectedIcon: HugeIcons.strokeRoundedLibrary,
           onTap: onTap,
-          label: LocaleKeys.navLibrary.tr,
+          label: context.l10n.navLibrary,
           subWidget: subWidget,
         );
       case 'History':
@@ -671,7 +675,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Iconsax.clock,
           selectedIcon: Iconsax.clock5,
           onTap: onTap,
-          label: LocaleKeys.navHistory.tr,
+          label: context.l10n.navHistory,
           subWidget: subWidget,
         );
       case 'Anime':
@@ -679,7 +683,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.movie_filter_outlined,
           selectedIcon: Icons.movie_filter_rounded,
           onTap: onTap,
-          label: isSimkl ? LocaleKeys.navMovies.tr : LocaleKeys.navAnime.tr,
+          label: isSimkl ? context.l10n.navMovies : context.l10n.navAnime,
           subWidget: subWidget,
         );
       case 'Manga':
@@ -687,7 +691,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
           selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
           onTap: onTap,
-          label: isSimkl ? LocaleKeys.navSeries.tr : LocaleKeys.navManga.tr,
+          label: isSimkl ? context.l10n.navSeries : context.l10n.navManga,
           subWidget: subWidget,
         );
       case 'Novel':
@@ -695,7 +699,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.auto_stories_outlined,
           selectedIcon: Icons.auto_stories_rounded,
           onTap: onTap,
-          label: LocaleKeys.navNovel.tr,
+          label: context.l10n.navNovel,
           subWidget: subWidget,
         );
       case 'Extensions':
@@ -703,7 +707,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.extension_outlined,
           selectedIcon: Icons.extension_rounded,
           onTap: onTap,
-          label: LocaleKeys.navExtensions.tr,
+          label: context.l10n.navExtensions,
           subWidget: subWidget,
         );
       case 'Stats':
@@ -711,7 +715,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.chart,
           selectedIcon: IconlyBold.chart,
           onTap: onTap,
-          label: LocaleKeys.navStats.tr,
+          label: context.l10n.navStats,
           subWidget: subWidget,
         );
       default:
@@ -778,7 +782,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             onTap: (index) {
                               return SettingsSheet.show(context);
                             },
-                            label: LocaleKeys.navProfile.tr,
+                            label: context.l10n.navProfile,
                             altIcon: Obx(() {
                               final count = Get.find<SourceController>()
                                   .extensionUpdatesCount

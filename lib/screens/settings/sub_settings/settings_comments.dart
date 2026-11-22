@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
@@ -67,7 +68,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         await commentumService.updateNotificationPreferences({key: newVal});
     if (!success) {
       rxVal.value = oldVal;
-      snackBar('Failed to update preference'.tr);
+      snackBar(Get.context!.l10n.failedToUpdatePreference);
     }
   }
 
@@ -113,39 +114,39 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     : null;
                 if (commentum == null) return const SizedBox.shrink();
                 return AnymeXSectionBuilder(
-                  title: 'Appearance'.tr,
+                  title: context.l10n.appearance,
                   children: [
                     AnymeXTile.toggle(
                       icon: Icons.auto_awesome_rounded,
-                      title: 'Avatar Decorations'.tr,
-                      subtitle: 'Show animated frames around user avatars'.tr,
+                      title: context.l10n.avatarDecorations,
+                      subtitle: context.l10n.showAnimatedFramesAroundUserAvatars,
                       value: commentum.renderAvatarDecorations.value,
                       onChanged: (v) => commentum.saveRenderPref(
                           CommentKeys.renderAvatarDecorations, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.badge_outlined,
-                      title: 'Nameplates'.tr,
+                      title: context.l10n.nameplates,
                       subtitle:
-                          'Show nameplate backgrounds on comment cards and leaderboard'.tr,
+                          context.l10n.showNameplateBackgroundsOnCommentCards,
                       value: commentum.renderNameplates.value,
                       onChanged: (v) => commentum.saveRenderPref(
                           CommentKeys.renderNameplates, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.blur_on_rounded,
-                      title: 'Profile Effects'.tr,
+                      title: context.l10n.profileEffects,
                       subtitle:
-                          'Show animated effect overlays on profile banners'.tr,
+                          context.l10n.showAnimatedEffectOverlaysOnProfile,
                       value: commentum.renderProfileEffects.value,
                       onChanged: (v) => commentum.saveRenderPref(
                           CommentKeys.renderProfileEffects, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.image_outlined,
-                      title: 'Custom Banners'.tr,
+                      title: context.l10n.customBanners,
                       subtitle:
-                          'Show custom profile banners (falls back to AniList cover if off)'.tr,
+                          context.l10n.showCustomProfileBannersFallsBack,
                       value: commentum.renderBanners.value,
                       onChanged: (v) => commentum.saveRenderPref(
                           CommentKeys.renderBanners, v),
@@ -157,13 +158,13 @@ class _SettingsCommentsState extends State<SettingsComments> {
               Obx(() {
                 if (commentumService.currentUserId == null) {
                   return AnymeXSectionBuilder(
-                    title: 'Notification Preferences'.tr,
+                    title: context.l10n.notificationPreferences,
                     children: [
                       AnymeXTile(
                         icon: Icons.notifications_off_outlined,
-                        title: 'Log In Required'.tr,
+                        title: context.l10n.logInRequired,
                         subtitle:
-                            'Log in to customize your push notification preferences.'.tr,
+                            context.l10n.logInToCustomizeYourPush,
                         showChevron: false,
                       ),
                     ],
@@ -172,7 +173,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
 
                 if (_isLoadingPreferences.value) {
                   return AnymeXSectionBuilder(
-                    title: 'Notification Preferences'.tr,
+                    title: context.l10n.notificationPreferences,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -184,38 +185,38 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 }
 
                 return AnymeXSectionBuilder(
-                  title: 'Notification Preferences'.tr,
+                  title: context.l10n.notificationPreferences,
                   children: [
                     AnymeXTile.toggle(
                       icon: Icons.reply_rounded,
-                      title: 'Comment Replies'.tr,
-                      subtitle: 'Notify when someone replies to your comment'.tr,
+                      title: context.l10n.commentReplies,
+                      subtitle: context.l10n.notifyWhenSomeoneRepliesToYour,
                       value: _notifyOnReply.value,
                       onChanged: (v) =>
                           _updatePreference('notify_on_reply', _notifyOnReply, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.alternate_email_rounded,
-                      title: 'Mentions'.tr,
-                      subtitle: 'Notify when someone @mentions your username'.tr,
+                      title: context.l10n.mentions,
+                      subtitle: context.l10n.notifyWhenSomeoneMentionsYourUsername,
                       value: _notifyOnMention.value,
                       onChanged: (v) => _updatePreference(
                           'notify_on_mention', _notifyOnMention, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.campaign_outlined,
-                      title: 'Announcements'.tr,
+                      title: context.l10n.announcements,
                       subtitle:
-                          'Notify for official announcements and app updates'.tr,
+                          context.l10n.notifyForOfficialAnnouncementsAndApp,
                       value: _notifyOnAnnouncement.value,
                       onChanged: (v) => _updatePreference(
                           'notify_on_announcement', _notifyOnAnnouncement, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.forum_outlined,
-                      title: 'Recent Media Comments'.tr,
+                      title: context.l10n.recentMediaComments,
                       subtitle:
-                          'Notify on new comments for media you discussed'.tr,
+                          context.l10n.notifyOnNewCommentsForMedia,
                       value: _notifyOnRecentComment.value,
                       onChanged: (v) => _updatePreference(
                           'notify_on_recent_comment',
@@ -224,17 +225,17 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.thumb_up_alt_outlined,
-                      title: 'Votes'.tr,
-                      subtitle: 'Notify on upvotes and downvotes'.tr,
+                      title: context.l10n.votes,
+                      subtitle: context.l10n.notifyOnUpvotesAndDownvotes,
                       value: _notifyOnVote.value,
                       onChanged: (v) =>
                           _updatePreference('notify_on_vote', _notifyOnVote, v),
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.delete_outline_rounded,
-                      title: 'Comment Deleted'.tr,
+                      title: context.l10n.commentDeleted,
                       subtitle:
-                          'Notify if your comment is removed by a moderator'.tr,
+                          context.l10n.notifyIfYourCommentIsRemoved,
                       value: _notifyOnCommentDelete.value,
                       onChanged: (v) => _updatePreference(
                           'notify_on_comment_delete',
@@ -243,9 +244,9 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.shield_outlined,
-                      title: 'Moderation Actions'.tr,
+                      title: context.l10n.moderationActions,
                       subtitle:
-                          'Notify on warnings, pinned comments, or thread locks'.tr,
+                          context.l10n.notifyOnWarningsPinnedCommentsOr,
                       value: _notifyOnModAction.value,
                       onChanged: (v) => _updatePreference(
                           'notify_on_mod_action', _notifyOnModAction, v),
@@ -293,12 +294,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
                   children: [
                     const SizedBox(height: 16),
                     AnymeXSectionBuilder(
-                      title: 'Moderation'.tr,
+                      title: context.l10n.moderation,
                       children: [
                         AnymeXTile(
                           icon: Icons.admin_panel_settings_outlined,
-                          title: 'Moderation Panel'.tr,
-                          subtitle: 'Access moderation tools and reports'.tr,
+                          title: context.l10n.moderationPanel,
+                          subtitle: context.l10n.accessModerationToolsAndReports,
                           onTap: () {
                             navigate(() => const SettingsModeration());
                           },
@@ -317,13 +318,13 @@ class _SettingsCommentsState extends State<SettingsComments> {
 
   void _showAboutDialog() {
     AnymeXDialog(
-      title: 'About Commentum v2'.tr,
+      title: context.l10n.aboutCommentumV2,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Commentum v2 is an advanced comment system that provides:'.tr,
+            context.l10n.commentumV2IsAnAdvancedComment,
             variant: TextVariant.semiBold,
             size: 14,
           ),
@@ -340,30 +341,30 @@ class _SettingsCommentsState extends State<SettingsComments> {
         ],
       ),
       showCancelButton: false,
-      confirmText: 'Close'.tr,
+      confirmText: context.l10n.close,
       onConfirm: () {},
     ).show(context);
   }
 
   void _showMarkdownGuide() {
     AnymeXDialog(
-      title: 'Markdown Guide'.tr,
+      title: context.l10n.markdownGuide,
       contentWidget: _buildMarkdownGuideContent(context),
       showCancelButton: false,
-      confirmText: 'Got it'.tr,
+      confirmText: context.l10n.gotIt,
       onConfirm: () {},
     ).show(context);
   }
 
   void _showHelpDialog() {
     AnymeXDialog(
-      title: 'Help & Support'.tr,
+      title: context.l10n.helpSupport,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'How to use the comment system:'.tr,
+            context.l10n.howToUseTheCommentSystem,
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -378,7 +379,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
               context, 'Report inappropriate content to moderators'),
           const SizedBox(height: 16),
           AnymeXText(
-            'Need help?'.tr,
+            context.l10n.needHelp,
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -389,20 +390,20 @@ class _SettingsCommentsState extends State<SettingsComments> {
         ],
       ),
       showCancelButton: false,
-      confirmText: 'Close'.tr,
+      confirmText: context.l10n.close,
       onConfirm: () {},
     ).show(context);
   }
 
   void _showPrivacyDialog() {
     AnymeXDialog(
-      title: 'Privacy & Safety'.tr,
+      title: context.l10n.privacySafety,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Your privacy is important:'.tr,
+            context.l10n.yourPrivacyIsImportant,
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -417,7 +418,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
               context, 'Reported content is reviewed by moderators'),
           const SizedBox(height: 16),
           AnymeXText(
-            'Safety features:'.tr,
+            context.l10n.safetyFeatures,
             variant: TextVariant.bold,
             size: 14,
           ),
@@ -429,7 +430,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         ],
       ),
       showCancelButton: false,
-      confirmText: 'Close'.tr,
+      confirmText: context.l10n.close,
       onConfirm: () {},
     ).show(context);
   }
@@ -441,32 +442,32 @@ class _SettingsCommentsState extends State<SettingsComments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'You can use Discord-style markdown to format your comments:'.tr,
+          context.l10n.youCanUseDiscordStyleMarkdown,
           variant: TextVariant.regular,
           size: 13,
           color: theme.onSurfaceVariant,
         ),
         const SizedBox(height: 12),
-        _buildMarkdownExample(context, syntax: '**bold text**', label: 'Bold'.tr),
-        _buildMarkdownExample(context, syntax: '*italic text*', label: 'Italic'.tr),
+        _buildMarkdownExample(context, syntax: '**bold text**', label: context.l10n.bold),
+        _buildMarkdownExample(context, syntax: '*italic text*', label: context.l10n.italic),
         _buildMarkdownExample(
-            context, syntax: '***bold italic***', label: 'Bold + Italic'.tr),
+            context, syntax: '***bold italic***', label: context.l10n.boldItalic),
         _buildMarkdownExample(
-            context, syntax: '~~strikethrough~~', label: 'Strikethrough'.tr),
+            context, syntax: '~~strikethrough~~', label: context.l10n.strikethrough),
         _buildMarkdownExample(
-            context, syntax: '`inline code`', label: 'Inline Code'.tr),
+            context, syntax: '`inline code`', label: context.l10n.inlineCode),
         _buildMarkdownExample(
-            context, syntax: '||spoiler text||', label: 'Spoiler (tap to reveal)'.tr),
-        _buildMarkdownExample(context, syntax: '> blockquote', label: 'Blockquote'.tr),
-        _buildMarkdownExample(context, syntax: '@username', label: 'Mention'.tr),
+            context, syntax: '||spoiler text||', label: context.l10n.spoilerTapToReveal),
+        _buildMarkdownExample(context, syntax: '> blockquote', label: context.l10n.blockquote),
+        _buildMarkdownExample(context, syntax: '@username', label: context.l10n.mention),
         _buildMarkdownExample(
-            context, syntax: 'https://example.com', label: 'Link (auto-detected)'.tr),
+            context, syntax: 'https://example.com', label: context.l10n.linkAutoDetected),
         _buildMarkdownExample(context,
             syntax: 'https://example.com/image.png',
-            label: 'Image (shows thumbnail)'.tr),
+            label: context.l10n.imageShowsThumbnail),
         const SizedBox(height: 8),
         AnymeXText(
-          'Tip: You can combine these! e.g. **bold and *italic* together**'.tr,
+          context.l10n.tipYouCanCombineTheseE,
           variant: TextVariant.regular,
           size: 12,
           fontStyle: FontStyle.italic,

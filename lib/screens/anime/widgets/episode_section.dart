@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -70,7 +71,7 @@ class EpisodeSection extends StatelessWidget {
       builder: (dialogContext) {
         return Obx(
           () => AnymeXDialog(
-            title: 'Episode List Settings'.tr,
+            title: context.l10n.episodeListSettings,
             onConfirm: () {},
             contentWidget: Column(
               mainAxisSize: MainAxisSize.min,
@@ -78,8 +79,8 @@ class EpisodeSection extends StatelessWidget {
               children: [
                 if (showAnify.value && !disableAnifyForCurrentSource.value) ...[
                   _ProviderOptionTile(
-                    title: 'Anify / Kitsu Artwork'.tr,
-                    subtitle: 'Use enhanced episode metadata and covers'.tr,
+                    title: context.l10n.anifyKitsuArtwork,
+                    subtitle: context.l10n.useEnhancedEpisodeMetadataAndCovers,
                     isSelected: isAnify.value,
                     onTap: () {
                       isAnify.value = !isAnify.value;
@@ -88,7 +89,7 @@ class EpisodeSection extends StatelessWidget {
                   const SizedBox(height: 16),
                 ],
                 AnymeXText(
-                  'Layout Style'.tr,
+                  context.l10n.layoutStyle,
                   variant: TextVariant.bold,
                   size: 14,
                 ),

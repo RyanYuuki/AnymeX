@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -357,7 +358,7 @@ class _ExtensionListState extends State<ExtensionList>
                             child: Padding(
                               padding: EdgeInsets.all(20.0),
                               child: AnymeXText(
-                                'No extensions found'.tr,
+                                context.l10n.noExtensionsFound,
                                 style:
                                     TextStyle(fontSize: 16, color: Colors.grey),
                               ),
@@ -388,7 +389,7 @@ class _ExtensionListState extends State<ExtensionList>
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: AnymeXText(
-            'No extensions found'.tr,
+            context.l10n.noExtensionsFound,
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ),
@@ -426,7 +427,7 @@ class _ExtensionListState extends State<ExtensionList>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       child: AnymeXText(
-        'Hold and drag any item to reorder'.tr,
+        context.l10n.holdAndDragAnyItemTo,
         style: TextStyle(
           fontSize: 11,
           color: Colors.grey.withValues(alpha: 0.55),
@@ -511,7 +512,7 @@ class _ExtensionListState extends State<ExtensionList>
                       color: context.colors.tertiary,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: AnymeXText('Update All'.tr,
+                    child: AnymeXText(context.l10n.updateAll,
                       size: 12,
                       variant: TextVariant.semiBold,
                       color: context.colors.onTertiary,

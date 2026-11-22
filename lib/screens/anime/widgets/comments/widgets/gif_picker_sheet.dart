@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -345,7 +346,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                       color: colorScheme.onSurface,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Search anime GIFs, reactions...'.tr,
+                      hintText: context.l10n.searchAnimeGifsReactions,
                       hintStyle: TextStyle(
                         fontSize: 13,
                         color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
@@ -393,7 +394,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                             color: colorScheme.onSurface,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Paste direct GIF or image URL...'.tr,
+                            hintText: context.l10n.pasteDirectGifOrImageUrl,
                             hintStyle: TextStyle(
                               fontSize: 12,
                               color: colorScheme.onSurfaceVariant

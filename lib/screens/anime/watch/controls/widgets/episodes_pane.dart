@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io' show Platform;
 import 'dart:ui';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -206,7 +207,7 @@ class EpisodesPane extends StatelessWidget {
           isVisible: controller.isEpisodePaneOpened.value,
           onOverlayTap: _closePane,
           child: WatchSettingsPane(
-            title: 'Episodes'.tr,
+            title: context.l10n.episodes,
             onClose: _closePane,
             actions: [
               IconButton(

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
@@ -422,7 +423,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           ),
                                           const SizedBox(height: 16),
                                           AnymeXText(
-                                            'More Options'.tr,
+                                            context.l10n.moreOptions,
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontFamily: 'Linotte',
@@ -435,7 +436,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           buildProfileSheetOption(
                                             ctx,
                                             icon: Icons.north_east_rounded,
-                                            label: 'View on AniList'.tr,
+                                            label: context.l10n.viewOnAnilist,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               launchUrlString(
@@ -445,7 +446,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           buildProfileSheetOption(
                                             ctx,
                                             icon: Iconsax.export,
-                                            label: 'Share Profile'.tr,
+                                            label: context.l10n.shareProfile,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               Share.share(
@@ -455,7 +456,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           buildProfileSheetOption(
                                             ctx,
                                             icon: Iconsax.copy,
-                                            label: 'Copy User ID'.tr,
+                                            label: context.l10n.copyUserId,
                                             onTap: () async {
                                               Navigator.pop(ctx);
                                               await Clipboard.setData(
@@ -467,7 +468,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                     .showSnackBar(
                                                   SnackBar(
                                                     content: AnymeXText(
-                                                        'User ID copied to clipboard'.tr),
+                                                        context.l10n.userIdCopiedToClipboard),
                                                     backgroundColor: context
                                                         .theme
                                                         .colorScheme
@@ -482,7 +483,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           buildProfileSheetOption(
                                             ctx,
                                             icon: Iconsax.heart4,
-                                            label: 'Check Compatibility'.tr,
+                                            label: context.l10n.checkCompatibility,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               navigate(() =>
@@ -497,7 +498,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           // buildProfileSheetOption(
                                           //   ctx,
                                           //   icon: Icons.emoji_events_outlined,
-                                          //   label: 'Community Leaderboard'.tr,
+                                          //   label: context.l10n.communityLeaderboard,
                                           //   onTap: () {
                                           //     Navigator.pop(ctx);
                                           //     LeaderboardSheet.show(context);

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -105,7 +106,7 @@ void showWelcomeDialogg(BuildContext context) {
         final status = await _requestStoragePermissions();
         storagePermissionGranted.value = status;
         if (!status) {
-          snackBar("Storage permission is required to download updates".tr);
+          snackBar(Get.context!.l10n.storagePermissionIsRequiredToDownload);
         }
       }
 
@@ -113,7 +114,7 @@ void showWelcomeDialogg(BuildContext context) {
         final status = await Permission.requestInstallPackages.request();
         installPermissionGranted.value = status.isGranted;
         if (!status.isGranted) {
-          snackBar("Install permission is required to update the app".tr);
+          snackBar(Get.context!.l10n.installPermissionIsRequiredToUpdate);
         }
       }
 
@@ -175,7 +176,7 @@ void showWelcomeDialogg(BuildContext context) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AnymeXText(
-                                'Welcome to AnymeX'.tr,
+                                context.l10n.welcomeToAnymex,
                                 style: TextStyle(
                                   fontFamily: 'Linotte',
                                   fontSize: 18,
@@ -184,7 +185,7 @@ void showWelcomeDialogg(BuildContext context) {
                               ),
                               const SizedBox(height: 2),
                               AnymeXText(
-                                'Set up your preferences for the best experience'.tr,
+                                context.l10n.setUpYourPreferencesForThe,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context.colors.onSurfaceVariant
@@ -205,9 +206,9 @@ void showWelcomeDialogg(BuildContext context) {
                         children: [
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedUserCheck01,
-                            title: 'Choose Service / Tracker'.tr,
+                            title: context.l10n.chooseServiceTracker,
                             subtitle:
-                                'Select AniList, MyAnimeList, Simkl, or Extensions mode'.tr,
+                                context.l10n.selectAnilistMyanimelistSimklOrExtensions,
                             onTap: () {
                               SettingsSheet().showServiceSelector(context);
                             },
@@ -215,9 +216,9 @@ void showWelcomeDialogg(BuildContext context) {
                           const SizedBox(height: 6),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedPuzzle,
-                            title: 'Extensions & Repositories'.tr,
+                            title: context.l10n.extensionsRepositories,
                             subtitle:
-                                'Manage sources and repositories to use the app to its full potential'.tr,
+                                context.l10n.manageSourcesAndRepositoriesToUse,
                             onTap: () {
                               navigate(() => const ExtensionScreen());
                             },
@@ -225,9 +226,9 @@ void showWelcomeDialogg(BuildContext context) {
                           const SizedBox(height: 6),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedDiscord,
-                            title: 'Join Discord Community'.tr,
+                            title: context.l10n.joinDiscordCommunity,
                             subtitle:
-                                'Propose new features, report bugs, and chat with other members'.tr,
+                                context.l10n.proposeNewFeaturesReportBugsAnd,
                             onTap: () async {
                               General.hasJoinedNewDiscord.set(true);
                               final url = Get.find<Settings>().discordUrl.value;
@@ -238,9 +239,9 @@ void showWelcomeDialogg(BuildContext context) {
                           const SizedBox(height: 6),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedTelegram,
-                            title: 'Join Telegram Channel'.tr,
+                            title: context.l10n.joinTelegramChannel,
                             subtitle:
-                                'Stay updated with the latest releases, announcements, and discussions'.tr,
+                                context.l10n.stayUpdatedWithTheLatestReleases,
                             onTap: () async {
                               final url = Get.find<Settings>().telegramUrl.value;
                               await launchUrl(Uri.parse(url),
@@ -251,9 +252,9 @@ void showWelcomeDialogg(BuildContext context) {
                           if (Platform.isAndroid) ...[
                             AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedFolderSecurity,
-                              title: "Storage Permission".tr,
+                              title: context.l10n.storagePermission,
                               subtitle:
-                                  "Allow storage access to download app & extension updates".tr,
+                                  context.l10n.allowStorageAccessToDownloadApp,
                               value: storagePermissionGranted.value,
                               onChanged: (val) {
                                 if (val) {
@@ -264,9 +265,9 @@ void showWelcomeDialogg(BuildContext context) {
                             const SizedBox(height: 6),
                             AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedDownload01,
-                              title: "Install Permission".tr,
+                              title: context.l10n.installPermission,
                               subtitle:
-                                  "Allow installing updates for extensions and app".tr,
+                                  context.l10n.allowInstallingUpdatesForExtensionsAnd,
                               value: installPermissionGranted.value,
                               onChanged: (val) {
                                 if (val) {
@@ -277,9 +278,9 @@ void showWelcomeDialogg(BuildContext context) {
                             const SizedBox(height: 6),
                             AnymeXTile(
                               icon: Icons.link_rounded,
-                              title: 'Open Supported Links'.tr,
+                              title: context.l10n.openSupportedLinks,
                               subtitle:
-                                  'Allow AnymeX to automatically open anime & manga web links'.tr,
+                                  context.l10n.allowAnymexToAutomaticallyOpenAnime,
                               onTap: () async {
                                 bool opened = false;
                                 try {
@@ -298,7 +299,7 @@ void showWelcomeDialogg(BuildContext context) {
 
                                 if (!opened) {
                                   snackBar(
-                                      "Couldn't open app settings. Open it manually.".tr);
+                                      Get.context!.l10n.couldntOpenAppSettingsOpenIt);
                                 }
                               },
                             ),
@@ -326,7 +327,7 @@ void showWelcomeDialogg(BuildContext context) {
                           Navigator.of(context).pop();
                         },
                         label: AnymeXText(
-                          'Get Started'.tr,
+                          context.l10n.getStarted,
                           style: TextStyle(
                             fontFamily: 'Linotte',
                             fontSize: 15,
@@ -362,10 +363,10 @@ void showDiscordJoinDialog(BuildContext context) {
           return PopScope(
             canPop: false,
             child: AnymeXDialog(
-              title: 'Discord Taken Down'.tr,
+              title: context.l10n.discordTakenDown,
               forceAction: true,
               showCancelButton: false,
-              confirmText: 'Okay'.tr,
+              confirmText: context.l10n.okay,
               isConfirmEnabled: isUnlocked,
               onConfirm: () {},
               contentWidget: Column(
@@ -404,7 +405,7 @@ void showDiscordJoinDialog(BuildContext context) {
                           Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           AnymeXText(
-                            'Join New Discord'.tr,
+                            context.l10n.joinNewDiscord,
                             color: Colors.white,
                             variant: TextVariant.bold,
                             size: 13,
@@ -436,7 +437,7 @@ void showDiscordJoinDialog(BuildContext context) {
                           Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           AnymeXText(
-                            'Join Telegram Channel'.tr,
+                            context.l10n.joinTelegramChannel,
                             color: Colors.white,
                             variant: TextVariant.bold,
                             size: 13,

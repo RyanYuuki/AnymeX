@@ -1,4 +1,5 @@
 // ignore_for_file: invalid_use_of_protected_member, prefer_const_constructors
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -146,7 +147,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   children: [
                     Row(
                       children: [
-                        AnymeXText("Episodes".tr,
+                        AnymeXText(context.l10n.episodes,
                             size: 20,
                             variant: TextVariant.semiBold)
                       ],
@@ -258,12 +259,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           AnymeXText(
-            'Scanning for video streams...'.tr,
+            context.l10n.scanningForVideoStreams,
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 8),
           AnymeXText(
-            'This may take up to 30 seconds'.tr,
+            context.l10n.thisMayTakeUpTo30,
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
@@ -276,12 +277,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
-        AnymeXText("Error Occured".tr,
+        AnymeXText(context.l10n.errorOccured,
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
-        AnymeXText("Server-chan is taking a nap!".tr,
+        AnymeXText(context.l10n.serverChanIsTakingANap,
           variant: TextVariant.semiBold,
           size: 18,
         ),
@@ -307,7 +308,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     return SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText("No servers available".tr,
+        child: AnymeXText(context.l10n.noServersAvailable,
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -326,7 +327,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             alignment: Alignment.center,
-            child: AnymeXText("Choose Server".tr,
+            child: AnymeXText(context.l10n.chooseServer,
               size: 18,
               variant: TextVariant.bold,
             ),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -91,7 +92,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    'Description'.tr,
+                    context.l10n.description,
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
@@ -150,7 +151,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No Description Available'.tr,
+              context.l10n.noDescriptionAvailable,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,

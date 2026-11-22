@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_popup_menu.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -813,7 +814,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 child: AnymeXPills(
                   items: [
                     PillItem(
-                      label: 'All Sources'.tr,
+                      label: context.l10n.allSources,
                       isSelected: _selectedSource == null,
                       onTap: () {
                         setState(() => _selectedSource = null);
@@ -862,7 +863,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 serviceHandler.serviceType.value == ServicesType.mal) ...[
               if (!General.hideAdultContent.get(true)) ...[
                 _buildToggleButton(
-                  label: 'Adult'.tr,
+                  label: context.l10n.adult,
                   isActive: isAdult,
                   onTap: () {
                     setState(() {
@@ -878,7 +879,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   serviceHandler.serviceType.value == ServicesType.anilist) ...[
                 _buildActionButton(
                   icon: Iconsax.eye,
-                  label: 'Image'.tr,
+                  label: context.l10n.image,
                   isActive: false,
                   onTap: () => navigate(() => const SauceFinderView()),
                 ),
@@ -902,7 +903,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final pills = <PillItem>[
       if (widget.source == null)
         PillItem(
-          label: '← All'.tr,
+          label: context.l10n.all2,
           isSelected: false,
           onTap: () {
             setState(() {
@@ -918,7 +919,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasPopular)
         PillItem(
-          label: 'Popular'.tr,
+          label: context.l10n.popular,
           isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
           onTap: () {
             _searchController.clear();
@@ -931,7 +932,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasLatest)
         PillItem(
-          label: 'Latest'.tr,
+          label: context.l10n.latest,
           isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
           onTap: () {
             _searchController.clear();
@@ -944,7 +945,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasFilters)
         PillItem(
-          label: 'Filter'.tr,
+          label: context.l10n.filter,
           icon: Icons.tune_rounded,
           isSelected: hasActiveFilters,
           onTap: _showExtensionFilterSheet,
@@ -961,7 +962,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
                   navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
                 } else {
-                  snackBar('Base URL not available for this source'.tr);
+                  snackBar(context.l10n.baseUrlNotAvailableForThis);
                 }
               }
             }),
@@ -1343,7 +1344,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'Searching...'.tr,
+            context.l10n.searching,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context)
                       .colorScheme
@@ -1741,13 +1742,13 @@ class _MoreOptionsPillContent extends StatelessWidget {
           items: [
             AnymeXMenuItem<String>(
               value: 'settings',
-              title: 'Extension Settings'.tr,
+              title: context.l10n.extensionSettings,
               leadingIcon: Icons.settings_outlined,
               onTap: () => onTap('settings'),
             ),
             AnymeXMenuItem<String>(
               value: 'webview',
-              title: 'Open Webview'.tr,
+              title: context.l10n.openWebview,
               leadingIcon: Icons.public_rounded,
               onTap: () => onTap('webview'),
             ),

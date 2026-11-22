@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
@@ -30,8 +31,8 @@ class _TrackingDialogState extends State<TrackingDialog> {
     final colors = context.colors;
 
     return AnymeXDialog(
-      confirmText: 'Track'.tr,
-      cancelText: 'Not now'.tr,
+      confirmText: context.l10n.track,
+      cancelText: context.l10n.notNow,
       confirmResultGetter: () {
         if (_rememberChoice && widget.dbId != null) {
           DynamicKeys.trackingPermission.set<bool>(widget.dbId!, true);
@@ -61,7 +62,7 @@ class _TrackingDialogState extends State<TrackingDialog> {
             ),
           ),
           const SizedBox(height: 16),
-          AnymeXText('Track your progress?'.tr,
+          AnymeXText(context.l10n.trackYourProgress,
             size: 18,
             variant: TextVariant.bold,
             textAlign: TextAlign.center,
@@ -77,7 +78,7 @@ class _TrackingDialogState extends State<TrackingDialog> {
           const SizedBox(height: 12),
           if (widget.dbId != null)
             AnymeXTile.checkbox(
-              title: 'Remember my choice'.tr,
+              title: context.l10n.rememberMyChoice,
               value: _rememberChoice,
               onChanged: (val) {
                 setState(() {

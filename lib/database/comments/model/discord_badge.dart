@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +62,7 @@ class DiscordBadge {
   static DiscordBadge get opBadge => DiscordBadge(
     id: 'op',
     name: 'Original Poster',
-    description: 'The creator of this comment discussion thread.'.tr,
+    description: Get.context!.l10n.theCreatorOfThisCommentDiscussion,
     iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/special/original-poster.svg',
     isSvg: true,
     badgeColor: Color(0xFF5865F2),
@@ -75,7 +76,7 @@ class DiscordBadge {
         return DiscordBadge(
           id: 'owner',
           name: 'Commentum Owner',
-          description: 'Owner and creator of the Commentum community platform.'.tr,
+          description: Get.context!.l10n.ownerAndCreatorOfTheCommentum,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
           isSvg: true,
           badgeColor: Color(0xFFFFD700),
@@ -86,7 +87,7 @@ class DiscordBadge {
         return DiscordBadge(
           id: 'app_owner',
           name: 'App Creator',
-          description: 'Creator and developer of AnymeX.'.tr,
+          description: Get.context!.l10n.creatorAndDeveloperOfAnymex,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
           isSvg: true,
           badgeColor: Color(0xFFFFD700),
@@ -97,7 +98,7 @@ class DiscordBadge {
         return DiscordBadge(
           id: 'super_admin',
           name: 'Super Administrator',
-          description: 'Super Administrator with system-wide management authority.'.tr,
+          description: Get.context!.l10n.superAdministratorWithSystemWideManagement,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
           isSvg: true,
           badgeColor: Color(0xFF5865F2),
@@ -107,7 +108,7 @@ class DiscordBadge {
         return DiscordBadge(
           id: 'admin',
           name: 'Administrator',
-          description: 'Community administrator overseeing moderation and policies.'.tr,
+          description: Get.context!.l10n.communityAdministratorOverseeingModerationAndPolicies,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
           isSvg: true,
           badgeColor: Color(0xFFED4245),
@@ -117,7 +118,7 @@ class DiscordBadge {
         return DiscordBadge(
           id: 'moderator',
           name: 'Moderator',
-          description: 'Verified moderator keeping comments respectful and safe.'.tr,
+          description: Get.context!.l10n.verifiedModeratorKeepingCommentsRespectfulAnd,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-mod.svg',
           isSvg: true,
           badgeColor: Color(0xFF57F287),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
@@ -74,7 +75,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: AnymeXText('Please login first'.tr),
+          content: AnymeXText(context.l10n.pleaseLoginFirst),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -113,7 +114,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: AnymeXText('Please login first'.tr),
+          content: AnymeXText(context.l10n.pleaseLoginFirst),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -141,18 +142,18 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
-        title: AnymeXText('Delete Reply'.tr),
+        title: AnymeXText(context.l10n.deleteReply),
         content:
-            AnymeXText('Are you sure you want to delete this reply?'.tr),
+            AnymeXText(context.l10n.areYouSureYouWantToDeleteThisReply),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AnymeXText('Cancel'.tr,
+            child: AnymeXText(context.l10n.cancel,
                 style: TextStyle(color: context.theme.colorScheme.primary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: AnymeXText('Delete'.tr,
+            child: AnymeXText(context.l10n.delete,
                 style: TextStyle(color: context.theme.colorScheme.error)),
           ),
         ],
@@ -211,9 +212,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       onWillPop: () => confirmDiscardComposer(
         context,
         composerKey: _composerKey,
-        discardTitle: 'Discard reply?'.tr,
+        discardTitle: context.l10n.discardReply,
         discardMessage:
-            'You have unsent text. Closing now will lose your reply.'.tr,
+            context.l10n.youHaveUnsentTextClosingNowWill,
       ),
       child: Padding(
         padding:
@@ -253,9 +254,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             final discard = await confirmDiscardComposer(
                               context,
                               composerKey: _composerKey,
-                              discardTitle: 'Discard reply?'.tr,
+                              discardTitle: context.l10n.discardReply,
                               discardMessage:
-                                  'You have unsent text. Closing now will lose your reply.'.tr,
+                                  context.l10n.youHaveUnsentTextClosingNowWill,
                             );
                             if (discard && context.mounted) {
                               Navigator.pop(context);
@@ -289,7 +290,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               padding: EdgeInsets.all(32.0),
                               child: Center(
                                 child:
-                                    AnymeXText("No replies yet. Be the first!".tr),
+                                    AnymeXText(context.l10n.noRepliesYetBeTheFirst),
                               ),
                             )
                           else
@@ -560,7 +561,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                         const Icon(Icons.favorite, color: Colors.red, size: 20),
                         const SizedBox(width: 8),
                         AnymeXText(
-                          'Liked by'.tr,
+                          context.l10n.likedBy,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

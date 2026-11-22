@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
@@ -222,8 +223,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
               isVisible: _isAppBarVisibleExternally,
               scrollController: _scrollController,
               headerContent: Header(
-                title: 'Stats'.tr,
-                subtitle: 'Your watch & read statistics'.tr,
+                title: context.l10n.stats,
+                subtitle: context.l10n.yourWatchReadStatistics,
                 bottom: isLegacy ? _buildStatsModeChips(context) : null,
               ),
               visibleStatusBarStyle: SystemUiOverlayStyle(
@@ -302,7 +303,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     );
 
     final daysCard = _buildSmallInfoCard(
-      title: 'DAYS ACTIVE'.tr,
+      title: context.l10n.daysActive,
       value: controller.totalDaysActive.toFormattedNumber(),
       icon: IconlyLight.calendar,
     );
@@ -353,7 +354,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Otaku Rank Level'.tr,
+                        context.l10n.otakuRankLevel,
                         size: 10,
                         color: context.colors.onSurfaceVariant.withOpacity(0.5),
                       ),
@@ -382,7 +383,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Level Progress'.tr,
+                context.l10n.levelProgress,
                 size: 11,
                 variant: TextVariant.semiBold,
                 color: context.colors.onSurfaceVariant.withOpacity(0.8),
@@ -418,7 +419,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       children: [
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Avg Episodes'.tr,
+            title: context.l10n.avgEpisodes,
             value: '${controller.averageEpisodesPerDay.toStringAsFixed(1)}/day',
             icon: Icons.play_circle_outline_rounded,
           ),
@@ -426,7 +427,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(width: 8),
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Avg Chapters'.tr,
+            title: context.l10n.avgChapters,
             value: '${controller.averageChaptersPerDay.toStringAsFixed(1)}/day',
             icon: Icons.chrome_reader_mode_outlined,
           ),
@@ -434,7 +435,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(width: 8),
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Streak (Cur/Long)'.tr,
+            title: context.l10n.streakCurLong,
             value: '${currentStreak}d / ${longestStreak}d',
             icon: Icons.local_fire_department_rounded,
           ),
@@ -475,7 +476,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Favorite Title'.tr,
+            context.l10n.favoriteTitle,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -650,7 +651,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Activity Heatmap'.tr,
+            context.l10n.activityHeatmap,
             size: 14,
             variant: TextVariant.bold,
           ),
@@ -848,7 +849,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
               ),
               if (watchMins + readMins == 0)
                 AnymeXText(
-                  'No activity'.tr,
+                  context.l10n.noActivity,
                   size: 11,
                   color: context.colors.onSurfaceVariant.withOpacity(0.5),
                 )
@@ -901,7 +902,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Frequently Revisited'.tr,
+            context.l10n.frequentlyRevisited,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -920,7 +921,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   ),
                   const SizedBox(height: 8),
                   AnymeXText(
-                    'No logged stats yet. Start watching/reading!'.tr,
+                    context.l10n.noLoggedStatsYetStartWatching,
                     size: 12,
                     color: context.colors.onSurfaceVariant.withOpacity(0.4),
                   ),
@@ -1048,7 +1049,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Detailed Insights'.tr,
+            context.l10n.detailedInsights,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -1061,7 +1062,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             padding: const EdgeInsets.all(24),
             child: Center(
               child: AnymeXText(
-                'No insights available yet. Add items to your library!'.tr,
+                context.l10n.noInsightsAvailableYetAddItems,
                 size: 12,
                 color: context.colors.onSurfaceVariant.withOpacity(0.4),
               ),
@@ -1071,7 +1072,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (genres.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Top Genres'.tr,
+              title: context.l10n.topGenres,
               icon: Icons.category_outlined,
               data: genres.entries.take(5).toList(),
             ),
@@ -1080,7 +1081,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (showStudios && studios.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Top Studios'.tr,
+              title: context.l10n.topStudios,
               icon: Icons.movie_creation_outlined,
               data: studios.entries.take(5).toList(),
             ),
@@ -1089,7 +1090,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (formats.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Media Type Breakdown'.tr,
+              title: context.l10n.mediaTypeBreakdown,
               icon: Icons.grid_view_rounded,
               data: formats.entries.toList(),
             ),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
@@ -43,7 +44,7 @@ class NoSourceSelectedWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          AnymeXText('No Source Installed'.tr,
+          AnymeXText(context.l10n.noSourceInstalled,
             variant: TextVariant.bold,
             size: 16,
             textAlign: TextAlign.center,

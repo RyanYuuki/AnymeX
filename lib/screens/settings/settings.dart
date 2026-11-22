@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/screens/settings/registry/settings_labels.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/settings/registry/settings_model.dart';
 import 'package:anymex/screens/settings/registry/settings_registry.dart';
@@ -15,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:get/get.dart';
-import 'package:anymex/l10n/locale_keys.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -67,10 +68,10 @@ class _SettingsPageState extends State<SettingsPage> {
     return AnymeXScaffold(
       resizeToAvoidBottomInset: false,
       showHeader: true,
-      headerTitle: LocaleKeys.labelSettings.tr,
+      headerTitle: context.l10n.labelSettings,
       headerEnableSearch: true,
       headerSearchController: _search.textController,
-      headerSearchHint: LocaleKeys.settingsSearchHint.tr,
+      headerSearchHint: context.l10n.settingsSearchHint,
       onHeaderSearchChanged: (value) => setState(() {}),
       onHeaderSearchClear: () => setState(() {}),
       body: Builder(
@@ -115,13 +116,13 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No search results'.tr,
+              context.l10n.noSearchResults,
               size: 16,
               color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
             ),
             const SizedBox(height: 6),
             AnymeXText(
-              'Try a different keyword'.tr,
+              context.l10n.tryADifferentKeyword,
               size: 13,
               color: context.colors.onSurface.opaque(0.3, iReallyMeanIt: true),
             ),
@@ -142,12 +143,12 @@ class _SettingsPageState extends State<SettingsPage> {
         final items = _searchResults[category]!;
 
         return AnymeXSectionBuilder(
-          title: category.tr,
+          title: settingsLabel(context.l10n, category),
           children: items
               .map((item) => AnymeXTile(
                     leading: _buildSearchLeading(context, item),
-                    title: item.title.tr,
-                    subtitle: (item.section ?? category).tr,
+                    title: settingsLabel(context.l10n, item.title),
+                    subtitle: settingsLabel(context.l10n, item.section ?? category),
                     onTap: () async {
                       final builder = SettingsRegistry.categoryRoutes[category];
                       if (builder != null) {
@@ -174,21 +175,21 @@ class _SettingsPageState extends State<SettingsPage> {
         SizedBox(height: headerHeight),
         for (final entry in groups.entries)
           AnymeXSectionBuilder(
-            title: entry.key.tr,
+            title: settingsLabel(context.l10n, entry.key),
             children: [
               for (final cat in entry.value)
                 _buildTile(
                   icon: cat.icon,
-                  title: cat.title.tr,
-                  description: cat.description.tr,
+                  title: settingsLabel(context.l10n, cat.title),
+                  description: settingsLabel(context.l10n, cat.description),
                   destination: cat.destination,
                 ),
               if (entry.key == 'About & Support')
                 Builder(
                   builder: (tileContext) => _buildTile(
                     icon: HugeIcons.strokeRoundedBug01,
-                    title: 'Test'.tr,
-                    description: 'Debug stuffs'.tr,
+                    title: context.l10n.test,
+                    description: context.l10n.debugStuffs,
                     customTap: () async {
                       final file = await rootBundle.loadString('.env');
                       print('ENV FILE CONTENTS:\n$file');

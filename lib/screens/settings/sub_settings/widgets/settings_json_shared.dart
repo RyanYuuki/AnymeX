@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 
@@ -130,18 +131,18 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: AnymeXText('Remove Theme'.tr),
+            title: AnymeXText(context.l10n.removeTheme),
             icon: const Icon(Icons.delete_forever_rounded),
             content: AnymeXText('Remove "$id"? This cannot be undone.'),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: AnymeXText('Cancel'.tr)),
+                  child: AnymeXText(context.l10n.cancel)),
               FilledButton.tonal(
                 style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(ctx).colorScheme.errorContainer),
                 onPressed: () => Navigator.pop(ctx, true),
-                child: AnymeXText('Remove'.tr,
+                child: AnymeXText(context.l10n.remove,
                     style: TextStyle(
                         color: Theme.of(ctx).colorScheme.onErrorContainer)),
               ),
@@ -192,10 +193,10 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymeXText('Player Themes'.tr,
+                  AnymeXText(context.l10n.playerThemes,
                       style: tt.titleMedium
                           ?.copyWith(fontWeight: FontWeight.w700)),
-                  AnymeXText('Import & manage custom JSON themes'.tr,
+                  AnymeXText(context.l10n.importManageCustomJsonThemes,
                       style: tt.bodySmall?.copyWith(
                           color: context.colors.onSurfaceVariant)),
                 ],
@@ -233,7 +234,7 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
         Row(
           children: [
             AnymeXText(
-              'Installed Themes'.tr,
+              context.l10n.installedThemes,
               style: tt.labelMedium
                   ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
@@ -333,7 +334,7 @@ class _ImportActionsRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16)),
             ),
             icon: const Icon(Icons.link_rounded, size: 18),
-            label: AnymeXText('From URL'.tr),
+            label: AnymeXText(context.l10n.fromUrl),
           ),
         ),
       ],
@@ -462,7 +463,7 @@ class _ThemeCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onDelete,
-                tooltip: 'Remove'.tr,
+                tooltip: context.l10n.remove,
                 icon: Icon(Icons.delete_outline_rounded,
                     size: 20,
                     color: context.colors.error.withValues(alpha: 0.8)),
@@ -501,7 +502,7 @@ class _EmptyState extends StatelessWidget {
                 size: 32, color: context.colors.onSurfaceVariant),
           ),
           const SizedBox(height: 16),
-          AnymeXText('No themes yet'.tr,
+          AnymeXText(context.l10n.noThemesYet,
               style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           AnymeXText(
@@ -524,7 +525,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
     context: context,
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setState) => AlertDialog(
-        title: AnymeXText('Import from URL'.tr),
+        title: AnymeXText(context.l10n.importFromUrl),
         icon: const Icon(Icons.link_rounded),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -554,7 +555,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: AnymeXText('Cancel'.tr)),
+              onPressed: () => Navigator.pop(ctx), child: AnymeXText(context.l10n.cancel)),
           FilledButton(
             onPressed: () {
               final v = controller.text.trim();
@@ -564,7 +565,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
               }
               Navigator.pop(ctx, v);
             },
-            child: AnymeXText('Import'.tr),
+            child: AnymeXText(context.l10n.importLabel2),
           ),
         ],
       ),

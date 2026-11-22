@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/services/ad_support_service.dart';
@@ -39,10 +40,10 @@ class _SettingsDonationState extends State<SettingsDonation> {
       final launched =
           await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!launched) {
-        snackBar('Could not open link'.tr);
+        snackBar(Get.context!.l10n.couldNotOpenLink);
       }
     } catch (_) {
-      snackBar('Could not open link'.tr);
+      snackBar(Get.context!.l10n.couldNotOpenLink);
     }
   }
 
@@ -86,12 +87,12 @@ class _SettingsDonationState extends State<SettingsDonation> {
 
   void _showIosUpiPicker(BuildContext context) {
     AnymeXDialog(
-      title: 'Choose UPI App'.tr,
+      title: context.l10n.chooseUpiApp,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildUpiAppItem(
-            title: 'Google Pay'.tr,
+            title: context.l10n.googlePay,
             icon: Icons.account_balance_wallet_rounded,
             onTap: () {
               Get.back();
@@ -102,7 +103,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 8),
           _buildUpiAppItem(
-            title: 'PhonePe'.tr,
+            title: context.l10n.phonepe,
             icon: Icons.account_balance_wallet_rounded,
             onTap: () {
               Get.back();
@@ -113,7 +114,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 8),
           _buildUpiAppItem(
-            title: 'Paytm'.tr,
+            title: context.l10n.paytm,
             icon: Icons.account_balance_wallet_rounded,
             onTap: () {
               Get.back();
@@ -124,7 +125,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 8),
           _buildUpiAppItem(
-            title: 'BHIM UPI'.tr,
+            title: context.l10n.bhimUpi,
             icon: Icons.account_balance_wallet_rounded,
             onTap: () {
               Get.back();
@@ -145,7 +146,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
         ],
       ),
       showCancelButton: false,
-      confirmText: 'Close'.tr,
+      confirmText: context.l10n.close,
       onConfirm: () {},
     ).show(context);
   }
@@ -208,14 +209,14 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 14),
           AnymeXText(
-            'Support AnymeX'.tr,
+            context.l10n.supportAnymex,
             variant: TextVariant.bold,
             size: 20,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            'AnymeX is 100% free, open-source, and ad-free. your support helps keep me motivated to continuously maintain and improve the app!'.tr,
+            context.l10n.anymexIs100FreeOpenSourceAnd,
             variant: TextVariant.regular,
             size: 13,
             color: colors.onSurfaceVariant,
@@ -230,7 +231,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
   Widget _buildAdSupportSection(BuildContext context) {
     final colors = context.colors;
     return AnymeXSectionBuilder(
-      title: 'Free Support'.tr,
+      title: context.l10n.freeSupport,
       children: [
         AnymeXContainer(
           width: double.infinity,
@@ -265,7 +266,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Watch an Ad to Support'.tr,
+                          context.l10n.watchAnAdToSupport,
                           variant: TextVariant.bold,
                           size: 15,
                         ),
@@ -351,7 +352,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                           ),
                           const SizedBox(width: 4),
                           AnymeXText(
-                            'Watch Ad'.tr,
+                            context.l10n.watchAd,
                             variant: TextVariant.bold,
                             size: 13,
                             color: colors.onPrimary,
@@ -373,7 +374,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Donate & Support'.tr,
+      headerTitle: context.l10n.donateSupport,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -390,18 +391,18 @@ class _SettingsDonationState extends State<SettingsDonation> {
               _buildAdSupportSection(context),
               const SizedBox(height: 20),
               AnymeXSectionBuilder(
-                title: 'India (UPI)'.tr,
+                title: context.l10n.indiaUpi,
                 children: [
                   AnymeXTile(
                     icon: Icons.account_balance_wallet_rounded,
-                    title: 'Pay via any UPI App'.tr,
+                    title: context.l10n.payViaAnyUpiApp,
                     subtitle: '$_upiId • Tap to launch GPay, PhonePe, Paytm, etc.',
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _handleUpiTap(context),
                   ),
                   AnymeXTile(
                     icon: Icons.copy_rounded,
-                    title: 'Copy UPI ID'.tr,
+                    title: context.l10n.copyUpiId,
                     subtitle: _upiId,
                     trailing: Container(
                       padding: const EdgeInsets.symmetric(
@@ -413,7 +414,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AnymeXText(
-                        'Copy'.tr,
+                        context.l10n.copy,
                         size: 12,
                         variant: TextVariant.bold,
                         color: context.colors.primary,
@@ -423,27 +424,27 @@ class _SettingsDonationState extends State<SettingsDonation> {
                   ),
                   AnymeXTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'Supported UPI Apps'.tr,
+                    title: context.l10n.supportedUpiApps,
                     subtitle:
-                        'Compatible with Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay, and all UPI banking apps.'.tr,
+                        context.l10n.compatibleWithGooglePayPhonepePaytm,
                     showChevron: false,
                   ),
                 ],
               ),
               const SizedBox(height: 20),
               AnymeXSectionBuilder(
-                title: 'International'.tr,
+                title: context.l10n.international,
                 children: [
                   AnymeXTile(
                     icon: Icons.payment_rounded,
-                    title: 'Donate via PayPal'.tr,
-                    subtitle: 'paypal.me/reyyuuki • Cards & PayPal Balance'.tr,
+                    title: context.l10n.donateViaPaypal,
+                    subtitle: context.l10n.paypalMeReyyuukiCardsPaypalBalance,
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _openUrl(_paypalUrl),
                   ),
                   AnymeXTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'PayPal Recipient Notice'.tr,
+                    title: context.l10n.paypalRecipientNotice,
                     subtitle:
                         'The name on PayPal may display as Rey Yuuki (friend\'s account), but all contributions directly support AnymeX.',
                     showChevron: false,
@@ -452,12 +453,12 @@ class _SettingsDonationState extends State<SettingsDonation> {
               ),
               const SizedBox(height: 20),
               AnymeXSectionBuilder(
-                title: 'Other Ways to Support'.tr,
+                title: context.l10n.otherWaysToSupport,
                 children: [
                   AnymeXTile(
                     icon: HugeIcons.strokeRoundedGithub,
-                    title: 'Star on GitHub'.tr,
-                    subtitle: 'github.com/RyanYuuki/AnymeX • Show your love'.tr,
+                    title: context.l10n.starOnGithub,
+                    subtitle: context.l10n.githubComRyanyuukiAnymexShowYour,
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _openUrl(_githubUrl),
                   ),

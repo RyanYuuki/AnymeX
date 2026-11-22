@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:math' show min;
 
@@ -151,7 +152,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             height: buttonHeight,
                             tagIcon: Icons.movie_filter_outlined,
                             subText: '${anilistAuth.animeList.length} items',
-                            buttonText: "ANIME LIST".tr,
+                            buttonText: context.l10n.animeList,
                             backgroundImage: animeButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () => navigate(() => AnimeList(data: anilistAuth.animeList.removeDupes())),
@@ -166,7 +167,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             height: buttonHeight,
                             tagIcon: Icons.book_outlined,
                             subText: '${anilistAuth.mangaList.length} items',
-                            buttonText: "MANGA LIST".tr,
+                            buttonText: context.l10n.mangaList,
                             backgroundImage: mangaButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () =>
@@ -186,7 +187,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     child: ImageButton(
                       height: buttonHeight,
                       subText: 'Calendar, AI Picks and more',
-                      buttonText: "OTHER".tr,
+                      buttonText: context.l10n.otherUpper,
                       borderRadius: 16.multiplyRadius(),
                       backgroundImage: otherButtonMedia?.cover ?? '',
                       onPressed: () =>
@@ -248,7 +249,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     ? recAnimes.where((e) => !ids.contains(e.id)).toList()
                     : recAnimes;
                 return ReusableCarousel(
-                  title: "Recommended Anime".tr,
+                  title: context.l10n.recommendedAnime,
                   data: data,
                   type: ItemType.anime,
                 );
@@ -262,7 +263,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     ? recMangas.where((e) => !ids.contains(e.id)).toList()
                     : recMangas;
                 return ReusableCarousel(
-                  title: "Recommended Manga".tr,
+                  title: context.l10n.recommendedManga,
                   data: data,
                   type: ItemType.manga,
                 );

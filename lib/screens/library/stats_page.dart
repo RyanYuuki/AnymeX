@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -16,7 +17,7 @@ class StatisticsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: AnymeXText('Library Statistics'.tr),
+        title: AnymeXText(context.l10n.libraryStatistics),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
@@ -26,7 +27,7 @@ class StatisticsPage extends StatelessWidget {
           children: [
             // Anime Library Section
             AnymeXText(
-              'Anime Library'.tr,
+              context.l10n.animeLibrary,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -45,7 +46,7 @@ class StatisticsPage extends StatelessWidget {
 
             // Manga Library Section
             AnymeXText(
-              'Manga Library'.tr,
+              context.l10n.mangaLibrary,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -64,7 +65,7 @@ class StatisticsPage extends StatelessWidget {
 
             // Novel Library Section
             AnymeXText(
-              'Novel Library'.tr,
+              context.l10n.novelLibrary,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -83,7 +84,7 @@ class StatisticsPage extends StatelessWidget {
 
             // Anime Custom Lists Section
             AnymeXText(
-              'Anime Custom Lists'.tr,
+              context.l10n.animeCustomLists,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -101,7 +102,7 @@ class StatisticsPage extends StatelessWidget {
 
             // Manga Custom Lists Section
             AnymeXText(
-              'Manga Custom Lists'.tr,
+              context.l10n.mangaCustomLists,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -119,7 +120,7 @@ class StatisticsPage extends StatelessWidget {
 
             // Novel Custom Lists Section
             AnymeXText(
-              'Novel Custom Lists'.tr,
+              context.l10n.novelCustomLists,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -151,7 +152,7 @@ class StatisticsPage extends StatelessWidget {
         const SizedBox(height: 8),
         library.isEmpty
             ? AnymeXText(
-                'No items in this library.'.tr,
+                context.l10n.noItemsInThisLibrary,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
@@ -198,7 +199,7 @@ class StatisticsPage extends StatelessWidget {
         const SizedBox(height: 8),
         customLists.isEmpty
             ? AnymeXText(
-                'No custom lists available.'.tr,
+                context.l10n.noCustomListsAvailable,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
@@ -224,7 +225,7 @@ class StatisticsPage extends StatelessWidget {
                               ? [
                                   Padding(
                                     padding: EdgeInsets.all(16.0),
-                                    child: AnymeXText('No media in this list.'.tr),
+                                    child: AnymeXText(context.l10n.noMediaInThisList),
                                   )
                                 ]
                               : listData.map((media) {

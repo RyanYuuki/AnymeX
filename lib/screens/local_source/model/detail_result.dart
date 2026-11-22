@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 
@@ -35,11 +36,11 @@ class DetailResult {
                       'year': year,
                     }),
                     poster: 'https://image.tmdb.org/t/p/w500$posterPath',
-                    title: 'Movie'.tr,
+                    title: Get.context!.l10n.movie,
                   )
                 ],
                 id: '',
-                title: 'Movie'.tr,
+                title: Get.context!.l10n.movie,
                 poster: 'https://image.tmdb.org/t/p/w500$backdropPath',
               ),
             ],

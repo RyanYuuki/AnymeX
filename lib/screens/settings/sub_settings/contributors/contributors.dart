@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 
 import 'package:anymex/screens/other_features.dart';
@@ -905,7 +906,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
           () => CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                  child: NestedHeader(title: 'Contributors'.tr)),
+                  child: NestedHeader(title: context.l10n.contributors)),
               if (isLoading.value)
                 const SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator()),
@@ -921,12 +922,12 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 )
               else if (coreTeam.isEmpty && communityContributors.isEmpty)
                 SliverFillRemaining(
-                  child: Center(child: AnymeXText('No contributors found.'.tr)),
+                  child: Center(child: AnymeXText(context.l10n.noContributorsFound)),
                 )
               else ...[
                 _buildFeaturedSection(
                   context,
-                  title: 'Core Team'.tr,
+                  title: context.l10n.coreTeam,
                   contributors: coreTeam,
                 ),
                 _buildSectionHeader(context, 'Community Contributors'),

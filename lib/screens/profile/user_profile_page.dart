@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -288,7 +289,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: AnymeXText('Activity refreshed'.tr),
+        content: AnymeXText(context.l10n.activityRefreshed),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -307,25 +308,25 @@ class _UserProfilePageState extends State<UserProfilePage>
         NavItem(
           selectedIcon: IconlyBold.home,
           unselectedIcon: IconlyLight.home,
-          label: 'Overview'.tr,
+          label: context.l10n.overview,
           onTap: (i) => setState(() => _selectedTab = 0),
         ),
         NavItem(
           selectedIcon: Icons.forum_rounded,
           unselectedIcon: Icons.forum_outlined,
-          label: 'Activity'.tr,
+          label: context.l10n.activity,
           onTap: (i) => setState(() => _selectedTab = 1),
         ),
         NavItem(
           selectedIcon: IconlyBold.chart,
           unselectedIcon: IconlyLight.chart,
-          label: 'Stats'.tr,
+          label: context.l10n.stats,
           onTap: (i) => setState(() => _selectedTab = 2),
         ),
         NavItem(
           selectedIcon: IconlyBold.user3,
           unselectedIcon: IconlyLight.user2,
-          label: 'Social'.tr,
+          label: context.l10n.social,
           onTap: (i) => setState(() => _selectedTab = 3),
         ),
       ];
@@ -339,7 +340,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: AnymeXText(
-            'Failed to load profile — account may be private or not found'.tr,
+            context.l10n.failedToLoadProfileAccountMay,
             textAlign: TextAlign.center,
           ),
         ),
@@ -384,7 +385,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                         children: [
                           Expanded(
                             child: HighlightCard(
-                              label: 'Anime'.tr,
+                              label: context.l10n.anime,
                               value: user.stats?.animeStats?.animeCount
                                       ?.toString() ??
                                   '0',
@@ -398,7 +399,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                           const SizedBox(width: 10),
                           Expanded(
                             child: HighlightCard(
-                              label: 'Manga'.tr,
+                              label: context.l10n.manga,
                               value: user.stats?.mangaStats?.mangaCount
                                       ?.toString() ??
                                   '0',
@@ -702,7 +703,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SectionHeader(
-              title: "Recent Activity".tr, icon: Icons.forum_outlined),
+              title: context.l10n.recentActivity, icon: Icons.forum_outlined),
           Row(
             children: [
               if (!isOwner)
@@ -712,7 +713,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: AnymeXText('Please login first'.tr),
+                          content: AnymeXText(context.l10n.pleaseLoginFirst),
                           duration: Duration(milliseconds: 1500),
                         ),
                       );
@@ -720,7 +721,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                     }
                     _showCreateMessageSheet(context);
                   },
-                  tooltip: "Message Friend".tr,
+                  tooltip: context.l10n.messageFriend,
                   style: IconButton.styleFrom(
                     backgroundColor: context.theme.colorScheme.primaryContainer,
                     foregroundColor: context.theme.colorScheme.primary,
@@ -730,7 +731,7 @@ class _UserProfilePageState extends State<UserProfilePage>
               IconButton(
                 icon: const Icon(IconlyLight.filter),
                 onPressed: () => _showFilterSheet(context),
-                tooltip: "Filter Activities".tr,
+                tooltip: context.l10n.filterActivities,
               ),
             ],
           ),
@@ -750,8 +751,8 @@ class _UserProfilePageState extends State<UserProfilePage>
                   const SizedBox(height: 12),
                   header,
                   PlaceholderTab(
-                      title: 'Activity'.tr,
-                      subtitle: 'No recent activity found for selected filters'.tr,
+                      title: context.l10n.activity,
+                      subtitle: context.l10n.noRecentActivityFoundForSelected,
                       icon: IconlyLight.activity),
                 ],
               ),
@@ -864,7 +865,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: AnymeXText(
-                          'No more activities'.tr,
+                          context.l10n.noMoreActivities,
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
@@ -899,7 +900,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: AnymeXText('Activity deleted'.tr),
+        content: AnymeXText(context.l10n.activityDeleted),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -957,7 +958,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
             child: SectionHeader(
-                title: "Activity".tr, icon: IconlyLight.activity),
+                title: context.l10n.activity, icon: IconlyLight.activity),
           ),
           const SizedBox(height: 10),
           Padding(
@@ -973,7 +974,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                   ? EdgeInsets.symmetric(horizontal: isDesktop ? 20.0 : 26.0)
                   : EdgeInsets.zero,
               child: buildListStatusCard(context,
-                  title: "ANIME LIST".tr,
+                  title: context.l10n.animeList,
                   statuses: _animeStatuses,
                   userId: int.tryParse(user.id?.toString() ?? '0') ?? 0,
                   userName: user.name ?? "User",
@@ -987,7 +988,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                   ? EdgeInsets.symmetric(horizontal: isDesktop ? 20.0 : 26.0)
                   : EdgeInsets.zero,
               child: buildListStatusCard(context,
-                  title: "MANGA LIST".tr,
+                  title: context.l10n.mangaList,
                   statuses: _mangaStatuses,
                   userId: int.tryParse(user.id?.toString() ?? '0') ?? 0,
                   userName: user.name ?? "User",
@@ -1064,7 +1065,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         const SizedBox(height: 12),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: SectionHeader(title: "Stats".tr, icon: IconlyLight.chart),
+          child: SectionHeader(title: context.l10n.stats, icon: IconlyLight.chart),
         ),
         const SizedBox(height: 8),
         Padding(
@@ -1082,7 +1083,7 @@ class _UserProfilePageState extends State<UserProfilePage>
             child: Column(
               children: [
                 StatRow(
-                    label: "Episodes Watched".tr,
+                    label: context.l10n.episodesWatched,
                     value:
                         user.stats?.animeStats?.episodesWatched?.toString() ??
                             '0',
@@ -1090,21 +1091,21 @@ class _UserProfilePageState extends State<UserProfilePage>
                     compact: true),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
-                    label: "Minutes Watched".tr,
+                    label: context.l10n.minutesWatched,
                     value: user.stats?.animeStats?.minutesWatched?.toString() ??
                         '0',
                     icon: IconlyLight.timeCircle,
                     compact: true),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
-                    label: "Chapters Read".tr,
+                    label: context.l10n.chaptersRead,
                     value:
                         user.stats?.mangaStats?.chaptersRead?.toString() ?? '0',
                     icon: IconlyLight.paper,
                     compact: true),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
-                    label: "Volumes Read".tr,
+                    label: context.l10n.volumesRead,
                     value:
                         user.stats?.mangaStats?.volumesRead?.toString() ?? '0',
                     icon: IconlyLight.bookmark,
@@ -1120,14 +1121,14 @@ class _UserProfilePageState extends State<UserProfilePage>
             children: [
               Expanded(
                   child: ScoreCard(
-                      label: "Anime Score".tr,
+                      label: context.l10n.animeScore,
                       value:
                           user.stats?.animeStats?.meanScore?.toString() ?? '0',
                       compact: true)),
               const SizedBox(width: 8),
               Expanded(
                   child: ScoreCard(
-                      label: "Manga Score".tr,
+                      label: context.l10n.mangaScore,
                       value:
                           user.stats?.mangaStats?.meanScore?.toString() ?? '0',
                       compact: true)),
@@ -1223,9 +1224,9 @@ class _UserProfilePageState extends State<UserProfilePage>
           onWillPop: () => confirmDiscardComposer(
             context,
             composerKey: composerKey,
-            discardTitle: 'Discard message?'.tr,
+            discardTitle: context.l10n.discardMessage,
             discardMessage:
-                'You have unsent text. Closing now will lose your message.'.tr,
+                context.l10n.youHaveUnsentTextClosingNow,
           ),
           child: Padding(
             padding: EdgeInsets.only(
@@ -1255,9 +1256,9 @@ class _UserProfilePageState extends State<UserProfilePage>
                         final discard = await confirmDiscardComposer(
                           context,
                           composerKey: composerKey,
-                          discardTitle: 'Discard message?'.tr,
+                          discardTitle: context.l10n.discardMessage,
                           discardMessage:
-                              'You have unsent text. Closing now will lose your message.'.tr,
+                              context.l10n.youHaveUnsentTextClosingNow,
                         );
                         if (discard && context.mounted) {
                           Navigator.pop(context);
@@ -1281,7 +1282,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                   child: ActivityComposerSheet(
                     key: composerKey,
                     isModal: true,
-                    hintText: "Write a message...".tr,
+                    hintText: context.l10n.writeAMessage,
                     showPrivateToggle: true,
                     onSubmit: (text, {isPrivate = false}) async {
                       final anilistAuth = Get.find<AnilistAuth>();

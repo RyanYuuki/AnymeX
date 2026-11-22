@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/reader/tap_zones.dart';
 import 'package:anymex/repositories/tap_zone_repository.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
@@ -103,7 +104,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Tap Zones'.tr,
+      headerTitle: context.l10n.tapZones,
       headerAction: IconButton(
         icon: const Icon(Icons.refresh_rounded),
         tooltip: 'Reset to default',
@@ -117,8 +118,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: _ElegantSegmentedControl(
                         options: [
-                          (title: "Paged".tr, icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
-                          (title: "Webtoon".tr, icon: const Icon(Icons.view_day_rounded, size: 18)),
+                          (title: context.l10n.paged, icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
+                          (title: context.l10n.webtoon, icon: const Icon(Icons.view_day_rounded, size: 18)),
                         ],
                         selectedIndex: _isWebtoon ? 1 : 0,
                         onChanged: (index) {
@@ -133,8 +134,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                       child: _ElegantSegmentedControl(
                         options: [
-                          (title: "Horizontal".tr, icon: Icon(Icons.swap_horiz_rounded, size: 18)),
-                          (title: "Vertical".tr, icon: Icon(Icons.swap_vert_rounded, size: 18)),
+                          (title: context.l10n.horizontal, icon: Icon(Icons.swap_horiz_rounded, size: 18)),
+                          (title: context.l10n.vertical, icon: Icon(Icons.swap_vert_rounded, size: 18)),
                         ],
                         selectedIndex: _isVertical ? 1 : 0,
                         onChanged: (index) {
@@ -150,8 +151,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: AnymeXTile.toggle(
                         icon: Icons.touch_app_rounded,
-                        title: "Enable Tap Zones".tr,
-                        subtitle: "Use custom gestures for reader navigation".tr,
+                        title: context.l10n.enableTapZones,
+                        subtitle: context.l10n.useCustomGesturesForReaderNavigation,
                         value: _tapZonesEnabled,
                         onChanged: (val) {
                           setState(() => _tapZonesEnabled = val);
@@ -186,7 +187,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: AnymeXText(
-            "Tap a zone to change its action".tr,
+            context.l10n.tapAZoneToChangeIts,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                 ),
@@ -269,7 +270,7 @@ class VisualZoneEditor extends StatelessWidget {
                     Icon(Icons.touch_app_rounded, color: theme.colorScheme.primary, size: 22),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      "Tap Action".tr,
+                      context.l10n.tapAction,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,

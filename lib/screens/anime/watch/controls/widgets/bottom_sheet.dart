@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io' show Platform;
 import 'dart:ui';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -531,16 +532,16 @@ class PlayerBottomSheets {
 
     return show<int>(
       context: context,
-      title: 'Audio Tracks'.tr,
+      title: context.l10n.audioTracks,
       showSearch: filteredTracks.length > 5,
       searchHint: 'Search audio tracks...',
       items: [
         BottomSheetItem(
-            title: 'Auto'.tr, subtitle: 'Audio Track'.tr, icon: Icons.audiotrack),
+            title: context.l10n.auto, subtitle: context.l10n.audioTrack, icon: Icons.audiotrack),
         ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(
             title: completeLanguageName(entry.language ?? '').toUpperCase(),
-            subtitle: 'Audio Track'.tr,
+            subtitle: context.l10n.audioTrack,
             icon: Icons.audiotrack,
           );
         })
@@ -600,11 +601,11 @@ class PlayerBottomSheets {
     final selectedQuality = controller.selectedVideo.value;
     return show<String>(
       context: context,
-      title: 'Video Servers'.tr,
+      title: context.l10n.videoServers,
       items: qualities.map((quality) {
         return BottomSheetItem(
-          title: quality.quality ?? 'Auto'.tr.tr,
-          subtitle: 'Server'.tr,
+          title: quality.quality ?? context.l10n.auto,
+          subtitle: context.l10n.server,
           icon: Icons.high_quality,
         );
       }).toList(),
@@ -625,13 +626,13 @@ class PlayerBottomSheets {
     final selectedQuality = controller.selectedQualityTrack.value;
     return show<String>(
       context: context,
-      title: 'Video Quality'.tr,
+      title: context.l10n.videoQuality,
       items: qualities.map((quality) {
         return BottomSheetItem(
           title: quality.height == 0
-              ? 'Auto'.tr
+              ? context.l10n.auto
               : '${quality.width}x${quality.height}',
-          subtitle: 'Quality Setting'.tr,
+          subtitle: context.l10n.qualitySetting,
           icon: Icons.high_quality,
         );
       }).toList(),
@@ -654,7 +655,7 @@ class PlayerBottomSheets {
 
     return showCustom<double>(
       context: context,
-      title: 'Episodes'.tr,
+      title: context.l10n.episodes,
       isExpanded: true,
       content: ScrollablePositionedList.separated(
         initialScrollIndex: selectedEpisode.value.number.toInt() - 1,
