@@ -24,10 +24,6 @@ class AnymeXText extends StatelessWidget {
   final TextStyle? style;
   final bool? softWrap;
 
-  /// Set false for service metadata (titles, descriptions, genres...) so it
-  /// is never run through the translator. HTML-stripped text is never translated.
-  final bool translate;
-
   const AnymeXText(
     this.text, {
     super.key,
@@ -45,7 +41,6 @@ class AnymeXText extends StatelessWidget {
     this.isMarquee = false,
     this.style,
     this.softWrap,
-    this.translate = true,
   });
 
   const AnymeXText.regular(
@@ -64,7 +59,6 @@ class AnymeXText extends StatelessWidget {
     bool isMarquee = false,
     TextStyle? style,
     bool? softWrap,
-    bool translate = true,
   }) : this(
           text,
           key: key,
@@ -82,7 +76,6 @@ class AnymeXText extends StatelessWidget {
           isMarquee: isMarquee,
           style: style,
           softWrap: softWrap,
-          translate: translate,
         );
 
   const AnymeXText.semiBold(
@@ -101,7 +94,6 @@ class AnymeXText extends StatelessWidget {
     bool isMarquee = false,
     TextStyle? style,
     bool? softWrap,
-    bool translate = true,
   }) : this(
           text,
           key: key,
@@ -119,7 +111,6 @@ class AnymeXText extends StatelessWidget {
           isMarquee: isMarquee,
           style: style,
           softWrap: softWrap,
-          translate: translate,
         );
 
   const AnymeXText.bold(
@@ -138,7 +129,6 @@ class AnymeXText extends StatelessWidget {
     bool isMarquee = false,
     TextStyle? style,
     bool? softWrap,
-    bool translate = true,
   }) : this(
           text,
           key: key,
@@ -156,13 +146,11 @@ class AnymeXText extends StatelessWidget {
           isMarquee: isMarquee,
           style: style,
           softWrap: softWrap,
-          translate: translate,
         );
 
   @override
   Widget build(BuildContext context) {
-    final raw = text.trim().toLowerCase() == 'null' ? '-' : text;
-    final sanitized = translate && !stripHtml ? raw.tr : raw;
+    final sanitized = text.trim().toLowerCase() == 'null' ? '-' : text;
     final processedText = stripHtml ? _removeHtmlTags(sanitized) : sanitized;
     final textStyle = _resolveStyle();
     final effectiveMaxLines = isMarquee ? 1 : maxLines;
