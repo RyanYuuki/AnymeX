@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:math';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -141,7 +142,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             Padding(
               padding: const EdgeInsets.all(40),
               child: Center(
-                child: AnymeXText('No stats available',
+                child: AnymeXText(context.l10n.noStatsAvailable,
                   color: colorScheme.onSurface.opaque(0.5),
                 ),
               ),
@@ -186,14 +187,14 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       // Summary card
       _sectionContainer(
         icon: IconlyLight.chart,
-        title: 'Summary',
+        title: context.l10n.summary,
         child: _overviewSummaryGrid(anime, manga),
       ),
       if (scores.isNotEmpty) ...[
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.bar_chart_rounded,
-          title: 'Score Distribution',
+          title: context.l10n.scoreDistribution,
           child: _verticalStatsBar(scores),
         ),
       ],
@@ -209,7 +210,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.radio_button_checked,
-          title: 'Status Distribution',
+          title: context.l10n.statusDistribution,
           child: _horizontalStatsBar(statuses),
         ),
       ],
@@ -217,7 +218,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.style_outlined,
-          title: 'Format Distribution',
+          title: context.l10n.formatDistribution,
           child: _horizontalStatsBar(formats),
         ),
       ],
@@ -225,7 +226,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.public,
-          title: 'Country Distribution',
+          title: context.l10n.countryDistribution,
           child: _horizontalStatsBar(countries),
         ),
       ],
@@ -233,7 +234,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.event,
-          title: 'Release Year',
+          title: context.l10n.releaseYear,
           child: _verticalStatsBar(releaseYears),
         ),
       ],
@@ -257,7 +258,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.category_rounded,
-        title: 'Genres',
+        title: context.l10n.genres,
         child: _rankedList(items,
             onTap: (label, {id, image}) => _searchFor(label, isGenre: true)),
       ),
@@ -274,7 +275,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.tag,
-        title: 'Tags',
+        title: context.l10n.tags2,
         child: _rankedList(items,
             onTap: (label, {id, image}) => _searchFor(label, isTag: true)),
       ),
@@ -291,7 +292,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: IconlyLight.user2,
-        title: 'Staff',
+        title: context.l10n.staff,
         child:
             _rankedList(items, showAvatar: true, onTap: (label, {id, image}) {
           if (id != null) _openSheet(id: id, name: label, image: image);
@@ -310,7 +311,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.record_voice_over,
-        title: 'Voice Actors',
+        title: context.l10n.voiceActors,
         child:
             _rankedList(items, showAvatar: true, onTap: (label, {id, image}) {
           if (id != null) _openSheet(id: id, name: label, image: image);
@@ -329,7 +330,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.business_outlined,
-        title: 'Studios',
+        title: context.l10n.studios,
         child: _rankedList(items, onTap: (label, {id, image}) {
           final studioId = int.tryParse(id ?? '') ?? 0;
           if (studioId > 0) {

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -44,7 +45,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     return AnymeXScaffold(
   body: Column(
           children: [
-            const NestedHeader(title: 'Extension Testing'),
+            NestedHeader(title: context.l10n.extensionTesting),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
@@ -76,7 +77,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Extension Type',
+          context.l10n.extensionType,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -160,7 +161,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Test Type',
+          context.l10n.testType,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -226,7 +227,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Search Query',
+          context.l10n.searchQuery,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -250,7 +251,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
             decoration: InputDecoration(
               filled: true,
               fillColor: theme.surfaceContainer.withValues(alpha: 0.2),
-              hintText: 'Enter search query',
+              hintText: context.l10n.enterSearchQuery,
               hintStyle: TextStyle(
                 fontFamily: 'Linotte',
                 color: theme.onSurface.withValues(alpha: 0.4),
@@ -275,7 +276,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnymeXText(
-              'Select Extensions',
+              context.l10n.selectExtensions,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
@@ -317,7 +318,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               child: Center(
                 child: AnymeXText(
-                  'No extensions installed',
+                  context.l10n.noExtensionsInstalled,
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
                     fontFamily: 'Linotte',
@@ -432,8 +433,8 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               elevation: 0,
             ),
-            child: const AnymeXText(
-              'Start Test',
+            child: AnymeXText(
+              context.l10n.startTest,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
@@ -463,7 +464,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                 ),
                 const SizedBox(height: 16),
                 AnymeXText(
-                  'No tests running',
+                  context.l10n.noTestsRunning,
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
                     fontFamily: 'Linotte',
@@ -480,7 +481,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'Test Results',
+            context.l10n.testResults,
             style: TextStyle(
               fontFamily: 'Linotte',
               fontWeight: FontWeight.bold,

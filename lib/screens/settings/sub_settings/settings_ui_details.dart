@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -124,7 +125,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Details Page',
+      headerTitle: context.l10n.detailsPage,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding:
@@ -137,12 +138,12 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
               _buildLivePreviewCard(context),
               const SizedBox(height: 24),
               AnymeXSectionBuilder(
-                title: 'Backdrop & Scope',
+                title: context.l10n.backdropScope,
                 children: [
                   Obx(
                     () => AnymeXTile.pills<int>(
                       icon: Icons.blur_on_rounded,
-                      title: 'Blur Style',
+                      title: context.l10n.blurStyle,
                       value: settings.detailsBlurStyle,
                       options: const [0, 1],
                       optionLabelTransformer: (val) =>
@@ -159,7 +160,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                     final isMesh = settings.detailsBlurStyle == 1;
                     return AnymeXTile.pills<bool>(
                       icon: Icons.blur_linear_rounded,
-                      title: 'Blur Mechanism',
+                      title: context.l10n.blurMechanism,
                       value: isMesh ? true : settings.useComputedBlur,
                       options: const [false, true],
                       optionLabelTransformer: (val) =>
@@ -178,7 +179,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                         if (isMesh) {
                           if (!val) {
                             snackBar(
-                                'Live blur is unavailable when using Fluid Mesh.');
+                                context.l10n.liveBlurIsUnavailableWhenUsing);
                           }
                           return;
                         }
@@ -189,7 +190,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   Obx(
                     () => AnymeXTile.pills<int>(
                       icon: Icons.fullscreen_rounded,
-                      title: 'Poster Blur Scope',
+                      title: context.l10n.posterBlurScope,
                       value: settings.detailsBlurScope,
                       options: const [0, 1, 2],
                       optionLabelTransformer: (val) {
@@ -220,7 +221,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   Obx(
                     () => AnymeXTile.pills<bool>(
                       icon: Icons.photo_library_outlined,
-                      title: 'Backdrop Source',
+                      title: context.l10n.backdropSource,
                       value: settings.usePosterForBlur,
                       options: const [false, true],
                       optionLabelTransformer: (val) => val ? 'Poster' : 'Cover',
@@ -235,7 +236,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   Obx(
                     () => AnymeXTile.pills<bool>(
                       icon: Icons.palette_outlined,
-                      title: 'Blur Color Tint',
+                      title: context.l10n.blurColorTint,
                       value: settings.tintBlur,
                       options: const [false, true],
                       optionLabelTransformer: (val) =>
@@ -276,13 +277,13 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
               ),
               const SizedBox(height: 14),
               AnymeXSectionBuilder(
-                title: 'Blur & Backdrop Tuning',
+                title: context.l10n.blurBackdropTuning,
                 children: [
                   Obx(
                     () => AnymeXTile.slider(
                       icon: Icons.blur_linear_rounded,
-                      title: 'Blur Amount',
-                      subtitle: 'Adjust frosted blur intensity',
+                      title: context.l10n.blurAmount,
+                      subtitle: context.l10n.adjustFrostedBlurIntensity,
                       value: blurAmount.value,
                       min: 2.0,
                       max: 50.0,
@@ -303,8 +304,8 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   Obx(
                     () => AnymeXTile.slider(
                       icon: Icons.brightness_6_outlined,
-                      title: 'Backdrop Brightness',
-                      subtitle: 'Adjust media backdrop exposure',
+                      title: context.l10n.backdropBrightness,
+                      subtitle: context.l10n.adjustMediaBackdropExposure,
                       value: backdropBrightness.value,
                       min: 0.5,
                       max: 1.5,
@@ -342,7 +343,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
         ),
         const SizedBox(width: 6),
         AnymeXText(
-          'LIVE PREVIEW',
+          context.l10n.livePreview,
           size: 11,
           variant: TextVariant.bold,
           color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),

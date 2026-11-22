@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
@@ -46,7 +47,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
           buttonItems: [
             ...selectableRegionState.contextMenuButtonItems,
             ContextMenuButtonItem(
-              label: 'Dictionary',
+              label: context.l10n.dictionary,
               onPressed: () async {
                 selectableRegionState
                     .copySelection(SelectionChangedCause.toolbar);

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -65,7 +66,7 @@ class RecommendIconButton extends StatelessWidget {
     return IconButton(
       onPressed: () => _openSheet(context),
       icon: icon,
-      tooltip: 'Recommend',
+      tooltip: context.l10n.recommend,
     );
   }
 }

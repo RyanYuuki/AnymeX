@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -51,11 +52,11 @@ class MangaHistoryCard extends StatelessWidget {
         onTap: () {
           if (data.currentChapter == null) {
             snackBar(
-                "Error: Missing required data. It seems you closed the app directly after reading the chapter!",
+                context.l10n.errorMissingRequiredDataItSeems,
                 maxLines: 3);
           } else {
             if (data.currentChapter?.sourceName == null) {
-              snackBar("Cant Play since user closed the app abruptly");
+              snackBar(context.l10n.cantPlaySinceUserClosedThe);
             }
             final source = Get.find<SourceController>()
                 .getMangaExtensionByName(data.currentChapter!.sourceName!);
@@ -237,7 +238,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                 maxLines: 3);
 //           } else {
 //             if (data.currentChapter?.sourceName == null) {
-//               snackBar("Cant Play since user closed the app abruptly");
+//               snackBar(context.l10n.cantPlaySinceUserClosedThe);
 //             }
 //             final source = Get.find<SourceController>()
 //                 .getMangaExtensionByName(data.currentChapter!.sourceName!);

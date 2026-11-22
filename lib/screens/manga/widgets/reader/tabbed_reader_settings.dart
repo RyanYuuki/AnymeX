@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
@@ -57,11 +58,11 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   late final TabController _tabController;
   int _selectedIndex = 0;
 
-  static const _tabs = [
-    Tab(text: 'Reading Mode'),
-    Tab(text: 'General'),
-    Tab(text: 'Color Filter'),
-    Tab(text: 'Upscale'),
+  static final _tabs = [
+    Tab(text: Get.context!.l10n.readingMode),
+    Tab(text: Get.context!.l10n.general),
+    Tab(text: Get.context!.l10n.colorFilter),
+    Tab(text: Get.context!.l10n.upscale),
   ];
 
   void _onTabChanged() {
@@ -115,10 +116,10 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
                 const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
             child: AnymeXTabBar(
               minTabWidth: 105,
-              selectTabs: const [
-                'Reading Mode',
-                'General',
-                'Color Filter',
+              selectTabs: [
+                context.l10n.readingMode,
+                context.l10n.general,
+                context.l10n.colorFilter,
                 'Upscale'
               ],
               selectedIndex: _selectedIndex,
@@ -185,7 +186,7 @@ class _ReadingModePage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               children: [
                 AnymeXTile(
-                  title: 'Layout',
+                  title: context.l10n.layout,
                   subtitle: switch (currentLayout) {
                     MangaPageViewMode.continuous => 'Continuous',
                     MangaPageViewMode.paged => 'Paged',
@@ -415,7 +416,7 @@ class _GeneralPage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               children: [
                 AnymeXTile(
-                  title: 'Control Theme',
+                  title: context.l10n.controlTheme,
                   subtitle: ReaderControlThemeRegistry.resolve(
                           settings.readerControlThemeRx.value)
                       .name,
@@ -423,7 +424,7 @@ class _GeneralPage extends StatelessWidget {
                   onTap: () => _showThemeDialog(context, settings),
                 ),
                 AnymeXTile(
-                  title: 'Background',
+                  title: context.l10n.background,
                   subtitle: switch (controller.readerTheme.value) {
                     0 => 'White',
                     1 => 'Black',
@@ -598,9 +599,9 @@ class _GeneralPage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 20),
               children: [
                 AnymeXTile.slider(
-                  title: 'Preload Pages',
+                  title: context.l10n.preloadPages,
                   icon: Icons.image_aspect_ratio_rounded,
-                  subtitle: 'Pages ahead of time for faster loading',
+                  subtitle: context.l10n.pagesAheadOfTimeForFaster,
                   value: controller.preloadPages.value.toDouble(),
                   min: 1,
                   max: 15,
@@ -609,9 +610,9 @@ class _GeneralPage extends StatelessWidget {
                 ),
                 if (!Platform.isAndroid && !Platform.isIOS) ...[
                   AnymeXTile.slider(
-                    title: 'Image Width',
+                    title: context.l10n.imageWidth,
                     icon: Icons.image_aspect_ratio_rounded,
-                    subtitle: 'Continuous Mode only',
+                    subtitle: context.l10n.continuousModeOnly2,
                     value: controller.pageWidthMultiplier.value,
                     min: 1.0,
                     max: 2.5,
@@ -619,9 +620,9 @@ class _GeneralPage extends StatelessWidget {
                     onChanged: (v) => controller.pageWidthMultiplier.value = v,
                   ),
                   AnymeXTile.slider(
-                    title: 'Scroll Multiplier',
+                    title: context.l10n.scrollMultiplier,
                     icon: Icons.speed,
-                    subtitle: 'Key & Volume Scrolling Speed',
+                    subtitle: context.l10n.keyVolumeScrollingSpeed,
                     value: controller.scrollSpeedMultiplier.value,
                     min: 1.0,
                     max: 5.0,
@@ -642,7 +643,7 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const AnymeXText('Control Theme'),
+        title: AnymeXText(context.l10n.controlTheme),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ReaderControlThemeRegistry.themes

@@ -39,6 +39,8 @@ enum General {
   dontShowDonationDialog,
   hasShownHomeDonationDialog,
   watchedAdsCount,
+  appLanguageCode,
+  appCountryCode,
 }
 
 enum ThemeKeys {

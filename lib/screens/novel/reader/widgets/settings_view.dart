@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dropdown.dart';
@@ -63,17 +64,17 @@ class NovelSettingsPanel extends StatelessWidget {
                               padding: const EdgeInsets.all(0),
                               isScrollable: true,
                               tabAlignment: TabAlignment.center,
-                              tabs: const [
+                              tabs: [
                                 Tab(
                                     icon: Icon(Icons.format_size),
-                                    text: 'Display'),
-                                Tab(icon: Icon(Icons.palette), text: 'Theme'),
+                                    text: context.l10n.display),
+                                Tab(icon: const Icon(Icons.palette), text: context.l10n.theme),
                                 Tab(
                                     icon: Icon(Icons.gesture),
-                                    text: 'Navigation'),
+                                    text: context.l10n.navigation),
                                 Tab(
                                     icon: Icon(Icons.record_voice_over),
-                                    text: 'TTS'),
+                                    text: context.l10n.tts),
                               ],
                               labelColor: context.colors.primary,
                               unselectedLabelColor:
@@ -149,13 +150,13 @@ class NovelSettingsPanel extends StatelessWidget {
         children: [
           _buildSection(
             context: context,
-            title: 'Font Settings',
+            title: context.l10n.fontSettings,
             children: [
               _buildFontFamilySelector(context),
               const SizedBox(height: 16),
               _buildSliderSetting(
                 context,
-                title: 'Font Size',
+                title: context.l10n.fontSize,
                 value: controller.fontSize,
                 min: 12,
                 max: 24,
@@ -166,7 +167,7 @@ class NovelSettingsPanel extends StatelessWidget {
               const SizedBox(height: 16),
               _buildSliderSetting(
                 context,
-                title: 'Line Height',
+                title: context.l10n.lineHeight,
                 value: controller.lineHeight,
                 min: 1.0,
                 max: 3.0,
@@ -179,11 +180,11 @@ class NovelSettingsPanel extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSection(
             context: context,
-            title: 'Spacing',
+            title: context.l10n.spacing,
             children: [
               _buildSliderSetting(
                 context,
-                title: 'Letter Spacing',
+                title: context.l10n.letterSpacing,
                 value: controller.letterSpacing,
                 min: -1.0,
                 max: 2.0,
@@ -194,7 +195,7 @@ class NovelSettingsPanel extends StatelessWidget {
               const SizedBox(height: 16),
               _buildSliderSetting(
                 context,
-                title: 'Word Spacing',
+                title: context.l10n.wordSpacing,
                 value: controller.wordSpacing,
                 min: 0.0,
                 max: 5.0,
@@ -205,7 +206,7 @@ class NovelSettingsPanel extends StatelessWidget {
               const SizedBox(height: 16),
               _buildSliderSetting(
                 context,
-                title: 'Paragraph Spacing',
+                title: context.l10n.paragraphSpacing,
                 value: controller.paragraphSpacing,
                 min: 8.0,
                 max: 32.0,
@@ -218,11 +219,11 @@ class NovelSettingsPanel extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSection(
             context: context,
-            title: 'Padding',
+            title: context.l10n.padding,
             children: [
               _buildSliderSetting(
                 context,
-                title: 'Horizontal Padding',
+                title: context.l10n.horizontalPadding,
                 value: controller.paddingHorizontal,
                 min: 8.0,
                 max: 32.0,
@@ -233,7 +234,7 @@ class NovelSettingsPanel extends StatelessWidget {
               const SizedBox(height: 16),
               _buildSliderSetting(
                 context,
-                title: 'Vertical Padding',
+                title: context.l10n.verticalPadding,
                 value: controller.paddingVertical,
                 min: 4.0,
                 max: 24.0,
@@ -259,7 +260,7 @@ class NovelSettingsPanel extends StatelessWidget {
         children: [
           _buildSection(
             context: context,
-            title: 'Theme Mode',
+            title: context.l10n.themeMode,
             children: [
               _buildThemeOption(context, 'Light', 0, Icons.light_mode),
               const SizedBox(height: 8),
@@ -273,11 +274,11 @@ class NovelSettingsPanel extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSection(
             context: context,
-            title: 'Background Opacity',
+            title: context.l10n.backgroundOpacity,
             children: [
               _buildSliderSetting(
                 context,
-                title: 'Opacity',
+                title: context.l10n.opacity,
                 value: controller.backgroundOpacity,
                 min: 0.3,
                 max: 1.0,
@@ -301,12 +302,12 @@ class NovelSettingsPanel extends StatelessWidget {
         children: [
           _buildSection(
             context: context,
-            title: 'Reading Mode',
+            title: context.l10n.readingMode,
             children: [
               _buildSwitchSetting(
                 context,
-                title: 'Page Reader Mode',
-                subtitle: 'Read one page at a time',
+                title: context.l10n.pageReaderMode,
+                subtitle: context.l10n.readOnePageAtATime,
                 value: controller.pageReaderMode,
                 onChanged: (value) => controller.togglePageReaderMode(),
               ),
@@ -315,11 +316,11 @@ class NovelSettingsPanel extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSection(
             context: context,
-            title: 'Auto Scroll',
+            title: context.l10n.autoScroll,
             children: [
               _buildSwitchSetting(
                 context,
-                title: 'Auto Scroll',
+                title: context.l10n.autoScroll,
                 value: controller.autoScrollEnabled,
                 onChanged: (value) => controller.toggleAutoScroll(),
               ),
@@ -327,7 +328,7 @@ class NovelSettingsPanel extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSliderSetting(
                   context,
-                  title: 'Scroll Speed',
+                  title: context.l10n.scrollSpeed,
                   value: controller.autoScrollSpeed,
                   min: 1.0,
                   max: 10.0,
@@ -341,20 +342,20 @@ class NovelSettingsPanel extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSection(
             context: context,
-            title: 'Controls',
+            title: context.l10n.controls,
             children: [
               _buildSwitchSetting(
                 context,
-                title: 'Volume Button Scrolling',
-                subtitle: 'Use volume buttons to scroll',
+                title: context.l10n.volumeButtonScrolling,
+                subtitle: context.l10n.useVolumeButtonsToScroll,
                 value: controller.volumeButtonScrolling,
                 onChanged: (value) => controller.toggleVolumeScrolling(),
               ),
               const SizedBox(height: 12),
               _buildSwitchSetting(
                 context,
-                title: 'Tap to Scroll',
-                subtitle: 'Tap top/bottom to scroll',
+                title: context.l10n.tapToScroll,
+                subtitle: context.l10n.tapTopBottomToScroll,
                 value: controller.tapToScroll,
                 onChanged: (value) => controller.toggleTapToScroll(),
               ),
@@ -362,7 +363,7 @@ class NovelSettingsPanel extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSliderSetting(
                   context,
-                  title: 'Tap Scroll Amount',
+                  title: context.l10n.tapScrollAmount,
                   value: controller.tapScrollAmount,
                   min: 10.0,
                   max: 200.0,
@@ -374,28 +375,28 @@ class NovelSettingsPanel extends StatelessWidget {
               const SizedBox(height: 12),
               _buildSwitchSetting(
                 context,
-                title: 'Swipe Between Chapters',
+                title: context.l10n.swipeBetweenChapters,
                 value: controller.swipeGestures,
                 onChanged: (value) => controller.toggleSwipeGestures(),
               ),
               const SizedBox(height: 12),
               _buildSwitchSetting(
                 context,
-                title: 'Keep Screen On',
+                title: context.l10n.keepScreenOn,
                 value: controller.keepScreenOn,
                 onChanged: (value) => controller.toggleKeepScreenOn(),
               ),
               const SizedBox(height: 12),
               _buildSwitchSetting(
                 context,
-                title: 'Show Reading Progress',
+                title: context.l10n.showReadingProgress,
                 value: controller.showReadingProgress,
                 onChanged: (value) => controller.toggleShowReadingProgress(),
               ),
               const SizedBox(height: 12),
               _buildSwitchSetting(
                 context,
-                title: 'Show Battery & Time',
+                title: context.l10n.showBatteryTime,
                 value: controller.showBatteryAndTime,
                 onChanged: (value) => controller.toggleShowBatteryAndTime(),
               ),
@@ -417,12 +418,12 @@ class NovelSettingsPanel extends StatelessWidget {
         children: [
           _buildSection(
             context: context,
-            title: 'Text-to-Speech',
+            title: context.l10n.textToSpeech,
             children: [
               _buildSwitchSetting(
                 context,
-                title: 'Enable TTS',
-                subtitle: 'Read text aloud',
+                title: context.l10n.enableTts,
+                subtitle: context.l10n.readTextAloud,
                 value: controller.ttsEnabled,
                 onChanged: (value) => controller.setTtsEnabled(value),
               ),
@@ -432,7 +433,7 @@ class NovelSettingsPanel extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSliderSetting(
                   context,
-                  title: 'Speech Speed',
+                  title: context.l10n.speechSpeed,
                   value: controller.ttsSpeed,
                   min: 0.1,
                   max: 1.0,
@@ -443,7 +444,7 @@ class NovelSettingsPanel extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSliderSetting(
                   context,
-                  title: 'Pitch',
+                  title: context.l10n.pitch,
                   value: controller.ttsPitch,
                   min: 0.5,
                   max: 2.0,
@@ -454,8 +455,8 @@ class NovelSettingsPanel extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSwitchSetting(
                   context,
-                  title: 'Auto Advance',
-                  subtitle: 'Automatically move to next text',
+                  title: context.l10n.autoAdvance,
+                  subtitle: context.l10n.automaticallyMoveToNextText,
                   value: controller.ttsAutoAdvance,
                   onChanged: (value) => controller.toggleTtsAutoAdvance(),
                 ),
@@ -518,7 +519,7 @@ class NovelSettingsPanel extends StatelessWidget {
     return Obx(() {
       return AnymeXDropdown(
         icon: HugeIcons.strokeRoundedTextFont,
-        label: 'Font Family',
+        label: context.l10n.fontFamily,
         selectedItem: DropdownItem(
           value: controller.fontFamily.value,
           text: controller.fontFamily.value,
@@ -540,7 +541,7 @@ class NovelSettingsPanel extends StatelessWidget {
     return Obx(() {
       return AnymeXDropdown(
         icon: Icons.record_voice_over,
-        label: 'Voice',
+        label: context.l10n.voice,
         selectedItem: DropdownItem(
           value: controller.ttsVoice.value,
           text: controller.ttsVoice.value.isEmpty
@@ -551,7 +552,7 @@ class NovelSettingsPanel extends StatelessWidget {
           controller.setTtsVoice(value.value);
         },
         items: [
-          const DropdownItem(value: '', text: 'Default'),
+          DropdownItem(value: '', text: context.l10n.defaultLabel),
           ...controller.ttsVoices.map((voice) => DropdownItem(
                 value: voice,
                 text: voice,
@@ -833,8 +834,8 @@ class NovelSettingsPanel extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: const AnymeXText(
-          'Reset to Default',
+        child: AnymeXText(
+          context.l10n.resetToDefault2,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

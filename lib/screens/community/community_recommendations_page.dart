@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -176,7 +177,7 @@ class _CommunityRecommendationsPageState
   void _showSettingsSheet(BuildContext context) {
     final svc = Get.find<CommunityService>();
     AnymeXSheet(
-      title: 'Filter Settings',
+      title: context.l10n.filterSettings,
       contentWidget: Obx(() {
         return AnymeXTileBuilder<String>(
           items: const [],
@@ -185,8 +186,8 @@ class _CommunityRecommendationsPageState
           isSelection: false,
           children: [
             AnymeXTile.toggle(
-              title: 'Hide by List Status',
-              subtitle: 'Filter out entries already in your list',
+              title: context.l10n.hideByListStatus,
+              subtitle: context.l10n.filterOutEntriesAlreadyInYour,
               value: svc.filterByListEnabled.value,
               onChanged: (v) {
                 svc.filterByListEnabled.value = v;
@@ -199,7 +200,7 @@ class _CommunityRecommendationsPageState
                 isSelection: false,
                 children: [
                   AnymeXTile.toggle(
-                    title: 'Hide Completed',
+                    title: context.l10n.hideCompleted,
                     value: svc.filterCompleted.value,
                     onChanged: (v) {
                       svc.filterCompleted.value = v;
@@ -207,7 +208,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Watching / Reading',
+                    title: context.l10n.hideWatchingReading,
                     value: svc.filterWatching.value,
                     onChanged: (v) {
                       svc.filterWatching.value = v;
@@ -215,7 +216,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Dropped',
+                    title: context.l10n.hideDropped,
                     value: svc.filterDropped.value,
                     onChanged: (v) {
                       svc.filterDropped.value = v;
@@ -223,7 +224,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Planning',
+                    title: context.l10n.hidePlanning,
                     value: svc.filterPlanning.value,
                     onChanged: (v) {
                       svc.filterPlanning.value = v;
@@ -231,7 +232,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide On Hold / Paused',
+                    title: context.l10n.hideOnHoldPaused,
                     value: svc.filterPaused.value,
                     onChanged: (v) {
                       svc.filterPaused.value = v;
@@ -239,7 +240,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Rewatching',
+                    title: context.l10n.hideRewatching,
                     value: svc.filterRepeating.value,
                     onChanged: (v) {
                       svc.filterRepeating.value = v;
@@ -250,7 +251,7 @@ class _CommunityRecommendationsPageState
               ),
             ),
             AnymeXTile.toggle(
-              title: 'Hide NSFW',
+              title: context.l10n.hideNsfw,
               value: svc.hideNsfw.value,
               onChanged: (v) {
                 svc.hideNsfw.value = v;
@@ -271,7 +272,7 @@ class _CommunityRecommendationsPageState
         body: Column(
       children: [
         NestedHeader(
-          title: 'Community Recommendations',
+          title: context.l10n.communityRecommendations,
           action: Row(children: [
             IconButton(
               onPressed: () {
@@ -312,7 +313,7 @@ class _CommunityRecommendationsPageState
                         color:
                             context.colors.onSurfaceVariant.withOpacity(0.5)),
                     const SizedBox(height: 12),
-                    AnymeXText('No recommendations found',
+                    AnymeXText(context.l10n.noRecommendationsFound,
                       color: context.colors.onSurfaceVariant.withOpacity(0.7),
                       variant: TextVariant.semiBold,
                     ),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -54,9 +55,9 @@ class DownloadPermissionDialog extends StatelessWidget {
     final colors = context.colors;
 
     return AnymeXDialog(
-      title: 'Download Permissions',
-      confirmText: 'Go to Downloads',
-      cancelText: 'Cancel',
+      title: context.l10n.downloadPermissions,
+      confirmText: context.l10n.goToDownloads,
+      cancelText: context.l10n.cancel,
       onConfirm: () {
         DownloadKeys.hasSeenDownloadGuide.set(true);
         navigate(() => const DownloadScreen());
@@ -79,7 +80,7 @@ class DownloadPermissionDialog extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           AnymeXText(
-            'To download for the first time, grant permissions by visiting the Downloads page first:',
+            context.l10n.toDownloadForTheFirstTime,
             textAlign: TextAlign.center,
             color: colors.onSurfaceVariant,
             size: 13,
@@ -89,24 +90,24 @@ class DownloadPermissionDialog extends StatelessWidget {
             context,
             stepNumber: '1',
             icon: HugeIcons.strokeRoundedUser,
-            title: 'Profile Icon',
-            description: 'Tap your profile icon in the top app bar',
+            title: context.l10n.profileIcon,
+            description: context.l10n.tapYourProfileIconInThe,
           ),
           const SizedBox(height: 8),
           _buildStepRow(
             context,
             stepNumber: '2',
             icon: HugeIcons.strokeRoundedDownload04,
-            title: 'Downloads Page',
-            description: 'Open the Downloads screen from the menu',
+            title: context.l10n.downloadsPage,
+            description: context.l10n.openTheDownloadsScreenFromThe,
           ),
           const SizedBox(height: 8),
           _buildStepRow(
             context,
             stepNumber: '3',
             icon: HugeIcons.strokeRoundedFolder01,
-            title: 'Grant Permissions',
-            description: 'Allow storage access and select download folder',
+            title: context.l10n.grantPermissions,
+            description: context.l10n.allowStorageAccessAndSelectDownload,
           ),
         ],
       ),

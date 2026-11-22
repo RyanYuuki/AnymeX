@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -133,7 +134,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaLayoutDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Layout',
+      title: context.l10n.readingLayout,
       items: const [0, 1],
       selectedItem: _mangaLayout.obs,
       getTitle: (value) => value == 0 ? 'Continuous' : 'Paged',
@@ -149,7 +150,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaDirectionDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Direction',
+      title: context.l10n.readingDirection,
       items: const [0, 1, 2, 3],
       selectedItem: _mangaDirection.obs,
       getTitle: (value) => switch (value) {
@@ -170,7 +171,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaDualPageDialog() {
     showSelectionDialog<int>(
-      title: 'Dual Page Mode',
+      title: context.l10n.dualPageMode,
       items: const [0, 1, 2],
       selectedItem: _mangaDualPageMode.obs,
       getTitle: (value) => switch (value) {
@@ -190,7 +191,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaFilterQualityDialog() {
     showSelectionDialog<int>(
-      title: 'Image Filter Quality',
+      title: context.l10n.imageFilterQuality,
       items: const [0, 1, 2, 3, 4],
       selectedItem: _mangaFilterQuality.obs,
       getTitle: (value) => switch (value) {
@@ -212,7 +213,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showChapterStyleDialog() {
     showSelectionDialog<String>(
-      title: 'Chapter Tile Style',
+      title: context.l10n.chapterTileStyle,
       items: const ['compact', 'detailed'],
       selectedItem: settings.chapterStyleRx,
       getTitle: (value) =>
@@ -244,7 +245,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showNovelThemeDialog() {
     showSelectionDialog<int>(
-      title: 'Novel Theme',
+      title: context.l10n.novelTheme,
       items: const [0, 1, 2, 3],
       selectedItem: _novelThemeMode.obs,
       getTitle: (value) => switch (value) {
@@ -265,7 +266,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showNovelFontDialog() {
     showSelectionDialog<String>(
-      title: 'Novel Font Family',
+      title: context.l10n.novelFontFamily,
       items: _novelFonts,
       selectedItem: _novelFontFamily.obs,
       getTitle: (value) => value,
@@ -1447,7 +1448,7 @@ class _SettingsReaderState extends State<SettingsReader> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Reader Settings',
+      headerTitle: context.l10n.readerSettings,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(

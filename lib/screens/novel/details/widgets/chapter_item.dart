@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -218,7 +219,7 @@ class ChapterListItem extends StatelessWidget {
         width: 100,
         height: 40,
         color: context.colors.primary,
-        child: AnymeXText("Read",
+        child: AnymeXText(context.l10n.read,
           variant: TextVariant.semiBold,
           color: context.colors.onPrimary,
         ),

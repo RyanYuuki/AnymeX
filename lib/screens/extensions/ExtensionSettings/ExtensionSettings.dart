@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -188,10 +189,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   void _confirmClearCacheAndCookies(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cache & Cookies',
+      title: context.l10n.clearCacheCookies,
       message:
           'Are you sure you want to delete cache and cookies for ${widget.source.name}?',
-      confirmText: 'Clear',
+      confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCookiesForSource();
         await _clearCacheForSource();
@@ -202,10 +203,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   void _confirmClearCookies(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cookies',
+      title: context.l10n.clearCookies2,
       message:
           'Are you sure you want to delete saved cookies and Cloudflare tokens for ${widget.source.name}?',
-      confirmText: 'Clear',
+      confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCookiesForSource();
         snackBar('Cookies cleared for ${widget.source.name}');
@@ -215,10 +216,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   void _confirmClearCache(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cache',
+      title: context.l10n.clearCache,
       message:
           'Are you sure you want to delete temporary cache for ${widget.source.name}?',
-      confirmText: 'Clear',
+      confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCacheForSource();
         snackBar('Cache cleared for ${widget.source.name}');
@@ -228,25 +229,25 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   Widget _buildDataAndCacheSection(BuildContext context) {
     return AnymeXSectionBuilder(
-      title: 'Data & Cache',
+      title: context.l10n.dataCache,
       margin: EdgeInsets.zero,
       children: [
         AnymeXTile(
           leading: const Icon(Icons.cleaning_services_rounded),
-          title: 'Clear Cache & Cookies',
-          subtitle: 'Delete saved cookies, Cloudflare tokens, and temporary cache',
+          title: context.l10n.clearCacheCookies,
+          subtitle: context.l10n.deleteSavedCookiesCloudflareTokensAnd,
           onTap: () => _confirmClearCacheAndCookies(context),
         ),
         AnymeXTile(
           leading: const Icon(Icons.cookie_outlined),
-          title: 'Clear Cookies',
-          subtitle: 'Delete saved cookies and Cloudflare tokens',
+          title: context.l10n.clearCookies2,
+          subtitle: context.l10n.deleteSavedCookiesAndCloudflareTokens,
           onTap: () => _confirmClearCookies(context),
         ),
         AnymeXTile(
           leading: const Icon(Icons.cached_rounded),
-          title: 'Clear Cache',
-          subtitle: 'Delete temporary network and image cache',
+          title: context.l10n.clearCache,
+          subtitle: context.l10n.deleteTemporaryNetworkAndImageCache,
           onTap: () => _confirmClearCache(context),
         ),
       ],
@@ -460,7 +461,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                     children: [
                       if (preference.value!.isNotEmpty) ...[
                         AnymeXSectionBuilder(
-                          title: 'Source Preferences',
+                          title: context.l10n.sourcePreferences,
                           margin: EdgeInsets.zero,
                           children: preference.value!
                               .map((pref) => _buildPreferenceTile(

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -123,7 +124,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
   Future<void> _submit() async {
     final reason = _reasonController.text.trim();
     if (reason.length < 30) {
-      warningSnackBar('Please write at least 30 characters');
+      warningSnackBar(context.l10n.pleaseWriteAtLeast30Characters);
       return;
     }
 
@@ -143,7 +144,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     setState(() => _submitting = false);
 
     if (error == null) {
-      successSnackBar('Recommendation submitted! 🎉');
+      successSnackBar(context.l10n.recommendationSubmitted);
       if (_checkResult is Map) {
         // Adding a reason to an existing entry — refresh instead of pop
         _reasonController.clear();
@@ -194,7 +195,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 size: 40, color: colors.onSurfaceVariant),
             const SizedBox(height: 12),
             AnymeXText(
-              'Bot URL not configured',
+              context.l10n.botUrlNotConfigured,
               style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
             ),
           ],
@@ -385,7 +386,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  AnymeXText('Edit Reason',
+                  AnymeXText(context.l10n.editReason,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -400,7 +401,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   maxLength: 700,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Why are you recommending this? (min 30 chars)',
+                    hintText: context.l10n.whyAreYouRecommendingThisMin,
                     filled: true,
                     fillColor: colors.surfaceContainerLow,
                     border: OutlineInputBorder(
@@ -424,7 +425,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                     onPressed: () async {
                       final newReason = controller.text.trim();
                       if (newReason.length < 30) {
-                        warningSnackBar('Please write at least 30 characters');
+                        warningSnackBar(context.l10n.pleaseWriteAtLeast30Characters);
                         return;
                       }
                       Navigator.of(ctx).pop();
@@ -437,14 +438,14 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         isAdmin: _isAdmin,
                       );
                       if (error == null) {
-                        successSnackBar('Reason updated!');
+                        successSnackBar(Get.context!.l10n.reasonUpdated);
                         _runCheck();
                       } else {
                         errorSnackBar(error);
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const AnymeXText('Save Changes'),
+                    label: AnymeXText(context.l10n.saveChanges2),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -467,7 +468,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Delete Recommendation?'),
+        title: AnymeXText(context.l10n.deleteRecommendation),
         content: AnymeXText(
           _isAdmin
               ? 'This entry will be deleted immediately.'
@@ -476,12 +477,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText(context.l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const AnymeXText('Delete'),
+            child: AnymeXText(context.l10n.delete),
           ),
         ],
       ),
@@ -498,9 +499,9 @@ class _RecommendSheetState extends State<RecommendSheet> {
 
     if (error == null) {
       if (pending) {
-        successSnackBar('Deletion request sent to admins for review.');
+        successSnackBar(Get.context!.l10n.deletionRequestSentToAdminsFor);
       } else {
-        successSnackBar('Entry deleted.');
+        successSnackBar(Get.context!.l10n.entryDeleted);
       }
       if (mounted) Navigator.of(context).pop();
     } else {
@@ -514,7 +515,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Remove Your Reason?'),
+        title: AnymeXText(context.l10n.removeYourReason),
         content: AnymeXText(
           _isAdmin
               ? 'This reason will be removed immediately.'
@@ -523,12 +524,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText(context.l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const AnymeXText('Remove'),
+            child: AnymeXText(context.l10n.remove),
           ),
         ],
       ),
@@ -545,9 +546,9 @@ class _RecommendSheetState extends State<RecommendSheet> {
 
     if (error == null) {
       if (pending) {
-        successSnackBar('Removal request sent to admins for review.');
+        successSnackBar(Get.context!.l10n.removalRequestSentToAdminsFor);
       } else {
-        successSnackBar('Your reason has been removed.');
+        successSnackBar(Get.context!.l10n.yourReasonHasBeenRemoved);
       }
       _runCheck();
     } else {
@@ -591,7 +592,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  AnymeXText('Edit Reason',
+                  AnymeXText(context.l10n.editReason,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -606,7 +607,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   maxLength: 700,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Edit recommendation reason (min 30 chars)',
+                    hintText: context.l10n.editRecommendationReasonMin30Chars,
                     filled: true,
                     fillColor: colors.surfaceContainerLow,
                     border: OutlineInputBorder(
@@ -630,7 +631,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                     onPressed: () async {
                       final newReason = controller.text.trim();
                       if (newReason.length < 30) {
-                        warningSnackBar('Please write at least 30 characters');
+                        warningSnackBar(context.l10n.pleaseWriteAtLeast30Characters);
                         return;
                       }
                       Navigator.of(ctx).pop();
@@ -643,14 +644,14 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         isAdmin: true,
                       );
                       if (error == null) {
-                        successSnackBar('Reason updated!');
+                        successSnackBar(Get.context!.l10n.reasonUpdated);
                         _runCheck();
                       } else {
                         errorSnackBar(error);
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const AnymeXText('Save Changes'),
+                    label: AnymeXText(context.l10n.saveChanges2),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -671,18 +672,18 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Delete Reason?'),
-        content: const AnymeXText('This reason will be deleted immediately.'),
+        title: AnymeXText(context.l10n.deleteReason),
+        content: AnymeXText(context.l10n.thisReasonWillBeDeletedImmediately),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText(context.l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const AnymeXText('Delete'),
+            child: AnymeXText(context.l10n.delete),
           ),
         ],
       ),
@@ -699,7 +700,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
     );
 
     if (error == null) {
-      successSnackBar('Reason deleted.');
+      successSnackBar(Get.context!.l10n.reasonDeleted);
       _runCheck();
     } else {
       errorSnackBar(error);
@@ -811,7 +812,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         Icon(Icons.check_circle_rounded,
                             size: 14, color: colors.primary),
                         const SizedBox(width: 4),
-                        AnymeXText('Already recommended',
+                        AnymeXText(context.l10n.alreadyRecommended,
                             style:
                                 TextStyle(fontSize: 12, color: colors.primary)),
                       ],
@@ -851,7 +852,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             : null,
                       ),
                       const SizedBox(width: 8),
-                      AnymeXText('Your Recommendation',
+                      AnymeXText(context.l10n.yourRecommendation,
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -878,7 +879,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             onPressed: () => _editReason(
                                 userReason['text']?.toString() ?? ''),
                             icon: const Icon(Icons.edit_rounded, size: 16),
-                            label: const AnymeXText('Edit Reason'),
+                            label: AnymeXText(context.l10n.editReason),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
@@ -892,7 +893,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             onPressed: _deleteReason,
                             icon: const Icon(Icons.delete_outline_rounded,
                                 size: 16),
-                            label: const AnymeXText('Remove'),
+                            label: AnymeXText(context.l10n.remove),
                             style: FilledButton.styleFrom(
                               backgroundColor: colors.error,
                               foregroundColor: colors.onError,
@@ -916,7 +917,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           // Other users' recommendations
           if (otherReasons.isNotEmpty) ...[
             const SizedBox(height: 16),
-            AnymeXText('Other Recommendations',
+            AnymeXText(context.l10n.otherRecommendations,
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -994,7 +995,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                           size: 13,
                                           color: colors.onSurfaceVariant),
                                       const SizedBox(width: 2),
-                                      AnymeXText('Edit',
+                                      AnymeXText(context.l10n.edit,
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: colors.onSurfaceVariant,
@@ -1019,7 +1020,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                       Icon(Icons.delete_outline_rounded,
                                           size: 13, color: colors.error),
                                       const SizedBox(width: 2),
-                                      AnymeXText('Delete',
+                                      AnymeXText(context.l10n.delete,
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: colors.error,
@@ -1072,7 +1073,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             children: [
               Icon(Icons.add_comment_rounded, color: colors.primary, size: 18),
               const SizedBox(width: 8),
-              AnymeXText('Add Your Recommendation',
+              AnymeXText(context.l10n.addYourRecommendation,
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -1086,7 +1087,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             maxLines: 5,
             maxLength: 700,
             decoration: InputDecoration(
-              hintText: 'Why are you recommending this? (min 30 chars)',
+              hintText: context.l10n.whyAreYouRecommendingThisMin,
               hintStyle:
                   TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
               filled: true,
@@ -1156,7 +1157,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
         ),
         const SizedBox(height: 4),
         AnymeXText(
-          'Tell the community why this deserves more attention.',
+          context.l10n.tellTheCommunityWhyThisDeserves,
           style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
@@ -1166,7 +1167,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           maxLines: 6,
           maxLength: 700,
           decoration: InputDecoration(
-            hintText: 'Why is this underrated? (min 30 chars)',
+            hintText: context.l10n.whyIsThisUnderratedMin30,
             hintStyle: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
             filled: true,
             fillColor: colors.surfaceContainerLow,

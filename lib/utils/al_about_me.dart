@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -347,15 +348,15 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                         icon: Icons.music_note_rounded,
                         color: const Color(0xFF1DB954),
                         title: 'Spotify',
-                        subtitle: 'Tap to open in Spotify',
+                        subtitle: context.l10n.tapToOpenInSpotify,
                       );
                     }
                     return AnilistExternalTile(
                       url: src,
                       icon: Icons.open_in_new_rounded,
                       color: context.theme.colorScheme.primary,
-                      title: 'Embedded content',
-                      subtitle: 'Tap to open',
+                      title: context.l10n.embeddedContent,
+                      subtitle: context.l10n.tapToOpen,
                     );
                   }
                 }
@@ -727,8 +728,8 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
         url: widget.url,
         icon: Icons.open_in_new_rounded,
         color: context.theme.colorScheme.primary,
-        title: 'Dynamic Widget',
-        subtitle: 'Tap to view in browser',
+        title: context.l10n.dynamicWidget,
+        subtitle: context.l10n.tapToViewInBrowser,
       );
     }
 

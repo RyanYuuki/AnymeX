@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -590,7 +591,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
       NavItem(
         selectedIcon: Iconsax.info_circle5,
         unselectedIcon: Iconsax.info_circle,
-        label: 'Info',
+        label: context.l10n.info,
         onTap: (index) => _onTabSelected(index),
       ),
       NavItem(
@@ -602,7 +603,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
       NavItem(
         selectedIcon: HugeIcons.strokeRoundedComment01,
         unselectedIcon: HugeIcons.strokeRoundedComment02,
-        label: 'Comments',
+        label: context.l10n.comments,
         onTap: (index) => _onTabSelected(index),
       ),
     ];
@@ -786,7 +787,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                   key: const ValueKey('media_relations'),
                   child: ReusableCarousel(
                     data: rels,
-                    title: 'Relations',
+                    title: context.l10n.relations,
                     variant: DataVariant.relation,
                   ).bottomSpacing(16),
                 );
@@ -991,7 +992,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                       Icons.sort_rounded,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    tooltip: 'Sort comments',
+                    tooltip: context.l10n.sortComments,
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         value: 'top',
@@ -1003,7 +1004,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            const AnymeXText('Top comments', maxLines: null),
+                            AnymeXText(context.l10n.topComments, maxLines: null),
                           ],
                         ),
                       ),
@@ -1017,7 +1018,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            const AnymeXText('Newest first', maxLines: null),
+                            AnymeXText(context.l10n.newestFirst, maxLines: null),
                           ],
                         ),
                       ),
@@ -1031,7 +1032,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            const AnymeXText('Oldest first', maxLines: null),
+                            AnymeXText(context.l10n.oldestFirst, maxLines: null),
                           ],
                         ),
                       ),
@@ -1040,13 +1041,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                   IconButton(
                     icon: const Icon(Icons.emoji_events_outlined, size: 21),
                     onPressed: () => LeaderboardSheet.show(context),
-                    tooltip: 'Leaderboard',
+                    tooltip: context.l10n.leaderboard,
                   ),
                   IconButton(
                     icon: const Icon(Icons.assignment_outlined, size: 20),
                     onPressed: () =>
                         showPolicySheet(context, PolicyType.commentRules),
-                    tooltip: 'Comment Rules',
+                    tooltip: context.l10n.commentRules,
                   ),
                   Obx(() => IconButton(
                         icon: commentCtrl.isRefreshing.value
@@ -1064,7 +1065,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                         onPressed: commentCtrl.isRefreshing.value
                             ? null
                             : () => commentCtrl.forceRefresh(),
-                        tooltip: 'Refresh comments',
+                        tooltip: context.l10n.refreshComments,
                       )),
                 ],
               ),
@@ -1117,7 +1118,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
           const SizedBox(width: 12),
           Expanded(
             child: AnymeXText(
-              'Log in to join the conversation and comment.',
+              context.l10n.logInToJoinTheConversation,
               size: 13,
               color: colorScheme.onSurfaceVariant,
               maxLines: 2,
@@ -1134,7 +1135,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: AnymeXText(
-                'Log In',
+                context.l10n.logIn,
                 size: 13,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onPrimary,

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -117,7 +118,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   void _showDeleteEpisodeDialog(
       BuildContext context, DownloadedEpisodeMeta ep) {
     AnymeXDialog(
-      title: 'Delete episode?',
+      title: context.l10n.deleteEpisodeQuestion,
       message:
           'Episode ${ep.number} will be permanently removed from your downloads.',
       onConfirm: () async {
@@ -131,7 +132,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           );
           await _refresh();
         } catch (e) {
-          snackBar('Failed to delete episode');
+          snackBar(Get.context!.l10n.failedToDeleteEpisode);
         } finally {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
@@ -145,7 +146,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       BuildContext context, DownloadedChapterMeta ch) {
     final display = ch.displayTitle;
     AnymeXDialog(
-      title: 'Delete chapter?',
+      title: context.l10n.deleteChapterQuestion,
       message: '$display will be permanently removed from your downloads.',
       onConfirm: () async {
         _showLoadingDialog(context, 'Deleting chapter...');
@@ -157,7 +158,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           );
           await _refresh();
         } catch (e) {
-          snackBar('Failed to delete chapter');
+          snackBar(Get.context!.l10n.failedToDeleteChapter);
         } finally {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
@@ -189,7 +190,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         } catch (e) {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
-            snackBar('Failed to delete media');
+            snackBar(context.l10n.failedToDeleteMedia);
           }
         }
       },
@@ -292,7 +293,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       target ??= chapters.first;
 
       return continueFab(
-        label: 'Continue Reading',
+        label: context.l10n.continueReading,
         subtitle: target.displayTitle,
         icon: HugeIcons.strokeRoundedBookOpen01,
         onTap: () => _playChapter(target!),
@@ -336,7 +337,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     }
 
     return continueFab(
-      label: 'Continue Watching',
+      label: context.l10n.continueWatching,
       subtitle: subtitle,
       icon: Icons.play_arrow_rounded,
       onTap: () => _playEpisode(target!),
@@ -637,7 +638,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                             ),
                           ),
                           child: AnymeXText(
-                            'DOWNLOADED',
+                            context.l10n.downloaded,
                             style: TextStyle(
                               fontFamily: 'Linotte',
                               fontSize: 10.0,
@@ -763,7 +764,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             Icon(Icons.track_changes_rounded, size: 15, color: theme.primary),
             const SizedBox(width: 6),
             AnymeXText(
-              'Track',
+              context.l10n.track,
               style: TextStyle(
                 color: theme.primary,
                 fontSize: 12,
@@ -1296,7 +1297,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(height: 14),
             AnymeXText(
-              'Nothing downloaded yet',
+              context.l10n.nothingDownloadedYet,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
                 fontSize: 15,
@@ -1306,7 +1307,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(height: 4),
             AnymeXText(
-              'Media you download will appear here.',
+              context.l10n.mediaYouDownloadWillAppearHere,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.28),
                 fontSize: 13,

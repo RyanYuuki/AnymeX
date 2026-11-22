@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:ui';
 
@@ -446,7 +447,7 @@ class _CalendarState extends State<Calendar>
 
       return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'Calendar',
+        headerTitle: context.l10n.calendar,
         headerSubtitle: subtitleText,
         headerAction: _buildHeaderActions(context),
         headerBottom: _buildTabsRow(context),
@@ -490,7 +491,7 @@ class _CalendarState extends State<Calendar>
                   } else if (filteredList.isEmpty) {
                     return Padding(
                       padding: EdgeInsets.only(top: headerHeight),
-                      child: const Center(child: AnymeXText("No Anime found")),
+                      child: Center(child: AnymeXText(context.l10n.noAnimeFound)),
                     );
                   }
 

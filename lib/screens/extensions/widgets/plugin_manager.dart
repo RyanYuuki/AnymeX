@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -26,7 +27,7 @@ class PluginManager {
 
     final release = await fetchLatestRelease();
     if (release == null) {
-      errorSnackBar('Failed to fetch plugin release details.');
+      errorSnackBar(Get.context!.l10n.failedToFetchPluginReleaseDetails);
       return;
     }
 
@@ -40,7 +41,7 @@ class PluginManager {
   }) async {
     final release = await fetchLatestRelease();
     if (release == null) {
-      errorSnackBar('Failed to check plugin updates.');
+      errorSnackBar(Get.context!.l10n.failedToCheckPluginUpdates);
       return;
     }
 
@@ -58,7 +59,7 @@ class PluginManager {
         release: release,
         installedVersion: currentVersion,
       );
-      successSnackBar("Restart the App to apply the update.");
+      successSnackBar(Get.context!.l10n.restartTheAppToApplyThe);
       return;
     }
 
@@ -235,11 +236,11 @@ class PluginManager {
     final isApk = apkPath.toLowerCase().endsWith('.apk');
 
     if (Platform.isAndroid && !isApk) {
-      errorSnackBar('Please select a valid APK file.');
+      errorSnackBar(Get.context!.l10n.pleaseSelectAValidApkFile);
       return false;
     }
     if (!Platform.isAndroid && !isJar) {
-      errorSnackBar('Please select a valid JAR file.');
+      errorSnackBar(Get.context!.l10n.pleaseSelectAValidJarFile);
       return false;
     }
 
@@ -273,14 +274,14 @@ class PluginManager {
       if (Platform.isAndroid && bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
-        successSnackBar('Plugin synced from local APK.');
+        successSnackBar(Get.context!.l10n.pluginSyncedFromLocalApk);
         return true;
       } else if (!Platform.isAndroid) {
-        successSnackBar('Plugin jar copied. Please restart the app.');
+        successSnackBar(Get.context!.l10n.pluginJarCopiedPleaseRestartThe);
         return true;
       }
 
-      errorSnackBar('Sync completed, but the plugin is not ready yet.');
+      errorSnackBar(Get.context!.l10n.syncCompletedButThePluginIs);
       return false;
     } catch (e) {
       errorSnackBar('Sync failed: $e');
@@ -378,7 +379,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         if (fetched != null) {
           _checkBridgeReady();
         } else {
-          errorSnackBar('Failed to fetch release details.');
+          errorSnackBar(context.l10n.failedToFetchReleaseDetails);
           Navigator.of(context).pop();
         }
       }
@@ -457,7 +458,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Fetching latest release details...',
+              context.l10n.fetchingLatestReleaseDetails,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -489,7 +490,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             _buildVersionCard(colors, bridge, isBusy, isComplete),
             const SizedBox(height: 14),
             AnymeXText(
-              'CHANGELOG',
+              context.l10n.changelog,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -553,7 +554,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 ? IconButton(
                     onPressed: widget.manager.forceSyncLocalApk,
                     icon: Icon(Icons.sync_rounded, color: colors.primary),
-                    tooltip: 'Force Sync from SD Card',
+                    tooltip: context.l10n.forceSyncFromSdCard,
                   )
                 : Icon(
                     widget.mode == _PluginSheetMode.install

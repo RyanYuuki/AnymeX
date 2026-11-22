@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -399,9 +400,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (context, setDialogState) => AnymeXDialog(
-          title: 'Select Status',
+          title: context.l10n.selectStatus,
           showCancelButton: true,
-          confirmText: 'Done',
+          confirmText: context.l10n.done2,
           onConfirm: () {},
           contentWidget: AnymeXTileBuilder<(String, String)>(
             items: _statuses.map((s) {
@@ -444,7 +445,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           children: [
             AnymeXTile(
               icon: Icons.info_outline_rounded,
-              title: 'Status',
+              title: context.l10n.status,
               subtitle: displayStatus,
               onTap: () => _showStatusSelectionDialog(context),
             ),
@@ -522,7 +523,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXText(
-                'Edit Media Entry',
+                context.l10n.editMediaEntry,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colors.onSurface,
@@ -569,7 +570,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
     return AnymeXTile(
       icon: Icons.layers_rounded,
-      title: 'Season',
+      title: context.l10n.season,
       subtitle: maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
       showChevron: false,
       trailing: Container(
@@ -644,7 +645,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          hintText: 'Season',
+          hintText: context.l10n.season,
           hintStyle: TextStyle(color: colors.onSurfaceVariant),
         ),
         onChanged: (v) {
@@ -669,7 +670,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
       icon: widget.isManga
           ? Icons.menu_book_rounded
           : Icons.play_circle_outline_rounded,
-      title: 'Progress',
+      title: context.l10n.progress,
       subtitle: subtitleText,
       showChevron: false,
       trailing: Container(
@@ -816,7 +817,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               border: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
               child: AnymeXText(
-                'Delete',
+                context.l10n.delete,
                 style: TextStyle(
                   color: colors.error,
                   fontWeight: FontWeight.w600,
@@ -864,7 +865,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     Opacity(
                       opacity: _isSaving ? 0 : 1,
                       child: AnymeXText(
-                        'Save changes',
+                        context.l10n.saveChanges,
                         style: TextStyle(
                           color: colors.onPrimary,
                           fontWeight: FontWeight.w600,

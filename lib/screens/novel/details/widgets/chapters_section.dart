@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -272,11 +273,11 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                         ),
                       )
                     else if (chunkedChapters.isEmpty)
-                      const SliverToBoxAdapter(
+                      SliverToBoxAdapter(
                         child: SizedBox(
                           height: 240,
                           child: Center(
-                            child: AnymeXText("No Chapters Found"),
+                            child: AnymeXText(context.l10n.noChaptersFound),
                           ),
                         ),
                       )
@@ -307,7 +308,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
             activeSource: controller.activeSource.value,
             installedSources: _sourceController.installedNovelExtensions,
             isManga: false,
-            label: 'Select Novel Source',
+            label: context.l10n.selectNovelSource,
             onSourceSelected: (source) {
               controller.switchSource(source);
             },
@@ -374,7 +375,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                             .opaque(0.3),
                       ),
                     ),
-                    child: AnymeXText('Wrong Title?',
+                    child: AnymeXText(context.l10n.wrongTitle,
                       size: 12,
                       variant: TextVariant.semiBold,
                       color: Theme.of(context).colorScheme.primary,
@@ -387,7 +388,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const AnymeXText('Chapters',
+              AnymeXText(context.l10n.chapters,
                 variant: TextVariant.bold,
                 size: 18,
               ),
@@ -404,7 +405,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                       )
                     : IconButton(
                         onPressed: controller.syncDetails,
-                        tooltip: 'Sync Details',
+                        tooltip: context.l10n.syncDetails,
                         icon: const Icon(Icons.sync_rounded),
                       )),
               IconButton(

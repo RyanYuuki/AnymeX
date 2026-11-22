@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/utils/function.dart';
@@ -118,7 +119,7 @@ class NewsPage extends StatelessWidget {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          AnymeXText("Read Article",
+                                          AnymeXText(context.l10n.readArticle,
                                             variant: TextVariant.bold,
                                             size: 12,
                                             color: colorScheme.primary,

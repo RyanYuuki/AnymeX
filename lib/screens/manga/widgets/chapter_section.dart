@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -199,14 +200,14 @@ class ChapterSection extends StatelessWidget {
         final settings = Get.find<Settings>();
         return Obx(
           () => AnymeXDialog(
-            title: 'Chapter List Settings',
+            title: context.l10n.chapterListSettings,
             onConfirm: () {},
             contentWidget: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                  'Layout Style',
+                AnymeXText(
+                  context.l10n.layoutStyle,
                   variant: TextVariant.bold,
                   size: 14,
                 ),
@@ -214,8 +215,8 @@ class ChapterSection extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _ProviderOptionTile(
-                    title: 'Compact',
-                    subtitle: 'Simple compact list view',
+                    title: context.l10n.compact,
+                    subtitle: context.l10n.simpleCompactListView,
                     isSelected: settings.chapterStyle == 'compact',
                     onTap: () {
                       settings.chapterStyle = 'compact';
@@ -225,9 +226,9 @@ class ChapterSection extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _ProviderOptionTile(
-                    title: 'Detailed (Classic)',
+                    title: context.l10n.detailedClassic,
                     subtitle:
-                        'Full-width detailed cards with progress and read button',
+                        context.l10n.fullWidthDetailedCardsWithProgress,
                     isSelected: settings.chapterStyle == 'detailed',
                     onTap: () {
                       settings.chapterStyle = 'detailed';
@@ -237,8 +238,8 @@ class ChapterSection extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: _ProviderOptionTile(
-                    title: 'Grid',
-                    subtitle: 'Compact grid of chapter numbers',
+                    title: context.l10n.grid,
+                    subtitle: context.l10n.compactGridOfChapterNumbers,
                     isSelected: settings.chapterStyle == 'grid',
                     onTap: () {
                       settings.chapterStyle = 'grid';

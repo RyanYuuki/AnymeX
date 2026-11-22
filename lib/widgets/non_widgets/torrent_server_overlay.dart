@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -309,7 +310,7 @@ class _TorrentServerOverlayWidgetState
                                           CrossAxisAlignment.start,
                                       children: [
                                         AnymeXText(
-                                          'Torrent Server',
+                                          context.l10n.torrentServer,
                                           variant: TextVariant.bold,
                                           size: 13.5,
                                           color: theme.onSurface,

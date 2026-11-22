@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
@@ -65,7 +66,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
       }
 
       return WatchSettingsPane(
-        title: 'Quality Settings',
+        title: context.l10n.qualitySettings,
         onClose: widget.onClose,
         tabBar: _buildTabBar(cs, theme, hasInbuilt: hasInbuilt),
         child: switch (_currentTab) {

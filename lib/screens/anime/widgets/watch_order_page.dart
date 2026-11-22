@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -70,7 +72,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
     return AnymeXScaffold(
   body: Column(
           children: [
-            const NestedHeader(title: 'Watch Order'),
+            NestedHeader(title: context.l10n.watchOrder),
             Expanded(
               child: Builder(
                 builder: (context) {
@@ -88,8 +90,8 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                     );
                   }
                   if (watchOrder.isEmpty) {
-                    return const Center(
-                        child: AnymeXText("No watch order found."));
+                    return Center(
+                        child: AnymeXText(context.l10n.noWatchOrderFound));
                   }
 
                   return ListView.builder(

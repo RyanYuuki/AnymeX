@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -80,7 +81,7 @@ class AnimeStats extends StatelessWidget {
           _buildCollapsibleSectionContainer(
             context,
             icon: Icons.analytics_outlined,
-            title: "Statistics",
+            title: context.l10n.statistics,
             child: _buildStatsGrid(context),
             isInitiallyExpanded: true,
           ),
@@ -92,7 +93,7 @@ class AnimeStats extends StatelessWidget {
                 child: _buildInfoCard(
                   context,
                   icon: Icons.language_rounded,
-                  title: "Romaji Title",
+                  title: context.l10n.romajiTitle,
                   content: AnymeXText(data.romajiTitle,
                     variant: TextVariant.semiBold,
                     size: 15,
@@ -107,7 +108,7 @@ class AnimeStats extends StatelessWidget {
           _buildCollapsibleInfoCard(
             context,
             icon: Icons.description_outlined,
-            title: "Synopsis",
+            title: context.l10n.synopsis,
             content: AnymeXText(data.description,
               size: 15,
               color: colorScheme.onSurface.opaque(0.9),
@@ -120,7 +121,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Synonyms',
+              title: context.l10n.synonyms,
               icon: Icons.translate_rounded,
               chips: data.synonyms.map((s) => _ChipData(label: s)).toList(),
             ),
@@ -129,7 +130,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Tags',
+              title: context.l10n.tags2,
               icon: Icons.label_rounded,
               chips: data.tags
                   .map((t) => _ChipData(
@@ -149,7 +150,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'External & Streaming Links',
+              title: context.l10n.externalStreamingLinks,
               icon: Icons.open_in_new_rounded,
               chips: data.externalLinks!
                   .map((link) => _ChipData(
@@ -163,7 +164,7 @@ class AnimeStats extends StatelessWidget {
           _buildSectionContainer(
             context,
             icon: Icons.category_rounded,
-            title: "Genres",
+            title: context.l10n.genres,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 15),
@@ -273,7 +274,7 @@ class AnimeStats extends StatelessWidget {
     return _buildCollapsibleSectionContainer(
         context,
         icon: Icons.more,
-        title: "Others",
+        title: context.l10n.others,
         child: Column(
           children: [
             GestureDetector(
@@ -311,12 +312,12 @@ class AnimeStats extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText("Openings & Endings",
+                          AnymeXText(context.l10n.openingsEndings,
                             variant: TextVariant.bold,
                             size: 14,
                           ),
                           const SizedBox(height: 4),
-                          AnymeXText("View opening and ending themes",
+                          AnymeXText(context.l10n.viewOpeningAndEndingThemes,
                             variant: TextVariant.regular,
                             size: 13,
                             color: colorScheme.onSurface.opaque(0.6),
@@ -374,12 +375,12 @@ class AnimeStats extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymeXText("Recent News",
+                                  AnymeXText(context.l10n.recentNews,
                                     variant: TextVariant.bold,
                                     size: 14,
                                   ),
                                   const SizedBox(height: 4),
-                                  AnymeXText("Read latest updates about this anime",
+                                  AnymeXText(context.l10n.readLatestUpdatesAboutThisAnime,
                                     variant: TextVariant.regular,
                                     size: 13,
                                     color: colorScheme.onSurface.opaque(0.6),
@@ -437,12 +438,12 @@ class AnimeStats extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText("Watch Order",
+                          AnymeXText(context.l10n.watchOrder,
                             variant: TextVariant.bold,
                             size: 14,
                           ),
                           const SizedBox(height: 4),
-                          AnymeXText("View the chronological watch order of this anime",
+                          AnymeXText(context.l10n.viewTheChronologicalWatchOrderOf,
                             variant: TextVariant.regular,
                             size: 13,
                             color: colorScheme.onSurface.opaque(0.6),
@@ -476,7 +477,7 @@ class AnimeStats extends StatelessWidget {
         ? const SizedBox.shrink()
         : _buildSectionContainer(context,
             icon: Icons.tv_rounded,
-            title: "Seasons",
+            title: context.l10n.seasons,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

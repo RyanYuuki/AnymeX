@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -158,11 +160,11 @@ class AudioTrack {
   }
 
   factory AudioTrack.no() {
-    return AudioTrack(id: 'no', title: 'No Audio');
+    return AudioTrack(id: 'no', title: Get.context!.l10n.noAudio);
   }
 
   factory AudioTrack.auto() {
-    return AudioTrack(id: 'auto', title: 'Auto');
+    return AudioTrack(id: 'auto', title: Get.context!.l10n.auto);
   }
 }
 
@@ -212,11 +214,11 @@ class SubtitleTrack {
   }
 
   factory SubtitleTrack.no() {
-    return SubtitleTrack(id: 'no', title: 'No Subtitle');
+    return SubtitleTrack(id: 'no', title: Get.context!.l10n.noSubtitle);
   }
 
   factory SubtitleTrack.auto() {
-    return SubtitleTrack(id: 'auto', title: 'Auto');
+    return SubtitleTrack(id: 'auto', title: Get.context!.l10n.auto);
   }
 }
 
@@ -236,11 +238,11 @@ class VideoTrack {
   });
 
   factory VideoTrack.no() {
-    return VideoTrack(id: 'no', title: 'No Video');
+    return VideoTrack(id: 'no', title: Get.context!.l10n.noVideo);
   }
 
   factory VideoTrack.auto() {
-    return VideoTrack(id: 'auto', title: 'Auto');
+    return VideoTrack(id: 'auto', title: Get.context!.l10n.auto);
   }
 }
 

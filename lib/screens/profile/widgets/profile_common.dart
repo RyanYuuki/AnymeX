@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
@@ -29,11 +30,11 @@ Future<bool> confirmDiscardComposer(
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const AnymeXText('Keep editing'),
+              child: AnymeXText(context.l10n.keepEditing),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const AnymeXText('Discard'),
+              child: AnymeXText(context.l10n.discard),
             ),
           ],
         ),
@@ -207,7 +208,7 @@ void showActivityFilterSheet(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    "Filter Activity",
+                    context.l10n.filterActivity,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -216,7 +217,7 @@ void showActivityFilterSheet(
                   ),
                   const SizedBox(height: 10),
                   CheckboxListTile(
-                    title: const AnymeXText('All'),
+                    title: AnymeXText(context.l10n.all),
                     value: activityFilters.length == 4,
                     activeColor: context.theme.colorScheme.primary,
                     checkboxShape: RoundedRectangleBorder(
@@ -270,8 +271,8 @@ void showActivityFilterSheet(
                         Navigator.pop(context);
                         onApply();
                       },
-                      child: const AnymeXText(
-                        "Apply Filters",
+                      child: AnymeXText(
+                        context.l10n.applyFilters,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

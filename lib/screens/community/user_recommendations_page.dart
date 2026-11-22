@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -240,7 +241,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                 size: 48,
                 color: context.colors.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(height: 12),
-            AnymeXText('No recommendations found',
+            AnymeXText(context.l10n.noRecommendationsFound,
               color: context.colors.onSurfaceVariant.withOpacity(0.7),
               variant: TextVariant.semiBold,
             ),

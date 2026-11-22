@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/settings/settings.dart';
@@ -113,14 +114,14 @@ class _MyLibraryState extends State<MyLibrary>
               scrollController: _scrollController,
               headerContent: Obx(
                 () => Header(
-                  title: 'Library',
-                  subtitle: 'All your local shi',
+                  title: context.l10n.libraryLabel,
+                  subtitle: context.l10n.allYourLocalShi,
                   isSearchActive: controller.isSearchActive.value,
                   searchBar: HeaderSearchBar(
                     controller: controller.searchController,
                     onChanged: controller.search,
                     onClose: controller.toggleSearch,
-                    hintText: 'Search in Library...',
+                    hintText: context.l10n.searchInLibrary,
                   ),
                   actions: [
                     HeaderActionButton(

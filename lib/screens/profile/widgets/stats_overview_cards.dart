@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/user_media_list_page.dart';
 import 'package:anymex/utils/function.dart';
@@ -38,7 +39,7 @@ class DesktopStatsGrid extends StatelessWidget {
 
     final items = [
       _StatCard(
-        label: 'ANIME',
+        label: context.l10n.animeUpper,
         value: anime?.animeCount ?? '0',
         sub: 'entries',
         color: context.theme.colorScheme.primary,
@@ -54,19 +55,19 @@ class DesktopStatsGrid extends StatelessWidget {
         ),
       ),
       _StatCard(
-        label: 'DAYS',
+        label: context.l10n.days,
         value: days.toString(),
         sub: 'watched',
         color: context.theme.colorScheme.onSurface,
       ),
       _StatCard(
-        label: 'MEAN',
+        label: context.l10n.mean,
         value: meanScore,
         sub: 'score',
         color: context.theme.colorScheme.primary,
       ),
       _StatCard(
-        label: 'CHAPTERS',
+        label: context.l10n.chaptersUpper,
         value: manga?.chaptersRead ?? '0',
         sub: 'read',
         color: context.theme.colorScheme.primary,
@@ -82,13 +83,13 @@ class DesktopStatsGrid extends StatelessWidget {
         ),
       ),
       _StatCard(
-        label: 'VOLUMES',
+        label: context.l10n.volumes,
         value: manga?.volumesRead ?? '0',
         sub: 'read',
         color: context.theme.colorScheme.onSurface,
       ),
       _StatCard(
-        label: 'MEAN',
+        label: context.l10n.mean,
         value: manga?.meanScore ?? '0',
         sub: 'score',
         color: context.theme.colorScheme.primary,

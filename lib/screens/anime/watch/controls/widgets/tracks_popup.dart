@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/database/isar_models/track.dart' as model;
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
@@ -127,7 +128,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
     final cs = theme.colorScheme;
 
     return WatchSettingsPane(
-      title: 'Subtitle Settings',
+      title: context.l10n.subtitleSettings,
       onClose: widget.onClose,
       tabBar: _buildTabBar(cs, theme),
       child: switch (_currentTab) {
@@ -235,7 +236,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                   return AnymeXTile.toggle(
                     value: allMode,
                     icon: Icons.layers_rounded,
-                    title: 'Show all streams',
+                    title: context.l10n.showAllStreams,
                     onChanged: (val) {
                       _showAllStreams.value = val;
                       widget.controller.showAllStreamSubtitles.value = val;
@@ -246,9 +247,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
                 if (index == 1) {
                   return AnymeXTile(
-                    title: 'Import Local Subtitle',
+                    title: context.l10n.importLocalSubtitle,
                     subtitle:
-                        'Choose a subtitle file from your device (.srt, .vtt, .ass, .ssa)',
+                        context.l10n.chooseASubtitleFileFromYour,
                     icon: Icons.file_open_rounded,
                     onTap: () {
                       widget.controller.pickLocalSubtitle();
@@ -328,7 +329,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               Expanded(
                 child: AnymeXSearchBar(
                   controller: _onlineSearchController,
-                  hintText: 'Search anime / episode...',
+                  hintText: context.l10n.searchAnimeEpisode,
                   onSubmitted: (_) => _performOnlineSearch(),
                 ),
               ),

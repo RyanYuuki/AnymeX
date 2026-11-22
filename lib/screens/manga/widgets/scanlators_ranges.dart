@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,7 @@ class ScanlatorsRanges extends StatelessWidget {
         scrollPadding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
         items: [
           PillItem(
-            label: 'All',
+            label: context.l10n.all,
             isSelected: selected == 0,
             onTap: () {
               selectedScanIndex.value = 0;

@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
@@ -204,8 +206,8 @@ class DetailedEpisodeWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: Colors.orange.withOpacity(0.5)),
                               ),
-                              child: const AnymeXText(
-                                "FILLER",
+                              child: AnymeXText(
+                                context.l10n.filler,
                                 size: 10,
                                 color: Colors.orange,
                                 variant: TextVariant.bold,

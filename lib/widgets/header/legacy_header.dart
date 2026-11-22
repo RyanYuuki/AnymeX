@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
@@ -56,52 +57,52 @@ class Header extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (type == PageType.library) ...[
-                      const AnymeXText(
-                        "Library",
+                      AnymeXText(
+                        context.l10n.libraryLabel,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "All your local shi",
+                        context.l10n.allYourLocalShi,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.history) ...[
-                      const AnymeXText(
-                        "History",
+                      AnymeXText(
+                        context.l10n.history,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Your watch & read history",
+                        context.l10n.yourWatchReadHistory,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.stats) ...[
-                      const AnymeXText(
-                        "Stats",
+                      AnymeXText(
+                        context.l10n.stats,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Your watch & read statistics",
+                        context.l10n.yourWatchReadStatistics,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.extensions) ...[
-                      const AnymeXText(
-                        "Extensions",
+                      AnymeXText(
+                        context.l10n.extensions,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Manage plugins & sources",
+                        context.l10n.managePluginsSources,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -109,7 +110,7 @@ class Header extends StatelessWidget {
                       ),
                     ] else ...[
                       Obx(() => AnymeXText(
-                            "${greetingController.currentGreeting.value},",
+                            "${greetingController.currentGreeting.value(context.l10n)},",
                             autoResize: true,
                             maxLines: 1,
                           )),
@@ -334,21 +335,21 @@ class Header extends StatelessWidget {
                       AnymeXTextSpans(
                         fontSize: 18,
                         spans: [
-                          const AnymeXTextSpan(
-                              text: 'Hey ', variant: TextVariant.bold),
+                          AnymeXTextSpan(
+                              text: context.l10n.hey, variant: TextVariant.bold),
                           AnymeXTextSpan(
                               text:
-                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : context.l10n.guest}',
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymeXTextSpan(
-                              text: ', what are we doing today?',
+                          AnymeXTextSpan(
+                              text: context.l10n.whatAreWeDoingToday,
                               variant: TextVariant.bold)
                         ],
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        "Find your favourite Anime, Manga, Manhwa or whatever you like!",
+                        context.l10n.findYourFavouriteAnimeMangaManhwa,
                         style: TextStyle(
                           fontSize: 12,
                           color: context.colors.onSurface.withOpacity(0.7),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -185,22 +186,22 @@ class _GistSyncCard extends StatelessWidget {
                       ),
                       if (hasCloudGist == true) ...[
                         AnymeXSectionBuilder(
-                          title: 'Sync Preferences',
+                          title: context.l10n.syncPreferences,
                           margin: const EdgeInsets.only(top: 14),
                           children: [
                             AnymeXTile.toggle(
                               icon: Icons.sync_rounded,
-                              title: 'Auto-sync progress',
+                              title: context.l10n.autoSyncProgress,
                               subtitle:
-                                  'While watching episodes or reading chapters',
+                                  context.l10n.whileWatchingEpisodesOrReadingChapters,
                               value: syncEnabled,
                               onChanged: (v) => ctrl.syncEnabled.value = v,
                             ),
                             AnymeXTile.toggle(
                               icon: Icons.auto_delete_rounded,
-                              title: 'Auto-delete completed entries',
+                              title: context.l10n.autoDeleteCompletedEntries,
                               subtitle:
-                                  'Removes finished media from cloud gist',
+                                  context.l10n.removesFinishedMediaFromCloudGist,
                               value: autoDeleteCompletedOnExit,
                               onChanged: (v) {
                                 unawaited(ctrl.setAutoDeleteCompletedOnExit(v));
@@ -208,9 +209,9 @@ class _GistSyncCard extends StatelessWidget {
                             ),
                             AnymeXTile.toggle(
                               icon: Icons.notifications_active_outlined,
-                              title: 'Exit sync notifications',
+                              title: context.l10n.exitSyncNotifications,
                               subtitle:
-                                  'Show sync result when player or reader closes',
+                                  context.l10n.showSyncResultWhenPlayerOr,
                               value: showExitSyncNotifications,
                               onChanged: (v) {
                                 unawaited(ctrl.setExitSyncNotifications(v));
@@ -557,37 +558,37 @@ class _GistSyncCard extends StatelessWidget {
                     ),
                   ),
                   AnymeXSectionBuilder(
-                    title: 'Cloud Tools',
+                    title: context.l10n.cloudTools,
                     margin: const EdgeInsets.only(top: 16),
                     children: [
                       AnymeXTile(
                         icon: Icons.open_in_new_rounded,
-                        title: 'View Cloud Gist',
-                        subtitle: 'Open your AnymeX sync gist on GitHub',
+                        title: context.l10n.viewCloudGist,
+                        subtitle: context.l10n.openYourAnymexSyncGistOn,
                         enabled: !ctrl.isSyncing.value &&
                             ctrl.hasCloudGist.value != false,
                         onTap: () => _openGistInBrowser(ctx, ctrl),
                       ),
                       AnymeXTile(
                         icon: Icons.download_rounded,
-                        title: 'Export Gist JSON',
-                        subtitle: 'Save your current cloud progress to a file',
+                        title: context.l10n.exportGistJson,
+                        subtitle: context.l10n.saveYourCurrentCloudProgressTo,
                         enabled: !ctrl.isSyncing.value &&
                             ctrl.hasCloudGist.value != false,
                         onTap: () => _exportGistJson(ctx, ctrl),
                       ),
                       AnymeXTile(
                         icon: Icons.upload_file_rounded,
-                        title: 'Import Gist JSON',
+                        title: context.l10n.importGistJson,
                         subtitle:
-                            'Merge uploaded entries or replace cloud data',
+                            context.l10n.mergeUploadedEntriesOrReplaceCloud,
                         enabled: !ctrl.isSyncing.value,
                         onTap: () => _importGistJson(ctx, ctrl),
                       ),
                       AnymeXTile(
                         icon: Icons.delete_forever_rounded,
-                        title: 'Delete Cloud Gist',
-                        subtitle: 'Permanently remove AnymeX sync data',
+                        title: context.l10n.deleteCloudGist,
+                        subtitle: context.l10n.permanentlyRemoveAnymexSyncData,
                         iconColor: ctx.colors.error,
                         enabled: !ctrl.isSyncing.value &&
                             ctrl.hasCloudGist.value != false,
@@ -598,13 +599,13 @@ class _GistSyncCard extends StatelessWidget {
                     ],
                   ),
                   AnymeXSectionBuilder(
-                    title: 'Account',
+                    title: context.l10n.account,
                     margin: const EdgeInsets.only(top: 16),
                     children: [
                       AnymeXTile(
                         icon: IconlyLight.logout,
-                        title: 'Log Out',
-                        subtitle: 'Disconnect this GitHub account from AnymeX',
+                        title: context.l10n.logOut,
+                        subtitle: context.l10n.disconnectThisGithubAccountFromAnymex,
                         onTap: () {
                           ctrl.logout();
                           Navigator.pop(ctx);
@@ -667,10 +668,10 @@ class _GistSyncCard extends StatelessWidget {
       }
 
       if (outputPath == null) return;
-      successSnackBar('Exported gist JSON.');
+      successSnackBar(Get.context!.l10n.exportedGistJson);
     } catch (e) {
       Logger.i('[GistSync] _exportGistJson: $e');
-      errorSnackBar('Failed to export gist JSON.');
+      errorSnackBar(Get.context!.l10n.failedToExportGistJson);
     }
   }
 
@@ -683,13 +684,13 @@ class _GistSyncCard extends StatelessWidget {
 
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      errorSnackBar('Invalid gist URL.');
+      errorSnackBar(Get.context!.l10n.invalidGistUrl);
       return;
     }
 
     try {
       if (!await canLaunchUrl(uri)) {
-        errorSnackBar('Could not open gist in browser.');
+        errorSnackBar(Get.context!.l10n.couldNotOpenGistInBrowser);
         return;
       }
       final opened = await launchUrl(
@@ -697,11 +698,11 @@ class _GistSyncCard extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       );
       if (!opened) {
-        errorSnackBar('Could not open gist in browser.');
+        errorSnackBar(Get.context!.l10n.couldNotOpenGistInBrowser);
       }
     } catch (e) {
       Logger.i('[GistSync] _openGistInBrowser: $e');
-      errorSnackBar('Failed to open gist in browser.');
+      errorSnackBar(Get.context!.l10n.failedToOpenGistInBrowser);
     }
   }
 
@@ -721,13 +722,13 @@ class _GistSyncCard extends StatelessWidget {
       final bytes = file.bytes ??
           (file.path != null ? await File(file.path!).readAsBytes() : null);
       if (bytes == null || bytes.isEmpty) {
-        errorSnackBar('Unable to read selected JSON file.');
+        errorSnackBar(Get.context!.l10n.unableToReadSelectedJsonFile);
         return;
       }
 
       final decoded = json.decode(utf8.decode(bytes));
       if (decoded is! Map) {
-        errorSnackBar('Selected file must contain a JSON object.');
+        errorSnackBar(Get.context!.l10n.selectedFileMustContainAJson);
         return;
       }
 
@@ -756,7 +757,7 @@ class _GistSyncCard extends StatelessWidget {
       }
     } catch (e) {
       Logger.i('[GistSync] _importGistJson: $e');
-      errorSnackBar('Failed to import gist JSON.');
+      errorSnackBar(Get.context!.l10n.failedToImportGistJson);
     }
   }
 
@@ -765,9 +766,9 @@ class _GistSyncCard extends StatelessWidget {
     return showDialog<_GistImportMode>(
       context: context,
       builder: (ctx) => Obx(() => AnymeXDialog(
-            title: 'Import Gist JSON',
+            title: context.l10n.importGistJson,
             message:
-                'Choose how to apply the selected JSON file to your AnymeX cloud gist.',
+                context.l10n.chooseHowToApplyTheSelected,
             confirmText: 'Import',
             onConfirm: () {},
             confirmResultGetter: () => selectedMode.value,
@@ -776,17 +777,17 @@ class _GistSyncCard extends StatelessWidget {
               children: [
                 AnymeXTile.radio(
                   selected: selectedMode.value == _GistImportMode.merge,
-                  title: 'Merge With Cloud',
+                  title: context.l10n.mergeWithCloud,
                   subtitle:
-                      'Keep both uploaded and cloud entries. If the same entry exists in both places, the newer one is kept. (Recommended)',
+                      context.l10n.keepBothUploadedAndCloudEntries,
                   onTap: () => selectedMode.value = _GistImportMode.merge,
                 ),
                 const SizedBox(height: 8),
                 AnymeXTile.radio(
                   selected: selectedMode.value == _GistImportMode.replace,
-                  title: 'Replace Cloud Gist',
+                  title: context.l10n.replaceCloudGist,
                   subtitle:
-                      'Remove current cloud entries and replace them with the uploaded file.',
+                      context.l10n.removeCurrentCloudEntriesAndReplace,
                   onTap: () => selectedMode.value = _GistImportMode.replace,
                 ),
               ],
@@ -898,9 +899,9 @@ class _DeleteGistConfirmDialogState extends State<_DeleteGistConfirmDialog> {
   @override
   Widget build(BuildContext context) {
     return AnymeXDialog(
-      title: 'Delete AnymeX Sync Gist?',
+      title: context.l10n.deleteAnymexSyncGist,
       message:
-          'This permanently deletes your AnymeX cloud progress gist from GitHub and cannot be undone.',
+          context.l10n.thisPermanentlyDeletesYourAnymexCloud,
       confirmText: _secondsLeft == 0
           ? 'I Understand, Delete'
           : 'I Understand ($_secondsLeft)',

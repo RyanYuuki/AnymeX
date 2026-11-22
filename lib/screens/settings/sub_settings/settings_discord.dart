@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/discord/discord_login.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
@@ -59,7 +60,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Discord RPC',
+      headerTitle: context.l10n.discordRpc,
       body: Builder(
         builder: (ctx) => ScrollWrapper(
           comfortPadding: false,
@@ -69,22 +70,22 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
             _buildAccountCard(context, rpc, colors),
             const SizedBox(height: 16),
             AnymeXSectionBuilder(
-              title: 'General & Privacy',
+              title: context.l10n.generalPrivacy,
               children: [
                 Obx(
                   () => AnymeXTile.toggle(
                     icon: Icons.discord,
-                    title: 'Enable Discord RPC',
-                    subtitle: 'Broadcast your activity to Discord',
+                    title: context.l10n.enableDiscordRpc,
+                    subtitle: context.l10n.broadcastYourActivityToDiscord,
                     value: rpc.isEnabled,
                     onChanged: (val) => rpc.setEnabled(val),
                   ),
                 ),
                 AnymeXTile.toggle(
                   icon: Icons.explicit_rounded,
-                  title: 'Hide NSFW Content',
+                  title: context.l10n.hideNsfwContent,
                   subtitle:
-                      'Suppress activity when watching or reading NSFW content',
+                      context.l10n.suppressActivityWhenWatchingOrReading,
                   value: hideNsfw,
                   onChanged: (val) {
                     setState(() {
@@ -95,8 +96,8 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile.toggle(
                   icon: Icons.timer_outlined,
-                  title: 'Show Timestamps',
-                  subtitle: 'Display playback or reading progress timestamps',
+                  title: context.l10n.showTimestamps,
+                  subtitle: context.l10n.displayPlaybackOrReadingProgressTimestamps,
                   value: showTimestamps,
                   onChanged: (val) {
                     setState(() {
@@ -109,14 +110,14 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
             ),
             const SizedBox(height: 16),
             AnymeXSectionBuilder(
-              title: 'Activity Phrasing',
+              title: context.l10n.activityPhrasing,
               children: [
                 AnymeXTile(
                   icon: Icons.movie_creation_outlined,
-                  title: 'Watching Anime',
+                  title: context.l10n.watchingAnime,
                   subtitle: animeWatching,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Watching Anime Phrasing',
+                    title: context.l10n.watchingAnimePhrasing,
                     currentVal: animeWatching,
                     defaultVal: 'Watching \$anime',
                     hintText: 'Watching \$anime',
@@ -131,10 +132,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'Viewing Anime Details',
+                  title: context.l10n.viewingAnimeDetails,
                   subtitle: animeDetails,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Anime Details Phrasing',
+                    title: context.l10n.animeDetailsPhrasing,
                     currentVal: animeDetails,
                     defaultVal: 'Viewing \$anime',
                     hintText: 'Viewing \$anime',
@@ -149,10 +150,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.menu_book_outlined,
-                  title: 'Reading Manga',
+                  title: context.l10n.readingManga,
                   subtitle: mangaReading,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Reading Manga Phrasing',
+                    title: context.l10n.readingMangaPhrasing,
                     currentVal: mangaReading,
                     defaultVal: 'Reading \$manga',
                     hintText: 'Reading \$manga',
@@ -168,10 +169,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'Viewing Manga Details',
+                  title: context.l10n.viewingMangaDetails,
                   subtitle: mangaDetails,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Manga Details Phrasing',
+                    title: context.l10n.mangaDetailsPhrasing,
                     currentVal: mangaDetails,
                     defaultVal: 'Viewing \$manga',
                     hintText: 'Viewing \$manga',
@@ -186,10 +187,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.auto_stories_outlined,
-                  title: 'Reading Novel',
+                  title: context.l10n.readingNovel,
                   subtitle: novelReading,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Reading Novel Phrasing',
+                    title: context.l10n.readingNovelPhrasing,
                     currentVal: novelReading,
                     defaultVal: 'Reading \$novel',
                     hintText: 'Reading \$novel',
@@ -204,10 +205,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'Viewing Novel Details',
+                  title: context.l10n.viewingNovelDetails,
                   subtitle: novelDetails,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Novel Details Phrasing',
+                    title: context.l10n.novelDetailsPhrasing,
                     currentVal: novelDetails,
                     defaultVal: 'Viewing \$novel',
                     hintText: 'Viewing \$novel',
@@ -222,10 +223,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.explore_outlined,
-                  title: 'Browsing / Idle',
+                  title: context.l10n.browsingIdle,
                   subtitle: idleFormat,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Browsing Phrasing',
+                    title: context.l10n.browsingPhrasing,
                     currentVal: idleFormat,
                     defaultVal: 'Browsing \$status',
                     hintText: 'Browsing \$status',
@@ -354,8 +355,8 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     color: const Color(0xFF5865F2).opaque(0.6),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const AnymeXText(
-                    'Login',
+                  child: AnymeXText(
+                    context.l10n.login,
                     variant: TextVariant.bold,
                     size: 13,
                     color: Colors.white,
@@ -405,10 +406,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
 
   void _showLogoutDialog(BuildContext context, DiscordRPCController rpc) {
     AnymeXDialog(
-      title: 'Disconnect Discord?',
-      message: 'Your rich presence activity will stop updating.',
-      confirmText: 'Disconnect',
-      cancelText: 'Cancel',
+      title: context.l10n.disconnectDiscord,
+      message: context.l10n.yourRichPresenceActivityWillStop,
+      confirmText: context.l10n.disconnect,
+      cancelText: context.l10n.cancel,
       onConfirm: () => rpc.logout(),
     ).show(context);
   }
@@ -426,8 +427,8 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
 
     AnymeXDialog(
       title: title,
-      confirmText: 'Save',
-      cancelText: 'Cancel',
+      confirmText: context.l10n.save,
+      cancelText: context.l10n.cancel,
       onConfirm: () {
         final val = controller.text.trim();
         onSave(val.isEmpty ? defaultVal : val);
@@ -438,7 +439,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AnymeXText(
-              'Dynamic variables will be replaced automatically. You can also use a static phrase.',
+              context.l10n.dynamicVariablesWillBeReplacedAutomatically,
               size: 12,
               color: colors.onSurfaceVariant,
               textAlign: TextAlign.center,
@@ -466,7 +467,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                   });
                 },
                 icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: const AnymeXText('Reset to default', size: 12),
+                label: AnymeXText(context.l10n.resetToDefault, size: 12),
               ),
             ),
           ],

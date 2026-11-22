@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
@@ -218,7 +219,7 @@ class AnilistAuth extends GetxController {
       selectedMethod = await AnymeXSheet.custom<String>(
         loginSheetHelper(
           context: context,
-          title: 'Login to AniList',
+          title: context.l10n.loginToAnilist,
           serviceName: 'AniList',
           showTokenOption: true,
         ),
@@ -298,7 +299,7 @@ class AnilistAuth extends GetxController {
             TextField(
               controller: tokenController,
               decoration: InputDecoration(
-                hintText: 'Enter token here',
+                hintText: context.l10n.enterTokenHere,
                 hintStyle: TextStyle(
                   fontFamily: 'Linotte',
                   color: theme.onSurface.opaque(0.5),

@@ -1,6 +1,7 @@
 // screens/watch_offline.dart
 // ignore_for_file: deprecated_member_use
 
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -104,7 +105,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AnymeXText(
-                  'Local Library',
+                  context.l10n.localLibrary,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
@@ -258,7 +259,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.transparent,
-                hintText: 'Search anime, movies...',
+                hintText: context.l10n.searchAnimeMovies,
                 hintStyle: TextStyle(
                   color: theme.colorScheme.onSurface.opaque(0.5),
                   fontSize: 14,
@@ -413,7 +414,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Searching...',
+              context.l10n.searching,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
                 fontSize: 14,
@@ -437,7 +438,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Loading Media...',
+              context.l10n.loadingMedia,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
                 fontSize: 14,
@@ -802,7 +803,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 24),
             AnymeXText(
-              'Loading media files...',
+              context.l10n.loadingMediaFiles,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
                 fontSize: 16,
@@ -831,7 +832,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 24),
             AnymeXText(
-              'Storage Permission Required',
+              context.l10n.storagePermissionRequired,
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
                 fontSize: 20,
@@ -840,7 +841,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Please grant storage permission to browse your media files',
+              context.l10n.pleaseGrantStoragePermissionToBrowse,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -851,7 +852,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ElevatedButton.icon(
               onPressed: controller.checkPermissionAndShowPicker,
               icon: const Icon(Icons.folder_open),
-              label: const AnymeXText('Grant Permission'),
+              label: AnymeXText(context.l10n.grantPermission),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary.opaque(0.4),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -884,7 +885,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 24),
             AnymeXText(
-              'Select Media Directory',
+              context.l10n.selectMediaDirectory,
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
                 fontSize: 20,
@@ -893,7 +894,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Choose a directory to browse your media files',
+              context.l10n.chooseADirectoryToBrowseYour,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -904,7 +905,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ElevatedButton.icon(
               onPressed: controller.showDirectoryPicker,
               icon: const Icon(Icons.folder_open),
-              label: const AnymeXText('Select Directory'),
+              label: AnymeXText(context.l10n.selectDirectory),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary.opaque(0.4),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -936,7 +937,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 24),
             AnymeXText(
-              'No Media Files Found',
+              context.l10n.noMediaFilesFound,
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
                 fontSize: 20,
@@ -945,7 +946,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'This directory contains no supported media files',
+              context.l10n.thisDirectoryContainsNoSupportedMedia,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -1017,7 +1018,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Iconsax.search_normal,
-                  label: 'Search',
+                  label: context.l10n.search,
                   viewMode: ViewMode.search,
                   isSelected: controller.viewMode.value == ViewMode.search,
                 )
@@ -1026,7 +1027,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Icons.download_rounded,
-                  label: 'Download',
+                  label: context.l10n.download,
                   viewMode: ViewMode.download,
                   isSelected: controller.viewMode.value == ViewMode.download,
                 )
@@ -1034,7 +1035,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           Obx(() => _buildModernTab(
                 controller: controller,
                 icon: Iconsax.folder_open,
-                label: 'Local',
+                label: context.l10n.local,
                 viewMode: ViewMode.local,
                 isSelected: controller.viewMode.value == ViewMode.local,
               )),

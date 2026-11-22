@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -26,13 +27,13 @@ class AnymeXFullscreenImageViewer extends StatefulWidget {
 class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
   Future<void> _saveImage(String url) async {
     try {
-      snackBar("Downloading image...");
+      snackBar(context.l10n.downloadingImage);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to download image");
+        snackBar(context.l10n.failedToDownloadImage);
         return;
       }
 
@@ -96,7 +97,7 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
             final file = File('${tempDir.path}/$fileName');
             await file.writeAsBytes(bytes);
             await Share.shareXFiles([XFile(file.path)],
-                text: "Image shared from AnymeX");
+                text: Get.context!.l10n.imageSharedFromAnymex);
           }
         }
       } else if (Platform.isIOS) {
@@ -104,7 +105,7 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(bytes);
         await Share.shareXFiles([XFile(file.path)],
-            text: "Image shared from AnymeX");
+            text: Get.context!.l10n.imageSharedFromAnymex);
       } else {
         // pc
         String? downloadPath = (await getDownloadsDirectory())?.path;
@@ -140,7 +141,7 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Error saving image");
+        snackBar(context.l10n.errorSavingImage);
       }
     }
   }
@@ -148,17 +149,17 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
   Future<void> _shareImage(String url) async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       await Clipboard.setData(ClipboardData(text: url));
-      if (mounted) snackBar("Link copied to clipboard!");
+      if (mounted) snackBar(context.l10n.linkCopiedToClipboard);
       return;
     }
     try {
-      snackBar("Preparing image to share...");
+      snackBar(context.l10n.preparingImageToShare);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to fetch image for sharing");
+        snackBar(context.l10n.failedToFetchImageForSharing);
         return;
       }
 
@@ -181,10 +182,10 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(bytes);
 
-      await Share.shareXFiles([XFile(file.path)], text: "Shared from AnymeX");
+      await Share.shareXFiles([XFile(file.path)], text: Get.context!.l10n.sharedFromAnymex);
     } catch (e) {
       if (mounted) {
-        snackBar("Error sharing image");
+        snackBar(context.l10n.errorSharingImage);
       }
     }
   }

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
@@ -48,16 +49,16 @@ class ColorFilterSettingsPage extends StatelessWidget {
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.brightness_6_rounded,
-                  title: 'Custom Brightness',
-                  subtitle: 'Override system screen brightness',
+                  title: context.l10n.customBrightness,
+                  subtitle: context.l10n.overrideSystemScreenBrightness,
                   value: customBrightness,
                   onChanged: (_) => controller.toggleCustomBrightness(),
                 ),
                 if (customBrightness)
                   AnymeXTile.slider(
-                    title: 'Brightness',
+                    title: context.l10n.brightness,
                     icon: Icons.wb_sunny_rounded,
-                    subtitle: 'Range: -75 (darkest) to 100',
+                    subtitle: context.l10n.range75DarkestTo100,
                     value: controller.customBrightnessValue.value.toDouble(),
                     min: -75,
                     max: 100,
@@ -72,14 +73,14 @@ class ColorFilterSettingsPage extends StatelessWidget {
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.color_lens_rounded,
-                  title: 'Color Filter',
-                  subtitle: 'Apply a color tint over pages',
+                  title: context.l10n.colorFilter,
+                  subtitle: context.l10n.applyAColorTintOverPages,
                   value: colorFilter,
                   onChanged: (_) => controller.toggleColorFilter(),
                 ),
                 if (colorFilter) ...[
                   AnymeXTile.slider(
-                    title: 'Red',
+                    title: context.l10n.red,
                     icon: Icons.circle,
                     subtitle: '0 – 255',
                     value: ((colorValue >> 16) & 0xFF).toDouble(),
@@ -90,7 +91,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                         controller.setColorFilterChannel('r', v.toInt()),
                   ),
                   AnymeXTile.slider(
-                    title: 'Green',
+                    title: context.l10n.green,
                     icon: Icons.circle,
                     subtitle: '0 – 255',
                     value: ((colorValue >> 8) & 0xFF).toDouble(),
@@ -101,7 +102,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                         controller.setColorFilterChannel('g', v.toInt()),
                   ),
                   AnymeXTile.slider(
-                    title: 'Blue',
+                    title: context.l10n.blue,
                     icon: Icons.circle,
                     subtitle: '0 – 255',
                     value: (colorValue & 0xFF).toDouble(),
@@ -112,7 +113,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                         controller.setColorFilterChannel('b', v.toInt()),
                   ),
                   AnymeXTile.slider(
-                    title: 'Alpha',
+                    title: context.l10n.alpha,
                     icon: Icons.opacity,
                     subtitle: '0 – 255',
                     value: ((colorValue >> 24) & 0xFF).toDouble(),
@@ -167,8 +168,8 @@ class ColorFilterSettingsPage extends StatelessWidget {
                 ),
                 AnymeXTile.toggle(
                   icon: Icons.invert_colors_rounded,
-                  title: 'Invert Colors',
-                  subtitle: 'Invert all page colors',
+                  title: context.l10n.invertColors,
+                  subtitle: context.l10n.invertAllPageColors,
                   value: controller.invertColorsEnabled.value,
                   onChanged: (_) => controller.toggleInvertColors(),
                 ),

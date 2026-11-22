@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -385,7 +386,7 @@ class SettingsSheet extends StatelessWidget {
             serviceHandler.serviceType.value == ServicesType.anilist)
           AnymeXTile(
             icon: IconlyLight.profile,
-            title: 'View Profile',
+            title: context.l10n.viewProfile,
             subtitle: 'Profile stats & user activities',
             onTap: () {
               Get.back();
@@ -440,7 +441,7 @@ class SettingsSheet extends StatelessWidget {
         ),
         AnymeXTile(
           icon: Icons.people_rounded,
-          title: 'Watch Together',
+          title: context.l10n.watchTogether,
           subtitle: 'Sync watch party with friends',
           onTap: () {
             Get.back();

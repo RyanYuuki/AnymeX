@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io' show Platform;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
@@ -303,7 +304,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.high_quality_rounded,
-              label: 'Quality',
+              label: context.l10n.quality,
               onTap: () {
                 Get.back();
                 PlayerBottomSheets.showVideoQuality(ctx, controller);
@@ -311,7 +312,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.speed_rounded,
-              label: 'Playback speed',
+              label: context.l10n.playbackSpeed2,
               onTap: () {
                 Get.back();
                 controller.isSpeedPaneOpened.value = true;
@@ -319,7 +320,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.music_note_rounded,
-              label: 'Audio track',
+              label: context.l10n.audioTrack2,
               onTap: () {
                 Get.back();
                 PlayerBottomSheets.showAudioTracks(ctx, controller);
@@ -327,7 +328,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.tune_rounded,
-              label: 'Picture & shaders',
+              label: context.l10n.pictureShaders,
               onTap: () {
                 Get.back();
                 controller.openColorProfileBottomSheet(ctx);
@@ -335,7 +336,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.cast_rounded,
-              label: 'Cast to device',
+              label: context.l10n.castToDevice2,
               onTap: () {
                 Get.back();
                 CastDeviceDialog.show(ctx, controller);
@@ -344,7 +345,7 @@ class NFMoreSheet extends StatelessWidget {
             if (!controller.isOffline.value)
               NFSheetTile(
                 icon: Icons.cloud_rounded,
-                label: 'Server',
+                label: context.l10n.server,
                 onTap: () {
                   Get.back();
                   PlayerBottomSheets.showVideoServers(ctx, controller);
@@ -352,7 +353,7 @@ class NFMoreSheet extends StatelessWidget {
               ),
             NFSheetTile(
               icon: Icons.settings_outlined,
-              label: 'Player settings',
+              label: context.l10n.playerSettings2,
               onTap: () {
                 Get.back();
                 controller.isSettingsPaneOpened.value =
@@ -361,7 +362,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.lock_outline_rounded,
-              label: 'Lock screen',
+              label: context.l10n.lockScreen,
               onTap: () {
                 Get.back();
                 controller.isLocked.value = true;

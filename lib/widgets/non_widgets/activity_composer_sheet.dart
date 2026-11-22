@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -369,7 +370,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
 
   Widget _buildGifButton() {
     return IconButton(
-      tooltip: 'GIF',
+      tooltip: context.l10n.gif,
       icon: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
         decoration: BoxDecoration(
@@ -377,7 +378,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
-          'GIF',
+          context.l10n.gif,
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w800,
@@ -403,7 +404,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           content: TextField(
             autofocus: true,
             decoration: InputDecoration(
-              hintText: 'Paste URL here...',
+              hintText: context.l10n.pasteUrlHere,
               filled: true,
               fillColor: context.theme.colorScheme.surface,
               border: OutlineInputBorder(
@@ -417,7 +418,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: AnymeXText('Cancel',
+              child: AnymeXText(context.l10n.cancel,
                   style: TextStyle(
                       color: context.theme.colorScheme.onSurfaceVariant)),
             ),
@@ -427,7 +428,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                 foregroundColor: context.theme.colorScheme.onPrimary,
               ),
               onPressed: () => Navigator.pop(context, inputUrl),
-              child: const AnymeXText('Insert'),
+              child: AnymeXText(context.l10n.insert),
             ),
           ],
         );
@@ -466,7 +467,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                   segments: [
                     ButtonSegment(
                       value: 0,
-                      label: AnymeXText('Compose',
+                      label: AnymeXText(context.l10n.compose,
                           style: TextStyle(
                               color: _previewMode
                                   ? context.theme.colorScheme.onSurfaceVariant
@@ -481,7 +482,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                     ),
                     ButtonSegment(
                       value: 1,
-                      label: AnymeXText('Preview',
+                      label: AnymeXText(context.l10n.preview,
                           style: TextStyle(
                               color: !_previewMode
                                   ? context.theme.colorScheme.onSurfaceVariant
@@ -596,7 +597,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                       ),
                       child: SingleChildScrollView(
                         child: _textController.text.trim().isEmpty
-                            ? AnymeXText("Nothing to preview",
+                            ? AnymeXText(context.l10n.nothingToPreview,
                                 style: TextStyle(
                                     color: context
                                         .theme.colorScheme.onSurfaceVariant))
@@ -683,7 +684,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
               Container(
                 margin: EdgeInsets.only(bottom: _isExpanded ? 16 : 2, right: 8),
                 child: IconButton(
-                  tooltip: 'Cancel',
+                  tooltip: context.l10n.cancel,
                   icon: Icon(
                     Icons.close_rounded,
                     color: context.theme.colorScheme.onSurfaceVariant,

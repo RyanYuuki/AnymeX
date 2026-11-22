@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
@@ -74,7 +75,7 @@ class ReaderAutoScrollMenu extends StatelessWidget {
                           _menuButton(
                             context: context,
                             icon: Icons.add_rounded,
-                            tooltip: 'Increase auto-scroll speed',
+                            tooltip: context.l10n.increaseAutoScrollSpeed,
                             onPressed: () =>
                                 _changeSpeed(controller, -_speedStep),
                           ),
@@ -94,7 +95,7 @@ class ReaderAutoScrollMenu extends StatelessWidget {
                           _menuButton(
                             context: context,
                             icon: Icons.remove_rounded,
-                            tooltip: 'Decrease auto-scroll speed',
+                            tooltip: context.l10n.decreaseAutoScrollSpeed,
                             onPressed: () =>
                                 _changeSpeed(controller, _speedStep),
                           ),

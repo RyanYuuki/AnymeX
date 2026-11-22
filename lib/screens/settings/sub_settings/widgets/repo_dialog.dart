@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 
 import 'package:anymex/utils/extensions.dart';
@@ -81,7 +83,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
             .toList();
 
         if (widget.managerId.toLowerCase().contains('kotatsu')) {
-          snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+          snackBar(context.l10n.addingKotatsuRepositoryThisWillTake);
         }
 
         await Extensions().addRepos(widget.type, urls, widget.managerId);
@@ -162,7 +164,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         ),
                         const SizedBox(height: 2),
                         AnymeXText(
-                          'Enter GitHub repository URL',
+                          context.l10n.enterGithubRepositoryUrl,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -181,7 +183,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    'Repository URL',
+                    context.l10n.repositoryUrl,
                     style: theme.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: colorScheme.onSurface,
@@ -275,7 +277,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: AnymeXText(
-                            'Note: Adding Kotatsu repository will take at least 1-2 minutes because it needs to download and convert the extension plugin on first load.',
+                            context.l10n.noteAddingKotatsuRepositoryWillTake,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.primary,
                               fontWeight: FontWeight.w500,
@@ -302,7 +304,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                             ),
                           ),
                           child: AnymeXText(
-                            'Cancel',
+                            context.l10n.cancel,
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
@@ -332,7 +334,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                                   ),
                                 )
                               : AnymeXText(
-                                  'Add Repository',
+                                  context.l10n.addRepository,
                                   style: theme.textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: colorScheme.onPrimary,

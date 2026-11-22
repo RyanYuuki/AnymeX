@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -23,7 +24,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Logs',
+      headerTitle: context.l10n.logs,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
@@ -31,14 +32,14 @@ class _SettingsLogsState extends State<SettingsLogs> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXSectionBuilder(
-                        title: 'Log Capture',
+                        title: context.l10n.logCapture,
                         children: [
                           Obx(
                             () => AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedFile02,
-                              title: 'Write log to a file',
+                              title: context.l10n.writeLogToAFile,
                               subtitle:
-                                  'When enabled, AnymeX saves logs locally until disabled.',
+                                  context.l10n.whenEnabledAnymexSavesLogsLocally,
                               value: settings.writeLogToFile.value,
                               onChanged: (value) =>
                                   settings.saveWriteLogToFile(value),
@@ -46,15 +47,15 @@ class _SettingsLogsState extends State<SettingsLogs> {
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedShare08,
-                            title: 'Share logs',
+                            title: context.l10n.shareLogs,
                             subtitle:
-                                'Share the saved log file or copy its contents.',
+                                context.l10n.shareTheSavedLogFileOr,
                             onTap: () async => Logger.share(),
                           ),
                           Obx(
                             () => AnymeXTile(
                               icon: HugeIcons.strokeRoundedFolder01,
-                              title: 'Log directory',
+                              title: context.l10n.logDirectory,
                               subtitle: settings
                                       .customLogDirectory.value.isEmpty
                                   ? 'Default (App Documents)'

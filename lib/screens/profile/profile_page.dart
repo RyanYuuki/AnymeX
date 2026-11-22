@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -194,8 +195,8 @@ class _ProfilePageState extends State<ProfilePage>
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AnymeXText('Activity refreshed'),
+      SnackBar(
+        content: AnymeXText(context.l10n.activityRefreshed),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -214,25 +215,25 @@ class _ProfilePageState extends State<ProfilePage>
         NavItem(
           selectedIcon: IconlyBold.home,
           unselectedIcon: IconlyLight.home,
-          label: 'Overview',
+          label: context.l10n.overview,
           onTap: (i) => setState(() => _selectedTab = 0),
         ),
         NavItem(
           selectedIcon: Icons.forum_rounded,
           unselectedIcon: Icons.forum_outlined,
-          label: 'Activity',
+          label: context.l10n.activity,
           onTap: (i) => setState(() => _selectedTab = 1),
         ),
         NavItem(
           selectedIcon: IconlyBold.chart,
           unselectedIcon: IconlyLight.chart,
-          label: 'Stats',
+          label: context.l10n.stats,
           onTap: (i) => setState(() => _selectedTab = 2),
         ),
         NavItem(
           selectedIcon: IconlyBold.user3,
           unselectedIcon: IconlyLight.user2,
-          label: 'Social',
+          label: context.l10n.social,
           onTap: (i) => setState(() => _selectedTab = 3),
         ),
       ];
@@ -286,7 +287,7 @@ class _ProfilePageState extends State<ProfilePage>
                           children: [
                             Expanded(
                               child: HighlightCard(
-                                label: 'Anime',
+                                label: context.l10n.anime,
                                 value: user.stats?.animeStats?.animeCount
                                         ?.toString() ??
                                     '0',
@@ -311,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage>
                             const SizedBox(width: 10),
                             Expanded(
                               child: HighlightCard(
-                                label: 'Manga',
+                                label: context.l10n.manga,
                                 value: user.stats?.mangaStats?.mangaCount
                                         ?.toString() ??
                                     '0',
@@ -588,9 +589,9 @@ class _ProfilePageState extends State<ProfilePage>
           onWillPop: () => confirmDiscardComposer(
             context,
             composerKey: composerKey,
-            discardTitle: 'Discard status?',
+            discardTitle: context.l10n.discardStatus,
             discardMessage:
-                'You have unsent text. Closing now will lose your status.',
+                context.l10n.youHaveUnsentTextClosingNowWillLose,
           ),
           child: Padding(
             padding: EdgeInsets.only(
@@ -607,7 +608,7 @@ class _ProfilePageState extends State<ProfilePage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AnymeXText(
-                      "Create Status",
+                      context.l10n.createStatus,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -620,9 +621,9 @@ class _ProfilePageState extends State<ProfilePage>
                         final discard = await confirmDiscardComposer(
                           context,
                           composerKey: composerKey,
-                          discardTitle: 'Discard status?',
+                          discardTitle: context.l10n.discardStatus,
                           discardMessage:
-                              'You have unsent text. Closing now will lose your status.',
+                              context.l10n.youHaveUnsentTextClosingNowWillLose,
                         );
                         if (discard && context.mounted) {
                           Navigator.pop(context);
@@ -646,15 +647,15 @@ class _ProfilePageState extends State<ProfilePage>
                   child: ActivityComposerSheet(
                     key: composerKey,
                     isModal: true,
-                    hintText: "What's on your mind?",
+                    hintText: context.l10n.whatsOnYourMind,
                     onSubmit: (text, {isPrivate = false}) async {
                       final anilistAuth = Get.find<AnilistAuth>();
                       try {
                         await anilistAuth.createActivity(text);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: AnymeXText('Status posted successfully!'),
+                            SnackBar(
+                              content: AnymeXText(context.l10n.statusPostedSuccessfully),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -754,14 +755,14 @@ class _ProfilePageState extends State<ProfilePage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SectionHeader(
-              title: "Recent Activity", icon: Icons.forum_outlined),
+          SectionHeader(
+              title: context.l10n.recentActivity, icon: Icons.forum_outlined),
           Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () => _showCreateActivitySheet(context),
-                tooltip: "Create Activity",
+                tooltip: context.l10n.createActivity,
                 style: IconButton.styleFrom(
                   backgroundColor: context.theme.colorScheme.primaryContainer,
                   foregroundColor: context.theme.colorScheme.primary,
@@ -771,7 +772,7 @@ class _ProfilePageState extends State<ProfilePage>
               IconButton(
                 icon: const Icon(IconlyLight.filter),
                 onPressed: () => _showFilterSheet(context),
-                tooltip: "Filter Activities",
+                tooltip: context.l10n.filterActivities,
               ),
             ],
           ),
@@ -790,9 +791,9 @@ class _ProfilePageState extends State<ProfilePage>
                 children: [
                   const SizedBox(height: 12),
                   header,
-                  const PlaceholderTab(
-                    title: 'Activity',
-                    subtitle: 'No recent activity found for selected filters',
+                  PlaceholderTab(
+                    title: context.l10n.activity,
+                    subtitle: context.l10n.noRecentActivityFoundForSelected,
                     icon: IconlyLight.activity,
                   ),
                 ],
@@ -898,11 +899,11 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
                   if (!_hasMoreActivities && _activities.isNotEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: AnymeXText(
-                          'No more activities',
+                          context.l10n.noMoreActivities,
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
@@ -936,8 +937,8 @@ class _ProfilePageState extends State<ProfilePage>
     });
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: AnymeXText('Activity deleted'),
+      SnackBar(
+        content: AnymeXText(context.l10n.activityDeleted),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -1027,8 +1028,8 @@ class _ProfilePageState extends State<ProfilePage>
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
-            child: const SectionHeader(
-              title: 'Activity',
+            child: SectionHeader(
+              title: context.l10n.activity,
               icon: IconlyLight.activity,
             ),
           ),
@@ -1047,7 +1048,7 @@ class _ProfilePageState extends State<ProfilePage>
                   : EdgeInsets.zero,
               child: buildListStatusCard(
                 context,
-                title: "ANIME LIST",
+                title: context.l10n.animeList,
                 statuses: animeStatuses,
                 userId: int.tryParse(user.id?.toString() ?? '0') ?? 0,
                 userName: user.name ?? "User",
@@ -1063,7 +1064,7 @@ class _ProfilePageState extends State<ProfilePage>
                   : EdgeInsets.zero,
               child: buildListStatusCard(
                 context,
-                title: "MANGA LIST",
+                title: context.l10n.mangaList,
                 statuses: mangaStatuses,
                 userId: int.tryParse(user.id?.toString() ?? '0') ?? 0,
                 userName: user.name ?? "User",
@@ -1138,9 +1139,9 @@ class _ProfilePageState extends State<ProfilePage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Mobile stats ui
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: SectionHeader(title: "Stats", icon: IconlyLight.chart),
+          child: SectionHeader(title: context.l10n.stats, icon: IconlyLight.chart),
         ),
         const SizedBox(height: 8),
         Padding(
@@ -1159,7 +1160,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Column(
               children: [
                 StatRow(
-                  label: "Episodes Watched",
+                  label: context.l10n.episodesWatched,
                   value: user.stats?.animeStats?.episodesWatched?.toString() ??
                       '0',
                   icon: IconlyLight.play,
@@ -1167,7 +1168,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
-                  label: "Minutes Watched",
+                  label: context.l10n.minutesWatched,
                   value:
                       user.stats?.animeStats?.minutesWatched?.toString() ?? '0',
                   icon: IconlyLight.timeCircle,
@@ -1175,7 +1176,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
-                  label: "Chapters Read",
+                  label: context.l10n.chaptersRead,
                   value:
                       user.stats?.mangaStats?.chaptersRead?.toString() ?? '0',
                   icon: IconlyLight.paper,
@@ -1183,7 +1184,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 const Divider(height: 16, thickness: 0.4),
                 StatRow(
-                  label: "Volumes Read",
+                  label: context.l10n.volumesRead,
                   value: user.stats?.mangaStats?.volumesRead?.toString() ?? '0',
                   icon: IconlyLight.bookmark,
                   compact: true,
@@ -1199,7 +1200,7 @@ class _ProfilePageState extends State<ProfilePage>
             children: [
               Expanded(
                 child: ScoreCard(
-                  label: "Anime Score",
+                  label: context.l10n.animeScore,
                   value: user.stats?.animeStats?.meanScore?.toString() ?? '0',
                   compact: true,
                 ),
@@ -1207,7 +1208,7 @@ class _ProfilePageState extends State<ProfilePage>
               const SizedBox(width: 8),
               Expanded(
                 child: ScoreCard(
-                  label: "Manga Score",
+                  label: context.l10n.mangaScore,
                   value: user.stats?.mangaStats?.meanScore?.toString() ?? '0',
                   compact: true,
                 ),

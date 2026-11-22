@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -16,7 +17,7 @@ class StatisticsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AnymeXText('Library Statistics'),
+        title: AnymeXText(context.l10n.libraryStatistics),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
@@ -25,8 +26,8 @@ class StatisticsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Anime Library Section
-            const AnymeXText(
-              'Anime Library',
+            AnymeXText(
+              context.l10n.animeLibrary,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -44,8 +45,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Library Section
-            const AnymeXText(
-              'Manga Library',
+            AnymeXText(
+              context.l10n.mangaLibrary,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -63,8 +64,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Library Section
-            const AnymeXText(
-              'Novel Library',
+            AnymeXText(
+              context.l10n.novelLibrary,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -82,8 +83,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Anime Custom Lists Section
-            const AnymeXText(
-              'Anime Custom Lists',
+            AnymeXText(
+              context.l10n.animeCustomLists,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -100,8 +101,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Custom Lists Section
-            const AnymeXText(
-              'Manga Custom Lists',
+            AnymeXText(
+              context.l10n.mangaCustomLists,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -118,8 +119,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Custom Lists Section
-            const AnymeXText(
-              'Novel Custom Lists',
+            AnymeXText(
+              context.l10n.novelCustomLists,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -150,8 +151,8 @@ class StatisticsPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         library.isEmpty
-            ? const AnymeXText(
-                'No items in this library.',
+            ? AnymeXText(
+                context.l10n.noItemsInThisLibrary,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
@@ -197,8 +198,8 @@ class StatisticsPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         customLists.isEmpty
-            ? const AnymeXText(
-                'No custom lists available.',
+            ? AnymeXText(
+                context.l10n.noCustomListsAvailable,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
@@ -222,9 +223,9 @@ class StatisticsPage extends StatelessWidget {
                           subtitle: AnymeXText('Items: ${listData.length}'),
                           children: listData.isEmpty
                               ? [
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(16.0),
-                                    child: AnymeXText('No media in this list.'),
+                                    child: AnymeXText(context.l10n.noMediaInThisList),
                                   )
                                 ]
                               : listData.map((media) {

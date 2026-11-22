@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
@@ -25,7 +26,7 @@ class ReaderSettings {
 
     void showReaderControlThemeDialog() {
       showSelectionDialog<String>(
-        title: 'Reader Control Theme',
+        title: context.l10n.readerControlTheme,
         items: ReaderControlThemeRegistry.themes.map((e) => e.id).toList(),
         selectedItem: settings.readerControlThemeRx,
         getTitle: (id) => ReaderControlThemeRegistry.resolve(id).name,
@@ -66,7 +67,7 @@ class ReaderSettings {
                   Obx(() {
                     final themeId = settings.readerControlThemeRx.value;
                     return AnymeXTile(
-                      title: 'Control Theme',
+                      title: context.l10n.controlTheme,
                       subtitle:
                           ReaderControlThemeRegistry.resolve(themeId).name,
                       icon: Icons.style_rounded,
@@ -76,7 +77,7 @@ class ReaderSettings {
                   Obx(() {
                     final currentLayout = controller.readingLayout.value;
                     return AnymeXTile(
-                      title: 'Layout',
+                      title: context.l10n.layout,
                       subtitle: switch (currentLayout) {
                         MangaPageViewMode.continuous => 'Continuous',
                         MangaPageViewMode.paged => 'Paged',
@@ -124,8 +125,8 @@ class ReaderSettings {
                   }),
                   if (Platform.isAndroid || Platform.isIOS)
                     AnymeXTile(
-                      title: 'Tap Zones',
-                      subtitle: 'Customize gestures',
+                      title: context.l10n.tapZones,
+                      subtitle: context.l10n.customizeGestures,
                       icon: Icons.touch_app_rounded,
                       onTap: () {
                         Navigator.pop(context);
@@ -135,7 +136,7 @@ class ReaderSettings {
                   Obx(() {
                     final currentDirection = controller.readingDirection.value;
                     return AnymeXTile(
-                      title: 'Direction',
+                      title: context.l10n.direction,
                       subtitle: switch (currentDirection) {
                         MangaPageViewDirection.down => "Top-Down",
                         MangaPageViewDirection.right => "LTR",
@@ -195,7 +196,7 @@ class ReaderSettings {
                   Obx(() {
                     final currentMode = controller.dualPageMode.value;
                     return AnymeXTile(
-                      title: 'Dual Page Mode',
+                      title: context.l10n.dualPageMode,
                       subtitle: switch (currentMode) {
                         DualPageMode.off => 'Standard (Single)',
                         DualPageMode.auto => 'Auto (Laptop/Tab)',
@@ -237,8 +238,8 @@ class ReaderSettings {
                   Obx(() {
                     return AnymeXTile.toggle(
                       icon: Iconsax.pharagraphspacing,
-                      title: "Spaced Pages",
-                      subtitle: "Continuous Mode only",
+                      title: context.l10n.spacedPages,
+                      subtitle: context.l10n.continuousModeOnly2,
                       value: controller.spacedPages.value,
                       onChanged: (val) => controller.toggleSpacedPages(),
                     );
@@ -246,8 +247,8 @@ class ReaderSettings {
                   Obx(() {
                     return AnymeXTile.toggle(
                       icon: Iconsax.arrow,
-                      title: "Overscroll",
-                      subtitle: "To Prev/Next Chapter",
+                      title: context.l10n.overscroll,
+                      subtitle: context.l10n.toPrevNextChapter,
                       value: controller.overscrollToChapter.value,
                       onChanged: (val) =>
                           controller.toggleOverscrollToChapter(),
@@ -256,8 +257,8 @@ class ReaderSettings {
                   Obx(() {
                     return AnymeXTile.toggle(
                       icon: Iconsax.eye,
-                      title: "Persistent Page Indicator",
-                      subtitle: "Always show page indicator",
+                      title: context.l10n.persistentPageIndicator,
+                      subtitle: context.l10n.alwaysShowPageIndicator,
                       value: controller.showPageIndicator.value,
                       onChanged: (val) => controller.togglePageIndicator(),
                     );
@@ -266,8 +267,8 @@ class ReaderSettings {
                     Obx(() {
                       return AnymeXTile.toggle(
                         icon: Iconsax.volume_high,
-                        title: "Volume Keys Navigation",
-                        subtitle: "Use volume keys to change pages",
+                        title: context.l10n.volumeKeysNavigation,
+                        subtitle: context.l10n.useVolumeKeysToChangePages,
                         value: controller.volumeKeysEnabled.value,
                         onChanged: (val) => controller.toggleVolumeKeys(),
                       );
@@ -276,8 +277,8 @@ class ReaderSettings {
                     Obx(() {
                       return AnymeXTile.toggle(
                         icon: Iconsax.arrow_swap_horizontal,
-                        title: "Invert Volume Keys",
-                        subtitle: "Swap Up/Down actions",
+                        title: context.l10n.invertVolumeKeys,
+                        subtitle: context.l10n.swapUpDownActions2,
                         value: controller.invertVolumeKeys.value,
                         onChanged: (val) {
                           controller.invertVolumeKeys.value = val;
@@ -288,9 +289,9 @@ class ReaderSettings {
                   Obx(() {
                     return AnymeXTile.toggle(
                       icon: Icons.crop_rounded,
-                      title: "Crop Borders",
+                      title: context.l10n.cropBorders,
                       subtitle:
-                          "Remove white/black borders to maximize content",
+                          context.l10n.removeWhiteBlackBordersToMaximize,
                       value: controller.cropImages.value,
                       onChanged: (val) {
                         controller.toggleCropImages();
@@ -300,9 +301,9 @@ class ReaderSettings {
                   Obx(() {
                     return AnymeXTile.toggle(
                       icon: Icons.fullscreen_rounded,
-                      title: "Fit to Screen Width",
+                      title: context.l10n.fitToScreenWidth,
                       subtitle:
-                          "Stretch images to fit screen width on wide screens",
+                          context.l10n.stretchImagesToFitScreenWidthOn,
                       value: controller.fitToScreen.value,
                       onChanged: (val) {
                         controller.toggleFitToScreen();
@@ -315,8 +316,8 @@ class ReaderSettings {
                     }
                     return AnymeXTile.toggle(
                       icon: Icons.play_arrow_rounded,
-                      title: "Auto Scroll",
-                      subtitle: "Automatically scroll/advance pages",
+                      title: context.l10n.autoScroll,
+                      subtitle: context.l10n.automaticallyScrollAdvancePages,
                       value: controller.autoScrollEnabled.value,
                       onChanged: (val) => controller.toggleAutoScroll(),
                     );
@@ -329,7 +330,7 @@ class ReaderSettings {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: AnymeXTile.slider(
-                        title: 'Auto Scroll Speed',
+                        title: context.l10n.autoScrollSpeed,
                         value: controller.autoScrollSpeed.value,
                         onChanged: (double value) {
                           controller.setAutoScrollSpeed(value);
@@ -350,14 +351,14 @@ class ReaderSettings {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: AnymeXTile.slider(
-                        title: 'Preload Page',
+                        title: context.l10n.preloadPage,
                         value:
                             controller.preloadPages.value.toDouble(),
                         onChanged: (double value) {
                           controller.preloadPages.value = value.toInt();
                         },
                         subtitle:
-                            'Preload Pages ahead of time for faster loading (Consumes more network and ram)',
+                            context.l10n.preloadPagesAheadOfTimeFor,
                         icon: Icons.image_aspect_ratio_rounded,
                         min: 1.0,
                         max: 15.0,
@@ -371,12 +372,12 @@ class ReaderSettings {
                         padding:
                             const EdgeInsets.symmetric(horizontal: 10.0),
                         child: AnymeXTile.slider(
-                          title: 'Image Width',
+                          title: context.l10n.imageWidth,
                           value: controller.pageWidthMultiplier.value,
                           onChanged: (double value) {
                             controller.pageWidthMultiplier.value = value;
                           },
-                          subtitle: 'Continuous Mode only',
+                          subtitle: context.l10n.continuousModeOnly2,
                           icon: Icons.image_aspect_ratio_rounded,
                           min: 1.0,
                           max: 2.5,
@@ -390,13 +391,13 @@ class ReaderSettings {
                         padding:
                             const EdgeInsets.symmetric(horizontal: 10.0),
                         child: AnymeXTile.slider(
-                          title: 'Scroll Multiplier',
+                          title: context.l10n.scrollMultiplier,
                           value:
                               controller.scrollSpeedMultiplier.value,
                           onChanged: (double value) {
                             controller.scrollSpeedMultiplier.value = value;
                           },
-                          subtitle: 'Adjust Key & Volume Scrolling Speed',
+                          subtitle: context.l10n.adjustKeyVolumeScrollingSpeed,
                           icon: Icons.speed,
                           min: 1.0,
                           max: 5.0,

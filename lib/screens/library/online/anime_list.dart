@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:math';
 import 'dart:ui';
 
@@ -354,7 +355,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   children: [
                     Icon(Icons.sort_rounded, color: colors.primary, size: 20),
                     const SizedBox(width: 10),
-                    AnymeXText('Sort By',
+                    AnymeXText(context.l10n.sortBy2,
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Linotte',
@@ -389,7 +390,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                 final label = {
                   _SortMode.lastUpdated: 'Last Updated',
                   _SortMode.score: 'Score',
-                  _SortMode.title: 'Title',
+                  _SortMode.title: context.l10n.title,
                   _SortMode.releaseDate: 'Release Date',
                 }[mode]!;
                 final icon = {
@@ -446,7 +447,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                 children: [
                   Icon(Iconsax.filter, color: colors.primary, size: 20),
                   const SizedBox(width: 10),
-                  AnymeXText('Filter by Genre',
+                  AnymeXText(context.l10n.filterByGenre,
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Linotte',
@@ -459,7 +460,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
                       child:
-                          const AnymeXText('Clear', style: TextStyle(fontSize: 12)),
+                          AnymeXText(context.l10n.clear, style: TextStyle(fontSize: 12)),
                     ),
                 ],
               ),
@@ -726,7 +727,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               Icon(Iconsax.shuffle,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              const AnymeXText('Random'),
+              AnymeXText(context.l10n.random),
             ],
           ),
         ),
@@ -750,7 +751,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               Icon(Icons.sort_rounded,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              const AnymeXText('Sort'),
+              AnymeXText(context.l10n.sort2),
             ],
           ),
         ),
@@ -793,7 +794,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
           : '${activeMediaList.length} Anime',
       headerEnableSearch: true,
       headerSearchController: _searchController,
-      headerSearchHint: 'Search anime...',
+      headerSearchHint: context.l10n.searchAnime,
       onHeaderSearchChanged: (val) {
         setState(() => _searchQuery = val.trim().toLowerCase());
       },

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
@@ -145,7 +146,7 @@ class _WatchiumPartyPopupContentState
   Widget build(BuildContext context) {
     if (_showSettings) {
       return WatchSettingsPane(
-        title: 'Party Settings',
+        title: context.l10n.partySettings,
         onClose: widget.onClose,
         actions: [
           IconButton(
@@ -168,7 +169,7 @@ class _WatchiumPartyPopupContentState
 
     final cs = context.colors;
     return WatchSettingsPane(
-      title: 'Watch Party',
+      title: context.l10n.watchParty,
       subtitle: _buildHeaderSubtitle(cs),
       onClose: widget.onClose,
       actions: [
@@ -1146,11 +1147,11 @@ class _WatchiumPartyPopupContentState
         children: [
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Room Access',
+            title: context.l10n.roomAccess,
             children: [
               AnymeXTile(
                 icon: Icons.vpn_key_rounded,
-                title: 'Room Code',
+                title: context.l10n.roomCode,
                 subtitleWidget: AnymeXText(
                   code,
                   size: 14,
@@ -1168,7 +1169,7 @@ class _WatchiumPartyPopupContentState
               AnymeXTile(
                 icon: Icons.link_rounded,
                 iconColor: Colors.purple,
-                title: 'Invite Link',
+                title: context.l10n.inviteLink,
                 subtitleWidget: AnymeXText(
                   inviteUrl,
                   size: 12,
@@ -1188,19 +1189,19 @@ class _WatchiumPartyPopupContentState
           const SizedBox(height: 20),
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Activity',
+            title: context.l10n.activity,
             children: [
               AnymeXTile(
                 icon: Icons.schedule_rounded,
                 iconColor: Colors.blue,
-                title: 'Room Duration',
+                title: context.l10n.roomDuration,
                 subtitle: durationStr,
                 showChevron: false,
               ),
               AnymeXTile(
                 icon: Icons.people_rounded,
                 iconColor: Colors.green.opaque(0.8, iReallyMeanIt: true),
-                title: 'Watching Now',
+                title: context.l10n.watchingNow,
                 subtitle: '$onlineCount / ${state.maxMembers} members',
                 showChevron: false,
               ),
@@ -1209,12 +1210,12 @@ class _WatchiumPartyPopupContentState
           const SizedBox(height: 20),
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Details',
+            title: context.l10n.details,
             children: [
               AnymeXTile(
                 icon: Icons.calendar_today_rounded,
                 iconColor: Colors.amber,
-                title: 'Created',
+                title: context.l10n.created,
                 subtitle: _formatDateTime(createdAt),
                 showChevron: false,
               ),

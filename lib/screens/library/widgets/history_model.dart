@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -169,7 +170,7 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
   final chapter = media.currentChapter;
   if (chapter == null) {
     snackBar(
-      "Error: Missing required media. It seems you closed the app directly after reading the chapter!",
+      Get.context!.l10n.errorMissingRequiredMediaItSeems,
       maxLines: 3,
     );
     return;
@@ -177,7 +178,7 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
 
   final sourceName = chapter.sourceName;
   if (sourceName == null || sourceName.isEmpty) {
-    snackBar("Cant Play since user closed the app abruptly");
+    snackBar(Get.context!.l10n.cantPlaySinceUserClosedThe);
     return;
   }
 
@@ -249,7 +250,7 @@ Future<void> _handleNovelTap(OfflineMedia media) async {
   final chapter = media.currentChapter;
   if (chapter == null || media.chapters == null) {
     snackBar(
-      "Error: Missing required media. It seems you closed the app directly after reading the chapter!",
+      Get.context!.l10n.errorMissingRequiredMediaItSeems,
       maxLines: 3,
     );
     return;
@@ -257,7 +258,7 @@ Future<void> _handleNovelTap(OfflineMedia media) async {
 
   final sourceName = chapter.sourceName;
   if (sourceName == null || sourceName.isEmpty) {
-    snackBar("Cant Read since user closed the app abruptly");
+    snackBar(Get.context!.l10n.cantReadSinceUserClosedThe);
     return;
   }
 
@@ -283,7 +284,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
       currentEpisode.currentTrack == null ||
       episodeList == null) {
     snackBar(
-      "Error: Missing required media. It seems you closed the app directly after watching the episode!",
+      Get.context!.l10n.errorMissingRequiredMediaItSeemsYou,
       duration: 2000,
       maxLines: 3,
     );
@@ -292,7 +293,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
 
   final sourceName = currentEpisode.source;
   if (sourceName == null || sourceName.isEmpty) {
-    snackBar("Cant Play since user closed the app abruptly");
+    snackBar(Get.context!.l10n.cantPlaySinceUserClosedThe);
     return;
   }
 
@@ -350,7 +351,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
     if (logSession.isCancelled) return;
     Logger.i("Error preparing anime playback: $e");
     logSession.log("Failed to prepare playback.");
-    snackBar("Unable to prepare playback right now. Please try again.");
+    snackBar(Get.context!.l10n.unableToPreparePlaybackRightNow);
   } finally {
     logSession.close();
   }
@@ -375,13 +376,13 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
 
   if (!isStoredLinkValid) {
     log("Saved link is expired.");
-    snackBar("Saved stream link has expired. Fetching a new link...");
+    snackBar(Get.context!.l10n.savedStreamLinkHasExpiredFetching);
     log("Fetching fresh stream URLs from source...");
 
     final episodeUrl = currentEpisode.link ?? "";
     if (episodeUrl.isEmpty || session.isCancelled) {
       log("Episode URL is missing.");
-      snackBar("Link has expired and episode URL is unavailable.");
+      snackBar(Get.context!.l10n.linkHasExpiredAndEpisodeUrl);
       return null;
     }
 
@@ -396,7 +397,7 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
 
     if (refreshedVideos.isEmpty) {
       log("Source returned no stream URLs.");
-      snackBar("Link has expired and no alternative stream was found.");
+      snackBar(Get.context!.l10n.linkHasExpiredAndNoAlternative);
       return null;
     }
 
@@ -407,7 +408,7 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
         .toList();
     if (tracks.isEmpty || session.isCancelled) {
       log("No playable URL in returned streams.");
-      snackBar("No playable stream was returned by this source.");
+      snackBar(Get.context!.l10n.noPlayableStreamWasReturnedBy);
       return null;
     }
   } else {
@@ -423,7 +424,7 @@ Future<_AnimePlaybackData?> _resolveAnimePlaybackData({
   );
   if (selectedTrack == null || session.isCancelled) {
     log("No playable track selected.");
-    snackBar("No playable stream available for this episode.");
+    snackBar(Get.context!.l10n.noPlayableStreamAvailableForThis);
     return null;
   }
 
@@ -675,9 +676,9 @@ class _LoaderLogSession {
                   children: [
                     const AnymeXProgressIndicator(),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: AnymeXText(
-                        'Preparing stream',
+                        Get.context!.l10n.preparingStream,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -717,7 +718,7 @@ class _LoaderLogSession {
                       onPressed: () {
                         cancel();
                       },
-                      child: const AnymeXText('Cancel'),
+                      child: AnymeXText(Get.context!.l10n.cancel),
                     ),
                   ],
                 ),

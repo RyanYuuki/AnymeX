@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
@@ -316,7 +317,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       anilistData.fetchAnilistMangaPage();
       _auth.fetchUserAnimeList();
       _auth.fetchUserMangaList();
-      snackBar('Settings saved successfully.', snackPosition: SnackPosition.BOTTOM);
+      snackBar(Get.context!.l10n.settingsSavedSuccessfully, snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       if (mounted) {
         setState(() { _saving = false; _error = e.toString().replaceFirst('Exception: ', ''); });
@@ -456,10 +457,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Row(children: [
                 Expanded(child: AnymeXText('$title Section Order', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
-                TextButton(onPressed: () { onApply(order); Navigator.pop(context); }, child: const AnymeXText('Done')),
+                TextButton(onPressed: () { onApply(order); Navigator.pop(context); }, child: AnymeXText(context.l10n.done2)),
               ]),
               const SizedBox(height: 8),
-              AnymeXText('Drag to reorder status sections',
+              AnymeXText(context.l10n.dragToReorderStatusSections,
                 style: TextStyle(fontSize: 13, color: context.colors.onSurface.opaque(0.65))),
               const SizedBox(height: 12),
               SizedBox(
@@ -516,14 +517,14 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                   decoration: BoxDecoration(color: context.colors.outline.opaque(0.45), borderRadius: BorderRadius.circular(999))),
                 Row(children: [
                   Expanded(child: AnymeXText(title, style: TextStyle(color: context.colors.onSurface, fontSize: 18, fontWeight: FontWeight.w700))),
-                  TextButton(onPressed: () { onApply(local); Navigator.pop(sheetContext); }, child: const AnymeXText('Done')),
+                  TextButton(onPressed: () { onApply(local); Navigator.pop(sheetContext); }, child: AnymeXText(context.l10n.done2)),
                 ]),
                 const SizedBox(height: 10),
                 Row(children: [
                   Expanded(child: TextField(
                     controller: inputController, onSubmitted: (_) => addItem(),
                     decoration: InputDecoration(
-                      hintText: 'New custom list name', filled: true,
+                      hintText: context.l10n.newCustomListName, filled: true,
                       fillColor: context.colors.surfaceContainer.opaque(0.72),
                       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
                         borderSide: BorderSide(color: context.colors.outline.opaque(0.25))),
@@ -543,7 +544,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                   child: local.isEmpty
                       ? Container(width: double.infinity, padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(color: context.colors.surfaceContainer.opaque(0.6), borderRadius: BorderRadius.circular(14)),
-                          child: AnymeXText('No custom lists yet.', style: TextStyle(color: context.colors.onSurface.opaque(0.65))))
+                          child: AnymeXText(context.l10n.noCustomListsYet2, style: TextStyle(color: context.colors.onSurface.opaque(0.65))))
                       : ListView.separated(
                           shrinkWrap: true, itemCount: local.length,
                           separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -571,7 +572,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Anilist Settings',
+      headerTitle: context.l10n.anilistSettings2,
       body: Builder(
         builder: (ctx) => _loading
                     ? const Center(child: CircularProgressIndicator())
@@ -608,48 +609,48 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     mergeValues.sort();
 
     return AnymeXSectionBuilder(
-      title: 'Anime & Manga',
+      title: context.l10n.animeManga,
       children: [
         AnymeXTile(
             icon: Icons.title_rounded,
-            title: 'Title Language',
+            title: context.l10n.titleLanguage,
             subtitle: _titleLanguageLabel(s.titleLanguage),
             onTap: () => _showOptionPicker<String>(
-                title: 'Title Language',
+                title: context.l10n.titleLanguage,
                 items: titleValues,
                 value: s.titleLanguage,
                 itemLabel: _titleLanguageLabel,
                 onChanged: (v) => _update((s) => s.titleLanguage = v))),
         AnymeXTile(
             icon: Icons.record_voice_over_rounded,
-            title: 'Staff & Character Name Language',
+            title: context.l10n.staffCharacterNameLanguage,
             subtitle: _staffNameLanguageLabel(s.staffNameLanguage),
             onTap: () => _showOptionPicker<String>(
-                title: 'Staff & Character Name Language',
+                title: context.l10n.staffCharacterNameLanguage,
                 items: staffValues,
                 value: s.staffNameLanguage,
                 itemLabel: _staffNameLanguageLabel,
                 onChanged: (v) => _update((s) => s.staffNameLanguage = v))),
         AnymeXTile(
             icon: Icons.schedule_rounded,
-            title: 'Activity Merge Time',
+            title: context.l10n.activityMergeTime,
             subtitle: _activityMergeLabel(s.activityMergeTime),
             onTap: () => _showOptionPicker<int>(
-                title: 'Activity Merge Time',
+                title: context.l10n.activityMergeTime,
                 items: mergeValues,
                 value: s.activityMergeTime,
                 itemLabel: _activityMergeLabel,
                 onChanged: (v) => _update((s) => s.activityMergeTime = v))),
         AnymeXTile.toggle(
             icon: Icons.notifications_active_rounded,
-            title: 'Airing Anime Notifications',
-            subtitle: 'Enable notifications for upcoming airing episodes.',
+            title: context.l10n.airingAnimeNotifications,
+            subtitle: context.l10n.enableNotificationsForUpcomingAiringEpisodes,
             value: s.airingNotifications,
             onChanged: (v) => _update((s) => s.airingNotifications = v)),
         AnymeXTile.toggle(
             icon: Icons.warning_amber_rounded,
-            title: '18+ Content',
-            subtitle: 'Enable NSFW/adult entries in AniList content.',
+            title: context.l10n.n18Content,
+            subtitle: context.l10n.enableNsfwAdultEntriesInAnilist,
             value: s.displayAdultContent,
             onChanged: (v) => _update((s) => s.displayAdultContent = v)),
       ],
@@ -761,33 +762,33 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
         splitCompleted: s.splitCompletedManga);
 
     return AnymeXSectionBuilder(
-      title: 'List Options',
+      title: context.l10n.listOptions,
       children: [
         AnymeXTile(
             icon: Icons.scoreboard_rounded,
-            title: 'Scoring System',
+            title: context.l10n.scoringSystem,
             subtitle: _scoreFormatLabel(s.scoreFormat),
             onTap: () => _showOptionPicker<String>(
-                title: 'Scoring System',
+                title: context.l10n.scoringSystem,
                 items: scoreValues,
                 value: s.scoreFormat,
                 itemLabel: _scoreFormatLabel,
                 onChanged: (v) => _update((s) => s.scoreFormat = v))),
         AnymeXTile(
             icon: Icons.sort_rounded,
-            title: 'Default List Order',
+            title: context.l10n.defaultListOrder,
             subtitle: _rowOrderLabel(s.rowOrder),
             onTap: () => _showOptionPicker<String>(
-                title: 'Default List Order',
+                title: context.l10n.defaultListOrder,
                 items: rowValues,
                 value: s.rowOrder,
                 itemLabel: _rowOrderLabel,
                 onChanged: (v) => _update((s) => s.rowOrder = v))),
         AnymeXTile.toggle(
             icon: Icons.view_stream_rounded,
-            title: 'Split Completed Anime List',
+            title: context.l10n.splitCompletedAnimeList,
             subtitle:
-                'Separate completed anime list into sections by format.',
+                context.l10n.separateCompletedAnimeListIntoSections,
             value: s.splitCompletedAnime,
             onChanged: (v) => _update((s) {
                   s.splitCompletedAnime = v;
@@ -801,9 +802,9 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 })),
         AnymeXTile.toggle(
             icon: Icons.view_stream_rounded,
-            title: 'Split Completed Manga List',
+            title: context.l10n.splitCompletedMangaList,
             subtitle:
-                'Separate completed manga list into sections by format.',
+                context.l10n.separateCompletedMangaListIntoSections,
             value: s.splitCompletedManga,
             onChanged: (v) => _update((s) {
                   s.splitCompletedManga = v;
@@ -817,41 +818,41 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 })),
         AnymeXTile(
             icon: Icons.list_alt_rounded,
-            title: 'Anime Custom Lists',
+            title: context.l10n.animeCustomLists,
             subtitle: s.animeCustomLists.isEmpty
                 ? 'No lists added'
                 : s.animeCustomLists.join(', '),
             onTap: () => _editCustomLists(
-                title: 'Anime Custom Lists',
+                title: context.l10n.animeCustomLists,
                 current: s.animeCustomLists,
                 onApply: (v) => _update((s) => s.animeCustomLists = v))),
         AnymeXTile(
             icon: Icons.menu_book_rounded,
-            title: 'Manga Custom Lists',
+            title: context.l10n.mangaCustomLists,
             subtitle: s.mangaCustomLists.isEmpty
                 ? 'No lists added'
                 : s.mangaCustomLists.join(', '),
             onTap: () => _editCustomLists(
-                title: 'Manga Custom Lists',
+                title: context.l10n.mangaCustomLists,
                 current: s.mangaCustomLists,
                 onApply: (v) => _update((s) => s.mangaCustomLists = v))),
         AnymeXTile(
             icon: Icons.reorder_rounded,
-            title: 'Anime Section Order',
+            title: context.l10n.animeSectionOrder,
             subtitle:
                 'Drag to reorder · ${_normalizeSectionOrder(s.animeSectionOrder, animeSections).length} items',
             onTap: () => _editSectionOrder(
-                title: 'Anime',
+                title: context.l10n.anime,
                 current: s.animeSectionOrder,
                 allowedValues: animeSections,
                 onApply: (v) => _update((s) => s.animeSectionOrder = v))),
         AnymeXTile(
             icon: Icons.reorder_rounded,
-            title: 'Manga Section Order',
+            title: context.l10n.mangaSectionOrder,
             subtitle:
                 'Drag to reorder · ${_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length} items',
             onTap: () => _editSectionOrder(
-                title: 'Manga',
+                title: context.l10n.manga,
                 current: s.mangaSectionOrder,
                 allowedValues: mangaSections,
                 onApply: (v) => _update((s) => s.mangaSectionOrder = v))),
@@ -873,8 +874,8 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           children: [
             AnymeXTile.toggle(
               icon: Icons.lock_rounded,
-              title: 'Restrict Messages To Following',
-              subtitle: 'Allow only users I follow to message me.',
+              title: context.l10n.restrictMessagesToFollowing,
+              subtitle: context.l10n.allowOnlyUsersIFollowTo,
               value: s.restrictMessagesToFollowing,
               onChanged: (v) => _update((s) => s.restrictMessagesToFollowing = v),
             ),
@@ -885,10 +886,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           children: [
             AnymeXTile(
               icon: Icons.public_rounded,
-              title: 'Select Timezone',
+              title: context.l10n.selectTimezone,
               subtitle: _timezoneLabel(tzValue),
               onTap: () => _showOptionPicker<String>(
-                title: 'Select Timezone',
+                title: context.l10n.selectTimezone,
                 items: tzValues,
                 value: tzValue,
                 itemLabel: _timezoneLabel,
@@ -930,11 +931,11 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
         const SizedBox(width: 20),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Expanded(child: AnymeXText('About', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.onSurface))),
+            Expanded(child: AnymeXText(context.l10n.about, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: context.colors.onSurface))),
             SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: false, label: AnymeXText('Edit')),
-                ButtonSegment(value: true, label: AnymeXText('Preview')),
+              segments: [
+                ButtonSegment(value: false, label: AnymeXText(context.l10n.edit)),
+                ButtonSegment(value: true, label: AnymeXText(context.l10n.preview)),
               ],
               selected: {_aboutPreview}, showSelectedIcon: false,
               onSelectionChanged: (v) => setState(() => _aboutPreview = v.first),
@@ -978,7 +979,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
               maxLines: _aboutEditorExpanded ? 24 : 12,
               style: TextStyle(fontSize: 15, color: context.colors.onSurface, height: 1.35),
               decoration: InputDecoration(
-                hintText: 'Write your AniList bio...',
+                hintText: context.l10n.writeYourAnilistBio,
                 filled: true, fillColor: context.colors.surfaceContainer.opaque(0.72),
                 enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(color: context.colors.outline.opaque(0.25))),
@@ -1010,7 +1011,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 ]),
                 if (_aboutPreviewExpanded)
                   _aboutController.text.trim().isEmpty
-                      ? AnymeXText('Nothing to preview yet.',
+                      ? AnymeXText(context.l10n.nothingToPreviewYet,
                           style: TextStyle(color: context.colors.onSurface.opaque(0.6), fontSize: 14))
                       : AnilistAboutMe(about: _previewAbout(_aboutController.text)),
               ]),
@@ -1026,7 +1027,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       AnymeXText(_error!, textAlign: TextAlign.center, style: TextStyle(color: context.colors.error)),
       const SizedBox(height: 12),
       ElevatedButton.icon(onPressed: _loadSettings,
-        icon: const Icon(Icons.refresh_rounded), label: const AnymeXText('Retry')),
+        icon: const Icon(Icons.refresh_rounded), label: AnymeXText(context.l10n.retry)),
     ]),
   ));
 

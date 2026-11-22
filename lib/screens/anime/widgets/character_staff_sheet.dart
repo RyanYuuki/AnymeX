@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -159,7 +160,7 @@ class _CharacterStaffSheetContentState
               final dynamic fullItem = snapshot.data;
               if (snapshot.connectionState == ConnectionState.done &&
                   fullItem == null) {
-                return const Center(child: AnymeXText("Failed to load details"));
+                return Center(child: AnymeXText(context.l10n.failedToLoadDetails));
               }
 
               final isLoading =
@@ -305,7 +306,7 @@ class _CharacterStaffSheetContentState
                                         if (GetPlatform.isDesktop) {
                                           await Clipboard.setData(
                                               ClipboardData(text: url));
-                                          snackBar("Link copied to clipboard!",
+                                          snackBar(Get.context!.l10n.linkCopiedToClipboard,
                                               duration: 2000);
                                         } else {
                                           Share.share(url);
@@ -345,7 +346,7 @@ class _CharacterStaffSheetContentState
                                 Obx(() => GestureDetector(
                                       onTap: () async {
                                         if (!anilistAuth.isLoggedIn.value) {
-                                          snackBar("Please login to favorite!");
+                                          snackBar(context.l10n.pleaseLoginToFavorite);
                                           return;
                                         }
 
@@ -363,7 +364,7 @@ class _CharacterStaffSheetContentState
 
                                         if (!success) {
                                           isFav.value = previousState;
-                                          snackBar("Failed to update AniList");
+                                          snackBar(Get.context!.l10n.failedToUpdateAnilist);
                                         } else {
                                           snackBar(isFav.value
                                               ? "Added to Favorites"
@@ -679,9 +680,9 @@ class _CharacterStaffSheetContentState
                             const SizedBox(height: 30),
                             if (widget.isCharacter &&
                                 voiceActors.isNotEmpty) ...[
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymeXText("Voice Actors",
+                                child: AnymeXText(context.l10n.voiceActors,
                                   variant: TextVariant.bold,
                                   size: 16,
                                 ),
@@ -776,9 +777,9 @@ class _CharacterStaffSheetContentState
                               const SizedBox(height: 30),
                             ],
                             if (voicedCharacters.isNotEmpty) ...[
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymeXText("Voiced Characters",
+                                child: AnymeXText(context.l10n.voicedCharacters,
                                   variant: TextVariant.bold,
                                   size: 16,
                                 ),
@@ -810,7 +811,7 @@ class _CharacterStaffSheetContentState
                                     GestureDetector(
                                       onTap: () {
                                         if (!anilistAuth.isLoggedIn.value) {
-                                          snackBar("Please login to use this filter!");
+                                          snackBar(context.l10n.pleaseLoginToUseThisFilter);
                                           return;
                                         }
                                         showOnlyOnList.value =
@@ -844,7 +845,7 @@ class _CharacterStaffSheetContentState
                                                     : null,
                                               )),
                                           const SizedBox(width: 10),
-                                          AnymeXText("On My List",
+                                          AnymeXText(context.l10n.onMyList,
                                             size: 14,
                                             color: theme.onSurface
                                                 .withOpacity(0.7),
@@ -1379,7 +1380,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                 ),
               ),
               child: MarkdownBody(
-                data: widget.text.isNotEmpty ? widget.text : 'Spoilers',
+                data: widget.text.isNotEmpty ? widget.text : context.l10n.spoilers,
                 shrinkWrap: true,
                 styleSheet: MarkdownStyleSheet(
                   p: TextStyle(
@@ -1409,7 +1410,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                       size: 16, color: theme.colorScheme.primary),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    "Spoiler",
+                    context.l10n.spoiler,
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,

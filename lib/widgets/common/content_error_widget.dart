@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -179,7 +181,7 @@ class ContentErrorWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  'Retry',
+                  context.l10n.retry,
                   variant: TextVariant.semiBold,
                   size: 13,
                   color: isError ? colors.onError : colors.onPrimary,
@@ -206,7 +208,7 @@ class ContentErrorWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  'Wrong Title?',
+                  context.l10n.wrongTitle,
                   variant: TextVariant.semiBold,
                   size: 13,
                   color: colors.primary,

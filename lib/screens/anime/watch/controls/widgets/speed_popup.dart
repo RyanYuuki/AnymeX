@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -290,7 +291,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
     final cs = theme.colorScheme;
 
     return WatchSettingsPane(
-      title: 'Playback Speed',
+      title: context.l10n.playbackSpeed,
       subtitle: AnymeXText(
         '${_fmt(_currentSpeed)} · $_speedLabel',
         style: TextStyle(fontSize: 12, color: cs.primary),

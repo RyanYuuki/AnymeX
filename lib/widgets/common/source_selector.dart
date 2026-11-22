@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
@@ -420,7 +421,7 @@ class _EmptySourceState extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 AnymeXText(
-                  'Go to Extensions to get started',
+                  context.l10n.goToExtensionsToGetStarted,
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'Linotte',
@@ -605,7 +606,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             fontFamily: 'Linotte',
           ),
           decoration: InputDecoration(
-            hintText: 'Search sources...',
+            hintText: context.l10n.searchSources,
             hintStyle: TextStyle(
               fontSize: 14,
               fontFamily: 'Linotte',
@@ -692,7 +693,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                       ),
                       const SizedBox(height: 8),
                       AnymeXText(
-                        'No sources found',
+                        context.l10n.noSourcesFound,
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Linotte',
@@ -895,7 +896,7 @@ class _LangSubPicker extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               AnymeXText(
-                'Language Variant',
+                context.l10n.languageVariant,
                 style: TextStyle(
                   fontSize: 12,
                   fontFamily: 'Linotte',

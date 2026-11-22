@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
@@ -104,14 +105,14 @@ class ListStatusCard extends StatelessWidget {
                       if (isAnime) {
                         navigate(() => AnimeList(
                               data: data,
-                              title: "Anime",
+                              title: context.l10n.anime,
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));
                       } else {
                         navigate(() => AnilistMangaList(
                               data: data,
-                              title: "Manga",
+                              title: context.l10n.manga,
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));

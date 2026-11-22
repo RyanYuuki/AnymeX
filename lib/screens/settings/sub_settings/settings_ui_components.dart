@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
@@ -168,7 +169,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'UI Components',
+      headerTitle: context.l10n.uiComponents,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding:

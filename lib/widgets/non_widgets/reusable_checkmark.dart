@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ void showSelectionDialog<T>({
         return AnymeXDialog(
           title: title,
           showCancelButton: false,
-          confirmText: 'Close',
+          confirmText: context.l10n.close,
           onConfirm: () {},
           contentWidget: ConstrainedBox(
             constraints: BoxConstraints(

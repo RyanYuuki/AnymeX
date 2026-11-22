@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -370,8 +371,8 @@ class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
         url: widget.url,
         icon: Icons.videocam_rounded,
         color: context.theme.colorScheme.primary,
-        title: 'WebM Video',
-        subtitle: 'Tap to open in browser',
+        title: context.l10n.webmVideo,
+        subtitle: context.l10n.tapToOpenInBrowser,
       );
     }
 

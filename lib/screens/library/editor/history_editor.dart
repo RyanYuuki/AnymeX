@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -87,7 +88,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     if (!deleted) return;
 
     HapticFeedback.lightImpact();
-    snackBar('History item deleted');
+    snackBar(Get.context!.l10n.historyItemDeleted);
   }
 
   Future<void> _deleteAllHistory(List<OfflineMedia> items) async {
@@ -208,29 +209,29 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 : item.name ?? 'Item'));
 
     AnymeXDialog(
-      title: 'Delete History Item',
+      title: context.l10n.deleteHistoryItem,
       message: 'Remove "$itemName" from your $_historyLabel?',
-      confirmText: 'Delete',
+      confirmText: context.l10n.delete,
       onConfirm: () => _deleteHistory(item),
     ).show(context);
   }
 
   void _showClearAllDialog(List<OfflineMedia> items) {
     AnymeXDialog(
-      title: 'Clear All History',
+      title: context.l10n.clearAllHistory,
       message:
           'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
-      confirmText: 'Clear All',
+      confirmText: context.l10n.clearAll,
       onConfirm: () => _deleteAllHistory(items),
     ).show(context);
   }
 
   void _showDeleteSelectedDialog() {
     AnymeXDialog(
-      title: 'Delete Selected',
+      title: context.l10n.deleteSelected,
       message:
           'Are you sure you want to delete ${_selectedMediaIds.length} ${_selectedMediaIds.length == 1 ? "item" : "items"} from your $_historyLabel?',
-      confirmText: 'Delete',
+      confirmText: context.l10n.delete,
       onConfirm: _deleteSelectedHistory,
     ).show(context);
   }
@@ -780,7 +781,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     ),
                     const SizedBox(width: 10),
                     AnymeXText(
-                      'Clear History',
+                      context.l10n.clearHistory,
                       size: 14,
                       variant: TextVariant.bold,
                       color: context.colors.error,

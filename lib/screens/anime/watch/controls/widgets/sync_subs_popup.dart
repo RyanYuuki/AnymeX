@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
@@ -77,7 +78,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
     final cs = theme.colorScheme;
 
     return WatchSettingsPane(
-      title: 'Sync Subtitles',
+      title: context.l10n.syncSubtitles,
       onClose: widget.onClose,
       child: Column(
         children: [

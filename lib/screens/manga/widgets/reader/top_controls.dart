@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -374,7 +375,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                   color: colors.onSurface,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Search chapters...',
+                  hintText: context.l10n.searchChapters,
                   hintStyle: TextStyle(
                     fontSize: 13,
                     color: colors.onSurface.withOpacity(0.45),

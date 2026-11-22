@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -277,7 +278,7 @@ class ChipTabs extends StatelessWidget {
           pillItems.add(
             PillItem(
               icon: Iconsax.clock,
-              label: 'History',
+              label: context.l10n.history,
               isSelected: selectedIndex == -1,
               onTap: () => controller.selectList(-1),
             ),

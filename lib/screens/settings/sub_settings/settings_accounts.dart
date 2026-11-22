@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -81,10 +82,10 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
     String title,
   ) {
     AnymeXDialog(
-      title: 'Log Out',
+      title: context.l10n.logOut,
       message: 'Are you sure you want to log out from $title?',
-      confirmText: 'Log Out',
-      cancelText: 'Cancel',
+      confirmText: context.l10n.logOut,
+      cancelText: context.l10n.cancel,
       onConfirm: () => service.logout(),
     ).show(context);
   }
@@ -176,14 +177,14 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                   if (title.toLowerCase() == 'anilist')
                     IconButton(
                       icon: const Icon(Icons.settings_outlined, size: 20),
-                      tooltip: 'Anilist Settings',
+                      tooltip: context.l10n.anilistSettings2,
                       onPressed: () =>
                           navigate(() => const SettingsAnilistApi()),
                     ),
                   IconButton(
                     icon: Icon(Icons.logout_rounded,
                         size: 20, color: colors.error),
-                    tooltip: 'Log Out',
+                    tooltip: context.l10n.logOut,
                     onPressed: () => _showLogoutDialog(context, service, title),
                   ),
                 ],
@@ -196,7 +197,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: AnymeXText(
-                  'Connect',
+                  context.l10n.connect,
                   variant: TextVariant.bold,
                   size: 12,
                   color: colors.primary,
@@ -242,7 +243,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
           children: [
             SizedBox(height: AnymeXHeaderScope.of(ctx)),
             AnymeXSectionBuilder(
-              title: 'Tracking Services',
+              title: context.l10n.trackingServices,
               children: services
                   .map((s) => _buildTrackingServiceTile(
                         context,

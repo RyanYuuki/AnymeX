@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -188,8 +189,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     final results = snapshot.data ?? [];
 
                     if (results.isEmpty) {
-                      return const Center(
-                        child: AnymeXText('No results found.'),
+                      return Center(
+                        child: AnymeXText(context.l10n.noResultsFound),
                       );
                     }
 
@@ -309,8 +310,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       },
                     );
                   } else {
-                    return const Center(
-                      child: AnymeXText('No data available.'),
+                    return Center(
+                      child: AnymeXText(context.l10n.noDataAvailable),
                     );
                   }
                 },

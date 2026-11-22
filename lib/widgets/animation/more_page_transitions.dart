@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -298,7 +300,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
               children: [
                 // Header
                 AnymeXText(
-                  'Page Animation Demo',
+                  context.l10n.pageAnimationDemo,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
@@ -306,7 +308,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                 ),
                 const SizedBox(height: 8),
                 AnymeXText(
-                  'Try different animation styles for page entrances',
+                  context.l10n.tryDifferentAnimationStylesForPage,
                   style: TextStyle(color: Colors.grey[600], fontSize: 16),
                 ),
 
@@ -366,7 +368,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Usage:',
+                        context.l10n.usage,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[700],

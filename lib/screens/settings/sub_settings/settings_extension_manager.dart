@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
@@ -67,7 +68,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     final release = await _pluginManager.fetchLatestRelease();
     if (!mounted) return;
     if (release == null) {
-      errorSnackBar('Failed to check for updates.');
+      errorSnackBar(context.l10n.failedToCheckForUpdates);
       return;
     }
     final currentVersion = _installedVersion;
@@ -92,7 +93,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } else {
-      successSnackBar('Plugin is already up to date.');
+      successSnackBar(context.l10n.pluginIsAlreadyUpToDate);
     }
   }
 
@@ -102,7 +103,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       final release = await _pluginManager.fetchLatestRelease();
       if (!mounted) return;
       if (release == null) {
-        errorSnackBar('Failed to check for updates.');
+        errorSnackBar(context.l10n.failedToCheckForUpdates);
         return;
       }
       final currentVersion = _installedVersion;
@@ -113,7 +114,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       if (_pluginManager.isNewerVersion(currentVersion, release.tagName)) {
         _showUpdatePopup();
       } else {
-        successSnackBar('Plugin is already up to date.');
+        successSnackBar(context.l10n.pluginIsAlreadyUpToDate);
       }
     } finally {
       if (mounted) setState(() => _isCheckingUpdate = false);
@@ -169,12 +170,12 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             .onRuntimeBridgeInitialization(force: true);
         if (mounted) {
           successSnackBar(
-              'Plugin re-downloaded successfully. Please restart to apply.');
+              context.l10n.pluginReDownloadedSuccessfullyPleaseRestart);
         }
       } else {
         if (mounted) {
           snackBar(
-              'Plugin re-downloaded. Please restart the app to apply.');
+              context.l10n.pluginReDownloadedPleaseRestartThe);
         }
       }
     } catch (error) {
@@ -187,13 +188,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     final releases = await _pluginManager.fetchReleases();
     setState(() => _isCheckingUpdate = false);
     if (releases.isEmpty) {
-      errorSnackBar('No releases found.');
+      errorSnackBar(Get.context!.l10n.noReleasesFound);
       return;
     }
     if (!mounted) return;
     final theme = Theme.of(context);
     AnymeXSheet(
-      title: 'Select Version to Rollback',
+      title: context.l10n.selectVersionToRollback,
       showDragHandle: true,
       contentWidget: Container(
         constraints: BoxConstraints(
@@ -338,7 +339,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
-      snackBar('Could not open releases page');
+      snackBar(Get.context!.l10n.couldNotOpenReleasesPage);
     }
   }
 
@@ -349,7 +350,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
  
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Extension Manager',
+      headerTitle: context.l10n.extensionManager,
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -368,7 +369,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           _isPluginInstalled ||
                           _installedVersion.isNotEmpty;
                       return AnymeXSectionBuilder(
-                        title: 'Plugin Installation & Sync',
+                        title: context.l10n.pluginInstallationSync,
                         children: [
                           AnymeXTile(
                             icon: Icons.cloud_download_rounded,
@@ -418,23 +419,23 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           if (hasInstalled || bridge.error.value.isNotEmpty)
                             AnymeXTile(
                               icon: Icons.refresh_rounded,
-                              title: 'Force Re-download',
+                              title: context.l10n.forceReDownload,
                               subtitle:
-                                  'Re-download and reinstall the plugin from scratch',
+                                  context.l10n.reDownloadAndReinstallThePlugin,
                               onTap: _forceReDownload,
                             ),
                           AnymeXTile(
                             icon: Icons.history_rounded,
-                            title: 'Rollback Version',
+                            title: context.l10n.rollbackVersion,
                             subtitle:
-                                'Downgrade or switch to a specific plugin version',
+                                context.l10n.downgradeOrSwitchToASpecific,
                             onTap: _showRollbackDialog,
                           ),
                           AnymeXTile(
                             icon: Icons.open_in_new_rounded,
-                            title: 'Runtime Host Releases',
+                            title: context.l10n.runtimeHostReleases,
                             subtitle:
-                                'Visit GitHub releases page for changelogs and manual downloads',
+                                context.l10n.visitGithubReleasesPageForChangelogs,
                             onTap: _openReleasesPage,
                           ),
                         ],
@@ -655,7 +656,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: AnymeXText(
-                        'Please restart the app to apply changes.',
+                        context.l10n.pleaseRestartTheAppToApply,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -778,22 +779,22 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           title: AnymeXText(title),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Enter value',
+              labelText: context.l10n.enterValue,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const AnymeXText('Cancel'),
+              child: AnymeXText(context.l10n.cancel),
             ),
             TextButton(
               onPressed: () {
                 onSave(controller.text);
                 Navigator.of(context).pop();
               },
-              child: const AnymeXText('Save'),
+              child: AnymeXText(context.l10n.save),
             ),
           ],
         );

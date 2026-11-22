@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/notification/announcement.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -136,9 +137,9 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: AnymeXText(
-                      'Announcement',
+                      context.l10n.announcement,
                       size: 16,
                       variant: TextVariant.semiBold,
                     ),
@@ -346,7 +347,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                   Icon(Icons.campaign_outlined,
                       size: 44, color: colors.onSurface.withOpacity(0.3)),
                   const SizedBox(height: 12),
-                  const AnymeXText('Announcement unavailable', size: 16,
+                  AnymeXText(context.l10n.announcementUnavailable, size: 16,
                       variant: TextVariant.semiBold),
                   const SizedBox(height: 6),
                   AnymeXText(
@@ -362,7 +363,7 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                     FilledButton.icon(
                       onPressed: _retry,
                       icon: const Icon(Icons.refresh_rounded, size: 18),
-                      label: const AnymeXText('Retry', size: 13),
+                      label: AnymeXText(context.l10n.retry, size: 13),
                     ),
                   ],
                 ],

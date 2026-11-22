@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,17 +75,17 @@ class _ReaderPageActionsSheet extends StatelessWidget {
             children: [
               _ActionButton(
                 icon: Icons.save_alt_rounded,
-                label: 'Save',
+                label: context.l10n.save,
                 onTap: () => _savePage(context),
               ),
               _ActionButton(
                 icon: Icons.share_rounded,
-                label: 'Share',
+                label: context.l10n.share,
                 onTap: () => _sharePage(context),
               ),
               _ActionButton(
                 icon: Icons.content_copy_rounded,
-                label: 'Copy URL',
+                label: context.l10n.copyUrl,
                 onTap: () => _copyPage(context),
               ),
             ],
@@ -152,7 +154,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
         final dir = await getTemporaryDirectory();
         final file = File('${dir.path}/$fileName');
         await file.writeAsBytes(bytes);
-        await Share.shareXFiles([XFile(file.path)], text: 'Manga page');
+        await Share.shareXFiles([XFile(file.path)], text: Get.context!.l10n.mangaPage);
       } else {
         String? downloadPath = (await getDownloadsDirectory())?.path;
 
@@ -196,7 +198,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
       final file = File(
           '${dir.path}/share_page_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await file.writeAsBytes(bytes);
-      await Share.shareXFiles([XFile(file.path)], text: 'Manga page');
+      await Share.shareXFiles([XFile(file.path)], text: Get.context!.l10n.mangaPage);
     } catch (e) {
       snackBar('Failed to share page: $e', duration: 2500);
     }

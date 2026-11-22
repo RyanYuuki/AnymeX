@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
@@ -44,7 +45,7 @@ void searchTypeSheet(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const AnymeXText("SEARCH",
+              AnymeXText(context.l10n.searchUpper,
                 size: 20,
                 variant: TextVariant.semiBold,
               ),

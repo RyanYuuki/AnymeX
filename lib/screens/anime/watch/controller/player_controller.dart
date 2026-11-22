@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -2951,7 +2952,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final url = selectedVideo.value?.url;
     if (url == null || url.isEmpty) {
       AnymeXToast.show(
-        message: 'No stream URL available',
+        message: Get.context!.l10n.noStreamUrlAvailable,
         duration: const Duration(seconds: 2),
       );
       return;
@@ -2961,14 +2962,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     final headers = selectedVideo.value?.headers;
     AnymeXToast.show(
-      message: 'Opening in external player...',
+      message: Get.context!.l10n.openingInExternalPlayer,
       duration: const Duration(seconds: 2),
     );
 
     final success = await ExternalPlayer.launch(url, headers: headers);
     if (!success) {
       AnymeXToast.show(
-        message: 'Failed to launch external player',
+        message: Get.context!.l10n.failedToLaunchExternalPlayer,
         duration: const Duration(seconds: 2),
       );
     }

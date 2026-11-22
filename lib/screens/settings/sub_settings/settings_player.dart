@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io' show Platform;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -174,7 +175,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: !widget.isModal,
-      headerTitle: 'Player Settings',
+      headerTitle: context.l10n.playerSettings,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -224,7 +225,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     ),
                     AnymeXTile(
                       icon: Icons.aspect_ratio_rounded,
-                      title: 'Resize Mode',
+                      title: context.l10n.resizeMode,
                       subtitle: settings.resizeMode.capitalizeFirst ??
                           settings.resizeMode,
                       onTap: _showResizeModeDialog,

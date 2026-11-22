@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -294,7 +295,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
   Future<void> _exportList() async {
     if (!serviceHandler.isLoggedIn.value) {
-      errorSnackBar('Please login first to export your list.');
+      errorSnackBar(context.l10n.pleaseLoginFirstToExportYour);
       return;
     }
 
@@ -305,7 +306,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
           ? await _exportMalList()
           : await _exportAnilistList();
       if (savedPath == null || savedPath.isEmpty) {
-        infoSnackBar('Export cancelled.');
+        infoSnackBar(Get.context!.l10n.exportCancelled);
         return;
       }
 
@@ -459,16 +460,16 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText("Export Settings",
+                      AnymeXText(context.l10n.exportSettings,
                         variant: TextVariant.bold,
                         size: 16,
                         color: colorScheme.primary,
                       ),
                       const SizedBox(height: 16),
                       _buildSettingsTile(
-                        title: "Update on Import",
+                        title: context.l10n.updateOnImport,
                         subtitle:
-                            "Automatically update entries when importing the XML",
+                            context.l10n.automaticallyUpdateEntriesWhenImportingThe,
                         value: _updateOnImport,
                         onChanged: (val) =>
                             setState(() => _updateOnImport = val),
@@ -480,7 +481,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                         ),
                         const SizedBox(height: 12),
                         _buildSettingsTile(
-                          title: "Round Up Scores",
+                          title: context.l10n.roundUpScores,
                           subtitle: _roundUp
                               ? "Scores will be rounded up (e.g. 7.5 → 8)"
                               : "Scores will be rounded down (e.g. 7.5 → 7)",

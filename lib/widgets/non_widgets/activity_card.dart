@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -120,8 +121,8 @@ class _ActivityCardState extends State<ActivityCard> {
     final anilistAuth = Get.find<AnilistAuth>();
     if (!anilistAuth.isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: AnymeXText('Please login first'),
+        SnackBar(
+          content: AnymeXText(context.l10n.pleaseLoginFirst),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -221,7 +222,7 @@ class _ActivityCardState extends State<ActivityCard> {
               ),
               ListTile(
                 leading: const Icon(Icons.open_in_browser),
-                title: const AnymeXText("Open in Browser"),
+                title: AnymeXText(context.l10n.openInBrowser),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   launchUrlString('https://anilist.co/activity/${activity.id}');
@@ -231,7 +232,7 @@ class _ActivityCardState extends State<ActivityCard> {
                   (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
                 ListTile(
                   leading: const Icon(Icons.edit_outlined),
-                  title: const AnymeXText("Edit Activity"),
+                  title: AnymeXText(context.l10n.editActivity),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _showEditSheet();
@@ -240,7 +241,7 @@ class _ActivityCardState extends State<ActivityCard> {
               if (isOwner)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: const AnymeXText("Delete Activity",
+                  title: AnymeXText(context.l10n.deleteActivity,
                       style: TextStyle(color: Colors.red)),
                   onTap: () async {
                     Navigator.pop(sheetContext);
@@ -309,7 +310,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             color: Colors.red, size: 20),
                         const SizedBox(width: 8),
                         AnymeXText(
-                          'Liked by',
+                          context.l10n.likedBy,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -470,7 +471,7 @@ class _ActivityCardState extends State<ActivityCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    "Edit Activity",
+                    context.l10n.editActivity,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -498,7 +499,7 @@ class _ActivityCardState extends State<ActivityCard> {
                 child: ActivityComposerSheet(
                   initialText: activity.text,
                   isModal: true,
-                  hintText: "Update your activity...",
+                  hintText: context.l10n.updateYourActivity,
                   onSubmit: (text, {isPrivate = false}) async {
                     final success = await Get.find<AnilistAuth>()
                         .editActivity(activity.id, text.trim());
@@ -683,7 +684,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                   Icon(Icons.lock, size: 10, color: subtleText),
                                   const SizedBox(width: 4),
                                   AnymeXText(
-                                    'Private',
+                                    context.l10n.private,
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: subtleText,

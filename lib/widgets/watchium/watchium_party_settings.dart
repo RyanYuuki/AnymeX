@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -29,13 +30,13 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
       children: [
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
-          title: 'Notifications',
+          title: context.l10n.notifications,
           children: [
             AnymeXTile.toggle(
               icon: Icons.person_add_alt_1_rounded,
               iconColor: Colors.green.opaque(0.8, iReallyMeanIt: true),
-              title: 'Join notifications',
-              subtitle: 'Show a notification when someone joins the party',
+              title: context.l10n.joinNotifications,
+              subtitle: context.l10n.showANotificationWhenSomeoneJoins,
               value: WatchiumKeys.notifyOnMemberJoin.get<bool>(true),
               onChanged: (v) {
                 WatchiumKeys.notifyOnMemberJoin.set(v);
@@ -45,8 +46,8 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             AnymeXTile.toggle(
               icon: Icons.person_remove_rounded,
               iconColor: cs.error,
-              title: 'Leave notifications',
-              subtitle: 'Show a notification when someone leaves the party',
+              title: context.l10n.leaveNotifications,
+              subtitle: context.l10n.showANotificationWhenSomeoneLeaves,
               value: WatchiumKeys.notifyOnMemberLeave.get<bool>(true),
               onChanged: (v) {
                 WatchiumKeys.notifyOnMemberLeave.set(v);
@@ -58,13 +59,13 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
         const SizedBox(height: 20),
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
-          title: 'On-Screen Overlays',
+          title: context.l10n.onScreenOverlays,
           children: [
             AnymeXTile.toggle(
               icon: Icons.chat_bubble_outline,
               iconColor: Colors.blue,
-              title: 'Live comments',
-              subtitle: 'Show chat messages on the player as they come in',
+              title: context.l10n.liveComments,
+              subtitle: context.l10n.showChatMessagesOnThePlayer,
               value: WatchiumKeys.commentOverlay.get<bool>(true),
               onChanged: (v) {
                 WatchiumKeys.commentOverlay.set(v);
@@ -74,8 +75,8 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             AnymeXTile.toggle(
               icon: Icons.emoji_emotions_outlined,
               iconColor: Colors.amber,
-              title: 'Reaction overlay',
-              subtitle: 'Show emoji reactions floating on the player',
+              title: context.l10n.reactionOverlay,
+              subtitle: context.l10n.showEmojiReactionsFloatingOnThe,
               value: WatchiumKeys.reactionOverlay.get<bool>(true),
               onChanged: (v) {
                 WatchiumKeys.reactionOverlay.set(v);
@@ -105,13 +106,13 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
         children: [
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Chat Moderation',
+            title: context.l10n.chatModeration,
             children: [
               AnymeXTile.toggle(
                 icon: Icons.voice_over_off_rounded,
                 iconColor: Colors.red,
-                title: 'Disable Chat',
-                subtitle: 'No one can send messages in the chat',
+                title: context.l10n.disableChat,
+                subtitle: context.l10n.noOneCanSendMessagesIn,
                 value: state.chatDisabled,
                 onChanged: (v) {
                   // Turn off announcement mode when disabling chat
@@ -124,8 +125,8 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
               AnymeXTile.toggle(
                 icon: Icons.campaign_outlined,
                 iconColor: Colors.amber,
-                title: 'Announcement Mode',
-                subtitle: 'Only host and co-hosts can send messages',
+                title: context.l10n.announcementMode,
+                subtitle: context.l10n.onlyHostAndCoHostsCan,
                 value: state.announcementMode,
                 onChanged: (v) {
                   // Turn off chat disabled when enabling announcement mode
@@ -158,13 +159,13 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
         children: [
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Sync Mode',
+            title: context.l10n.syncMode,
             children: [
               AnymeXTile.toggle(
                 icon: Icons.link_rounded,
                 iconColor: Colors.purple,
-                title: 'Follow Host',
-                subtitle: 'Playback is locked to the host',
+                title: context.l10n.followHost,
+                subtitle: context.l10n.playbackIsLockedToTheHost,
                 value: isFollowing,
                 onChanged: (v) {
                   watchium.setFollowHost(v);
@@ -173,8 +174,8 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
               AnymeXTile.toggle(
                 icon: Icons.lock_open_rounded,
                 iconColor: Colors.teal,
-                title: 'Freedom Seek',
-                subtitle: 'Seek and control playback freely',
+                title: context.l10n.freedomSeek,
+                subtitle: context.l10n.seekAndControlPlaybackFreely,
                 value: !isFollowing,
                 onChanged: (v) {
                   watchium.setFollowHost(!v);
@@ -203,8 +204,8 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
     return AnymeXTile(
       icon: Icons.picture_in_picture_alt_rounded,
       iconColor: Colors.purple,
-      title: 'Overlay position',
-      subtitle: 'Where live comments appear on screen',
+      title: context.l10n.overlayPosition,
+      subtitle: context.l10n.whereLiveCommentsAppearOnScreen,
       showChevron: false,
       customContent: Padding(
         padding: const EdgeInsets.only(top: 12),
@@ -212,7 +213,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
           children: [
             _positionTile(
               cs: cs,
-              label: 'Top-L',
+              label: context.l10n.topL,
               icon: icons[WatchiumOverlayPosition.topLeft]!,
               isSelected: current == WatchiumOverlayPosition.topLeft,
               onTap: () => _setPosition(WatchiumOverlayPosition.topLeft),
@@ -220,7 +221,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             const SizedBox(width: 8),
             _positionTile(
               cs: cs,
-              label: 'Top-R',
+              label: context.l10n.topR,
               icon: icons[WatchiumOverlayPosition.topRight]!,
               isSelected: current == WatchiumOverlayPosition.topRight,
               onTap: () => _setPosition(WatchiumOverlayPosition.topRight),
@@ -228,7 +229,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             const SizedBox(width: 8),
             _positionTile(
               cs: cs,
-              label: 'Bot-L',
+              label: context.l10n.botL,
               icon: icons[WatchiumOverlayPosition.bottomLeft]!,
               isSelected: current == WatchiumOverlayPosition.bottomLeft,
               onTap: () => _setPosition(WatchiumOverlayPosition.bottomLeft),
@@ -236,7 +237,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             const SizedBox(width: 8),
             _positionTile(
               cs: cs,
-              label: 'Bot-R',
+              label: context.l10n.botR,
               icon: icons[WatchiumOverlayPosition.bottomRight]!,
               isSelected: current == WatchiumOverlayPosition.bottomRight,
               onTap: () => _setPosition(WatchiumOverlayPosition.bottomRight),

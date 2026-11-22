@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -78,7 +79,7 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
 
   void _deleteItem(OfflineMedia item, ItemType type) {
     AnymeXDialog(
-      title: 'Remove from History',
+      title: context.l10n.removeFromHistory,
       contentWidget: AnymeXText(
         'Are you sure you want to remove "${item.name}" from your history?',
         size: 14,
@@ -199,14 +200,14 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
             scrollController: _scrollController,
             headerContent: Obx(
               () => Header(
-                title: 'History',
-                subtitle: 'Your watch & read history',
+                title: context.l10n.history,
+                subtitle: context.l10n.yourWatchReadHistory,
                 isSearchActive: _searchController.isSearchActive.value,
                 searchBar: HeaderSearchBar(
                   controller: _searchController.searchController,
                   onChanged: _searchController.search,
                   onClose: _searchController.toggleSearch,
-                  hintText: 'Search in History...',
+                  hintText: context.l10n.searchInHistory,
                 ),
                 actions: [
                   HeaderActionButton(

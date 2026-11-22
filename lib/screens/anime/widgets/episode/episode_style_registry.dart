@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -53,26 +54,26 @@ class EpisodeStyleRegistry {
   static EpisodeStyle get activeStyle => getStyle(currentStyleId.value);
 
   static final List<EpisodeStyle> _styles = [
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'minimal',
       name: 'Minimal',
       description:
-          'Simple layout displaying episode number, title, and progress without thumbnail',
+          Get.context!.l10n.simpleLayoutDisplayingEpisodeNumberTitle,
       styleType: EpisodeStyleType.minimal,
       builder: buildMinimalEpisodeStyle,
     ),
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'compact',
       name: 'Compact',
-      description: 'Compact card with episode thumbnail and title',
+      description: Get.context!.l10n.compactCardWithEpisodeThumbnailAnd,
       styleType: EpisodeStyleType.compact,
       builder: buildCompactEpisodeStyle,
     ),
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'detailed',
       name: 'Detailed',
       description:
-          'Full-width detailed card with large thumbnail and episode metadata',
+          Get.context!.l10n.fullWidthDetailedCardWithLarge,
       styleType: EpisodeStyleType.detailed,
       builder: buildDetailedEpisodeStyle,
     ),

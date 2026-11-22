@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_border.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -444,8 +446,8 @@ Widget loginSheetHelper({
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
-                      'Internal Browser',
+                    AnymeXText(
+                      context.l10n.internalBrowser,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -453,7 +455,7 @@ Widget loginSheetHelper({
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Login inside the app (Recommended)',
+                      context.l10n.loginInsideTheAppRecommended,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
@@ -492,8 +494,8 @@ Widget loginSheetHelper({
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
-                      'External Browser',
+                    AnymeXText(
+                      context.l10n.externalBrowser,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -501,7 +503,7 @@ Widget loginSheetHelper({
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Login using your default browser',
+                      context.l10n.loginUsingYourDefaultBrowser,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
@@ -541,8 +543,8 @@ Widget loginSheetHelper({
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymeXText(
-                        'Login with Token',
+                      AnymeXText(
+                        context.l10n.loginWithToken,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -550,7 +552,7 @@ Widget loginSheetHelper({
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Manually paste OAuth access token',
+                        context.l10n.manuallyPasteOauthAccessToken,
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -100,8 +101,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setDialogState) {
           return AnymeXDialog(
-            title: 'New Collection',
-            confirmText: 'Create',
+            title: context.l10n.newCollection,
+            confirmText: context.l10n.create,
             onConfirm: () {},
             confirmResultGetter: () => textController.text.trim(),
             showCancelButton: true,
@@ -109,7 +110,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
               controller: textController,
               autofocus: true,
               decoration: InputDecoration(
-                labelText: 'Collection name',
+                labelText: context.l10n.collectionName,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -166,8 +167,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
     final textTheme = Theme.of(context).textTheme;
 
     return AnymeXDialog(
-      title: 'Collections',
-      confirmText: 'Save',
+      title: context.l10n.collections,
+      confirmText: context.l10n.save,
       onConfirm: _handleOkPress,
       showCancelButton: true,
       contentWidget: Column(
@@ -240,7 +241,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
           OutlinedButton.icon(
             onPressed: _showCreateListDialog,
             icon: const Icon(Icons.add, size: 18),
-            label: const AnymeXText('New Collection'),
+            label: AnymeXText(context.l10n.newCollection),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(

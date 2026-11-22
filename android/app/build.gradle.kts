@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.ryan.anymex"
-    compileSdk = 36
+    compileSdk = 37
     ndkVersion = "28.2.13676358"
 
     dependenciesInfo {

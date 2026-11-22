@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:intl/intl.dart';
 import 'package:anymex/database/comments/model/commentum_role.dart';
 import 'package:anymex/database/comments/model/comment.dart';
@@ -459,7 +460,7 @@ class _CommentSectionState extends State<CommentSection>
                     AnymeXText(
                       widget.media.title.isNotEmpty
                           ? widget.media.title
-                          : 'Comments',
+                          : context.l10n.comments,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       size: 14.5,
@@ -508,7 +509,7 @@ class _CommentSectionState extends State<CommentSection>
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    tooltip: 'Leaderboard',
+                    tooltip: context.l10n.leaderboard,
                   ),
                 ),
                 SizedBox(
@@ -523,7 +524,7 @@ class _CommentSectionState extends State<CommentSection>
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    tooltip: 'Comment Rules',
+                    tooltip: context.l10n.commentRules,
                   ),
                 ),
                 Obx(() => SizedBox(
@@ -550,7 +551,7 @@ class _CommentSectionState extends State<CommentSection>
                                 size: 18,
                                 color: colorScheme.onSurfaceVariant,
                               ),
-                        tooltip: 'Refresh comments',
+                        tooltip: context.l10n.refreshComments,
                       ),
                     )),
               ],
@@ -729,7 +730,7 @@ class _CommentSectionState extends State<CommentSection>
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              hintText: 'Or type custom tag...',
+              hintText: context.l10n.orTypeCustomTag,
               hintStyle: TextStyle(
                 color: colorScheme.onSurfaceVariant.opaque(0.6),
                 fontSize: 14,
@@ -1662,7 +1663,7 @@ class _CommentSectionState extends State<CommentSection>
                       ),
                       onChanged: (_) => setReplyState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Write a reply...',
+                        hintText: context.l10n.writeAReply,
                         hintStyle: TextStyle(
                           color: colorScheme.onSurfaceVariant.opaque(0.5),
                           fontSize: 14,
@@ -2128,7 +2129,7 @@ class _CommentSectionState extends State<CommentSection>
                     ),
                     _buildTextMenuOption(
                       context: context,
-                      label: 'Copy',
+                      label: context.l10n.copy,
                       onTap: () {
                         Navigator.pop(ctx);
                         Clipboard.setData(
@@ -2139,7 +2140,7 @@ class _CommentSectionState extends State<CommentSection>
                     if (isOwnComment) ...[
                       _buildTextMenuOption(
                         context: context,
-                        label: 'Delete',
+                        label: context.l10n.delete,
                         isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
@@ -2150,7 +2151,7 @@ class _CommentSectionState extends State<CommentSection>
                     if (!isOwnComment) ...[
                       _buildTextMenuOption(
                         context: context,
-                        label: 'Report',
+                        label: context.l10n.report,
                         isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
@@ -2162,13 +2163,13 @@ class _CommentSectionState extends State<CommentSection>
                       if (!isOwnComment) ...[
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Delete',
+                          label: context.l10n.delete,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showReasonDialog(
                               context: context,
-                              title: 'Delete Comment',
+                              title: context.l10n.deleteComment,
                               isDestructive: true,
                               onConfirm: (reason) {
                                 controller.deleteComment(comment);
@@ -2245,7 +2246,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Warn User',
+                          label: context.l10n.warnUser,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2254,7 +2255,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Mute User',
+                          label: context.l10n.muteUser,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2263,7 +2264,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Ban User',
+                          label: context.l10n.banUser,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
@@ -2273,7 +2274,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Shadow Ban User',
+                          label: context.l10n.shadowBanUser,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
@@ -2283,7 +2284,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Unmute User',
+                          label: context.l10n.unmuteUser,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2292,7 +2293,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Unban User',
+                          label: context.l10n.unbanUser,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2301,7 +2302,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'User Info',
+                          label: context.l10n.userInfo,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showUserInfoDialog(
@@ -2310,7 +2311,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'User History',
+                          label: context.l10n.userHistory,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showUserHistoryDialog(
@@ -2415,7 +2416,7 @@ class _CommentSectionState extends State<CommentSection>
                 maxLines: 5,
                 minLines: 2,
                 decoration: InputDecoration(
-                  hintText: 'Edit your comment...',
+                  hintText: context.l10n.editYourComment,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2595,7 +2596,7 @@ class _CommentSectionState extends State<CommentSection>
                     ? null
                     : reasonController.text,
                 decoration: InputDecoration(
-                  labelText: 'Reason',
+                  labelText: context.l10n.reason,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2630,7 +2631,7 @@ class _CommentSectionState extends State<CommentSection>
                 controller: notesController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Additional notes (optional)',
+                  labelText: context.l10n.additionalNotesOptional,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2776,13 +2777,13 @@ class _CommentSectionState extends State<CommentSection>
                 _buildModAction(
                   context: context,
                   icon: Icons.delete_forever_rounded,
-                  label: 'Delete Comment (Mod)',
+                  label: context.l10n.deleteCommentMod,
                   color: colorScheme.error,
                   onTap: () {
                     Navigator.pop(context);
                     _showReasonDialog(
                       context: context,
-                      title: 'Delete Comment',
+                      title: context.l10n.deleteComment,
                       isDestructive: true,
                       onConfirm: (reason) {
                         controller.deleteComment(comment);
@@ -2858,9 +2859,9 @@ class _CommentSectionState extends State<CommentSection>
           controller: reasonController,
           maxLines: 3,
           minLines: 1,
-          decoration: const InputDecoration(
-            labelText: 'Reason',
-            hintText: 'Provide a reason for this action...',
+          decoration: InputDecoration(
+            labelText: context.l10n.reason,
+            hintText: context.l10n.provideAReasonForThisAction,
             border: OutlineInputBorder(),
           ),
         ),
@@ -2991,7 +2992,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.warning_rounded,
-                label: 'Warn User',
+                label: context.l10n.warnUser,
                 color: Colors.orange,
                 onTap: () {
                   Navigator.pop(context);
@@ -3001,7 +3002,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.volume_off_rounded,
-                label: 'Mute User',
+                label: context.l10n.muteUser,
                 color: Colors.amber,
                 onTap: () {
                   Navigator.pop(context);
@@ -3011,7 +3012,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.block_rounded,
-                label: 'Ban User',
+                label: context.l10n.banUser,
                 color: colorScheme.error,
                 onTap: () {
                   Navigator.pop(context);
@@ -3021,7 +3022,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.visibility_off_rounded,
-                label: 'Shadow Ban User',
+                label: context.l10n.shadowBanUser,
                 color: Colors.purple,
                 onTap: () {
                   Navigator.pop(context);
@@ -3044,7 +3045,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.check_circle_rounded,
-                label: 'Unban User',
+                label: context.l10n.unbanUser,
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
@@ -3054,7 +3055,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.notifications_active_rounded,
-                label: 'Unmute User',
+                label: context.l10n.unmuteUser,
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
@@ -3077,7 +3078,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.info_rounded,
-                label: 'View User Info',
+                label: context.l10n.viewUserInfo,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
@@ -3087,7 +3088,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.history_rounded,
-                label: 'View User History',
+                label: context.l10n.viewUserHistory,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);

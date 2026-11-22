@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -370,7 +371,7 @@ class WatchiumService extends GetxController {
       if (errCode == 'RATE_LIMITED') {
         warningSnackBar(
           errMsg,
-          title: 'Rate limited',
+          title: Get.context!.l10n.rateLimited,
           duration: 4000,
         );
       }
@@ -436,7 +437,7 @@ class WatchiumService extends GetxController {
     if (WatchiumKeys.notifyOnMemberJoin.get<bool>(true)) {
       for (final m in newMembers) {
         if (!oldIds.contains(m.userId) && m.userId != _userId) {
-          infoSnackBar('${m.username} joined the party', title: 'New member');
+          infoSnackBar('${m.username} joined the party', title: Get.context!.l10n.newMember);
         }
       }
     }
@@ -444,7 +445,7 @@ class WatchiumService extends GetxController {
     if (WatchiumKeys.notifyOnMemberLeave.get<bool>(true)) {
       for (final m in oldMembers) {
         if (!newIds.contains(m.userId) && m.userId != _userId) {
-          infoSnackBar('${m.username} left the party', title: 'Member left');
+          infoSnackBar('${m.username} left the party', title: Get.context!.l10n.memberLeft);
         }
       }
     }

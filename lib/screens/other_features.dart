@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
@@ -17,7 +19,7 @@ class OtherFeaturesPage extends StatelessWidget {
 
     return AnymeXScaffold(
   body: Column(children: [
-          const NestedHeader(title: 'Other Features'),
+          NestedHeader(title: context.l10n.otherFeatures),
           const SizedBox(height: 32),
           Expanded(
             child: ListView(
@@ -32,7 +34,7 @@ class OtherFeaturesPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      'Anime',
+                      context.l10n.anime,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -49,8 +51,8 @@ class OtherFeaturesPage extends StatelessWidget {
                       Expanded(
                         child: _FeatureCard(
                           icon: Icons.calendar_month_rounded,
-                          title: 'Calendar',
-                          description: 'Track airing schedules',
+                          title: context.l10n.calendar,
+                          description: context.l10n.trackAiringSchedules,
                           accentColor: colorScheme.primary,
                           onTap: () => navigate(() => const Calendar()),
                         ),
@@ -59,8 +61,8 @@ class OtherFeaturesPage extends StatelessWidget {
                       Expanded(
                         child: _FeatureCard(
                           icon: Icons.auto_awesome,
-                          title: 'AI Picks',
-                          description: 'Personalized recommendations',
+                          title: context.l10n.aiPicks,
+                          description: context.l10n.personalizedRecommendations,
                           accentColor: colorScheme.primary,
                           onTap: () => navigate(() => const AIRecommendation(
                                 isManga: false,
@@ -73,8 +75,8 @@ class OtherFeaturesPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 _FeatureCard(
                   icon: Icons.file_upload_rounded,
-                  title: 'List Exporter',
-                  description: 'Export your Anime list',
+                  title: context.l10n.listExporter,
+                  description: context.l10n.exportYourAnimeList,
                   accentColor: colorScheme.primary,
                   isFullWidth: true,
                   onTap: () =>
@@ -90,7 +92,7 @@ class OtherFeaturesPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      'Manga',
+                      context.l10n.manga,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -101,8 +103,8 @@ class OtherFeaturesPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 _FeatureCard(
                   icon: Icons.auto_awesome,
-                  title: 'AI Picks',
-                  description: 'Smart manga suggestions',
+                  title: context.l10n.aiPicks,
+                  description: context.l10n.smartMangaSuggestions,
                   accentColor: colorScheme.tertiary,
                   isFullWidth: true,
                   onTap: () => navigate(() => const AIRecommendation(
@@ -112,8 +114,8 @@ class OtherFeaturesPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 _FeatureCard(
                   icon: Icons.file_upload_rounded,
-                  title: 'List Exporter',
-                  description: 'Export your Manga list',
+                  title: context.l10n.listExporter,
+                  description: context.l10n.exportYourMangaList,
                   accentColor: colorScheme.tertiary,
                   isFullWidth: true,
                   onTap: () =>

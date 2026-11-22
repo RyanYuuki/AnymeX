@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -65,11 +66,11 @@ class _SettingsUiState extends State<SettingsUi> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXSectionBuilder(
-                        title: 'Interface Styling',
+                        title: context.l10n.interfaceStyling,
                         children: [
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedShapes,
-                            title: 'UI Components',
+                            title: context.l10n.uiComponents,
                             subtitle:
                                 'Customize history card, carousel & nav bar styles',
                             onTap: () =>
@@ -85,9 +86,9 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedPlaySquare,
-                            title: 'Details Page',
+                            title: context.l10n.detailsPage,
                             subtitle:
-                                'Configure poster blur, scope, tint & backdrop source',
+                                context.l10n.configurePosterBlurScopeTintBackdrop,
                             onTap: () =>
                                 navigate(() => const SettingsUiDetails()),
                           ),
@@ -98,7 +99,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         children: [
                           AnymeXTile.pills<bool>(
                             icon: Icons.view_sidebar_rounded,
-                            title: 'Nav Bar Layout',
+                            title: context.l10n.navBarLayout,
                             value: settings.useLegacyNavbar,
                             options: const [false, true],
                             optionLabelTransformer: (isLegacy) =>
@@ -119,8 +120,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.colorize,
-                            title: "Translucent Nav",
-                            subtitle: "Enable translucent navigation bar",
+                            title: context.l10n.translucentNav,
+                            subtitle: context.l10n.enableTranslucentNavigationBar,
                             value: settings.transculentBar,
                             onChanged: (val) {
                               settings.transculentBar = val;
@@ -154,9 +155,9 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.view_headline_rounded,
-                            title: "Use Legacy Header",
+                            title: context.l10n.useLegacyHeader,
                             subtitle:
-                                "Enable classic simple header style on home screens",
+                                context.l10n.enableClassicSimpleHeaderStyleOn,
                             value: settings.useLegacyHeader,
                             onChanged: (val) {
                               settings.useLegacyHeader = val;
@@ -190,9 +191,9 @@ class _SettingsUiState extends State<SettingsUi> {
                           if (Platform.isAndroid || Platform.isIOS)
                             AnymeXTile.toggle(
                               icon: Icons.fullscreen_rounded,
-                              title: "Immersive Mode",
+                              title: context.l10n.immersiveMode,
                               subtitle:
-                                  "Hide system status and navigation bars",
+                                  context.l10n.hideSystemStatusAndNavigationBars,
                               value: settings.enableImmersiveMode,
                               onChanged: (val) {
                                 settings.enableImmersiveMode = val;
@@ -205,8 +206,8 @@ class _SettingsUiState extends State<SettingsUi> {
                         children: [
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedLighthouse,
-                            title: "Glow Multiplier",
-                            subtitle: "Adjust element glow intensity",
+                            title: context.l10n.glowMultiplier,
+                            subtitle: context.l10n.adjustElementGlowIntensity,
                             value: settings.glowMultiplier,
                             min: 0,
                             max: 5.0,
@@ -215,8 +216,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Radius Multiplier",
-                            subtitle: "Adjust corner radius of elements",
+                            title: context.l10n.radiusMultiplier,
+                            subtitle: context.l10n.adjustCornerRadiusOfElements,
                             value: settings.radiusMultiplier,
                             min: 0,
                             max: 3.0,
@@ -225,8 +226,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Blur Multiplier",
-                            subtitle: "Adjust glow blur intensity",
+                            title: context.l10n.blurMultiplier,
+                            subtitle: context.l10n.adjustGlowBlurIntensity,
                             value: settings.blurMultiplier,
                             min: 0,
                             max: 5.0,
@@ -235,8 +236,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Card Roundness",
-                            subtitle: "Adjust roundness of all media cards",
+                            title: context.l10n.cardRoundness,
+                            subtitle: context.l10n.adjustRoundnessOfAllMediaCards,
                             value: settings.cardRoundness,
                             min: 0,
                             max: 5.0,
@@ -245,8 +246,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Card Animation Duration",
-                            subtitle: "Adjust card animation speed",
+                            title: context.l10n.cardAnimationDuration,
+                            subtitle: context.l10n.adjustCardAnimationSpeed,
                             value: settings.animationDuration.toDouble(),
                             min: 0,
                             max: 1000,
@@ -313,7 +314,7 @@ class _SettingsUiState extends State<SettingsUi> {
             final theme = Theme.of(context);
 
             return AnymeXDialog(
-              title: 'Reorder Navigation Tabs',
+              title: context.l10n.reorderNavigationTabs,
               contentWidget: SizedBox(
                 width: double.maxFinite,
                 child: SingleChildScrollView(
@@ -324,7 +325,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: AnymeXText(
-                          'Visible Tabs',
+                          context.l10n.visibleTabs,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
@@ -332,9 +333,9 @@ class _SettingsUiState extends State<SettingsUi> {
                         ),
                       ),
                       if (visibleTabs.isEmpty)
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: AnymeXText('No visible tabs'),
+                          child: AnymeXText(context.l10n.noVisibleTabs),
                         )
                       else
                         ReorderableListView.builder(
@@ -435,7 +436,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                       onPressed: () {
                                         if (visibleTabs.length <= 2) {
                                           snackBar(
-                                              'At least 2 tabs must remain visible!');
+                                              context.l10n.atLeast2TabsMustRemain);
                                           return;
                                         }
                                         setDialogState(() {
@@ -463,7 +464,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: AnymeXText(
-                          'Hidden Tabs',
+                          context.l10n.hiddenTabs,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.bold,
@@ -474,7 +475,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: AnymeXText(
-                            'No hidden tabs',
+                            context.l10n.noHiddenTabs,
                             style: TextStyle(
                               color: theme.colorScheme.onSurfaceVariant
                                   .withOpacity(0.6),
@@ -544,7 +545,7 @@ class _SettingsUiState extends State<SettingsUi> {
                   ),
                 ),
               ),
-              confirmText: 'Save',
+              confirmText: context.l10n.save,
               onConfirm: () {
                 settings.navigationTabOrder = visibleTabs;
                 setState(() {});

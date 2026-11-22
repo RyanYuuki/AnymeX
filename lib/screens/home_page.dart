@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -227,7 +228,7 @@ class _HomePageState extends State<HomePage> {
       onRefresh: () {
         if (!serviceHandler.isLoggedIn.value) {
           snackBar(
-              "W-what are you doing step-bro, login before you do that (●´⌓`●)",
+              context.l10n.wWhatAreYouDoingStep,
               duration: 1200);
         }
         return serviceHandler.refresh();
@@ -256,18 +257,18 @@ class _HomePageState extends State<HomePage> {
                       child: AnymeXTextSpans(
                         fontSize: 27,
                         spans: [
-                          const AnymeXTextSpan(
-                              text: 'Hey ',
+                          AnymeXTextSpan(
+                              text: context.l10n.hey,
                               size: 30,
                               variant: TextVariant.bold),
                           AnymeXTextSpan(
                               text:
-                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : context.l10n.guest}',
                               size: 30,
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymeXTextSpan(
-                              text: ', what are we doing today?',
+                          AnymeXTextSpan(
+                              text: context.l10n.whatAreWeDoingToday,
                               size: 30,
                               variant: TextVariant.bold),
                         ],
@@ -288,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                           horizontal: isDesktop ? 24.0 : 20.0,
                         ),
                         child: AnymeXText(
-                          'Find your favourite anime or manga, manhwa or whatever you like!',
+                          context.l10n.findYourFavouriteAnimeOrManga,
                           style: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme
@@ -319,7 +320,7 @@ class _HomePageState extends State<HomePage> {
                 if (novelData.isNotEmpty)
                   SliverToBoxAdapter(
                     child: ReusableCarousel(
-                      title: "Recommended Novels",
+                      title: context.l10n.recommendedNovels,
                       data: novelData,
                       type: ItemType.novel,
                       source: sourceController.activeNovelSource.value,
@@ -337,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                 scrollController: _scrollController,
                 headerContent: Header(
                   leading: const HeaderLogoButton(),
-                  title: 'AnymeX',
+                  title: context.l10n.anymex,
                   titleColor: Theme.of(context).colorScheme.primary,
                   subtitleWidget: const HeaderGreetingSubtitle(),
                   actions: const [HeaderProfileAvatar()],

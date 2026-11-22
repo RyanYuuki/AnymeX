@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -249,7 +250,7 @@ class Header extends StatelessWidget {
             Icon(Iconsax.eye_slash, size: 12, color: theme.error),
             const SizedBox(width: 4),
             AnymeXText(
-              'Incognito',
+              context.l10n.incognito,
               size: 11,
               variant: TextVariant.bold,
               color: theme.error,
@@ -276,7 +277,7 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderLogoButton(),
-        title: 'AnymeX',
+        title: Get.context!.l10n.anymex,
         titleColor: Get.theme.colorScheme.primary,
         subtitleWidget: const HeaderGreetingSubtitle(),
         actions: const [HeaderProfileAvatar()],
@@ -316,7 +317,7 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Novels',
+        title: Get.context!.l10n.novels,
         subtitleWidget: const HeaderGreetingSubtitle(),
         actions: [
           if (onSearchPressed != null)
@@ -331,8 +332,8 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Library',
-        subtitle: 'All your local shi',
+        title: Get.context!.l10n.libraryLabel,
+        subtitle: Get.context!.l10n.allYourLocalShi,
         actions: [
           if (onSearchPressed != null)
             HeaderActionButton(
@@ -351,8 +352,8 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'History',
-        subtitle: 'Your watch & read history',
+        title: Get.context!.l10n.history,
+        subtitle: Get.context!.l10n.yourWatchReadHistory,
         actions: [
           if (onSearchPressed != null)
             HeaderActionButton(
@@ -366,16 +367,16 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Stats',
-        subtitle: 'Your watch & read statistics',
+        title: Get.context!.l10n.stats,
+        subtitle: Get.context!.l10n.yourWatchReadStatistics,
         bottom: bottom,
       );
     case PageType.extensions:
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Extensions',
-        subtitle: 'Manage plugins & sources',
+        title: Get.context!.l10n.extensions,
+        subtitle: Get.context!.l10n.managePluginsSources,
         bottom: bottom,
       );
   }
@@ -651,7 +652,7 @@ class HeaderGreetingSubtitle extends StatelessWidget {
     final greetingController = Get.find<GreetingController>();
     return Obx(
       () => AnymeXText(
-        greetingController.currentGreeting.value,
+        greetingController.currentGreeting.value(context.l10n),
         autoResize: true,
         maxLines: 1,
         size: 11,
@@ -725,8 +726,8 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const AnymeXText(
-            'Library Settings',
+          AnymeXText(
+            context.l10n.librarySettings,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -785,7 +786,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.lastRead),
               ),
               SortTile(
-                title: 'Title',
+                title: context.l10n.title,
                 sortType: SortType.title,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -802,7 +803,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.progress),
               ),
               SortTile(
-                title: 'Rating',
+                title: context.l10n.rating,
                 sortType: SortType.rating,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -813,7 +814,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
             ]
           : [
               SortTile(
-                title: 'Last Added',
+                title: context.l10n.lastAdded,
                 sortType: SortType.lastAdded,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -822,7 +823,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.lastAdded),
               ),
               SortTile(
-                title: 'Title',
+                title: context.l10n.title,
                 sortType: SortType.title,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -839,7 +840,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.lastRead),
               ),
               SortTile(
-                title: 'Rating',
+                title: context.l10n.rating,
                 sortType: SortType.rating,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -857,7 +858,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.progress),
               ),
               SortTile(
-                title: 'Release Date',
+                title: context.l10n.releaseDate,
                 sortType: SortType.aired,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -881,8 +882,8 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
         Obx(() {
           return AnymeXTile.slider(
             icon: Icons.grid_view_rounded,
-            title: 'Grid Size',
-            subtitle: 'Adjust Items per row',
+            title: context.l10n.gridSize,
+            subtitle: context.l10n.adjustItemsPerRow,
             value: widget.controller.gridCount.value.toDouble(),
             min: 0.0,
             max: 10.0,
@@ -896,9 +897,9 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
         Obx(() {
           return AnymeXTile.toggle(
             icon: Icons.translate_rounded,
-            title: 'Use Alternate Title',
+            title: context.l10n.useAlternateTitle,
             subtitle:
-                'Switch between default title and romaji/alternate title across library & cards',
+                context.l10n.switchBetweenDefaultTitleAndRomaji,
             value: settings.useAlternateTitle.value,
             onChanged: (e) {
               settings.useAlternateTitle.value = e;

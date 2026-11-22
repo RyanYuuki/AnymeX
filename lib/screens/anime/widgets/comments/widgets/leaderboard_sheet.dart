@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
@@ -144,7 +145,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                 IconButton(
                   icon: const Icon(Icons.refresh_rounded, size: 20),
                   onPressed: _isLoading ? null : _fetchLeaderboard,
-                  tooltip: 'Refresh',
+                  tooltip: context.l10n.refresh,
                 ),
               ],
             ),

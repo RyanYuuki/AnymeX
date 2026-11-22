@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
@@ -1157,7 +1158,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           if (curIdx == -1 || getNextChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
-              title: "Last Chapter",
+              title: Get.context!.l10n.lastChapter,
               "There are no more chapters.",
             );
             Future.delayed(
@@ -1177,7 +1178,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           if (curIdx == -1 || getPrevChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
-              title: "First Chapter",
+              title: Get.context!.l10n.firstChapter,
               "This is the first chapter.",
             );
             Future.delayed(
@@ -2029,12 +2030,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     } else {
       if (next) {
         snackBar(
-          title: "Last Chapter",
+          title: Get.context!.l10n.lastChapter,
           "There are no more chapters.",
         );
       } else {
         snackBar(
-          title: "First Chapter",
+          title: Get.context!.l10n.firstChapter,
           "This is the first chapter.",
         );
       }

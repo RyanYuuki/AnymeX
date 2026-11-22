@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -61,7 +62,7 @@ class CenterControls extends StatelessWidget {
         ControlButton(
           icon: Icons.skip_previous_rounded,
           onPressed: () => controller.navigator(false),
-          tooltip: 'Previous Episode',
+          tooltip: Get.context!.l10n.previousEpisode,
         ),
         const SizedBox(width: 32),
         Obx(() {
@@ -101,7 +102,7 @@ class CenterControls extends StatelessWidget {
         ControlButton(
           icon: Icons.skip_next_rounded,
           onPressed: () => controller.navigator(true),
-          tooltip: 'Next Episode',
+          tooltip: Get.context!.l10n.nextEpisode,
         ),
       ],
     );
@@ -119,7 +120,7 @@ class CenterControls extends StatelessWidget {
           child: ControlButton(
             icon: Icons.skip_previous_rounded,
             onPressed: () => controller.navigator(false),
-            tooltip: 'Previous Episode',
+            tooltip: Get.context!.l10n.previousEpisode,
           ),
         ),
         const SizedBox(width: 28),
@@ -132,7 +133,7 @@ class CenterControls extends StatelessWidget {
                   final newPos = currentPos - const Duration(seconds: 30);
                   controller.seekTo(newPos.isNegative ? Duration.zero : newPos);
                 },
-          tooltip: 'Replay 30s',
+          tooltip: Get.context!.l10n.replay30s,
         ),
         const SizedBox(width: 32),
         Obx(() {
@@ -186,7 +187,7 @@ class CenterControls extends StatelessWidget {
                   final newPos = currentPos + const Duration(seconds: 30);
                   controller.seekTo(newPos > duration ? duration : newPos);
                 },
-          tooltip: 'Forward 30s',
+          tooltip: Get.context!.l10n.forward30s,
         ),
         const SizedBox(width: 28),
         Opacity(
@@ -194,7 +195,7 @@ class CenterControls extends StatelessWidget {
           child: ControlButton(
             icon: Icons.skip_next_rounded,
             onPressed: () => controller.navigator(true),
-            tooltip: 'Next Episode',
+            tooltip: Get.context!.l10n.nextEpisode,
           ),
         ),
       ],

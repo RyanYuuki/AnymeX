@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -138,8 +139,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
         _buildField(
           cs,
           controller: null,
-          label: 'Room Code',
-          hint: 'e.g. ABC123',
+          label: context.l10n.roomCode,
+          hint: context.l10n.eGAbc123,
           prefixIcon: Icons.vpn_key_rounded,
           letterSpacing: 2,
           onChanged: (v) => _joinCode = v.toUpperCase(),
@@ -154,7 +155,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
         _buildField(
           cs,
           controller: null,
-          label: 'Password (if required)',
+          label: context.l10n.passwordIfRequired,
           prefixIcon: Icons.lock_outline_rounded,
           obscureText: _obscurePassword,
           suffixIcon: _buildVisibilityToggle(cs),
@@ -353,8 +354,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             child: _buildField(
               cs,
               controller: null,
-              label: 'Room Password',
-              hint: 'Set a password for your room',
+              label: context.l10n.roomPassword,
+              hint: context.l10n.setAPasswordForYourRoom,
               prefixIcon: Icons.password_rounded,
               obscureText: _obscurePassword,
               suffixIcon: _buildVisibilityToggle(cs),
@@ -530,7 +531,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
     if (_hasLocalProxyStreams()) {
       warningSnackBar(
         'This extension is not supported for rooms yet. Please switch to a different extension.',
-        title: 'Unsupported Extension',
+        title: context.l10n.unsupportedExtension,
       );
       return;
     }
@@ -754,7 +755,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: code));
-                      successSnackBar('Room code copied to clipboard', title: 'Copied');
+                      successSnackBar(context.l10n.roomCodeCopiedToClipboard, title: context.l10n.copied);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: cs.primary,
@@ -776,7 +777,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: FilledButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: shareUrl));
-                      successSnackBar('Invite link copied!', title: 'Copied');
+                      successSnackBar(context.l10n.inviteLinkCopied, title: context.l10n.copied);
                     },
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),

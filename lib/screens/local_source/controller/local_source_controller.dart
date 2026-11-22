@@ -1,4 +1,5 @@
 // controllers/watch_offline_controller.dart
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -563,7 +564,7 @@ class LocalSourceController extends GetxController
           selectedMedia.value = data;
         }
       } else {
-        errorSnackBar('Failed to fetch details');
+        errorSnackBar(Get.context!.l10n.failedToFetchDetails);
       }
     } else {
       final data = await selectedSource.value!.methods.getDetail(searchResult);
@@ -608,6 +609,6 @@ class LocalSourceController extends GetxController
     //     },
     //     filename:
     //         '${selectedMedia.value!.title}/${selectedSeason.value!.title}/${selectedEpisode.value?.title} - ${video.quality}');
-    snackBar('Added to downloads');
+    snackBar(Get.context!.l10n.addedToDownloads);
   }
 }

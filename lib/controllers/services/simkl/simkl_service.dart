@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
@@ -322,7 +323,7 @@ class SimklService extends GetxController
                     height: buttonHeight,
                     tagIcon: Icons.movie_filter_outlined,
                     subText: '${animeList.length} items',
-                    buttonText: "MOVIES LIST",
+                    buttonText: context.l10n.moviesList,
                     backgroundImage: trendingMovies
                             .firstWhere(
                               (e) => e.cover != null,
@@ -334,7 +335,7 @@ class SimklService extends GetxController
                     borderRadius: 16.multiplyRadius(),
                     onPressed: () {
                       navigate(() => AnimeList(
-                            title: "Movies",
+                            title: context.l10n.movies,
                             data: animeList.value.removeDupes(),
                           ));
                     },
@@ -345,7 +346,7 @@ class SimklService extends GetxController
                     height: buttonHeight,
                     tagIcon: Icons.movie_filter_outlined,
                     subText: '${mangaList.length} items',
-                    buttonText: "SERIES LIST",
+                    buttonText: context.l10n.seriesList,
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: trendingSeries
                             .firstWhere(
@@ -357,7 +358,7 @@ class SimklService extends GetxController
                         '',
                     onPressed: () {
                       navigate(() => AnimeList(
-                            title: "Shows",
+                            title: context.l10n.shows,
                             data: mangaList.value.removeDupes(),
                           ));
                     },
@@ -380,7 +381,7 @@ class SimklService extends GetxController
               child: ImageButton(
                 width: buttonWidth,
                 height: buttonHeight,
-                buttonText: "CALENDAR",
+                buttonText: context.l10n.calendarUpper,
                 borderRadius: 16.multiplyRadius(),
                 backgroundImage: trendingMovies.isNotEmpty
                     ? trendingMovies[0].cover ?? ''
@@ -423,13 +424,13 @@ class SimklService extends GetxController
           ? ReusableCarousel(
               data: trendingMovies.value
                   .sublist(0, math.min(10, trendingMovies.length)),
-              title: "Trending Movies")
+              title: context.l10n.trendingMovies)
           : const SizedBox.shrink()),
       Obx(() => trendingSeries.value.isNotEmpty
           ? ReusableCarousel(
               data: trendingSeries.value
                   .sublist(0, math.min(10, trendingSeries.length)),
-              title: "Trending Series")
+              title: context.l10n.trendingSeries)
           : const SizedBox.shrink()),
     ].obs;
   }
@@ -457,16 +458,16 @@ class SimklService extends GetxController
           if (trendingMovies.value.isNotEmpty)
             ReusableCarousel(
                 data: trendingMovies.value.sublist(0, 10),
-                title: "Trending Movies"),
+                title: context.l10n.trendingMovies),
           if (koreanMovies.value.isNotEmpty)
-            ReusableCarousel(data: koreanMovies.value, title: "Korean Movies"),
+            ReusableCarousel(data: koreanMovies.value, title: context.l10n.koreanMovies),
           if (usMovies.value.isNotEmpty)
-            ReusableCarousel(data: usMovies.value, title: "US Movies"),
+            ReusableCarousel(data: usMovies.value, title: context.l10n.usMovies),
           if (ukMovies.value.isNotEmpty)
-            ReusableCarousel(data: ukMovies.value, title: "UK Movies"),
+            ReusableCarousel(data: ukMovies.value, title: context.l10n.ukMovies),
           if (canadaMovies.value.isNotEmpty)
             ReusableCarousel(
-                data: canadaMovies.value, title: "Canadian Movies"),
+                data: canadaMovies.value, title: context.l10n.canadianMovies),
           Obx(() {
             final list = communityService.getFilteredCommunityMovies();
             return buildUnderratedSection('Community Recommendations', list,
@@ -502,17 +503,17 @@ class SimklService extends GetxController
           if (trendingSeries.value.isNotEmpty)
             ReusableCarousel(
                 data: trendingSeries.value.sublist(0, 10),
-                title: "Trending Series"),
+                title: context.l10n.trendingSeries),
           if (koreanSeries.value.isNotEmpty)
-            ReusableCarousel(data: koreanSeries.value, title: "K-Dramas"),
+            ReusableCarousel(data: koreanSeries.value, title: context.l10n.kDramas),
           if (japaneseSeries.value.isNotEmpty)
-            ReusableCarousel(data: japaneseSeries.value, title: "J-Dramas"),
+            ReusableCarousel(data: japaneseSeries.value, title: context.l10n.jDramas),
           if (usSeries.value.isNotEmpty)
-            ReusableCarousel(data: usSeries.value, title: "US Shows"),
+            ReusableCarousel(data: usSeries.value, title: context.l10n.usShows),
           if (ukSeries.value.isNotEmpty)
-            ReusableCarousel(data: ukSeries.value, title: "UK Shows"),
+            ReusableCarousel(data: ukSeries.value, title: context.l10n.ukShows),
           if (canadaSeries.value.isNotEmpty)
-            ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
+            ReusableCarousel(data: canadaSeries.value, title: context.l10n.canadianShows),
           Obx(() {
             final list = communityService.getFilteredCommunityShows();
             return buildUnderratedSection('Community Recommendations', list,
@@ -935,7 +936,7 @@ class SimklService extends GetxController
       final selectedMethod = await AnymeXSheet.custom<String>(
         loginSheetHelper(
           context: context,
-          title: 'Login to Simkl',
+          title: context.l10n.loginToSimkl,
           serviceName: 'Simkl',
           showTokenOption: false,
         ),

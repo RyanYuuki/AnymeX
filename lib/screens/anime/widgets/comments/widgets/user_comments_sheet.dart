@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/database/comments/model/user_points.dart';
@@ -159,7 +160,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                       if (!isLoading && points != null) ...[
                         _buildSectionHeader(
                           icon: Icons.bar_chart_rounded,
-                          title: 'Activity & Stats',
+                          title: context.l10n.activityStats,
                           colorScheme: colorScheme,
                         ),
                         const SizedBox(height: 10),
@@ -178,7 +179,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                           _breakdownChips(context, points).isNotEmpty) ...[
                         _buildSectionHeader(
                           icon: Icons.pie_chart_outline_rounded,
-                          title: 'Points Breakdown',
+                          title: context.l10n.pointsBreakdown,
                           colorScheme: colorScheme,
                         ),
                         const SizedBox(height: 8),

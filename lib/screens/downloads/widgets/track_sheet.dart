@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding.dart';
@@ -214,7 +215,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         _searchResults = [];
                         _searchCtrl.clear();
                       }),
-                      child: const AnymeXText('Back'),
+                      child: AnymeXText(context.l10n.back),
                     ),
                 ],
               ),
@@ -245,7 +246,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           shrinkWrap: true,
           children: [
             AnymeXText(
-              'Logged-in tracking services',
+              context.l10n.loggedInTrackingServices,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
                 fontSize: 11,
@@ -370,7 +371,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Not tracked',
+                        context.l10n.notTracked,
                         style: TextStyle(
                           color: theme.onSurface.withOpacity(0.4),
                           fontSize: 11,
@@ -384,13 +385,13 @@ class _TrackSheetState extends State<_TrackSheet> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  tooltip: 'Edit',
+                  tooltip: context.l10n.edit,
                   icon: Icon(Icons.edit_rounded,
                       size: 18, color: theme.primary.withOpacity(0.8)),
                   onPressed: () => _showEditDialog(context, theme, tracker, b),
                 ),
                 IconButton(
-                  tooltip: 'Unbind',
+                  tooltip: context.l10n.unbind,
                   icon: Icon(Icons.link_off_rounded,
                       size: 18, color: theme.error.withOpacity(0.7)),
                   onPressed: () => _unbind(b),
@@ -409,7 +410,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               },
               icon: Icon(Icons.add_link_rounded,
                   size: 16, color: theme.primary),
-              label: AnymeXText('Track',
+              label: AnymeXText(context.l10n.track,
                   style: TextStyle(color: theme.primary)),
             ),
         ],
@@ -674,7 +675,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         child: Padding(
                           padding: const EdgeInsets.all(24),
                           child: AnymeXText(
-                            'No results. Try searching by title.',
+                            context.l10n.noResultsTrySearchingByTitle,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: theme.onSurface.withOpacity(0.4),
@@ -795,7 +796,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             minimumSize: const Size(0, 34),
           ),
-          child: const AnymeXText('Track', style: TextStyle(fontSize: 12)),
+          child: AnymeXText(context.l10n.track, style: TextStyle(fontSize: 12)),
         ),
       ),
     );
@@ -811,7 +812,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               size: 36, color: theme.onSurface.withOpacity(0.3)),
           const SizedBox(height: 14),
           AnymeXText(
-            'No tracking service connected',
+            context.l10n.noTrackingServiceConnected,
             style: TextStyle(
               color: theme.onSurface,
               fontSize: 15,
@@ -836,7 +837,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               navigate(() => const SettingsAccounts());
             },
             icon: const Icon(Icons.settings_rounded, size: 16),
-            label: const AnymeXText('Open Settings'),
+            label: AnymeXText(context.l10n.openSettings),
           ),
         ],
       ),

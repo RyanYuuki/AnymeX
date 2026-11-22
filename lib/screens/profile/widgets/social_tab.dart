@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
@@ -447,7 +448,7 @@ class SocialTabState extends State<SocialTab> {
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Center(
               child: AnymeXText(
-                'No more users',
+                context.l10n.noMoreUsers,
                 style: TextStyle(
                   fontSize: 12,
                   color: context.theme.colorScheme.onSurfaceVariant

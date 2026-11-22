@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -163,7 +164,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                       Obx(() => GestureDetector(
                             onTap: () async {
                               if (!anilistAuth.isLoggedIn.value) {
-                                snackBar("Please login to favorite!");
+                                snackBar(context.l10n.pleaseLoginToFavorite);
                                 return;
                               }
 
@@ -190,7 +191,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     _favouritesCount++;
                                   }
                                 });
-                                snackBar("Failed to update AniList");
+                                snackBar(Get.context!.l10n.failedToUpdateAnilist);
                               } else {
                                 snackBar(isFav.value
                                     ? "Added to Favorites"
@@ -254,7 +255,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                   Padding(
                     padding: const EdgeInsets.all(40),
                     child: Center(
-                      child: AnymeXText('No media found for this studio',
+                      child: AnymeXText(context.l10n.noMediaFoundForThisStudio,
                         variant: TextVariant.regular,
                         size: 16,
                         color: theme.onSurface.withValues(alpha: 0.6),
@@ -298,7 +299,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               child: GestureDetector(
                 onTap: () {
                   if (!anilistAuth.isLoggedIn.value) {
-                    snackBar("Please login to use this filter!");
+                    snackBar(context.l10n.pleaseLoginToUseThisFilter);
                     return;
                   }
                   showOnlyOnList.value = !showOnlyOnList.value;
@@ -327,7 +328,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           : null,
                     ),
                     const SizedBox(width: 10),
-                    AnymeXText("On My List",
+                    AnymeXText(context.l10n.onMyList,
                       size: 14,
                       color: theme.onSurface.withOpacity(0.7),
                       variant: TextVariant.bold,

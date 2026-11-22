@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -32,7 +33,7 @@ class NotificationScreen extends GetView<NotificationController> {
     return AnymeXScaffold(
       body: Column(children: [
         NestedHeader(
-          title: 'Notifications',
+          title: context.l10n.notifications,
           action: Obx(() {
             final isAnilist = controller.selectedTab.value == 0;
             final hasUnread = isAnilist
@@ -53,7 +54,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 color: colorScheme.primary,
               ),
               label: AnymeXText(
-                'Mark all read',
+                context.l10n.markAllRead,
                 variant: TextVariant.semiBold,
                 size: 12,
                 color: colorScheme.primary,
@@ -703,7 +704,7 @@ class NotificationScreen extends GetView<NotificationController> {
                     ),
                     const SizedBox(width: 6),
                     AnymeXText(
-                      'Unread only',
+                      context.l10n.unreadOnly,
                       variant: TextVariant.regular,
                       size: 12,
                       color: controller.showUnreadOnly.value
@@ -814,7 +815,7 @@ class NotificationScreen extends GetView<NotificationController> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No notifications yet',
+              Get.context!.l10n.noNotificationsYet,
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -851,7 +852,7 @@ class NotificationScreen extends GetView<NotificationController> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Something went wrong',
+              Get.context!.l10n.somethingWentWrong,
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -868,7 +869,7 @@ class NotificationScreen extends GetView<NotificationController> {
                   color: colorScheme.primary,
                   radius: 12,
                   child: AnymeXText(
-                    'Retry',
+                    Get.context!.l10n.retry,
                     variant: TextVariant.semiBold,
                     size: 13,
                     color: colorScheme.onPrimary,

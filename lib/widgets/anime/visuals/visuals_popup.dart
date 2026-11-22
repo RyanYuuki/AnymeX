@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:ui';
 
@@ -161,13 +162,13 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
   Future<void> _saveImage(String url) async {
     try {
-      snackBar("Downloading image...");
+      snackBar(context.l10n.downloadingImage);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to download image");
+        snackBar(context.l10n.failedToDownloadImage);
         return;
       }
 
@@ -231,14 +232,14 @@ class _VisualsPopupState extends State<VisualsPopup> {
             final file = File('${tempDir.path}/$fileName');
             await file.writeAsBytes(bytes);
             await Share.shareXFiles([XFile(file.path)],
-                text: "Visual from AnymeX");
+                text: Get.context!.l10n.visualFromAnymex);
           }
         }
       } else if (Platform.isIOS) {
         final tempDir = await getTemporaryDirectory();
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(bytes);
-        await Share.shareXFiles([XFile(file.path)], text: "Visual from AnymeX");
+        await Share.shareXFiles([XFile(file.path)], text: Get.context!.l10n.visualFromAnymex);
       } else {
         // pc
         String? downloadPath = (await getDownloadsDirectory())?.path;
@@ -274,7 +275,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Error saving image");
+        snackBar(context.l10n.errorSavingImage);
       }
     }
   }
@@ -373,8 +374,8 @@ class _VisualsPopupState extends State<VisualsPopup> {
                       },
                     ),
                   )
-                : const Center(
-                    child: AnymeXText("No Visuals found for this Anime (╥﹏╥)",
+                : Center(
+                    child: AnymeXText(context.l10n.noVisualsFoundForThisAnime,
                       color: Colors.white,
                     ),
                   ),

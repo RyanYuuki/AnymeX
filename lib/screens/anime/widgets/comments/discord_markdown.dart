@@ -1,4 +1,6 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui' as ui;
+import 'package:get/get.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -765,7 +767,7 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
         actions: [
           IconButton(
             icon: const Icon(Icons.launch_outlined, size: 20),
-            tooltip: 'Open in browser',
+            tooltip: context.l10n.openInBrowser2,
             onPressed: () async {
               final uri = Uri.parse(widget.imageUrls[_currentIndex]);
               if (await canLaunchUrl(uri)) {
@@ -857,7 +859,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _ToolbarButton(
-              label: 'Bold',
+              label: context.l10n.bold,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('**', '**'),
               child: Text(
@@ -871,7 +873,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Italic',
+              label: context.l10n.italic,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('*', '*'),
               child: Text(
@@ -885,7 +887,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Strikethrough',
+              label: context.l10n.strikethrough,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('~~', '~~'),
               child: Text(
@@ -901,7 +903,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Code',
+              label: context.l10n.code,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('`', '`'),
               child: Text(
@@ -915,7 +917,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Spoiler',
+              label: context.l10n.spoiler,
               colorScheme: colorScheme,
               onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
               child: Text(
@@ -929,7 +931,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Quote',
+              label: context.l10n.quote,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('> ', ''),
               child: Text(
@@ -943,7 +945,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Bullet List',
+              label: context.l10n.bulletList,
               colorScheme: colorScheme,
               onTap: _insertBulletList,
               child: Icon(
@@ -954,7 +956,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Numbered List',
+              label: context.l10n.numberedList,
               colorScheme: colorScheme,
               onTap: _insertNumberedList,
               child: Icon(
@@ -966,7 +968,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             if (onGifTap != null) ...[
               const SizedBox(width: 4),
               _ToolbarButton(
-                label: 'GIF',
+                label: context.l10n.gif,
                 colorScheme: colorScheme,
                 onTap: onGifTap!,
                 child: Container(

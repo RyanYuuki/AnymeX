@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -139,7 +140,7 @@ class _NovelReaderState extends State<NovelReader>
                           _ttsMenuButton(
                             context: context,
                             icon: Icons.skip_previous_rounded,
-                            tooltip: 'Previous Paragraph',
+                            tooltip: context.l10n.previousParagraph,
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               controller.ttsPrevious();
@@ -164,7 +165,7 @@ class _NovelReaderState extends State<NovelReader>
                           _ttsMenuButton(
                             context: context,
                             icon: Icons.skip_next_rounded,
-                            tooltip: 'Next Paragraph',
+                            tooltip: context.l10n.nextParagraph,
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               controller.ttsNext();

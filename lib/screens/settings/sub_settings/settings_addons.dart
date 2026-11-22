@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -51,7 +52,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
     setState(() => _isCheckingUpdates = true);
     try {
       await _addonManager.checkForUpdates();
-      snackBar('Update check complete');
+      snackBar(Get.context!.l10n.updateCheckComplete);
     } catch (e) {
       errorSnackBar('Failed to check for updates: $e');
     } finally {
@@ -88,7 +89,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
         title: 'Uninstall ${addon.name}',
         message:
             'Are you sure you want to uninstall ${addon.name}? This will delete the downloaded binary.',
-        confirmText: 'Uninstall',
+        confirmText: context.l10n.uninstall,
         onConfirm: () async {
           try {
             await addon.uninstall();
@@ -109,7 +110,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Add-ons',
+      headerTitle: context.l10n.addOns,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -124,7 +125,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
               _buildInfoBanner(theme),
               const SizedBox(height: 20),
               AnymeXSectionBuilder(
-                title: 'Available Add-ons',
+                title: context.l10n.availableAddOns,
                 children: _addonManager.addons.map((addon) {
                   if (addon is TorrServerAddon) {
                     return _buildTorrServerTile(context, addon, theme);
@@ -174,14 +175,14 @@ class _SettingsAddonsState extends State<SettingsAddons> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AnymeXText(
-                  'Add-on Extensions',
+                  context.l10n.addOnExtensions,
                   variant: TextVariant.bold,
                   size: 15,
                   color: theme.onSurface,
                 ),
                 const SizedBox(height: 4),
                 AnymeXText(
-                  'Add-ons power background services such as the TorrServer torrent streaming engine for direct magnet link playback.',
+                  context.l10n.addOnsPowerBackgroundServicesSuch,
                   variant: TextVariant.regular,
                   size: 13,
                   maxLines: 99,
@@ -290,7 +291,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                             ),
                             const SizedBox(width: 8),
                             AnymeXText(
-                              'Downloading package...',
+                              context.l10n.downloadingPackage,
                               size: 12.5,
                               variant: TextVariant.semiBold,
                               color: theme.onSurface,
@@ -380,7 +381,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                       ),
                       const SizedBox(width: 8),
                       AnymeXText(
-                        'Update to Latest Version',
+                        context.l10n.updateToLatestVersion,
                         variant: TextVariant.bold,
                         size: 15,
                         color: theme.onTertiary,
@@ -539,12 +540,12 @@ class _SettingsAddonsState extends State<SettingsAddons> {
 
   Widget _buildQuickActions(ColorScheme theme) {
     return AnymeXSectionBuilder(
-      title: 'Management',
+      title: context.l10n.management,
       children: [
         AnymeXTile(
           icon: Icons.refresh_rounded,
-          title: 'Check for Add-on Updates',
-          subtitle: 'Query remote repository for add-on updates',
+          title: context.l10n.checkForAddOnUpdates,
+          subtitle: context.l10n.queryRemoteRepositoryForAddOn,
           trailing: _isCheckingUpdates
               ? SizedBox(
                   width: 18,

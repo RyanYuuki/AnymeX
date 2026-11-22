@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -238,7 +239,7 @@ class LibraryController extends GetxController {
     savePreferences();
 
     if (index == -1) {
-      snackBar('Hold to access history editor');
+      snackBar(Get.context!.l10n.holdToAccessHistoryEditor);
     }
   }
 

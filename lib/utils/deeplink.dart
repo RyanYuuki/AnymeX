@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/compatibility_controller.dart';
@@ -173,7 +174,7 @@ class Deeplink {
   static Future<void> _handleThemeDeepLink(Uri uri) async {
     final type = (uri.queryParameters['type'] ?? '').trim().toLowerCase();
     if (type.isEmpty) {
-      errorSnackBar('Missing "type" query parameter. Use type=player.');
+      errorSnackBar(Get.context!.l10n.missingTypeQueryParameterUseType);
       return;
     }
     if (type != 'player') {
@@ -183,7 +184,7 @@ class Deeplink {
 
     final rawUrl = uri.queryParameters['url']?.trim();
     if (rawUrl == null || rawUrl.isEmpty) {
-      errorSnackBar('Missing "url" query parameter for the theme JSON.');
+      errorSnackBar(Get.context!.l10n.missingUrlQueryParameterForThe);
       return;
     }
 
@@ -498,14 +499,14 @@ class Deeplink {
     // URI: anymex://watchium/join/ABC123
     if (segments.length < 2) {
       Logger.w('Watchium deep link: invalid segments $segments', 'DEEPLINK');
-      errorSnackBar('Invalid Watch Together link');
+      errorSnackBar(Get.context!.l10n.invalidWatchTogetherLink);
       return;
     }
 
     final code = segments[1].toUpperCase();
     if (code.length != 6) {
       Logger.w('Watchium deep link: invalid code length ${code.length}', 'DEEPLINK');
-      errorSnackBar('Invalid room code in link');
+      errorSnackBar(Get.context!.l10n.invalidRoomCodeInLink);
       return;
     }
 
@@ -520,7 +521,7 @@ class Deeplink {
 
     if (!Get.isRegistered<WatchiumService>()) {
       Logger.w('Watchium deep link: WatchiumService not registered after waiting', 'DEEPLINK');
-      errorSnackBar('App is still loading, try again shortly.');
+      errorSnackBar(Get.context!.l10n.appIsStillLoadingTryAgain);
       return;
     }
 
@@ -528,7 +529,7 @@ class Deeplink {
     // Wait for the user to be authenticated before attempting login/join.
     if (!Get.isRegistered<ServiceHandler>()) {
       Logger.w('Watchium deep link: ServiceHandler not registered', 'DEEPLINK');
-      errorSnackBar('App is still loading, try again shortly.');
+      errorSnackBar(Get.context!.l10n.appIsStillLoadingTryAgain);
       return;
     }
 
@@ -541,7 +542,7 @@ class Deeplink {
 
     if (!serviceHandler.isLoggedIn.value) {
       Logger.w('Watchium deep link: user not logged in after waiting', 'DEEPLINK');
-      errorSnackBar('Please log in first, then try the link again.');
+      errorSnackBar(Get.context!.l10n.pleaseLogInFirstThenTry);
       return;
     }
 
@@ -554,7 +555,7 @@ class Deeplink {
 
     if (roomInfo == null) {
       Logger.w('Watchium deep link: room not found or expired', 'DEEPLINK');
-      errorSnackBar('Room not found or expired');
+      errorSnackBar(Get.context!.l10n.roomNotFoundOrExpired);
       return;
     }
 
@@ -632,12 +633,12 @@ class Deeplink {
     user2 = user2?.trim();
 
     if (user1 == null || user1.isEmpty || user2 == null || user2.isEmpty) {
-      errorSnackBar('Invalid compatibility link: missing usernames.');
+      errorSnackBar(Get.context!.l10n.invalidCompatibilityLinkMissingUsernames);
       return;
     }
 
     if (user1.toLowerCase() == user2.toLowerCase()) {
-      errorSnackBar('Cannot compare the same profile with itself.');
+      errorSnackBar(Get.context!.l10n.cannotCompareTheSameProfileWith);
       return;
     }
 
@@ -661,7 +662,7 @@ class Deeplink {
     if (controller.result.value != null) {
       navigate(() => CompatibilityResultPage(controller: controller));
     } else {
-      errorSnackBar('Could not calculate compatibility.');
+      errorSnackBar(Get.context!.l10n.couldNotCalculateCompatibility);
     }
   }
 }

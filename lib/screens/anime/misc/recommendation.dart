@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/ai/animeo.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -147,20 +148,20 @@ class _AIRecommendationState extends State<AIRecommendation> {
 
   void _showSettings() {
     AnymeXSheet(
-      title: 'Preferences',
+      title: context.l10n.preferences,
       showDragHandle: true,
       contentWidget: Obx(() {
         final options = [
           _PrefOption(
-            title: "Grid View",
-            subtitle: "Toggle between grid and detailed list",
+            title: context.l10n.gridView,
+            subtitle: context.l10n.toggleBetweenGridAndDetailedList,
             icon: Iconsax.grid_1,
             value: isGrid.value,
             onChanged: (v) => isGrid.value = v,
           ),
           _PrefOption(
-            title: "18+ Content",
-            subtitle: "Include adult & NSFW suggestions",
+            title: context.l10n.n18Content,
+            subtitle: context.l10n.includeAdultNsfwSuggestions,
             icon: Icons.eighteen_up_rating_rounded,
             value: isAdult.value,
             onChanged: (v) {
@@ -253,7 +254,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     }
                   },
                   disableIcons: true,
-                  hintText: "Enter Username",
+                  hintText: context.l10n.enterUsername,
                 ),
               ),
               const SizedBox(height: 16),
@@ -273,7 +274,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     borderRadius: BorderRadius.circular(12.multiplyRadius()),
                   ),
                   child: AnymeXText(
-                    "Search",
+                    context.l10n.search,
                     variant: TextVariant.semiBold,
                     color: context.colors.onPrimary,
                   ),
@@ -316,7 +317,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
                     child: AnymeXText(
-                      'No more recommendations',
+                      context.l10n.noMoreRecommendations,
                       style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme

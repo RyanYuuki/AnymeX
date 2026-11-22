@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -116,7 +117,7 @@ class NovelDetailsController extends GetxController {
       media.value = fetched;
       CommentPreloader.to.preloadComments(media.value);
     } catch (e) {
-      errorSnackBar('Failed to fetch chapters');
+      errorSnackBar(Get.context!.l10n.failedToFetchChapters);
     } finally {
       isLoading.value = false;
       isChaptersLoading.value = false;
@@ -178,7 +179,7 @@ class NovelDetailsController extends GetxController {
       fetched.season = source.name ?? '';
       _cachedSourceMedia = fetched;
     } catch (e) {
-      errorSnackBar('Failed to fetch chapters');
+      errorSnackBar(Get.context!.l10n.failedToFetchChapters);
     } finally {
       isChaptersLoading.value = false;
     }
@@ -201,7 +202,7 @@ class NovelDetailsController extends GetxController {
         CommentPreloader.to.preloadComments(media.value);
       }
     } catch (e) {
-      errorSnackBar('Sync failed');
+      errorSnackBar(Get.context!.l10n.syncFailed);
     } finally {
       isSyncing.value = false;
     }
@@ -213,7 +214,7 @@ class NovelDetailsController extends GetxController {
   }) {
     final source = activeSource.value;
     if (source == null) {
-      errorSnackBar('No source selected');
+      errorSnackBar(Get.context!.l10n.noSourceSelected);
       return;
     }
     final chaps = filteredChapters ?? chapters;

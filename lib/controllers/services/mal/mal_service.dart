@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math' show Random;
@@ -464,7 +465,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   tagIcon: Icons.movie_filter_outlined,
                   height: !isDesktop ? 70 : 90,
                   subText: '${animeList.length} items',
-                  buttonText: "ANIME LIST",
+                  buttonText: context.l10n.animeList,
                   backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
                   onPressed: () {
@@ -481,7 +482,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     tagIcon: Icons.book_outlined,
                     height: !isDesktop ? 70 : 90,
                     subText: '${mangaList.length} items',
-                    buttonText: "MANGA LIST",
+                    buttonText: context.l10n.mangaList,
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: mangaButtonMedia?.cover ?? '',
                     onPressed: () {
@@ -500,7 +501,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                         ? width
                         : width * 2 + 15,
                     height: !isDesktop ? 70 : 90,
-                    buttonText: "OTHER",
+                    buttonText: context.l10n.otherUpper,
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: otherButtonMedia?.cover ?? '',
                     onPressed: () {
@@ -691,7 +692,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       selectedMethod = await AnymeXSheet.custom<String>(
         loginSheetHelper(
           context: context,
-          title: 'Login to MyAnimeList',
+          title: context.l10n.loginToMyanimelist,
           serviceName: 'MyAnimeList',
           showTokenOption: false,
         ),

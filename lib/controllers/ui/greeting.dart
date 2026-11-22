@@ -1,9 +1,11 @@
+import 'package:anymex/l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'dart:math';
 
 class GreetingController extends GetxController {
-  var currentGreeting = ''.obs;
+  final currentGreeting =
+      Rx<String Function(AppLocalizations)>(_calculateGreeting());
   Timer? _timer;
 
   @override
@@ -22,24 +24,21 @@ class GreetingController extends GetxController {
   }
 
   void _updateGreeting() {
-    final newGreeting = _calculateGreeting();
-    if (currentGreeting.value != newGreeting) {
-      currentGreeting.value = newGreeting;
-    }
+    currentGreeting.value = _calculateGreeting();
   }
 
-  String _calculateGreeting() {
+  static String Function(AppLocalizations) _calculateGreeting() {
     final hour = DateTime.now().hour;
     final random = Random();
 
     if (hour >= 5 && hour < 12) {
-      return random.nextBool() ? "Rise and shine" : "Good morning";
+      return random.nextBool() ? (l) => l.riseAndShine : (l) => l.goodMorning;
     } else if (hour >= 12 && hour < 17) {
-      return random.nextBool() ? "Happy snacking" : "Good afternoon";
+      return random.nextBool() ? (l) => l.happySnacking : (l) => l.goodAfternoon;
     } else if (hour >= 17 && hour < 21) {
-      return random.nextBool() ? "Keep it chill" : "Good evening";
+      return random.nextBool() ? (l) => l.keepItChill : (l) => l.goodEvening;
     } else {
-      return random.nextBool() ? "You're up late" : "Goodnight";
+      return random.nextBool() ? (l) => l.youreUpLate : (l) => l.goodnight;
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
@@ -191,7 +192,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
         _isLoading = false;
         _error = 'Room not found or expired';
       });
-      errorSnackBar('Room not found or expired');
+      errorSnackBar(context.l10n.roomNotFoundOrExpired);
       return;
     }
 
@@ -349,8 +350,8 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       color: cs.onSurface,
                     ),
                     decoration: InputDecoration(
-                      labelText: 'Room password',
-                      hintText: 'Enter the room password',
+                      labelText: context.l10n.roomPassword2,
+                      hintText: context.l10n.enterTheRoomPassword,
                       labelStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
@@ -477,7 +478,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
   body: Column(
           children: [
             NestedHeader(
-              title: 'Watch Together',
+              title: context.l10n.watchTogether,
               action: IconButton(
                 onPressed: _loadRooms,
                 icon: const Icon(Icons.refresh),
@@ -1087,7 +1088,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
     if (preview == null) {
       setState(() => _isLoading = false);
       if (!fromDeepLink) {
-        errorSnackBar('Room not found or expired');
+        errorSnackBar(context.l10n.roomNotFoundOrExpired);
       }
       return false;
     }

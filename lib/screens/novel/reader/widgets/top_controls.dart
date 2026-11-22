@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -317,7 +318,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                             });
                           },
                           decoration: InputDecoration(
-                            hintText: 'Search chapters...',
+                            hintText: context.l10n.searchChapters,
                             prefixIcon: const Icon(Icons.search, size: 20),
                             filled: true,
                             fillColor: Theme.of(context)

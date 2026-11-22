@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/delay_row.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
@@ -78,13 +79,13 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
       }
 
       return WatchSettingsPane(
-        title: 'Audio Settings',
+        title: context.l10n.audioSettings,
         onClose: widget.onClose,
         tabBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Obx(() => DelayRow(
-                  label: 'Audio Delay',
+                  label: context.l10n.audioDelay,
                   delay: widget.controller.audioDelay.value,
                   onChange: widget.controller.setAudioDelay,
                 )),

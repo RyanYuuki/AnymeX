@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
@@ -29,7 +31,7 @@ class CharactersCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: AnymeXText("Characters",
+          child: AnymeXText(context.l10n.characters,
               style: TextStyle(
                   fontFamily: 'Linotte',
                   fontSize: isDesktop ? 20 : 17,
@@ -143,7 +145,7 @@ class CharactersCarousel extends StatelessWidget {
         if (!isManga) ...[
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: AnymeXText("Voice Actors",
+            child: AnymeXText(context.l10n.voiceActors,
                 style: TextStyle(
                     fontFamily: 'Linotte',
                     fontSize: 18,
@@ -295,7 +297,7 @@ class StaffCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: AnymeXText("Staff",
+          child: AnymeXText(context.l10n.staff,
               style: TextStyle(
                   fontFamily: 'Linotte',
                   fontSize: 18,

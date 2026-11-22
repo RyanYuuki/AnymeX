@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -111,7 +112,7 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: AnymeXSearchBar(
         controller: _searchController,
-        hintText: 'Search files...',
+        hintText: context.l10n.searchFiles,
         prefixIcon: const Icon(Icons.search_rounded, size: 20),
         onClear: () {
           _searchController.clear();
@@ -192,7 +193,7 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
         isVisible: isVisible,
         onOverlayTap: _closePane,
         child: WatchSettingsPane(
-          title: 'Torrent Files',
+          title: context.l10n.torrentFiles,
           subtitle: _buildSubtitle(context),
           onClose: _closePane,
           tabBar: _buildSearchBar(context, files.length),

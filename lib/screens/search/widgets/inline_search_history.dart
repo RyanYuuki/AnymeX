@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -87,7 +88,7 @@ class InlineSearchHistory extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    AnymeXText('Recent Searches',
+                    AnymeXText(context.l10n.recentSearches,
                       variant: TextVariant.semiBold,
                       size: 15,
                       color: Theme.of(context)
@@ -119,7 +120,7 @@ class InlineSearchHistory extends StatelessWidget {
                               .opaque(0.8, iReallyMeanIt: true),
                         ),
                         const SizedBox(width: 4),
-                        AnymeXText("Clear",
+                        AnymeXText(context.l10n.clear,
                           size: 11,
                           color: Theme.of(context)
                               .colorScheme

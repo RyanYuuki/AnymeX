@@ -1,5 +1,6 @@
 // netflix_playerNFColorsontrol_theme_mobile.dart
 
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/netflix_shared.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
@@ -250,7 +251,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                             children: [
                               NFLabeledButton(
                                 icon: Icons.playlist_play_rounded,
-                                label: 'Episodes',
+                                label: context.l10n.episodes,
                                 onTap: () =>
                                     controller.isEpisodePaneOpened.value =
                                         !controller.isEpisodePaneOpened.value,
@@ -261,7 +262,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                 }
                                 return NFLabeledButton(
                                   icon: Icons.folder_zip_rounded,
-                                  label: 'Torrent Files',
+                                  label: context.l10n.torrentFiles,
                                   onTap: () => controller
                                           .isTorrentFilesPaneOpened.value =
                                       !controller.isTorrentFilesPaneOpened.value,
@@ -269,14 +270,14 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                               }),
                               NFLabeledButton(
                                 icon: Icons.subtitles_rounded,
-                                label: 'Audio & Subtitles',
+                                label: context.l10n.audioSubtitles,
                                 onTap: () =>
                                     controller.isTracksPaneOpened.value =
                                         !controller.isTracksPaneOpened.value,
                               ),
                               Obx(() => NFLabeledButton(
                                     icon: Icons.skip_next_rounded,
-                                    label: 'Next Ep.',
+                                    label: context.l10n.nextEp,
                                     enabled: controller.canGoForward.value,
                                     onTap: () => controller.navigator(true),
                                   )),

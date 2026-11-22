@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/comments/model/user_customization.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -183,9 +184,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     final colorScheme = context.colors;
 
     AnymeXDialog(
-      title: 'Unlock Customizations',
+      title: context.l10n.unlockCustomizations,
       showCancelButton: true,
-      cancelText: 'Cancel',
+      cancelText: context.l10n.cancel,
       confirmText: canAfford ? 'Unlock & Equip' : 'Not Enough Points',
       isConfirmEnabled: canAfford,
       contentWidget: Column(
@@ -245,7 +246,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Total Cost:',
+                context.l10n.totalCost,
                 variant: TextVariant.semiBold,
                 size: 13,
                 color: colorScheme.onSurfaceVariant,
@@ -263,7 +264,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Your Balance:',
+                context.l10n.yourBalance,
                 variant: TextVariant.semiBold,
                 size: 13,
                 color: colorScheme.onSurfaceVariant,
@@ -330,7 +331,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       setState(() => _isSaving = false);
       if (success) {
         Get.snackbar(
-          'Profile Updated',
+          context.l10n.profileUpdated,
           'Your customizations have been saved and applied!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: context.colors.surfaceContainerHighest,
@@ -338,7 +339,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         );
       } else {
         Get.snackbar(
-          'Error',
+          context.l10n.error,
           'Failed to update customizations. Please try again.',
           snackPosition: SnackPosition.BOTTOM,
         );
@@ -554,7 +555,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     color: colorScheme.outline.withOpacity(0.2), width: 0.8),
               ),
               child: AnymeXText(
-                'Live Preview',
+                context.l10n.livePreview2,
                 size: 10,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onSurface,
@@ -634,7 +635,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewDecorationUrl = null),
                   child: AnymeXText(
-                    'Remove Decoration',
+                    context.l10n.removeDecoration,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -757,7 +758,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewNameplateUrl = null),
                   child: AnymeXText(
-                    'Remove Nameplate',
+                    context.l10n.removeNameplate,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -887,7 +888,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 child: TextField(
                   controller: _customBannerController,
                   decoration: InputDecoration(
-                    hintText: 'Paste custom image URL...',
+                    hintText: context.l10n.pasteCustomImageUrl,
                     hintStyle: TextStyle(
                       color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                       fontSize: 12,
@@ -925,7 +926,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text('Apply', style: TextStyle(fontSize: 12)),
+                child: Text(context.l10n.apply, style: TextStyle(fontSize: 12)),
               ),
               if (_previewBannerUrl != null) ...[
                 const SizedBox(width: 4),
@@ -937,7 +938,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     });
                   },
                   icon: Icon(Icons.clear, color: colorScheme.error, size: 20),
-                  tooltip: 'Remove Banner',
+                  tooltip: context.l10n.removeBanner,
                 ),
               ],
             ],
@@ -1097,7 +1098,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewEffectUrl = null),
                   child: AnymeXText(
-                    'Remove Effect',
+                    context.l10n.removeEffect,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -1230,7 +1231,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                         ),
                       )
                     : AnymeXText(
-                        'Save & Equip',
+                        context.l10n.saveEquip,
                         color: colorScheme.onPrimary,
                         variant: TextVariant.bold,
                         size: 14,

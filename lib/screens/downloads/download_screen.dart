@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
@@ -239,7 +240,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         body: Column(
       children: [
         NestedHeader(
-          title: 'Downloads',
+          title: context.l10n.downloads,
           action: Container(
             decoration: BoxDecoration(
               color: theme.primaryContainer.opaque(0.3),
@@ -268,14 +269,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildDynamicTabBar(
               colors: theme,
-              tabs: const [
+              tabs: [
                 (
-                  label: 'Downloaded Media',
+                  label: context.l10n.downloadedMedia,
                   icon: HugeIcons.strokeRoundedFolderLibrary,
                   type: 0
                 ),
                 (
-                  label: 'New Download',
+                  label: context.l10n.newDownload,
                   icon: HugeIcons.strokeRoundedAdd01,
                   type: 1
                 ),
@@ -309,14 +310,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedFolder01,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            const AnymeXText(
-              'Choose Download Folder',
+            AnymeXText(
+              context.l10n.chooseDownloadFolder,
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
+              context.l10n.selectAFolderWhereAnymexWill,
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -334,8 +335,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
                 onPressed: _pickDownloadDirectory,
                 icon: const Icon(Icons.folder_open_rounded),
-                label: const AnymeXText(
-                  'Select Folder',
+                label: AnymeXText(
+                  context.l10n.selectFolder,
                   variant: TextVariant.semiBold,
                 ),
               ),
@@ -356,14 +357,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedSecurityLock,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            const AnymeXText(
-              'Permissions Required',
+            AnymeXText(
+              context.l10n.permissionsRequired,
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Manage device storage and notifications to download and manage your media offline.',
+              context.l10n.manageDeviceStorageAndNotificationsTo,
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -379,7 +380,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _checkPermissions,
-                child: const AnymeXText('Grant Permissions',
+                child: AnymeXText(context.l10n.grantPermissions,
                     variant: TextVariant.semiBold),
               ),
             ),
@@ -405,9 +406,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
             child: _buildDynamicTabBar(
               colors: theme,
               height: 46,
-              tabs: const [
-                (label: 'Anime', icon: Icons.movie_creation_outlined, type: 0),
-                (label: 'Manga', icon: Icons.menu_book_outlined, type: 1),
+              tabs: [
+                (label: context.l10n.anime, icon: Icons.movie_creation_outlined, type: 0),
+                (label: context.l10n.manga, icon: Icons.menu_book_outlined, type: 1),
               ],
               currentTab: _mediaTypeFilter,
               onChanged: (v) => setState(() => _mediaTypeFilter = v),
@@ -619,9 +620,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
             child: _buildDynamicTabBar(
               colors: theme,
               height: 46,
-              tabs: const [
-                (label: 'Anime', icon: Icons.movie_creation_outlined, type: 0),
-                (label: 'Manga', icon: Icons.menu_book_outlined, type: 1),
+              tabs: [
+                (label: context.l10n.anime, icon: Icons.movie_creation_outlined, type: 0),
+                (label: context.l10n.manga, icon: Icons.menu_book_outlined, type: 1),
               ],
               currentTab: controller.mediaType.value,
               onChanged: (v) {
@@ -641,7 +642,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     onSubmitted: controller.search,
                     style: TextStyle(fontSize: 15, color: theme.onSurface),
                     decoration: InputDecoration(
-                      hintText: 'Search across extensions...',
+                      hintText: context.l10n.searchAcrossExtensions,
                       hintStyle: TextStyle(
                           color: theme.onSurface.opaque(0.4), fontSize: 14),
                       filled: true,
@@ -752,8 +753,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
       return _buildEmptyState(
         theme: theme,
         icon: Icons.search_off_rounded,
-        message: 'Search for anime',
-        subtitle: 'Results will appear grouped by extension',
+        message: context.l10n.searchForAnime,
+        subtitle: context.l10n.resultsWillAppearGroupedByExtension,
       );
     }
 
@@ -912,8 +913,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               return _buildEmptyState(
                 theme: theme,
                 icon: HugeIcons.strokeRoundedPlay,
-                message: 'No episodes found',
-                subtitle: 'Could not fetch episodes for this title',
+                message: context.l10n.noEpisodesFound,
+                subtitle: context.l10n.couldNotFetchEpisodesForThis,
               );
             }
 
@@ -982,7 +983,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const AnymeXText("Range",
+                        AnymeXText(context.l10n.range,
                             variant: TextVariant.bold, size: 14),
                         EpisodeChunkSelector(
                           chunks: chunkedEpisodes,
@@ -1253,8 +1254,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               return _buildEmptyState(
                 theme: theme,
                 icon: HugeIcons.strokeRoundedBookOpen01,
-                message: 'No chapters found',
-                subtitle: 'Could not fetch chapters for this title',
+                message: context.l10n.noChaptersFound2,
+                subtitle: context.l10n.couldNotFetchChaptersForThis,
               );
             }
 
@@ -1518,8 +1519,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AnymeXText(
-                    'Search Extensions',
+                  AnymeXText(
+                    context.l10n.searchExtensions,
                     variant: TextVariant.bold,
                     size: 20,
                   ),
@@ -1646,8 +1647,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
                 elevation: 0,
               ),
-              child: const AnymeXText(
-                'Done',
+              child: AnymeXText(
+                context.l10n.done2,
                 variant: TextVariant.bold,
               ),
             ),
@@ -1684,14 +1685,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
     double end = 10;
 
     AnymeXDialog(
-      title: 'Select Range',
+      title: context.l10n.selectRange,
       contentWidget: Obx(() => Column(
             children: [
               Row(
                 children: [
                   Expanded(
                     child: _buildSelectionTypeBtn(
-                      label: 'Chapter Number',
+                      label: context.l10n.chapterNumber,
                       isSelected: !controller.selectByIndex.value,
                       onTap: () => controller.selectByIndex.value = false,
                     ),
@@ -1699,7 +1700,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildSelectionTypeBtn(
-                      label: 'By Index',
+                      label: context.l10n.byIndex,
                       isSelected: controller.selectByIndex.value,
                       onTap: () => controller.selectByIndex.value = true,
                     ),

@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:math';
 
 import 'package:anymex/models/Anilist/anilist_profile.dart';
@@ -202,7 +204,7 @@ class Matchmaker {
     final details = <HeuristicDetail>[
       HeuristicDetail(
         key: 'watchStats',
-        title: 'Watch Stats',
+        title: Get.context!.l10n.watchStats,
         description: watchStatsDesc,
         score: watchStatsScore,
         weight: _watchStatsWeight,
@@ -210,7 +212,7 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'releaseYear',
-        title: 'Release Year Stats',
+        title: Get.context!.l10n.releaseYearStats,
         description: releaseYearDesc,
         score: releaseYearScore,
         weight: _releaseYearWeight,
@@ -219,8 +221,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'genres',
-        title: 'Common Genres',
-        description: 'Based on your top 5 genres.',
+        title: Get.context!.l10n.commonGenres,
+        description: Get.context!.l10n.basedOnYourTop5Genres,
         score: genreScore,
         weight: _genreWeight,
         cards: genreCards,
@@ -228,8 +230,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'tags',
-        title: 'Common Tags',
-        description: 'Based on your top 10 tags.',
+        title: Get.context!.l10n.commonTags,
+        description: Get.context!.l10n.basedOnYourTop10Tags,
         score: tagScore,
         weight: _tagWeight,
         cards: tagCards,
@@ -237,7 +239,7 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'perfectAnime',
-        title: 'Common Perfect Anime',
+        title: Get.context!.l10n.commonPerfectAnime,
         description: 'Based on anime you\'ve scored as 10/10.',
         score: perfectScore,
         weight: _perfectAnimeWeight,
@@ -246,8 +248,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'favouriteAnime',
-        title: 'Common Favourite Anime',
-        description: 'Based on your favourite anime.',
+        title: Get.context!.l10n.commonFavouriteAnime,
+        description: Get.context!.l10n.basedOnYourFavouriteAnime,
         score: favAnimeScore,
         weight: _favouriteAnimeWeight,
         mediaItems: favAnimeList,
@@ -255,8 +257,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'favouriteCharacters',
-        title: 'Common Favourite Characters',
-        description: 'Based on your favourite characters.',
+        title: Get.context!.l10n.commonFavouriteCharacters,
+        description: Get.context!.l10n.basedOnYourFavouriteCharacters,
         score: favCharScore,
         weight: _favouriteCharWeight,
         characterItems: favCharList,
@@ -264,8 +266,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'voiceActors',
-        title: 'Common Voice Actors',
-        description: 'Based on your top 6 voice actors.',
+        title: Get.context!.l10n.commonVoiceActors,
+        description: Get.context!.l10n.basedOnYourTop6Voice,
         score: vaScore,
         weight: _voiceActorWeight,
         cards: vaCards,
@@ -273,8 +275,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'studios',
-        title: 'Common Studios',
-        description: 'Based on your top 3 studios.',
+        title: Get.context!.l10n.commonStudios,
+        description: Get.context!.l10n.basedOnYourTop3Studios,
         score: studioScore,
         weight: _studioWeight,
         cards: studioCards,
@@ -282,8 +284,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'staff',
-        title: 'Common Favourite Staff',
-        description: 'Based on your favourite staff.',
+        title: Get.context!.l10n.commonFavouriteStaff,
+        description: Get.context!.l10n.basedOnYourFavouriteStaff,
         score: staffScore,
         weight: _staffWeight,
         staffItems: staffList,
@@ -375,7 +377,7 @@ class Matchmaker {
     final details = <HeuristicDetail>[
       HeuristicDetail(
         key: 'mangaReadStats',
-        title: 'Read Stats',
+        title: Get.context!.l10n.readStats,
         description: readStatsDesc,
         score: readStatsScore,
         weight: _mangaReadStatsWeight,
@@ -383,7 +385,7 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'mangaReleaseYear',
-        title: 'Release Year Stats',
+        title: Get.context!.l10n.releaseYearStats,
         description: releaseYearDesc,
         score: releaseYearScore,
         weight: _mangaReleaseYearWeight,
@@ -392,8 +394,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'mangaGenres',
-        title: 'Common Genres',
-        description: 'Based on your top 5 manga genres.',
+        title: Get.context!.l10n.commonGenres,
+        description: Get.context!.l10n.basedOnYourTop5Manga,
         score: genreScore,
         weight: _mangaGenreWeight,
         cards: genreCards,
@@ -401,8 +403,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'mangaTags',
-        title: 'Common Tags',
-        description: 'Based on your top 10 manga tags.',
+        title: Get.context!.l10n.commonTags,
+        description: Get.context!.l10n.basedOnYourTop10Manga,
         score: tagScore,
         weight: _mangaTagWeight,
         cards: tagCards,
@@ -410,8 +412,8 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'favouriteManga',
-        title: 'Common Favourite Manga',
-        description: 'Based on your favourite manga.',
+        title: Get.context!.l10n.commonFavouriteManga,
+        description: Get.context!.l10n.basedOnYourFavouriteManga,
         score: favMangaScore,
         weight: _favouriteMangaWeight,
         mediaItems: favMangaList,
@@ -419,7 +421,7 @@ class Matchmaker {
       ),
       HeuristicDetail(
         key: 'perfectManga',
-        title: 'Common Perfect Manga',
+        title: Get.context!.l10n.commonPerfectManga,
         description: 'Based on manga you\'ve scored as 10/10.',
         score: perfectScore,
         weight: _perfectMangaWeight,
@@ -532,28 +534,28 @@ class Matchmaker {
   }
 
   static List<HeuristicCardData> _buildTotalsCard(List<StatComparisonRow> rows) => [
-        HeuristicCardData(title: 'Totals', rows: rows),
+        HeuristicCardData(title: Get.context!.l10n.totals, rows: rows),
       ];
 
   static List<HeuristicCardData> _buildWatchStatsCards(AnimeStats a, AnimeStats b) => _buildTotalsCard([
         StatComparisonRow(
           user1Value: '${_getCompletedCount(a.statuses, a.animeCount).toInt()}',
-          label: 'Anime Completed',
+          label: Get.context!.l10n.animeCompleted,
           user2Value: '${_getCompletedCount(b.statuses, b.animeCount).toInt()}',
         ),
         StatComparisonRow(
           user1Value: '${_parseI(a.episodesWatched)}',
-          label: 'Episodes Watched',
+          label: Get.context!.l10n.episodesWatched,
           user2Value: '${_parseI(b.episodesWatched)}',
         ),
         StatComparisonRow(
           user1Value: '${(_parseD(a.minutesWatched) / 60.0).round()}',
-          label: 'Hours Watched',
+          label: Get.context!.l10n.hoursWatched,
           user2Value: '${(_parseD(b.minutesWatched) / 60.0).round()}',
         ),
         StatComparisonRow(
           user1Value: _parseD(a.meanScore).toStringAsFixed(2),
-          label: 'Mean Score',
+          label: Get.context!.l10n.meanScore,
           user2Value: _parseD(b.meanScore).toStringAsFixed(2),
         ),
       ]);
@@ -561,22 +563,22 @@ class Matchmaker {
   static List<HeuristicCardData> _buildMangaReadStatsCards(MangaStats a, MangaStats b) => _buildTotalsCard([
         StatComparisonRow(
           user1Value: '${_getCompletedCount(a.statuses, a.mangaCount).toInt()}',
-          label: 'Manga Completed',
+          label: Get.context!.l10n.mangaCompleted,
           user2Value: '${_getCompletedCount(b.statuses, b.mangaCount).toInt()}',
         ),
         StatComparisonRow(
           user1Value: '${_parseI(a.chaptersRead)}',
-          label: 'Chapters Read',
+          label: Get.context!.l10n.chaptersRead,
           user2Value: '${_parseI(b.chaptersRead)}',
         ),
         StatComparisonRow(
           user1Value: '${_parseI(a.volumesRead)}',
-          label: 'Volumes Read',
+          label: Get.context!.l10n.volumesRead,
           user2Value: '${_parseI(b.volumesRead)}',
         ),
         StatComparisonRow(
           user1Value: _parseD(a.meanScore).toStringAsFixed(2),
-          label: 'Mean Score',
+          label: Get.context!.l10n.meanScore,
           user2Value: _parseD(b.meanScore).toStringAsFixed(2),
         ),
       ]);
@@ -623,8 +625,8 @@ class Matchmaker {
         cards.add(HeuristicCardData(
           title: '${decade}s',
           rows: [
-            StatComparisonRow(user1Value: propStrA, label: 'Proportion of Total Time Watched', user2Value: propStrB),
-            StatComparisonRow(user1Value: deltaStrA, label: 'Difference from own Mean Score', user2Value: deltaStrB),
+            StatComparisonRow(user1Value: propStrA, label: Get.context!.l10n.proportionOfTotalTimeWatched, user2Value: propStrB),
+            StatComparisonRow(user1Value: deltaStrA, label: Get.context!.l10n.differenceFromOwnMeanScore, user2Value: deltaStrB),
           ],
         ));
 
@@ -738,12 +740,12 @@ class Matchmaker {
         rows: [
           StatComparisonRow(
             user1Value: getMeanScore(statA).toStringAsFixed(2),
-            label: 'Mean Score',
+            label: Get.context!.l10n.meanScore,
             user2Value: getMeanScore(statB).toStringAsFixed(2),
           ),
           StatComparisonRow(
             user1Value: '${getCount(statA)}',
-            label: 'Count',
+            label: Get.context!.l10n.count,
             user2Value: '${getCount(statB)}',
           ),
         ],
@@ -997,12 +999,12 @@ class Matchmaker {
         rows: [
           StatComparisonRow(
             user1Value: getMeanScore(statA).toStringAsFixed(2),
-            label: 'Mean Score',
+            label: Get.context!.l10n.meanScore,
             user2Value: getMeanScore(statB).toStringAsFixed(2),
           ),
           StatComparisonRow(
             user1Value: '${getCount(statA)}',
-            label: 'Count',
+            label: Get.context!.l10n.count,
             user2Value: '${getCount(statB)}',
           ),
         ],

@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
 
@@ -207,12 +209,12 @@ class RankInfo {
   }
 }
 
-const kRanks = <RankInfo>[
+List<RankInfo> get kRanks => <RankInfo>[
   RankInfo(
     name: 'SSS',
     min: 85,
     max: 100.01,
-    description: 'You are basically the same person.',
+    description: Get.context!.l10n.youAreBasicallyTheSamePerson,
     colorHex: '#FBBF24',
     template: 'Absolute soulmates in taste with {{RANGE}} overlap.',
   ),
@@ -220,7 +222,7 @@ const kRanks = <RankInfo>[
     name: 'SS',
     min: 75,
     max: 85,
-    description: 'Practically made for each other.',
+    description: Get.context!.l10n.practicallyMadeForEachOther,
     colorHex: '#F59E0B',
     template: 'Practically made for each other with {{RANGE}} overlap.',
   ),
@@ -228,7 +230,7 @@ const kRanks = <RankInfo>[
     name: 'S',
     min: 65,
     max: 75,
-    description: 'You both have very similar taste.',
+    description: Get.context!.l10n.youBothHaveVerySimilarTaste,
     colorHex: '#EAB308',
     template: 'You both have very similar taste—about {{RANGE}} agreement.',
   ),
@@ -236,7 +238,7 @@ const kRanks = <RankInfo>[
     name: 'A',
     min: 55,
     max: 65,
-    description: 'Good chemistry and shared taste.',
+    description: Get.context!.l10n.goodChemistryAndSharedTaste,
     colorHex: '#8B5CF6',
     template: 'Good chemistry and shared taste with around {{RANGE}} overlap.',
   ),
@@ -244,7 +246,7 @@ const kRanks = <RankInfo>[
     name: 'B',
     min: 40,
     max: 55,
-    description: 'Above-average similarity.',
+    description: Get.context!.l10n.aboveAverageSimilarity,
     colorHex: '#10B981',
     template: 'Above-average similarity at roughly {{RANGE}} overlap.',
   ),
@@ -252,7 +254,7 @@ const kRanks = <RankInfo>[
     name: 'C',
     min: 20,
     max: 40,
-    description: 'Average overlap.',
+    description: Get.context!.l10n.averageOverlap,
     colorHex: '#22C55E',
     template: 'Average overlap with around {{RANGE}} shared taste.',
   ),
@@ -260,7 +262,7 @@ const kRanks = <RankInfo>[
     name: 'D',
     min: 10,
     max: 20,
-    description: 'There’s a small spark of agreement.',
+    description: Get.context!.l10n.theresASmallSparkOfAgreement,
     colorHex: '#F97316',
     template: 'There’s a small spark of agreement: about {{RANGE}} overlap.',
   ),
@@ -268,7 +270,7 @@ const kRanks = <RankInfo>[
     name: 'F',
     min: 0,
     max: 10,
-    description: 'Not very compatible at all.',
+    description: Get.context!.l10n.notVeryCompatibleAtAll,
     colorHex: '#EF4444',
     template: 'Not very compatible at all. Only {{RANGE}} of your taste overlaps.',
   ),

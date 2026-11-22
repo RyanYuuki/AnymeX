@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -273,8 +274,8 @@ class _WatchTogetherPopupContentState
           child: OutlinedButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: code));
-              successSnackBar('Room code copied to clipboard',
-                  title: 'Copied');
+              successSnackBar(context.l10n.roomCodeCopiedToClipboard,
+                  title: context.l10n.copied);
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: cs.primary,
@@ -295,12 +296,12 @@ class _WatchTogetherPopupContentState
         const SizedBox(height: 20),
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
-          title: 'Invite Link',
+          title: context.l10n.inviteLink,
           children: [
             AnymeXTile(
               icon: Icons.link_rounded,
               iconColor: Colors.purple,
-              title: 'Invite Link',
+              title: context.l10n.inviteLink,
               subtitleWidget: AnymeXText(
                 shareUrl,
                 size: 12,
@@ -311,7 +312,7 @@ class _WatchTogetherPopupContentState
               trailing: GestureDetector(
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: shareUrl));
-                  successSnackBar('Invite link copied!', title: 'Copied');
+                  successSnackBar(context.l10n.inviteLinkCopied, title: context.l10n.copied);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(8),
@@ -328,7 +329,7 @@ class _WatchTogetherPopupContentState
               ),
               onTap: () {
                 Clipboard.setData(ClipboardData(text: shareUrl));
-                successSnackBar('Invite link copied!', title: 'Copied');
+                successSnackBar(context.l10n.inviteLinkCopied, title: context.l10n.copied);
               },
               showChevron: false,
             ),
@@ -427,12 +428,12 @@ class _WatchTogetherPopupContentState
         ],
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
-          title: 'Room Settings',
+          title: context.l10n.roomSettings,
           children: [
             AnymeXTile.slider(
               icon: Icons.people_alt_rounded,
-              title: 'Max Members',
-              subtitle: 'How many friends can join',
+              title: context.l10n.maxMembers,
+              subtitle: context.l10n.howManyFriendsCanJoin,
               value: _maxMembers,
               min: 2,
               max: 50,
@@ -442,8 +443,8 @@ class _WatchTogetherPopupContentState
             ),
             AnymeXTile.toggle(
               icon: Icons.lock_outline_rounded,
-              title: 'Private Room',
-              subtitle: 'Friends need a password to join',
+              title: context.l10n.privateRoom,
+              subtitle: context.l10n.friendsNeedAPasswordToJoin,
               value: _isPrivate,
               onChanged: (v) => setState(() {
                 _isPrivate = v;
@@ -451,8 +452,8 @@ class _WatchTogetherPopupContentState
               }),
               child: _buildField(
                 cs,
-                label: 'Room Password',
-                hint: 'Set a password for your room',
+                label: context.l10n.roomPassword,
+                hint: context.l10n.setAPasswordForYourRoom,
                 prefixIcon: Icons.password_rounded,
                 obscureText: _obscurePassword,
                 suffixIcon: _buildVisibilityToggle(cs),
@@ -609,7 +610,7 @@ class _WatchTogetherPopupContentState
     if (_hasLocalProxyStreams()) {
       warningSnackBar(
         'This extension is not supported for rooms yet. Please switch to a different extension.',
-        title: 'Unsupported Extension',
+        title: context.l10n.unsupportedExtension,
       );
       return;
     }

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -106,7 +107,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
         return Column(
           children: [
             NestedHeader(
-              title: 'Active Downloads',
+              title: context.l10n.activeDownloads,
               action: headerAction,
             ),
             Expanded(
@@ -151,14 +152,14 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
           Icon(HugeIcons.strokeRoundedDownload04,
               size: 64, color: context.colors.onSurface.opaque(0.15)),
           const SizedBox(height: 16),
-          AnymeXText('No active downloads',
+          AnymeXText(context.l10n.noActiveDownloads,
               size: 16,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface.opaque(0.4)),
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: AnymeXText('Start a new download from the "New Download" tab',
+            child: AnymeXText(context.l10n.startANewDownloadFromThe,
                 size: 13,
                 color: context.colors.onSurface.opaque(0.3),
                 textAlign: TextAlign.center),
@@ -752,7 +753,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                       color: theme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: AnymeXText('Select Server',
+                    child: AnymeXText(context.l10n.selectServer,
                         size: 10.5,
                         color: theme.onTertiaryContainer,
                         variant: TextVariant.bold),
@@ -773,7 +774,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                       color: theme.primary,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: AnymeXText('Select Server',
+                    child: AnymeXText(context.l10n.selectServer,
                         size: 10.5,
                         color: theme.onPrimary,
                         variant: TextVariant.bold),
@@ -954,7 +955,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const AnymeXText('Select Server',
+                AnymeXText(context.l10n.selectServer,
                     variant: TextVariant.bold, size: 18),
                 if (isLoading) ...[
                   const SizedBox(width: 10),
@@ -979,7 +980,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
             SizedBox(
               height: 180,
               child: Center(
-                child: AnymeXText('No servers found.',
+                child: AnymeXText(context.l10n.noServersFound,
                     color: theme.onSurface.opaque(0.5)),
               ),
             )

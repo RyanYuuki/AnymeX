@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -70,8 +72,8 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AnymeXDialog(
-              title: 'Clear App Cache',
-              confirmText: 'Clear Selected',
+              title: context.l10n.clearAppCache,
+              confirmText: context.l10n.clearSelected,
               onConfirm: () async {
                 await _executeClear(
                   deleteImages: deleteImages,
@@ -84,28 +86,28 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnymeXTile.checkbox(
-                    title: 'Cached Images',
+                    title: context.l10n.cachedImages,
                     subtitle: 'App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}',
                     value: deleteImages,
                     onChanged: (v) => setDialogState(() => deleteImages = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
-                    title: 'Torrent Stream Cache',
+                    title: context.l10n.torrentStreamCache,
                     subtitle: 'Temporary video chunks. Size: ${_service.formatBytes(torrentSize)}',
                     value: deleteTorrents,
                     onChanged: (v) => setDialogState(() => deleteTorrents = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
-                    title: 'Novel Snapshots',
+                    title: context.l10n.novelSnapshots,
                     subtitle: 'Downloaded web novel pages. Size: ${_service.formatBytes(snapshotSize)}',
                     value: deleteSnapshots,
                     onChanged: (v) => setDialogState(() => deleteSnapshots = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
-                    title: 'Other Temporary Files',
+                    title: context.l10n.otherTemporaryFiles,
                     subtitle: 'Logs, temp downloads. Size: ${_service.formatBytes(otherTempSize)}',
                     value: deleteOther,
                     onChanged: (v) => setDialogState(() => deleteOther = v),
@@ -135,7 +137,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
       
       await Future.delayed(const Duration(milliseconds: 150));
       await _refresh();
-      snackBar('Selected cache cleared');
+      snackBar(Get.context!.l10n.selectedCacheCleared);
     } catch (e) {
       snackBar('Failed to clear cache: $e');
     } finally {
@@ -149,11 +151,11 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AnymeXDialog(
-        title: 'Factory Reset',
-        confirmText: 'Delete All',
+        title: context.l10n.factoryReset,
+        confirmText: context.l10n.deleteAll,
         confirmResultGetter: () => true,
         onConfirm: () {},
-        message: 'This will permanently delete all data stored of AnymeX. This cannot be undone.',
+        message: context.l10n.thisWillPermanentlyDeleteAllData,
       ),
     );
 
@@ -162,7 +164,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     setState(() => _isRunningAction = true);
     try {
       await _service.factoryResetIsar();
-      snackBar('App data has been completely reset');
+      snackBar(Get.context!.l10n.appDataHasBeenCompletelyReset);
       if (mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
@@ -182,7 +184,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Storage Manager',
+      headerTitle: context.l10n.storageManager,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
@@ -190,7 +192,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXSectionBuilder(
-                        title: 'Cache Overview',
+                        title: context.l10n.cacheOverview,
                         children: [
                           Container(
                             width: double.infinity,
@@ -205,7 +207,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AnymeXText(
-                                        'Temporary App Cache',
+                                        context.l10n.temporaryAppCache,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
@@ -242,13 +244,13 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Storage Options',
+                        title: context.l10n.storageOptions,
                         children: [
                           AnymeXTile.slider(
                             icon: Icons.storage_rounded,
-                            title: 'Auto-clear threshold',
+                            title: context.l10n.autoClearThreshold,
                             subtitle:
-                                'If temporary app cache reaches this size, it will be cleared automatically.',
+                                context.l10n.ifTemporaryAppCacheReachesThis,
                             value: _thresholdGb,
                             min: StorageManagerService.minThresholdGb,
                             max: StorageManagerService.maxThresholdGb,
@@ -263,16 +265,16 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                   .then((wasCleared) {
                                 if (!mounted || !wasCleared) return;
                                 snackBar(
-                                    'App cache exceeded threshold and was cleared');
+                                    Get.context!.l10n.appCacheExceededThresholdAndWas);
                                 _refresh();
                               });
                             },
                           ),
                           AnymeXTile(
                             icon: Icons.delete_sweep_rounded,
-                            title: 'Clear app cache now',
+                            title: context.l10n.clearAppCacheNow,
                             subtitle:
-                                'Delete all cached images, torrent stream chunks, and temporary files.',
+                                context.l10n.deleteAllCachedImagesTorrentStream,
                             onTap: _showClearCacheDialog,
                             trailing: _isRunningAction
                                 ? const SizedBox(
@@ -286,9 +288,9 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                           ),
                           AnymeXTile(
                             icon: Icons.warning_rounded,
-                            title: 'Factory reset',
+                            title: context.l10n.factoryReset2,
                             subtitle:
-                                'Delete everything stored of AnymeX permanently.',
+                                context.l10n.deleteEverythingStoredOfAnymexPermanently,
                             iconColor: context.colors.error,
                             onTap: _factoryResetIsar,
                           ),

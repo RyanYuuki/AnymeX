@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -1169,7 +1170,7 @@ class DownloadController extends GetxController {
     _sendToBackground({
       'type': 'UPDATE_NOTIFICATION',
       'title': title,
-      'text': text.isNotEmpty ? text : 'Downloading…'
+      'text': text.isNotEmpty ? text : Get.context!.l10n.downloading
     });
   }
 

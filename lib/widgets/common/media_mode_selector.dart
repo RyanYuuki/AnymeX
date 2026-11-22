@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -100,7 +101,7 @@ class MediaModeSelector extends StatelessWidget {
                 source: activeSource,
               ));
         } else {
-          snackBar('No novel extensions installed to read this novel.');
+          snackBar(context.l10n.noNovelExtensionsInstalledToRead);
         }
       }
     }

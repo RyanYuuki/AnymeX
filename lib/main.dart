@@ -80,6 +80,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:anymex/l10n/app_localizations.dart';
+import 'package:anymex/l10n/english_framework_delegates.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/l10n/locale_controller.dart';
 
 late Isar isar;
 final appLinks = AppLinks();
@@ -294,6 +298,7 @@ void _initializeGetxController() async {
   await safeCall(() {
     Get.put(ThemeController(), permanent: true);
     Get.put(Settings());
+    Get.put(LocaleController());
     Get.put(OfflineStorageController());
     Get.put(AnilistAuth());
     Get.put(CommunityService());
@@ -430,6 +435,12 @@ class _MainAppState extends State<MainApp> {
           scrollBehavior: MyCustomScrollBehavior(),
           debugShowCheckedModeBanner: false,
           title: "AnymeX",
+          localizationsDelegates: const [
+            ...AppLocalizations.localizationsDelegates,
+            EnglishMaterialDelegate(),
+            EnglishCupertinoDelegate(),
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: themeCtrl.lightTheme,
           darkTheme: themeCtrl.darkTheme,
           themeMode: themeCtrl.themeMode,
@@ -632,7 +643,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.home,
           selectedIcon: IconlyBold.home,
           onTap: onTap,
-          label: 'Home',
+          label: context.l10n.navHome,
           subWidget: subWidget,
         );
       case 'Discover':
@@ -640,7 +651,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Iconsax.discover_13,
           selectedIcon: Iconsax.discover5,
           onTap: onTap,
-          label: 'Discover',
+          label: context.l10n.navDiscover,
           subWidget: subWidget,
         );
       case 'Search':
@@ -648,7 +659,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.search,
           selectedIcon: IconlyBold.search,
           onTap: onTap,
-          label: 'Search',
+          label: context.l10n.navSearch,
           subWidget: subWidget,
         );
       case 'Library':
@@ -656,7 +667,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: HugeIcons.strokeRoundedLibrary,
           selectedIcon: HugeIcons.strokeRoundedLibrary,
           onTap: onTap,
-          label: 'Library',
+          label: context.l10n.navLibrary,
           subWidget: subWidget,
         );
       case 'History':
@@ -664,7 +675,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Iconsax.clock,
           selectedIcon: Iconsax.clock5,
           onTap: onTap,
-          label: 'History',
+          label: context.l10n.navHistory,
           subWidget: subWidget,
         );
       case 'Anime':
@@ -672,7 +683,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.movie_filter_outlined,
           selectedIcon: Icons.movie_filter_rounded,
           onTap: onTap,
-          label: isSimkl ? 'Movies' : 'Anime',
+          label: isSimkl ? context.l10n.navMovies : context.l10n.navAnime,
           subWidget: subWidget,
         );
       case 'Manga':
@@ -680,7 +691,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
           selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
           onTap: onTap,
-          label: isSimkl ? 'Series' : 'Manga',
+          label: isSimkl ? context.l10n.navSeries : context.l10n.navManga,
           subWidget: subWidget,
         );
       case 'Novel':
@@ -688,7 +699,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.auto_stories_outlined,
           selectedIcon: Icons.auto_stories_rounded,
           onTap: onTap,
-          label: 'Novel',
+          label: context.l10n.navNovel,
           subWidget: subWidget,
         );
       case 'Extensions':
@@ -696,7 +707,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.extension_outlined,
           selectedIcon: Icons.extension_rounded,
           onTap: onTap,
-          label: 'Extensions',
+          label: context.l10n.navExtensions,
           subWidget: subWidget,
         );
       case 'Stats':
@@ -704,7 +715,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.chart,
           selectedIcon: IconlyBold.chart,
           onTap: onTap,
-          label: 'Stats',
+          label: context.l10n.navStats,
           subWidget: subWidget,
         );
       default:
@@ -747,6 +758,7 @@ class _FilterScreenState extends State<FilterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Obx(() {
+            Get.find<LocaleController>().currentLocale.value;
             final mediaModeController = Get.put(MediaModeController());
             final _ = mediaModeController.rxMode.value;
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
@@ -770,7 +782,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             onTap: (index) {
                               return SettingsSheet.show(context);
                             },
-                            label: 'Profile',
+                            label: context.l10n.navProfile,
                             altIcon: Obx(() {
                               final count = Get.find<SourceController>()
                                   .extensionUpdatesCount
@@ -860,6 +872,7 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget _buildAndroidLayout(ServiceHandler authService) {
     final settings = Get.find<Settings>();
     return Obx(() {
+      Get.find<LocaleController>().currentLocale.value;
       final isSimkl = authService.serviceType.value == ServicesType.simkl;
       final navTabs = _getNavTabs(authService, settings);
       final mobileRoutes = [

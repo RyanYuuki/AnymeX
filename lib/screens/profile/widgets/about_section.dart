@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/profile/widgets/stats_overview_cards.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +33,8 @@ class AboutSection extends StatelessWidget {
               : EdgeInsets.zero,
           child: Row(
             children: [
-              const Expanded(
-                child: SectionHeader(title: 'About', icon: IconlyLight.profile),
+              Expanded(
+                child: SectionHeader(title: context.l10n.about, icon: IconlyLight.profile),
               ),
               if (!isDesktop && onToggle != null)
                 InkWell(

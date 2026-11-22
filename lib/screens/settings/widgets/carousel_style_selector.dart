@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/carousel/carousel_style_registry.dart';
@@ -16,7 +17,7 @@ void showCarouselStyleSelector(BuildContext context) {
     builder: (dialogContext) {
       return Obx(
         () => AnymeXDialog(
-          title: 'Carousel Style',
+          title: context.l10n.carouselStyle,
           onConfirm: () {
             settingsController.carouselStyle = selectedIndex.value;
           },

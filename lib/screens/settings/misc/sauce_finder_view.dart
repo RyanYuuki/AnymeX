@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -135,7 +137,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXText(
-                      'Sauce Searcher',
+                      context.l10n.sauceSearcher,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
@@ -144,7 +146,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                     ),
                     const SizedBox(height: 4),
                     AnymeXText(
-                      'Find anime sauce by screenshots',
+                      context.l10n.findAnimeSauceByScreenshots,
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.opaque(0.7),
                         fontSize: 12,
@@ -200,7 +202,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Upload Image',
+          context.l10n.uploadImage,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -254,7 +256,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
             const SizedBox(height: 24),
             AnymeXText(
-              'Choose Image',
+              context.l10n.chooseImage,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -264,7 +266,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
             const SizedBox(height: 8),
             AnymeXText(
-              'Select an anime screenshot to find its source',
+              context.l10n.selectAnAnimeScreenshotToFind,
               style: TextStyle(
                 fontSize: 14,
                 color: colorScheme.onSurface.opaque(0.6),
@@ -362,7 +364,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                           ),
                           const SizedBox(width: 12),
                           AnymeXText(
-                            'Find Source',
+                            context.l10n.findSource,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -401,7 +403,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                     ),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Choose Different Image',
+                      context.l10n.chooseDifferentImage,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -423,7 +425,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Results',
+          context.l10n.results,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -461,7 +463,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'Searching database...',
+            context.l10n.searchingDatabase,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -471,7 +473,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            'This might take a few seconds',
+            context.l10n.thisMightTakeAFewSeconds,
             style: TextStyle(
               fontSize: 14,
               color: colorScheme.onSurface.opaque(0.6),
@@ -511,7 +513,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           ),
           const SizedBox(height: 20),
           AnymeXText(
-            'Search Failed',
+            context.l10n.searchFailed,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -552,7 +554,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                       ),
                       const SizedBox(width: 8),
                       AnymeXText(
-                        'Try Again',
+                        context.l10n.tryAgain,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -596,7 +598,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'No results yet',
+            context.l10n.noResultsYet,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -605,7 +607,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            'Upload an image to get started',
+            context.l10n.uploadAnImageToGetStarted,
             style: TextStyle(
               fontSize: 14,
               color: colorScheme.onSurface.opaque(0.4),
@@ -714,7 +716,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                             ),
                             const SizedBox(width: 12),
                             AnymeXText(
-                              'Watch Anime',
+                              context.l10n.watchAnime,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

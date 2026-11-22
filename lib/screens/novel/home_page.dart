@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
@@ -73,7 +74,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
             headerContent: Header(
-              title: 'Novels',
+              title: context.l10n.novels,
               subtitleWidget: const HeaderGreetingSubtitle(),
               actions: [
                 HeaderActionButton(

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 
 import 'package:anymex/controllers/services/community_service.dart';
@@ -944,7 +945,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             )
           : Row(
               children: [
-                AnymeXText('Was this helpful?',
+                AnymeXText(context.l10n.wasThisHelpful,
                   size: 13,
                   color: colors.onSurfaceVariant,
                   variant: TextVariant.semiBold,
@@ -1005,7 +1006,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText('Recommended by',
+                    AnymeXText(context.l10n.recommendedBy,
                       size: 11,
                       color: colors.onSurfaceVariant,
                     ),

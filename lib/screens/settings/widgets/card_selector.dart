@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
@@ -21,7 +22,7 @@ void showCardStyleSwitcher(BuildContext context) {
       return Obx(
         () {
           return AnymeXDialog(
-            title: 'Card Style',
+            title: context.l10n.cardStyle,
             onConfirm: () {
               settingsController.cardStyle = selectedIndex.value;
             },
