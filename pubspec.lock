@@ -1903,12 +1903,11 @@ packages:
     source: hosted
     version: "2.1.2"
   screen_brightness_windows:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: screen_brightness_windows
-      sha256: "368b9c822e1671de81616e48150006e39eff2a434957e47ee638b09a32b2297c"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/screen_brightness_windows"
+      relative: true
+    source: path
     version: "2.1.2"
   screen_retriever:
     dependency: transitive

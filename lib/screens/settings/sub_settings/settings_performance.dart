@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/kv_helper.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -118,7 +117,8 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       icon: HugeIcons.strokeRoundedDashboardSpeed01,
                       title: 'FPS Meter',
                       subtitle: 'Show draggable real-time FPS overlay',
-                      value: KvHelper.get<bool>('show_fps_meter', defaultVal: false),
+                      value: KvHelper.get<bool>('show_fps_meter',
+                          defaultVal: false),
                       onChanged: (val) {
                         KvHelper.set('show_fps_meter', val);
                         FpsMeter.isVisible.value = val;
@@ -129,8 +129,8 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                 ),
                 const SizedBox(height: 20),
                 Center(
-                  child: AnymeXText(
-                      context.l10n.displayModeTuningIsNotApplicable),
+                  child:
+                      AnymeXText(context.l10n.displayModeTuningIsNotApplicable),
                 ),
               ],
             ),
@@ -141,10 +141,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
 
     final validModes = _supportedModes
         .where((m) =>
-            m != DisplayMode.auto &&
-            m.id != 0 &&
-            m.width != 0 &&
-            m.height != 0)
+            m != DisplayMode.auto && m.id != 0 && m.width != 0 && m.height != 0)
         .toList();
 
     final resolutions =
@@ -162,8 +159,8 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
       headerTitle: context.l10n.performance,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-              16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
+          padding:
+              EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
           child: Obx(() {
             final preferred = settings.preferredDisplayMode.value;
             final active = settings.activeDisplayMode.value;
@@ -185,12 +182,13 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                 .where((m) => '${m.width}x${m.height}' == currentRes)
                 .toList();
 
-            final distinctHz =
-                (modesForRes.isNotEmpty ? modesForRes : validModes)
-                    .map((m) => m.refreshRate.round())
-                    .toSet()
-                    .toList()
-                  ..sort();
+            final distinctHz = (modesForRes.isNotEmpty
+                    ? modesForRes
+                    : validModes)
+                .map((m) => m.refreshRate.round())
+                .toSet()
+                .toList()
+              ..sort();
 
             final hzOptions = [0, ...distinctHz];
 
@@ -212,7 +210,8 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       icon: HugeIcons.strokeRoundedDashboardSpeed01,
                       title: 'FPS Meter',
                       subtitle: 'Show draggable real-time FPS overlay',
-                      value: KvHelper.get<bool>('show_fps_meter', defaultVal: false),
+                      value: KvHelper.get<bool>('show_fps_meter',
+                          defaultVal: false),
                       onChanged: (val) {
                         KvHelper.set('show_fps_meter', val);
                         FpsMeter.isVisible.value = val;
@@ -233,8 +232,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   AnymeXTile(
                     icon: Icons.info_outline_rounded,
                     title: context.l10n.displayMode,
-                    subtitle:
-                        context.l10n.hardwareDisplayModeSwitchingIsNot,
+                    subtitle: context.l10n.hardwareDisplayModeSwitchingIsNot,
                   ),
                 ] else ...[
                   AnymeXSectionBuilder(
