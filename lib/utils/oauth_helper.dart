@@ -4,6 +4,8 @@ import 'package:webview_all/webview_all.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 
 class OauthHelper {
   static Future<String?> authenticate({
@@ -122,7 +124,7 @@ class _OauthWebViewPageState extends State<OauthWebViewPage> {
         child: Padding(
           padding: EdgeInsets.only(top: isWindows ? 40.0 : 0.0),
           child: AppBar(
-            title: const AnymeXText('Sign In'),
+            title: AnymeXText(Get.context!.l10n.signIn),
             leading: IconButton(
               icon: const Icon(Icons.close),
               onPressed: () => Navigator.pop(context),

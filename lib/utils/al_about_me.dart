@@ -347,7 +347,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                         url: src,
                         icon: Icons.music_note_rounded,
                         color: const Color(0xFF1DB954),
-                        title: 'Spotify',
+                        title: Get.context!.l10n.spotify,
                         subtitle: context.l10n.tapToOpenInSpotify,
                       );
                     }

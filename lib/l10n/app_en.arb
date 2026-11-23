@@ -3824,5 +3824,207 @@
   "previousStyle": "Previous style",
   "nextStyle": "Next style",
   "currentStyle": "Current style",
-  "useThisStyle": "Use this style"
+  "useThisStyle": "Use this style",
+  "pleaseLogInToGetRecommendations": "Please log in to get recommendations",
+  "chapter1": "Chapter 1",
+  "deletedSuccessfully": "{value} Deleted Successfully",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl Logined Successfully!",
+  "yepFailed": "Yep, Failed",
+  "userInfoFetchingFailed": "User Info Fetching Failed!",
+  "githubLoginFailed": "GitHub login failed: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Sync already in progress.",
+  "anotherSyncActionIsAlreadyIn": "Another sync action is already in progress.",
+  "noAnymexSyncGistFoundTo": "No AnymeX sync gist found to delete.",
+  "noAnymexSyncGistFoundInitialize": "No AnymeX sync gist found. Initialize first.",
+  "githubGistSync": "GitHub Gist Sync",
+  "manage": "Manage",
+  "manageGithubGistSync": "Manage GitHub Gist Sync",
+  "joinedTheParty": "{username} joined the party",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} left the party",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Host switched to Episode {episodeNumber} of {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Error fetching comments",
+  "errorAddingComment": "Error adding comment",
+  "errorUpdatingVote": "Error updating vote",
+  "errorEditingComment": "Error editing comment",
+  "errorDeletingComment": "Error deleting comment",
+  "commentReportedSuccessfully": "Comment reported successfully",
+  "errorReportingComment": "Error reporting comment",
+  "errorFetchingReportsQueue": "Error fetching reports queue",
+  "reportResolvedSuccessfully": "Report resolved successfully",
+  "failedToResolveReport": "Failed to resolve report",
+  "errorResolvingReport": "Error resolving report",
+  "errorFetchingUserInfo": "Error fetching user info",
+  "errorFetchingUserHistory": "Error fetching user history",
+  "errorFetchingUserStats": "Error fetching user stats",
+  "errorListingUsers": "Error listing users",
+  "errorSearchingUsers": "Error searching users",
+  "errorFetchingModerationQueue": "Error fetching moderation queue",
+  "commentModeratedSuccessfully": "Comment moderated successfully",
+  "errorModeratingComment": "Error moderating comment",
+  "userManagedSuccessfully": "User managed successfully",
+  "errorManagingUser": "Error managing user",
+  "errorGettingInitialDeepLink": "Error getting initial deep link: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Error Opening link: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Copy error details",
+  "whatSNew": "What's New",
+  "updatedToV": "Updated to v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Could not open ad link",
+  "newAnilistUpdates": "{length} New AniList Updates",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\\n+{value} more",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Refresh devices",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Adding repo... please wait.",
+  "unsupportedThemeTypeSupportedPlayer": "Unsupported theme type \"{type}\". Supported: player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Importing player theme from link...",
+  "themeIsInvalid": "Theme is invalid: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Theme JSON is valid. Imported {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Joining room {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Failed to join room: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Calculating AniMatch compatibility for {user1} & {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Share with your selected tracking service",
+  "shareAnymexLink": "Share AnymeX link",
+  "opensDirectlyInAnymex": "Opens directly in AnymeX",
+  "newCommentsRepliesAndEdits": "New comments, replies, and edits",
+  "upvotesAndDownvotesOnYourComments": "Upvotes and downvotes on your comments",
+  "warningsMutesBansAndModerationActions": "Warnings, mutes, bans, and moderation actions",
+  "reportFiledResolvedDismissed": "Report filed, resolved, dismissed",
+  "officialAnnouncements": "Official announcements",
+  "whenSomeoneMentionsYouInA": "When someone @mentions you in a comment",
+  "notificationsForNewAnimeEpisodeReleases": "Notifications for new anime episode releases",
+  "notificationsForFollowsMentionsAndLikes": "Notifications for follows, mentions, and likes",
+  "notificationsForCompletedEpisodeAndChapter": "Notifications for completed episode and chapter downloads",
+  "signIn": "Sign In",
+  "failedToCheckForUpdates3": "Failed to check for updates",
+  "noUpdatesAvailable": "No updates available",
+  "errorCheckingForUpdates": "Error checking for updates",
+  "installPermissionRequired": "Install permission required",
+  "downloadFailed3": "Download Failed",
+  "newVersionAvailable": "New Version Available"
 }

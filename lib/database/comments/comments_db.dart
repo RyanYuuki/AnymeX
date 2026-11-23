@@ -6,6 +6,7 @@ import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:get/get.dart';
 
 import 'model/comment.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class CommentsDatabase {
   final commentumService = Get.find<CommentumService>();
@@ -31,7 +32,7 @@ class CommentsDatabase {
       );
     } catch (e) {
       log("Error fetching comments: $e");
-      snackBar('Error fetching comments');
+      snackBar(Get.context!.l10n.errorFetchingComments);
       return CommentsPageResult.empty(page: page, limit: limit);
     }
   }
@@ -145,7 +146,7 @@ class CommentsDatabase {
       return newComment;
     } catch (e) {
       log("Error adding comment: $e");
-      snackBar('Error adding comment');
+      snackBar(Get.context!.l10n.errorAddingComment);
       return null;
     }
   }
@@ -188,7 +189,7 @@ class CommentsDatabase {
       }
     } catch (e) {
       log("Error updating vote: $e");
-      snackBar('Error updating vote');
+      snackBar(Get.context!.l10n.errorUpdatingVote);
       return null;
     }
   }
@@ -210,7 +211,7 @@ class CommentsDatabase {
       return updatedComment;
     } catch (e) {
       log("Error editing comment: $e");
-      snackBar('Error editing comment');
+      snackBar(Get.context!.l10n.errorEditingComment);
       return null;
     }
   }
@@ -230,7 +231,7 @@ class CommentsDatabase {
       return success;
     } catch (e) {
       log("Error deleting comment: $e");
-      snackBar('Error deleting comment');
+      snackBar(Get.context!.l10n.errorDeletingComment);
       return false;
     }
   }
@@ -247,16 +248,16 @@ class CommentsDatabase {
 
       if (success) {
         log('Comment reported successfully');
-        snackBar('Comment reported successfully');
+        snackBar(Get.context!.l10n.commentReportedSuccessfully);
       } else {
         log('Failed to report comment');
-        snackBar('Failed to report comment');
+        snackBar(Get.context!.l10n.failedToReportComment);
       }
 
       return success;
     } catch (e) {
       log("Error reporting comment: $e");
-      snackBar('Error reporting comment');
+      snackBar(Get.context!.l10n.errorReportingComment);
       return false;
     }
   }
@@ -269,7 +270,7 @@ class CommentsDatabase {
       return queue;
     } catch (e) {
       log("Error fetching reports queue: $e");
-      snackBar('Error fetching reports queue');
+      snackBar(Get.context!.l10n.errorFetchingReportsQueue);
       return [];
     }
   }
@@ -291,14 +292,14 @@ class CommentsDatabase {
         deleteComment: deleteComment,
       );
       if (success) {
-        snackBar('Report resolved successfully');
+        snackBar(Get.context!.l10n.reportResolvedSuccessfully);
       } else {
-        snackBar('Failed to resolve report');
+        snackBar(Get.context!.l10n.failedToResolveReport);
       }
       return success;
     } catch (e) {
       log("Error resolving report: $e");
-      snackBar('Error resolving report');
+      snackBar(Get.context!.l10n.errorResolvingReport);
       return false;
     }
   }
@@ -315,7 +316,7 @@ class CommentsDatabase {
       );
     } catch (e) {
       log("Error fetching user info: $e");
-      snackBar('Error fetching user info');
+      snackBar(Get.context!.l10n.errorFetchingUserInfo);
       return null;
     }
   }
@@ -332,7 +333,7 @@ class CommentsDatabase {
       );
     } catch (e) {
       log("Error fetching user history: $e");
-      snackBar('Error fetching user history');
+      snackBar(Get.context!.l10n.errorFetchingUserHistory);
       return null;
     }
   }
@@ -347,7 +348,7 @@ class CommentsDatabase {
       );
     } catch (e) {
       log("Error fetching user stats: $e");
-      snackBar('Error fetching user stats');
+      snackBar(Get.context!.l10n.errorFetchingUserStats);
       return null;
     }
   }
@@ -374,7 +375,7 @@ class CommentsDatabase {
       );
     } catch (e) {
       log("Error listing users: $e");
-      snackBar('Error listing users');
+      snackBar(Get.context!.l10n.errorListingUsers);
       return null;
     }
   }
@@ -391,7 +392,7 @@ class CommentsDatabase {
       );
     } catch (e) {
       log("Error searching users: $e");
-      snackBar('Error searching users');
+      snackBar(Get.context!.l10n.errorSearchingUsers);
       return null;
     }
   }
@@ -404,7 +405,7 @@ class CommentsDatabase {
       return queue;
     } catch (e) {
       log("Error fetching moderation queue: $e");
-      snackBar('Error fetching moderation queue');
+      snackBar(Get.context!.l10n.errorFetchingModerationQueue);
       return [];
     }
   }
@@ -424,16 +425,16 @@ class CommentsDatabase {
 
       if (success) {
         log('Comment moderated successfully');
-        snackBar('Comment moderated successfully');
+        snackBar(Get.context!.l10n.commentModeratedSuccessfully);
       } else {
         log('Failed to moderate comment');
-        snackBar('Failed to moderate comment');
+        snackBar(Get.context!.l10n.failedToModerateComment);
       }
 
       return success;
     } catch (e) {
       log("Error moderating comment: $e");
-      snackBar('Error moderating comment');
+      snackBar(Get.context!.l10n.errorModeratingComment);
       return false;
     }
   }
@@ -463,16 +464,16 @@ class CommentsDatabase {
 
       if (success) {
         log('User managed successfully');
-        snackBar('User managed successfully');
+        snackBar(Get.context!.l10n.userManagedSuccessfully);
       } else {
         log('Failed to manage user');
-        snackBar('Failed to manage user');
+        snackBar(Get.context!.l10n.failedToManageUser);
       }
 
       return success;
     } catch (e) {
       log("Error managing user: $e");
-      snackBar('Error managing user');
+      snackBar(Get.context!.l10n.errorManagingUser);
       return false;
     }
   }

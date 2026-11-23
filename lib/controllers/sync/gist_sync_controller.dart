@@ -207,7 +207,7 @@ class GistSyncController extends GetxController {
           final ghError =
               data['error_description'] ?? data['error'] ?? 'Unknown error';
           Logger.i('[GistSync] Token exchange error: $ghError');
-          errorSnackBar('GitHub login failed: $ghError');
+          errorSnackBar(Get.context!.l10n.githubLoginFailed(ghError.toString()));
           return;
         }
 
@@ -348,7 +348,7 @@ class GistSyncController extends GetxController {
       return;
     }
     if (isSyncing.value) {
-      infoSnackBar('Sync already in progress.');
+      infoSnackBar(Get.context!.l10n.syncAlreadyInProgress);
       return;
     }
 
@@ -387,7 +387,7 @@ class GistSyncController extends GetxController {
       return;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar(Get.context!.l10n.anotherSyncActionIsAlreadyIn);
       return;
     }
 
@@ -398,7 +398,7 @@ class GistSyncController extends GetxController {
       final elapsed = stopwatch.elapsedMilliseconds;
       if (!deleted) {
         hasCloudGist.value = false;
-        infoSnackBar('No AnymeX sync gist found to delete.');
+        infoSnackBar(Get.context!.l10n.noAnymexSyncGistFoundTo);
         return;
       }
 
@@ -427,7 +427,7 @@ class GistSyncController extends GetxController {
       return null;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar(Get.context!.l10n.anotherSyncActionIsAlreadyIn);
       return null;
     }
 
@@ -437,7 +437,7 @@ class GistSyncController extends GetxController {
       final raw = await _service.downloadRawIfExists();
       if (raw == null) {
         hasCloudGist.value = false;
-        infoSnackBar('No AnymeX sync gist found. Initialize first.');
+        infoSnackBar(Get.context!.l10n.noAnymexSyncGistFoundInitialize);
         return null;
       }
       hasCloudGist.value = true;
@@ -461,7 +461,7 @@ class GistSyncController extends GetxController {
       return null;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar(Get.context!.l10n.anotherSyncActionIsAlreadyIn);
       return null;
     }
 
@@ -469,7 +469,7 @@ class GistSyncController extends GetxController {
       final url = await _service.syncGistHtmlUrl(createIfMissing: false);
       if (url == null || url.isEmpty) {
         hasCloudGist.value = false;
-        infoSnackBar('No AnymeX sync gist found. Initialize first.');
+        infoSnackBar(Get.context!.l10n.noAnymexSyncGistFoundInitialize);
         return null;
       }
       hasCloudGist.value = true;
@@ -490,7 +490,7 @@ class GistSyncController extends GetxController {
       return null;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar(Get.context!.l10n.anotherSyncActionIsAlreadyIn);
       return null;
     }
 

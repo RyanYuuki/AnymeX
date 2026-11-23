@@ -896,7 +896,7 @@ class SimklService extends GetxController
               }));
     Logger.i(response.body);
 
-    snackBar('${isMovie ? "Movie" : "Series"} Deleted Successfully');
+    snackBar(Get.context!.l10n.deletedSuccessfully((isMovie ? "Movie" : "Series").toString()));
     currentMedia.value = TrackedMedia();
     fetchUserMovieList();
     fetchUserSeriesList();
@@ -1020,10 +1020,10 @@ class SimklService extends GetxController
       AuthKeys.simklAuthToken.set(token);
       isLoggedIn.value = true;
       await fetchUserInfo();
-      snackBar("Simkl Logined Successfully!");
+      snackBar(Get.context!.l10n.simklLoginedSuccessfully);
     } else {
       Logger.i('${req.statusCode}: ${req.body}');
-      snackBar("Yep, Failed");
+      snackBar(Get.context!.l10n.yepFailed);
     }
   }
 
@@ -1063,7 +1063,7 @@ class SimklService extends GetxController
       fetchUserMovieList();
       fetchUserSeriesList();
     } else {
-      snackBar("User Info Fetching Failed!");
+      snackBar(Get.context!.l10n.userInfoFetchingFailed);
     }
   }
 

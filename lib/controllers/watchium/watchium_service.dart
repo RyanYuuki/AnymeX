@@ -78,17 +78,17 @@ class WatchiumService extends GetxController {
         final result = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const AnymeXText('Leave Watch Together?'),
+            title: AnymeXText(Get.context!.l10n.leaveWatchTogether),
             content: const AnymeXText(
                 'You will leave the room and stop watching with everyone.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const AnymeXText('Cancel'),
+                child: AnymeXText(Get.context!.l10n.actionCancel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const AnymeXText('Leave'),
+                child: AnymeXText(Get.context!.l10n.leave),
               ),
             ],
           ),
@@ -437,7 +437,7 @@ class WatchiumService extends GetxController {
     if (WatchiumKeys.notifyOnMemberJoin.get<bool>(true)) {
       for (final m in newMembers) {
         if (!oldIds.contains(m.userId) && m.userId != _userId) {
-          infoSnackBar('${m.username} joined the party', title: Get.context!.l10n.newMember);
+          infoSnackBar(Get.context!.l10n.joinedTheParty(m.username.toString()), title: Get.context!.l10n.newMember);
         }
       }
     }
@@ -445,7 +445,7 @@ class WatchiumService extends GetxController {
     if (WatchiumKeys.notifyOnMemberLeave.get<bool>(true)) {
       for (final m in oldMembers) {
         if (!newIds.contains(m.userId) && m.userId != _userId) {
-          infoSnackBar('${m.username} left the party', title: Get.context!.l10n.memberLeft);
+          infoSnackBar(Get.context!.l10n.leftTheParty(m.username.toString()), title: Get.context!.l10n.memberLeft);
         }
       }
     }
