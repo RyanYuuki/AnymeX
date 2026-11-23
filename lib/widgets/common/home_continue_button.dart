@@ -72,7 +72,7 @@ class _HomeContinueWatchingBarState extends State<HomeContinueWatchingBar> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: 52,
+            height: 60,
             child: PageView.builder(
               controller: _pageController,
               itemCount: validItems.length,
@@ -126,7 +126,8 @@ class _HomeContinueWatchingBarState extends State<HomeContinueWatchingBar> {
                 ? item.cover!
                 : (item.poster ?? ''));
 
-    final episodeNumber = formatEpisodeNumberLabel(episode.number, title: episode.title);
+    final episodeNumber =
+        formatEpisodeNumberLabel(episode.number, title: episode.title);
     final animeName = item.name ?? '';
     final rawEpisodeTitle = episode.title?.trim() ?? '';
     final hasSpecificTitle = rawEpisodeTitle.isNotEmpty &&
