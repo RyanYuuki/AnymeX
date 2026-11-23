@@ -303,7 +303,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
               children: [
                 Icon(Icons.menu_book_rounded, size: 20, color: colors.primary),
                 const SizedBox(width: 10),
-                const AnymeXText('Chapters',
+                AnymeXText(context.l10n.detailsChapters,
                   size: 16,
                   variant: TextVariant.bold,
                 ),
@@ -434,7 +434,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                               size: 40,
                               color: colors.onSurface.withOpacity(0.4)),
                           const SizedBox(height: 8),
-                          AnymeXText('No chapters found',
+                          AnymeXText(context.l10n.noChaptersFound2,
                             color: colors.onSurface.withOpacity(0.6),
                           ),
                         ],

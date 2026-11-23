@@ -118,7 +118,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
         children: [
           ExpressiveLoadingIndicator(color: context.colors.primary),
           const SizedBox(height: 16),
-          AnymeXText('Loading chapter...',
+          AnymeXText(context.l10n.loadingChapter,
               style: TextStyle(
                   color: context.colors.onSurface.opaque(0.7), fontSize: 16)),
         ],
@@ -134,7 +134,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
           Icon(Icons.book_outlined,
               size: 48, color: context.colors.onSurface.opaque(0.5)),
           const SizedBox(height: 16),
-          AnymeXText('No content available',
+          AnymeXText(context.l10n.noContentAvailable,
               style: TextStyle(
                   fontSize: 18,
                   color: context.colors.onSurface.opaque(0.7),

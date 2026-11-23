@@ -161,8 +161,8 @@ class ColorFilterSettingsPage extends StatelessWidget {
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.gradient_rounded,
-                  title: 'Grayscale',
-                  subtitle: 'Display pages in black & white',
+                  title: context.l10n.grayscale,
+                  subtitle: context.l10n.displayPagesInBlackWhite,
                   value: controller.grayscaleEnabled.value,
                   onChanged: (_) => controller.toggleGrayscale(),
                 ),

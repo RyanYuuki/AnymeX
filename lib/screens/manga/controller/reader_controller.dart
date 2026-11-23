@@ -119,11 +119,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final c = ReaderController(shouldTrack: false, isPreview: true);
     c.media = Media(
       id: '0',
-      title: 'Attack on Titan',
+      title: Get.context!.l10n.attackOnTitan,
       poster: '',
       serviceType: ServicesType.anilist,
     );
-    c.chapterList = [Chapter(number: 138), Chapter(number: 139, title: 'Freedom', totalPages: 24)];
+    c.chapterList = [Chapter(number: 138), Chapter(number: 139, title: Get.context!.l10n.freedom, totalPages: 24)];
     c.currentChapter.value = c.chapterList.last;
     c.pageList.value = List.generate(24, (_) => PageUrl(''));
     c.currentPageIndex.value = 6;
@@ -1831,10 +1831,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         }
         selectedUpscalerShader.value = fileName;
         savePreferences();
-        AnymeXToast.show(message: 'Shader added: $fileName');
+        AnymeXToast.show(message: Get.context!.l10n.shaderAdded(fileName.toString()));
       }
     } catch (e) {
-      AnymeXToast.show(message: 'Error importing shader: $e');
+      AnymeXToast.show(message: Get.context!.l10n.errorImportingShader(e.toString()));
     }
   }
 

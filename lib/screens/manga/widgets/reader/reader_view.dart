@@ -18,6 +18,7 @@ import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class ReaderView extends StatefulWidget {
   final ReaderController controller;
@@ -102,13 +103,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   }
 
   Widget _buildLoadingView(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnymeXProgressIndicator(),
           SizedBox(height: 16),
-          AnymeXText('Loading pages...'),
+          AnymeXText(context.l10n.loadingPages),
         ],
       ),
     );
@@ -149,13 +150,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                 ElevatedButton.icon(
                   onPressed: widget.controller.retryFetchImages,
                   icon: const Icon(Icons.refresh),
-                  label: const AnymeXText('Retry'),
+                  label: AnymeXText(context.l10n.actionRetry),
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
                   onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back),
-                  label: const AnymeXText('Go Back'),
+                  label: AnymeXText(context.l10n.goBack),
                 ),
               ],
             ),
@@ -403,7 +404,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           children: [
             AnymeXProgressIndicator(value: progress),
             const SizedBox(height: 8),
-            AnymeXText('Loading page ${pageIndex + 1}$progressText...'),
+            AnymeXText(context.l10n.loadingPage2((pageIndex + 1).toString(), progressText.toString())),
           ],
         ),
       ),

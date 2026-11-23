@@ -2522,5 +2522,152 @@
     }
   },
   "readableOn": "READABLE ON",
-  "streamingOn": "STREAMING ON"
+  "streamingOn": "STREAMING ON",
+  "freedom": "Freedom",
+  "shaderAdded": "Shader added: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Error importing shader: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Scanlators",
+  "chapterRange": "Chapter Range",
+  "downloadFailed2": "Download failed: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Chapter {formattedNumber} is downloaded",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Downloading ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} chapters",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Loading page {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Page saved to Pictures/AnymeX",
+  "pageSavedToAnymex": "Page saved to {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Failed to save page: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Failed to share page: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "Page URL copied to clipboard",
+  "failedToCopy": "Failed to copy: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Loading pages...",
+  "goBack": "Go Back",
+  "loadingPage2": "Loading page {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Flash Color",
+  "black": "Black",
+  "white": "White",
+  "readerBackground": "Reader Background",
+  "gray": "Gray",
+  "automatic": "Automatic",
+  "noneNearestNeighbor": "None (Nearest-neighbor)",
+  "lowBilinear": "Low (Bilinear)",
+  "mediumDefault": "Medium (Default)",
+  "highBicubic": "High (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (Best quality, slower)",
+  "fullscreenPreview": "Fullscreen Preview",
+  "enhancementPreset": "Enhancement Preset",
+  "fineTuning": "Fine Tuning",
+  "enhancementStrength": "Enhancement Strength",
+  "strength": "{value}% strength",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Artifact Suppression",
+  "cleanJpegCompressionRingingAroundLinework": "Clean JPEG compression ringing around linework",
+  "cache": "Cache",
+  "cacheSize": "Cache Size",
+  "mbStoredOnDisk": "{mb} MB stored on disk",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Super Resolution",
+  "loadingChapter": "Loading chapter...",
+  "noContentAvailable": "No content available"
 }
