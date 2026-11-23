@@ -23,7 +23,8 @@ class DynamicStyleSelector<T> extends StatefulWidget {
   });
 
   @override
-  State<DynamicStyleSelector<T>> createState() => _DynamicStyleSelectorState<T>();
+  State<DynamicStyleSelector<T>> createState() =>
+      _DynamicStyleSelectorState<T>();
 }
 
 class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {

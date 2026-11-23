@@ -361,7 +361,48 @@ class _SettingsThemeState extends State<SettingsTheme> {
     );
   }
 
+  Widget _buildPalettePreview(ColorScheme cs, bool isModern) {
+    final radius = isModern ? 999.0 : 10.0;
+    return Container(
+      width: isModern ? 40 : 36,
+      height: isModern ? 40 : 36,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(
+          color: cs.onSurface.withValues(alpha: 0.12),
+          width: 1,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius - 1),
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(child: Container(color: cs.primary)),
+                  Expanded(child: Container(color: cs.secondary)),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(child: Container(color: cs.tertiary)),
+                  Expanded(child: Container(color: cs.primaryContainer)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void showPaletteSelectionDialog(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final isModern = settings.tileStyle == 1;
+
     AnymeXDialog(
       title: context.l10n.palettes,
       showCancelButton: false,
@@ -369,10 +410,23 @@ class _SettingsThemeState extends State<SettingsTheme> {
       onConfirm: () {},
       contentWidget: StatefulBuilder(
         builder: (context, setDialogState) {
+          final seedColor = themeController.seedColor;
+          final brightness = Theme.of(context).brightness;
+
           return AnymeXTileBuilder<String>(
             items: dynamicSchemeVariantKeys,
             selectedItem: dynamicSchemeVariantKeys[selectedVariantIndex],
             getTitle: (label) => label,
+            getLeading: (label) {
+              final variant = dynamicSchemeVariantMap[label] ??
+                  DynamicSchemeVariant.tonalSpot;
+              final scheme = ColorScheme.fromSeed(
+                seedColor: seedColor,
+                brightness: brightness,
+                dynamicSchemeVariant: variant,
+              );
+              return _buildPalettePreview(scheme, isModern);
+            },
             onItemPressed: (label) {
               final index = dynamicSchemeVariantKeys.indexOf(label);
               setState(() {
@@ -747,7 +801,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   const SizedBox(height: 20),
                   AnymeXText(
                     context.l10n.hue,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
                   Container(
@@ -789,7 +843,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   const SizedBox(height: 14),
                   AnymeXText(
                     context.l10n.saturation,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
                   Container(
@@ -826,7 +880,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   const SizedBox(height: 14),
                   AnymeXText(
                     context.l10n.lightness,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
                   Container(

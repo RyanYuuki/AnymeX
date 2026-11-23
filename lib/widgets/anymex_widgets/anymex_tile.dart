@@ -5,8 +5,10 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/common/tile_icon_shapes.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
 enum TileStyle { classic, modern }
 
@@ -14,12 +16,14 @@ class AnymeXTileScope extends InheritedWidget {
   final BorderRadius? borderRadius;
   final Color? backgroundColor;
   final TileStyle? style;
+  final M3EShapeKind? iconShape;
 
   const AnymeXTileScope({
     super.key,
     this.borderRadius,
     this.backgroundColor,
     this.style,
+    this.iconShape,
     required super.child,
   });
 
@@ -31,7 +35,8 @@ class AnymeXTileScope extends InheritedWidget {
   bool updateShouldNotify(AnymeXTileScope oldWidget) {
     return borderRadius != oldWidget.borderRadius ||
         backgroundColor != oldWidget.backgroundColor ||
-        style != oldWidget.style;
+        style != oldWidget.style ||
+        iconShape != oldWidget.iconShape;
   }
 }
 
@@ -60,6 +65,7 @@ class AnymeXTile extends StatelessWidget {
   final bool isRadio;
   final TileStyle? style;
   final Color? backgroundColor;
+  final M3EShapeKind? iconShape;
 
   const AnymeXTile({
     super.key,
@@ -87,6 +93,7 @@ class AnymeXTile extends StatelessWidget {
     this.subtitleStyle,
     this.style,
     this.backgroundColor,
+    this.iconShape,
   });
 
   AnymeXTile copyWith({
@@ -114,6 +121,7 @@ class AnymeXTile extends StatelessWidget {
     bool? isRadio,
     TileStyle? style,
     Color? backgroundColor,
+    M3EShapeKind? iconShape,
   }) {
     return AnymeXTile(
       key: key,
@@ -141,6 +149,7 @@ class AnymeXTile extends StatelessWidget {
       isRadio: isRadio ?? this.isRadio,
       style: style ?? this.style,
       backgroundColor: backgroundColor ?? this.backgroundColor,
+      iconShape: iconShape ?? this.iconShape,
     );
   }
 
@@ -370,6 +379,7 @@ class AnymeXTile extends StatelessWidget {
     TextStyle? subtitleStyle,
     TileStyle? style,
     Color? backgroundColor,
+    M3EShapeKind? iconShape,
   }) {
     return AnymeXTile(
       key: key,
@@ -390,6 +400,7 @@ class AnymeXTile extends StatelessWidget {
       isRadio: true,
       style: style,
       backgroundColor: backgroundColor,
+      iconShape: iconShape,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;
@@ -631,28 +642,49 @@ class AnymeXTile extends StatelessWidget {
             ? TileStyle.modern
             : TileStyle.classic);
     final isModern = effectiveStyle == TileStyle.modern;
+    final effectiveShapeKind = iconShape ??
+        tileScope?.iconShape ??
+        getTileIconShapeKind(settingsController.tileIconShape);
+    final shapeBgColor = iconBackgroundColor ??
+        (isModern
+            ? colors.surfaceContainerHighest.opaque(0.5)
+            : colors.primary.opaque(0.12, iReallyMeanIt: true));
+    final shapeIconColor = iconColor ?? colors.primary;
+    final double iconContainerSize = isModern ? 42 : 36;
+    final double iconGlyphSize = isModern ? 19 : 20;
 
     final Widget leadingWidget = leading ??
         (icon != null
-            ? Container(
-                width: isModern ? 42 : 36,
-                height: isModern ? 42 : 36,
-                decoration: BoxDecoration(
-                  color: iconBackgroundColor ??
-                      (isModern
-                          ? colors.surfaceContainerHighest.opaque(0.5)
-                          : colors.primary.opaque(0.12, iReallyMeanIt: true)),
-                  shape: isModern ? BoxShape.circle : BoxShape.rectangle,
-                  borderRadius: isModern ? null : BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Icon(
-                    icon,
-                    size: isModern ? 19 : 20,
-                    color: iconColor ?? colors.primary,
-                  ),
-                ),
-              )
+            ? (effectiveShapeKind != null
+                ? M3EShapeContainer(
+                    kind: effectiveShapeKind,
+                    width: iconContainerSize,
+                    height: iconContainerSize,
+                    color: shapeBgColor,
+                    child: Center(
+                      child: Icon(
+                        icon,
+                        size: iconGlyphSize,
+                        color: shapeIconColor,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: iconContainerSize,
+                    height: iconContainerSize,
+                    decoration: BoxDecoration(
+                      color: shapeBgColor,
+                      shape: isModern ? BoxShape.circle : BoxShape.rectangle,
+                      borderRadius: isModern ? null : BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        icon,
+                        size: iconGlyphSize,
+                        color: shapeIconColor,
+                      ),
+                    ),
+                  ))
             : const SizedBox.shrink());
 
     final Widget trailingWidget = trailing ??

@@ -7,6 +7,10 @@ import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/navbar_selector.dart';
 import 'package:anymex/screens/settings/widgets/style_picker_section.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -15,6 +19,7 @@ import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/navbar/navbar_registry.dart';
 import 'package:anymex/widgets/common/navbar/navbar_styles.dart';
+import 'package:anymex/widgets/common/tile_icon_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -163,6 +168,93 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     );
   }
 
+  void _showTileIconShapeDialog(BuildContext context) {
+    final desktop = MediaQuery.sizeOf(context).width > 600;
+
+    AnymeXDialog(
+      title: 'Tile Icon Shapes',
+      showCancelButton: false,
+      confirmText: 'Done',
+      width: desktop ? 520.0 : MediaQuery.sizeOf(context).width * 0.92,
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+      onConfirm: () {},
+      contentWidget: Obx(() {
+        final currentShape = settings.tileIconShape;
+        final currentTileStyle = settings.tileStyle == 1
+            ? TileStyle.modern
+            : TileStyle.classic;
+
+        return AnymeXSectionBuilder(
+          margin: EdgeInsets.zero,
+          style: currentTileStyle,
+          children: List.generate(totalTileIconShapes, (i) {
+            final isSelected = currentShape == i;
+            return AnymeXTile.radio(
+              icon: getTileIconShapeIcon(i),
+              iconShape: getTileIconShapeKind(i),
+              title: getTileIconShapeName(i),
+              subtitle: getTileIconShapeDescription(i),
+              selected: isSelected,
+              style: currentTileStyle,
+              onTap: () {
+                settings.tileIconShape = i;
+              },
+            );
+          }),
+        );
+      }),
+    ).show(context);
+  }
+
+  Widget _buildTileIconShapeSection(BuildContext context) {
+    final colors = context.colors;
+    final currentTileStyle = settings.tileStyle == 1
+        ? TileStyle.modern
+        : TileStyle.classic;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: AnymeXSectionBuilder(
+        title: 'Tile prefix icon shape',
+        style: currentTileStyle,
+        children: [
+          AnymeXTile(
+            icon: getTileIconShapeIcon(settings.tileIconShape),
+            iconShape: getTileIconShapeKind(settings.tileIconShape),
+            title: 'Tile icon shapes',
+            subtitle: getTileIconShapeName(settings.tileIconShape),
+            trailing: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: colors.primary.opaque(0.12, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnymeXText(
+                    getTileIconShapeName(settings.tileIconShape),
+                    size: 11.5,
+                    variant: TextVariant.semiBold,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 16,
+                    color: colors.primary,
+                  ),
+                ],
+              ),
+            ),
+            style: currentTileStyle,
+            onTap: () => _showTileIconShapeDialog(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final desktop = MediaQuery.sizeOf(context).width > 600;
@@ -182,6 +274,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
                 _buildCarouselStyleSection(context),
                 _buildNavBarStyleSection(context),
                 _buildTileStyleSection(context),
+                _buildTileIconShapeSection(context),
               ],
             ),
           ),

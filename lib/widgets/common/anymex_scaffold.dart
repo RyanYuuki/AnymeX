@@ -306,15 +306,6 @@ class AnymeXScaffold extends StatelessWidget {
                     imagePath: imagePath,
                     color: tintColor,
                   ),
-                  if (!hasCustomBg) ...[
-                    if (isOled)
-                      Container(color: Colors.black)
-                    else
-                      _buildGradientOverlay(
-                        gradientVariant: GradientVariant.subtle,
-                        theme: theme,
-                      ),
-                  ],
                 ],
               ),
             ),

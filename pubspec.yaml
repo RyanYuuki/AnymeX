@@ -131,7 +131,6 @@ dependencies:
     crypto: any
     flutter_cache_manager: any
     encrypt: any
-    material3_expressive_loading_indicator: ^0.1.2
     dlna_dart: ^0.1.1
     xml: ^6.5.0
 #    liquid_glass_widgets: ^1.16.1

@@ -425,6 +425,12 @@ class Settings extends GetxController {
     UISettingsKeys.tileStyle.set(value);
   }
 
+  int get tileIconShape => _getUISetting((s) => s.tileIconShape);
+  set tileIconShape(int value) {
+    uiSettings.update((s) => s?.tileIconShape = value);
+    UISettingsKeys.tileIconShape.set(value);
+  }
+
   String get appFontFamily => _getUISetting((s) => s.appFontFamily);
   set appFontFamily(String value) {
     uiSettings.update((s) => s?.appFontFamily = value);

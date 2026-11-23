@@ -3,6 +3,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
 class AnymeXTileBuilder<T> extends StatelessWidget {
   final List<T> items;
@@ -26,6 +27,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final bool autoResize;
   final bool lazy;
   final TileStyle? style;
+  final M3EShapeKind? iconShape;
 
   final List<Widget>? headerChildren;
   final List<Widget>? children;
@@ -55,6 +57,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.getSubtitleStyle,
     this.lazy = false,
     this.style,
+    this.iconShape,
     this.headerChildren,
     this.children,
     this.footerChildren,
@@ -72,6 +75,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
             ? TileStyle.modern
             : TileStyle.classic);
     final isModern = effectiveStyle == TileStyle.modern;
+    final effectiveIconShape =
+        iconShape ?? AnymeXTileScope.of(context)?.iconShape;
 
     if (lazy) {
       final totalCount =
@@ -129,6 +134,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
                   ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
                   : null,
               style: effectiveStyle,
+              iconShape: effectiveIconShape,
               child: ClipRRect(
                 borderRadius: radius,
                 child: child,
@@ -146,6 +152,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
                   ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
                   : null,
               style: effectiveStyle,
+              iconShape: effectiveIconShape,
               child: ClipRRect(
                 borderRadius: radius,
                 child: child,
@@ -173,6 +180,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
               subtitleStyle: getSubtitleStyle?.call(item),
               borderRadius: radius,
               style: effectiveStyle,
+              iconShape: effectiveIconShape,
             );
           }
 
@@ -187,12 +195,14 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
               title: getTitle(item),
               subtitle: getSubtitle?.call(item),
               icon: getIcon?.call(item),
+              leading: getLeading?.call(item),
               selected: checked,
               onTap: () => onItemPressed(item),
               titleStyle: getTitleStyle?.call(item),
               subtitleStyle: getSubtitleStyle?.call(item),
               borderRadius: radius,
               style: effectiveStyle,
+              iconShape: effectiveIconShape,
             );
           } else {
             return AnymeXTile.checkbox(
@@ -248,6 +258,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
           titleStyle: getTitleStyle?.call(item),
           subtitleStyle: getSubtitleStyle?.call(item),
           style: effectiveStyle,
+          iconShape: effectiveIconShape,
         ) as Widget;
       }
 
@@ -262,11 +273,13 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
           title: getTitle(item),
           subtitle: getSubtitle?.call(item),
           icon: getIcon?.call(item),
+          leading: getLeading?.call(item),
           selected: checked,
           onTap: () => onItemPressed(item),
           titleStyle: getTitleStyle?.call(item),
           subtitleStyle: getSubtitleStyle?.call(item),
           style: effectiveStyle,
+          iconShape: effectiveIconShape,
         ) as Widget;
       } else {
         return AnymeXTile.checkbox(
@@ -286,6 +299,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
       margin: EdgeInsets.zero,
       separatorIndent: separatorIndent,
       style: effectiveStyle,
+      iconShape: effectiveIconShape,
       children: [
         ...resolvedHeaderChildren,
         ...itemWidgets,

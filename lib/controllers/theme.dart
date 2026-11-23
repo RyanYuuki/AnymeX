@@ -38,6 +38,7 @@ class ThemeController extends GetxController {
 
   ThemeData get lightTheme => _lightTheme;
   ThemeData get darkTheme => _darkTheme;
+  Color get seedColor => _seedColor;
 
   ThemeMode get themeMode => isSystemMode
       ? ThemeMode.system

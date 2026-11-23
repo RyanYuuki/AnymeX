@@ -248,6 +248,11 @@ void main(List<String> args) async {
       Logger.e("STACK: ${details.stack}");
     };
 
+    PlatformDispatcher.instance.onError = (error, stack) {
+      Logger.e("PLATFORM ERROR: $error", stackTrace: stack);
+      return true;
+    };
+
     ErrorWidget.builder = (FlutterErrorDetails details) {
       return Material(
         color: Colors.transparent,

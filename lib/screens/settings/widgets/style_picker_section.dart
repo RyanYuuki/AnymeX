@@ -222,32 +222,36 @@ class _StylePickerSectionState extends State<StylePickerSection> {
           ),
           const SizedBox(height: 12),
           Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (int i = 0; i < widget.itemCount; i++)
-                  GestureDetector(
-                    onTap: () => _go(i),
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 3, vertical: 6),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOut,
-                        width: i == _index ? 18 : 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: i == _index
-                              ? colors.primary
-                              : colors.onSurface
-                                  .opaque(0.25, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(3),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < widget.itemCount; i++)
+                    GestureDetector(
+                      onTap: () => _go(i),
+                      behavior: HitTestBehavior.opaque,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 3, vertical: 6),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
+                          width: i == _index ? 18 : 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: i == _index
+                                ? colors.primary
+                                : colors.onSurface
+                                    .opaque(0.25, iReallyMeanIt: true),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 8),
