@@ -668,7 +668,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         title: 'Cache Minutes',
                         subtitle: 'Read-ahead duration in Minutes',
                         value:
-                            ((mpvCore['cacheMinutes'] as num?) ?? 5).toDouble(),
+                            ((mpvCore['cacheMinutes'] as num?) ?? 2).toDouble(),
                         min: 0,
                         max: 60,
                         divisions: 60,
@@ -683,7 +683,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         title: 'Demuxer Readahead',
                         subtitle: 'Readahead seconds',
                         value:
-                            ((mpvCore['demuxerReadaheadSeconds'] as num?) ?? 30)
+                            ((mpvCore['demuxerReadaheadSeconds'] as num?) ?? 20)
                                 .toDouble(),
                         min: 0,
                         max: 120,
@@ -698,7 +698,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         icon: Icons.storage_rounded,
                         title: 'Demuxer Max Buffer',
                         subtitle: 'Maximum demuxer buffer (MB)',
-                        value: ((mpvCore['demuxerMaxBytesMb'] as num?) ?? 128)
+                        value: ((mpvCore['demuxerMaxBytesMb'] as num?) ?? 32)
                             .toDouble(),
                         min: 16,
                         max: 512,
