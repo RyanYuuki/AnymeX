@@ -89,6 +89,11 @@ class MediaKitPlayer extends base.BasePlayer {
       configuration: PlayerConfiguration(
         bufferSize: bufferSize,
         libass: config.useLibass,
+        libassAndroidFont: Platform.isAndroid && config.useLibass
+            ? 'assets/fonts/Linotte-Regular.otf'
+            : null,
+        libassAndroidFontName:
+            Platform.isAndroid && config.useLibass ? 'Linotte-Regular' : null,
         vo: resolvedVo,
       ),
     );
