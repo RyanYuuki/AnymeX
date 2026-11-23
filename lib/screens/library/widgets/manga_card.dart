@@ -169,7 +169,7 @@ class MangaHistoryCard extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnymeXText('PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
+                              AnymeXText(context.l10n.page((data.currentChapter?.pageNumber).toString(), (data.currentChapter?.totalPages).toString()),
                                 size: 12,
                                 color: colorScheme.primary,
                                 variant: TextVariant.bold,

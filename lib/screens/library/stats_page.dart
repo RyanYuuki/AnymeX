@@ -168,8 +168,8 @@ class StatisticsPage extends StatelessWidget {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText('ID: ${media.mediaId}'),
-                          if (media.type != null) AnymeXText('Type: ${media.type}'),
+                          AnymeXText(context.l10n.id(media.mediaId.toString())),
+                          if (media.type != null) AnymeXText(context.l10n.type(media.type.toString())),
                           if (media.genres != null && media.genres!.isNotEmpty)
                             AnymeXText('Genres: ${media.genres!.join(', ')}'),
                           AnymeXText(
@@ -220,7 +220,7 @@ class StatisticsPage extends StatelessWidget {
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         child: ExpansionTile(
                           title: AnymeXText(listName),
-                          subtitle: AnymeXText('Items: ${listData.length}'),
+                          subtitle: AnymeXText(context.l10n.items(listData.length.toString())),
                           children: listData.isEmpty
                               ? [
                                   Padding(
@@ -231,7 +231,7 @@ class StatisticsPage extends StatelessWidget {
                               : listData.map((media) {
                                   return ListTile(
                                     title: AnymeXText(media.name ?? 'Unnamed Media'),
-                                    subtitle: AnymeXText('ID: ${media.mediaId}'),
+                                    subtitle: AnymeXText(context.l10n.id(media.mediaId.toString())),
                                   );
                                 }).toList(),
                         ),
