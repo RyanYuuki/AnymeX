@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class MediaHeader extends StatelessWidget {
   const MediaHeader({
@@ -377,7 +378,7 @@ class MediaHeader extends StatelessWidget {
                                   data?.title ??
                                   'Loading...';
                               Clipboard.setData(ClipboardData(text: title));
-                              snackBar('Title copied');
+                              snackBar(context.l10n.titleCopied);
                             },
                             child: AnymeXText(
                               data?.displayTitle ?? data?.title ?? 'Loading...',

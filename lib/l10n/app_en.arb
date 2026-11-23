@@ -2766,5 +2766,192 @@
     }
   },
   "join": "Join →",
-  "full": "Full"
+  "full": "Full",
+  "savedToPicturesAnymex": "Saved to Pictures/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Saved to Downloads/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Saved to {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Tap to open profile)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Chapter ",
+  "episode5": "Episode ",
+  "noData": "{title} (No Data)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Search {title} extensions...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Browse Extensions",
+  "goToHome": "Go to Home",
+  "fetching": "Fetching {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Error fetching policy: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "Added \"{name}\" successfully!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "Updated \"{name}\" successfully!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Are you sure you want to delete \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "Deleted \"{name}\"",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Your history is empty",
+  "episode6": "Episode {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Show Less",
+  "readMore": "Read More",
+  "unpin": "Unpin",
+  "pinActivity": "Pin Activity",
+  "n1Recommendation": "1 Recommendation",
+  "recommendations2": "{count} Recommendations",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Submitting…",
+  "addRecommendation": "Add Recommendation",
+  "submitRecommendation": "Submit Recommendation",
+  "currentProvider": "CURRENT PROVIDER",
+  "profileStatsUserActivities": "Profile stats & user activities",
+  "manageSourcesPlugins": "Manage sources & plugins",
+  "savedOfflineEpisodesChapters": "Saved offline episodes & chapters",
+  "watchVideoFilesFromDeviceStorage": "Watch video files from device storage",
+  "syncWatchPartyWithFriends": "Sync watch party with friends",
+  "pauseWatchHistoryAndSync": "Pause watch history and sync",
+  "appearancePlayerNetwork": "Appearance, player & network",
+  "joining": "Joining...",
+  "joinRoom": "Join Room",
+  "shareTheCodeOrInviteLink": "Share the code or invite link with friends.",
+  "roomCreated": "Room Created!",
+  "shareThisCodeWithFriends": "Share this code with friends:",
+  "copyCode": "Copy Code",
+  "copyLink": "Copy Link",
+  "leaveWatchTogether": "Leave Watch Together?",
+  "removeMember": "Remove Member",
+  "transferHost": "Transfer Host",
+  "transferHost2": "Transfer host",
+  "transfer": "Transfer",
+  "removeMember2": "Remove member",
+  "removeFromThisWatchParty": "Remove {username} from this watch party?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} members",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} copied",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "No servers available for this room",
+  "selectStreamingServerQualityToWatch": "Select streaming server quality to watch",
+  "thisServerHasNoPlayableUrl": "This server has no playable URL",
+  "episode7": "Episode {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  }
 }

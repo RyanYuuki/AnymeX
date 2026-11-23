@@ -183,7 +183,7 @@ class _ActivityCardState extends State<ActivityCard> {
                   leading: Icon(
                     activity.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
                   ),
-                  title: AnymeXText(activity.isPinned ? "Unpin" : "Pin Activity"),
+                  title: AnymeXText(activity.isPinned ? context.l10n.unpin : context.l10n.pinActivity),
                   onTap: () async {
                     Navigator.pop(sheetContext);
                     final auth = Get.find<AnilistAuth>();

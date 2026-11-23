@@ -12,6 +12,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 /// Shows a bottom sheet with servers from the room's content data.
 /// When the user picks a server, the player opens directly.
@@ -22,7 +23,7 @@ void showWatchiumServerSheet({
   final servers = content.availableServers;
   if (servers.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: AnymeXText('No servers available for this room')),
+      SnackBar(content: AnymeXText(context.l10n.noServersAvailableForThisRoom)),
     );
     return;
   }
@@ -87,10 +88,10 @@ class _WatchiumServerSheetContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText('Choose Quality',
+                AnymeXText(context.l10n.chooseQuality,
                     variant: TextVariant.bold,
                     size: 16),
-                AnymeXText('Select streaming server quality to watch',
+                AnymeXText(context.l10n.selectStreamingServerQualityToWatch,
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
                 ),
@@ -111,7 +112,7 @@ class _WatchiumServerSheetContent extends StatelessWidget {
     final video = server.toVideo();
     if (video.url == null || video.url!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: AnymeXText('This server has no playable URL')),
+        SnackBar(content: AnymeXText(context.l10n.thisServerHasNoPlayableUrl)),
       );
       return;
     }
@@ -123,7 +124,7 @@ class _WatchiumServerSheetContent extends StatelessWidget {
 
     final episode = Episode(
       number: content.episodeNumber.toString(),
-      title: 'Episode ${content.episodeNumber}',
+      title: context.l10n.episode7(content.episodeNumber.toString()),
     );
 
     final animeId = content.anilistId?.toString() ??
@@ -263,7 +264,7 @@ class _ServerTile extends StatelessWidget {
                       border:
                           Border.all(color: Colors.green.withOpacity(0.3)),
                     ),
-                    child: const AnymeXText('Direct',
+                    child: AnymeXText(context.l10n.direct,
                         style: TextStyle(
                             fontSize: 10,
                             color: Colors.green,

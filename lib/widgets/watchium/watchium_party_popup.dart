@@ -251,17 +251,17 @@ class _WatchiumPartyPopupContentState
     final result = await showDialog<bool>(
       context: ctx,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Leave Watch Together?'),
+        title: AnymeXText(context.l10n.leaveWatchTogether),
         content: const AnymeXText(
             'You will leave the room and stop watching with everyone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText(context.l10n.actionCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const AnymeXText('Leave'),
+            child: AnymeXText(context.l10n.leave),
           ),
         ],
       ),
@@ -951,25 +951,25 @@ class _WatchiumPartyPopupContentState
           child: Icon(Icons.more_vert, size: 18, color: cs.onSurface),
         ),
         itemBuilder: (context) => [
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'kick',
             child: Row(
               children: [
                 Icon(Icons.person_remove_rounded,
                     color: Colors.red, size: 18),
                 SizedBox(width: 10),
-                AnymeXText('Remove Member'),
+                AnymeXText(context.l10n.removeMember),
               ],
             ),
           ),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'transfer',
             child: Row(
               children: [
                 Icon(Icons.workspace_premium,
                     color: Colors.amber, size: 18),
                 SizedBox(width: 10),
-                AnymeXText('Transfer Host'),
+                AnymeXText(context.l10n.transferHost),
               ],
             ),
           ),
@@ -1052,20 +1052,20 @@ class _WatchiumPartyPopupContentState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Transfer host'),
+        title: AnymeXText(context.l10n.transferHost2),
         content: AnymeXText(
             'Make ${member.username} the new host? You\'ll become a regular member.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText(context.l10n.actionCancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: Colors.amber.shade700,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const AnymeXText('Transfer'),
+            child: AnymeXText(context.l10n.transfer),
           ),
         ],
       ),
@@ -1079,20 +1079,20 @@ class _WatchiumPartyPopupContentState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Remove member'),
+        title: AnymeXText(context.l10n.removeMember2),
         content:
-            AnymeXText('Remove ${member.username} from this watch party?'),
+            AnymeXText(context.l10n.removeFromThisWatchParty(member.username.toString())),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText(context.l10n.actionCancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: ctx.theme.colorScheme.error,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const AnymeXText('Remove'),
+            child: AnymeXText(context.l10n.remove),
           ),
         ],
       ),
@@ -1202,7 +1202,7 @@ class _WatchiumPartyPopupContentState
                 icon: Icons.people_rounded,
                 iconColor: Colors.green.opaque(0.8, iReallyMeanIt: true),
                 title: context.l10n.watchingNow,
-                subtitle: '$onlineCount / ${state.maxMembers} members',
+                subtitle: context.l10n.members2(onlineCount.toString(), state.maxMembers.toString()),
                 showChevron: false,
               ),
             ],
@@ -1259,6 +1259,6 @@ class _WatchiumPartyPopupContentState
 
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
-    snackBar('$label copied');
+    snackBar(context.l10n.copied2(label.toString()));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/widgets.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class EmptyLibrary extends StatelessWidget {
   final bool isHistory;
@@ -20,7 +21,7 @@ class EmptyLibrary extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        AnymeXText(isHistory ? "Your history is empty" : "Your library is empty")
+        AnymeXText(isHistory ? context.l10n.yourHistoryIsEmpty : context.l10n.libraryEmpty)
       ],
     );
   }

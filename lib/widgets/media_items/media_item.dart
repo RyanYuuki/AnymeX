@@ -20,6 +20,7 @@ import 'package:get/get.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class CardData {
   String id;
@@ -318,7 +319,7 @@ class BlurAnimeCard extends StatelessWidget {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        AnymeXText("Episode ${data.nextAiringEpisode!.episode}",
+                        AnymeXText(context.l10n.episode6((data.nextAiringEpisode!.episode).toString()),
                           size: 14,
                           maxLines: 2,
                           color: context.colors.primary,

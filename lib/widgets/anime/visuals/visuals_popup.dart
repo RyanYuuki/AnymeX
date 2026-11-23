@@ -197,7 +197,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             'name': fileName,
           });
           if (!mounted) return;
-          snackBar("Saved to Pictures/AnymeX/$fileName");
+          snackBar(context.l10n.savedToPicturesAnymex(fileName.toString()));
         } catch (_) {
           Future<bool> check(Permission p) async {
             var status = await p.status;
@@ -226,7 +226,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             } catch (_) {}
 
             if (!mounted) return;
-            snackBar("Saved to Downloads/AnymeX/$fileName");
+            snackBar(context.l10n.savedToDownloadsAnymex(fileName.toString()));
           } catch (e) {
             final tempDir = await getTemporaryDirectory();
             final file = File('${tempDir.path}/$fileName');
@@ -271,7 +271,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
         final file = File('${saveDir.path}/$fileName');
         await file.writeAsBytes(bytes);
         if (!mounted) return;
-        snackBar("Saved to $path/AnymeX");
+        snackBar(context.l10n.savedToAnymex(path.toString()));
       }
     } catch (e) {
       if (mounted) {

@@ -81,7 +81,7 @@ class NoSourceSelectedWidget extends StatelessWidget {
                   color: colors.onPrimary,
                 ),
                 const SizedBox(width: 8),
-                AnymeXText(isMobile ? 'Browse Extensions' : 'Go to Home',
+                AnymeXText(isMobile ? context.l10n.browseExtensions : context.l10n.goToHome,
                   variant: TextVariant.semiBold,
                   size: 14,
                   color: colors.onPrimary,

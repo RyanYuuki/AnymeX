@@ -342,7 +342,7 @@ class SettingsSheet extends StatelessWidget {
     return AnymeXTile(
       icon: HugeIcons.strokeRoundedAiSetting,
       title: currentService,
-      subtitle: 'CURRENT PROVIDER',
+      subtitle: context.l10n.currentProvider,
       borderRadius: BorderRadius.circular(16),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -387,7 +387,7 @@ class SettingsSheet extends StatelessWidget {
           AnymeXTile(
             icon: IconlyLight.profile,
             title: context.l10n.viewProfile,
-            subtitle: 'Profile stats & user activities',
+            subtitle: context.l10n.profileStatsUserActivities,
             onTap: () {
               Get.back();
               navigate(() => const ProfilePage());
@@ -398,8 +398,8 @@ class SettingsSheet extends StatelessWidget {
                 (Platform.isWindows || Platform.isMacOS || Platform.isLinux)))
           AnymeXTile(
             icon: Icons.extension_rounded,
-            title: 'Extensions',
-            subtitle: 'Manage sources & plugins',
+            title: context.l10n.navExtensions,
+            subtitle: context.l10n.manageSourcesPlugins,
             trailing: extensionCount > 0
                 ? Container(
                     padding:
@@ -423,8 +423,8 @@ class SettingsSheet extends StatelessWidget {
           ),
         AnymeXTile(
           icon: HugeIcons.strokeRoundedDownload04,
-          title: 'Downloads',
-          subtitle: 'Saved offline episodes & chapters',
+          title: context.l10n.labelDownloads,
+          subtitle: context.l10n.savedOfflineEpisodesChapters,
           onTap: () {
             Get.back();
             navigate(() => const DownloadScreen());
@@ -432,8 +432,8 @@ class SettingsSheet extends StatelessWidget {
         ),
         AnymeXTile(
           icon: Iconsax.document_download,
-          title: 'Local Media',
-          subtitle: 'Watch video files from device storage',
+          title: context.l10n.localMedia,
+          subtitle: context.l10n.watchVideoFilesFromDeviceStorage,
           onTap: () {
             Get.back();
             navigate(() => const WatchOffline());
@@ -442,7 +442,7 @@ class SettingsSheet extends StatelessWidget {
         AnymeXTile(
           icon: Icons.people_rounded,
           title: context.l10n.watchTogether,
-          subtitle: 'Sync watch party with friends',
+          subtitle: context.l10n.syncWatchPartyWithFriends,
           onTap: () {
             Get.back();
             navigate(() => const WatchiumPage());
@@ -452,8 +452,8 @@ class SettingsSheet extends StatelessWidget {
               icon: settingsController.isIncognito.value
                   ? Iconsax.eye_slash
                   : Iconsax.eye,
-              title: 'Incognito Mode',
-              subtitle: 'Pause watch history and sync',
+              title: context.l10n.incognitoMode,
+              subtitle: context.l10n.pauseWatchHistoryAndSync,
               value: settingsController.isIncognito.value,
               onChanged: (_) {
                 settingsController.toggleIncognito();
@@ -466,8 +466,8 @@ class SettingsSheet extends StatelessWidget {
             )),
         AnymeXTile(
           icon: Iconsax.setting,
-          title: 'Settings',
-          subtitle: 'Appearance, player & network',
+          title: context.l10n.labelSettings,
+          subtitle: context.l10n.appearancePlayerNetwork,
           onTap: () {
             Get.back();
             navigate(() => const SettingsPage());

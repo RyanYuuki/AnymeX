@@ -97,7 +97,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText('Watch Together',
+                AnymeXText(context.l10n.watchTogether,
                   variant: TextVariant.bold,
                   size: 16,
                 ),
@@ -182,7 +182,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     ),
                   )
                 : const Icon(Icons.login_rounded, size: 18),
-            label: AnymeXText(_isCreating ? 'Joining...' : 'Join Room',
+            label: AnymeXText(_isCreating ? context.l10n.joining : context.l10n.joinRoom,
               variant: TextVariant.semiBold,
               size: 14,
               color: cs.onPrimary,
@@ -264,7 +264,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             Icon(Icons.people_alt_rounded,
                 size: 18, color: cs.onSurface.opaque(0.7)),
             const SizedBox(width: 8),
-            const AnymeXText('Max Members',
+            AnymeXText(context.l10n.maxMembers,
               variant: TextVariant.semiBold,
               size: 13,
             ),
@@ -324,11 +324,11 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymeXText('Private Room',
+                      AnymeXText(context.l10n.privateRoom,
                         variant: TextVariant.semiBold,
                         size: 13,
                       ),
-                      AnymeXText('Friends need a password to join',
+                      AnymeXText(context.l10n.friendsNeedAPasswordToJoin,
                         size: 11,
                         color: cs.onSurface.opaque(0.4),
                       ),
@@ -378,7 +378,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     size: 16, color: cs.primary),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: AnymeXText('Share the code or invite link with friends.',
+                  child: AnymeXText(context.l10n.shareTheCodeOrInviteLink,
                     size: 12,
                     color: cs.onSurface.opaque(0.6),
                   ),
@@ -688,8 +688,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       color: Colors.green, size: 22),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
-                  child: AnymeXText('Room Created!',
+                Expanded(
+                  child: AnymeXText(context.l10n.roomCreated,
                     variant: TextVariant.bold,
                     size: 16,
                   ),
@@ -724,7 +724,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
               ],
             ),
             const SizedBox(height: 14),
-            AnymeXText('Share this code with friends:',
+            AnymeXText(context.l10n.shareThisCodeWithFriends,
               size: 12,
               color: cs.onSurface.opaque(0.5),
             ),
@@ -766,7 +766,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       ),
                     ),
                     icon: const Icon(Icons.copy_rounded, size: 16),
-                    label: const AnymeXText('Copy Code',
+                    label: AnymeXText(context.l10n.copyCode,
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
@@ -786,7 +786,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       ),
                     ),
                     icon: const Icon(Icons.link_rounded, size: 16),
-                    label: const AnymeXText('Copy Link',
+                    label: AnymeXText(context.l10n.copyLink,
                       variant: TextVariant.semiBold,
                       size: 13,
                       color: Colors.white,

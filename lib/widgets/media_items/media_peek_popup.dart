@@ -865,7 +865,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             GestureDetector(
               onTap: () =>
                   setState(() => _synopsisExpanded = !_synopsisExpanded),
-              child: AnymeXText(_synopsisExpanded ? 'Show Less' : 'Read More',
+              child: AnymeXText(_synopsisExpanded ? context.l10n.showLess : context.l10n.readMore,
                 size: 12,
                 color: colors.primary,
                 variant: TextVariant.semiBold,
