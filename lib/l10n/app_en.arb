@@ -2216,5 +2216,85 @@
   "inspectExportAndShareApplicationLogs": "Inspect, export and share application logs",
   "aboutSupport": "About & Support",
   "supportDevelopmentViaKoFiPaypal": "Support development via Ko-fi, PayPal & UPI",
-  "versionUpdatesSocialLinksLegalPolicies": "Version, updates, social links & legal policies"
+  "versionUpdatesSocialLinksLegalPolicies": "Version, updates, social links & legal policies",
+  "cacheAndCookiesClearedFor": "Cache and cookies cleared for {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Cookies cleared for {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Cache cleared for {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Unsupported type {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "{name} Settings",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Local file not found at: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Sync failed: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Local APK not found at: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Error: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Plugin installation failed: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
