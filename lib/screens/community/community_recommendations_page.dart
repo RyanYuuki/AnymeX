@@ -994,7 +994,7 @@ class _SeeAllListTile extends StatelessWidget {
                               Icon(Icons.people_rounded,
                                   size: 12, color: colors.onSecondaryContainer),
                               const SizedBox(width: 4),
-                              AnymeXText('${item.reasonCount} recommendations',
+                              AnymeXText(context.l10n.recommendations(item.reasonCount.toString()),
                                 size: 11,
                                 color: colors.onSecondaryContainer,
                                 variant: TextVariant.semiBold,

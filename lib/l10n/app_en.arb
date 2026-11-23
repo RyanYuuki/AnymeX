@@ -2669,5 +2669,102 @@
   },
   "superResolution": "Super Resolution",
   "loadingChapter": "Loading chapter...",
-  "noContentAvailable": "No content available"
+  "noContentAvailable": "No content available",
+  "recommendations": "{reasonCount} recommendations",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "'s Recs",
+  "all3": "All ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Failed to post message: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Total entries: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Joined room {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Active Rooms",
+  "joinWithCode": "Join with Code",
+  "leftRoom": "Left room",
+  "leaveReset": "Leave / Reset",
+  "inRoom": "In Room: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Episode {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Kicked {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} members",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Left the room",
+  "leave": "Leave",
+  "noActiveRooms": "No active rooms",
+  "roomsWillAppearHereWhenSomeone": "Rooms will appear here when someone creates one",
+  "created2": "Created · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Join →",
+  "full": "Full"
 }

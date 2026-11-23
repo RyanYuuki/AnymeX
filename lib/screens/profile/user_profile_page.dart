@@ -1305,7 +1305,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: AnymeXText('Failed to post message: $e'),
+                              content: AnymeXText(context.l10n.failedToPostMessage(e.toString())),
                               backgroundColor: Colors.red,
                             ),
                           );
