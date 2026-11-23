@@ -177,9 +177,9 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
           builder: (ctx, setSt) {
             final colors = ctx.theme.colorScheme;
             return AnymeXDialog(
-              title: 'Add Speed',
-              confirmText: 'Add',
-              cancelText: 'Cancel',
+              title: context.l10n.addSpeed,
+              confirmText: context.l10n.add,
+              cancelText: context.l10n.actionCancel,
               onConfirm: () {
                 confirmedSpeed = value;
               },
@@ -320,7 +320,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
 
   Widget _buildPresetsSection(ColorScheme cs, ThemeData theme) {
     return AnymeXSectionBuilder(
-      title: 'Speed Presets',
+      title: context.l10n.speedPresets,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -474,13 +474,13 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
 
   Widget _buildPreferencesSection(ColorScheme cs, ThemeData theme) {
     return AnymeXSectionBuilder(
-      title: 'Preferences',
+      title: context.l10n.preferences,
       children: [
         AnymeXTile.checkbox(
           icon: _isCurrentDefault
               ? Icons.star_rounded
               : Icons.star_outline_rounded,
-          title: 'Remember as default speed',
+          title: context.l10n.rememberAsDefaultSpeed,
           subtitle: _isCurrentDefault
               ? '${_fmt(_currentSpeed)} is currently your default speed'
               : 'Set ${_fmt(_currentSpeed)} as default for all media',

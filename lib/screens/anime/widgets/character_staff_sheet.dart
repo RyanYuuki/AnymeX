@@ -917,7 +917,7 @@ class _CharacterStaffSheetContentState
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
-                                              child: AnymeXText("TBA (${unknownYearMedia.length})",
+                                              child: AnymeXText(context.l10n.tba(unknownYearMedia.length.toString()),
                                                 variant: TextVariant.bold,
                                                 size: 18,
                                                 color: theme.primary,

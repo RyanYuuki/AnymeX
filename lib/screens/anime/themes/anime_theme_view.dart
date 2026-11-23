@@ -11,6 +11,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../models/Media/media.dart' as m;
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class AnimeThemePlayerPage extends StatefulWidget {
   final m.Media animeDetails;
@@ -126,7 +127,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
 
     if (url == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: AnymeXText('No playable media available')),
+        SnackBar(content: AnymeXText(context.l10n.noPlayableMediaAvailable)),
       );
       return;
     }
@@ -350,7 +351,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                         hasScrollBody: false,
                         child: Container(
                           color: surfaceColor,
-                          child: const Center(child: AnymeXText("No themes found")),
+                          child: Center(child: AnymeXText(context.l10n.noThemesFound)),
                         ),
                       )
                     else
@@ -404,7 +405,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
           FilledButton.icon(
             onPressed: themes.isNotEmpty ? () => _playTheme(0) : null,
             icon: const Icon(Icons.play_arrow_rounded, size: 18),
-            label: const AnymeXText("Play All"),
+            label: AnymeXText(context.l10n.playAll),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               shape: RoundedRectangleBorder(

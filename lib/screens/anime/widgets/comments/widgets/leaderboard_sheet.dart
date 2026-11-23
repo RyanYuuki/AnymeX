@@ -556,9 +556,9 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
     return GestureDetector(
       onTap: () {
         if (entry.isInfinite) {
-          snackBar('${entry.username}: ${tag.label} (∞ points). Ranking is based on real activity (${entry.realPoints} pts).');
+          snackBar(context.l10n.pointsRankingIsBasedOnReal(entry.username.toString(), tag.label.toString(), entry.realPoints.toString()));
         } else {
-          snackBar('${entry.username}: ${entry.realPoints} earned pts + ${tag.text} role bonus (${tag.label}). Ranking is based on real activity.');
+          snackBar(context.l10n.earnedPtsRoleBonusRankingIs(entry.username.toString(), entry.realPoints.toString(), tag.text.toString(), tag.label.toString()));
         }
       },
       child: AnymeXContainer(

@@ -240,7 +240,7 @@ class _WatchTogetherPopupContentState
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.only(left: 12, bottom: 8),
-          child: AnymeXText('ROOM CODE',
+          child: AnymeXText(context.l10n.roomCode2,
             size: 11.5,
             variant: TextVariant.bold,
             color: cs.onSurface.opaque(0.45),

@@ -807,7 +807,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                   key: const ValueKey('media_staff'),
                   child: ReusableCarousel(
                     data: mediaData.staff!,
-                    title: 'Staff',
+                    title: context.l10n.staff,
                     variant: DataVariant.staff,
                   ).bottomSpacing(16),
                 );

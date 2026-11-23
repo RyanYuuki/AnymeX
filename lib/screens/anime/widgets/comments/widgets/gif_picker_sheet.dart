@@ -421,7 +421,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const AnymeXText('Insert'),
+                      child: AnymeXText(context.l10n.insert),
                     ),
                   ],
                 ),
@@ -459,7 +459,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                               const SizedBox(height: 12),
                               OutlinedButton(
                                 onPressed: _fetchTrending,
-                                child: const AnymeXText('Retry'),
+                                child: AnymeXText(context.l10n.actionRetry),
                               ),
                             ],
                           ),

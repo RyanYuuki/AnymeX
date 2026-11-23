@@ -505,7 +505,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             ),
             boxShadow: [glowingShadow(context)],
           ),
-          child: AnymeXText("EP $formatted",
+          child: AnymeXText(context.l10n.ep2(formatted.toString()),
             variant: TextVariant.bold,
           ),
         ),

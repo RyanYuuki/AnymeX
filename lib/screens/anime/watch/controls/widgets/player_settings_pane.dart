@@ -14,6 +14,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class PlayerSettingsPane extends StatefulWidget {
   final PlayerController controller;
@@ -50,7 +51,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
       'portrait': 'Portrait',
     };
     showSelectionDialog<String>(
-      title: 'Default Orientation',
+      title: context.l10n.defaultOrientation,
       items: orientations.keys.toList(),
       selectedItem: settings.defaultOrientation.obs,
       getTitle: (value) => orientations[value] ?? 'Auto (Landscape)',
@@ -65,7 +66,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
   void _showPlaybackSpeedDialog() {
     final speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
     showSelectionDialog<double>(
-      title: 'Playback Speed',
+      title: context.l10n.playbackSpeed,
       items: speeds,
       selectedItem: settings.speed.obs,
       getTitle: (s) => '${s}x',
@@ -83,7 +84,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
   void _showResizeModeDialog() {
     const modes = ['contain', 'cover', 'fill', 'fitWidth', 'fitHeight'];
     showSelectionDialog<String>(
-      title: 'Resize Mode',
+      title: context.l10n.resizeMode,
       items: modes,
       selectedItem: settings.resizeMode.obs,
       getTitle: (m) => m.capitalizeFirst ?? m,
@@ -104,7 +105,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
         AnymeXTile(
           icon: Icons.screen_rotation_rounded,
           onTap: _showDefaultOrientationDialog,
-          title: 'Default Orientation',
+          title: context.l10n.defaultOrientation,
           subtitle: const {
                 'landscape': 'Auto (Landscape)',
                 'auto_full': 'Auto (Full)',
@@ -117,19 +118,19 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
         AnymeXTile(
           icon: Icons.speed_rounded,
           onTap: _showPlaybackSpeedDialog,
-          title: 'Playback Speed',
-          subtitle: '${settings.speed.toStringAsFixed(2)}x',
+          title: context.l10n.playbackSpeed,
+          subtitle: context.l10n.x((settings.speed.toStringAsFixed(2)).toString()),
         ),
         AnymeXTile(
           icon: Icons.aspect_ratio_rounded,
-          title: 'Resize Mode',
+          title: context.l10n.resizeMode,
           subtitle: settings.resizeMode.capitalizeFirst ?? settings.resizeMode,
           onTap: _showResizeModeDialog,
         ),
         AnymeXTile.toggle(
           icon: Icons.launch_rounded,
-          title: 'Use External Player',
-          subtitle: 'Open video streams in an external player by default',
+          title: context.l10n.useExternalPlayer,
+          subtitle: context.l10n.openVideoStreamsInAnExternal,
           value: _useExternalPlayer,
           onChanged: (val) {
             setState(() {
@@ -148,7 +149,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
           isVisible: widget.controller.isSettingsPaneOpened.value,
           onOverlayTap: _closePane,
           child: WatchSettingsPane(
-            title: 'Player Settings',
+            title: context.l10n.playerSettings,
             onClose: _closePane,
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 30.0),
@@ -156,16 +157,16 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXExpansionTile(
-                    title: 'Quick Defaults',
-                    subtitle: 'Orientation, speed, resize mode & external player',
+                    title: context.l10n.quickDefaults,
+                    subtitle: context.l10n.orientationSpeedResizeModeExternalPlayer,
                     icon: Icons.tune_rounded,
                     initialExpanded: true,
                     useContentContainer: false,
                     content: _buildQuickDefaults(),
                   ),
                   const SizedBox(height: 12),
-                  const AnymeXExpansionTile(
-                    title: 'Controls & Gestures',
+                  AnymeXExpansionTile(
+                    title: context.l10n.controlsGestures,
                     subtitle:
                         'Theme, indicators, gestures, auto-skip & button layout',
                     icon: HugeIcons.strokeRoundedPlaySquare,
@@ -177,9 +178,9 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const AnymeXExpansionTile(
-                    title: 'Subtitles & Translation',
-                    subtitle: 'Languages, fonts, styling, libass & translation',
+                  AnymeXExpansionTile(
+                    title: context.l10n.subtitlesTranslation,
+                    subtitle: context.l10n.languagesFontsStylingLibassTranslation,
                     icon: Icons.subtitles_rounded,
                     initialExpanded: false,
                     useContentContainer: false,
@@ -189,9 +190,9 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const AnymeXExpansionTile(
-                    title: 'Anime4K & Shaders',
-                    subtitle: 'Upscaling shaders, presets & profiles',
+                  AnymeXExpansionTile(
+                    title: context.l10n.anime4kShaders,
+                    subtitle: context.l10n.upscalingShadersPresetsProfiles,
                     icon: Icons.auto_awesome_rounded,
                     initialExpanded: false,
                     useContentContainer: false,
@@ -201,8 +202,8 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const AnymeXExpansionTile(
-                    title: 'Engine & Advanced',
+                  AnymeXExpansionTile(
+                    title: context.l10n.engineAdvanced,
                     subtitle:
                         'Hardware decoder, video renderer, audio & mpv config',
                     icon: Icons.memory_rounded,

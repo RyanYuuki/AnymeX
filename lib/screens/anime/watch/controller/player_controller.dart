@@ -128,7 +128,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   factory PlayerController.preview() {
-    final ep = Episode(number: '87', title: 'The Dawn of Humanity');
+    final ep = Episode(number: '87', title: Get.context!.l10n.theDawnOfHumanity);
     final previewVideo = model.Video(
       url: '',
       quality: '1080p',
@@ -142,7 +142,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       [Episode(number: '86'), ep, Episode(number: '88')],
       anymex.Media(
         id: '0',
-        title: 'Attack on Titan',
+        title: Get.context!.l10n.attackOnTitan,
         poster: '',
         serviceType: ServicesType.anilist,
       ),
@@ -887,9 +887,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (currentOrientation.value != physicalOrientation.value) {
         _applyOrientation(physicalOrientation.value);
       }
-      snackBar('Orientation Unlocked');
+      snackBar(Get.context!.l10n.orientationUnlocked);
     } else {
-      snackBar('Orientation Locked');
+      snackBar(Get.context!.l10n.orientationLocked);
     }
   }
 
@@ -899,13 +899,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.seek(duration);
     if (identical(skipTimes?.op, interval)) {
       isOPSkippedOnce.value = true;
-      snackBar('Skipped Opening', duration: 2000);
+      snackBar(Get.context!.l10n.skippedOpening, duration: 2000);
     } else if (identical(skipTimes?.ed, interval)) {
       isEDSkippedOnce.value = true;
-      snackBar('Skipped Ending', duration: 2000);
+      snackBar(Get.context!.l10n.skippedEnding, duration: 2000);
     } else if (identical(skipTimes?.recap, interval)) {
       isRecapSkippedOnce.value = true;
-      snackBar('Skipped Recap', duration: 2000);
+      snackBar(Get.context!.l10n.skippedRecap, duration: 2000);
     }
   }
 
@@ -1068,7 +1068,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             startPositionOverride ?? Duration(milliseconds: stamp ?? 0),
       );
       await _basePlayer.setRate(_sessionSpeed);
-      snackBar('If you see black screen, use external player for watching');
+      snackBar(Get.context!.l10n.ifYouSeeBlackScreenUse);
     } else {
       await _openWithCloudFallback(
           startPositionOverride: startPositionOverride);
@@ -1166,7 +1166,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         currentTorrentInfo.value = null;
         currentTorrentFile.value = null;
         Logger.e('Failed to resolve torrent stream: $e');
-        snackBar('Failed to start torrent stream: $e');
+        snackBar(Get.context!.l10n.failedToStartTorrentStream(e.toString()));
         return;
       }
     } else {
@@ -1447,7 +1447,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (errorStr.contains('Failed to open') &&
           !errorStr.contains('.glsl') &&
           !errorStr.contains('Cannot open file')) {
-        snackBar('Failed to open stream. Please try other server');
+        snackBar(Get.context!.l10n.failedToOpenStreamPleaseTry);
       }
     }));
 
@@ -1793,7 +1793,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       if (data.isEmpty) {
         PlayerBottomSheets.hideLoader();
-        snackBar('No servers found for this episode.');
+        snackBar(Get.context!.l10n.noServersFoundForThisEpisode);
         isEpisodePaneOpened.value = true;
         return;
       }
@@ -1838,7 +1838,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       await _switchMedia(matched.url ?? "", matched.headers,
           startPosition: startPosition);
     } catch (e) {
-      snackBar('Failed to load episode. Check your connection.');
+      snackBar(Get.context!.l10n.failedToLoadEpisodeCheckYour);
     } finally {
       PlayerBottomSheets.hideLoader();
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -2078,7 +2078,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         currentTorrentInfo.value = null;
         currentTorrentFile.value = null;
         Logger.e('Failed to resolve torrent stream: $e');
-        snackBar('Failed to start torrent stream: $e');
+        snackBar(Get.context!.l10n.failedToStartTorrentStream(e.toString()));
         return;
       }
     } else {
@@ -2106,13 +2106,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       await _basePlayer.setRate(_sessionSpeed);
       _autoSelectAudioTrack();
       AnymeXToast.show(
-        message: 'Playing ${p.basename(file.path)}',
+        message: Get.context!.l10n.playing((p.basename(file.path)).toString()),
       );
     } catch (e) {
       _isTorrentBuffering = false;
       isBuffering.value = false;
       Logger.e('Failed to switch torrent file: $e');
-      snackBar('Failed to switch torrent file: $e');
+      snackBar(Get.context!.l10n.failedToSwitchTorrentFile(e.toString()));
     }
   }
 
@@ -2444,10 +2444,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           localSubtitles.add(track);
         }
         setExternalSub(track);
-        AnymeXToast.show(message: 'Subtitle loaded: $fileName');
+        AnymeXToast.show(message: Get.context!.l10n.subtitleLoaded(fileName.toString()));
       }
     } catch (e) {
-      AnymeXToast.show(message: 'Error loading subtitle: $e');
+      AnymeXToast.show(message: Get.context!.l10n.errorLoadingSubtitle(e.toString()));
     }
   }
 
@@ -2466,7 +2466,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (track.file?.isEmpty ?? true) {
-      snackBar('Corrupted Subtitle!');
+      snackBar(Get.context!.l10n.corruptedSubtitle);
       return;
     }
 
@@ -2579,7 +2579,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     isPreTranslating.value = true;
     preTranslateProgress.value = 'Starting translation...';
-    snackBar('Pre-translating subtitles...');
+    snackBar(Get.context!.l10n.preTranslatingSubtitles);
 
     try {
       final success = await SubtitlePreTranslator.preTranslateFromUrl(
@@ -2591,11 +2591,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         snackBar(
             'Subtitles translated! (${SubtitlePreTranslator.totalEntries} entries)');
       } else {
-        snackBar('Pre-translation failed, using real-time fallback');
+        snackBar(Get.context!.l10n.preTranslationFailedUsingRealTime);
       }
     } catch (e) {
       Logger.e('[PlayerController] Pre-translation error: $e');
-      snackBar('Pre-translation error, using real-time fallback');
+      snackBar(Get.context!.l10n.preTranslationErrorUsingRealTime);
     }
 
     isPreTranslating.value = false;
@@ -2604,7 +2604,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void setServerTrack(model.Video track) async {
     if (track.url?.isEmpty ?? true) {
-      snackBar('Corrupted Quality!');
+      snackBar(Get.context!.l10n.corruptedQuality);
       return;
     }
 
@@ -2909,7 +2909,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             context, this, (_basePlayer as MediaKitPlayer).nativePlayer);
       });
     } else {
-      snackBar('Color profiles only available with MediaKit player');
+      snackBar(context.l10n.colorProfilesOnlyAvailableWithMediakit);
     }
   }
 

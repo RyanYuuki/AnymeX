@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart'
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class PlayerControlItemMeta {
   final String id;
@@ -149,7 +150,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isEpisodePaneOpened.value =
             !controller.isEpisodePaneOpened.value;
       },
-      tooltip: 'Playlist',
+      tooltip: context.l10n.playlist,
       compact: true,
     ),
     'torrent': ControlButton(
@@ -158,13 +159,13 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isTorrentFilesPaneOpened.value =
             !controller.isTorrentFilesPaneOpened.value;
       },
-      tooltip: 'Torrent Files',
+      tooltip: context.l10n.torrentFiles,
       compact: true,
     ),
     'shaders': ControlButton(
       icon: Icons.tune_rounded,
       onPressed: () => controller.openColorProfileBottomSheet(context),
-      tooltip: 'Shaders & Color Profiles',
+      tooltip: context.l10n.shadersColorProfiles,
       compact: true,
     ),
     'source': ControlButton(
@@ -173,7 +174,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isSourcePaneOpened.value =
             !controller.isSourcePaneOpened.value;
       },
-      tooltip: 'Quality',
+      tooltip: context.l10n.playerQuality,
       compact: true,
     ),
     'tracks': ControlButton(
@@ -182,7 +183,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isTracksPaneOpened.value =
             !controller.isTracksPaneOpened.value;
       },
-      tooltip: 'Subtitles',
+      tooltip: context.l10n.playerSubtitles,
       compact: true,
     ),
     'audio': ControlButton(
@@ -191,7 +192,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isAudioPaneOpened.value =
             !controller.isAudioPaneOpened.value;
       },
-      tooltip: 'Audio',
+      tooltip: context.l10n.audio,
       compact: true,
     ),
     'sync_subs': ControlButton(
@@ -200,7 +201,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isSyncSubsPaneOpened.value =
             !controller.isSyncSubsPaneOpened.value;
       },
-      tooltip: 'Sync Subtitles',
+      tooltip: context.l10n.syncSubtitles,
       compact: true,
     ),
     'speed': ControlButton(
@@ -209,7 +210,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isSpeedPaneOpened.value =
             !controller.isSpeedPaneOpened.value;
       },
-      tooltip: 'Speed',
+      tooltip: context.l10n.playerSpeed,
       compact: true,
     ),
     'orientation': Obx(() {
@@ -227,13 +228,13 @@ Map<String, Widget> buildPlayerControlButtonMap(
       icon: Icons.fit_screen,
       onPressed: () => controller.toggleVideoFit(),
       onLongPress: controller.resetVideoFit,
-      tooltip: 'Aspect Ratio',
+      tooltip: context.l10n.aspectRatio,
       compact: true,
     ),
     'external_player': ControlButton(
       icon: Icons.launch_rounded,
       onPressed: () => controller.launchExternalPlayer(),
-      tooltip: 'External Player',
+      tooltip: context.l10n.externalPlayer,
       compact: true,
     ),
     'watch_together': Obx(() {
@@ -241,7 +242,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         return ControlButton(
           icon: Icons.people_outline_rounded,
           onPressed: () {},
-          tooltip: 'Watch Together',
+          tooltip: context.l10n.watchTogether,
           compact: true,
         );
       }
@@ -291,19 +292,19 @@ Map<String, Widget> buildPlayerControlButtonMap(
     'cast': ControlButton(
       icon: Icons.cast_rounded,
       onPressed: () => CastDeviceDialog.show(context, controller),
-      tooltip: 'Cast to Device',
+      tooltip: context.l10n.castToDevice,
       compact: true,
     ),
     'lock': ControlButton(
       icon: Icons.lock_rounded,
       onPressed: () => controller.isLocked.value = true,
-      tooltip: 'Lock Controls',
+      tooltip: context.l10n.lockControls,
       compact: true,
     ),
     'pip': ControlButton(
       icon: Icons.picture_in_picture_rounded,
       onPressed: () => controller.enterPip(),
-      tooltip: 'Picture in Picture',
+      tooltip: context.l10n.pictureInPicture,
       compact: true,
     ),
     'settings': ControlButton(
@@ -313,7 +314,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
         controller.isSettingsPaneOpened.value =
             !controller.isSettingsPaneOpened.value;
       },
-      tooltip: 'Settings',
+      tooltip: context.l10n.labelSettings,
       compact: true,
     ),
   };

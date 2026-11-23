@@ -561,7 +561,7 @@ class AnimeStats extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: AnymeXText("EPISODE ${data.nextAiringEpisode?.episode} RELEASES IN",
+                child: AnymeXText(context.l10n.episodeReleasesIn((data.nextAiringEpisode?.episode).toString()),
                   variant: TextVariant.bold,
                   size: 13,
                   color: colorScheme.onSurface.opaque(0.7),

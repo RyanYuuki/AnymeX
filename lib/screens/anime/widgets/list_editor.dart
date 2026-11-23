@@ -462,7 +462,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             _buildProgressRow(context),
             AnymeXTile.slider(
               icon: Icons.star_rounded,
-              title: 'Score',
+              title: context.l10n.detailsScore,
               subtitle: _getScoreDisplayLabel(_localScore),
               value: _localScore,
               min: _minScore,
@@ -472,7 +472,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             ),
             AnymeXTile(
               icon: Icons.calendar_today_rounded,
-              title: 'Start Date',
+              title: context.l10n.startDate,
               subtitle: _startedAt != null ? _formatDate(_startedAt!) : 'Not set',
               onTap: () => _pickDate(context, isStart: true),
               trailing: _startedAt != null
@@ -485,7 +485,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             ),
             AnymeXTile(
               icon: Icons.event_available_rounded,
-              title: 'Finish Date',
+              title: context.l10n.finishDate,
               subtitle: _completedAt != null ? _formatDate(_completedAt!) : 'Not set',
               onTap: () => _pickDate(context, isStart: false),
               trailing: _completedAt != null
@@ -499,8 +499,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
             if (widget.media.serviceType.isAL)
               AnymeXTile.toggle(
                 icon: Icons.lock_rounded,
-                title: 'Private Entry',
-                subtitle: 'Hidden from your public profile',
+                title: context.l10n.privateEntry,
+                subtitle: context.l10n.hiddenFromYourPublicProfile,
                 value: _isPrivate,
                 onChanged: (val) => setState(() => _isPrivate = val),
               ),

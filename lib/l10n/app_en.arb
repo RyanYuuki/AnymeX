@@ -2953,5 +2953,296 @@
         "type": "String"
       }
     }
+  },
+  "adaptedFromChapterTo": "Adapted from Chapter {start} to {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} predicted on {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "EPISODE {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MAL list exported to:\\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML exported to:\\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Export failed: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Exporting your {value} list...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Export {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "No playable media available",
+  "noThemesFound": "No themes found",
+  "playAll": "Play All",
+  "theDawnOfHumanity": "The Dawn of Humanity",
+  "orientationUnlocked": "Orientation Unlocked",
+  "orientationLocked": "Orientation Locked",
+  "skippedOpening": "Skipped Opening",
+  "skippedEnding": "Skipped Ending",
+  "skippedRecap": "Skipped Recap",
+  "ifYouSeeBlackScreenUse": "If you see black screen, use external player for watching",
+  "failedToStartTorrentStream": "Failed to start torrent stream: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Failed to open stream. Please try other server",
+  "noServersFoundForThisEpisode": "No servers found for this episode.",
+  "failedToLoadEpisodeCheckYour": "Failed to load episode. Check your connection.",
+  "playing": "Playing {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Failed to switch torrent file: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Subtitle loaded: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Error loading subtitle: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Corrupted Subtitle!",
+  "preTranslatingSubtitles": "Pre-translating subtitles...",
+  "preTranslationFailedUsingRealTime": "Pre-translation failed, using real-time fallback",
+  "preTranslationErrorUsingRealTime": "Pre-translation error, using real-time fallback",
+  "corruptedQuality": "Corrupted Quality!",
+  "colorProfilesOnlyAvailableWithMediakit": "Color profiles only available with MediaKit player",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Open video streams in an external player by default",
+  "quickDefaults": "Quick Defaults",
+  "orientationSpeedResizeModeExternalPlayer": "Orientation, speed, resize mode & external player",
+  "controlsGestures": "Controls & Gestures",
+  "subtitlesTranslation": "Subtitles & Translation",
+  "languagesFontsStylingLibassTranslation": "Languages, fonts, styling, libass & translation",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "Upscaling shaders, presets & profiles",
+  "engineAdvanced": "Engine & Advanced",
+  "addSpeed": "Add Speed",
+  "speedPresets": "Speed Presets",
+  "rememberAsDefaultSpeed": "Remember as default speed",
+  "loadedSubtitle": "Loaded subtitle: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Failed to download subtitle: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "ROOM CODE",
+  "episodeReleasesIn": "EPISODE {value} RELEASES IN",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "You need to be logged in to comment",
+  "readFullRules": "Read Full Rules",
+  "acceptPost": "Accept & Post",
+  "youNeedToBeLoggedIn2": "You need to be logged in to reply",
+  "commentCopiedToClipboard": "Comment copied to clipboard",
+  "spam": "Spam",
+  "offensive": "Offensive",
+  "harassment": "Harassment",
+  "offTopic": "Off-Topic",
+  "failedToLoadUserInfo": "Failed to load user info.",
+  "noUserDataFound": "No user data found.",
+  "viewHistory": "View History",
+  "failedToLoadComments": "Failed to load comments.",
+  "noCommentsFound": "No comments found.",
+  "deleted2": "DELETED",
+  "comment": "COMMENT",
+  "failedToLoadUserHistory": "Failed to load user history.",
+  "noHistoryFound": "No history found.",
+  "youNeedToBeLoggedIn3": "You need to be logged in to edit comments",
+  "commentCannotBeEmpty": "Comment cannot be empty",
+  "failedToLoadCommentsPleaseTry": "Failed to load comments. Please try again.",
+  "commentsLoaded": "{value} comments loaded",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Failed to refresh comments. Please try again.",
+  "invalidParentCommentId": "Invalid parent comment ID",
+  "replyPostedSuccessfully": "Reply posted successfully",
+  "failedToPostReply": "Failed to post reply",
+  "failedToPostReplyPleaseTry": "Failed to post reply. Please try again.",
+  "commentPostedSuccessfully": "Comment posted successfully",
+  "failedToAddCommentPleaseTry": "Failed to add comment. Please try again.",
+  "failedToUpdateVotePleaseTry": "Failed to update vote. Please try again.",
+  "invalidCommentId": "Invalid comment ID",
+  "commentEditedSuccessfully": "Comment edited successfully",
+  "failedToEditComment": "Failed to edit comment",
+  "commentDeletedSuccessfully": "Comment deleted successfully",
+  "failedToDeleteComment": "Failed to delete comment",
+  "failedToReportComment": "Failed to report comment",
+  "failedToModerateComment": "Failed to moderate comment",
+  "failedToManageUser": "Failed to manage user",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ points). Ranking is based on real activity ({realPoints} pts).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} earned pts + {text} role bonus ({label}). Ranking is based on real activity.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Episode Range",
+  "episodeIsDownloaded": "Episode {number} is downloaded",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} episodes",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
   }
 }
