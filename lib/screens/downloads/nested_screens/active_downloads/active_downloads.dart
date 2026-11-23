@@ -853,7 +853,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
         DownloadController.findMatchingSource(allSources, task.extensionName);
 
     if (source == null) {
-      snackBar('Source "${task.extensionName}" not found.');
+      snackBar(context.l10n.sourceNotFound(task.extensionName.toString()));
       return;
     }
 

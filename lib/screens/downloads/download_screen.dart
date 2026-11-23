@@ -543,7 +543,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                 meta.extensionName, meta.folderName),
                             builder: (context, snapshot) {
                               final count = snapshot.data?.chapters.length ?? 0;
-                              return AnymeXText('$count ch',
+                              return AnymeXText(context.l10n.ch(count.toString()),
                                   size: 11,
                                   color: theme.primary,
                                   variant: TextVariant.semiBold);
@@ -554,7 +554,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                 meta.extensionName, meta.folderName),
                             builder: (context, snapshot) {
                               final count = snapshot.data?.episodes.length ?? 0;
-                              return AnymeXText('$count eps',
+                              return AnymeXText(context.l10n.eps(count.toString()),
                                   size: 11,
                                   color: theme.primary,
                                   variant: TextVariant.semiBold);

@@ -147,7 +147,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     final display = ch.displayTitle;
     AnymeXDialog(
       title: context.l10n.deleteChapterQuestion,
-      message: '$display will be permanently removed from your downloads.',
+      message: context.l10n.willBePermanentlyRemovedFromYour(display.toString()),
       onConfirm: () async {
         _showLoadingDialog(context, 'Deleting chapter...');
         try {
