@@ -28,7 +28,7 @@ class NewsPage extends StatelessWidget {
               floating: true,
               pinned: false,
               snap: true,
-              title: AnymeXText('${media.title} News',
+              title: AnymeXText(context.l10n.news(media.title.toString()),
                 variant: TextVariant.bold,
                 size: 20,
               ),

@@ -115,7 +115,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 child: _buildTabItem(
                   context,
                   colorScheme: colorScheme,
-                  label: 'Community',
+                  label: context.l10n.community,
                   icon: Icons.forum_outlined,
                   isSelected: selected == 1,
                   badgeCount: communityUnread,
@@ -227,7 +227,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 ElevatedButton.icon(
                   onPressed: () => anilistAuth.login(context),
                   icon: const Icon(Icons.login_rounded),
-                  label: const Text('Log In with AniList'),
+                  label: Text(context.l10n.logInWithAnilist),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
@@ -275,7 +275,7 @@ class NotificationScreen extends GetView<NotificationController> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => controller.loadAnilistNotifications(),
-                      child: const Text('Retry'),
+                      child: Text(context.l10n.actionRetry),
                     ),
                   ],
                 ),

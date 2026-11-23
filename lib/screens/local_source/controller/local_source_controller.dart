@@ -547,7 +547,7 @@ class LocalSourceController extends GetxController
       searchResults.value = results;
     } else {
       searchResults.value = [];
-      errorSnackBar('No results found for "$query"');
+      errorSnackBar(Get.context!.l10n.noResultsFoundFor(query.toString()));
     }
     isSearching.value = false;
   }

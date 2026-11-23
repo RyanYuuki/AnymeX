@@ -2296,5 +2296,39 @@
         "type": "String"
       }
     }
-  }
+  },
+  "noResultsFoundFor": "No results found for \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Season {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Episode {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title} News",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Community",
+  "logInWithAnilist": "Log In with AniList"
 }
