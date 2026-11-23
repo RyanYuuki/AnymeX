@@ -34,6 +34,9 @@ class ThemeController extends GetxController {
         fontScale = UISettingsKeys.appFontScale.get<double>(1.0) {
     _determineSeedColor();
     _applyTheme();
+    if (currentThemeMode == "material") {
+      unawaited(_restoreDynamicTheme());
+    }
   }
 
   ThemeData get lightTheme => _lightTheme;
@@ -121,10 +124,21 @@ class ThemeController extends GetxController {
   Future<void> loadDynamicTheme() async {
     currentThemeMode = "material";
     ThemeKeys.themeMode.set("material");
-    final corePalette = await DynamicColorPlugin.getCorePalette();
-    _seedColor = corePalette != null
-        ? Color(corePalette.primary.get(40))
-        : Colors.deepPurple;
+    await _restoreDynamicTheme();
+  }
+
+  Future<void> _restoreDynamicTheme() async {
+    try {
+      final corePalette = await DynamicColorPlugin.getCorePalette();
+      if (currentThemeMode != "material") return;
+      _seedColor = corePalette != null
+          ? Color(corePalette.primary.get(40))
+          : Colors.deepPurple;
+    } catch (error) {
+      debugPrint('Failed to load Material You palette: $error');
+      if (currentThemeMode != "material") return;
+      _seedColor = Colors.deepPurple;
+    }
     _updateThemeImmediately();
   }
 
