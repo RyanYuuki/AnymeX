@@ -3244,5 +3244,585 @@
         "type": "String"
       }
     }
-  }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "Card Customizer",
+  "presetStyle": "Preset Style",
+  "chooseFrom5AuthenticBuiltIn": "Choose from 5 authentic built-in designs",
+  "sizingGeometry": "Sizing & Geometry",
+  "cardSize": "Card Size",
+  "scaleCardsProportionallyWithoutDistortion": "Scale cards proportionally without distortion",
+  "landscapeCards": "Landscape Cards",
+  "formatCardsIn169Widescreen": "Format cards in 16:9 widescreen orientation",
+  "selectPosterImageAspectRatio": "Select poster image aspect ratio",
+  "titleLines": "Title Lines",
+  "maximumNumberOfTitleLinesDisplayed": "Maximum number of title lines displayed",
+  "gestureAreas": "Gesture Areas",
+  "resetDefault": "Reset Default",
+  "overlay": "Overlay",
+  "volume": "Volume",
+  "brightnessArea": "Brightness Area",
+  "overlayAreaTap": "Overlay Area (Tap)",
+  "volumeArea": "Volume Area",
+  "resetToDefaultLayout": "Reset to default layout",
+  "moveToSlot": "Move to slot",
+  "topBar": "Top Bar",
+  "bottomLeft": "Bottom Left",
+  "bottomRight": "Bottom Right",
+  "themesOverlay": "Themes & Overlay",
+  "gesturesSeeking": "Gestures & Seeking",
+  "horizontalSwipeAcrossTheScreenTo": "Horizontal swipe across the screen to seek",
+  "autoSkipCompletion": "Auto Skip & Completion",
+  "percentageWatchedBeforeMarkingCompleted": "Percentage watched before marking completed",
+  "playerControls": "Player Controls",
+  "mpvConfSavedSuccessfully": "mpv.conf saved successfully",
+  "hardwareDrivers": "Hardware & Drivers",
+  "systemIntegrations": "System & Integrations",
+  "experimentalMpvTuning": "Experimental MPV Tuning",
+  "editMpvConf": "Edit mpv.conf",
+  "modeA": "Mode A",
+  "modeB": "Mode B",
+  "modeC": "Mode C",
+  "modeAA": "Mode A+A",
+  "modeBB": "Mode B+B",
+  "modeCA": "Mode C+A",
+  "natural": "Natural",
+  "vivid": "Vivid",
+  "cinema": "Cinema",
+  "soft": "Soft",
+  "warm": "Warm",
+  "cool": "Cool",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinema HDR",
+  "vividPop": "Vivid Pop",
+  "dark": "Dark",
+  "anime4kEngine": "Anime4K Engine",
+  "anime4kShaders2": "Anime4K shaders",
+  "devicePerformanceTier": "Device Performance Tier",
+  "midRange": "Mid-range",
+  "highEnd": "High-end",
+  "shaderMode": "Shader Mode",
+  "colorPreset": "Color Preset",
+  "desktopPlaybackKeybindings": "Desktop Playback Keybindings",
+  "customSubtitleFonts": "Custom Subtitle Fonts",
+  "importedFont": "Imported font \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Are you sure you want to delete \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Language & Translation",
+  "renderingBehavior": "Rendering & Behavior",
+  "disableToAvoidFadeTransitionsBetween": "Disable to avoid fade transitions between subtitles",
+  "typographyOutline": "Typography & Outline",
+  "adjustSubtitleFontSize": "Adjust subtitle font size",
+  "adjustSubtitleOutlineThickness": "Adjust subtitle outline thickness",
+  "colorsPosition": "Colors & Position",
+  "changeSubtitleTextColor": "Change subtitle text color",
+  "mangaReader": "Manga Reader",
+  "layoutDirection": "Layout & Direction",
+  "autoSwitchToVerticalModeFor": "Auto switch to vertical mode for webtoons",
+  "imageDisplay": "Image & Display",
+  "interfaceSession": "Interface & Session",
+  "mangaControlsGestures": "Manga Controls & Gestures",
+  "overscrollToPreviousNextChapter": "Overscroll to previous/next chapter",
+  "automaticallyScrollMangaPages": "Automatically scroll manga pages",
+  "swapVolumeUpDownActions": "Swap volume up/down actions",
+  "novelReader": "Novel Reader",
+  "themeDisplay": "Theme & Display",
+  "displayChapterPercentageWhileReading": "Display chapter percentage while reading",
+  "displayStatusInfoInTheNovel": "Display status info in the novel reader",
+  "typographySpacing": "Typography & Spacing",
+  "novelControlsGestures": "Novel Controls & Gestures",
+  "tapScreenEdgesToScrollNovel": "Tap screen edges to scroll novel pages",
+  "swipeGestures": "Swipe Gestures",
+  "volumeKeyScrolling": "Volume Key Scrolling",
+  "useHardwareVolumeButtonsToScroll": "Use hardware volume buttons to scroll novels",
+  "automaticallyScrollNovelContent": "Automatically scroll novel content",
+  "textToSpeechTts": "Text-to-Speech (TTS)",
+  "readNovelChaptersAloud": "Read novel chapters aloud",
+  "speechRate": "Speech rate",
+  "voicePitch": "Voice pitch",
+  "areYouSureYouWantTo4": "Are you sure you want to log out from {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Failed to check for updates: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} installed successfully",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Failed to install {name}: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} updated successfully",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Failed to update {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Uninstall {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} uninstalled",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Failed to uninstall {name}: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} Section Order",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Notifications & Sync",
+  "enableNotifications": "Enable Notifications",
+  "syncAnilistNotificationsWithDeviceNotifications": "Sync AniList notifications with device notifications",
+  "airingAlerts": "Airing Alerts",
+  "socialAlerts": "Social Alerts",
+  "notifyOnNewFollowers": "Notify on new followers",
+  "activityAlerts": "Activity Alerts",
+  "syncInterval": "Sync Interval",
+  "regionTimezone": "Region & Timezone",
+  "profileBio": "Profile Bio",
+  "backupFailed": "Backup failed: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Error selecting file: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Failed to load backup: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Restore failed: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} titles and history",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} titles and chapters",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} titles and reading state",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} custom lists across media",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} registered extension entries",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} extension zip bundles",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Help & Information",
+  "libraryContentSafety": "Library & Content Safety",
+  "homePageLists": "Home Page Lists",
+  "chooseWhichListsToShowOn": "Choose which lists to show on home page",
+  "homePageCards": "Home Page Cards ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Watching $anime",
+  "viewingAnime": "Viewing $anime",
+  "readingManga2": "Reading $manga",
+  "viewingManga": "Viewing $manga",
+  "readingNovel2": "Reading $novel",
+  "viewingNovel": "Viewing $novel",
+  "browsingStatus": "Browsing $status",
+  "upiIdCopied": "UPI ID copied: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Copy UPI ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Tap to launch GPay, PhonePe, Paytm, etc.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Download Notifications",
+  "reDownloadFailed": "Re-download failed: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Rollback failed: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Failed to add repo: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Applied font \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Failed to download \"{fontName}\"",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "Imported & applied \"{fontName}\"",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Failed to import font file",
+  "deleted3": "Deleted \"{fontName}\"",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Font Library",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Default geometric rounded font designed for AnymeX",
+  "systemFont": "System Font",
+  "useYourDeviceOsDefaultSystem": "Use your device OS default system typeface",
+  "loadYourOwnTtfOrOtf": "Load your own .ttf or .otf typography files",
+  "pendingReports": "{length} pending reports",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies & Storage",
+  "monitoring": "Monitoring",
+  "fpsMeter": "FPS Meter",
+  "showDraggableRealTimeFpsOverlay": "Show draggable real-time FPS overlay",
+  "detectedModesDisplay": "Detected Modes & Display",
+  "currentDisplayMode": "Current Display Mode",
+  "modes": "{length} modes",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Customize",
+  "stylingLibass": "{subLang} • {subFont} • Styling & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Controls & Tap Zones",
+  "customizeTapZones": "Customize Tap Zones",
+  "configurePagedAndWebtoonTapRegions": "Configure paged and webtoon tap regions",
+  "fitBordersSpacing": "{value} • Fit, borders & spacing",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Chapter style, page indicator & screen lock",
+  "overscrollActionsAutoScrollVolume": "Overscroll, actions, auto scroll & volume",
+  "themeTypography": "Theme & Typography",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Reading Mode & Display",
+  "pageModeProgressBatteryIndicator": "Page mode, progress & battery indicator",
+  "readPageByPageInsteadOf": "Read page-by-page instead of scrolling",
+  "displayPercentageInReadingBar": "Display percentage in reading bar",
+  "displayBatteryAndTimeInReader": "Display battery and time in reader bar",
+  "gesturesNavigation": "Gestures & Navigation",
+  "tapToScrollSwipeAutoScroll": "Tap to scroll, swipe, auto scroll & volume",
+  "tapEdgesOfScreenToScroll": "Tap edges of screen to scroll up/down",
+  "swipeHorizontallyToChangeChapters": "Swipe horizontally to change chapters",
+  "useVolumeKeysToScroll": "Use volume keys to scroll",
+  "textToSpeechTts2": "Text to Speech (TTS)",
+  "textToSpeechReadingSupport": "Text-to-speech reading support",
+  "speechRate2": "Speech Rate",
+  "voicePitch2": "Voice Pitch",
+  "appPostersIconsAvatarsSize": "App posters, icons, avatars. Size: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Temporary video chunks. Size: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Downloaded web novel pages. Size: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Logs, temp downloads. Size: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Failed to clear cache: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Factory reset failed: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 or 3F51B5",
+  "motionDisplay": "Motion & Display",
+  "visualEffectsTuning": "Visual Effects & Tuning",
+  "historyCard": "History card",
+  "carousel": "Carousel",
+  "navBar": "Nav bar",
+  "themeDarkModeLayoutStyling": "Theme, dark mode & layout styling",
+  "gesturesSubtitlesVideoSettings": "Gestures, subtitles & video settings",
+  "settingsTiles": "Settings tiles",
+  "oledMode2": "OLED Mode",
+  "primaryAccount": "Primary Account ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Connected to {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Connect to {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} titles",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Remove \"{id}\"? This cannot be undone.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Importing…",
+  "addJsonFiles": "Add JSON Files",
+  "previousStyle": "Previous style",
+  "nextStyle": "Next style",
+  "currentStyle": "Current style",
+  "useThisStyle": "Use this style"
 }

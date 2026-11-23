@@ -54,7 +54,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
       await _addonManager.checkForUpdates();
       snackBar(Get.context!.l10n.updateCheckComplete);
     } catch (e) {
-      errorSnackBar('Failed to check for updates: $e');
+      errorSnackBar(Get.context!.l10n.failedToCheckForUpdates2(e.toString()));
     } finally {
       if (mounted) setState(() => _isCheckingUpdates = false);
     }
@@ -63,9 +63,9 @@ class _SettingsAddonsState extends State<SettingsAddons> {
   Future<void> _installAddon(Addon addon) async {
     try {
       await addon.install();
-      successSnackBar('${addon.name} installed successfully');
+      successSnackBar(Get.context!.l10n.installedSuccessfully(addon.name.toString()));
     } catch (e) {
-      errorSnackBar('Failed to install ${addon.name}: $e');
+      errorSnackBar(Get.context!.l10n.failedToInstall(addon.name.toString(), e.toString()));
       print(e);
     }
     if (mounted) setState(() {});
@@ -74,9 +74,9 @@ class _SettingsAddonsState extends State<SettingsAddons> {
   Future<void> _updateAddon(Addon addon) async {
     try {
       await addon.update();
-      successSnackBar('${addon.name} updated successfully');
+      successSnackBar(Get.context!.l10n.updatedSuccessfully2(addon.name.toString()));
     } catch (e) {
-      errorSnackBar('Failed to update ${addon.name}: $e');
+      errorSnackBar(Get.context!.l10n.failedToUpdate(addon.name.toString(), e.toString()));
       print(e);
     }
     if (mounted) setState(() {});
@@ -86,16 +86,16 @@ class _SettingsAddonsState extends State<SettingsAddons> {
     showDialog<bool>(
       context: context,
       builder: (ctx) => AnymeXDialog(
-        title: 'Uninstall ${addon.name}',
+        title: context.l10n.uninstall2(addon.name.toString()),
         message:
             'Are you sure you want to uninstall ${addon.name}? This will delete the downloaded binary.',
         confirmText: context.l10n.uninstall,
         onConfirm: () async {
           try {
             await addon.uninstall();
-            snackBar('${addon.name} uninstalled');
+            snackBar(Get.context!.l10n.uninstalled(addon.name.toString()));
           } catch (e) {
-            errorSnackBar('Failed to uninstall ${addon.name}: $e');
+            errorSnackBar(Get.context!.l10n.failedToUninstall(addon.name.toString(), e.toString()));
             print(e);
           }
           if (mounted) setState(() {});

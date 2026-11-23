@@ -669,7 +669,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               FilledButton.icon(
                 onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
                 icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: const AnymeXText('Retry',
+                label: AnymeXText(context.l10n.actionRetry,
                     variant: TextVariant.bold, size: 12),
                 style: FilledButton.styleFrom(
                   backgroundColor: colors.primary,
@@ -959,7 +959,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
           _error = e.toString().replaceFirst('Exception: ', '');
           _loading = false;
         });
-        snackBar('Failed to add repo: $_error');
+        snackBar(context.l10n.failedToAddRepo(_error.toString()));
       }
     } finally {
       if (mounted && _error == null) setState(() => _loading = false);

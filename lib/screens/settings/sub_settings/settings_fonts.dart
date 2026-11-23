@@ -12,6 +12,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class SettingsFonts extends StatefulWidget {
   const SettingsFonts({super.key});
@@ -58,9 +59,9 @@ class _SettingsFontsState extends State<SettingsFonts> {
     if (success) {
       _downloadedStatus[fontName] = true;
       await _applyFont(fontName);
-      snackBar('Applied font "$fontName"');
+      snackBar(Get.context!.l10n.appliedFont(fontName.toString()));
     } else {
-      snackBar('Failed to download "$fontName"');
+      snackBar(Get.context!.l10n.failedToDownload(fontName.toString()));
     }
     if (mounted) setState(() {});
   }
@@ -77,9 +78,9 @@ class _SettingsFontsState extends State<SettingsFonts> {
       if (fontName != null) {
         _customFonts = await ExternalFontLoader.getCustomFontNames();
         await _applyFont(fontName);
-        snackBar('Imported & applied "$fontName"');
+        snackBar(Get.context!.l10n.importedApplied(fontName.toString()));
       } else {
-        snackBar('Failed to import font file');
+        snackBar(Get.context!.l10n.failedToImportFontFile);
       }
       if (mounted) setState(() {});
     }
@@ -93,7 +94,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
       await _applyFont('');
     }
     _customFonts = await ExternalFontLoader.getCustomFontNames();
-    snackBar('Deleted "$fontName"');
+    snackBar(Get.context!.l10n.deleted3(fontName.toString()));
     if (mounted) setState(() {});
   }
 
@@ -187,7 +188,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
     ];
 
     return AnymeXSectionBuilder(
-      title: 'Global Font Scaling',
+      title: context.l10n.globalFontScaling,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -257,11 +258,11 @@ class _SettingsFontsState extends State<SettingsFonts> {
     final current = themeProvider.appFontFamily;
 
     return AnymeXSectionBuilder(
-      title: 'Font Library',
+      title: context.l10n.fontLibrary,
       children: [
         AnymeXTile(
-          title: 'Linotte',
-          subtitle: 'Default geometric rounded font designed for AnymeX',
+          title: context.l10n.linotte,
+          subtitle: context.l10n.defaultGeometricRoundedFontDesignedFor,
           titleStyle: const TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -272,8 +273,8 @@ class _SettingsFontsState extends State<SettingsFonts> {
           onTap: () => _applyFont(''),
         ),
         AnymeXTile(
-          title: 'System Font',
-          subtitle: 'Use your device OS default system typeface',
+          title: context.l10n.systemFont,
+          subtitle: context.l10n.useYourDeviceOsDefaultSystem,
           trailing: current == 'System'
               ? Icon(Icons.check_circle_rounded, color: colors.primary)
               : null,
@@ -334,12 +335,12 @@ class _SettingsFontsState extends State<SettingsFonts> {
     final current = themeProvider.appFontFamily;
 
     return AnymeXSectionBuilder(
-      title: 'Custom Fonts',
+      title: context.l10n.customFonts,
       children: [
         AnymeXTile(
           icon: Icons.add_circle_outline_rounded,
-          title: 'Import Custom Font',
-          subtitle: 'Load your own .ttf or .otf typography files',
+          title: context.l10n.importCustomFont,
+          subtitle: context.l10n.loadYourOwnTtfOrOtf,
           onTap: _importCustomFont,
         ),
         for (final fontName in _customFonts)
@@ -378,7 +379,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
       builder: (themeController) {
         return AnymeXScaffold(
           showHeader: true,
-          headerTitle: 'Fonts & Typography',
+          headerTitle: context.l10n.fontsTypography,
           body: Builder(
             builder: (ctx) {
               final headerHeight = AnymeXHeaderScope.of(ctx);

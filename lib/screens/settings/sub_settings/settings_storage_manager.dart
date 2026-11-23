@@ -87,28 +87,28 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                 children: [
                   AnymeXTile.checkbox(
                     title: context.l10n.cachedImages,
-                    subtitle: 'App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}',
+                    subtitle: context.l10n.appPostersIconsAvatarsSize((_service.formatBytes(imageSize)).toString()),
                     value: deleteImages,
                     onChanged: (v) => setDialogState(() => deleteImages = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
                     title: context.l10n.torrentStreamCache,
-                    subtitle: 'Temporary video chunks. Size: ${_service.formatBytes(torrentSize)}',
+                    subtitle: context.l10n.temporaryVideoChunksSize((_service.formatBytes(torrentSize)).toString()),
                     value: deleteTorrents,
                     onChanged: (v) => setDialogState(() => deleteTorrents = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
                     title: context.l10n.novelSnapshots,
-                    subtitle: 'Downloaded web novel pages. Size: ${_service.formatBytes(snapshotSize)}',
+                    subtitle: context.l10n.downloadedWebNovelPagesSize((_service.formatBytes(snapshotSize)).toString()),
                     value: deleteSnapshots,
                     onChanged: (v) => setDialogState(() => deleteSnapshots = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
                     title: context.l10n.otherTemporaryFiles,
-                    subtitle: 'Logs, temp downloads. Size: ${_service.formatBytes(otherTempSize)}',
+                    subtitle: context.l10n.logsTempDownloadsSize((_service.formatBytes(otherTempSize)).toString()),
                     value: deleteOther,
                     onChanged: (v) => setDialogState(() => deleteOther = v),
                   ),
@@ -139,7 +139,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
       await _refresh();
       snackBar(Get.context!.l10n.selectedCacheCleared);
     } catch (e) {
-      snackBar('Failed to clear cache: $e');
+      snackBar(Get.context!.l10n.failedToClearCache(e.toString()));
     } finally {
       if (mounted) setState(() => _isRunningAction = false);
     }
@@ -169,7 +169,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } catch (e) {
-      snackBar('Factory reset failed: $e');
+      snackBar(Get.context!.l10n.factoryResetFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isRunningAction = false);
     }

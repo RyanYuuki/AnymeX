@@ -75,7 +75,7 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
       snackBar(Get.context!.l10n.failedToFetchPolicy, duration: 2000);
     }
   } catch (e) {
-    snackBar(context.l10n.errorFetchingPolicy(e.toString()), duration: 2000);
+    snackBar(Get.context!.l10n.errorFetchingPolicy(e.toString()), duration: 2000);
   }
 }
 

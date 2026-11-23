@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class SettingsReaderNovel extends StatefulWidget {
   const SettingsReaderNovel({super.key});
@@ -67,7 +68,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
 
   void _showNovelThemeDialog() {
     showSelectionDialog<int>(
-      title: 'Novel Theme',
+      title: context.l10n.novelTheme,
       items: const [0, 1, 2, 3],
       selectedItem: _novelThemeMode.obs,
       getTitle: (value) => switch (value) {
@@ -88,7 +89,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
 
   void _showNovelFontDialog() {
     showSelectionDialog<String>(
-      title: 'Novel Font Family',
+      title: context.l10n.novelFontFamily,
       items: _novelFonts,
       selectedItem: _novelFontFamily.obs,
       getTitle: (value) => value,
@@ -245,7 +246,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Novel Reader',
+      headerTitle: context.l10n.novelReader,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -258,11 +259,11 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
             children: [
               _buildNovelPreviewCard(),
               AnymeXSectionBuilder(
-                title: 'Theme & Display',
+                title: context.l10n.themeDisplay,
                 children: [
                   AnymeXTile(
                     icon: Icons.palette_rounded,
-                    title: 'Theme',
+                    title: context.l10n.labelTheme,
                     subtitle: switch (_novelThemeMode) {
                       0 => 'Light',
                       1 => 'Dark',
@@ -273,8 +274,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.slider(
                     icon: Icons.opacity_rounded,
-                    title: 'Background Opacity',
-                    subtitle: 'Reader background opacity',
+                    title: context.l10n.backgroundOpacity,
+                    subtitle: context.l10n.readerBackgroundOpacity,
                     value: _novelBackgroundOpacity,
                     min: 0.3,
                     max: 1.0,
@@ -288,8 +289,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.chrome_reader_mode_rounded,
-                    title: 'Page Reader Mode',
-                    subtitle: 'Read one page at a time',
+                    title: context.l10n.pageReaderMode,
+                    subtitle: context.l10n.readOnePageAtATime,
                     value: _novelPageReaderMode,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.pageReader,
@@ -299,8 +300,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.percent_rounded,
-                    title: 'Show Reading Progress',
-                    subtitle: 'Display chapter percentage while reading',
+                    title: context.l10n.showReadingProgress,
+                    subtitle: context.l10n.displayChapterPercentageWhileReading,
                     value: _novelReadingProgress,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.showReadingProgress,
@@ -310,8 +311,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.battery_std_rounded,
-                    title: 'Show Battery & Time',
-                    subtitle: 'Display status info in the novel reader',
+                    title: context.l10n.showBatteryTime,
+                    subtitle: context.l10n.displayStatusInfoInTheNovel,
                     value: _novelBatteryTime,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.showBatteryTime,
@@ -321,8 +322,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.lock_clock_rounded,
-                    title: 'Keep Screen On',
-                    subtitle: 'Prevent screen from sleeping while reading',
+                    title: context.l10n.keepScreenOn,
+                    subtitle: context.l10n.preventScreenFromSleepingWhileReading,
                     value: _novelKeepScreenOn,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.keepScreenOn,
@@ -333,18 +334,18 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Typography & Spacing',
+                title: context.l10n.typographySpacing,
                 children: [
                   AnymeXTile(
                     icon: HugeIcons.strokeRoundedTextFont,
-                    title: 'Font Family',
+                    title: context.l10n.fontFamily,
                     subtitle: _novelFontFamily,
                     onTap: _showNovelFontDialog,
                   ),
                   AnymeXTile.slider(
                     icon: Icons.format_size_rounded,
-                    title: 'Font Size',
-                    subtitle: 'Text size',
+                    title: context.l10n.fontSize,
+                    subtitle: context.l10n.textSize,
                     value: _novelFontSize,
                     min: 12,
                     max: 24,
@@ -357,8 +358,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.slider(
                     icon: Icons.height_rounded,
-                    title: 'Line Height',
-                    subtitle: 'Distance between lines',
+                    title: context.l10n.lineHeight,
+                    subtitle: context.l10n.distanceBetweenLines,
                     value: _novelLineHeight,
                     min: 1.0,
                     max: 3.0,
@@ -371,8 +372,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.slider(
                     icon: Icons.text_fields_rounded,
-                    title: 'Letter Spacing',
-                    subtitle: 'Space between letters',
+                    title: context.l10n.letterSpacing,
+                    subtitle: context.l10n.spaceBetweenLetters,
                     value: _novelLetterSpacing,
                     min: -1.0,
                     max: 2.0,
@@ -385,8 +386,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.slider(
                     icon: Icons.text_rotation_none_rounded,
-                    title: 'Word Spacing',
-                    subtitle: 'Space between words',
+                    title: context.l10n.wordSpacing,
+                    subtitle: context.l10n.spaceBetweenWords,
                     value: _novelWordSpacing,
                     min: 0.0,
                     max: 5.0,
@@ -399,8 +400,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.slider(
                     icon: Icons.format_line_spacing_rounded,
-                    title: 'Paragraph Spacing',
-                    subtitle: 'Space between paragraphs',
+                    title: context.l10n.paragraphSpacing,
+                    subtitle: context.l10n.spaceBetweenParagraphs,
                     value: _novelParagraphSpacing,
                     min: 8.0,
                     max: 32.0,
@@ -415,12 +416,12 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Novel Controls & Gestures',
+                title: context.l10n.novelControlsGestures,
                 children: [
                   AnymeXTile.toggle(
                     icon: Icons.touch_app_rounded,
-                    title: 'Tap to Scroll',
-                    subtitle: 'Tap screen edges to scroll novel pages',
+                    title: context.l10n.tapToScroll,
+                    subtitle: context.l10n.tapScreenEdgesToScrollNovel,
                     value: _novelTapToScroll,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.tapToScroll,
@@ -430,7 +431,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.swipe_rounded,
-                    title: 'Swipe Gestures',
+                    title: context.l10n.swipeGestures,
                     subtitle:
                         'Enable horizontal swipe navigation in novel reader',
                     value: _novelSwipeGestures,
@@ -443,8 +444,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   if (Platform.isAndroid)
                     AnymeXTile.toggle(
                       icon: Iconsax.volume_high,
-                      title: 'Volume Key Scrolling',
-                      subtitle: 'Use hardware volume buttons to scroll novels',
+                      title: context.l10n.volumeKeyScrolling,
+                      subtitle: context.l10n.useHardwareVolumeButtonsToScroll,
                       value: _novelVolumeScrolling,
                       onChanged: (value) => _setNovelBool(
                         NovelReaderKeys.volumeScrolling,
@@ -454,8 +455,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     ),
                   AnymeXTile.toggle(
                     icon: Icons.play_arrow_rounded,
-                    title: 'Auto Scroll',
-                    subtitle: 'Automatically scroll novel content',
+                    title: context.l10n.autoScroll,
+                    subtitle: context.l10n.automaticallyScrollNovelContent,
                     value: _novelAutoScroll,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.autoScroll,
@@ -466,8 +467,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   if (_novelAutoScroll)
                     AnymeXTile.slider(
                       icon: Icons.speed_rounded,
-                      title: 'Auto Scroll Speed',
-                      subtitle: 'Seconds per screen (lower is faster)',
+                      title: context.l10n.autoScrollSpeed,
+                      subtitle: context.l10n.secondsPerScreenLowerIsFaster,
                       value: _novelAutoScrollSpeed,
                       min: 1.0,
                       max: 10.0,
@@ -482,12 +483,12 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Text-to-Speech (TTS)',
+                title: context.l10n.textToSpeechTts,
                 children: [
                   AnymeXTile.toggle(
                     icon: Icons.record_voice_over_rounded,
-                    title: 'Enable TTS',
-                    subtitle: 'Read novel chapters aloud',
+                    title: context.l10n.enableTts,
+                    subtitle: context.l10n.readNovelChaptersAloud,
                     value: _novelTtsEnabled,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.ttsEnabled,
@@ -498,8 +499,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                   if (_novelTtsEnabled) ...[
                     AnymeXTile.slider(
                       icon: Icons.speed_rounded,
-                      title: 'TTS Speed',
-                      subtitle: 'Speech rate',
+                      title: context.l10n.ttsSpeed,
+                      subtitle: context.l10n.speechRate,
                       value: _novelTtsSpeed,
                       min: 0.1,
                       max: 1.5,
@@ -511,8 +512,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     ),
                     AnymeXTile.slider(
                       icon: Icons.graphic_eq_rounded,
-                      title: 'TTS Pitch',
-                      subtitle: 'Voice pitch',
+                      title: context.l10n.ttsPitch,
+                      subtitle: context.l10n.voicePitch,
                       value: _novelTtsPitch,
                       min: 0.5,
                       max: 2.0,
@@ -524,8 +525,8 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.skip_next_rounded,
-                      title: 'TTS Auto Advance',
-                      subtitle: 'Automatically move to next text segment',
+                      title: context.l10n.ttsAutoAdvance,
+                      subtitle: context.l10n.automaticallyMoveToNextTextSegment,
                       value: _novelTtsAutoAdvance,
                       onChanged: (value) => _setNovelBool(
                         NovelReaderKeys.ttsAutoAdvance,
@@ -537,12 +538,12 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Reset',
+                title: context.l10n.actionReset,
                 children: [
                   AnymeXTile(
                     icon: Icons.restart_alt_rounded,
-                    title: 'Reset Novel Reader Settings',
-                    subtitle: 'Restore all novel reader defaults',
+                    title: context.l10n.resetNovelReaderSettings,
+                    subtitle: context.l10n.restoreAllNovelReaderDefaults,
                     onTap: _resetNovelDefaults,
                   ),
                 ],

@@ -179,7 +179,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } catch (error) {
-      if (mounted) errorSnackBar('Re-download failed: $error');
+      if (mounted) errorSnackBar(context.l10n.reDownloadFailed(error.toString()));
     }
   }
 
@@ -329,7 +329,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } catch (error) {
-      if (mounted) errorSnackBar('Rollback failed: $error');
+      if (mounted) errorSnackBar(context.l10n.rollbackFailed(error.toString()));
     }
   }
 
@@ -755,7 +755,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       if (children.isNotEmpty) {
         settingsList.add(
           AnymeXSectionBuilder(
-            title: '${manager.name} Settings',
+            title: context.l10n.settings2(manager.name.toString()),
             children: children,
           ),
         );

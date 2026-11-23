@@ -86,7 +86,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
   static final Media _fallbackAttackOnTitan = Media(
     id: '16498',
     idMal: '16498',
-    title: 'Attack on Titan',
+    title: Get.context!.l10n.attackOnTitan,
     romajiTitle: 'Shingeki no Kyojin',
     englishTitle: 'Attack on Titan',
     nativeTitle: '進撃の巨人',
@@ -252,7 +252,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   Obx(
                     () => AnymeXTile.toggle(
                       icon: Icons.color_lens_outlined,
-                      title: 'Use Poster Color',
+                      title: context.l10n.usePosterColor,
                       subtitle:
                           'Applies anime/manga poster color scheme on the details page',
                       value: settings.usePosterColor,
@@ -264,7 +264,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   Obx(
                     () => AnymeXTile.toggle(
                       icon: Icons.brightness_2_outlined,
-                      title: 'OLED Mode',
+                      title: context.l10n.oledMode2,
                       subtitle:
                           'Pure black background on details page without gradients',
                       value: settings.detailsOledMode,

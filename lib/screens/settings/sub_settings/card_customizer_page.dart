@@ -16,6 +16,7 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class CardCustomizerPage extends StatefulWidget {
   const CardCustomizerPage({super.key});
@@ -47,7 +48,7 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
         : [
             CarouselData(
               id: '1',
-              title: 'Solo Leveling Season 2 – Arise from the Shadow',
+              title: context.l10n.soloLevelingSeason2AriseFrom,
               poster:
                   'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx176496-zEa7w0t8V90a.jpg',
               extraData: '8.6',
@@ -57,7 +58,7 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
             ),
             CarouselData(
               id: '2',
-              title: 'Frieren: Beyond Journey\'s End',
+              title: context.l10n.frierenBeyondJourneySEnd,
               poster:
                   'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-n2bJDnUhdwio.png',
               extraData: '9.3',
@@ -67,7 +68,7 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
             ),
             CarouselData(
               id: '3',
-              title: 'BLEACH: Thousand-Year Blood War',
+              title: context.l10n.bleachThousandYearBloodWar,
               poster:
                   'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx114446-2t352pD3F95p.jpg',
               extraData: '8.8',
@@ -112,9 +113,9 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Card Customizer',
+      headerTitle: context.l10n.cardCustomizer,
       headerAction: IconButton(
-        tooltip: 'Reset to Default',
+        tooltip: context.l10n.resetToDefault2,
         icon: const Icon(Icons.refresh_rounded),
         onPressed: _reset,
       ),
@@ -217,12 +218,12 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
       final currentName = _styleNameFromIndex(settings.cardStyle);
 
       return AnymeXSectionBuilder(
-        title: 'Card Style',
+        title: context.l10n.cardStyle,
         children: [
           AnymeXTile.pills<String>(
             icon: Iconsax.category,
-            title: 'Preset Style',
-            subtitle: 'Choose from 5 authentic built-in designs',
+            title: context.l10n.presetStyle,
+            subtitle: context.l10n.chooseFrom5AuthenticBuiltIn,
             value: currentName,
             options: _styleOptions,
             onChanged: (selected) {
@@ -242,12 +243,12 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
       final config = settings.cardCustomization;
 
       return AnymeXSectionBuilder(
-        title: 'Sizing & Geometry',
+        title: context.l10n.sizingGeometry,
         children: [
           AnymeXTile.slider(
             icon: Iconsax.size,
-            title: 'Card Size',
-            subtitle: 'Scale cards proportionally without distortion',
+            title: context.l10n.cardSize,
+            subtitle: context.l10n.scaleCardsProportionallyWithoutDistortion,
             value: config.scale,
             min: 0.75,
             max: 1.35,
@@ -260,8 +261,8 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
           ),
           AnymeXTile.toggle(
             icon: Iconsax.rotate_right,
-            title: 'Landscape Cards',
-            subtitle: 'Format cards in 16:9 widescreen orientation',
+            title: context.l10n.landscapeCards,
+            subtitle: context.l10n.formatCardsIn169Widescreen,
             value: config.isLandscape,
             onChanged: (val) {
               _update((c) => c.copyWith(isLandscape: val));
@@ -270,8 +271,8 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
           if (!config.isLandscape)
             AnymeXTile.pills<String>(
               icon: Icons.aspect_ratio_rounded,
-              title: 'Aspect Ratio',
-              subtitle: 'Select poster image aspect ratio',
+              title: context.l10n.aspectRatio,
+              subtitle: context.l10n.selectPosterImageAspectRatio,
               value: config.aspectRatio,
               options: const ['2:3', '3:4', '1:1', '9:16'],
               onChanged: (val) {
@@ -283,8 +284,8 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
             ),
           AnymeXTile.pills<int>(
             icon: Iconsax.textalign_left,
-            title: 'Title Lines',
-            subtitle: 'Maximum number of title lines displayed',
+            title: context.l10n.titleLines,
+            subtitle: context.l10n.maximumNumberOfTitleLinesDisplayed,
             value: config.titleLines,
             options: const [1, 2, 3],
             optionLabelTransformer: (lines) =>

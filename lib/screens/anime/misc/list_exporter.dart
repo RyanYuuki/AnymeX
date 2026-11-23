@@ -311,12 +311,12 @@ class _ListExporterPageState extends State<ListExporterPage> {
       }
 
       if (serviceHandler.serviceType.value == ServicesType.mal) {
-        successSnackBar(context.l10n.malListExportedToN(savedPath.toString()), duration: 5000);
+        successSnackBar(Get.context!.l10n.malListExportedToN(savedPath.toString()), duration: 5000);
       } else {
-        successSnackBar(context.l10n.anilistXmlExportedToN(savedPath.toString()), duration: 5000);
+        successSnackBar(Get.context!.l10n.anilistXmlExportedToN(savedPath.toString()), duration: 5000);
       }
     } catch (e) {
-      errorSnackBar(context.l10n.exportFailed((e.toString()).toString()));
+      errorSnackBar(Get.context!.l10n.exportFailed((e.toString()).toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

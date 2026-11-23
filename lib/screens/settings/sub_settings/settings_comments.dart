@@ -76,7 +76,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Community & Comments',
+      headerTitle: context.l10n.communityComments,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -89,18 +89,18 @@ class _SettingsCommentsState extends State<SettingsComments> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXSectionBuilder(
-                title: 'Closet & Community',
+                title: context.l10n.closetCommunity,
                 children: [
                   AnymeXTile(
                     icon: Icons.checkroom_rounded,
-                    title: 'Open Closet',
+                    title: context.l10n.openCloset,
                     subtitle:
                         'Avatar decorations, nameplates, banners & profile effects',
                     onTap: () => DecorationClosetSheet.show(context),
                   ),
                   AnymeXTile(
                     icon: Icons.emoji_events_rounded,
-                    title: 'Leaderboard',
+                    title: context.l10n.leaderboard,
                     subtitle:
                         'View user rankings, top contributors & reputation',
                     onTap: () => LeaderboardSheet.show(context),
@@ -256,31 +256,31 @@ class _SettingsCommentsState extends State<SettingsComments> {
               }),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'Help & Information',
+                title: context.l10n.helpInformation,
                 children: [
                   AnymeXTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'About Commentum v2',
+                    title: context.l10n.aboutCommentumV2,
                     subtitle:
                         'Powered by Commentum v2 - Advanced comment system with moderation',
                     onTap: _showAboutDialog,
                   ),
                   AnymeXTile(
                     icon: Icons.code_rounded,
-                    title: 'Markdown Guide',
-                    subtitle: 'Learn how to format your comments',
+                    title: context.l10n.markdownGuide,
+                    subtitle: context.l10n.learnHowToFormatYourComments,
                     onTap: _showMarkdownGuide,
                   ),
                   AnymeXTile(
                     icon: Icons.help_outline_rounded,
-                    title: 'Help & Support',
-                    subtitle: 'Get help with the comment system',
+                    title: context.l10n.helpSupport,
+                    subtitle: context.l10n.getHelpWithTheCommentSystem,
                     onTap: _showHelpDialog,
                   ),
                   AnymeXTile(
                     icon: Icons.privacy_tip_outlined,
-                    title: 'Privacy & Safety',
-                    subtitle: 'Privacy settings and safety features',
+                    title: context.l10n.privacySafety,
+                    subtitle: context.l10n.privacySettingsAndSafetyFeatures,
                     onTap: _showPrivacyDialog,
                   ),
                 ],

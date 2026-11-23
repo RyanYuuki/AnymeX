@@ -71,7 +71,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Backup failed: ${e.toString()}");
+        snackBar(context.l10n.backupFailed((e.toString()).toString()));
       }
     } finally {
       if (mounted) {
@@ -88,7 +88,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       if (path == null) return;
       await _loadBackupFile(path);
     } catch (e) {
-      snackBar("Error selecting file: ${e.toString()}");
+      snackBar(Get.context!.l10n.errorSelectingFile((e.toString()).toString()));
     }
   }
 
@@ -155,7 +155,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         setState(() {
           _isLoadingFile = false;
         });
-        snackBar("Failed to load backup: ${e.toString()}");
+        snackBar(context.l10n.failedToLoadBackup((e.toString()).toString()));
       }
     }
   }
@@ -190,7 +190,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Restore failed: ${e.toString()}");
+        snackBar(context.l10n.restoreFailed((e.toString()).toString()));
       }
     } finally {
       if (mounted) {
@@ -523,7 +523,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
             children: [
               AnymeXTile(
                 icon: Icons.folder_open_rounded,
-                title: "Backup Archive",
+                title: context.l10n.backupArchive,
                 subtitle: _selectedFileName ??
                     "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
                 trailing: Container(
@@ -597,7 +597,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.movie_filter_rounded,
                         title: context.l10n.animeLibrary,
-                        subtitle: "$animeCount titles and history",
+                        subtitle: context.l10n.titlesAndHistory(animeCount.toString()),
                         value: _restoreOptions.anime,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.anime = v),
@@ -606,7 +606,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.menu_book_rounded,
                         title: context.l10n.mangaLibrary,
-                        subtitle: "$mangaCount titles and chapters",
+                        subtitle: context.l10n.titlesAndChapters(mangaCount.toString()),
                         value: _restoreOptions.manga,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.manga = v),
@@ -615,7 +615,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.auto_stories_rounded,
                         title: context.l10n.novelLibrary,
-                        subtitle: "$novelCount titles and reading state",
+                        subtitle: context.l10n.titlesAndReadingState(novelCount.toString()),
                         value: _restoreOptions.novel,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.novel = v),
@@ -636,7 +636,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               AnymeXTile.checkbox(
                 icon: Icons.playlist_play_rounded,
                 title: context.l10n.customLists,
-                subtitle: "$totalLists custom lists across media",
+                subtitle: context.l10n.customListsAcrossMedia(totalLists.toString()),
                 enabled: totalLists > 0,
                 value: _restoreOptions.customLists,
                 onChanged: (v) =>
@@ -655,7 +655,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.source_rounded,
                         title: context.l10n.configurationsRepos,
-                        subtitle: "$extDataCount registered extension entries",
+                        subtitle: context.l10n.registeredExtensionEntries(extDataCount.toString()),
                         value: _restoreOptions.extensionsData,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.extensionsData = v),
@@ -664,7 +664,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.folder_zip_rounded,
                         title: context.l10n.installedPackages,
-                        subtitle: "$extFilesCount extension zip bundles",
+                        subtitle: context.l10n.extensionZipBundles(extFilesCount.toString()),
                         value: _restoreOptions.extensionFiles,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.extensionFiles = v),

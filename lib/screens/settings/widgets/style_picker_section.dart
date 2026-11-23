@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class StylePickerSection extends StatefulWidget {
   const StylePickerSection({
@@ -161,7 +162,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
               children: [
                 _ArrowButton(
                   icon: Icons.chevron_left_rounded,
-                  tooltip: 'Previous style',
+                  tooltip: context.l10n.previousStyle,
                   onTap: () => _step(-1),
                 ),
                 const SizedBox(width: 8),
@@ -171,7 +172,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                 const SizedBox(width: 8),
                 _ArrowButton(
                   icon: Icons.chevron_right_rounded,
-                  tooltip: 'Next style',
+                  tooltip: context.l10n.nextStyle,
                   onTap: () => _step(1),
                 ),
               ],
@@ -260,11 +261,11 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                     ? FilledButton.tonalIcon(
                         onPressed: () {},
                         icon: const Icon(Icons.check_rounded, size: 18),
-                        label: const Text('Current style'),
+                        label: Text(context.l10n.currentStyle),
                       )
                     : FilledButton(
                         onPressed: () => widget.onApply(_index),
-                        child: const Text('Use this style'),
+                        child: Text(context.l10n.useThisStyle),
                       ),
               ),
             ),

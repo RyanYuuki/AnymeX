@@ -456,7 +456,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Row(children: [
-                Expanded(child: AnymeXText('$title Section Order', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+                Expanded(child: AnymeXText(context.l10n.sectionOrder(title.toString()), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
                 TextButton(onPressed: () { onApply(order); Navigator.pop(context); }, child: AnymeXText(context.l10n.done2)),
               ]),
               const SizedBox(height: 8),
@@ -677,12 +677,12 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     };
 
     return AnymeXSectionBuilder(
-      title: 'Notifications & Sync',
+      title: context.l10n.notificationsSync,
       children: [
         AnymeXTile.toggle(
           icon: Icons.notifications_active_rounded,
-          title: 'Enable Notifications',
-          subtitle: 'Sync AniList notifications with device notifications',
+          title: context.l10n.enableNotifications,
+          subtitle: context.l10n.syncAnilistNotificationsWithDeviceNotifications,
           value: enabled,
           onChanged: (v) {
             KvHelper.set('anilist_notifications_enabled', v);
@@ -693,7 +693,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
         if (enabled) ...[
           AnymeXTile.toggle(
             icon: Icons.play_circle_outline_rounded,
-            title: 'Airing Alerts',
+            title: context.l10n.airingAlerts,
             subtitle:
                 'Notify when anime on your watch list airs new episodes',
             value: airing,
@@ -704,8 +704,8 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           ),
           AnymeXTile.toggle(
             icon: Icons.people_outline_rounded,
-            title: 'Social Alerts',
-            subtitle: 'Notify on new followers',
+            title: context.l10n.socialAlerts,
+            subtitle: context.l10n.notifyOnNewFollowers,
             value: social,
             onChanged: (v) {
               KvHelper.set('anilist_notif_social', v);
@@ -714,7 +714,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           ),
           AnymeXTile.toggle(
             icon: Icons.favorite_border_rounded,
-            title: 'Activity Alerts',
+            title: context.l10n.activityAlerts,
             subtitle:
                 'Notify when someone likes or replies to your activity',
             value: activity,
@@ -725,10 +725,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           ),
           AnymeXTile(
             icon: Icons.timer_outlined,
-            title: 'Sync Interval',
+            title: context.l10n.syncInterval,
             subtitle: intervalLabels[interval] ?? '$interval Minutes',
             onTap: () => _showOptionPicker<int>(
-              title: 'Sync Interval',
+              title: context.l10n.syncInterval,
               items: intervalLabels.keys.toList(),
               value: interval,
               itemLabel: (v) => intervalLabels[v] ?? '$v Minutes',
@@ -870,7 +870,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXSectionBuilder(
-          title: 'Privacy & Safety',
+          title: context.l10n.privacySafety,
           children: [
             AnymeXTile.toggle(
               icon: Icons.lock_rounded,
@@ -882,7 +882,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           ],
         ),
         AnymeXSectionBuilder(
-          title: 'Region & Timezone',
+          title: context.l10n.regionTimezone,
           children: [
             AnymeXTile(
               icon: Icons.public_rounded,
@@ -899,7 +899,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
           ],
         ),
         AnymeXSectionBuilder(
-          title: 'Profile Bio',
+          title: context.l10n.profileBio,
           children: [
             _buildAboutEditor(),
           ],

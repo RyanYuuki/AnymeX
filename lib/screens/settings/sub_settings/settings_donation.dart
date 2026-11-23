@@ -31,7 +31,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
 
   Future<void> _copyUpiId() async {
     await Clipboard.setData(const ClipboardData(text: _upiId));
-    snackBar('UPI ID copied: $_upiId');
+    snackBar(Get.context!.l10n.upiIdCopied(_upiId.toString()));
   }
 
   Future<void> _openUrl(String url) async {
@@ -136,7 +136,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 8),
           _buildUpiAppItem(
-            title: 'Copy UPI ID ($_upiId)',
+            title: context.l10n.copyUpiId2(_upiId.toString()),
             icon: Icons.copy_rounded,
             onTap: () {
               Get.back();
@@ -396,7 +396,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                   AnymeXTile(
                     icon: Icons.account_balance_wallet_rounded,
                     title: context.l10n.payViaAnyUpiApp,
-                    subtitle: '$_upiId • Tap to launch GPay, PhonePe, Paytm, etc.',
+                    subtitle: context.l10n.tapToLaunchGpayPhonepePaytm(_upiId.toString()),
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _handleUpiTap(context),
                   ),

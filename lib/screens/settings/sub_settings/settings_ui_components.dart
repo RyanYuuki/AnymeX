@@ -45,7 +45,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return StylePickerSection(
       icon: Iconsax.clock,
-      title: 'History card',
+      title: context.l10n.historyCard,
       itemCount: HistoryCardStyle.values.length,
       appliedIndex: settings.historyCardStyle,
       labelFor: (i) => HistoryCardStyle.values[i].displayName,
@@ -76,7 +76,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   Widget _buildCarouselStyleSection(BuildContext context) {
     return StylePickerSection(
       icon: Icons.view_carousel_rounded,
-      title: 'Carousel',
+      title: context.l10n.carousel,
       itemCount: CarouselStyleRegistry.styles.length,
       appliedIndex:
           CarouselStyleRegistry.normalizeIndex(settings.carouselStyle),
@@ -97,7 +97,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   Widget _buildNavBarStyleSection(BuildContext context) {
     return StylePickerSection(
       icon: Icons.navigation_rounded,
-      title: 'Nav bar',
+      title: context.l10n.navBar,
       itemCount: NavStyleVariant.values.length,
       appliedIndex: settings.navBarStyle,
       labelFor: (i) =>
@@ -125,13 +125,13 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   Widget _buildTileStyleSection(BuildContext context) {
     final sampleItems = [
       (
-        title: 'Appearance',
-        subtitle: 'Theme, dark mode & layout styling',
+        title: context.l10n.labelAppearance,
+        subtitle: context.l10n.themeDarkModeLayoutStyling,
         icon: Icons.palette_outlined,
       ),
       (
-        title: 'Player Controls',
-        subtitle: 'Gestures, subtitles & video settings',
+        title: context.l10n.playerControls,
+        subtitle: context.l10n.gesturesSubtitlesVideoSettings,
         icon: Icons.play_circle_outline_rounded,
       ),
     ];
@@ -144,7 +144,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return StylePickerSection(
       icon: Icons.view_agenda_rounded,
-      title: 'Settings tiles',
+      title: context.l10n.settingsTiles,
       itemCount: 2,
       appliedIndex: settings.tileStyle,
       labelFor: (i) => labels[i],

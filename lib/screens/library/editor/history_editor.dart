@@ -118,7 +118,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     });
 
     HapticFeedback.mediumImpact();
-    snackBar(context.l10n.historyItemsDeleted(deletedCount.toString()));
+    snackBar(Get.context!.l10n.historyItemsDeleted(deletedCount.toString()));
   }
 
   void _toggleSelection(String mediaId) {

@@ -83,7 +83,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
   ) {
     AnymeXDialog(
       title: context.l10n.logOut,
-      message: 'Are you sure you want to log out from $title?',
+      message: context.l10n.areYouSureYouWantTo4(title.toString()),
       confirmText: context.l10n.logOut,
       cancelText: context.l10n.cancel,
       onConfirm: () => service.logout(),
@@ -235,7 +235,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Tracking Accounts',
+      headerTitle: context.l10n.trackingAccounts,
       body: Builder(
         builder: (ctx) => ScrollWrapper(
           comfortPadding: false,
@@ -255,11 +255,11 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
             ),
             const SizedBox(height: 16),
             AnymeXSectionBuilder(
-              title: 'Tracking Behavior',
+              title: context.l10n.trackingBehavior,
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.touch_app_rounded,
-                  title: 'Ask for tracking permission',
+                  title: context.l10n.askForTrackingPermission,
                   subtitle:
                       'If enabled, AnymeX will ask before updating your tracking progress; otherwise it tracks automatically.',
                   value: shouldAskForPermission,

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class SettingsPlayerShaders extends StatefulWidget {
   final bool isModal;
@@ -42,90 +43,90 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
   final _defaultShader = 'Default'.obs;
   Dio? _dio;
 
-  static const List<({String id, String title, String sub})> _modeDefs = [
-    (id: 'A', title: 'Mode A', sub: 'Sharpen soft lines'),
-    (id: 'B', title: 'Mode B', sub: 'Gentle, keeps grain'),
-    (id: 'C', title: 'Mode C', sub: 'Denoise, upscale'),
-    (id: 'A+A', title: 'Mode A+A', sub: 'Sharper · heavier'),
-    (id: 'B+B', title: 'Mode B+B', sub: 'Gentle · heavier'),
-    (id: 'C+A', title: 'Mode C+A', sub: 'Clean, then sharpen'),
+  static List<({String id, String title, String sub})> _modeDefs = [
+    (id: 'A', title: Get.context!.l10n.modeA, sub: 'Sharpen soft lines'),
+    (id: 'B', title: Get.context!.l10n.modeB, sub: 'Gentle, keeps grain'),
+    (id: 'C', title: Get.context!.l10n.modeC, sub: 'Denoise, upscale'),
+    (id: 'A+A', title: Get.context!.l10n.modeAA, sub: 'Sharper · heavier'),
+    (id: 'B+B', title: Get.context!.l10n.modeBB, sub: 'Gentle · heavier'),
+    (id: 'C+A', title: Get.context!.l10n.modeCA, sub: 'Clean, then sharpen'),
   ];
 
-  static const List<({String key, String title, Color c1, Color c2, Color c3})>
+  static List<({String key, String title, Color c1, Color c2, Color c3})>
       _presetDefs = [
     (
       key: 'natural',
-      title: 'Natural',
+      title: Get.context!.l10n.natural,
       c1: Color(0xFF8FB1A3),
       c2: Color(0xFFE7C9A1),
       c3: Color(0xFF5E6F9A),
     ),
     (
       key: 'vivid',
-      title: 'Vivid',
+      title: Get.context!.l10n.vivid,
       c1: Color(0xFFFF6B8B),
       c2: Color(0xFFFFC857),
       c3: Color(0xFF3DDBD9),
     ),
     (
       key: 'cinema',
-      title: 'Cinema',
+      title: Get.context!.l10n.cinema,
       c1: Color(0xFF1F3A4D),
       c2: Color(0xFFC98B4E),
       c3: Color(0xFF0E0E14),
     ),
     (
       key: 'anime_soft',
-      title: 'Soft',
+      title: Get.context!.l10n.soft,
       c1: Color(0xFFC9B8E8),
       c2: Color(0xFFF3D3D0),
       c3: Color(0xFFA9D6CE),
     ),
     (
       key: 'warm',
-      title: 'Warm',
+      title: Get.context!.l10n.warm,
       c1: Color(0xFFE8895B),
       c2: Color(0xFFF2C879),
       c3: Color(0xFF8E4B3A),
     ),
     (
       key: 'cool',
-      title: 'Cool',
+      title: Get.context!.l10n.cool,
       c1: Color(0xFF5B8DEF),
       c2: Color(0xFF9FD3F0),
       c3: Color(0xFF2E3A6B),
     ),
     (
       key: 'anime_4k',
-      title: 'Anime 4K',
+      title: Get.context!.l10n.anime4k,
       c1: Color(0xFF7B61FF),
       c2: Color(0xFFFF6584),
       c3: Color(0xFF43E6D5),
     ),
     (
       key: 'cinema_hdr',
-      title: 'Cinema HDR',
+      title: Get.context!.l10n.cinemaHdr,
       c1: Color(0xFF1A2A3A),
       c2: Color(0xFFE5A93C),
       c3: Color(0xFFFF5722),
     ),
     (
       key: 'vivid_pop',
-      title: 'Vivid Pop',
+      title: Get.context!.l10n.vividPop,
       c1: Color(0xFFFF2A6D),
       c2: Color(0xFF05D9E8),
       c3: Color(0xFFF3E600),
     ),
     (
       key: 'dark',
-      title: 'Dark',
+      title: Get.context!.l10n.dark,
       c1: Color(0xFF212121),
       c2: Color(0xFF37474F),
       c3: Color(0xFF121212),
     ),
     (
       key: 'grayscale',
-      title: 'Grayscale',
+      title: Get.context!.l10n.grayscale,
       c1: Color(0xFF424242),
       c2: Color(0xFF757575),
       c3: Color(0xFFBDBDBD),
@@ -335,7 +336,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXSectionBuilder(
-          title: 'Anime4K Engine',
+          title: context.l10n.anime4kEngine,
                 children: [
                   Obx(() {
                     if (!_shadersDownloaded.value) {
@@ -440,7 +441,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: 8),
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: LinearProgressIndicator(
@@ -453,7 +454,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                       minHeight: 8,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  SizedBox(height: 8),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: TextButton(
@@ -475,7 +476,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                     }
 
                     return AnymeXTile.toggle(
-                      title: 'Anime4K shaders',
+                      title: context.l10n.anime4kShaders2,
                       subtitle:
                           'Enable real-time neural upscaling during playback',
                       value: _enableShaders.value,
@@ -490,15 +491,15 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                   }),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'Device Performance Tier',
+                title: context.l10n.devicePerformanceTier,
                 children: [
                   AnymeXSegmentedButtonGroup<String>(
                     selected: settings.selectedProfile,
-                    items: const [
-                      (value: 'MID-END', title: 'Mid-range', icon: null),
-                      (value: 'HIGH-END', title: 'High-end', icon: null),
+                    items: [
+                      (value: 'MID-END', title: context.l10n.midRange, icon: null),
+                      (value: 'HIGH-END', title: context.l10n.highEnd, icon: null),
                     ],
                     onSelected: _selectTier,
                   ),
@@ -525,7 +526,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
               ),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'Shader Mode',
+                title: context.l10n.shaderMode,
                 children: [
                   Obx(() {
                     final current = _defaultShader.value;
@@ -676,7 +677,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
               ),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'Color Preset',
+                title: context.l10n.colorPreset,
                 children: [
                   Obx(() {
                     final currentProfile = _defaultColorProfile.value;
@@ -783,7 +784,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                   children: [
                     const SizedBox(height: 16),
                     AnymeXSectionBuilder(
-                      title: 'Desktop Playback Keybindings',
+                      title: context.l10n.desktopPlaybackKeybindings,
                       children: [
                         _buildKeybindingItem('CTRL + 1', 'Anime4K: Mode A'),
                         _buildKeybindingItem('CTRL + 2', 'Anime4K: Mode B'),
@@ -807,7 +808,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
 
     return AnymeXScaffold(
       showHeader: !widget.isModal,
-      headerTitle: 'Shaders & Colors',
+      headerTitle: context.l10n.shadersColors,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
