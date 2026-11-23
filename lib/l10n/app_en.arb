@@ -2992,7 +2992,7 @@
       }
     }
   },
-  "malListExportedToN": "MAL list exported to:\\n{savedPath}",
+  "malListExportedToN": "MAL list exported to:\n{savedPath}",
   "@malListExportedToN": {
     "placeholders": {
       "savedPath": {
@@ -3000,7 +3000,7 @@
       }
     }
   },
-  "anilistXmlExportedToN": "AniList XML exported to:\\n{savedPath}",
+  "anilistXmlExportedToN": "AniList XML exported to:\n{savedPath}",
   "@anilistXmlExportedToN": {
     "placeholders": {
       "savedPath": {
@@ -3936,7 +3936,7 @@
       }
     }
   },
-  "nMore": "{summaryText}\\n+{value} more",
+  "nMore": "{summaryText}\n+{value} more",
   "@nMore": {
     "placeholders": {
       "summaryText": {
