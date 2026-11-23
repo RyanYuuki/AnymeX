@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 
 class ExtensionFilterSheet extends StatefulWidget {
@@ -583,7 +584,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
                   color: theme.colorScheme.onSurface,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Search ${group.name.toLowerCase()}...',
+                  hintText: context.l10n.search2((group.name.toLowerCase()).toString()),
                   hintStyle: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 13,
                     color: theme.colorScheme.onSurface.withOpacity(0.45),

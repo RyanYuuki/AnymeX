@@ -1972,7 +1972,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: _buildNeonButton(
-                    text: 'DONE (${selectedTags.length} selected)',
+                    text: context.l10n.doneSelected(selectedTags.length.toString()),
                     icon: Icons.check_rounded,
                     isPrimary: true,
                     onTap: () => Navigator.pop(ctx),
@@ -2090,7 +2090,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             Icon(Icons.live_tv_rounded,
                                 color: colorScheme.primary, size: 24),
                             const SizedBox(width: 8),
-                            AnymeXText(isManga ? 'READABLE ON' : 'STREAMING ON',
+                            AnymeXText(isManga ? context.l10n.readableOn : context.l10n.streamingOn,
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.5,

@@ -2504,5 +2504,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "search2": "Search {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "DONE ({length} selected)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "READABLE ON",
+  "streamingOn": "STREAMING ON"
 }
