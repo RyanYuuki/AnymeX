@@ -176,5 +176,3834 @@
   "incognitoDisabled": "Η κατάσταση ανώνυμης περιήγησης είναι απενεργοποιημένη",
   "episodeCount": "{count} Επεισόδια",
   "chapterCount": "{count} Κεφάλαια",
-  "itemCount": "{count} Αντικείμενα"
+  "itemCount": "{count} Αντικείμενα",
+  "whatAreWeDoingToday": ", τι θα κάνουμε σήμερα;",
+  "aLogoWithThisNameAlready": "Υπάρχει ήδη ένα λογότυπο με αυτό το όνομα.",
+  "about": "Σχετικά με",
+  "aboutCommentumV2": "Σχετικά με το Commentum v2",
+  "aboutTheApp": "Σχετικά με την εφαρμογή",
+  "accessModerationToolsAndReports": "Πρόσβαση σε εργαλεία διαχείρισης και αναφορές",
+  "accountTokensAnilistMalSimkl": "Διακριτικά λογαριασμού (AniList, MAL, Simkl)",
+  "accounts": "Λογαριασμοί",
+  "accountsSync": "Λογαριασμοί & Συγχρονισμός",
+  "actionAppliedSuccessfully": "Η ενέργεια εκτελέστηκε με επιτυχία",
+  "activeDownloads": "Ενεργές λήψεις",
+  "activity": "Δραστηριότητα",
+  "activityDeleted": "Η δραστηριότητα διαγράφηκε",
+  "activityHeatmap": "Χάρτης δραστηριότητας",
+  "activityMergeTime": "Χρόνος συγχώνευσης δραστηριοτήτων",
+  "activityPhrasing": "Διατύπωση δραστηριοτήτων",
+  "activityRefreshed": "Η δραστηριότητα ανανεώθηκε",
+  "adFreeApp": "Εφαρμογή χωρίς διαφημίσεις",
+  "addCustomLogo": "Προσθήκη προσαρμοσμένου λογότυπου",
+  "addCustomLogoGifWebp": "Προσθήκη προσαρμοσμένου λογότυπου (.gif, .webp)",
+  "addRepo": "Προσθήκη Repo",
+  "addRepository": "Προσθήκη αποθετηρίου",
+  "addYourRecommendation": "Προσθέστε τη δική σας πρόταση",
+  "addOnExtensions": "Πρόσθετες επεκτάσεις",
+  "addOns": "Πρόσθετα",
+  "addOnsPowerBackgroundServicesSuch": "Τα πρόσθετα υποστηρίζουν υπηρεσίες που λειτουργούν στο παρασκήνιο, όπως ο μηχανισμός ροής torrent TorrServer για άμεση αναπαραγωγή μέσω συνδέσμων magnet.",
+  "addedToDownloads": "Προστέθηκε στις λήψεις",
+  "addingKotatsuRepositoryThisWillTake": "Προσθήκη του αποθετηρίου Kotatsu. Η διαδικασία θα διαρκέσει τουλάχιστον 1-2 λεπτά, παρακαλώ περιμένετε...",
+  "addingRepositoryFetchingExtensions": "Προσθήκη αποθετηρίου και λήψη επεκτάσεων...",
+  "adjustBottomBarMarginMediaDetails": "Προσαρμογή περιθωρίου κάτω γραμμής (μόνο στη σελίδα λεπτομερειών μέσων)",
+  "adjustCardAnimationSpeed": "Ρύθμιση της ταχύτητας της κινούμενης εικόνας της κάρτας",
+  "adjustCornerRadiusOfElements": "Προσαρμογή της ακτίνας γωνίας των στοιχείων",
+  "adjustDoubleTapToSeekDuration": "Ρύθμιση της διάρκειας της λειτουργίας «Διπλό πάτημα για αναζήτηση»",
+  "adjustElementGlowIntensity": "Ρύθμιση της έντασης της λάμψης του στοιχείου",
+  "adjustFrostedBlurIntensity": "Ρύθμιση της έντασης του θολού εφέ",
+  "adjustGlowBlurIntensity": "Ρύθμιση της έντασης της θολούρας λάμψης",
+  "adjustHorizontalMarginOfBottomNavigation": "Προσαρμογή του οριζόντιου περιθωρίου της κάτω γραμμής πλοήγησης",
+  "adjustItemsPerRow": "Προσαρμογή του αριθμού των στοιχείων ανά σειρά",
+  "adjustMediaBackdropExposure": "Ρύθμιση της έκθεσης του φόντου με πολυμέσα",
+  "adjustMegaskipDuration": "Ρύθμιση της διάρκειας του MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "Προσαρμογή της στρογγυλότητας όλων των καρτών αποθήκευσης",
+  "adjustSubSize": "Προσαρμογή μεγέθους υποκατηγορίας",
+  "adjustSubtitleOutlineWidth": "Προσαρμογή του πλάτους του περιγράμματος των υπότιτλων",
+  "adjustTextVisibility": "Προσαρμογή της ορατότητας του κειμένου",
+  "admin": "Διαχειριστής",
+  "adult": "Ενήλικες",
+  "aiPicks": "Επιλογές AI",
+  "airingAnimeNotifications": "Ειδοποιήσεις για την προβολή anime",
+  "all": "Όλα",
+  "allClearNoReportsToReview": "Όλα εντάξει! Δεν υπάρχουν αναφορές προς εξέταση.",
+  "allSources": "Όλες οι πηγές",
+  "allowAnymexToAutomaticallyOpenAnime": "Επιτρέψτε στο AnymeX να ανοίγει αυτόματα τους συνδέσμους προς ιστοσελίδες με anime και manga",
+  "allowInstallingUpdatesForExtensionsAnd": "Να επιτρέπεται η εγκατάσταση ενημερώσεων για επεκτάσεις και εφαρμογές",
+  "allowOnlyUsersIFollowTo": "Να επιτρέπεται μόνο στους χρήστες που ακολουθώ να μου στέλνουν μηνύματα.",
+  "allowStorageAccessAndSelectDownload": "Επιτρέψτε την πρόσβαση στο χώρο αποθήκευσης και επιλέξτε φάκελο λήψης",
+  "allowStorageAccessToDownloadApp": "Να επιτρέπεται η πρόσβαση στην αποθήκευση για τη λήψη ενημερώσεων εφαρμογών και επεκτάσεων",
+  "alreadyRecommended": "Έχει ήδη προταθεί",
+  "alternativeTitles": "Εναλλακτικοί τίτλοι",
+  "alwaysShowChapterTransition": "Να εμφανίζεται πάντα η μετάβαση μεταξύ κεφαλαίων",
+  "alwaysShowPageIndicator": "Να εμφανίζεται πάντα ο δείκτης σελίδας",
+  "amountOfFilmGrainApplied": "Ποσότητα κόκκων φιλμ που εφαρμόστηκε",
+  "anifyKitsuArtwork": "Anify / Kitsu: Έργα τέχνης",
+  "anilistSettings": "Ρυθμίσεις AniList",
+  "anilistSettings2": "Ρυθμίσεις Anilist",
+  "animatchCompatibility": "Συμβατότητα AniMatch",
+  "animatchLinkCopiedToClipboard": "Ο σύνδεσμος AniMatch αντιγράφηκε στο πρόχειρο!",
+  "animateControlOverlay": "Κινούμενη επικάλυψη στοιχείου ελέγχου",
+  "anime": "Άνιμε",
+  "animeUpper": "ANIME",
+  "animeManga": "Άνιμε & Μάνγκα",
+  "anime4kEnhancement": "Βελτίωση ποιότητας anime σε 4K",
+  "animeAdaptation": "Προσαρμογή σε anime",
+  "animeCustomLists": "Προσαρμοσμένες λίστες anime",
+  "animeDetailsPhrasing": "Διατύπωση λεπτομερειών για τα anime",
+  "animeLibrary": "Βιβλιοθήκη Anime",
+  "animeList": "ΛΙΣΤΑ ΑΝΙΜΕ",
+  "animeScore": "Βαθμολογία Anime",
+  "animeSectionOrder": "Παραγγελία τμήματος Anime",
+  "announcement": "Ανακοίνωση",
+  "announcementUnavailable": "Η ανακοίνωση δεν είναι διαθέσιμη",
+  "announcements": "Ανακοινώσεις",
+  "anymexForkOptimisedForTv": "Το fork του AnymeX, βελτιστοποιημένο για τηλεόραση",
+  "anymexIs100FreeOpenSource": "Το AnymeX είναι 100% δωρεάν, ανοιχτού κώδικα και χωρίς διαφημίσεις. Η υποστήριξή σας συμβάλλει άμεσα στην κάλυψη των εξόδων των διακομιστών και στην ενεργή ανάπτυξη νέων λειτουργιών!",
+  "anymexIs100FreeOpenSourceAnd": "Το AnymeX είναι 100% δωρεάν, ανοιχτού κώδικα και χωρίς διαφημίσεις. Η υποστήριξή σας με βοηθά να παραμένω ενθουσιασμένος για τη συνεχή συντήρηση και βελτίωση της εφαρμογής!",
+  "appCacheExceededThresholdAndWas": "Η προσωρινή μνήμη της εφαρμογής ξεπέρασε το όριο και εκκαθαρίστηκε",
+  "appDataHasBeenCompletelyReset": "Τα δεδομένα της εφαρμογής έχουν επαναφερθεί πλήρως",
+  "appFonts": "Γραμματοσειρές εφαρμογών",
+  "appSettingsSessions": "Ρυθμίσεις εφαρμογής & Συνεδρίες",
+  "appearance": "Εμφάνιση",
+  "appearanceInterface": "Εμφάνιση και διεπαφή",
+  "appearanceTheme": "Εμφάνιση & Θέμα",
+  "appliesAnimeMangaPosterColorOn": "Εφαρμόζει χρώμα αφίσας anime/manga στη σελίδα λεπτομερειών",
+  "apply": "Υποβολή αίτησης",
+  "applyASubtleFilmGrainTexture": "Εφαρμόστε μια διακριτική υφή κόκκων φιλμ στη διεπαφή",
+  "applyFilters": "Εφαρμογή φίλτρων",
+  "applyOptionsFromYourMpvConf": "Εφαρμογή των ρυθμίσεων από το αρχείο mpv.conf κατά την έναρξη της αναπαραγωγής",
+  "areYouSureYouWantTo": "Είστε σίγουροι ότι θέλετε να διαγράψετε όλα τα αποθηκευμένα cookies;",
+  "areYouSureYouWantToDelete": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το σχόλιο; Θα διαγραφεί οριστικά και η αναφορά θα κλείσει.",
+  "areYouSureYouWantToDeleteThis": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την επέκταση;",
+  "areYouSureYouWantToDeleteThisReply": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την απάντηση;",
+  "askForTrackingPermission": "Ζητήστε άδεια παρακολούθησης",
+  "atLeast2TabsMustRemain": "Πρέπει να παραμένουν ορατές τουλάχιστον 2 καρτέλες!",
+  "audioEngine": "Μηχανή ήχου",
+  "audioPitchCorrection": "Διόρθωση του τόνου του ήχου",
+  "authenticationOptional": "ΕΠΑΛΗΘΕΥΣΗ ΤΑΥΤΟΤΗΤΑΣ (ΠΡΟΑΙΡΕΤΙΚΟ)",
+  "auto": "Αυτοκίνητο",
+  "autoPlay": "Αυτόματη αναπαραγωγή",
+  "autoScroll": "Αυτόματη κύλιση",
+  "autoScrollSpeed": "Ταχύτητα αυτόματης κύλισης",
+  "autoSkipEd": "Αυτόματη παράλειψη ED",
+  "autoSkipFiller": "Αυτόματη παράλειψη συμπληρωματικού κειμένου",
+  "autoSkipOnceOnly": "Αυτόματη παράλειψη μόνο μία φορά",
+  "autoSkipOnlyOncePerWatch": "Αυτόματη παράλειψη μόνο μία φορά ανά προβολή",
+  "autoSkipOp": "Αυτόματη παράλειψη OP",
+  "autoSkipRecap": "Αυτόματη παράλειψη ανακεφαλαίωσης",
+  "autoSkipTheEndingSong": "Αυτόματη παράλειψη του τελευταίου τραγουδιού",
+  "autoSkipTheOpeningSong": "Αυτόματη παράλειψη του εναρκτήριου τραγουδιού",
+  "autoSkipTheRecapSection": "Αυτόματη παράλειψη της ενότητας ανακεφαλαίωσης",
+  "autoSwitchToVerticalMode": "Αυτόματη μετάβαση σε κατακόρυφη λειτουργία",
+  "autoTranslateSubtitles": "Αυτόματη μετάφραση υπότιτλων",
+  "autoWebtoonMode": "Αυτόματη λειτουργία Webtoon",
+  "autoClearThreshold": "Όριο αυτόματης εκκαθάρισης",
+  "autoSelectDefault": "Αυτόματη επιλογή (προεπιλογή)",
+  "autoSelectThisServerQualityFor": "Αυτόματη επιλογή αυτής της ποιότητας διακομιστή για αυτό το anime",
+  "automaticallyMoveToNextTextSegment": "Αυτόματη μετάβαση στο επόμενο τμήμα κειμένου",
+  "automaticallyScrollContent": "Αυτόματη κύλιση του περιεχομένου",
+  "automaticallyScrollPages": "Αυτόματη κύλιση σελίδων",
+  "automaticallySkipFillerEpisodesWhenGoing": "Αυτόματη παράλειψη των επεισοδίων-γέφυρας κατά τη μετάβαση στο επόμενο επεισόδιο",
+  "automaticallyUpdateEntriesWhenImportingThe": "Αυτόματη ενημέρωση των εγγραφών κατά την εισαγωγή του αρχείου XML",
+  "availableAddOns": "Διαθέσιμα πρόσθετα",
+  "availableKeybindings": "Διαθέσιμες συντομεύσεις πληκτρολογίου:",
+  "avatarDecorations": "Διακοσμητικά με θέμα το Avatar",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Διακοσμητικά για το Avatar, ταμπελάκια με ονόματα, πανό και εφέ προφίλ",
+  "avgChapters": "Μέσος όρος κεφαλαίων",
+  "avgEpisodes": "Μέσος όρος επεισοδίων",
+  "back": "Πίσω",
+  "backdropScope": "Πλαίσιο & Πεδίο εφαρμογής",
+  "backdropBrightness": "Φωτεινότητα φόντου",
+  "backdropSource": "Πηγή φόντου",
+  "backgroundOpacity": "Αδιαφάνεια φόντου",
+  "backup": "Δημιουργία αντιγράφου ασφαλείας",
+  "backupRestore": "Δημιουργία αντιγράφων ασφαλείας και επαναφορά",
+  "backupAndRestoreYourLibrary": "Δημιουργία αντιγράφων ασφαλείας και επαναφορά της βιβλιοθήκης σας",
+  "backupArchive": "Αρχείο αντιγράφων ασφαλείας",
+  "backupOwner": "Αναπληρωτής ιδιοκτήτης",
+  "backupRestoredSuccessfully": "Η επαναφορά του αντιγράφου ασφαλείας ολοκληρώθηκε με επιτυχία!",
+  "backupSavedSuccessfully": "Η δημιουργία αντιγράφου ασφαλείας ολοκληρώθηκε με επιτυχία!",
+  "badge": "Σήμα",
+  "banUser": "Αποκλεισμός χρήστη",
+  "baseUrlNotAvailableForThis": "Η βασική διεύθυνση URL δεν είναι διαθέσιμη για αυτή την πηγή",
+  "basedOnYourFavouriteCharacters": "Με βάση τους αγαπημένους σου χαρακτήρες.",
+  "basedOnYourFavouriteStaff": "Με βάση το αγαπημένο σου προσωπικό.",
+  "basedOnYourTop10Tags": "Με βάση τις 10 πιο δημοφιλείς ετικέτες σου.",
+  "basedOnYourTop3Studios": "Με βάση τα 3 αγαπημένα σου στούντιο.",
+  "basedOnYourTop5Genres": "Με βάση τα 5 αγαπημένα σου είδη.",
+  "basedOnYourTop6Voice": "Με βάση τους 6 αγαπημένους σου ηθοποιούς φωνής.",
+  "batchDownload": "Μαζική λήψη",
+  "beTheFirstToRecommendThis": "Γίνε ο πρώτος που θα προτείνει αυτόν τον τίτλο!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Βελτιωμένη απόδοση υποτίτλων με χρήση της βιβλιοθήκης libass",
+  "blockquote": "Απόσπασμα",
+  "blurBackdropTuning": "Ρύθμιση θολώματος και φόντου",
+  "blurAmount": "Βαθμός θόλωσης",
+  "blurColorTint": "Αποχρώσεις χρώματος Blur",
+  "blurMechanism": "Μηχανισμός θόλωσης",
+  "blurMultiplier": "Πολλαπλασιαστής θολώματος",
+  "blurStyle": "Στυλ Blur",
+  "bold": "Έντονη γραφή",
+  "boldItalic": "Έντονη + Πλάγια",
+  "botUrlNotConfigured": "Η διεύθυνση URL του bot δεν έχει ρυθμιστεί",
+  "bottomControls": "Χειριστήρια στο κάτω μέρος",
+  "bottomMargin": "Κάτω περιθώριο",
+  "bottomNavBarMargin": "Περιθώριο κάτω γραμμής πλοήγησης",
+  "broadcastYourActivityToDiscord": "Μεταδώστε τη δραστηριότητά σας στο Discord",
+  "browsingIdle": "Περιήγηση / Αδράνεια",
+  "browsingPhrasing": "Εκφράσεις κατά την περιήγηση",
+  "bufferSize": "Μέγεθος buffer",
+  "builtInStyles": "Ενσωματωμένα στυλ",
+  "byDisablingThisYouCanAvoid": "Απενεργοποιώντας αυτή τη ρύθμιση, μπορείτε να αποφύγετε τη μετάβαση μεταξύ των υπότιτλων.",
+  "byIndex": "Κατά ευρετήριο",
+  "byUserId": "Κατά αναγνωριστικό χρήστη",
+  "byUsername": "Ανά όνομα χρήστη",
+  "bypassCloudflare": "Παράκαμψη του Cloudflare",
+  "cacheStorage": "Μνήμη cache και αποθήκευση",
+  "cacheMinutes": "Πρακτικά της Cache",
+  "cacheOverview": "Επισκόπηση της κρυφής μνήμης",
+  "cachedImages": "Εικόνες στην προσωρινή μνήμη",
+  "calculateCompatibility": "Υπολογισμός συμβατότητας",
+  "calculatedBasedOnWhichReleaseDecades": "Υπολογίστηκε με βάση τις δεκαετίες κυκλοφορίας των ταινιών που παρακολουθήσατε περισσότερο και στις οποίες σημειώσατε την υψηλότερη βαθμολογία.",
+  "calendar": "Ημερολόγιο",
+  "cancel": "Ακύρωση",
+  "cannotCompareAUserWithThemselves": "Δεν είναι δυνατή η σύγκριση ενός χρήστη με τον εαυτό του! Παρακαλώ εισάγετε δύο διαφορετικά ονόματα χρήστη.",
+  "cannotCompareYourProfileWithYourself": "Δεν είναι δυνατή η σύγκριση του προφίλ σου με τον εαυτό σου! Παρακαλώ, εισάγε ένα διαφορετικό όνομα χρήστη.",
+  "cantPlaySinceUserClosedThe": "Δεν είναι δυνατή η αναπαραγωγή, καθώς ο χρήστης έκλεισε απότομα την εφαρμογή",
+  "cantReadSinceUserClosedThe": "Δεν είναι δυνατή η ανάγνωση, καθώς ο χρήστης έκλεισε απότομα την εφαρμογή",
+  "cardAnimationDuration": "Διάρκεια της κινούμενης εικόνας της κάρτας",
+  "cardRoundness": "Στρογγυλοποίηση καρτών",
+  "cardStyle": "Στυλ κάρτας",
+  "carouselStyle": "Στυλ καρουζέλ",
+  "changeFile": "Αλλαγή αρχείου",
+  "changeRole": "Αλλαγή ρόλου",
+  "changeService": "Υπηρεσία αλλαγών",
+  "changeSubtitleBackgroundColor": "Αλλαγή χρώματος φόντου υποτίτλων",
+  "changeSubtitleColors": "Αλλαγή χρωμάτων υπότιτλων",
+  "changeSubtitleOutlineColor": "Αλλαγή χρώματος περιγράμματος υποτίτλων",
+  "changelog": "ΚΑΤΑΛΟΓΟΣ ΑΛΛΑΓΩΝ",
+  "chapterListSettings": "Ρυθμίσεις λίστας κεφαλαίων",
+  "chapterNumber": "Αριθμός κεφαλαίου",
+  "chapterTileStyle": "Στυλ τίτλου κεφαλαίου",
+  "chapters": "Κεφάλαια",
+  "chaptersUpper": "ΚΕΦΑΛΑΙΑ",
+  "chaptersVolumes": "ΚΕΦΑΛΑΙΑ & ΤΟΜΟΙ",
+  "chaptersRead": "Κεφάλαια που έχουν διαβαστεί",
+  "characters": "Χαρακτήρες",
+  "checkCompatibility": "Έλεγχος συμβατότητας",
+  "checkForAddOnUpdates": "Έλεγχος για ενημερώσεις πρόσθετων",
+  "checkForUpdates": "Έλεγχος για ενημερώσεις",
+  "checkUpdatesFromBetaChannel": "Δείτε τις ενημερώσεις από το κανάλι beta",
+  "checkingForUpdates": "Έλεγχος για ενημερώσεις!",
+  "chooseABackupFileAnymex": "Επιλέξτε ένα αρχείο αντιγράφου ασφαλείας (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Επιλέξτε ένα προσαρμοσμένο φόντο για τη λειτουργία «liquid».",
+  "chooseADirectoryToBrowseYour": "Επιλέξτε έναν φάκελο για να περιηγηθείτε στα αρχεία πολυμέσων σας",
+  "chooseDifferentImage": "Επιλέξτε άλλη εικόνα",
+  "chooseDownloadFolder": "Επιλέξτε φάκελο λήψης",
+  "chooseImage": "Επιλογή εικόνας",
+  "chooseProvider": "Επιλογή παρόχου",
+  "chooseQuality": "Επιλέξτε ποιότητα",
+  "chooseServer": "Επιλογή διακομιστή",
+  "chooseServiceTracker": "Επιλογή υπηρεσίας / Παρακολούθηση",
+  "chooseShaderProfile": "Επιλογή προφίλ σκιών",
+  "chooseUpiApp": "Επιλέξτε την εφαρμογή UPI",
+  "chooseWhichListToShowOn": "Επιλέξτε ποια λίστα θα εμφανίζεται στην αρχική σελίδα",
+  "chooseYourFavouriteColor": "Διάλεξε το αγαπημένο σου χρώμα!",
+  "chooseYourFavouritePalette": "Διάλεξε την αγαπημένη σου παλέτα!",
+  "chromaScaler": "Chroma Scaler",
+  "classicCarouselCardLayoutFeaturingVertical": "Κλασική διάταξη καρτών τύπου καρουζέλ με κάθετες κάρτες-αφίσες.",
+  "clear": "Εκκαθάριση",
+  "clearAll": "Εκκαθάριση όλων",
+  "clearAllHistory": "Εκκαθάριση όλου του ιστορικού",
+  "clearAppCache": "Εκκαθάριση της προσωρινής μνήμης της εφαρμογής",
+  "clearAppCacheNow": "Εκκαθάριση της προσωρινής μνήμης της εφαρμογής τώρα",
+  "clearCache": "Εκκαθάριση προσωρινής μνήμης",
+  "clearCacheCookies": "Εκκαθάριση προσωρινής μνήμης και cookies",
+  "clearCookies": "Διαγραφή cookies",
+  "clearCookies2": "Διαγραφή cookies",
+  "clearHistory": "Εκκαθάριση ιστορικού",
+  "clearImageCacheNow": "Εκκαθάριση της προσωρινής μνήμης εικόνων τώρα",
+  "clearProxy": "Εκκαθάριση διακομιστή μεσολάβησης",
+  "clearSelected": "Εκκαθάριση επιλεγμένων",
+  "clientAll": "Πελάτης: Όλοι",
+  "close": "Κλείσιμο",
+  "closetCommunity": "Ντουλάπα & Κοινότητα",
+  "cloudflareChallengeSolved": "Η πρόκληση της Cloudflare λύθηκε!",
+  "collectionName": "Όνομα συλλογής",
+  "collections": "Συλλογές",
+  "combineBackupDataWithExistingData": "Συνδυάστε τα δεδομένα αντιγράφου ασφαλείας με τα υπάρχοντα δεδομένα σε αυτή τη συσκευή",
+  "commentDeleted": "Το σχόλιο διαγράφηκε",
+  "commentPolicy": "Πολιτική σχολίων",
+  "commentReplies": "Απαντήσεις σε σχόλια",
+  "commentRules": "Κανόνες για τα σχόλια",
+  "commentSystem": "Σύστημα σχολίων",
+  "comments": "Σχόλια",
+  "commentumV2IsAnAdvancedComment": "Το Commentum v2 είναι ένα προηγμένο σύστημα σχολίων που προσφέρει:",
+  "commentumV2SettingsModerationPreferences": "Ρυθμίσεις, διαχείριση σχολίων και προτιμήσεις του Commentum v2",
+  "common": "Συνηθισμένο",
+  "commonCharacters": "Κοινά χαρακτηριστικά",
+  "commonFavouriteStaff": "Αγαπημένοι υπάλληλοι",
+  "commonGenres": "Συνηθισμένα είδη",
+  "commonSettings": "Γενικές ρυθμίσεις",
+  "commonStudios": "Common Studios",
+  "commonTags": "Συχνές ετικέτες",
+  "commonVoiceActors": "Συνηθισμένοι ηθοποιοί φωνής",
+  "communityDriven": "Με πρωτοβουλία της κοινότητας",
+  "communityForksOfAnymex": "Κοινοτικά fork του AnymeX",
+  "communityLeaderboard": "Πίνακας κατάταξης της κοινότητας",
+  "communityRecommendations": "Συστάσεις της κοινότητας",
+  "compact": "Συμπαγής",
+  "compactCardWithEpisodeThumbnailAnd": "Συμπαγής κάρτα με μικρογραφία και τίτλο επεισοδίου",
+  "compactGridOfChapterNumbers": "Συμπαγές πλέγμα με τους αριθμούς των κεφαλαίων",
+  "compatibility": "Συμβατότητα",
+  "compatibilityRanks": "Κατάταξη συμβατότητας",
+  "compatibleWithGooglePayPhonepePaytm": "Συμβατό με τα Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay και όλες τις τραπεζικές εφαρμογές UPI.",
+  "completeAnyCloudflareChallengeThenTap": "Ολοκληρώστε οποιαδήποτε δοκιμασία της Cloudflare και, στη συνέχεια, πατήστε «Συγχρονισμός cookies» για να μεταβιβάσετε τη συνεδρία στις επεκτάσεις.",
+  "compose": "Σύνταξη",
+  "concurrencyLimits": "Παράλληλη εκτέλεση και όρια",
+  "configurationsRepos": "Διαμορφώσεις & Αποθετήρια",
+  "configureExport": "Ρύθμιση παραμέτρων & Εξαγωγή",
+  "configureDiscordRichPresenceActivityStatus": "Ρύθμιση παραμέτρων της λειτουργίας «Rich Presence» και της κατάστασης δραστηριότητας στο Discord",
+  "configureDnsOverHttpsProxyTls": "Ρύθμιση παραμέτρων DNS-over-HTTPS, διακομιστή μεσολάβησης και TLS",
+  "configureMangaAndNovelReaderDefaults": "Ρύθμιση των προεπιλογών του προγράμματος ανάγνωσης μάνγκα και μυθιστορημάτων",
+  "configureParallelDownloadsAndDirectory": "Ρύθμιση παραμέτρων για παράλληλες λήψεις και κατάλογο",
+  "configurePosterBlurScopeTintBackdrop": "Ρύθμιση της θολώσεως της αφίσας, του πεδίου εφαρμογής, της απόχρωσης και της πηγής του φόντου",
+  "confirm": "Επιβεβαίωση",
+  "confirmRestore": "ΕΠΙΒΕΒΑΙΩΣΗ & ΕΠΑΝΑΦΟΡΑ",
+  "confirmBackupPassword": "Επιβεβαίωση κωδικού πρόσβασης αντιγράφου ασφαλείας",
+  "conflictHandling": "Διαχείριση συγκρούσεων",
+  "connect": "Σύνδεση",
+  "continueReading": "Συνέχεια ανάγνωσης",
+  "continueWatching": "Συνέχισε να παρακολουθείς",
+  "continuousModeOnly": "Μόνο σε συνεχή λειτουργία",
+  "contributors": "Συνεισφέροντες",
+  "controlTheme": "Θέμα ελέγχου",
+  "controlsSubtitlesAndPlaybackPreferences": "Λειτουργίες ελέγχου, υπότιτλοι και προτιμήσεις αναπαραγωγής",
+  "cookiesUserAgentSynced": "Τα cookies και το User-Agent έχουν συγχρονιστεί!",
+  "copy": "Αντιγραφή",
+  "copyPath": "Αντιγραφή διαδρομής",
+  "copyUpiId": "Αντιγραφή κωδικού UPI",
+  "copyUserId": "Αντιγραφή αναγνωριστικού χρήστη",
+  "coreTeam": "Κύρια ομάδα",
+  "couldNotCalculateCompatibility": "Δεν ήταν δυνατός ο υπολογισμός της συμβατότητας.",
+  "couldNotFetchChaptersForThis": "Δεν ήταν δυνατή η ανάκτηση των κεφαλαίων για αυτόν τον τίτλο",
+  "couldNotFetchEpisodesForThis": "Δεν ήταν δυνατή η λήψη επεισοδίων για αυτόν τον τίτλο",
+  "couldNotOpenDonationLink": "Δεν ήταν δυνατό να ανοίξει ο σύνδεσμος για τη δωρεά",
+  "couldNotOpenLink": "Δεν ήταν δυνατό να ανοίξει ο σύνδεσμος",
+  "couldNotOpenReleasesPage": "Δεν ήταν δυνατό να ανοίξει η σελίδα των κυκλοφοριών",
+  "couldntOpenAppSettingsOpenIt": "Δεν ήταν δυνατή η πρόσβαση στις ρυθμίσεις της εφαρμογής. Ανοίξτε την χειροκίνητα.",
+  "count": "Αριθμός",
+  "countryDistribution": "Κατανομή ανά χώρα",
+  "countryOfOrigin": "Χώρα προέλευσης",
+  "create": "Δημιουργία",
+  "createAFullAnymexArchiveOf": "Δημιουργήστε ένα πλήρες αρχείο .anymex με τη βιβλιοθήκη πολυμέσων, τις ρυθμίσεις, τις επεκτάσεις και το περιβάλλον εκτέλεσης του κεντρικού υπολογιστή σας",
+  "createActivity": "Δημιουργία δραστηριότητας",
+  "createBackup": "Δημιουργία αντιγράφου ασφαλείας",
+  "createNewList": "Δημιουργία νέας λίστας",
+  "createStatus": "Δημιουργία κατάστασης",
+  "cropBorders": "Περίγραμμα καλλιεργειών",
+  "current": "Τρέχοντα • ",
+  "custom": "Προσαρμοσμένο",
+  "customBanners": "Προσαρμοσμένα πανό",
+  "customColorPicker": "Επιλογέας χρωμάτων κατά παραγγελία",
+  "customDohUrl": "ΠΡΟΣΑΡΜΟΣΜΕΝΗ ΔΙΕΥΘΥΝΣΗ URL ΤΟΥ DOH",
+  "customFonts": "Προσαρμοσμένες γραμματοσειρές",
+  "customLists": "Προσαρμοσμένες λίστες",
+  "customLogos": "Προσαρμοσμένα λογότυπα",
+  "customPlayerFlagsParameters": "Προσαρμοσμένες σημαίες και παράμετροι παικτών",
+  "customScale": "Προσαρμοσμένη κλίμακα",
+  "customTheme": "Προσαρμοσμένο θέμα",
+  "customUserAgent": "Προσαρμοσμένος User-Agent",
+  "customValue": "Προσαρμοσμένη τιμή",
+  "customEllipsis": "Προσαρμοσμένο...",
+  "customizeCardHistoryCardCarouselNav": "Προσαρμογή στυλ καρτών, καρτών ιστορικού, καρουζέλ και γραμμής πλοήγησης",
+  "customizeTheInterfaceToYourLiking": "Προσαρμόστε τη διεπαφή σύμφωνα με τις προτιμήσεις σας",
+  "customizeYourLogoAnimationStyle": "Προσαρμόστε το στυλ της κινούμενης εικόνας του λογότυπού σας",
+  "dailyActivitiesWatchAndReadMetrics": "Καθημερινές δραστηριότητες, παρακολούθηση και ανάγνωση δεικτών",
+  "dailyActivityAndWatchReadProgress": "Παρακολούθηση της καθημερινής δραστηριότητας και της προόδου στην παρακολούθηση/ανάγνωση",
+  "dataCache": "Δεδομένα & Προσωρινή μνήμη",
+  "dataToRestore": "ΔΕΔΟΜΕΝΑ ΠΡΟΣ ΑΠΟΚΑΤΑΣΤΑΣΗ",
+  "days": "ΗΜΕΡΕΣ",
+  "days2": "Ημέρες",
+  "daysActive": "ΗΜΕΡΕΣ ΕΝΕΡΓΟΠΟΙΗΣΗΣ",
+  "debanding": "Αφαίρεση των επιδέσμων",
+  "debugStuffs": "Θέματα εντοπισμού σφαλμάτων",
+  "decoder": "Αποκωδικοποιητής",
+  "decoderHwdec": "Αποκωδικοποιητής (HWDec)",
+  "decoderThreads": "Θέματα σχετικά με τους αποκωδικοποιητές",
+  "decorationCloset": "Ντουλάπα διακόσμησης",
+  "defaultLabel": "Προεπιλογή",
+  "defaultAndroidAudiotrackApi": "Προεπιλεγμένο API AudioTrack του Android",
+  "defaultAppleCoreaudioApi": "Προεπιλεγμένο API CoreAudio της Apple",
+  "defaultListOrder": "Προεπιλεγμένη σειρά εμφάνισης της λίστας",
+  "defaultOrientation": "Προεπιλεγμένος προσανατολισμός",
+  "defaultPortrait": "Προεπιλεγμένη κατακόρυφη διάταξη",
+  "defaultPulseaudioApi": "Προεπιλεγμένο API PulseAudio",
+  "defaultSize200px": "Προεπιλεγμένο μέγεθος (200px)",
+  "defaultSystemAudioDriver": "Προεπιλεγμένος οδηγός ήχου του συστήματος",
+  "defaultTheme": "Προεπιλεγμένο θέμα",
+  "defaultWindowsAudioDriver": "Προεπιλεγμένο πρόγραμμα οδήγησης ήχου των Windows",
+  "delete": "Διαγραφή",
+  "deleteActivity": "Διαγραφή δραστηριότητας",
+  "deleteAll": "Διαγραφή όλων",
+  "deleteAllCachedImagesTorrentStream": "Διαγράψτε όλες τις εικόνες που έχουν αποθηκευτεί στην προσωρινή μνήμη, τα τμήματα ροής torrent και τα προσωρινά αρχεία.",
+  "deleteAllStoredHttpCookiesAcross": "Διαγραφή όλων των αποθηκευμένων cookies HTTP σε όλους τους τομείς.",
+  "deleteChapter": "Διαγραφή κεφαλαίου",
+  "deleteChapterQuestion": "Να διαγραφεί το κεφάλαιο;",
+  "deleteComment": "Διαγραφή σχολίου",
+  "deleteCustomLogo": "Διαγραφή προσαρμοσμένου λογότυπου",
+  "deleteEpisode": "Διαγραφή επεισοδίου",
+  "deleteEpisodeQuestion": "Να διαγραφεί το επεισόδιο;",
+  "deleteEverythingStoredOfAnymexPermanently": "Διαγράψτε οριστικά όλα τα αποθηκευμένα δεδομένα του AnymeX.",
+  "deleteExtension": "Διαγραφή επέκτασης",
+  "deleteFont": "Διαγραφή γραμματοσειράς",
+  "deleteHistoryItem": "Διαγραφή στοιχείου ιστορικού",
+  "deleteList": "Διαγραφή λίστας",
+  "deleteLogo": "Διαγραφή λογότυπου",
+  "deleteReason": "Λόγος διαγραφής;",
+  "deleteRecommendation": "Να διαγραφεί η πρόταση;",
+  "deleteReply": "Διαγραφή Απάντηση",
+  "deleteReportedComment": "Διαγραφή αναφερόμενου σχολίου",
+  "deleteSavedCookiesAndCloudflareTokens": "Διαγραφή αποθηκευμένων cookies και διακριτικών Cloudflare",
+  "deleteSavedCookiesCloudflareTokensAnd": "Διαγραφή αποθηκευμένων cookies, διακριτικών Cloudflare και προσωρινής προσωρινής μνήμης",
+  "deleteSelected": "Διαγραφή επιλεγμένων",
+  "deleteTemporaryNetworkAndImageCache": "Διαγραφή της προσωρινής προσωρινής μνήμης δικτύου και εικόνων",
+  "deletionRequestSentToAdminsFor": "Το αίτημα διαγραφής έχει σταλεί στους διαχειριστές για έλεγχο.",
+  "demuxerMaxBuffer": "Αποπολυπλέκτης με μέγιστο buffer",
+  "demuxerReadahead": "Προανάγνωση αποπολυπλέκτη",
+  "description": "Περιγραφή",
+  "detailedClassic": "Λεπτομερής (Κλασική)",
+  "detailedInsights": "Λεπτομερείς αναλύσεις",
+  "detailsPage": "Σελίδα λεπτομερειών",
+  "developer": "Προγραμματιστής",
+  "development": "Ανάπτυξη",
+  "direct": "Άμεση",
+  "directSurfaceRenderingAndroidOnly": "Άμεση απόδοση επιφάνειας (μόνο για Android)",
+  "direction": "Κατεύθυνση",
+  "disableToShowAndHidePlayer": "Απενεργοποίηση για άμεση εμφάνιση και απόκρυψη των στοιχείων ελέγχου του προγράμματος αναπαραγωγής",
+  "disablingMayBypassCaptivePortalsOr": "Η απενεργοποίηση μπορεί να παρακάμψει τα captive portals ή τον έλεγχο SSL, αλλά μειώνει την ασφάλεια.",
+  "discard": "Απόρριψη",
+  "discardMessage": "Να διαγραφεί το μήνυμα;",
+  "discardReply": "Να διαγραφεί η απάντηση;",
+  "discardStatus": "Κατάσταση απόρριψης;",
+  "disconnect": "Αποσύνδεση",
+  "disconnectDiscord": "Να αποσυνδεθώ από το Discord;",
+  "discordTakenDown": "Το Discord τέθηκε εκτός λειτουργίας",
+  "dismiss": "Απόρριψη",
+  "display": "Οθόνη",
+  "displayAnimeMangaMoviesAndShows": "Προβολή anime, manga, ταινιών και σειρών που προτείνει η κοινότητα στην αρχική σελίδα.",
+  "displayMode": "Λειτουργία οθόνης",
+  "displayModeTuningIsNotApplicable": "Η ρύθμιση της λειτουργίας οθόνης δεν ισχύει για επιτραπέζιους υπολογιστές.",
+  "displayPlaybackOrReadingProgressTimestamps": "Εμφάνιση χρονικών σημάνσεων αναπαραγωγής ή προόδου ανάγνωσης",
+  "displayRefreshRateResolutionAndFrame": "Ρυθμίσεις συχνότητας ανανέωσης οθόνης, ανάλυσης και καρέ",
+  "distanceBetweenLines": "Απόσταση μεταξύ γραμμών",
+  "distanceFromBottomOfScreen": "Απόσταση από το κάτω μέρος της οθόνης",
+  "ditherDepth": "Βάθος διακύμανσης",
+  "dnsProxy": "DNS & Proxy",
+  "dontShowAgain": "Να μην εμφανιστεί ξανά",
+  "donate": "Κάντε μια δωρεά",
+  "donateSupport": "Κάντε μια δωρεά & Υποστηρίξτε μας",
+  "donateViaPaypal": "Κάντε δωρεά μέσω PayPal",
+  "donateViaUpiOrPaypalTo": "Κάντε μια δωρεά μέσω UPI ή PayPal για να υποστηρίξετε την ανάπτυξη",
+  "donateViaUpiPaypalSupportDevelopment": "Κάντε δωρεά μέσω UPI, PayPal και υποστηρίξτε την ανάπτυξη",
+  "done": "ΟΛΟΚΛΗΡΩΘΗΚΕ",
+  "done2": "Τέλος",
+  "doubletapToSeek": "Διπλό πάτημα για αναζήτηση",
+  "downgradeOrSwitchToASpecific": "Υποβάθμιση ή μετάβαση σε συγκεκριμένη έκδοση προσθέτου",
+  "download": "Λήψη",
+  "download4kShaders": "Λήψη 4K Shaders",
+  "downloadAllChapters": "Λήψη όλων των κεφαλαίων",
+  "downloadAllEpisodes": "Λήψη όλων των επεισοδίων",
+  "downloadChapter": "Λήψη κεφαλαίου",
+  "downloadChunks": "Λήψη τμημάτων",
+  "downloadCurrentSection": "Λήψη της τρέχουσας ενότητας",
+  "downloadEpisode": "Λήψη επεισοδίου",
+  "downloadFailedTapToRetry": "Η λήψη απέτυχε. Πατήστε για να ξαναδοκιμάσετε.",
+  "downloadPath": "Διαδρομή λήψης",
+  "downloadPathsAndQualitySettings": "Διαδρομές λήψης και ρυθμίσεις ποιότητας",
+  "downloadPathsAndStorageSettings": "Διαδρομές λήψης και ρυθμίσεις αποθήκευσης",
+  "downloadPermissions": "Δικαιώματα λήψης",
+  "downloadQualityStoragePaths": "Ποιότητα λήψης, διαδρομές αποθήκευσης",
+  "downloadSettings": "Λήψη ρυθμίσεων",
+  "downloadSize4mb": "Μέγεθος αρχείου: ~4 MB",
+  "downloadStarted": "Ξεκίνησε η λήψη",
+  "downloadUnreadChapters": "Λήψη μη αναγνωσμένων κεφαλαίων",
+  "downloadUnwatchedEpisodes": "Λήψη επεισοδίων που δεν έχετε δει",
+  "downloaded": "ΛΗΦΘΗΚΕ",
+  "downloaded2": "Λήψη",
+  "downloadedMedia": "Ληφθέντα αρχεία πολυμέσων",
+  "downloadingImage": "Λήψη εικόνας...",
+  "downloadingPackage": "Λήψη πακέτου...",
+  "downloads": "Λήψεις",
+  "downloadsStorage": "Λήψεις & Αποθήκευση",
+  "downloadsPage": "Σελίδα λήψεων",
+  "downscalingAlgorithm": "Αλγόριθμος υποκλιμάκωσης",
+  "dragAndDropToReorderNavigation": "Μετακινήστε και αποθέστε για να αλλάξετε τη σειρά των καρτελών στη γραμμή πλοήγησης",
+  "dragToReorderStatusSections": "Σύρετε για να αλλάξετε τη σειρά των ενοτήτων κατάστασης",
+  "dualPageMode": "Λειτουργία διπλής σελίδας",
+  "dynamicVariablesWillBeReplacedAutomatically": "Οι δυναμικές μεταβλητές θα αντικατασταθούν αυτόματα. Μπορείτε επίσης να χρησιμοποιήσετε μια στατική φράση.",
+  "edit": "Επεξεργασία",
+  "editActivity": "Επεξεργασία δραστηριότητας",
+  "editCustomMpvFlagsPropertiesAnd": "Επεξεργασία προσαρμοσμένων παραμέτρων mpv, ιδιοτήτων και αρχείου ρυθμίσεων",
+  "editLogoSettings": "Επεξεργασία ρυθμίσεων λογότυπου",
+  "editMediaEntry": "Επεξεργασία καταχώρησης πολυμέσων",
+  "editReason": "Λόγος επεξεργασίας",
+  "editRecommendationReasonMin30Chars": "Επεξεργασία αιτιολογίας πρότασης (τουλάχιστον 30 χαρακτήρες)",
+  "edited": "Επεξεργασμένο",
+  "enableAnimation": "Ενεργοποίηση κινούμενων εικόνων",
+  "enableAnimationOnCarouselsForSmooth": "Ενεργοποίηση κινούμενων εικόνων στα καρουζέλ για ομαλή κίνηση",
+  "enableBackgroundMediaControlsForBluetooth": "Ενεργοποίηση των στοιχείων ελέγχου πολυμέσων στο παρασκήνιο για ακουστικά Bluetooth και ειδοποιήσεις πολυμέσων του συστήματος. Σημείωση: Η ενεργοποίηση αυτής της ρύθμισης θα αυξήσει την κατανάλωση της μπαταρίας.",
+  "enableBetaUpdates": "Ενεργοποίηση ενημερώσεων Beta",
+  "enableClassicSimpleHeaderStyleOn": "Ενεργοποίηση του κλασικού, απλού στυλ κεφαλίδας στις αρχικές οθόνες",
+  "enableDiscordRpc": "Ενεργοποίηση του Discord RPC",
+  "enableExperimentalSettings": "Ενεργοποίηση πειραματικών ρυθμίσεων",
+  "enableHoldingOnPlayerScreenTo": "Ενεργοποίηση της λειτουράς «πατήστε και κρατήστε πατημένο» στην οθόνη αναπαραγωγής για προσωρινή επιτάχυνση της αναπαραγωγής του βίντεο",
+  "enableHorizontalSwipingOnPlayerScreen": "Ενεργοποιήστε την οριζόντια κύλιση στην οθόνη του προγράμματος αναπαραγωγής για να μετακινηθείτε στο βίντεο",
+  "enableKenBurns": "Ενεργοποίηση της λειτουργίας «Ken Burns»",
+  "enableLongPressQuickActions": "Ενεργοποίηση γρήγορων ενεργειών με παρατεταμένο πάτημα",
+  "enableNotificationsForUpcomingAiringEpisodes": "Ενεργοποιήστε τις ειδοποιήσεις για τα επόμενα επεισόδια που θα προβληθούν.",
+  "enableNsfwAdultEntriesInAnilist": "Ενεργοποίηση καταχωρίσεων NSFW/για ενήλικες στο περιεχόμενο του AniList.",
+  "enableShaders": "Ενεργοποίηση Shaders",
+  "enableSwipeControls": "Ενεργοποίηση χειριστηρίων σάρωσης",
+  "enableTapZones": "Ενεργοποίηση ζωνών αφής",
+  "enableThisIfYouWantTo": "Ενεργοποιήστε αυτή την επιλογή αν θέλετε να διατηρήσετε το αρχικό χρώμα της ταπετσαρίας σας",
+  "enableTranslucentNavigationBar": "Ενεργοποίηση ημιδιαφανούς γραμμής πλοήγησης",
+  "enableTts": "Ενεργοποίηση TTS",
+  "enableVerticalSwipingOnTheLeft": "Ενεργοποιήστε την κάθετη κύλιση προς τα αριστερά/δεξιά στην οθόνη του προγράμματος αναπαραγωγής για να ρυθμίσετε τη φωτεινότητα και την ένταση του ήχου",
+  "enablesASoftGlowingGradientEffect": "Δημιουργεί ένα απαλό, λαμπερό εφέ ντεγκραντέ.",
+  "encryptWithAes256RecommendedFor": "Κρυπτογράφηση με AES-256 (συνιστάται για διακριτικά ελέγχου ταυτότητας)",
+  "encrypted": "Κρυπτογραφημένο • ",
+  "endChapter": "Τέλος κεφαλαίου",
+  "enterAmount": "Εισάγετε το ποσό...",
+  "enterAnilistUsername": "Εισάγετε το όνομα χρήστη του AniList",
+  "enterAtLeast2Characters": "Πληκτρολογήστε τουλάχιστον 2 χαρακτήρες",
+  "enterBackupPassword": "Εισάγετε τον εφεδρικό κωδικό πρόσβασης",
+  "enterFirstAnilistUsername": "Εισάγετε πρώτα το όνομα χρήστη του AniList",
+  "enterGithubRepositoryUrl": "Εισάγετε τη διεύθυνση URL του αποθετηρίου GitHub",
+  "enterListName": "Εισάγετε το όνομα της λίστας",
+  "enterPassword": "Εισάγετε τον κωδικό πρόσβασης",
+  "enterReasonOrDetailsForThis": "Εισάγετε τον λόγο ή τις λεπτομέρειες για αυτή την ενέργεια...",
+  "enterSearchQuery": "Εισάγετε το ερώτημα αναζήτησης",
+  "enterUsername": "Εισάγετε το όνομα χρήστη",
+  "enterValue": "Εισάγετε τιμή",
+  "entryDeleted": "Η καταχώριση διαγράφηκε.",
+  "episode1": "Επεισόδιο 1",
+  "episodeListSettings": "Ρυθμίσεις λίστας επεισοδίων",
+  "episodes": "Επεισόδια",
+  "episodesDuration": "ΕΠΕΙΣΟΔΙΑ & ΔΙΑΡΚΕΙΑ",
+  "episodesWatched": "Επεισόδια που έχω δει",
+  "errorOccured": "Παρουσιάστηκε σφάλμα",
+  "errorOccurred": "Παρουσιάστηκε σφάλμα",
+  "errorSavingImage": "Σφάλμα κατά την αποθήκευση της εικόνας",
+  "errorSharingImage": "Σφάλμα κατά την κοινή χρήση εικόνας",
+  "errorMissingRequiredDataItSeems": "Σφάλμα: Λείπουν απαραίτητα δεδομένα. Φαίνεται ότι έκλεισες την εφαρμογή αμέσως μετά την ανάγνωση του κεφαλαίου!",
+  "errorMissingRequiredMediaItSeems": "Σφάλμα: Λείπουν τα απαιτούμενα πολυμέσα. Φαίνεται ότι έκλεισες την εφαρμογή αμέσως μετά την ανάγνωση του κεφαλαίου!",
+  "errorMissingRequiredMediaItSeemsYou": "Σφάλμα: Λείπουν τα απαιτούμενα αρχεία πολυμέσων. Φαίνεται ότι έκλεισες την εφαρμογή αμέσως μετά την παρακολούθηση του επεισοδίου!",
+  "everyScoreIsMappedToA": "Κάθε βαθμολογία αντιστοιχεί σε μια θέση στην κατάταξη. Ο παρακάτω πίνακας παρουσιάζει κάθε κατηγορία, το αντίστοιχο έμβλημα και το εύρος που αντιπροσωπεύει.",
+  "experimental": "Πειραματικό",
+  "experimentalHighPerformanceRenderer": "Πειραματικός renderer υψηλής απόδοσης",
+  "explore": "Εξερευνήστε",
+  "exploreTheProjectAndContribute": "Εξερευνήστε το έργο και συνεισφέρετε",
+  "exportLabel": "ΕΞΑΓΩΓΗ",
+  "exportBackup": "Εξαγωγή αντιγράφου ασφαλείας",
+  "exportCancelled": "Η εξαγωγή ακυρώθηκε.",
+  "exportDeviceBackup": "Εξαγωγή αντιγράφου ασφαλείας συσκευής",
+  "exportSettings": "Ρυθμίσεις εξαγωγής",
+  "exportYourAnimeList": "Εξαγωγή της λίστας Anime σου",
+  "exportYourMangaList": "Εξαγωγή της λίστας μάνγκα σου",
+  "extensionConfigurations": "Ρυθμίσεις επεκτάσεων",
+  "extensionConfigurationsRepos": "Ρυθμίσεις επεκτάσεων & αποθετήρια",
+  "extensionManager": "Διαχειριστής επεκτάσεων",
+  "extensionPackages": "Πακέτα επεκτάσεων",
+  "extensionPreferences": "Προτιμήσεις επεκτάσεων",
+  "extensionSettings": "Ρυθμίσεις επέκτασης",
+  "extensionSettingsAndSourceConfigurations": "Ρυθμίσεις επέκτασης και διαμορφώσεις πηγών",
+  "extensionTesting": "Δοκιμές επέκτασης",
+  "extensionType": "Τύπος επέκτασης",
+  "extensions": "Επεκτάσεις",
+  "extensionsDiagnostics": "Επεκτάσεις & Διαγνωστικά",
+  "extensionsRepositories": "Επεκτάσεις & Αποθετήρια",
+  "extensionsSources": "Επεκτάσεις & Πηγές",
+  "extensionsTailoredToYourNeeds": "Επεκτάσεις προσαρμοσμένες στις ανάγκες σας",
+  "externalStreamingLinks": "Εξωτερικοί σύνδεσμοι και σύνδεσμοι ροής",
+  "externalBackupsRestoreMetadataAndConfigurations": "Τα εξωτερικά αντίγραφα ασφαλείας επαναφέρουν τα μεταδεδομένα και τις ρυθμίσεις με ασφάλεια.",
+  "externalBrowser": "Εξωτερικός περιηγητής",
+  "extras": "Πρόσθετα",
+  "factoryReset": "Επαναφορά εργοστασιακών ρυθμίσεων",
+  "factoryReset2": "Επαναφορά εργοστασιακών ρυθμίσεων",
+  "failedToCheckForUpdates": "Δεν κατέστη δυνατός ο έλεγχος για ενημερώσεις.",
+  "failedToCheckPluginUpdates": "Δεν κατέστη δυνατός ο έλεγχος για ενημερώσεις προσθηκών.",
+  "failedToDeleteChapter": "Δεν κατέστη δυνατή η διαγραφή του κεφαλαίου",
+  "failedToDeleteEpisode": "Δεν κατέστη δυνατή η διαγραφή του επεισοδίου",
+  "failedToDeleteListEntry": "Δεν κατέστη δυνατή η διαγραφή της καταχώρισης από τη λίστα",
+  "failedToDeleteMedia": "Δεν κατέστη δυνατή η διαγραφή του αρχείου πολυμέσων",
+  "failedToDownloadImage": "Δεν κατέστη δυνατή η λήψη της εικόνας",
+  "failedToFetchChapters": "Δεν κατέστη δυνατή η λήψη των κεφαλαίων",
+  "failedToFetchDetails": "Δεν κατέστη δυνατή η ανάκτηση των λεπτομερειών",
+  "failedToFetchImageForSharing": "Δεν κατέστη δυνατή η λήψη της εικόνας για κοινή χρήση",
+  "failedToFetchPluginReleaseDetails": "Δεν κατέστη δυνατή η λήψη των λεπτομερειών έκδοσης του πρόσθετου.",
+  "failedToFetchPolicy": "Δεν κατέστη δυνατή η λήψη της πολιτικής.",
+  "failedToFetchReleaseDetails": "Δεν κατέστη δυνατή η ανάκτηση των λεπτομερειών της έκδοσης.",
+  "failedToFetchServers": "Αποτυχία ανάκτησης διακομιστών",
+  "failedToLoadDetails": "Δεν κατέστη δυνατή η φόρτωση των λεπτομερειών",
+  "failedToLoadFontFile": "Δεν κατέστη δυνατή η φόρτωση του αρχείου γραμματοσειράς",
+  "failedToLoadProfileAccountMay": "Δεν κατέστη δυνατή η φόρτωση του προφίλ — ο λογαριασμός ενδέχεται να είναι ιδιωτικός ή να μην εντοπίστηκε",
+  "failedToLoadTorrentMetadata": "Δεν κατέστη δυνατή η φόρτωση των μεταδεδομένων του torrent",
+  "failedToPerformAction": "Δεν κατέστη δυνατή η εκτέλεση της ενέργειας",
+  "failedToRemoveRepo": "Δεν κατέστη δυνατή η κατάργηση του αποθετηρίου",
+  "failedToStartExtensionRuntime": "Αποτυχία εκκίνησης του περιβάλλοντος εκτέλεσης της επέκτασης",
+  "failedToUpdateAnilist": "Δεν κατέστη δυνατή η ενημέρωση του AniList",
+  "failedToUpdateListEntry": "Δεν κατέστη δυνατή η ενημέρωση της καταχώρισης στη λίστα",
+  "failedToUpdatePreference": "Δεν κατέστη δυνατή η ενημέρωση των ρυθμίσεων",
+  "failedToUpdateRole": "Αποτυχία ενημέρωσης ρόλου",
+  "favoriteTitle": "Αγαπημένος τίτλος",
+  "favouriteAnime": "Αγαπημένα Anime",
+  "favouriteCharacters": "Αγαπημένοι χαρακτήρες",
+  "favouriteManga": "Αγαπημένα μάνγκα",
+  "favouriteStaff": "Αγαπημένο προσωπικό",
+  "favouriteStudios": "Αγαπημένα στούντιο",
+  "featuresIssues": "Χαρακτηριστικά/Θέματα",
+  "fetchingAvailableServers": "Αναζήτηση διαθέσιμων διακομιστών...",
+  "fetchingLatestReleaseDetails": "Ανακτήση λεπτομερειών για την πιο πρόσφατη έκδοση...",
+  "fetchingTorrentFileList": "Λήψη λίστας αρχείων torrent...",
+  "filler": "ΓΕΜΙΣΤΙΚΟ",
+  "filter": "Φίλτρο",
+  "filterActivities": "Φιλτράρισμα δραστηριοτήτων",
+  "filterActivity": "Δραστηριότητα φίλτρου",
+  "filterByChapterCount": "Φιλτράρισμα ανά αριθμό κεφαλαίων",
+  "filterByDurationMin": "Φιλτράρισμα κατά διάρκεια (λεπτά)",
+  "filterByEpisodeCount": "Φιλτράρισμα ανά αριθμό επεισοδίων",
+  "filterByGenre": "Φιλτράρισμα ανά είδος",
+  "filterByVolumeCount": "Φιλτράρισμα κατά αριθμό τεύχων",
+  "filterGenres": "Φιλτράρισμα ειδών",
+  "filterOutAdultNsfwEntriesFrom": "Αποκλείστε τις αναρτήσεις για ενήλικες/NSFW από τις προτάσεις της κοινότητας.",
+  "filterOutEntriesAlreadyInYour": "Αποκλείστε τις καταχωρήσεις που υπάρχουν ήδη στη λίστα σας",
+  "filterOutEntriesAlreadyInYourList": "Αποκλείστε τις καταχωρήσεις που βρίσκονται ήδη στη λίστα σας, ανάλογα με το αν τις έχετε παρακολουθήσει ή διαβάσει.",
+  "filterSettings": "Ρυθμίσεις φίλτρου",
+  "filters": "ΦΙΛΤΡΑ",
+  "findAndManageSpecificUsers": "Εύρεση και διαχείριση συγκεκριμένων χρηστών",
+  "findAnimeSauceByScreenshots": "Βρείτε anime sauce μέσω στιγμιότυπων οθόνης",
+  "findSource": "Εύρεση πηγής",
+  "findYourFavouriteAnimeOrManga": "Βρες το αγαπημένο σου anime ή manga, manhwa ή ό,τι άλλο σου αρέσει!",
+  "findYourFavouriteAnimeMangaManhwa": "Βρες το αγαπημένο σου Anime, Manga, Manhwa ή ό,τι άλλο σου αρέσει!",
+  "finishDate": "Ημερομηνία ολοκλήρωσης",
+  "firstChapter": "Πρώτο κεφάλαιο",
+  "firstUser": "Πρώτος χρήστης",
+  "fitToScreenWidth": "Προσαρμογή στο πλάτος της οθόνης",
+  "fontFamily": "Οικογένεια γραμματοσειρών",
+  "fontSize": "Μέγεθος γραμματοσειράς",
+  "forceReDownload": "Επιβολή επανεκκίνησης λήψης",
+  "forceSyncFromSdCard": "Επιβολή συγχρονισμού από την κάρτα SD",
+  "forks": "Πιρούνια",
+  "format": "Μορφή",
+  "formatDistribution": "Διανομή μορφών",
+  "frameInterpolation": "Παρεμβολή καρέ",
+  "freeSupport": "Δωρεάν υποστήριξη",
+  "frequentlyRevisited": "Συχνά επισκεπτόμενες σελίδες",
+  "fromUrl": "Από τη διεύθυνση URL",
+  "fullWidthDetailedCardWithLarge": "Λεπτομερής κάρτα πλήρους πλάτους με μεγάλη μικρογραφία και μεταδεδομένα επεισοδίου",
+  "fullWidthDetailedCardsWithProgress": "Λεπτομερείς κάρτες πλήρους πλάτους με ένδειξη προόδου και κουμπί ανάγνωσης",
+  "fullWidthHeroBannerWithCompact": "Μπάνερ «hero» πλήρους πλάτους με συνοπτικές πληροφορίες και σύντομη περίληψη.",
+  "general": "Γενικά",
+  "generalPrivacy": "Γενικά & Προστασία Προσωπικών Δεδομένων",
+  "generalSync": "Γενικά & Συγχρονισμός",
+  "generalAppPreferencesAndSyncServices": "Γενικές ρυθμίσεις εφαρμογών και υπηρεσίες συγχρονισμού",
+  "generalAppSettingsAndSyncServices": "Γενικές ρυθμίσεις εφαρμογών και υπηρεσίες συγχρονισμού",
+  "generalPreferences": "Γενικές ρυθμίσεις",
+  "genres": "Είδη",
+  "genresUpper": "ΕΙΔΗ",
+  "gestureForBrightnessVolume": "Χειρονομία για τη ρύθμιση της φωτεινότητας και της έντασης",
+  "getHelpWithTheCommentSystem": "Λάβετε βοήθεια σχετικά με το σύστημα σχολίων",
+  "getStarted": "Ξεκινήστε",
+  "globalConcurrencyLimit": "Παγκόσμιο όριο ταυτόχρονης πρόσβασης",
+  "glowMultiplier": "Πολλαπλασιαστής λάμψης",
+  "goSuperDarkMode": "Ενεργοποίησε τη λειτουργία «Super Dark Mode»!",
+  "goToDownloads": "Μετάβαση στην ενότητα «Λήψεις»",
+  "goToExtensionsToGetStarted": "Μεταβείτε στην ενότητα «Επεκτάσεις» για να ξεκινήσετε",
+  "goToPluginDownloader": "Μετάβαση στο Plugin Downloader",
+  "goToRuntimeManager": "Μετάβαση στο Runtime Manager",
+  "goodAfternoon": "Καλησπέρα",
+  "goodEvening": "Καλησπέρα",
+  "goodMorning": "Καλημέρα",
+  "goodnight": "Καληνύχτα",
+  "gotIt": "Εντάξει",
+  "grainIntensity": "Ένταση κόκκων",
+  "grainTextureOverlay": "Επικάλυψη υφής κόκκων",
+  "grantPermission": "Χορήγηση άδειας",
+  "grantPermissions": "Χορήγηση δικαιωμάτων",
+  "grid": "Πλέγμα",
+  "gridSize": "Μέγεθος πλέγματος",
+  "gridView": "Προβολή πλέγματος",
+  "guest": "Επισκέπτης",
+  "happySnacking": "Καλή απόλαυση!",
+  "hardwareDisplayModeSwitchingIsNot": "Η συσκευή σας δεν υποστηρίζει την αλλαγή της λειτουργίας οθόνης σε επίπεδο υλικού.",
+  "helpSupport": "Βοήθεια & Υποστήριξη",
+  "hexColorCode": "Δεκαεξαδικός κωδικός χρώματος",
+  "hey": "Γεια ",
+  "hidden": "Κρυφό",
+  "hiddenFromYourPublicProfile": "Κρυμμένο από το δημόσιο προφίλ σας",
+  "hiddenTabs": "Κρυφές καρτέλες",
+  "hideAdultContent": "Απόκρυψη περιεχομένου για ενήλικες",
+  "hideButton": "Κουμπί απόκρυψης",
+  "hideByListStatus": "Απόκρυψη ανά κατάσταση λίστας",
+  "hideCompleted": "Απόκρυψη ολοκληρωμένων",
+  "hideDropped": "Απόκρυψη: Αποσύρθηκε",
+  "hideEntriesThatAreInYour": "Απόκρυψη καταχωρήσεων που περιλαμβάνονται στη λίστα του προγράμματός σας.",
+  "hideEntriesThatAreMarkedAs": "Απόκρυψη των καταχωρήσεων που έχουν επισημανθεί ως ολοκληρωμένες στη λίστα σας.",
+  "hideEntriesThatYouAreCurrently": "Απόκρυψη των καταχωρήσεων που παρακολουθείτε ή διαβάζετε αυτή τη στιγμή.",
+  "hideEntriesThatYouAreRewatching": "Απόκρυψη των καταχωρήσεων που ξαναβλέπεις.",
+  "hideEntriesThatYouHaveDropped": "Απόκρυψη των καταχωρήσεων που έχετε διαγράψει.",
+  "hideEntriesThatYouHavePut": "Απόκρυψη των καταχωρήσεων που έχετε θέσει σε αναμονή.",
+  "hideNsfw": "Απόκρυψη NSFW",
+  "hideNsfw18Content": "Απόκρυψη περιεχομένου NSFW / 18+",
+  "hideNsfwContent": "Απόκρυψη περιεχομένου NSFW",
+  "hideNsfwRecommendations": "Απόκρυψη προτάσεων NSFW",
+  "hideOnHoldPaused": "Απόκρυψη «Σε αναμονή» / «Σε παύση»",
+  "hidePlanning": "Απόκρυψη σχεδιασμού",
+  "hideRewatching": "Απόκρυψη επανάληψης προβολής",
+  "hideSystemStatusAndNavigationBars": "Απόκρυψη της γραμμής κατάστασης του συστήματος και των γραμμών πλοήγησης",
+  "hideWatchingReading": "Απόκρυψη παρακολούθησης / ανάγνωσης",
+  "history": "Ιστορία",
+  "historyStatistics": "Ιστορία και στατιστικά στοιχεία",
+  "historyCardStyle": "Στυλ κάρτας ιστορικού",
+  "historyItemDeleted": "Το στοιχείο ιστορικού διαγράφηκε",
+  "hlsParallelSegments": "Παράλληλα τμήματα HLS",
+  "holdAndDragAnyItemTo": "Κρατήστε πατημένο και σύρετε οποιοδήποτε στοιχείο για να αλλάξετε τη σειρά του",
+  "holdToAccessHistoryEditor": "Κρατήστε πατημένο για να ανοίξετε τον επεξεργαστή ιστορικού",
+  "holdToDelete": "Κρατήστε πατημένο για διαγραφή",
+  "holdToSpeedUp": "Κρατήστε πατημένο για επιτάχυνση",
+  "home": "Αρχική σελίδα",
+  "horizontal": "Οριζόντια",
+  "hostEG12700": "Κεντρικός υπολογιστής (π.χ. 127.0.0.1)",
+  "hours": "Ώρες λειτουργίας",
+  "howItWorksCompatibilityRanks": "Πώς λειτουργεί & Βαθμολογίες συμβατότητας",
+  "howMuchInPercentageToMark": "Ποιο ποσοστό πρέπει να ορίσω για να επισημάνω ένα επεισόδιο ως «παρακολουθημένο»;",
+  "howToUseTheCommentSystem": "Πώς να χρησιμοποιήσετε το σύστημα σχολίων:",
+  "hue": "Χουέ",
+  "ifEnabledAContinueWatchingBar": "Εάν η λειτουργία είναι ενεργοποιημένη, θα εμφανίζεται μια γραμμή «Συνέχεια παρακολούθησης» πάνω από την κάτω γραμμή πλοήγησης στην αρχική σελίδα.",
+  "ifEnabledAllLibraryItemsWill": "Εάν η επιλογή είναι ενεργοποιημένη, όλα τα στοιχεία της βιβλιοθήκης θα κοινοποιούνται σε όλες τις υπηρεσίες παρακολούθησης.",
+  "ifEnabledAnymexWillAskFor": "Εάν είναι ενεργοποιημένη, η Anymex θα ζητήσει άδεια παρακολούθησης· διαφορετικά, θα πραγματοποιεί παρακολούθηση από προεπιλογή.",
+  "ifEnabledYouWillNotGet": "Εάν είναι ενεργοποιημένη αυτή η ρύθμιση, δεν θα εμφανιστεί μήνυμα που να σας ζητά να ενεργοποιήσετε το περιεχόμενο για ενήλικες στο Anilist/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "Εάν η προσωρινή μνήμη cache της εφαρμογής φτάσει σε αυτό το μέγεθος, θα διαγραφεί αυτόματα.",
+  "ifYouAreUsingAJson": "Εάν χρησιμοποιείτε ένα θέμα JSON, οι αλλαγές που θα κάνετε εδώ δεν θα επηρεάσουν τα στοιχεία ελέγχου του προγράμματος αναπαραγωγής. Για να εφαρμόσετε αυτές τις ρυθμίσεις, αλλάξτε σε ένα ενσωματωμένο θέμα.",
+  "ifYouCantDonateWatchThis": "Αν δεν μπορείτε να κάνετε δωρεά, παρακολουθήστε αυτό το διαφημιστικό για να στηρίξετε την προσπάθεια",
+  "image": "Εικόνα",
+  "imageShowsThumbnail": "Εικόνα (εμφανίζεται μικρογραφία)",
+  "imageFilterQuality": "Ποιότητα φίλτρου εικόνας",
+  "imageSharedFromAnymex": "Εικόνα που κοινοποιήθηκε από το AnymeX",
+  "imagesWillBeDownloadedInFull": "Οι εικόνες θα κατεβούν σε πλήρη ποιότητα. Κάθε κεφάλαιο αποθηκεύεται σε ξεχωριστό φάκελο.",
+  "immersiveMode": "Λειτουργία εμβύθισης",
+  "importLabel": "ΕΙΣΑΓΩΓΗ",
+  "importLabel2": "Εισαγωγή",
+  "importManageCustomJsonThemes": "Εισαγωγή και διαχείριση προσαρμοσμένων θεμάτων JSON",
+  "importBackup": "Εισαγωγή αντιγράφου ασφαλείας",
+  "importCustomFont": "Εισαγωγή προσαρμοσμένης γραμματοσειράς",
+  "importFromUrl": "Εισαγωγή από διεύθυνση URL",
+  "includeAdultNsfwSuggestions": "Να περιλαμβάνονται προτάσεις για ενήλικες και NSFW",
+  "incognito": "Ανώνυμα",
+  "incognitoActive": "Ανώνυμη περιήγηση (Ενεργή)",
+  "incognitoMode2": "Λειτουργία ανώνυμης περιήγησης",
+  "indiaUpi": "Ινδία (UPI)",
+  "info": "Πληροφορίες",
+  "inlineCode": "Ενσωματωμένος κώδικας",
+  "insert": "Εισαγωγή",
+  "installPermission": "Άδεια εγκατάστασης",
+  "installPermissionIsRequiredToUpdate": "Απαιτείται άδεια εγκατάστασης για την ενημέρωση της εφαρμογής",
+  "installedPackages": "Εγκατεστημένα πακέτα",
+  "installedThemes": "Εγκατεστημένα θέματα",
+  "interfaceStyling": "Σχεδιασμός διεπαφής",
+  "internalBrowser": "Εσωτερικός περιηγητής",
+  "international": "Διεθνές",
+  "invalidBackupFileOrIncorrectPassword": "Μη έγκυρο αρχείο αντιγράφου ασφαλείας ή λανθασμένος κωδικός πρόσβασης",
+  "invertVolumeKeys": "Αντιστροφή πλήκτρων έντασης",
+  "italic": "Πλάγια γραφή",
+  "joinDiscordCommunity": "Γίνετε μέλος της κοινότητας του Discord",
+  "joinNewDiscord": "Γίνετε μέλος του νέου Discord",
+  "joinTelegramChannel": "Εγγραφείτε στο κανάλι του Telegram",
+  "joinUsForDroppingFeedbackOr": "Ελάτε μαζί μας για να μας στείλετε τα σχόλιά σας ή να μας υποβάλετε αιτήματα για νέες λειτουργίες",
+  "jsonThemeManager": "Διαχειριστής θεμάτων JSON",
+  "judgment": "Απόφαση",
+  "keepEditing": "Συνέχισε την επεξεργασία",
+  "keepItChill": "Μην αγχώνεσαι",
+  "keepScreenOn": "Διατήρηση της οθόνης ενεργοποιημένης",
+  "keepVoicePitchStableAtHigher": "Διατηρήστε σταθερό το ύψος της φωνής σας σε υψηλότερες ταχύτητες",
+  "koFiSupport": "Υποστήριξη μέσω Ko-fi",
+  "languageVariant": "Γλωσσική παραλλαγή",
+  "lastAdded": "Τελευταία προσθήκη",
+  "lastChapter": "Τελευταίο κεφάλαιο",
+  "later": "Αργότερα",
+  "latest": "Τελευταία νέα",
+  "latestManga": "Τελευταία μάνγκα",
+  "layout": "Διάταξη",
+  "layoutStyle": "Στυλ διάταξης",
+  "leaderboard": "Πίνακας κατάταξης",
+  "learnHowToFormatYourComments": "Μάθετε πώς να μορφοποιείτε τα σχόλιά σας",
+  "leftSide": "Αριστερή πλευρά",
+  "letterSpacing": "Διάστημα μεταξύ γραμμάτων",
+  "levelProgress": "Πρόοδος επιπέδου",
+  "libraryLabel": "Βιβλιοθήκη",
+  "librarySettings": "Ρυθμίσεις βιβλιοθήκης",
+  "libraryStatistics": "Στατιστικά στοιχεία βιβλιοθήκης",
+  "lightness": "Ελαφρότητα",
+  "likedBy": "Αρέσει σε",
+  "lineHeight": "Ύψος γραμμής",
+  "linkAutoDetected": "Σύνδεσμος (αυτόματη ανίχνευση)",
+  "linkCopiedToClipboard": "Ο σύνδεσμος αντιγράφηκε στο πρόχειρο!",
+  "linkHasExpiredAndEpisodeUrl": "Ο σύνδεσμος έχει λήξει και η διεύθυνση URL του επεισοδίου δεν είναι διαθέσιμη.",
+  "linkHasExpiredAndNoAlternative": "Ο σύνδεσμος έχει λήξει και δεν βρέθηκε εναλλακτική πηγή ροής.",
+  "linotteDefault": "Linotte (Προεπιλογή)",
+  "liquidBackground": "Υγρό φόντο",
+  "liquidMode": "Λειτουργία υγρού",
+  "listEntryUpdatedSuccessfully": "Η καταχώριση στην λίστα ενημερώθηκε με επιτυχία!",
+  "listExporter": "Εξαγωγέας λίστας",
+  "listNameAlreadyExists": "Το όνομα της λίστας υπάρχει ήδη",
+  "listOptions": "Επιλογές λίστας",
+  "liveBlurIsUnavailableWhenUsing": "Η λειτουργία «Live blur» δεν είναι διαθέσιμη όταν χρησιμοποιείται το Fluid Mesh.",
+  "livePreview": "ΖΩΝΤΑΝΗ ΠΡΟΕΠΙΣΚΟΠΗΣΗ",
+  "livePreview2": "Ζωντανή προεπισκόπηση",
+  "loadTemplate": "Φόρτωση προτύπου",
+  "loadingMediaFiles": "Φόρτωση αρχείων πολυμέσων...",
+  "loadingMedia": "Φόρτωση πολυμέσων...",
+  "local": "Τοπικά",
+  "localLibrary": "Τοπική βιβλιοθήκη",
+  "localMedia": "Τοπικά ΜΜΕ",
+  "location": "Τοποθεσία",
+  "logCapture": "Καταγραφή αρχείων καταγραφής",
+  "logDirectory": "Κατάλογος καταγραφής",
+  "logIn": "Σύνδεση",
+  "logInRequired": "Απαιτείται σύνδεση",
+  "logInToCustomizeYourPush": "Συνδεθείτε για να προσαρμόσετε τις προτιμήσεις σας σχετικά με τις ειδοποιήσεις push.",
+  "logInToJoinTheConversation": "Συνδεθείτε για να συμμετάσχετε στη συζήτηση και να σχολιάσετε.",
+  "logOut": "Αποσύνδεση",
+  "loggedInTrackingServices": "Υπηρεσίες παρακολούθησης για συνδεδεμένους χρήστες",
+  "login": "Σύνδεση",
+  "loginAuthTokens": "Διακριτικά σύνδεσης και ελέγχου ταυτότητας",
+  "loginInsideTheAppRecommended": "Συνδεθείτε μέσα από την εφαρμογή (Συνιστάται)",
+  "loginSessions": "Συνεδρίες σύνδεσης",
+  "loginUsingYourDefaultBrowser": "Συνδεθείτε χρησιμοποιώντας τον προεπιλεγμένο περιηγητή σας",
+  "loginWithToken": "Σύνδεση με Token",
+  "logoAnimation": "Κινούμενο λογότυπο",
+  "logoName": "Όνομα λογότυπου:",
+  "logs": "Αρχεία καταγραφής",
+  "longPressPageActions": "Ενέργειες σελίδας με παρατεταμένο πάτημα",
+  "makeEverythingGlassyLiquidy": "Κάνε τα πάντα να μοιάζουν γυάλινα και υγρά...",
+  "manageAnilistLists": "Διαχείριση λιστών Anilist",
+  "manageCachedImagesThresholdsAndReset": "Διαχείριση εικόνων στην προσωρινή μνήμη, ορίων και επαναφοράς δεδομένων εφαρμογής",
+  "manageDeviceStorageAndNotificationsTo": "Διαχειριστείτε τον αποθηκευτικό χώρο της συσκευής και τις ειδοποιήσεις, ώστε να κατεβάζετε και να διαχειρίζεστε τα πολυμέσα σας εκτός σύνδεσης.",
+  "manageLogCaptureAndShareSaved": "Διαχείριση της καταγραφής αρχείων καταγραφής και κοινή χρήση των αποθηκευμένων αρχείων καταγραφής",
+  "manageMyanimelistLists": "Διαχείριση λιστών στο MyAnimeList",
+  "managePluginsSources": "Διαχείριση προσθηκών και πηγών",
+  "manageSimklLists": "Διαχείριση λιστών Simkl",
+  "manageSourcesAndRepositoriesToUse": "Διαχειριστείτε τις πηγές και τα αποθετήρια για να αξιοποιήσετε στο έπακρο τις δυνατότητες της εφαρμογής",
+  "manageYourMyanimelistAnilistSimklAccounts": "Διαχειριστείτε τους λογαριασμούς σας στο MyAnimeList, το Anilist και το Simkl!",
+  "management": "Διοίκηση",
+  "manga": "Μάνγκα",
+  "mangaNovelReaderSettingsTapZones": "Ρυθμίσεις ανάγνωσης μάνγκα και μυθιστορημάτων, ζώνες αφής",
+  "mangaNovelViewerSettingsTapZones": "Ρυθμίσεις προβολής μάνγκα και μυθιστορημάτων, ζώνες αφής",
+  "mangaAndNovelReaderStylesAnd": "Στυλ και περιοχές αφής για συσκευές ανάγνωσης μάνγκα και μυθιστορημάτων",
+  "mangaCustomLists": "Προσαρμοσμένες λίστες μάνγκα",
+  "mangaDetailsPhrasing": "Διατύπωση λεπτομερειών μάνγκα",
+  "mangaLibrary": "Βιβλιοθήκη μάνγκα",
+  "mangaList": "ΛΙΣΤΑ ΜΑΝΓΚΑ",
+  "mangaScore": "Βαθμολογία μάνγκα",
+  "mangaSectionOrder": "Παραγγελία τμήματος μάνγκα",
+  "manuallyPasteOauthAccessToken": "Επικόλληση του διακριτικού πρόσβασης OAuth με το χέρι",
+  "markAllRead": "Επιλογή «Όλα ως αναγνωσμένα»",
+  "markAsWatched": "Σήμανση ως «Παρακολουθημένο»",
+  "markdownGuide": "Οδηγός Markdown",
+  "maximumDemuxerBufferMb": "Μέγιστο μέγεθος buffer αποδιαχωριστή (MB)",
+  "maybeLater": "Ίσως αργότερα",
+  "mean": "ΜΕΣΟΣ ΟΡΟΣ",
+  "meanScore": "Μέση βαθμολογία",
+  "mediaPlayback": "Πολυμέσα και αναπαραγωγή",
+  "mediaLibrary": "Βιβλιοθήκη πολυμέσων",
+  "mediaSessionBluetoothSupport": "Συνέντευξη Τύπου (Υποστήριξη Bluetooth)",
+  "mediaTypeBreakdown": "Ανάλυση ανά τύπο μέσου",
+  "mediaYouDownloadWillAppearHere": "Τα αρχεία πολυμέσων που κατεβάζετε θα εμφανίζονται εδώ.",
+  "megaskipDuration": "Διάρκεια του MegaSkip",
+  "mention": "Αναφορά",
+  "mentions": "Αναφορές",
+  "merge": "Συγχώνευση",
+  "messageFriend": "Αποστολή μηνύματος σε φίλο",
+  "minutesWatched": "Χρόνος παρακολούθησης",
+  "miscellaneous": "Διάφορα",
+  "missingRuntimeHost": "Λείπει ο κεντρικός υπολογιστής εκτέλεσης",
+  "moderation": "Διαχείριση",
+  "moderationActions": "Ενέργειες διαχειριστή",
+  "moderationPanel": "Επιτροπή Συντονισμού",
+  "moderator": "Συντονιστής",
+  "moreOptions": "Περισσότερες επιλογές",
+  "morePopularManga": "Τα πιο δημοφιλή μάνγκα",
+  "moveToLeft": "Μετακίνηση προς τα αριστερά",
+  "moveToRight": "Μετακίνηση προς τα δεξιά",
+  "movie": "Ταινία",
+  "mpvConfiguration": "Διαμόρφωση MPV",
+  "muteUser": "Σίγαση χρήστη",
+  "mutualConnections": "Αμοιβαίες συνδέσεις",
+  "mutualFriends": "Κοινοί φίλοι",
+  "nameplates": "Πινακίδες ονομάτων",
+  "navBarLayout": "Διάταξη της γραμμής πλοήγησης",
+  "navBarStyle": "Στυλ γραμμής πλοήγησης",
+  "navigationLayout": "Διάταξη πλοήγησης",
+  "needHelp": "Χρειάζεστε βοήθεια;",
+  "network": "Δίκτυο",
+  "newLabel": "ΝΕΟ",
+  "newCollection": "Νέα συλλογή",
+  "newCustomListName": "Νέο όνομα προσαρμοσμένης λίστας",
+  "newDownload": "Νέα λήψη",
+  "newList": "Νέα λίστα",
+  "newestFirst": "Πρώτα τα πιο πρόσφατα",
+  "nextRelease": "Επόμενη έκδοση",
+  "nextReleasePrediction": "Πρόβλεψη για την επόμενη κυκλοφορία",
+  "noActiveDownloads": "Δεν υπάρχουν ενεργές λήψεις",
+  "noActiveSourceOrMediaFound": "Δεν εντοπίστηκε καμία ενεργή πηγή ή μέσο",
+  "noActiveSourceSelected": "Δεν έχει επιλεγεί καμία ενεργή πηγή",
+  "noActivity": "Δεν υπάρχει δραστηριότητα",
+  "noAnimeFound": "Δεν βρέθηκαν anime",
+  "noAudioTracksAvailable": "Δεν υπάρχουν διαθέσιμα ηχητικά κομμάτια",
+  "noChaptersFound": "Δεν βρέθηκαν κεφάλαια",
+  "noChaptersFound2": "Δεν βρέθηκαν κεφάλαια",
+  "noCommonGenres": "Δεν υπάρχουν κοινά είδη",
+  "noCommonTags": "Δεν υπάρχουν κοινές ετικέτες",
+  "noContributorsFound": "Δεν βρέθηκαν συνεισφέροντες.",
+  "noCustomListsAvailable": "Δεν υπάρχουν διαθέσιμες προσαρμοσμένες λίστες.",
+  "noCustomListsYet": "Δεν υπάρχουν ακόμη προσαρμοσμένες λίστες",
+  "noCustomListsYet2": "Δεν υπάρχουν ακόμη προσαρμοσμένες λίστες.",
+  "noDataAvailableForThisSection": "Δεν υπάρχουν διαθέσιμα στοιχεία για αυτή την ενότητα",
+  "noDataAvailable": "Δεν υπάρχουν διαθέσιμα στοιχεία.",
+  "noDecadeBreakdownAvailable": "Δεν υπάρχουν διαθέσιμα στοιχεία ανά δεκαετία",
+  "noDescriptionAvailable": "Δεν υπάρχει διαθέσιμη περιγραφή",
+  "noDownloadedChaptersFoundForThis": "Δεν βρέθηκαν κεφάλαια προς λήψη για αυτό το μάνγκα",
+  "noDownloadedEpisodesFoundForThis": "Δεν βρέθηκαν επεισόδια προς λήψη για αυτό το anime",
+  "noEntriesFound": "Δεν βρέθηκαν αποτελέσματα",
+  "noEpisodesFound": "Δεν βρέθηκαν επεισόδια",
+  "noExtensionManagersFound": "Δεν εντοπίστηκαν διαχειριστές επεκτάσεων.",
+  "noExtensionsFound": "Δεν βρέθηκαν επεκτάσεις",
+  "noExtensionsInstalled": "Δεν έχουν εγκατασταθεί επεκτάσεις",
+  "noGenresAvailableAnilistApiMay": "Δεν υπάρχουν διαθέσιμα είδη. Το API του AniList ενδέχεται να είναι προσωρινά εκτός λειτουργίας.",
+  "noHiddenTabs": "Χωρίς κρυφές καρτέλες",
+  "noInsightsAvailableYetAddItems": "Δεν υπάρχουν ακόμη πληροφορίες. Προσθέστε στοιχεία στη βιβλιοθήκη σας!",
+  "noItemsInThisLibrary": "Δεν υπάρχουν στοιχεία σε αυτή τη βιβλιοθήκη.",
+  "noLoggedStatsYetStartWatching": "Δεν έχουν καταγραφεί ακόμα στατιστικά. Ξεκινήστε να παρακολουθείτε/διαβάζετε!",
+  "noMediaFilesFound": "Δεν βρέθηκαν αρχεία πολυμέσων",
+  "noMediaFoundForThisStudio": "Δεν βρέθηκαν πολυμέσα για αυτό το στούντιο",
+  "noMediaInThisList": "Δεν υπάρχουν αρχεία πολυμέσων σε αυτή τη λίστα.",
+  "noMoreActivities": "Δεν υπάρχουν άλλες δραστηριότητες",
+  "noMoreRecommendations": "Δεν υπάρχουν άλλες προτάσεις",
+  "noMoreUsers": "Δεν υπάρχουν πλέον χρήστες",
+  "noNotificationsYet": "Δεν υπάρχουν ακόμη ειδοποιήσεις",
+  "noNovelExtensionsInstalledToRead": "Δεν έχουν εγκατασταθεί επεκτάσεις για την ανάγνωση αυτού του μυθιστορήματος.",
+  "noPendingReports": "Δεν υπάρχουν εκκρεμείς αναφορές",
+  "noPlayableStreamAvailableForThis": "Δεν υπάρχει διαθέσιμη ροή για αναπαραγωγή για αυτό το επεισόδιο.",
+  "noPlayableStreamWasReturnedBy": "Αυτή η πηγή δεν επέστρεψε καμία ροή που να μπορεί να αναπαραχθεί.",
+  "noRecentActivityFoundForSelected": "Δεν βρέθηκε πρόσφατη δραστηριότητα για τα επιλεγμένα φίλτρα",
+  "noRecommendationsFound": "Δεν βρέθηκαν προτάσεις",
+  "noRecommendationsYet": "Δεν υπάρχουν ακόμη προτάσεις",
+  "noReleasesFound": "Δεν βρέθηκαν ανακοινώσεις.",
+  "noRepliesYetBeTheFirst": "Δεν υπάρχουν ακόμη απαντήσεις. Γίνε ο πρώτος!",
+  "noRepositoriesYet": "Δεν υπάρχουν ακόμη αποθετήρια",
+  "noResult": "Δεν βρέθηκαν αποτελέσματα",
+  "noResultsFound": "Δεν βρέθηκαν αποτελέσματα.",
+  "noResultsYet": "Δεν υπάρχουν ακόμη αποτελέσματα",
+  "noResultsTrySearchingByTitle": "Δεν βρέθηκαν αποτελέσματα. Δοκιμάστε να κάνετε αναζήτηση με βάση τον τίτλο.",
+  "noSearchResults": "Δεν υπάρχουν αποτελέσματα αναζήτησης",
+  "noServersAvailable": "Δεν υπάρχουν διαθέσιμοι διακομιστές",
+  "noServersFound": "Δεν βρέθηκαν διακομιστές.",
+  "noServicesAvailable": "Δεν υπάρχουν διαθέσιμες υπηρεσίες",
+  "noSourceInstalled": "Δεν έχει εγκατασταθεί καμία πηγή",
+  "noSourceSelected": "Δεν έχει επιλεγεί πηγή",
+  "noSourcesFound": "Δεν βρέθηκαν πηγές",
+  "noStatsAvailable": "Δεν υπάρχουν διαθέσιμα στατιστικά στοιχεία",
+  "noSubtitleTracksAvailable": "Δεν υπάρχουν διαθέσιμα κομμάτια υποτίτλων",
+  "noTestsRunning": "Δεν εκτελούνται δοκιμές",
+  "noThemesYet": "Δεν υπάρχουν ακόμη θέματα",
+  "noTrackingServiceConnected": "Δεν υπάρχει συνδεδεμένη υπηρεσία παρακολούθησης",
+  "noUsersFound": "Δεν βρέθηκαν χρήστες",
+  "noVisibleTabs": "Χωρίς ορατές καρτέλες",
+  "noVisualsFoundForThisAnime": "Δεν βρέθηκαν εικόνες για αυτό το anime (╥﹏╥)",
+  "noWatchOrderFound": "Δεν βρέθηκε καμία εντολή παρακολούθησης.",
+  "notNow": "Όχι τώρα",
+  "notSupported": "Δεν υποστηρίζεται",
+  "notTracked": "Δεν παρακολουθείται",
+  "noteAddingKotatsuRepositoryWillTake": "Σημείωση: Η προσθήκη του αποθετηρίου Kotatsu θα διαρκέσει τουλάχιστον 1-2 λεπτά, καθώς απαιτείται η λήψη και η μετατροπή του πρόσθετου κατά την πρώτη φόρτωση.",
+  "nothingDownloadedYet": "Δεν έχει γίνει ακόμα καμία λήψη",
+  "nothingToPreview": "Δεν υπάρχει προεπισκόπηση",
+  "nothingToPreviewYet": "Δεν υπάρχει ακόμα τίποτα για προεπισκόπηση.",
+  "notificationPreferences": "Προτιμήσεις ειδοποιήσεων",
+  "notifications": "Ειδοποιήσεις",
+  "notifyForOfficialAnnouncementsAndApp": "Λάβετε ειδοποιήσεις για επίσημες ανακοινώσεις και ενημερώσεις της εφαρμογής",
+  "notifyIfYourCommentIsRemoved": "Θα λάβετε ειδοποίηση αν το σχόλιό σας διαγραφεί από έναν διαχειριστή",
+  "notifyOnNewCommentsForMedia": "Ειδοποίηση για νέα σχόλια σε αρχεία πολυμέσων που έχετε συζητήσει",
+  "notifyOnUpvotesAndDownvotes": "Ειδοποίηση για θετικές και αρνητικές ψήφους",
+  "notifyOnWarningsPinnedCommentsOr": "Ειδοποίηση για προειδοποιήσεις, επισημασμένα σχόλια ή κλειδώματα θεμάτων",
+  "notifyWhenSomeoneMentionsYourUsername": "Ειδοποίηση όταν κάποιος @αναφέρει το όνομα χρήστη σου",
+  "notifyWhenSomeoneRepliesToYour": "Ειδοποίηση όταν κάποιος απαντήσει στο σχόλιό σου",
+  "novel": "Μυθιστόρημα",
+  "novelCustomLists": "Νέες προσαρμοσμένες λίστες",
+  "novelDetailsPhrasing": "Λεπτομέρειες σχετικά με τη διατύπωση του μυθιστορήματος",
+  "novelFontFamily": "Νέα οικογένεια γραμματοσειρών",
+  "novelLibrary": "Βιβλιοθήκη μυθιστορημάτων",
+  "novelSnapshots": "Στιγμιότυπα από μυθιστορήματα",
+  "novelTheme": "Θέμα μυθιστορήματος",
+  "novels": "Μυθιστορήματα",
+  "numberOfActiveDownloadTasks": "Αριθμός ενεργών εργασιών λήψης",
+  "numberOfParallelChunksPerDownload": "Αριθμός παράλληλων τμημάτων ανά λήψη",
+  "okay": "Εντάξει",
+  "oldestFirst": "Πρώτα τα παλαιότερα",
+  "oledMode": "Λειτουργία OLED",
+  "onMyList": "Στη λίστα μου",
+  "oneOptionPerLineLikeHwdec": "Μία επιλογή ανά γραμμή, όπως hwdec=auto ή scale=ewa_lanczossharp. Οι γραμμές που ξεκινούν με # είναι σχόλια. Τα προφίλ που βρίσκονται σε [αγκύλες] αγνοούνται.",
+  "online": "Διαδικτυακά",
+  "openCloset": "Ανοιχτή ντουλάπα",
+  "openInBrowser": "Άνοιγμα στον περιηγητή",
+  "openSettings": "Άνοιγμα ρυθμίσεων",
+  "openSource": "Ανοιχτός κώδικας",
+  "openSupportedLinks": "Άνοιγμα υποστηριζόμενων συνδέσμων",
+  "openTheDownloadsScreenFromThe": "Ανοίξτε την οθόνη «Λήψεις» από το μενού",
+  "openVideoStreamInExternalPlayer": "Άνοιγμα της ροής βίντεο σε εξωτερικό πρόγραμμα αναπαραγωγής ως προεπιλογή",
+  "openWebview": "Άνοιγμα Webview",
+  "openingsEndings": "Αρχές και Τέλη",
+  "openslEsNativeAudioEngine": "Εγγενής μηχανή ήχου OpenSL ES",
+  "options": "ΕΠΙΛΟΓΕΣ",
+  "order": "ΠΑΡΑΓΓΕΛΙΑ",
+  "originalSize": "Αρχικό μέγεθος",
+  "otakuRankLevel": "Επίπεδο κατάταξης Otaku",
+  "other": "Άλλα",
+  "otherFeatures": "Άλλα χαρακτηριστικά",
+  "otherRecommendations": "Άλλες συστάσεις",
+  "otherStuffs": "Διάφορα άλλα",
+  "otherTemporaryFiles": "Άλλα προσωρινά αρχεία",
+  "otherWaysToSupport": "Άλλοι τρόποι υποστήριξης",
+  "others": "Άλλα",
+  "outlineType": "Τύπος περιγράμματος",
+  "overscroll": "Υπερκύλιση",
+  "overscrollToPrevNextChapter": "Κάντε κύλιση προς τα πάνω για το προηγούμενο/επόμενο κεφάλαιο",
+  "overview": "Επισκόπηση",
+  "overwrite": "Αντικατάσταση",
+  "pageAnimationDemo": "Δείγμα κινούμενης εικόνας σελίδας",
+  "pageReaderMode": "Λειτουργία ανάγνωσης σελίδας",
+  "paged": "Σελίδες",
+  "palette": "Παλέτα",
+  "palettes": "Παλέτες",
+  "paragraphSpacing": "Διάστιξη παραγράφων",
+  "parallelSegmentsForVideoDownloader": "Παράλληλα τμήματα για το πρόγραμμα λήψης βίντεο",
+  "password": "Κωδικός πρόσβασης",
+  "passwordProtectBackup": "Προστασία αντιγράφου ασφαλείας με κωδικό πρόσβασης",
+  "passwordRequired": "Απαιτείται κωδικός πρόσβασης",
+  "passwordsDontMatch": "Οι κωδικοί πρόσβασης δεν ταιριάζουν!",
+  "pasteCustomImageUrl": "Επικόλληση διεύθυνσης URL προσαρμοσμένης εικόνας...",
+  "pasteUrlHere": "Επικολλήστε τη διεύθυνση URL εδώ...",
+  "pathCopiedToClipboard": "Η διαδρομή αντιγράφηκε στο πρόχειρο",
+  "payViaAnyUpiApp": "Πληρώστε μέσω οποιασδήποτε εφαρμογής UPI",
+  "paypalDonation": "Δωρεά μέσω PayPal",
+  "paypalRecipientNotice": "Ειδοποίηση προς τον παραλήπτη μέσω PayPal",
+  "penaltyDuration": "Διάρκεια της ποινής",
+  "performance": "Απόδοση",
+  "permissionsRequired": "Απαιτούμενα δικαιώματα",
+  "persistentPageIndicator": "Δείκτης μόνιμης σελίδας",
+  "personalizeTheLookAndMakeIt": "Προσδώστε προσωπική πινελιά στην εμφάνιση και κάντε την δική σας",
+  "personalizedRecommendations": "Εξατομικευμένες προτάσεις",
+  "platform": "Πλατφόρμα",
+  "playAroundWithAppTheme": "Πειραματιστείτε με το θέμα της εφαρμογής",
+  "playAroundWithTheVideoPlayer": "Πειραματιστείτε με το πρόγραμμα αναπαραγωγής βίντεο",
+  "playback": "Αναπαραγωγή",
+  "playbackSpeed": "Ταχύτητα αναπαραγωγής",
+  "playbackSpeeds": "Ταχύτητες αναπαραγωγής",
+  "player": "Παίκτης",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Χειριστήρια αναπαραγωγής, υπότιτλοι και ρυθμίσεις αναπαραγωγής",
+  "playerSettings": "Ρυθμίσεις παίκτη",
+  "playerTheme": "Θέμα παίκτη",
+  "playerThemes": "Θέματα παικτών",
+  "pleaseChooseALogoFile": "Παρακαλώ επιλέξτε ένα αρχείο λογότυπου.",
+  "pleaseEnterAPasswordOrDisable": "Παρακαλώ εισάγετε έναν κωδικό πρόσβασης ή απενεργοποιήστε την προστασία με κωδικό πρόσβασης.",
+  "pleaseEnterASearchTerm": "Παρακαλώ εισάγετε έναν όρο αναζήτησης",
+  "pleaseEnterAUsernameToCompare": "Παρακαλώ εισάγετε ένα όνομα χρήστη για σύγκριση.",
+  "pleaseGrantStoragePermissionToBrowse": "Παρακαλώ, παραχωρήστε άδεια αποθήκευσης για να μπορείτε να περιηγηθείτε στα αρχεία πολυμέσων σας",
+  "pleaseLoginFirst": "Παρακαλώ συνδεθείτε πρώτα",
+  "pleaseLoginFirstToExportYour": "Παρακαλώ συνδεθείτε πρώτα για να εξαγάγετε τη λίστα σας.",
+  "pleaseLoginToFavorite": "Παρακαλώ συνδεθείτε για να το προσθέσετε στα αγαπημένα!",
+  "pleaseLoginToUseThisFilter": "Παρακαλώ συνδεθείτε για να χρησιμοποιήσετε αυτό το φίλτρο!",
+  "pleaseProvideAReasonForThis": "Παρακαλώ αναφέρετε τον λόγο για αυτή την ενέργεια",
+  "pleaseRestartTheAppToApply": "Παρακαλώ, επανεκκινήστε την εφαρμογή για να εφαρμοστούν οι αλλαγές.",
+  "pleaseSelectABackupFileFirst": "Παρακαλώ επιλέξτε πρώτα ένα αρχείο αντιγράφου ασφαλείας",
+  "pleaseSelectAValidApkFile": "Παρακαλώ επιλέξτε ένα έγκυρο αρχείο APK.",
+  "pleaseSelectAValidJarFile": "Παρακαλώ επιλέξτε ένα έγκυρο αρχείο JAR.",
+  "pleaseSelectAtLeastOneItem": "Παρακαλώ επιλέξτε τουλάχιστον ένα στοιχείο για δημιουργία αντιγράφου ασφαλείας.",
+  "pleaseSelectAtLeastOneItemTo": "Παρακαλώ επιλέξτε τουλάχιστον ένα στοιχείο για επαναφορά.",
+  "pleaseWriteAtLeast30Characters": "Παρακαλώ πληκτρολογήστε τουλάχιστον 30 χαρακτήρες",
+  "pluginInstallationSync": "Εγκατάσταση και συγχρονισμός προσθηκών",
+  "pluginIsAlreadyUpToDate": "Το πρόσθετο είναι ήδη ενημερωμένο.",
+  "pluginJarCopiedPleaseRestartThe": "Το αρχείο JAR του πρόσθετου αντιγράφηκε. Παρακαλώ, επανεκκινήστε την εφαρμογή.",
+  "pluginNotInstalled": "Το πρόσθετο δεν έχει εγκατασταθεί",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "Η επανεγκατάσταση του πρόσθετου ολοκληρώθηκε με επιτυχία. Παρακαλώ, κάντε επανεκκίνηση για να εφαρμοστούν οι αλλαγές.",
+  "pluginReDownloadedPleaseRestartThe": "Το πρόσθετο κατεβάστηκε εκ νέου. Παρακαλώ, επανεκκινήστε την εφαρμογή για να εφαρμοστούν οι αλλαγές.",
+  "pluginSyncedFromLocalApk": "Το πρόσθετο συγχρονίστηκε από το τοπικό αρχείο APK.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (μέγιστο μέγεθος 20 MB)",
+  "popular": "Δημοφιλή",
+  "popularAnime": "Δημοφιλή Anime",
+  "popularAnimes": "Δημοφιλή Anime",
+  "popularManga": "Δημοφιλή μάνγκα",
+  "posterBlurMode": "Λειτουργία θόλωσης αφίσας",
+  "posterBlurScope": "Πεδίο θολώματος αφίσας",
+  "poweredByAnimatch16PointCompatibility": "Με βάση την ανάλυση συμβατότητας 16 σημείων του AniMatch στο AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Με την υποστήριξη του Commentum v2 – Προηγμένο σύστημα σχολίων με διαχείριση",
+  "preferences": "Προτιμήσεις",
+  "preferencesSystem": "Ρυθμίσεις & Σύστημα",
+  "preferredSubtitleLanguage": "Προτιμώμενη γλώσσα υποτίτλων",
+  "preparingImageToShare": "Προετοιμασία της εικόνας για κοινή χρήση...",
+  "preparingStream": "Προετοιμασία ροής",
+  "presetProviders": "ΠΡΟΚΑΘΟΡΙΣΜΕΝΟΙ ΠΑΡΟΧΕΙΣ",
+  "preventScreenFromSleeping": "Αποτροπή της μετάβασης της οθόνης σε κατάσταση αναστολής λειτουργίας",
+  "preview": "Προεπισκόπηση",
+  "previewUpper": "ΠΡΟΕΠΙΣΚΟΠΗΣΗ",
+  "privacySafety": "Προστασία προσωπικών δεδομένων και ασφάλεια",
+  "privacySettingsAndSafetyFeatures": "Ρυθμίσεις απορρήτου και λειτουργίες ασφαλείας",
+  "private": "Ιδιωτικό",
+  "privateEntry": "Ιδιωτική είσοδος",
+  "profileEffects": "Εφέ προφίλ",
+  "profileIcon": "Εικονίδιο προφίλ",
+  "progress": "Πρόοδος",
+  "progressHistory": "Εξέλιξη & Ιστορία",
+  "proposeNewFeaturesReportBugsAnd": "Προτείνετε νέες λειτουργίες, αναφέρετε σφάλματα και συνομιλήστε με άλλα μέλη",
+  "protocol": "ΠΡΩΤΟΚΟΛΛΟ",
+  "proxy": "Αντιπρόσωπος",
+  "proxyConfiguration": "Ρύθμιση παραμέτρων διακομιστή μεσολάβησης",
+  "pulseaudioSoundServer": "Διακομιστής ήχου PulseAudio",
+  "queryRemoteRepositoryForAddOn": "Αναζήτηση ενημερώσεων πρόσθετων στο απομακρυσμένο αποθετήριο",
+  "queuedForDownload": "Σε αναμονή για λήψη",
+  "quickSelectFollowing": "Γρήγορη επιλογή (Ακολουθία)",
+  "radiusMultiplier": "Πολλαπλασιαστής ακτίνας",
+  "random": "Τυχαίο",
+  "range": "Εύρος",
+  "rank": "Κατάταξη",
+  "rating": "Αξιολόγηση",
+  "reDownloadAndReinstallThePlugin": "Κάντε εκ νέου λήψη και επανεγκατάσταση του πρόσθετου από την αρχή",
+  "read": "Διαβάστε",
+  "readArticle": "Διαβάστε το άρθρο",
+  "readLatestUpdatesAboutThisAnime": "Διαβάστε τις τελευταίες ενημερώσεις για αυτό το anime",
+  "readLatestUpdatesAboutThisManga": "Διαβάστε τις τελευταίες ενημερώσεις για αυτό το μάνγκα",
+  "readOnePageAtATime": "Διάβαζε μία σελίδα κάθε φορά",
+  "readAheadDurationInMinutes": "Διάρκεια προ-ανάγνωσης σε λεπτά",
+  "readaheadSeconds": "Δευτερόλεπτα προ-ανάγνωσης",
+  "reader": "Αναγνώστης",
+  "readerBackgroundOpacity": "Διαφάνεια φόντου αναγνώστη",
+  "readerControlTheme": "Θέμα ελέγχου αναγνώστη",
+  "readerPreferences": "Προτιμήσεις αναγνωστών",
+  "readerSettings": "Ρυθμίσεις αναγνώστη",
+  "readingDirection": "Κατεύθυνση ανάγνωσης",
+  "readingLayout": "Διάταξη ανάγνωσης",
+  "readingManga": "Διαβάζοντας μάνγκα",
+  "readingMangaPhrasing": "Διαβάζοντας φράσεις από μάνγκα",
+  "readingNovel": "Ανάγνωση μυθιστορήματος",
+  "readingNovelPhrasing": "Ανάγνωση φράσεων από μυθιστόρημα",
+  "realTime4kUpscalingForAnime": "Αναβάθμιση σε 4K σε πραγματικό χρόνο για περιεχόμενο anime",
+  "reason": "Λόγος",
+  "reasonDeleted": "Ο λόγος διαγράφηκε.",
+  "reasonUpdated": "Η αιτιολογία ενημερώθηκε!",
+  "recentActivity": "Πρόσφατη δραστηριότητα",
+  "recentMediaComments": "Πρόσφατα σχόλια στα ΜΜΕ",
+  "recentNews": "Πρόσφατα νέα",
+  "recentSearches": "Πρόσφατες αναζητήσεις",
+  "recentlyCompleted": "Πρόσφατα ολοκληρωμένα",
+  "recentlyUpdated": "Πρόσφατη ενημέρωση",
+  "recommend": "Προτείνω",
+  "recommendationSubmitted": "Η πρόταση υποβλήθηκε! 🎉",
+  "recommended": "Συνιστάται",
+  "recommendedAnime": "Προτεινόμενα Anime",
+  "recommendedBy": "Συνιστάται από",
+  "recommendedManga": "Προτεινόμενα μάνγκα",
+  "recommendedNovels": "Προτεινόμενα μυθιστορήματα",
+  "reduceColorBandingArtifacts": "Μείωση των παραμορφώσεων που δημιουργούνται από τις χρωματικές ζώνες",
+  "refreshComments": "Ανανέωση σχολίων",
+  "refreshRate": "Ρυθμός ανανέωσης",
+  "relations": "Σχέσεις",
+  "releaseDate": "Ημερομηνία κυκλοφορίας",
+  "releaseYear": "Έτος κυκλοφορίας",
+  "releaseYearStats": "Στατιστικά στοιχεία ανά έτος κυκλοφορίας",
+  "rememberMyChoice": "Να θυμάσαι την επιλογή μου",
+  "rememberServer": "Απομνημόνευση διακομιστή",
+  "removalRequestSentToAdminsFor": "Το αίτημα διαγραφής έχει σταλεί στους διαχειριστές για εξέταση.",
+  "remove": "Κατάργηση",
+  "removeBanner": "Κατάργηση banner",
+  "removeDecoration": "Αφαίρεση διακόσμησης",
+  "removeEffect": "Αφαίρεση εφέ",
+  "removeFromHistory": "Διαγραφή από το ιστορικό",
+  "removeItems": "Διαγραφή στοιχείων",
+  "removeNameplate": "Αφαίρεση της πινακίδας",
+  "removeTheme": "Κατάργηση θέματος",
+  "removeWhiteBlackBorders": "Αφαίρεση λευκών/μαύρων περιθωρίων",
+  "removeYourReason": "Να αφαιρέσεις τη λογική σου;",
+  "rename": "Μετονομασία",
+  "renameList": "Λίστα μετονομασίας",
+  "reorderNavigationTabs": "Αναδιάταξη καρτελών πλοήγησης",
+  "replaceExistingDataOnThisDevice": "Αντικατάσταση των υφιστάμενων δεδομένων σε αυτή τη συσκευή με το αντίγραφο ασφαλείας",
+  "replay": "Επανάληψη",
+  "reportsQueue": "Ουρά αναφορών",
+  "repositories": "Αποθετήρια",
+  "repositoryUrl": "Διεύθυνση URL του αποθετηρίου",
+  "repositoryUrlUpper": "Διεύθυνση URL του αποθετηρίου",
+  "requests": "Αιτήματα",
+  "requiredForCoreAndVisualTuning": "Απαιτείται για τη ρύθμιση των λειτουργιών Core και Visual. Να μην ενεργοποιείται σε συσκευές χαμηλών προδιαγραφών.",
+  "reset": "Επαναφορά",
+  "resetUpper": "ΕΠΑΝΑΦΟΡΑ",
+  "resetDownloadPath": "Επαναφορά διαδρομής λήψης",
+  "resetNovelReaderSettings": "Επαναφορά ρυθμίσεων του Novel Reader",
+  "resetToDefault": "Επαναφορά στις προεπιλεγμένες ρυθμίσεις",
+  "resetToDefault2": "Επαναφορά στις προεπιλεγμένες ρυθμίσεις",
+  "resetToDefaultPicture": "Επαναφορά στην προεπιλεγμένη εικόνα",
+  "resetToDefaultWallpaper": "Επαναφορά στην προεπιλεγμένη ταπετσαρία!",
+  "resizeMode": "Λειτουργία αλλαγής μεγέθους",
+  "resizeModes": "Λειτουργίες αλλαγής μεγέθους",
+  "resolution": "Ψήφισμα",
+  "resolve": "Επίλυση",
+  "restartTheAppToApplyThe": "Επανεκκινήστε την εφαρμογή για να εφαρμοστεί η ενημέρωση.",
+  "restoreAllNovelReaderDefaults": "Επαναφορά όλων των προεπιλεγμένων ρυθμίσεων του Novel Reader",
+  "restoreData": "Επαναφορά δεδομένων",
+  "restorePreview": "Επαναφορά προεπισκόπησης",
+  "restoreToDefaultInternalStorage": "Επαναφορά των προεπιλεγμένων ρυθμίσεων της εσωτερικής μνήμης",
+  "restoringWillOverwriteYourSelectedLocal": "Η επαναφορά θα αντικαταστήσει τα στοιχεία και τις ρυθμίσεις της τοπικής βιβλιοθήκης που έχετε επιλέξει με το περιεχόμενο αυτού του αντιγράφου ασφαλείας.",
+  "restrictMessagesToFollowing": "Περιορισμός μηνυμάτων στους παρακάτω",
+  "results": "Αποτελέσματα",
+  "resultsWillAppearGroupedByExtension": "Τα αποτελέσματα θα εμφανίζονται ομαδοποιημένα ανά κατάληξη",
+  "retainOriginalColor": "Διατήρηση του αρχικού χρώματος",
+  "retry": "Επανάληψη",
+  "rightSide": "Δεξιά πλευρά",
+  "riseAndShine": "Ξύπνα και φωτίσου",
+  "roleUpdatedSuccessfully": "Ο ρόλος ενημερώθηκε με επιτυχία",
+  "roleAll": "Ρόλος: Όλοι",
+  "rollbackVersion": "Προηγούμενη έκδοση",
+  "romajiTitle": "Τίτλος σε ρομάτζι",
+  "roundUpScores": "Σύνοψη αποτελεσμάτων",
+  "runtimeHost": "Περιβάλλον εκτέλεσης",
+  "runtimeHostReleases": "Εκδόσεις του Runtime Host",
+  "runtimeHostRequired": "Απαιτείται περιβάλλον εκτέλεσης",
+  "safetyFeatures": "Χαρακτηριστικά ασφαλείας:",
+  "saturation": "Κορεσμός",
+  "sauceSearcher": "Αναζήτηση σάλτσας",
+  "save": "Αποθήκευση",
+  "saveEquip": "Αποθήκευση & Εξοπλισμός",
+  "saveChanges": "Αποθήκευση αλλαγών",
+  "saveChanges2": "Αποθήκευση αλλαγών",
+  "saveLastFrame": "Αποθήκευση τελευταίου καρέ",
+  "saveLogo": "Αποθήκευση λογότυπου",
+  "savedAnimeEntriesAndProgress": "Αποθηκευμένες καταχωρήσεις anime και πρόοδος",
+  "savedLightNovelsAndReadingState": "Αποθηκευμένα ελαφρά μυθιστορήματα και κατάσταση ανάγνωσης",
+  "savedMangaEntriesAndChapters": "Αποθηκευμένες καταχωρήσεις και κεφάλαια μάνγκα",
+  "savedStreamLinkHasExpiredFetching": "Ο σύνδεσμος της αποθηκευμένης ροής έχει λήξει. Αναζήτηση νέου συνδέσμου...",
+  "savesAScreenshotOfTheLast": "Αποθηκεύει ένα στιγμιότυπο οθόνης του τελευταίου καρέ που παρακολουθήσατε. Η απενεργοποίηση αυτής της λειτουργίας μειώνει σημαντικά τη χρήση χώρου αποθήκευσης",
+  "scaleFactor": "Συντελεστής κλίμακας",
+  "scalingAlgorithm": "Αλγόριθμος κλιμάκωσης",
+  "scanningForMoreServers": "Αναζήτηση περισσότερων διακομιστών...",
+  "scanningForVideoStreams": "Αναζήτηση ροών βίντεο...",
+  "score": "Σκορ",
+  "scoreDistribution": "Κατανομή βαθμολογίας",
+  "scoringSystem": "Σύστημα βαθμολόγησης",
+  "search": "Αναζήτηση",
+  "searchUpper": "ΑΝΑΖΗΤΗΣΗ",
+  "searchAcrossExtensions": "Αναζήτηση σε όλες τις επεκτάσεις...",
+  "searchAnimeMovies": "Αναζήτηση anime, ταινιών...",
+  "searchAnime": "Αναζήτηση anime...",
+  "searchExtensions": "Επεκτάσεις αναζήτησης",
+  "searchExtensionsEllipsis": "Επεκτάσεις αναζήτησης...",
+  "searchFailed": "Η αναζήτηση απέτυχε",
+  "searchForAnime": "Αναζήτηση anime",
+  "searchInHistory": "Αναζήτηση στο ιστορικό...",
+  "searchInLibrary": "Αναζήτηση στη Βιβλιοθήκη...",
+  "searchItemsInList": "Αναζήτηση στοιχείων στη λίστα...",
+  "searchManga": "Αναζήτηση μάνγκα...",
+  "searchQuery": "Ερώτημα αναζήτησης",
+  "searchSources": "Αναζήτηση πηγών...",
+  "searchTags": "Ετικέτες αναζήτησης...",
+  "searchUser": "Αναζήτηση χρήστη",
+  "searchingDatabase": "Αναζήτηση στη βάση δεδομένων...",
+  "searching": "Αναζήτηση...",
+  "season": "Σεζόν",
+  "seasons": "Εποχές",
+  "secondsPerScreenLowerIsFaster": "Δευτερόλεπτα ανά οθόνη (όσο μικρότερο, τόσο γρηγορότερο)",
+  "secondsPerScreenPageLowerIs": "Δευτερόλεπτα ανά οθόνη/σελίδα (όσο μικρότερο, τόσο γρηγορότερο)",
+  "securityEncryption": "Ασφάλεια και κρυπτογράφηση",
+  "seePeopleWhoContributedToAnymex": "Δείτε τα άτομα που συνέβαλαν στο AnymeX",
+  "selectAFolderWhereAnymexWill": "Επιλέξτε έναν φάκελο στον οποίο το AnymeX θα αποθηκεύσει τα επεισόδια anime και τα κεφάλαια manga που έχετε κατεβάσει.",
+  "selectAnAnimeScreenshotToFind": "Επιλέξτε ένα στιγμιότυπο από anime για να βρείτε την πηγή του",
+  "selectAnilistMyanimelistSimklOrExtensions": "Επιλέξτε τη λειτουργία AniList, MyAnimeList, Simkl ή «Επεκτάσεις»",
+  "selectDataToIncludeInThis": "Επιλέξτε τα δεδομένα που θέλετε να συμπεριλάβετε σε αυτό το αντίγραφο ασφαλείας",
+  "selectDirectory": "Επιλογή καταλόγου",
+  "selectExtensions": "Επιλογή επεκτάσεων",
+  "selectFolder": "Επιλογή φακέλου",
+  "selectLanguage": "Επιλογή γλώσσας",
+  "selectMediaDirectory": "Επιλογή καταλόγου πολυμέσων",
+  "selectNovelSource": "Επιλογή πηγής μυθιστορήματος",
+  "selectProfile": "ΕΠΙΛΟΓΗ ΠΡΟΦΙΛ",
+  "selectRange": "Επιλογή εύρους",
+  "selectServer": "Επιλογή διακομιστή",
+  "selectStatus": "Επιλογή κατάστασης",
+  "selectSubtitleFont": "Επιλογή γραμματοσειράς υποτίτλων",
+  "selectTags": "ΕΠΙΛΟΓΗ ΕΤΙΚΕΤΩΝ",
+  "selectTimezone": "Επιλογή ζώνης ώρας",
+  "selectVersionToRollback": "Επιλέξτε την έκδοση για την επαναφορά",
+  "selectVideoFile": "Επιλογή αρχείου βίντεο",
+  "selectYourPreferredContentSource": "Επιλέξτε την πηγή περιεχομένου που προτιμάτε",
+  "selectedCacheCleared": "Η επιλεγμένη προσωρινή μνήμη εκκαθαρίστηκε",
+  "selectedItemsRemoved": "Τα επιλεγμένα στοιχεία έχουν αφαιρεθεί",
+  "sensitiveLoginTokensForMalSimkl": "Ευαίσθητα διακριτικά σύνδεσης για τα MAL, Simkl και AniList",
+  "sensitiveSessionTokensForMalSimkl": "Διακριτικά ευαίσθητων συνεδριών για τα MAL, Simkl και AniList",
+  "separateCompletedAnimeListIntoSections": "Διαχωρίστε τη λίστα των anime που έχετε παρακολουθήσει σε ενότητες ανά μορφή.",
+  "separateCompletedMangaListIntoSections": "Διαχωρίστε τον κατάλογο των ολοκληρωμένων μάνγκα σε ενότητες ανά μορφή.",
+  "serverDetails": "ΛΕΠΤΟΜΕΡΕΙΕΣ ΔΙΑΚΟΜΙΣΤΗ",
+  "serverChanIsTakingANap": "Η Server-chan κάνει έναν υπνάκο!",
+  "setUpYourPreferencesForThe": "Ρυθμίστε τις προτιμήσεις σας για την καλύτερη δυνατή εμπειρία",
+  "settings": "Ρυθμίσεις",
+  "settingsAccount": "Ρυθμίσεις & Λογαριασμός",
+  "settingsAuthentication": "Ρυθμίσεις & Πιστοποίηση",
+  "settingsSavedSuccessfully": "Οι ρυθμίσεις αποθηκεύτηκαν με επιτυχία.",
+  "shaderProfilesInitialized": "Τα προφίλ shader έχουν αρχικοποιηθεί",
+  "shadowBanUser": "Χρήστης με «σκιώδη» αποκλεισμό",
+  "shareLogs": "Κοινή χρήση αρχείων καταγραφής",
+  "shareMatchCard": "Κοινοποίηση κάρτας αγώνα",
+  "shareProfile": "Κοινοποίηση προφίλ",
+  "shareTheSavedLogFileOr": "Μοιραστείτε το αρχείο καταγραφής που έχετε αποθηκεύσει ή αντιγράψτε το περιεχόμενό του.",
+  "sharedFromAnymex": "Κοινοποιήθηκε από το AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Εμφάνιση επικάλυψης με κινούμενα εφέ στα banner προφίλ",
+  "showAnimatedFramesAroundUserAvatars": "Εμφάνιση κινούμενων πλαισίων γύρω από τα avatar των χρηστών",
+  "showBatteryTime": "Εμφάνιση μπαταρίας και ώρας",
+  "showChapterTransitionEvenWithoutGaps": "Εμφάνιση μετάβασης κεφαλαίου ακόμη και χωρίς κενά",
+  "showCommunityRecommendations": "Εμφάνιση προτάσεων της κοινότητας",
+  "showContinueWatchingCard": "Εμφάνιση κάρτας «Συνέχεια παρακολούθησης»",
+  "showContinueWatchingOnHome": "Εμφάνιση της επιλογής «Συνέχεια παρακολούθησης» στην αρχική σελίδα",
+  "showCustomProfileBannersFallsBack": "Εμφάνιση προσαρμοσμένων banner προφίλ (εάν είναι απενεργοποιημένη, εμφανίζεται το εξώφυλλο του AniList)",
+  "showNameplateBackgroundsOnCommentCards": "Εμφάνιση φόντων με τις πινακίδες ονομάτων στις κάρτες σχολίων και στον πίνακα κατάταξης",
+  "showOnLeft": "Εμφάνιση στα αριστερά",
+  "showOnRight": "Εμφάνιση στα δεξιά",
+  "showReadingProgress": "Εμφάνιση προόδου ανάγνωσης",
+  "showTimestamps": "Εμφάνιση χρονικών σημάνσεων",
+  "simpleCompactListView": "Απλή και συμπαγής προβολή λίστας",
+  "simpleDirectmediaLayerAudioOutput": "Απλή έξοδος ήχου DirectMedia Layer",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Απλή διάταξη που εμφανίζει τον αριθμό του επεισοδίου, τον τίτλο και την πρόοδο χωρίς μικρογραφία",
+  "sizeMode": "Λειτουργία μεγέθους:",
+  "smartMangaSuggestions": "Έξυπνες προτάσεις για μάνγκα",
+  "smootherMotionCanIncreaseGpuUsage": "Ομαλότερη κίνηση, μπορεί να αυξήσει τη χρήση της GPU",
+  "social": "Κοινωνικά",
+  "somethingWentWrong": "Παρουσιάστηκε κάποιο πρόβλημα",
+  "sort": "ΤΑΞΙΝΟΜΗΣΗ",
+  "sort2": "Ταξινόμηση",
+  "sortBy": "ΤΑΞΙΝΟΜΗΣΗ ΚΑΤΑ",
+  "sortBy2": "Ταξινόμηση κατά",
+  "sortComments": "Ταξινόμηση σχολίων",
+  "source": "Πηγή",
+  "sourceAndPluginConfigurations": "Ρυθμίσεις πηγής και προσθηκών",
+  "sourcePreferences": "Προτιμήσεις πηγών",
+  "spaceBetweenLetters": "Διάστημα μεταξύ των γραμμάτων",
+  "spaceBetweenParagraphs": "Διάστημα μεταξύ παραγράφων",
+  "spaceBetweenWords": "Διάστημα μεταξύ των λέξεων",
+  "spacedPages": "Σελίδες με κενά",
+  "splitCompletedAnimeList": "Λίστα ολοκληρωμένων anime της σειράς «Split»",
+  "splitCompletedMangaList": "Λίστα ολοκληρωμένων μάνγκα της Σπλιτ",
+  "spoiler": "Σπόιλερ",
+  "spoilerTapToReveal": "Σπόιλερ (πατήστε για να το δείτε)",
+  "staff": "Προσωπικό",
+  "staffCharacterNameLanguage": "Προσωπικό & Όνομα χαρακτήρα Γλώσσα",
+  "standardGpuRendering": "Τυπική απόδοση μέσω GPU",
+  "starOnGithub": "Προσθήκη στο GitHub",
+  "startANewDownloadFromThe": "Ξεκινήστε μια νέα λήψη από την καρτέλα «Νέα λήψη»",
+  "startChapter": "Έναρξη κεφαλαίου",
+  "startDate": "Ημερομηνία έναρξης",
+  "startMangaDownload": "Ξεκινήστε τη λήψη του μάνγκα",
+  "startTest": "Έναρξη δοκιμής",
+  "startingExtensionRuntime": "Έναρξη εκτέλεσης της επέκτασης...",
+  "statistics": "Στατιστικά στοιχεία",
+  "stats": "Στατιστικά",
+  "status": "Κατάσταση",
+  "statusDistribution": "Κατανομή κατάστασης",
+  "statusPostedSuccessfully": "Η κατάσταση δημοσιεύτηκε με επιτυχία!",
+  "stayUpdatedWithTheLatestReleases": "Μείνετε ενημερωμένοι για τις τελευταίες κυκλοφορίες, ανακοινώσεις και συζητήσεις",
+  "storagePath": "Αποθήκευση και διαδρομή",
+  "storageManager": "Διαχειριστής αποθήκευσης",
+  "storageOptions": "Επιλογές αποθήκευσης",
+  "storagePermission": "Άδεια αποθήκευσης",
+  "storagePermissionIsRequiredToDownload": "Απαιτείται άδεια αποθήκευσης για τη λήψη ενημερώσεων",
+  "storagePermissionRequired": "Απαιτείται άδεια αποθήκευσης",
+  "streakCurLong": "Σειρά (Σύντομη/Μακρά)",
+  "stretchImagesToFitScreenWidth": "Προσαρμογή εικόνων ώστε να καλύπτουν το πλάτος της οθόνης",
+  "strikethrough": "Διαγραφή με διαγράμμιση",
+  "studios": "Στούντιο",
+  "style": "ΣΤΥΛ",
+  "subtitleBackgroundColor": "Χρώμα φόντου υπότιτλου",
+  "subtitleColor": "Χρώμα υπότιτλων",
+  "subtitleFont": "Γραμματοσειρά υπότιτλων",
+  "subtitleOutlineColor": "Χρώμα περιγράμματος υπότιτλου",
+  "subtitleOutlineWidth": "Πλάτος περιγράμματος υπότιτλου",
+  "subtitlePreview": "Προεπισκόπηση υπότιτλων",
+  "subtitlePreviewText": "Κείμενο προεπισκόπησης υπότιτλου",
+  "subtitleSize": "Μέγεθος υπότιτλων",
+  "subtitleTransparency": "Διαφάνεια υπότιτλων",
+  "subtitles": "Υπότιτλοι",
+  "summary": "Περίληψη",
+  "superAdmin": "Υπεύθυνος διαχείρισης",
+  "supportTtfAndOtfFiles": "Υποστήριξη αρχείων .ttf και .otf",
+  "supportAnymex": "Υποστήριξη AnymeX",
+  "supportedModes": "Υποστηριζόμενοι τρόποι λειτουργίας",
+  "supportedUpiApps": "Υποστηριζόμενες εφαρμογές UPI",
+  "suppressActivityWhenWatchingOrReading": "Απενεργοποίηση δραστηριότητας κατά την παρακολούθηση ή την ανάγνωση περιεχομένου NSFW",
+  "swapUpDownActions": "Ενέργειες εναλλαγής προς τα πάνω/κάτω",
+  "swipeBetweenChapters": "Μετακίνηση μεταξύ κεφαλαίων",
+  "swipeIndicatorTheme": "Θέμα δείκτη κύλισης",
+  "swipeToSeek": "Σύρε για αναζήτηση",
+  "switchBetweenDefaultTitleAndRomaji": "Εναλλαγή μεταξύ του προεπιλεγμένου τίτλου και του τίτλου σε ρομάτζι/εναλλακτικού τίτλου σε όλη τη βιβλιοθήκη και τις κάρτες",
+  "switchToOnline": "Μετάβαση στο διαδίκτυο",
+  "syncCompletedButThePluginIs": "Ο συγχρονισμός ολοκληρώθηκε, αλλά το πρόσθετο δεν είναι ακόμα έτοιμο.",
+  "syncDetails": "Λεπτομέρειες συγχρονισμού",
+  "syncFailed": "Η συγχρονισμός απέτυχε",
+  "synonyms": "Συνώνυμα",
+  "synopsis": "Σύνοψη",
+  "tags": "ΕΤΙΚΕΤΕΣ",
+  "tags2": "Ετικέτες",
+  "takeColorFromYourWallpaperA12": "Επιλέξτε χρώμα από την ταπετσαρία σας (A12+)",
+  "tapToAddARepositoryUrl": "Πατήστε το σύμβολο «+» για να προσθέσετε τη διεύθυνση URL ενός αποθετηρίου",
+  "tapAZoneToChangeIts": "Πατήστε μια ζώνη για να αλλάξετε τη δράση της",
+  "tapAction": "Ενέργεια με πάτημα",
+  "tapToChooseASource": "Πατήστε για να επιλέξετε μια πηγή",
+  "tapToLogin": "Πατήστε για να συνδεθείτε",
+  "tapToLogout": "Πατήστε για να αποσυνδεθείτε",
+  "tapToScroll": "Πατήστε για κύλιση",
+  "tapYourProfileIconInThe": "Πατήστε το εικονίδιο του προφίλ σας στην επάνω γραμμή της εφαρμογής",
+  "tapZones": "Ζώνες αφής",
+  "tellTheCommunityWhyThisDeserves": "Εξηγήστε στην κοινότητα γιατί αυτό το θέμα αξίζει περισσότερη προσοχή.",
+  "temporaryAppCache": "Προσωρινή μνήμη cache εφαρμογών",
+  "termsOfServicePrivacyPolicy": "Όροι Χρήσης/Πολιτική Απορρήτου",
+  "test": "Δοκιμή",
+  "testExtensions": "Επεκτάσεις δοκιμών",
+  "testResults": "Αποτελέσματα δοκιμών",
+  "testType": "Τύπος εξέτασης",
+  "textSize": "Μέγεθος κειμένου",
+  "theme": "Θέμα",
+  "themeLayoutAndColors": "Θέμα, διάταξη και χρώματα",
+  "themes": "Θέματα",
+  "thisBackupIsEncryptedPleaseEnter": "Αυτό το αντίγραφο ασφαλείας είναι κρυπτογραφημένο. Παρακαλώ εισάγετε τον κωδικό πρόσβασης για να συνεχίσετε.",
+  "thisDirectoryContainsNoSupportedMedia": "Αυτός ο κατάλογος δεν περιέχει αρχεία πολυμέσων που υποστηρίζονται",
+  "thisMayTakeAFewSeconds": "Αυτό μπορεί να διαρκέσει μερικά δευτερόλεπτα",
+  "thisMayTakeUpTo30": "Αυτό μπορεί να διαρκέσει έως και 30 δευτερόλεπτα",
+  "thisMightTakeAFewSeconds": "Αυτό μπορεί να διαρκέσει μερικά δευτερόλεπτα",
+  "thisReasonWillBeDeletedImmediately": "Αυτός ο λόγος θα διαγραφεί αμέσως.",
+  "thisWillPermanentlyDeleteAllData": "Αυτή η ενέργεια θα διαγράψει οριστικά όλα τα δεδομένα που είναι αποθηκευμένα στο AnymeX. Η ενέργεια αυτή δεν μπορεί να ανακληθεί.",
+  "tipYouCanCombineTheseE": "Συμβουλή: Μπορείτε να τα συνδυάσετε! π.χ. **έντονη γραφή και *πλάγια γραφή* μαζί**",
+  "title": "Τίτλος",
+  "titleCopied": "Ο τίτλος αντιγράφηκε",
+  "titleLanguage": "Γλώσσα τίτλου",
+  "toDownloadForTheFirstTime": "Για να πραγματοποιήσετε τη λήψη για πρώτη φορά, παραχωρήστε τα δικαιώματα πρόσβασης μεταβαίνοντας πρώτα στη σελίδα «Λήψεις»:",
+  "toggleBetweenGridAndDetailedList": "Εναλλαγή μεταξύ προβολής πλέγματος και λεπτομερούς λίστας",
+  "toneMapping": "Αντιστοίχιση τόνων",
+  "topAnime": "Τα καλύτερα anime",
+  "topComments": "Κορυφαία σχόλια",
+  "topGenres": "Κορυφαία είδη",
+  "topManga": "Τα καλύτερα μάνγκα",
+  "topManhua": "Κορυφαία μανχούα",
+  "topManhwa": "Κορυφαία μάνγκα",
+  "topStudios": "Κορυφαία στούντιο",
+  "torrentServer": "Διακομιστής Torrent",
+  "torrentStreamCache": "Προσωρινή αποθήκευση ροής Torrent",
+  "torrserverStreamingAddOns": "TorrServer & πρόσθετα ροής",
+  "totalChapters": "Σύνολο κεφαλαίων",
+  "totalCost": "Συνολικό κόστος:",
+  "totalItems": "Σύνολο αντικειμένων",
+  "track": "Πίστα",
+  "trackAiringSchedules": "Παρακολούθηση προγραμμάτων μετάδοσης",
+  "trackYourProgress": "Θέλετε να παρακολουθείτε την πρόοδό σας;",
+  "trackingServices": "Υπηρεσίες παρακολούθησης",
+  "transitionSubtitle": "Υπότιτλος μετάβασης",
+  "translateTo": "Μετάφραση σε",
+  "translationLanguage": "Γλώσσα μετάφρασης",
+  "translucentNav": "Ημιδιαφανής πλοήγηση",
+  "trendingAnime": "Δημοφιλή Anime",
+  "trendingAnimes": "Δημοφιλή Anime",
+  "trendingManga": "Δημοφιλή μάνγκα",
+  "tryADifferentKeyword": "Δοκιμάστε μια διαφορετική λέξη-κλειδί",
+  "tryAdjustingYourFilters": "Δοκιμάστε να προσαρμόσετε τα φίλτρα σας",
+  "tryAgain": "Δοκίμασε ξανά",
+  "tryDifferentAnimationStylesForPage": "Δοκιμάστε διαφορετικά στυλ κινούμενων εικόνων για τις εμφανίσεις των σελίδων",
+  "ttsAutoAdvance": "Αυτόματη προώθηση TTS",
+  "ttsPitch": "Τόνος TTS",
+  "ttsSpeed": "Ταχύτητα TTS",
+  "tweakGeneralAppSettings": "Προσαρμογή των γενικών ρυθμίσεων της εφαρμογής",
+  "typeLabel": "Τύπος",
+  "typeAtLeast2CharactersTo": "Πληκτρολογήστε τουλάχιστον 2 χαρακτήρες για την αναζήτηση",
+  "ui": "UI",
+  "uiComponents": "Στοιχεία διεπαφής χρήστη",
+  "uiLayoutColorsAndThemes": "Διάταξη διεπαφής χρήστη, χρώματα και θέματα",
+  "uiLayoutColorsAndVisualStyles": "Διάταξη διεπαφής χρήστη, χρώματα και οπτικά στυλ",
+  "uiSettings": "Ρυθμίσεις διεπαφής χρήστη",
+  "unableToPreparePlaybackRightNow": "Δεν είναι δυνατή η προετοιμασία της αναπαραγωγής αυτή τη στιγμή. Παρακαλώ, δοκιμάστε ξανά.",
+  "unbanUser": "Άρση αποκλεισμού χρήστη",
+  "unbind": "Αποσύνδεση",
+  "unifiedLibrary": "Ενιαία Βιβλιοθήκη",
+  "uninstall": "Απεγκατάσταση",
+  "universal": "Universal",
+  "unlock": "Ξεκλείδωμα",
+  "unlockCustomizations": "Ξεκλείδωμα προσαρμογών",
+  "unmuteUser": "Ενεργοποίηση ήχου χρήστη",
+  "unreadOnly": "Μόνο τα μη αναγνωσμένα",
+  "upcomingAnime": "Προσεχείς σειρές anime",
+  "update": "Ενημέρωση",
+  "updateAll": "Ενημέρωση όλων",
+  "updateCheckComplete": "Ο έλεγχος ενημέρωσης ολοκληρώθηκε",
+  "updateOnImport": "Ενημέρωση σχετικά με τις εισαγωγές",
+  "updateToLatestVersion": "Ενημέρωση στην πιο πρόσφατη έκδοση",
+  "updateYourActivity": "Ενημερώστε τη δραστηριότητά σας...",
+  "updatesPending": "Εκκρεμείς ενημερώσεις",
+  "upiDonation": "Δωρεά προς την UPI",
+  "uploadAnImageToGetStarted": "Ανεβάστε μια εικόνα για να ξεκινήσετε",
+  "uploadImage": "Ανεβάστε εικόνα",
+  "urlCopiedToClipboard": "Η διεύθυνση URL αντιγράφηκε στο πρόχειρο",
+  "usage": "Χρήση:",
+  "useAiToTranslateSoftSubtitles": "Χρησιμοποιήστε την τεχνητή νοημοσύνη για να μεταφράσετε ζωντανά τους υπότιτλους",
+  "useAlternateTitle": "Χρήση εναλλακτικού τίτλου",
+  "useBuffering": "Χρήση προσωρινής αποθήκευσης",
+  "useCustomGesturesForReaderNavigation": "Χρησιμοποιήστε προσαρμοσμένες κινήσεις για την πλοήγηση στον αναγνώστη",
+  "useEnhancedEpisodeMetadataAndCovers": "Χρησιμοποιήστε βελτιωμένα μεταδεδομένα επεισοδίων και εξώφυλλα",
+  "useExternalPlayer": "Χρήση εξωτερικού προγράμματος αναπαραγωγής",
+  "useKeyboardShortcutsDuringPlaybackTo": "Χρησιμοποιήστε συντομεύσεις πληκτρολογίου κατά την αναπαραγωγή για να αλλάξετε προφίλ",
+  "useLegacyHeader": "Χρήση της κλασικής κεφαλίδας",
+  "useLibassForSubtitles": "Χρησιμοποιήστε το Libass για υπότιτλους",
+  "useLibmpvForPlayback": "Χρησιμοποιήστε το LibMpv για αναπαραγωγή",
+  "useMpvConf": "Χρησιμοποιήστε το αρχείο mpv.conf",
+  "usePosterColor": "Χρησιμοποιήστε χρώμα αφίσας",
+  "useVolumeKeysToChangePages": "Χρησιμοποιήστε τα πλήκτρα έντασης για να αλλάξετε σελίδες",
+  "useYearRange": "Χρήση εύρους ετών",
+  "user": "Χρήστης",
+  "userIdCopiedToClipboard": "Το αναγνωριστικό χρήστη αντιγράφηκε στο πρόχειρο",
+  "userList": "Λίστα χρηστών",
+  "userManagement": "Διαχείριση χρηστών",
+  "userCreatedCustomMediaCollections": "Προσαρμοσμένες συλλογές πολυμέσων που έχουν δημιουργηθεί από χρήστες",
+  "username": "Όνομα χρήστη",
+  "verifyTlsCertificates": "Επαλήθευση πιστοποιητικών TLS",
+  "versionCopied": "Αντιγραφή έκδοσης",
+  "vertical": "Κάθετη",
+  "videoPlayer": "Πρόγραμμα αναπαραγωγής βίντεο",
+  "videoRenderer": "Πρόγραμμα απόδοσης βίντεο",
+  "videoSync": "Συγχρονισμός βίντεο",
+  "viewAndFilterAllUsers": "Προβολή και φιλτράρισμα όλων των χρηστών",
+  "viewOnAnilist": "Προβολή στο AniList",
+  "viewOpeningAndEndingThemes": "Προβολή των θεμάτων έναρξης και λήξης",
+  "viewProfile": "Προβολή προφίλ",
+  "viewSourceCodeOnGithub": "Δείτε τον πηγαίο κώδικα στο GitHub.",
+  "viewTheChronologicalWatchOrderOf": "Δείτε τη χρονολογική σειρά προβολής αυτού του anime",
+  "viewUser": "Προβολή χρήστη",
+  "viewUserRankingsTopContributorsReputation": "Δείτε τις κατατάξεις των χρηστών, τους κορυφαίους συνεισφέροντες και τη φήμη",
+  "viewingAnimeDetails": "Προβολή λεπτομερειών για το anime",
+  "viewingMangaDetails": "Προβολή λεπτομερειών μάνγκα",
+  "viewingNovelDetails": "Προβολή λεπτομερειών βιβλίου",
+  "visibleTabs": "Ορατές καρτέλες",
+  "visitGithubReleasesPageForChangelogs": "Επισκεφθείτε τη σελίδα «Releases» του GitHub για να δείτε τα αρχεία καταγραφής αλλαγών και να κατεβάσετε τα εγχειρίδια",
+  "visualFromAnymex": "Εικόνα από την AnymeX",
+  "voiceActors": "Ηθοποιοί φωνής",
+  "voicedCharacters": "Χαρακτήρες με φωνή",
+  "volumeButtonScrolling": "Κύλιση με το κουμπί έντασης ήχου",
+  "volumeKeysNavigation": "Πλήκτρα πλοήγησης με βάση τον όγκο",
+  "volumes": "Τόμοι",
+  "volumesRead": "Αριθμός βιβλίων που διαβάστηκαν",
+  "votes": "Ψήφοι",
+  "wWhatAreYouDoingStep": "Τ-τι κάνεις, ετεροθαλής αδελφέ; Συνδέσου πρώτα πριν το κάνεις αυτό (●´⌓`●)",
+  "wallpaper": "Ταπετσαρία",
+  "warnUser": "Προειδοποίηση χρήστη",
+  "warning": "Προειδοποίηση",
+  "wasThisHelpful": "Σας φάνηκε χρήσιμο αυτό;",
+  "watchAd": "Δείτε τη διαφήμιση",
+  "watchAnAdToSupport": "Παρακολουθήστε μια διαφήμιση για να στηρίξετε",
+  "watchAnime": "Παρακολουθήστε Anime",
+  "watchOrder": "Παραγγελία ρολογιού",
+  "watchTogether": "Παρακολουθήστε μαζί",
+  "watchTogetherPolicy": "Πολιτική «Παρακολούθηση μαζί»",
+  "watchingAnime": "Παρακολούθηση anime",
+  "watchingAnimePhrasing": "Εκφράσεις που χρησιμοποιούνται στα anime",
+  "welcomeToAnymex": "Καλώς ήρθατε στο AnymeX",
+  "whatsOnYourMind": "Τι σκέφτεσαι;",
+  "whenEnabledAnymexSavesLogsLocally": "Όταν είναι ενεργοποιημένο, το AnymeX αποθηκεύει τα αρχεία καταγραφής τοπικά μέχρι να απενεργοποιηθεί.",
+  "whyAreYouRecommendingThisMin": "Γιατί το προτείνεις αυτό; (τουλάχιστον 30 χαρακτήρες)",
+  "whyIsThisUnderratedMin30": "Γιατί αυτό το έργο είναι υποτιμημένο; (τουλάχιστον 30 χαρακτήρες)",
+  "windowsAudioSessionApi": "API συνεδρίας ήχου των Windows",
+  "wordSpacing": "Διάστημα μεταξύ λέξεων",
+  "writeAMessage": "Γράψτε ένα μήνυμα...",
+  "writeLogToAFile": "Εγγραφή καταγραφής σε αρχείο",
+  "writeYourAnilistBio": "Γράψτε τη βιογραφία σας για το AniList...",
+  "wrongTitle": "Λάθος τίτλος;",
+  "year": "Έτος",
+  "yearUpper": "ΕΤΟΣ",
+  "you": "Εσύ",
+  "youCanUseDiscordStyleMarkdown": "Μπορείτε να χρησιμοποιήσετε τη σύνταξη Markdown τύπου Discord για να μορφοποιήσετε τα σχόλιά σας:",
+  "youHaveUnsentTextClosingNow": "Έχετε ένα μήνυμα που δεν έχει αποσταλεί. Αν κλείσετε τώρα, το μήνυμά σας θα χαθεί.",
+  "youHaveUnsentTextClosingNowWill": "Έχετε ένα μήνυμα που δεν έχει αποσταλεί. Αν κλείσετε τώρα, η απάντησή σας θα χαθεί.",
+  "youHaveUnsentTextClosingNowWillLose": "Έχετε μήνυμα που δεν έχει αποσταλεί. Αν κλείσετε τώρα, θα χαθεί η κατάστασή σας.",
+  "youNeedModeratorPermissionsToAccess": "Χρειάζεστε δικαιώματα διαχειριστή για να αποκτήσετε πρόσβαση σε αυτόν τον πίνακα ελέγχου",
+  "youreUpLate": "Έχεις μείνει ξύπνιος μέχρι αργά",
+  "yourBalance": "Το υπόλοιπό σας:",
+  "yourPrivacyIsImportant": "Το απόρρητό σας είναι σημαντικό:",
+  "yourReasonHasBeenRemoved": "Ο λόγος που αναφέρατε έχει διαγραφεί.",
+  "yourRecommendation": "Η πρότασή σας",
+  "yourRichPresenceActivityWillStop": "Η δραστηριότητα «Πλούσια παρουσία» σας θα σταματήσει να ενημερώνεται.",
+  "yourRole": "Ο ρόλος σας",
+  "yourWatchReadHistory": "Το ιστορικό των βίντεο που έχετε παρακολουθήσει και των άρθρων που έχετε διαβάσει",
+  "yourWatchReadStatistics": "Τα στατιστικά στοιχεία σχετικά με το τι παρακολουθείς και διαβάζεις",
+  "advancedLinuxSoundArchitecture": "Προηγμένη αρχιτεκτονική ήχου του Linux",
+  "al": "AL",
+  "allYourLocalShi": "Όλα τα τοπικά σου shi",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "API AudioTrack του Android",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "API CoreAudio της Apple",
+  "areYouSure": "Είσαι σίγουρος;",
+  "aspectRatio": "Αναλογία διαστάσεων",
+  "attackOnTitan": "Η επίθεση των Τιτάνων",
+  "audio": "Ήχος",
+  "audioSubtitles": "Ήχος & Υπότιτλοι",
+  "audioTrack": "Ηχητικό κομμάτι",
+  "audioTracks": "Ηχητικά κομμάτια",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Αυτόματη ρύθμιση (AudioTrack)",
+  "autoCoreaudio": "Αυτόματη ρύθμιση (CoreAudio)",
+  "autoGpu": "Αυτόματη ρύθμιση (GPU)",
+  "autoPulseaudio": "Αυτόματη ρύθμιση (PulseAudio)",
+  "autoWasapi": "Αυτόματη (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Άνθιση",
+  "castToDevice": "Μετάδοση σε συσκευή",
+  "colorFilter": "Φίλτρο χρώματος",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "RPC του Discord",
+  "dnsOverHttps": "DNS μέσω HTTPS",
+  "externalPlayer": "Εξωτερικός αναπαραγωγέας",
+  "files": "Αρχεία",
+  "forward": "Προώθηση",
+  "forward30s": "Πρόωρη αποστολή 30s",
+  "fullscreen": "Πλήρης οθόνη",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Χειριστήρια κλειδώματος",
+  "lockOrientation": "Προσανατολισμός κλειδώματος",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "Ενσωμάτωση MediaCodec",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Αναγκαία δολοφονία",
+  "nextEp": "Επόμενο επεισόδιο",
+  "nextEpisode": "Επόμενο επεισόδιο",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Εικόνα μέσα σε εικόνα",
+  "playlist": "Λίστα αναπαραγωγής",
+  "previousEpisode": "Προηγούμενο επεισόδιο",
+  "pulseaudio": "PulseAudio",
+  "quality": "Ποιότητα",
+  "qualitySetting": "Ρύθμιση ποιότητας",
+  "readingMode": "Λειτουργία ανάγνωσης",
+  "reddit": "Reddit",
+  "replay30s": "Επανάληψη 30 δευτερολέπτων",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Σαμπίτο και Μακόμο",
+  "sdl": "SDL",
+  "server": "Διακομιστής",
+  "servers": "Διακομιστές",
+  "shadersColorProfiles": "Shaders & Προφίλ χρωμάτων",
+  "shadersColors": "Σέιντερ και χρώματα",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "Ταχύτητα",
+  "sw": "SW",
+  "syncSubs": "Συγχρονισμός συνδρομών",
+  "syncSubtitles": "Συγχρονισμός υπότιτλων",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Η γρήγορη καφέ αλεπού πηδάει πάνω από τον τεμπέλη σκύλο",
+  "themeMode": "Λειτουργία θέματος",
+  "thisIsFrustrating": "Αυτό είναι απογοητευτικό",
+  "toYouSomeday": "Σε σένα, κάποια μέρα",
+  "torrentFiles": "Αρχεία Torrent",
+  "tracks": "Κομμάτια",
+  "unlockOrientation": "Ξεκλείδωμα προσανατολισμού",
+  "userAgent": "User-Agent",
+  "videoQuality": "Ποιότητα βίντεο",
+  "videoServers": "Διακομιστές βίντεο",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Παρακολούθηση μαζί (στο δωμάτιο)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "Το 0 σημαίνει αυτόματο υπολογισμό νημάτων",
+  "n18Content": "Περιεχόμενο για άτομα άνω των 18 ετών",
+  "aboveAverageSimilarity": "Ομοιότητα άνω του μέσου όρου.",
+  "account": "Λογαριασμός",
+  "activityStats": "Δραστηριότητα & Στατιστικά",
+  "add": "Προσθήκη",
+  "additionalNotesOptional": "Πρόσθετες σημειώσεις (προαιρετικά)",
+  "adjustKeyVolumeScrollingSpeed": "Ρύθμιση της ταχύτητας κύλισης των πλήκτρων και της έντασης",
+  "alpha": "Άλφα",
+  "alwaysChecksCurrentChapterNumberAnd": "Ελέγχει πάντα τον τρέχοντα αριθμό κεφαλαίου και τον συγκρίνει με τον αριθμό του επόμενου/προηγούμενου κεφαλαίου, πραγματοποιώντας μετάβαση μόνο όταν ο αριθμός είναι διαφορετικός. Η επιλογή «Μετάβαση ανά κεφάλαιο» θα μεταβεί απλώς στο επόμενο στοιχείο της λίστας, ακόμη και αν υπάρχουν διπλότυπα.",
+  "animeCompleted": "Ολοκληρωμένα anime",
+  "announcementMode": "Λειτουργία ανακοινώσεων",
+  "appIsStillLoadingTryAgain": "Η εφαρμογή εξακολουθεί να φορτώνεται. Δοκιμάστε ξανά σε λίγο.",
+  "applyAColorTintOverPages": "Εφαρμόστε μια χρωματική απόχρωση στις σελίδες",
+  "audioDelay": "Καθυστέρηση ήχου",
+  "audioSettings": "Ρυθμίσεις ήχου",
+  "audioTrack2": "Ηχητική λωρίδα",
+  "autoAdvance": "Αυτόματη προώθηση",
+  "autoDeleteCompletedEntries": "Αυτόματη διαγραφή ολοκληρωμένων εγγραφών",
+  "autoSyncProgress": "Αυτόματος συγχρονισμός προόδου",
+  "automaticallyMoveToNextText": "Αυτόματη μετάβαση στο επόμενο κείμενο",
+  "automaticallyScrollAdvancePages": "Αυτόματη κύλιση/μετάβαση στις σελίδες",
+  "automaticallySwitchToContinuousModeFor": "Αυτόματη μετάβαση σε λειτουργία συνεχούς προβολής για μάνγκα με μακριές λωρίδες",
+  "averageOverlap": "Μέση επικάλυψη.",
+  "background": "Ιστορικό",
+  "basedOnYourFavouriteAnime": "Βασισμένο στο αγαπημένο σου anime.",
+  "basedOnYourFavouriteManga": "Βασισμένο στο αγαπημένο σου μάνγκα.",
+  "basedOnYourTop10Manga": "Με βάση τις 10 πιο δημοφιλείς ετικέτες μάνγκα που έχετε επιλέξει.",
+  "basedOnYourTop5Manga": "Με βάση τα 5 αγαπημένα σου είδη μάνγκα.",
+  "blue": "Μπλε",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "Διατίθεται ενημέρωση για το Bridge",
+  "brightness": "Φωτεινότητα",
+  "bulletList": "Λίστα με κουκκίδες",
+  "calendarUpper": "ΗΜΕΡΟΛΟΓΙΟ",
+  "canadianMovies": "Καναδικές ταινίες",
+  "canadianShows": "Καναδικές εκπομπές",
+  "cannotCompareTheSameProfileWith": "Δεν είναι δυνατή η σύγκριση του ίδιου προφίλ με το ίδιο.",
+  "castToDevice2": "Μετάδοση σε συσκευή",
+  "chatModeration": "Διαχείριση συνομιλιών",
+  "chooseASubtitleFileFromYour": "Επιλέξτε ένα αρχείο υποτίτλων από τη συσκευή σας (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Επιλέξτε τον τρόπο με τον οποίο θα εφαρμόσετε το επιλεγμένο αρχείο JSON στο AnymeX cloud gist σας.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "Εργαλεία Cloud",
+  "code": "Κώδικας",
+  "commonFavouriteAnime": "Δημοφιλή και αγαπημένα anime",
+  "commonFavouriteCharacters": "Δημοφιλείς αγαπημένοι χαρακτήρες",
+  "commonFavouriteManga": "Δημοφιλή αγαπημένα μάνγκα",
+  "commonPerfectAnime": "Κλασικά anime",
+  "commonPerfectManga": "Κοινό Τέλειο Μάνγκα",
+  "communityAdministratorOverseeingModerationAndPolicies": "Διαχειριστής της κοινότητας που επιβλέπει τη διαχείριση των σχολίων και την εφαρμογή των πολιτικών.",
+  "connectGithubFirstBeforeDeletingSync": "Συνδέστε πρώτα το GitHub πριν διαγράψετε τα δεδομένα συγχρονισμού.",
+  "connectGithubFirstToExportSync": "Συνδέστε πρώτα το GitHub για να εξαγάγετε τα δεδομένα συγχρονισμού.",
+  "connectGithubFirstToImportSync": "Συνδέστε πρώτα το GitHub για να εισαγάγετε τα δεδομένα συγχρονισμού.",
+  "connectGithubFirstToSyncProgress": "Συνδέστε πρώτα το GitHub για να συγχρονιστεί η πρόοδος.",
+  "connectGithubFirstToViewSync": "Συνδέστε πρώτα το GitHub για να δείτε το gist συγχρονισμού.",
+  "continuousModeOnly2": "Μόνο σε συνεχή λειτουργία",
+  "controls": "Χειριστήρια",
+  "cookiesClearedSuccessfully": "Τα cookies διαγράφηκαν με επιτυχία",
+  "copied": "Αντιγραφή",
+  "copyUrl": "Αντιγραφή URL",
+  "correctDownscaling": "Σωστή μείωση κλίμακας",
+  "couldNotLoadStreamingServicesFrom": "Δεν ήταν δυνατή η φόρτωση των υπηρεσιών streaming από το API του AniList. \n Η υπηρεσία ενδέχεται να μην είναι προσωρινά διαθέσιμη ή να υπάρχει περιορισμός στον αριθμό των αιτήσεων.",
+  "couldNotOpenGistInBrowser": "Δεν ήταν δυνατό να ανοίξει το gist στον περιηγητή.",
+  "created": "Δημιουργήθηκε",
+  "creatorAndDeveloperOfAnymex": "Δημιουργός και προγραμματιστής του AnymeX.",
+  "customBrightness": "Προσαρμοσμένη φωτεινότητα",
+  "customizeGestures": "Προσαρμογή χειρονομιών",
+  "deband": "Αφαίρεση επιδέσμου",
+  "debandIterations": "Επαναλήψεις αφαίρεσης ζώνης",
+  "debandThreshold": "Όριο απομάκρυνσης ζώνης",
+  "decreaseAutoScrollSpeed": "Μείωση της ταχύτητας της αυτόματης κύλισης",
+  "decreaseFontSize": "Μείωση μεγέθους γραμματοσειράς",
+  "deleteAnymexSyncGist": "Να διαγραφεί το AnymeX Sync Gist;",
+  "deleteCloudGist": "Διαγραφή Cloud Gist",
+  "deleteCommentMod": "Διαγραφή σχολίου (Διαχειριστής)",
+  "details": "Λεπτομέρειες",
+  "dictionary": "Λεξικό",
+  "differenceFromOwnMeanScore": "Διαφορά από τον μέσο όρο της ίδιας ομάδας",
+  "disableChat": "Απενεργοποίηση συνομιλίας",
+  "disconnectThisGithubAccountFromAnymex": "Αποσυνδέστε αυτόν τον λογαριασμό GitHub από το AnymeX",
+  "displayPagesInBlackWhite": "Εμφάνιση σελίδων σε ασπρόμαυρο",
+  "downloading": "Λήψη…",
+  "downscaler": "Μηχανισμός μείωσης κλίμακας",
+  "dynamicWidget": "Δυναμικό widget",
+  "eInkDisplayRefresh": "Ανανέωση οθόνης E-ink",
+  "eGAbc123": "π.χ. ABC123",
+  "eGMyAnimeLogo": "π.χ. My Anime Logo",
+  "editYourComment": "Επεξεργαστείτε το σχόλιό σας...",
+  "embeddedContent": "Ενσωματωμένο περιεχόμενο",
+  "enterTheRoomPassword": "Πληκτρολογήστε τον κωδικό πρόσβασης του δωματίου",
+  "enterTokenHere": "Εισάγετε εδώ το διακριτικό",
+  "error": "Σφάλμα",
+  "exitSyncNotifications": "Ειδοποιήσεις τερματισμού συγχρονισμού",
+  "exportGistJson": "Εξαγωγή JSON του Gist",
+  "exportedGistJson": "Εξαγωγή του JSON του gist.",
+  "failedToExportGistJson": "Δεν κατέστη δυνατή η εξαγωγή του JSON του gist.",
+  "failedToFetchDataFromSources": "Δεν κατέστη δυνατή η λήψη δεδομένων από τις πηγές.",
+  "failedToGetCloudGistLink": "Δεν κατέστη δυνατή η λήψη του συνδέσμου του Cloud Gist.",
+  "failedToImportGistJson": "Δεν κατέστη δυνατή η εισαγωγή του JSON του gist.",
+  "failedToLaunchExternalPlayer": "Δεν κατέστη δυνατή η εκκίνηση του εξωτερικού προγράμματος αναπαραγωγής",
+  "failedToOpenGistInBrowser": "Δεν κατέστη δυνατό το άνοιγμα του gist στον περιηγητή.",
+  "flashDuration": "Διάρκεια φλας",
+  "flashEveryNPages": "Εμφάνιση κάθε N σελίδες",
+  "flashFrequency": "Συχνότητα αναλαμπής",
+  "flashScreenOnPageTurnTo": "Εμφάνιση οθόνης flash κατά την αλλαγή σελίδας για την εξάλειψη του φαινομένου «ghosting»",
+  "followHost": "Ακολουθήστε τον οικοδεσπότη",
+  "fontSettings": "Ρυθμίσεις γραμματοσειράς",
+  "freedomSeek": "Αναζήτηση της Ελευθερίας",
+  "friendsNeedAPasswordToJoin": "Οι φίλοι χρειάζονται κωδικό πρόσβασης για να συμμετάσχουν",
+  "githubClientIdNotConfigured": "Το αναγνωριστικό πελάτη GitHub δεν έχει ρυθμιστεί.",
+  "githubLoginFailedMissingAuthorizationCode": "Αποτυχία σύνδεσης στο GitHub: λείπει ο κωδικός εξουσιοδότησης.",
+  "githubLoginWasCancelledOrFailed": "Η σύνδεση στο GitHub ακυρώθηκε ή απέτυχε.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Δείξτε την αγάπη σας",
+  "goodChemistryAndSharedTaste": "Καλή χημεία και κοινές προτιμήσεις.",
+  "grayscale": "Γκρι κλίμακα",
+  "green": "Πράσινο",
+  "hdrToneMappingTargetPeak": "Μέγιστη τιμή στόχου χαρτογράφησης τόνων HDR",
+  "higherValueIncreasesDebandingStrength": "Η υψηλότερη τιμή αυξάνει την αντοχή στη διάσπαση",
+  "horizontalPadding": "Οριζόντια συμπλήρωση",
+  "hoursWatched": "Ώρες παρακολούθησης",
+  "howManyFriendsCanJoin": "Πόσοι φίλοι μπορούν να συμμετάσχουν",
+  "ifYouHaveAnIssueOr": "Αν έχετε κάποιο πρόβλημα ή κάποια πρόταση, παρακαλώ δημιουργήστε ένα issue στο GitHub.",
+  "imageWidth": "Πλάτος εικόνας",
+  "importGistJson": "Εισαγωγή JSON από το Gist",
+  "importLocalSubtitle": "Εισαγωγή τοπικών υπότιτλων",
+  "improveQualityWhenScalingDownVideo": "Βελτίωση της ποιότητας κατά τη μείωση της ανάλυσης του βίντεο",
+  "increaseAutoScrollSpeed": "Αύξηση της ταχύτητας της αυτόματης κύλισης",
+  "increaseFontSize": "Αύξηση μεγέθους γραμματοσειράς",
+  "invalidCompatibilityLinkMissingUsernames": "Μη έγκυρος σύνδεσμος συμβατότητας: λείπουν ονόματα χρηστών.",
+  "invalidGistUrl": "Η διεύθυνση URL του gist δεν είναι έγκυρη.",
+  "invalidRoomCodeInLink": "Ο κωδικός δωματίου στον σύνδεσμο δεν είναι έγκυρος",
+  "invalidWatchTogetherLink": "Ο σύνδεσμος «Watch Together» δεν είναι έγκυρος",
+  "invertAllPageColors": "Αντιστροφή όλων των χρωμάτων της σελίδας",
+  "invertColors": "Αντιστροφή χρωμάτων",
+  "inviteLink": "Σύνδεσμος πρόσκλησης",
+  "inviteLinkCopied": "Ο σύνδεσμος πρόσκλησης αντιγράφηκε!",
+  "jDramas": "Ιαπωνικές τηλεοπτικές σειρές",
+  "joinNotifications": "Ειδοποιήσεις συμμετοχής",
+  "kDramas": "Κορεατικές τηλεοπτικές σειρές",
+  "keepBothUploadedAndCloudEntries": "Διατηρήστε τόσο τις καταχωρήσεις που έχουν μεταφορτωθεί όσο και αυτές που βρίσκονται στο cloud. Εάν η ίδια καταχώρηση υπάρχει και στα δύο μέρη, διατηρείται η πιο πρόσφατη. (Συνιστάται)",
+  "keyVolumeScrollingSpeed": "Ταχύτητα κύλισης με τα πλήκτρα και το ρυθμιστικό έντασης",
+  "koreanMovies": "Κορεατικές ταινίες",
+  "leaveNotifications": "Ειδοποιήσεις αποχώρησης",
+  "liveComments": "Ζωντανά σχόλια",
+  "lockScreen": "Οθόνη κλειδώματος",
+  "loginToAnilist": "Σύνδεση στο AniList",
+  "loginToMyanimelist": "Σύνδεση στο MyAnimeList",
+  "loginToSimkl": "Σύνδεση στο Simkl",
+  "longPressForPageActions": "Πατήστε παρατεταμένα για ενέργειες στη σελίδα",
+  "longPressAPageToSave": "Πατήστε παρατεταμένα μια σελίδα για να την αποθηκεύσετε, να την μοιραστείτε ή να την αντιγράψετε",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "Ολοκληρωμένα μάνγκα",
+  "mangaPage": "Σελίδα μάνγκα",
+  "maxMembers": "Μέλη Max",
+  "memberLeft": "Μέλος έφυγε",
+  "mergeUploadedEntriesOrReplaceCloud": "Συγχώνευση των καταχωρήσεων που έχουν μεταφορτωθεί ή αντικατάσταση των δεδομένων στο cloud",
+  "mergeWithCloud": "Συγχώνευση με το Cloud",
+  "milliseconds": "Χιλιοστά του δευτερολέπτου",
+  "missingTypeQueryParameterUseType": "Λείπει η παράμετρος ερωτήματος «type». Χρησιμοποιήστε type=player.",
+  "missingUrlQueryParameterForThe": "Λείπει η παράμετρος ερωτήματος «url» για το JSON του θέματος.",
+  "moreIterationsStrongerDebanding": "Περισσότερες επαναλήψεις = ισχυρότερη απομάκρυνση των λωρίδων",
+  "movies": "Ταινίες",
+  "moviesList": "ΛΙΣΤΑ ΤΑΙΝΙΩΝ",
+  "navigateByNumber": "Πλοήγηση ανά αριθμό",
+  "navigation": "Πλοήγηση",
+  "newMember": "Νέο μέλος",
+  "nextChapter": "Επόμενο κεφάλαιο",
+  "nextParagraph": "Επόμενη παράγραφος",
+  "noAudio": "Χωρίς ήχο",
+  "noOneCanSendMessagesIn": "Κανείς δεν μπορεί να στέλνει μηνύματα στο chat",
+  "noStreamUrlAvailable": "Δεν υπάρχει διαθέσιμη διεύθυνση URL ροής",
+  "noSubtitle": "Χωρίς υπότιτλους",
+  "noVideo": "Δεν υπάρχει βίντεο",
+  "notVeryCompatibleAtAll": "Δεν είναι καθόλου συμβατά.",
+  "numberedList": "Αριθμημένη λίστα",
+  "onScreenOverlays": "Επικαλύψεις στην οθόνη",
+  "onlyHostAndCoHostsCan": "Μόνο ο διοργανωτής και οι συνδιοργανωτές μπορούν να στέλνουν μηνύματα",
+  "opacity": "Αδιαφάνεια",
+  "openInBrowser2": "Άνοιγμα στον περιηγητή",
+  "openYourAnymexSyncGistOn": "Άνοιξε το gist συγχρονισμού του AnymeX στο GitHub",
+  "openingInExternalPlayer": "Άνοιγμα σε εξωτερικό πρόγραμμα αναπαραγωγής...",
+  "orTypeCustomTag": "Ή πληκτρολογήστε μια προσαρμοσμένη ετικέτα...",
+  "otherUpper": "ΑΛΛΑ",
+  "overlayPosition": "Θέση επικάλυψης",
+  "overrideSystemScreenBrightness": "Παράκαμψη της φωτεινότητας της οθόνης του συστήματος",
+  "ownerAndCreatorOfTheCommentum": "Ιδιοκτήτης και δημιουργός της πλατφόρμας κοινότητας Commentum.",
+  "padding": "Επένδυση",
+  "pagesAheadOfTimeForFaster": "Προετοιμασία σελίδων εκ των προτέρων για ταχύτερη φόρτωση",
+  "partySettings": "Ρυθμίσεις πάρτι",
+  "passwordIfRequired": "Κωδικός πρόσβασης (εάν απαιτείται)",
+  "pasteDirectGifOrImageUrl": "Επικόλληση απευθείας URL GIF ή εικόνας...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Κάρτες & Υπόλοιπο PayPal",
+  "permanentlyRemoveAnymexSyncData": "Μόνιμη διαγραφή των δεδομένων συγχρονισμού του AnymeX",
+  "pictureShaders": "Εικόνα και shaders",
+  "pitch": "Πίτς",
+  "playbackIsLockedToTheHost": "Η αναπαραγωγή είναι κλειδωμένη στον κεντρικό υπολογιστή",
+  "playbackSpeed2": "Ταχύτητα αναπαραγωγής",
+  "playerSettings2": "Ρυθμίσεις παίκτη",
+  "pleaseLogInFirstThenTry": "Παρακαλώ συνδεθείτε πρώτα και, στη συνέχεια, δοκιμάστε ξανά τον σύνδεσμο.",
+  "pointsBreakdown": "Ανάλυση βαθμολογίας",
+  "practicallyMadeForEachOther": "Σαν να είναι φτιαγμένοι ο ένας για τον άλλον.",
+  "preloadPage": "Προφόρτωση σελίδας",
+  "preloadPages": "Προφόρτωση σελίδων",
+  "preloadPagesAheadOfTimeFor": "Προφόρτωση σελίδων εκ των προτέρων για ταχύτερη φόρτωση (καταναλώνει περισσότερο δίκτυο και μνήμη RAM)",
+  "preventScreenFromSleepingWhileReading": "Αποτροπή της μετάβασης της οθόνης σε κατάσταση αναστολής λειτουργίας κατά την ανάγνωση",
+  "previousChapter": "Προηγούμενο κεφάλαιο",
+  "previousParagraph": "Προηγούμενη παράγραφος",
+  "privateRoom": "Ιδιωτικό δωμάτιο",
+  "profileUpdated": "Ενημέρωση προφίλ",
+  "proportionOfTotalTimeWatched": "Ποσοστό του συνολικού χρόνου παρακολούθησης",
+  "provideAReasonForThisAction": "Αναφέρετε τον λόγο για αυτή την ενέργεια...",
+  "qualitySettings": "Ρυθμίσεις ποιότητας",
+  "quote": "Απόσπασμα",
+  "range75DarkestTo100": "Εύρος: από -75 (το πιο σκούρο) έως 100",
+  "rateLimited": "Με περιορισμό ρυθμού",
+  "reactionOverlay": "Επικάλυψη αντίδρασης",
+  "readStats": "Δείτε τα στατιστικά",
+  "readTextAloud": "Ανάγνωση κειμένου με δυνατή φωνή",
+  "red": "Κόκκινο",
+  "reduceColorBandingInGradients": "Μείωση των χρωματικών ραβδώσεων στις διαβαθμίσεις",
+  "reduceHaloingWhileUpscaling": "Μείωση του φαινομένου «haloing» κατά την αναβάθμιση της ανάλυσης",
+  "refresh": "Ανανέωση",
+  "removeCurrentCloudEntriesAndReplace": "Διαγράψτε τις υπάρχουσες καταχωρήσεις στο cloud και αντικαταστήστε τις με το αρχείο που ανεβάσατε.",
+  "removeWhiteBlackBordersToMaximize": "Αφαίρεση των λευκών/μαύρων περιθωρίων για μεγιστοποίηση του περιεχομένου",
+  "removesFinishedMediaFromCloudGist": "Αφαιρεί τα ολοκληρωμένα μέσα από το Cloud Gist",
+  "replaceCloudGist": "Αντικατάσταση του Cloud Gist",
+  "report": "Έκθεση",
+  "resetReLogin": "Επαναφορά & εκ νέου σύνδεση",
+  "resetTo1": "Επαναφορά στο 1×",
+  "restore": "Επαναφορά",
+  "roomAccess": "Πρόσβαση στο δωμάτιο",
+  "roomCode": "Κωδικός δωματίου",
+  "roomCodeCopiedToClipboard": "Ο κωδικός δωματίου αντιγράφηκε στο πρόχειρο",
+  "roomDuration": "Διάρκεια διαμονής",
+  "roomNotFoundOrExpired": "Το δωμάτιο δεν βρέθηκε ή έχει λήξει",
+  "roomPassword": "Κωδικός πρόσβασης δωματίου",
+  "roomPassword2": "Κωδικός πρόσβασης δωματίου",
+  "roomSettings": "Ρυθμίσεις δωματίου",
+  "saveYourCurrentCloudProgressTo": "Αποθήκευσε την τρέχουσα πρόοδό σου στο cloud σε ένα αρχείο",
+  "scrollMultiplier": "Πολλαπλασιαστής κύλισης",
+  "scrollSpeed": "Ταχύτητα κύλισης",
+  "searchAnimeEpisode": "Αναζήτηση anime / επεισόδιο...",
+  "searchAnimeGifsReactions": "Αναζήτηση GIF από anime, αντιδράσεις...",
+  "searchChapters": "Αναζήτηση κεφαλαίων...",
+  "searchFiles": "Αναζήτηση αρχείων...",
+  "secondsPerPageScreen": "Δευτερόλεπτα ανά σελίδα / οθόνη",
+  "seekAndControlPlaybackFreely": "Αναζητήστε και ελέγξτε την αναπαραγωγή όπως θέλετε",
+  "selectedFileMustContainAJson": "Το επιλεγμένο αρχείο πρέπει να περιέχει ένα αντικείμενο JSON.",
+  "selectedJsonHasNoValidSync": "Το επιλεγμένο JSON δεν περιέχει έγκυρες καταχωρήσεις συγχρονισμού.",
+  "seriesList": "ΚΑΤΑΛΟΓΟΣ ΣΕΙΡΩΝ",
+  "setAPasswordForYourRoom": "Ορίστε έναν κωδικό πρόσβασης για το δωμάτιό σας",
+  "share": "Κοινοποίηση",
+  "showANotificationWhenSomeoneJoins": "Εμφάνιση ειδοποίησης όταν κάποιος συμμετέχει στο πάρτι",
+  "showANotificationWhenSomeoneLeaves": "Εμφάνιση ειδοποίησης όταν κάποιος αποχωρήσει από το πάρτι",
+  "showAllStreams": "Εμφάνιση όλων των ροών",
+  "showChatMessagesOnThePlayer": "Εμφάνιση των μηνυμάτων της συνομιλίας στο πρόγραμμα αναπαραγωγής καθώς φτάνουν",
+  "showEmojiReactionsFloatingOnThe": "Εμφάνιση αντιδράσεων με emoji που αιωρούνται πάνω από το πρόγραμμα αναπαραγωγής",
+  "showSyncResultWhenPlayerOr": "Εμφάνιση του αποτελέσματος συγχρονισμού όταν κλείνει το πρόγραμμα αναπαραγωγής ή το πρόγραμμα ανάγνωσης",
+  "showTransitionPageEvenWhenChapters": "Εμφάνιση της σελίδας μετάβασης ακόμη και όταν τα κεφάλαια είναι συνεχόμενα",
+  "shows": "Παραστάσεις",
+  "sigmoidUpscaling": "Σιγμοειδής αναβάθμιση",
+  "smootherGradientsWithSlightTemporalNoise": "Πιο ομαλές κλίσεις με ελαφρύ χρονικό θόρυβο",
+  "spacing": "Διάστιξη",
+  "speechSpeed": "Ταχύτητα ομιλίας",
+  "spoilers": "Αποκαλύψεις",
+  "stretchImagesToFitScreenWidthOn": "Προσαρμογή εικόνων στο πλάτος της οθόνης σε ευρείες οθόνες",
+  "subtitleSettings": "Ρυθμίσεις υποτίτλων",
+  "superAdministratorWithSystemWideManagement": "Υπεύθυνος διαχείρισης με εξουσίες διαχείρισης σε επίπεδο συστήματος.",
+  "swapUpDownActions2": "Ενέργειες «Ανταλλαγή προς τα πάνω/προς τα κάτω»",
+  "syncMode": "Λειτουργία συγχρονισμού",
+  "syncPreferences": "Προτιμήσεις συγχρονισμού",
+  "tapScrollAmount": "Πατήστε «Ποσότητα κύλισης»",
+  "tapToOpen": "Πατήστε για να ανοίξετε",
+  "tapToOpenInBrowser": "Πατήστε για να ανοίξετε στον περιηγητή",
+  "tapToOpenInSpotify": "Πατήστε για να ανοίξετε στο Spotify",
+  "tapToViewInBrowser": "Πατήστε για προβολή στον περιηγητή",
+  "tapTopBottomToScroll": "Πατήστε στο πάνω ή στο κάτω μέρος για κύλιση",
+  "targetPeak": "Στόχος: Κορυφή",
+  "temporalDither": "Χρονική διακύμανση",
+  "textToSpeech": "Μετατροπή κειμένου σε ομιλία",
+  "theCreatorOfThisCommentDiscussion": "Ο δημιουργός αυτού του νήματος συζήτησης με σχόλια.",
+  "theresASmallSparkOfAgreement": "Υπάρχει μια μικρή σπίθα συμφωνίας.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Αυτή η ενέργεια διαγράφει οριστικά το gist της προόδου σας στο AnymeX cloud από το GitHub και δεν μπορεί να ανακληθεί.",
+  "toPrevNextChapter": "Προς το προηγούμενο/επόμενο κεφάλαιο",
+  "topL": "Top-L",
+  "topR": "Top-R",
+  "totals": "Σύνολα",
+  "trendingMovies": "Ταινίες που κάνουν θραύση",
+  "trendingSeries": "Σειρές που έχουν μεγάλη απήχηση",
+  "tts": "TTS",
+  "ukMovies": "Βρετανικές ταινίες",
+  "ukShows": "Παραστάσεις στο Ηνωμένο Βασίλειο",
+  "unableToReadSelectedJsonFile": "Δεν είναι δυνατή η ανάγνωση του επιλεγμένου αρχείου JSON.",
+  "unsupportedExtension": "Επέκταση που δεν υποστηρίζεται",
+  "usMovies": "Αμερικανικές ταινίες",
+  "usShows": "Αμερικανικές σειρές",
+  "useVolumeButtonsToScroll": "Χρησιμοποιήστε τα κουμπιά έντασης για να μετακινηθείτε",
+  "userHistory": "Ιστορικό χρήστη",
+  "userInfo": "Πληροφορίες χρήστη",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "Επικυρωμένος διαχειριστής που φροντίζει ώστε τα σχόλια να είναι σεβαστά και ασφαλή.",
+  "verticalPadding": "Κάθετη πλήρωση",
+  "viewCloudGist": "Προβολή του Cloud Gist",
+  "viewUserHistory": "Προβολή ιστορικού χρήστη",
+  "viewUserInfo": "Προβολή πληροφοριών χρήστη",
+  "voice": "Φωνή",
+  "watchParty": "Πάρτι για να δούμε μαζί την ταινία",
+  "watchStats": "Στατιστικά αγώνα",
+  "watchingNow": "Παρακολουθώ τώρα",
+  "webmVideo": "Βίντεο WebM",
+  "whereLiveCommentsAppearOnScreen": "Στο σημείο όπου εμφανίζονται τα ζωντανά σχόλια στην οθόνη",
+  "whileWatchingEpisodesOrReadingChapters": "Ενώ παρακολουθείτε επεισόδια ή διαβάζετε κεφάλαια",
+  "writeAReply": "Γράψτε μια απάντηση...",
+  "youAreBasicallyTheSamePerson": "Είσαι ουσιαστικά το ίδιο άτομο.",
+  "youBothHaveVerySimilarTaste": "Και οι δύο έχετε πολύ παρόμοιο γούστο.",
+  "all2": "← Όλα",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "Στυλ",
+  "upscale": "Πολυτελές",
+  "appearanceStyle": "Εμφάνιση & Στυλ",
+  "colorsLightDarkOledLogoAnimations": "Χρώματα, Ανοιχτό/Σκούρο, OLED και κινούμενες εικόνες λογότυπου",
+  "fontsTypography": "Γραμματοσειρές και τυπογραφία",
+  "chooseTypographyCustomFontsGlobalText": "Επιλογή τυπογραφίας, προσαρμοσμένων γραμματοσειρών και γενικής κλίμακας κειμένου",
+  "globalFontScaling": "Παγκόσμια κλιμάκωση γραμματοσειρών",
+  "scaling": "Κλιμάκωση",
+  "typefaces": "Γραμματοσειρές",
+  "interfaceLayout": "Διεπαφή & Διάταξη",
+  "navBarCardStylesDetailsBlur": "Γραμμή πλοήγησης, στυλ καρτών, θόλωση λεπτομερειών και διάταξη",
+  "navigationHomeLayout": "Πλοήγηση και διάταξη αρχικής σελίδας",
+  "playbackEngineSubtitlesGesturesDecoders": "Μηχανισμός αναπαραγωγής, υπότιτλοι, χειρονομίες και αποκωδικοποιητές",
+  "mangaNovelReader": "Αναγνώστης μάνγκα και μυθιστορημάτων",
+  "readingModesDirectionColorsTapZones": "Λειτουργίες ανάγνωσης, κατεύθυνση, χρώματα και ζώνες αφής",
+  "dataNetworkSystem": "Δεδομένα, Δίκτυο & Σύστημα",
+  "downloadDirectoryConcurrencyHlsSegments": "Λήψη καταλόγου, ταυτόχρονη εκτέλεση και τμήματα HLS",
+  "accountsSocial": "Λογαριασμοί & Κοινωνικά δίκτυα",
+  "trackingAccounts": "Παρακολούθηση λογαριασμών",
+  "manageYourAnilistMyanimelistSimklAccounts": "Διαχειριστείτε τους λογαριασμούς σας στα AniList, MyAnimeList και Simkl",
+  "trackingBehavior": "Παρακολούθηση συμπεριφοράς",
+  "communityComments": "Κοινότητα & Σχόλια",
+  "commentumProfileBadgesMarkdownPrivacy": "Προφίλ Commentum, διακριτικά, Markdown και προστασία προσωπικών δεδομένων",
+  "contentPreferences": "Περιεχόμενο και προτιμήσεις",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "Φίλτρο NSFW, ενοποιημένη βιβλιοθήκη, προτάσεις και λίστες",
+  "exportAndRestoreYourLibraryAnd": "Εξαγωγή και επαναφορά της βιβλιοθήκης και των ρυθμίσεών σας",
+  "manageAnimeMangaNovelSourcesAnd": "Διαχείριση πηγών και αποθετηρίων για anime, manga και μυθιστορήματα",
+  "installAndUpdateCommunityAddOns": "Εγκατάσταση και ενημέρωση πρόσθετων της κοινότητας",
+  "storageCache": "Αποθήκευση & Προσωρινή μνήμη",
+  "manageCachedImagesThresholdsResetData": "Διαχείριση εικόνων στην προσωρινή μνήμη, ορίων και επαναφοράς δεδομένων",
+  "networkProxy": "Δίκτυο & Proxy",
+  "logsDiagnostics": "Αρχεία καταγραφής και διαγνωστικά",
+  "inspectExportAndShareApplicationLogs": "Ελέγξτε, εξαγάγετε και μοιραστείτε τα αρχεία καταγραφής της εφαρμογής",
+  "aboutSupport": "Σχετικά με εμάς & Υποστήριξη",
+  "supportDevelopmentViaKoFiPaypal": "Υποστηρίξτε την ανάπτυξη μέσω Ko-fi, PayPal και UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Έκδοση, ενημερώσεις, σύνδεσμοι προς κοινωνικά δίκτυα και νομικές πολιτικές",
+  "cacheAndCookiesClearedFor": "Η προσωρινή μνήμη και τα cookies διαγράφηκαν για τον/την {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Τα cookies διαγράφηκαν για τον/την {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Η προσωρινή μνήμη εκκαθαρίστηκε για το {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Μη υποστηριζόμενος τύπος {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Ρυθμίσεις {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Δεν βρέθηκε το τοπικό αρχείο στη διαδρομή: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Αποτυχία συγχρονισμού: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Δεν βρέθηκε το τοπικό αρχείο APK στη διαδρομή: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Σφάλμα: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Η εγκατάσταση του πρόσθετου απέτυχε: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Δεν βρέθηκαν αποτελέσματα για το «{query}»",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Σεζόν {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Επεισόδιο {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "Νέα για το {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Κοινότητα",
+  "logInWithAnilist": "Σύνδεση μέσω AniList",
+  "episode2": "Επεισόδιο {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Η λήψη ολοκληρώθηκε",
+  "downloadFailedHasNoUrl": "Η λήψη απέτυχε: Το {chapterDisplay} δεν διαθέτει διεύθυνση URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Η λήψη απέτυχε: Δεν βρέθηκαν σελίδες για το {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Η λήψη απέτυχε: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Επεισόδιο {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} επεισόδια",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Δεν βρέθηκε η πηγή «{extensionName}».",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Αποτυχία δημιουργίας torrent: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "Το {display} θα διαγραφεί οριστικά από τις λήψεις σας.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Η αναζήτηση απέτυχε: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Αναζήτηση του «{title}» στην ετικέτα {label}…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} στοιχεία ιστορικού διαγράφηκαν",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Θέλετε να διαγράψετε το «{itemName}» από το {_historyLabel};",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "Διαγράφηκε το «{itemName}»",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Ανοδική",
+  "descending": "Κατηφορική πορεία",
+  "defaultTabOrder": "Προεπιλεγμένη σειρά πλοήγησης",
+  "reverseTabs": "Αντίστροφες καρτέλες",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Τύπος: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Στοιχεία: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Εγκαταστήστε πρώτα το {sourceName} και, στη συνέχεια, κάντε κλικ",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "ΣΕΛΙΔΑ {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Αναζήτηση {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "ΟΛΟΚΛΗΡΩΘΗΚΕ (επιλέχθηκαν {length})",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "ΔΙΑΒΑΣΙΜΟ ΣΕ",
+  "streamingOn": "ΣΕ ΖΩΝΤΑΝΗ ΜΕΤΑΔΟΣΗ",
+  "freedom": "Ελευθερία",
+  "shaderAdded": "Προστέθηκε shader: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Σφάλμα κατά την εισαγωγή του shader: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Σκανλάτορες",
+  "chapterRange": "Εύρος κεφαλαίων",
+  "downloadFailed2": "Η λήψη απέτυχε: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Το κεφάλαιο {formattedNumber} έχει ληφθεί",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Λήψη ({value} %)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} κεφάλαια",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Φόρτωση της σελίδας {pageNumber} {progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Η σελίδα αποθηκεύτηκε στο φάκελο «Εικόνες/AnymeX»",
+  "pageSavedToAnymex": "Η σελίδα αποθηκεύτηκε στο {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Δεν κατέστη δυνατή η αποθήκευση της σελίδας: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Δεν κατέστη δυνατή η κοινοποίηση της σελίδας: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "Η διεύθυνση URL της σελίδας αντιγράφηκε στο πρόχειρο",
+  "failedToCopy": "Αποτυχία αντιγραφής: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Φόρτωση σελίδων...",
+  "goBack": "Επιστροφή",
+  "loadingPage2": "Φόρτωση σελίδας {value} {progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Χρώμα Flash",
+  "black": "Μαύρο",
+  "white": "Λευκό",
+  "readerBackground": "Προφίλ αναγνώστη",
+  "gray": "Γκρι",
+  "automatic": "Αυτόματο",
+  "noneNearestNeighbor": "Κανένα (πλησιέστερος γείτονας)",
+  "lowBilinear": "Χαμηλή (διγραμμική)",
+  "mediumDefault": "Μεσαίο (Προεπιλογή)",
+  "highBicubic": "Υψηλή (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Προκλίμακα Lanczos (Καλύτερη ποιότητα, πιο αργή)",
+  "fullscreenPreview": "Προεπισκόπηση σε πλήρη οθόνη",
+  "enhancementPreset": "Προεπιλογή βελτίωσης",
+  "fineTuning": "Λεπτομερής ρύθμιση",
+  "enhancementStrength": "Δύναμη ενίσχυσης",
+  "strength": "{value} % ισχύς",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Καταστολή τεχνητών φαινομένων",
+  "cleanJpegCompressionRingingAroundLinework": "Εμφανίζονται δακτυλιοειδείς παραμορφώσεις από τη συμπίεση JPEG γύρω από τις γραμμές",
+  "cache": "Προσωρινή μνήμη",
+  "cacheSize": "Μέγεθος προσωρινής μνήμης",
+  "mbStoredOnDisk": "{mb} MB αποθηκευμένα στο δίσκο",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Υπερ-ανάλυση",
+  "loadingChapter": "Φόρτωση κεφαλαίου...",
+  "noContentAvailable": "Δεν υπάρχει διαθέσιμο περιεχόμενο",
+  "recommendations": "{reasonCount} προτάσεις",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "Προτάσεις του",
+  "all3": "Όλα ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Αποτυχία δημοσίευσης μηνύματος: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Συνολικός αριθμός συμμετοχών: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Μπήκα στο δωμάτιο {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Ενεργά δωμάτια",
+  "joinWithCode": "Συμμετοχή μέσω κώδικα",
+  "leftRoom": "Έξοδος από το δωμάτιο",
+  "leaveReset": "Έξοδος / Επαναφορά",
+  "inRoom": "Στο δωμάτιο: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Επεισόδιο {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Αποβλήθηκε ο {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length} / {maxMembers} μέλη",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Έφυγε από το δωμάτιο",
+  "leave": "Αναχώρηση",
+  "noActiveRooms": "Δεν υπάρχουν ενεργά δωμάτια",
+  "roomsWillAppearHereWhenSomeone": "Τα δωμάτια θα εμφανίζονται εδώ όταν κάποιος δημιουργήσει ένα",
+  "created2": "Δημιουργήθηκε · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Εγγραφείτε →",
+  "full": "Πλήρες",
+  "savedToPicturesAnymex": "Αποθηκεύτηκε στο φάκελο «Εικόνες/AnymeX/{fileName}»",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Αποθηκεύτηκε στο φάκελο «Λήψεις»/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Αποθηκεύτηκε στο {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Πατήστε για να ανοίξετε το προφίλ)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Κεφάλαιο ",
+  "episode5": "Επεισόδιο ",
+  "noData": "{title} (Δεν υπάρχουν δεδομένα)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Αναζήτηση επεκτάσεων {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Περιήγηση στις επεκτάσεις",
+  "goToHome": "Μετάβαση στην Αρχική σελίδα",
+  "fetching": "Ανάκτηση του {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Σφάλμα κατά τη λήψη της πολιτικής: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "Το «{name}» προστέθηκε με επιτυχία!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "Το «{name}» ενημερώθηκε με επιτυχία!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Είστε σίγουροι ότι θέλετε να διαγράψετε το «{name}»;",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "Διαγράφηκε το «{name}»",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Το ιστορικό σας είναι κενό",
+  "episode6": "Επεισόδιο {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Εμφάνιση λιγότερων",
+  "readMore": "Διαβάστε περισσότερα",
+  "unpin": "Αποσύνδεση",
+  "pinActivity": "Δραστηριότητα «Pin»",
+  "n1Recommendation": "1 Σύσταση",
+  "recommendations2": "{count} Προτάσεις",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Αποστολή…",
+  "addRecommendation": "Προσθήκη σύστασης",
+  "submitRecommendation": "Υποβολή πρότασης",
+  "currentProvider": "ΤΡΕΧΩΝ ΠΑΡΟΧΕΑΣ",
+  "profileStatsUserActivities": "Στατιστικά προφίλ και δραστηριότητες χρηστών",
+  "manageSourcesPlugins": "Διαχείριση πηγών και προσθηκών",
+  "savedOfflineEpisodesChapters": "Αποθηκευμένα επεισόδια και κεφάλαια για προβολή εκτός σύνδεσης",
+  "watchVideoFilesFromDeviceStorage": "Παρακολούθηση αρχείων βίντεο από τον αποθηκευτικό χώρο της συσκευής",
+  "syncWatchPartyWithFriends": "Συντονίστε μια ομαδική προβολή με φίλους",
+  "pauseWatchHistoryAndSync": "Παύση ιστορικού παρακολούθησης και συγχρονισμού",
+  "appearancePlayerNetwork": "Εμφάνιση, παίκτης και δίκτυο",
+  "joining": "Σύνδεση...",
+  "joinRoom": "Συμμετοχή στο δωμάτιο",
+  "shareTheCodeOrInviteLink": "Μοιραστείτε τον κωδικό ή τον σύνδεσμο πρόσκλησης με τους φίλους σας.",
+  "roomCreated": "Το δωμάτιο δημιουργήθηκε!",
+  "shareThisCodeWithFriends": "Μοιραστείτε αυτόν τον κωδικό με τους φίλους σας:",
+  "copyCode": "Αντιγραφή κώδικα",
+  "copyLink": "Αντιγραφή συνδέσμου",
+  "leaveWatchTogether": "Να φύγουμε από το «Watch Together»;",
+  "removeMember": "Διαγραφή μέλους",
+  "transferHost": "Διακομιστής μεταφοράς",
+  "transferHost2": "Διακομιστής μεταφοράς",
+  "transfer": "Μεταφορά",
+  "removeMember2": "Διαγραφή μέλους",
+  "removeFromThisWatchParty": "Να αφαιρεθεί ο {username} από αυτή την ομαδική προβολή;",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} μέλη",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "Αντιγραφή του {label}",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Δεν υπάρχουν διαθέσιμοι διακομιστές για αυτό το δωμάτιο",
+  "selectStreamingServerQualityToWatch": "Επιλέξτε την ποιότητα του διακομιστή ροής για να παρακολουθήσετε",
+  "thisServerHasNoPlayableUrl": "Αυτός ο διακομιστής δεν διαθέτει URL που να μπορεί να αναπαραχθεί",
+  "episode7": "Επεισόδιο {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Προσαρμογή από το κεφάλαιο {start} έως {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh}, σύμφωνα με τις προβλέψεις για την {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "ΕΠΕΙΣΟΔΙΟ {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "Η λίστα MAL εξήχθη στο: \n {savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "Το αρχείο XML του AniList εξήχθη στο: \n {savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Η εξαγωγή απέτυχε: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Εξαγωγή της λίστας {value}...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Εξαγωγή XML {value}",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Δεν υπάρχουν διαθέσιμα αρχεία αναπαραγωγής",
+  "noThemesFound": "Δεν βρέθηκαν θέματα",
+  "playAll": "Αναπαραγωγή όλων",
+  "theDawnOfHumanity": "Η Αυγή της Ανθρωπότητας",
+  "orientationUnlocked": "Αποκλειδώθηκε ο προσανατολισμός",
+  "orientationLocked": "Προσανατολισμός κλειδωμένος",
+  "skippedOpening": "Παράλειψη εισαγωγής",
+  "skippedEnding": "Παραλειπόμενο τέλος",
+  "skippedRecap": "Παράλειψη ανακεφαλαίωσης",
+  "ifYouSeeBlackScreenUse": "Αν εμφανιστεί μαύρη οθόνη, χρησιμοποιήστε μια εξωτερική συσκευή αναπαραγωγής για να παρακολουθήσετε το βίντεο",
+  "failedToStartTorrentStream": "Αποτυχία εκκίνησης ροής torrent: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Δεν κατέστη δυνατό το άνοιγμα της ροής. Παρακαλώ δοκιμάστε κάποιον άλλο διακομιστή",
+  "noServersFoundForThisEpisode": "Δεν βρέθηκαν διακομιστές για αυτό το επεισόδιο.",
+  "failedToLoadEpisodeCheckYour": "Δεν κατέστη δυνατή η φόρτωση του επεισοδίου. Ελέγξτε τη σύνδεσή σας.",
+  "playing": "Παίζοντας {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Αποτυχία αλλαγής αρχείου torrent: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Ο υπότιτλος φορτώθηκε: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Σφάλμα κατά τη φόρτωση των υπότιτλων: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Κατεστραμμένος υπότιτλος!",
+  "preTranslatingSubtitles": "Προεπεξεργασία υποτίτλων...",
+  "preTranslationFailedUsingRealTime": "Η προ-μετάφραση απέτυχε, χρησιμοποιείται εναλλακτική λύση σε πραγματικό χρόνο",
+  "preTranslationErrorUsingRealTime": "Σφάλμα πριν τη μετάφραση, με χρήση εναλλακτικής λύσης σε πραγματικό χρόνο",
+  "corruptedQuality": "Κακή ποιότητα!",
+  "colorProfilesOnlyAvailableWithMediakit": "Τα προφίλ χρωμάτων διατίθενται μόνο με το πρόγραμμα αναπαραγωγής MediaKit",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Ανοίξτε τις ροές βίντεο σε εξωτερικό πρόγραμμα αναπαραγωγής ως προεπιλογή",
+  "quickDefaults": "Γρήγορες προεπιλογές",
+  "orientationSpeedResizeModeExternalPlayer": "Προσανατολισμός, ταχύτητα, λειτουργία αλλαγής μεγέθους και εξωτερικός αναπαραγωγέας",
+  "controlsGestures": "Χειριστήρια και κινήσεις",
+  "subtitlesTranslation": "Υπότιτλοι & Μετάφραση",
+  "languagesFontsStylingLibassTranslation": "Γλώσσες, γραμματοσειρές, μορφοποίηση, libass και μετάφραση",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "Αναβάθμιση shaders, προεπιλογών και προφίλ",
+  "engineAdvanced": "Κινητήρας & Προηγμένες Τεχνολογίες",
+  "addSpeed": "Προσθήκη ταχύτητας",
+  "speedPresets": "Προεπιλογές ταχύτητας",
+  "rememberAsDefaultSpeed": "Να το αποθηκεύσεις ως προεπιλεγμένη ταχύτητα",
+  "loadedSubtitle": "Φορτωμένος υπότιτλος: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Αποτυχία λήψης υποτίτλων: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "ΚΩΔΙΚΟΣ ΔΩΜΑΤΙΟΥ",
+  "episodeReleasesIn": "ΤΟ ΕΠΕΙΣΟΔΙΟ {value} ΚΥΚΛΟΦΟΡΕΙ ΣΕ",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "Θα ανακοινωθεί ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Πρέπει να είστε συνδεδεμένοι για να σχολιάσετε",
+  "readFullRules": "Διαβάστε τους πλήρεις κανόνες",
+  "acceptPost": "Αποδοχή & Δημοσίευση",
+  "youNeedToBeLoggedIn2": "Πρέπει να είστε συνδεδεμένοι για να απαντήσετε",
+  "commentCopiedToClipboard": "Το σχόλιο αντιγράφηκε στο πρόχειρο",
+  "spam": "Ανεπιθύμητα μηνύματα",
+  "offensive": "Επιθετική",
+  "harassment": "Παρενόχληση",
+  "offTopic": "Εκτός θέματος",
+  "failedToLoadUserInfo": "Δεν κατέστη δυνατή η φόρτωση των στοιχείων χρήστη.",
+  "noUserDataFound": "Δεν βρέθηκαν δεδομένα χρήστη.",
+  "viewHistory": "Προβολή ιστορικού",
+  "failedToLoadComments": "Δεν κατέστη δυνατή η φόρτωση των σχολίων.",
+  "noCommentsFound": "Δεν βρέθηκαν σχόλια.",
+  "deleted2": "ΔΙΑΓΡΑΦΗ",
+  "comment": "ΣΧΟΛΙΟ",
+  "failedToLoadUserHistory": "Δεν κατέστη δυνατή η φόρτωση του ιστορικού χρήστη.",
+  "noHistoryFound": "Δεν βρέθηκε ιστορικό.",
+  "youNeedToBeLoggedIn3": "Πρέπει να είστε συνδεδεμένοι για να επεξεργαστείτε τα σχόλια",
+  "commentCannotBeEmpty": "Το σχόλιο δεν μπορεί να είναι κενό",
+  "failedToLoadCommentsPleaseTry": "Δεν κατέστη δυνατή η φόρτωση των σχολίων. Παρακαλώ δοκιμάστε ξανά.",
+  "commentsLoaded": "Φορτώθηκαν {value} σχόλια",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Δεν κατέστη δυνατή η ανανέωση των σχολίων. Παρακαλώ δοκιμάστε ξανά.",
+  "invalidParentCommentId": "Μη έγκυρο αναγνωριστικό γονικού σχολίου",
+  "replyPostedSuccessfully": "Η απάντηση δημοσιεύτηκε με επιτυχία",
+  "failedToPostReply": "Δεν κατέστη δυνατή η δημοσίευση της απάντησης",
+  "failedToPostReplyPleaseTry": "Δεν κατέστη δυνατή η δημοσίευση της απάντησης. Παρακαλώ δοκιμάστε ξανά.",
+  "commentPostedSuccessfully": "Το σχόλιο δημοσιεύτηκε με επιτυχία",
+  "failedToAddCommentPleaseTry": "Δεν κατέστη δυνατή η προσθήκη σχολίου. Παρακαλώ, δοκιμάστε ξανά.",
+  "failedToUpdateVotePleaseTry": "Δεν κατέστη δυνατή η ενημέρωση της ψήφου. Παρακαλώ δοκιμάστε ξανά.",
+  "invalidCommentId": "Μη έγκυρο αναγνωριστικό σχολίου",
+  "commentEditedSuccessfully": "Το σχόλιο τροποποιήθηκε με επιτυχία",
+  "failedToEditComment": "Δεν κατέστη δυνατή η επεξεργασία του σχολίου",
+  "commentDeletedSuccessfully": "Το σχόλιο διαγράφηκε με επιτυχία",
+  "failedToDeleteComment": "Δεν κατέστη δυνατή η διαγραφή του σχολίου",
+  "failedToReportComment": "Δεν κατέστη δυνατή η αναφορά του σχολίου",
+  "failedToModerateComment": "Δεν κατέστη δυνατή η διαχείριση του σχολίου",
+  "failedToManageUser": "Αποτυχία διαχείρισης χρήστη",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ πόντοι). Η κατάταξη βασίζεται στην πραγματική δραστηριότητα ({realPoints} πόντοι).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} πόντοι που κερδήθηκαν + {text} μπόνους ρόλου ({label}). Η κατάταξη βασίζεται στην πραγματική δραστηριότητα.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Εύρος επεισοδίων",
+  "episodeIsDownloaded": "Το επεισόδιο {number} έχει κατεβαστεί",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} επεισόδια",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling, 2η σεζόν – Αναδύσου από τη σκιά",
+  "frierenBeyondJourneySEnd": "Frieren: Πέρα από το τέλος του ταξιδιού",
+  "bleachThousandYearBloodWar": "BLEACH: Ο Χιλιετής Πόλεμος του Αίματος",
+  "cardCustomizer": "Εργαλείο προσαρμογής καρτών",
+  "presetStyle": "Προκαθορισμένο στυλ",
+  "chooseFrom5AuthenticBuiltIn": "Επιλέξτε ανάμεσα σε 5 αυθεντικά σχέδια ενσωματωμένων συσκευών",
+  "sizingGeometry": "Διαστάσεις και γεωμετρία",
+  "cardSize": "Μέγεθος κάρτας",
+  "scaleCardsProportionallyWithoutDistortion": "Κλιμάκωση των καρτών αναλογικά χωρίς παραμόρφωση",
+  "landscapeCards": "Κάρτες με τοπία",
+  "formatCardsIn169Widescreen": "Διαμόρφωση καρτών σε ευρεία οθόνη με αναλογία διαστάσεων 16:9",
+  "selectPosterImageAspectRatio": "Επιλογή αναλογίας διαστάσεων εικόνας αφίσας",
+  "titleLines": "Τίτλοι",
+  "maximumNumberOfTitleLinesDisplayed": "Μέγιστος αριθμός γραμμών τίτλων που εμφανίζονται",
+  "gestureAreas": "Περιοχές χειρονομιών",
+  "resetDefault": "Επαναφορά προεπιλογών",
+  "overlay": "Επικάλυψη",
+  "volume": "Όγκος",
+  "brightnessArea": "Περιοχή φωτεινότητας",
+  "overlayAreaTap": "Περιοχή επικάλυψης (Πατήστε)",
+  "volumeArea": "Όγκος Έκταση",
+  "resetToDefaultLayout": "Επαναφορά στην προεπιλεγμένη διάταξη",
+  "moveToSlot": "Μετακίνηση στην θέση",
+  "topBar": "Κορυφαία γραμμή",
+  "bottomLeft": "Κάτω αριστερά",
+  "bottomRight": "Κάτω δεξιά",
+  "themesOverlay": "Θέματα & Επικάλυψη",
+  "gesturesSeeking": "Χειρονομίες & Αναζήτηση",
+  "horizontalSwipeAcrossTheScreenTo": "Κάντε οριζόντια κίνηση με το δάχτυλο στην οθόνη για αναζήτηση",
+  "autoSkipCompletion": "Αυτόματη παράλειψη και συμπλήρωση",
+  "percentageWatchedBeforeMarkingCompleted": "Ποσοστό που έχει παρακολουθηθεί πριν ολοκληρωθεί η βαθμολόγηση",
+  "playerControls": "Χειριστήρια παικτή",
+  "mpvConfSavedSuccessfully": "Το αρχείο mpv.conf αποθηκεύτηκε με επιτυχία",
+  "hardwareDrivers": "Υλικό και προγράμματα οδήγησης",
+  "systemIntegrations": "Σύστημα & Ενσωματώσεις",
+  "experimentalMpvTuning": "Πειραματική βελτιστοποίηση MPV",
+  "editMpvConf": "Επεξεργασία του αρχείου mpv.conf",
+  "modeA": "Λειτουργία Α",
+  "modeB": "Λειτουργία Β",
+  "modeC": "Λειτουργία C",
+  "modeAA": "Λειτουργία A+A",
+  "modeBB": "Λειτουργία B+B",
+  "modeCA": "Λειτουργία C+A",
+  "natural": "Φυσικό",
+  "vivid": "Ζωηρό",
+  "cinema": "Κινηματογράφος",
+  "soft": "Μαλακό",
+  "warm": "Ζεστό",
+  "cool": "Ωραίο",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Κινηματογράφος HDR",
+  "vividPop": "Ζωηρό Ποπ",
+  "dark": "Σκοτεινό",
+  "anime4kEngine": "Μηχανή Anime4K",
+  "anime4kShaders2": "Shaders του Anime4K",
+  "devicePerformanceTier": "Κατηγορία απόδοσης συσκευής",
+  "midRange": "Μεσαίας κατηγορίας",
+  "highEnd": "Υψηλής ποιότητας",
+  "shaderMode": "Λειτουργία Shader",
+  "colorPreset": "Προεπιλογή χρώματος",
+  "desktopPlaybackKeybindings": "Συντομεύσεις πληκτρολογίου για αναπαραγωγή στην επιφάνεια εργασίας",
+  "customSubtitleFonts": "Προσαρμοσμένες γραμματοσειρές υποτίτλων",
+  "importedFont": "Εισαγόμενη γραμματοσειρά «{fontName}»",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Είστε σίγουροι ότι θέλετε να διαγράψετε το «{font}»;",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Γλώσσα και μετάφραση",
+  "renderingBehavior": "Απόδοση & Συμπεριφορά",
+  "disableToAvoidFadeTransitionsBetween": "Απενεργοποίηση για την αποφυγή μεταβάσεων με ξεθώριασμα μεταξύ των υπότιτλων",
+  "typographyOutline": "Τυπογραφία & Περίγραμμα",
+  "adjustSubtitleFontSize": "Προσαρμογή μεγέθους γραμματοσειράς υποτίτλων",
+  "adjustSubtitleOutlineThickness": "Ρύθμιση του πάχους του περιγράμματος των υπότιτλων",
+  "colorsPosition": "Χρώματα & Θέση",
+  "changeSubtitleTextColor": "Αλλαγή χρώματος κειμένου υπότιτλων",
+  "mangaReader": "Αναγνώστης μάνγκα",
+  "layoutDirection": "Σχεδιασμός & Σκηνοθεσία",
+  "autoSwitchToVerticalModeFor": "Αυτόματη μετάβαση σε κατακόρυφη λειτουργία για webtoons",
+  "imageDisplay": "Εικόνα & Οθόνη",
+  "interfaceSession": "Διεπαφή & Συνεδρία",
+  "mangaControlsGestures": "Χειριστήρια και χειρονομίες στο μάνγκα",
+  "overscrollToPreviousNextChapter": "Κάντε κύλιση προς τα πάνω για το προηγούμενο/επόμενο κεφάλαιο",
+  "automaticallyScrollMangaPages": "Αυτόματη κύλιση των σελίδων του μάνγκα",
+  "swapVolumeUpDownActions": "Ανταλλαγή ενεργειών αύξησης/μείωσης όγκου",
+  "novelReader": "Novel Reader",
+  "themeDisplay": "Θέμα & Εμφάνιση",
+  "displayChapterPercentageWhileReading": "Εμφάνιση του ποσοστού ολοκλήρωσης του κεφαλαίου κατά την ανάγνωση",
+  "displayStatusInfoInTheNovel": "Εμφάνιση πληροφοριών κατάστασης στον αναγνώστη μυθιστορημάτων",
+  "typographySpacing": "Τυπογραφία και διαστήματα",
+  "novelControlsGestures": "Νέες λειτουργίες ελέγχου και χειρονομίες",
+  "tapScreenEdgesToScrollNovel": "Αγγίξτε τις άκρες της οθόνης για να μετακινηθείτε στις σελίδες του μυθιστορήματος",
+  "swipeGestures": "Κινήσεις σάρωσης",
+  "volumeKeyScrolling": "Πλοήγηση με τα πλήκτρα έντασης",
+  "useHardwareVolumeButtonsToScroll": "Χρησιμοποιήστε τα φυσικά κουμπιά ρύθμισης έντασης για να περιηγηθείτε στα μυθιστορήματα",
+  "automaticallyScrollNovelContent": "Αυτόματη κύλιση του περιεχομένου του μυθιστορήματος",
+  "textToSpeechTts": "Μετατροπή κειμένου σε ομιλία (TTS)",
+  "readNovelChaptersAloud": "Διαβάστε τα κεφάλαια του μυθιστορήματος φωναχτά",
+  "speechRate": "Ρυθμός ομιλίας",
+  "voicePitch": "Τόνος φωνής",
+  "areYouSureYouWantTo4": "Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε από το {title};",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Δεν κατέστη δυνατή η αναζήτηση ενημερώσεων: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "Το {name} εγκαταστάθηκε με επιτυχία",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Δεν κατέστη δυνατή η εγκατάσταση του {name}: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "Η ενημέρωση του {name} ολοκληρώθηκε με επιτυχία",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Δεν κατέστη δυνατή η ενημέρωση του {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Απεγκατάσταση του {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "Απεγκαταστάθηκε το {name}",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Δεν κατέστη δυνατή η απεγκατάσταση του {name}: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} Σειρά ενοτήτων",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Ειδοποιήσεις & Συγχρονισμός",
+  "enableNotifications": "Ενεργοποίηση ειδοποιήσεων",
+  "syncAnilistNotificationsWithDeviceNotifications": "Συγχρονισμός των ειδοποιήσεων του AniList με τις ειδοποιήσεις της συσκευής",
+  "airingAlerts": "Ειδοποιήσεις για τηλεοπτικές μεταδόσεις",
+  "socialAlerts": "Κοινωνικές ειδοποιήσεις",
+  "notifyOnNewFollowers": "Ειδοποίηση για νέους ακόλουθους",
+  "activityAlerts": "Ειδοποιήσεις δραστηριότητας",
+  "syncInterval": "Διάστημα συγχρονισμού",
+  "regionTimezone": "Περιοχή και ζώνη ώρας",
+  "profileBio": "Προφίλ - Βιογραφικό",
+  "backupFailed": "Η δημιουργία αντιγράφου ασφαλείας απέτυχε: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Σφάλμα κατά την επιλογή αρχείου: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Αποτυχία φόρτωσης αντιγράφου ασφαλείας: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Η επαναφορά απέτυχε: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} τίτλοι και ιστορικό",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} τίτλοι και κεφάλαια",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} τίτλοι και κατάσταση ανάγνωσης",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists}: προσαρμοσμένες λίστες σε όλα τα μέσα",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} καταχωρημένες εγγραφές επεκτάσεων",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} πακέτα zip με επεκτάσεις",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Βοήθεια & Πληροφορίες",
+  "libraryContentSafety": "Βιβλιοθήκη και ασφάλεια περιεχομένου",
+  "homePageLists": "Λίστες αρχικής σελίδας",
+  "chooseWhichListsToShowOn": "Επιλέξτε ποιες λίστες θα εμφανίζονται στην αρχική σελίδα",
+  "homePageCards": "Κάρτες αρχικής σελίδας ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Παρακολουθώντας $anime",
+  "viewingAnime": "Προβολή του $anime",
+  "readingManga2": "Διαβάζοντας $manga",
+  "viewingManga": "Προβολή $manga",
+  "readingNovel2": "Ανάγνωση του $novel",
+  "viewingNovel": "Προβολή του $novel",
+  "browsingStatus": "Περιήγηση στο $status",
+  "upiIdCopied": "Αντιγραφή αναγνωριστικού UPI: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Αντιγραφή του αναγνωριστικού UPI ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Πατήστε για να ανοίξετε το GPay, το PhonePe, το Paytm κ.λπ.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Λήψη ειδοποιήσεων",
+  "reDownloadFailed": "Η επανεκκίνηση της λήψης απέτυχε: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Η επαναφορά απέτυχε: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Δεν κατέστη δυνατή η προσθήκη του αποθετηρίου: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Χρησιμοποιήθηκε η γραμματοσειρά «{fontName}»",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Δεν κατέστη δυνατή η λήψη του «{fontName}»",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "Εισαγωγή και εφαρμογή της γραμματοσειράς «{fontName}»",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Δεν κατέστη δυνατή η εισαγωγή του αρχείου γραμματοσειράς",
+  "deleted3": "Διαγράφηκε το «{fontName}»",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Βιβλιοθήκη γραμματοσειρών",
+  "linotte": "Λινόττε",
+  "defaultGeometricRoundedFontDesignedFor": "Προεπιλεγμένη γραμματοσειρά με στρογγυλεμένα γεωμετρικά στοιχεία, σχεδιασμένη για το AnymeX",
+  "systemFont": "Γραμματοσειρά συστήματος",
+  "useYourDeviceOsDefaultSystem": "Χρησιμοποιήστε την προεπιλεγμένη γραμματοσειρά του λειτουργικού συστήματος της συσκευής σας",
+  "loadYourOwnTtfOrOtf": "Φορτώστε τα δικά σας αρχεία γραμματοσειρών σε μορφή .ttf ή .otf",
+  "pendingReports": "{length} εκκρεμείς αναφορές",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies και αποθήκευση",
+  "monitoring": "Παρακολούθηση",
+  "fpsMeter": "Μετρητής FPS",
+  "showDraggableRealTimeFpsOverlay": "Εμφάνιση μετακινούμενης επικάλυψης FPS σε πραγματικό χρόνο",
+  "detectedModesDisplay": "Ανιχνευόμενες λειτουργίες & Οθόνη",
+  "currentDisplayMode": "Τρέχουσα λειτουργία οθόνης",
+  "modes": "Λειτουργίες {length}",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Προσαρμογή",
+  "stylingLibass": "{subLang} • {subFont} • Στυλ & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Κάθετα",
+  "controlsTapZones": "Χειριστήρια και ζώνες αφής",
+  "customizeTapZones": "Προσαρμογή ζωνών αφής",
+  "configurePagedAndWebtoonTapRegions": "Ρύθμιση περιοχών αφής για σελίδες και webtoon",
+  "fitBordersSpacing": "{value} • Προσαρμογή, περιγράμματα και αποστάσεις",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Στυλ κεφαλαίου, ένδειξη σελίδας και κλείδωμα οθόνης",
+  "overscrollActionsAutoScrollVolume": "Υπερκύλιση, ενέργειες, αυτόματη κύλιση και ένταση ήχου",
+  "themeTypography": "Θέμα & Τυπογραφία",
+  "pt": "{value}pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Λειτουργία ανάγνωσης & Οθόνη",
+  "pageModeProgressBatteryIndicator": "Λειτουργία σελίδας, ένδειξη προόδου και ένδειξη μπαταρίας",
+  "readPageByPageInsteadOf": "Διαβάστε σελίδα προς σελίδα αντί να κάνετε κύλιση",
+  "displayPercentageInReadingBar": "Εμφάνιση ποσοστού στη γραμμή ανάγνωσης",
+  "displayBatteryAndTimeInReader": "Εμφάνιση της μπαταρίας και της ώρας στη γραμμή ανάγνωσης",
+  "gesturesNavigation": "Χειρονομίες και πλοήγηση",
+  "tapToScrollSwipeAutoScroll": "Πατήστε για κύλιση, σύρετε, αυτόματη κύλιση και ένταση ήχου",
+  "tapEdgesOfScreenToScroll": "Αγγίξτε τις άκρες της οθόνης για να μετακινηθείτε προς τα πάνω/κάτω",
+  "swipeHorizontallyToChangeChapters": "Σύρε οριζόντια για να αλλάξεις κεφάλαιο",
+  "useVolumeKeysToScroll": "Χρησιμοποιήστε τα πλήκτρα έντασης για να μετακινηθείτε",
+  "textToSpeechTts2": "Μετατροπή κειμένου σε ομιλία (TTS)",
+  "textToSpeechReadingSupport": "Υποστήριξη ανάγνωσης με μετατροπή κειμένου σε ομιλία",
+  "speechRate2": "Ρυθμός ομιλίας",
+  "voicePitch2": "Τόνος φωνής",
+  "appPostersIconsAvatarsSize": "Αφίσες εφαρμογών, εικονίδια, αβατάρ. Μέγεθος: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Προσωρινά τμήματα βίντεο. Μέγεθος: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Σελίδες διαδικτυακού μυθιστορήματος που έχουν ληφθεί. Μέγεθος: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Αρχεία καταγραφής, προσωρινές λήψεις. Μέγεθος: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Αποτυχία εκκαθάρισης της προσωρινής μνήμης: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Η επαναφορά στις εργοστασιακές ρυθμίσεις απέτυχε: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 ή 3F51B5",
+  "motionDisplay": "Κίνηση & Οθόνη",
+  "visualEffectsTuning": "Οπτικά εφέ & Ρυθμίσεις",
+  "historyCard": "Κάρτα ιστορικού",
+  "carousel": "Καρουσέλ",
+  "navBar": "Γραμμή πλοήγησης",
+  "themeDarkModeLayoutStyling": "Θέμα, σκοτεινή λειτουργία και διαμόρφωση εμφάνισης",
+  "gesturesSubtitlesVideoSettings": "Χειρονομίες, υπότιτλοι και ρυθμίσεις βίντεο",
+  "settingsTiles": "Πλακίδια ρυθμίσεων",
+  "oledMode2": "Λειτουργία OLED",
+  "primaryAccount": "Κύριος λογαριασμός ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Σχετικό με το {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Σύνδεση με το {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "Τίτλοι {value}",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Να διαγραφεί το «{id}»; Αυτή η ενέργεια δεν μπορεί να ανακληθεί.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Εισαγωγή…",
+  "addJsonFiles": "Προσθήκη αρχείων JSON",
+  "previousStyle": "Προηγούμενο στυλ",
+  "nextStyle": "Επόμενο στυλ",
+  "currentStyle": "Τρέχον στυλ",
+  "useThisStyle": "Χρησιμοποιήστε αυτό το στυλ",
+  "pleaseLogInToGetRecommendations": "Παρακαλώ συνδεθείτε για να δείτε προτάσεις",
+  "chapter1": "Κεφάλαιο 1",
+  "deletedSuccessfully": "Το {value} διαγράφηκε με επιτυχία",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Η σύνδεση στο Simkl ολοκληρώθηκε με επιτυχία!",
+  "yepFailed": "Ναι, απέτυχε",
+  "userInfoFetchingFailed": "Αποτυχία ανάκτησης πληροφοριών χρήστη!",
+  "githubLoginFailed": "Αποτυχία σύνδεσης στο GitHub: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Ο συγχρονισμός βρίσκεται ήδη σε εξέλιξη.",
+  "anotherSyncActionIsAlreadyIn": "Μια άλλη διαδικασία συγχρονισμού βρίσκεται ήδη σε εξέλιξη.",
+  "noAnymexSyncGistFoundTo": "Δεν βρέθηκε κανένα gist συγχρονισμού AnymeX προς διαγραφή.",
+  "noAnymexSyncGistFoundInitialize": "Δεν βρέθηκε κανένα gist συγχρονισμού AnymeX. Πρέπει πρώτα να γίνει η αρχικοποίηση.",
+  "githubGistSync": "Συγχρονισμός GitHub Gist",
+  "manage": "Διαχείριση",
+  "manageGithubGistSync": "Διαχείριση συγχρονισμού GitHub Gist",
+  "joinedTheParty": "Ο {username} μπήκε στο πάρτι",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "Ο {username} έφυγε από το πάρτι",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Ο παρουσιαστής πέρασε στο επεισόδιο {episodeNumber} της σειράς {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Σφάλμα κατά τη λήψη σχολίων",
+  "errorAddingComment": "Σφάλμα κατά την προσθήκη σχολίου",
+  "errorUpdatingVote": "Σφάλμα κατά την ενημέρωση της ψήφου",
+  "errorEditingComment": "Σφάλμα κατά την επεξεργασία του σχολίου",
+  "errorDeletingComment": "Σφάλμα κατά τη διαγραφή σχολίου",
+  "commentReportedSuccessfully": "Το σχόλιο καταχωρήθηκε με επιτυχία",
+  "errorReportingComment": "Σχόλιο σχετικά με την αναφορά σφάλματος",
+  "errorFetchingReportsQueue": "Σφάλμα κατά τη λήψη της ουράς αναφορών",
+  "reportResolvedSuccessfully": "Η αναφορά επιλύθηκε με επιτυχία",
+  "failedToResolveReport": "Δεν κατέστη δυνατή η επεξεργασία της αναφοράς",
+  "errorResolvingReport": "Σφάλμα κατά την επεξεργασία της αναφοράς",
+  "errorFetchingUserInfo": "Σφάλμα κατά τη λήψη των στοιχείων χρήστη",
+  "errorFetchingUserHistory": "Σφάλμα κατά τη λήψη του ιστορικού χρήστη",
+  "errorFetchingUserStats": "Σφάλμα κατά τη λήψη των στατιστικών του χρήστη",
+  "errorListingUsers": "Σφάλμα κατά την εμφάνιση της λίστας χρηστών",
+  "errorSearchingUsers": "Σφάλμα κατά την αναζήτηση χρηστών",
+  "errorFetchingModerationQueue": "Σφάλμα κατά τη λήψη της ουράς ελέγχου",
+  "commentModeratedSuccessfully": "Το σχόλιο εγκρίθηκε με επιτυχία",
+  "errorModeratingComment": "Σφάλμα κατά τη διαμόρφωση του σχολίου",
+  "userManagedSuccessfully": "Ο χρήστης διαχειρίστηκε με επιτυχία",
+  "errorManagingUser": "Σφάλμα κατά τη διαχείριση χρήστη",
+  "errorGettingInitialDeepLink": "Σφάλμα κατά τη λήψη του αρχικού deep link: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Σφάλμα κατά το άνοιγμα του συνδέσμου: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Αντιγραφή λεπτομερειών σφάλματος",
+  "whatSNew": "Τι νέο υπάρχει",
+  "updatedToV": "Ενημερώθηκε στην έκδοση {current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Δεν ήταν δυνατό να ανοίξει ο σύνδεσμος της διαφήμισης",
+  "newAnilistUpdates": "{length} Νέες ενημερώσεις του AniList",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText} \n + {value} ακόμη",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Ανανέωση συσκευών",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Προσθήκη αποθετηρίου... παρακαλώ περιμένετε.",
+  "unsupportedThemeTypeSupportedPlayer": "Ο τύπος θέματος «{type}» δεν υποστηρίζεται. Υποστηριζόμενοι τύποι: player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Εισαγωγή θέματος παίκτη από τον σύνδεσμο...",
+  "themeIsInvalid": "Το θέμα δεν είναι έγκυρο: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Το JSON του θέματος είναι έγκυρο. Εισήχθη το {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Σύνδεση στην αίθουσα {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Αποτυχία σύνδεσης με το δωμάτιο: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Υπολογισμός συμβατότητας AniMatch για τους {user1} και {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Μοιραστείτε το με την υπηρεσία παρακολούθησης που έχετε επιλέξει",
+  "shareAnymexLink": "Κοινοποίηση συνδέσμου AnymeX",
+  "opensDirectlyInAnymex": "Ανοίγει απευθείας στο AnymeX",
+  "newCommentsRepliesAndEdits": "Νέα σχόλια, απαντήσεις και τροποποιήσεις",
+  "upvotesAndDownvotesOnYourComments": "Θετικές και αρνητικές ψήφοι στα σχόλιά σας",
+  "warningsMutesBansAndModerationActions": "Προειδοποιήσεις, απενεργοποίηση ήχου, αποκλεισμοί και ενέργειες διαχειριστών",
+  "reportFiledResolvedDismissed": "Η αναφορά κατατέθηκε, επιλύθηκε, απορρίφθηκε",
+  "officialAnnouncements": "Επίσημες ανακοινώσεις",
+  "whenSomeoneMentionsYouInA": "Όταν κάποιος σε @αναφέρει σε ένα σχόλιο",
+  "notificationsForNewAnimeEpisodeReleases": "Ειδοποιήσεις για νέες κυκλοφορίες επεισοδίων anime",
+  "notificationsForFollowsMentionsAndLikes": "Ειδοποιήσεις για νέους ακόλουθους, αναφορές και «μου αρέσει»",
+  "notificationsForCompletedEpisodeAndChapter": "Ειδοποιήσεις για ολοκληρωμένες λήψεις επεισοδίων και κεφαλαίων",
+  "signIn": "Σύνδεση",
+  "failedToCheckForUpdates3": "Δεν κατέστη δυνατός ο έλεγχος για ενημερώσεις",
+  "noUpdatesAvailable": "Δεν υπάρχουν διαθέσιμες ενημερώσεις",
+  "errorCheckingForUpdates": "Σφάλμα κατά τον έλεγχο για ενημερώσεις",
+  "installPermissionRequired": "Απαιτείται άδεια εγκατάστασης",
+  "downloadFailed3": "Η λήψη απέτυχε",
+  "newVersionAvailable": "Διατίθεται νέα έκδοση"
 }

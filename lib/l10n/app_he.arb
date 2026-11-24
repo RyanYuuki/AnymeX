@@ -176,5 +176,3834 @@
   "incognitoDisabled": "מצב גלישה בסתר מושבת",
   "episodeCount": "{count} פרקים",
   "chapterCount": "{count} פרקים",
-  "itemCount": "{count} פריטים"
+  "itemCount": "{count} פריטים",
+  "whatAreWeDoingToday": ", מה אנחנו עושים היום?",
+  "aLogoWithThisNameAlready": "כבר קיים לוגו בשם זה.",
+  "about": "בערך",
+  "aboutCommentumV2": "על Commentum v2",
+  "aboutTheApp": "לגבי האפליקציה",
+  "accessModerationToolsAndReports": "גישה לכלי ניהול ודוחות",
+  "accountTokensAnilistMalSimkl": "אסימוני חשבון (AniList, MAL, Simkl)",
+  "accounts": "חשבונות",
+  "accountsSync": "חשבונות וסנכרון",
+  "actionAppliedSuccessfully": "הפעולה הוחלה בהצלחה",
+  "activeDownloads": "הורדות פעילות",
+  "activity": "פעילות",
+  "activityDeleted": "הפעילות נמחקה",
+  "activityHeatmap": "מפת חום פעילות",
+  "activityMergeTime": "זמן מיזוג פעילות",
+  "activityPhrasing": "ניסוח פעילות",
+  "activityRefreshed": "הפעילות רעננה",
+  "adFreeApp": "אפליקציה ללא פרסומות",
+  "addCustomLogo": "הוסף לוגו מותאם אישית",
+  "addCustomLogoGifWebp": "הוסף לוגו מותאם אישית (.gif, .webp)",
+  "addRepo": "הוסף ריפו",
+  "addRepository": "הוסף מאגר",
+  "addYourRecommendation": "הוסף את המלצתך",
+  "addOnExtensions": "הרחבות תוספים",
+  "addOns": "תוספות",
+  "addOnsPowerBackgroundServicesSuch": "תוספים מפעילים שירותי רקע כמו מנוע הזרמת הטורנט TorrServer להשמעה ישירה של קישורי מגנט.",
+  "addedToDownloads": "נוסף להורדות",
+  "addingKotatsuRepositoryThisWillTake": "הוספת מאגר Kotatsu. זה ייקח לפחות 1-2 דקות, אנא המתן...",
+  "addingRepositoryFetchingExtensions": "מוסיף מאגר ומביא תוספים...",
+  "adjustBottomBarMarginMediaDetails": "התאם את השוליים של הסרגל התחתון (דף פרטי המדיה בלבד)",
+  "adjustCardAnimationSpeed": "התאם את מהירות הנפשת הכרטיס",
+  "adjustCornerRadiusOfElements": "התאם את רדיוס הפינה של האלמנטים",
+  "adjustDoubleTapToSeekDuration": "התאם את משך הקשה כפולה כדי לחפש",
+  "adjustElementGlowIntensity": "התאם את עוצמת זוהר האלמנט",
+  "adjustFrostedBlurIntensity": "התאם את עוצמת הטשטוש החלב",
+  "adjustGlowBlurIntensity": "התאם את עוצמת טשטוש הזוהר",
+  "adjustHorizontalMarginOfBottomNavigation": "התאם את השוליים האופקיים של סרגל הניווט התחתון",
+  "adjustItemsPerRow": "התאם פריטים בכל שורה",
+  "adjustMediaBackdropExposure": "התאם את חשיפת הרקע של המדיה",
+  "adjustMegaskipDuration": "התאם את משך MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "התאם את העגלגלות של כל כרטיסי המדיה",
+  "adjustSubSize": "התאם את גודל המשנה",
+  "adjustSubtitleOutlineWidth": "התאם את רוחב מתאר הכתוביות",
+  "adjustTextVisibility": "התאם את נראות הטקסט",
+  "admin": "מנהל מערכת",
+  "adult": "מבוגר",
+  "aiPicks": "בחירות AI",
+  "airingAnimeNotifications": "שידור הודעות אנימה",
+  "all": "הכל",
+  "allClearNoReportsToReview": "הכל ברור! אין דוחות לבדיקה.",
+  "allSources": "כל המקורות",
+  "allowAnymexToAutomaticallyOpenAnime": "אפשר ל-AnymeX לפתוח אוטומטית קישורי אינטרנט לאנימה ומנגה",
+  "allowInstallingUpdatesForExtensionsAnd": "אפשר התקנת עדכונים עבור תוספים ואפליקציה",
+  "allowOnlyUsersIFollowTo": "אפשר רק למשתמשים שאני עוקב אחריהם לשלוח לי הודעה.",
+  "allowStorageAccessAndSelectDownload": "אפשר גישה לאחסון ובחר תיקיית הורדה",
+  "allowStorageAccessToDownloadApp": "אפשר גישה לאחסון כדי להוריד עדכוני אפליקציות ותוספים",
+  "alreadyRecommended": "כבר מומלץ",
+  "alternativeTitles": "כותרות חלופיות",
+  "alwaysShowChapterTransition": "הצג תמיד מעבר פרק",
+  "alwaysShowPageIndicator": "הצג תמיד מחוון עמוד",
+  "amountOfFilmGrainApplied": "כמות גרגר הסרט מיושם",
+  "anifyKitsuArtwork": "יצירות אמנות של Anify / Kitsu",
+  "anilistSettings": "הגדרות AniList",
+  "anilistSettings2": "הגדרות אניליסט",
+  "animatchCompatibility": "תאימות AniMatch",
+  "animatchLinkCopiedToClipboard": "קישור AniMatch הועתק ללוח!",
+  "animateControlOverlay": "שכבת שליטה הנפשת",
+  "anime": "אנימה",
+  "animeUpper": "אנימה",
+  "animeManga": "אנימה ומנגה",
+  "anime4kEnhancement": "שיפור אנימה 4K",
+  "animeAdaptation": "עיבוד אנימה",
+  "animeCustomLists": "רשימות מותאמות אישית של אנימה",
+  "animeDetailsPhrasing": "ניסוח פרטי אנימה",
+  "animeLibrary": "ספריית אנימה",
+  "animeList": "רשימת אנימה",
+  "animeScore": "ציון אנימה",
+  "animeSectionOrder": "סדר מדור אנימה",
+  "announcement": "הכרזה",
+  "announcementUnavailable": "הודעה לא זמינה",
+  "announcements": "הכרזות",
+  "anymexForkOptimisedForTv": "מזלג AnymeX מותאם לטלוויזיה",
+  "anymexIs100FreeOpenSource": "AnymeX הוא 100% חינמי, קוד פתוח וללא פרסומות. התמיכה שלך עוזרת ישירות בעלויות השרת ובפיתוח תכונות פעיל!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX הוא 100% חינמי, קוד פתוח וללא פרסומות. התמיכה שלך עוזרת לי לשמור על מוטיבציה לתחזק ולשפר את האפליקציה ללא הרף!",
+  "appCacheExceededThresholdAndWas": "מטמון האפליקציה חרג מהסף ונוקה",
+  "appDataHasBeenCompletelyReset": "נתוני האפליקציה אופסו לחלוטין",
+  "appFonts": "גופני אפליקציה",
+  "appSettingsSessions": "הגדרות והפעלות של אפליקציה",
+  "appearance": "מראה",
+  "appearanceInterface": "מראה וממשק",
+  "appearanceTheme": "מראה ועיצוב",
+  "appliesAnimeMangaPosterColorOn": "מחיל צבע של פוסטר אנימה/מנגה בדף הפרטים",
+  "apply": "החל",
+  "applyASubtleFilmGrainTexture": "החל מרקם גרגירי סרט עדין על הממשק",
+  "applyFilters": "החל מסננים",
+  "applyOptionsFromYourMpvConf": "החל אפשרויות מה-mpv.conf שלך כאשר ההשמעה מתחילה",
+  "areYouSureYouWantTo": "האם אתה בטוח שברצונך למחוק את כל קובצי ה-Cookie השמורים?",
+  "areYouSureYouWantToDelete": "האם אתה בטוח שברצונך למחוק את התגובה הזו? זה יוסר לצמיתות והדוח ייפתר.",
+  "areYouSureYouWantToDeleteThis": "האם אתה בטוח שברצונך למחוק את התוסף הזה?",
+  "areYouSureYouWantToDeleteThisReply": "האם אתה בטוח שברצונך למחוק את התשובה הזו?",
+  "askForTrackingPermission": "בקשו אישור מעקב",
+  "atLeast2TabsMustRemain": "לפחות 2 כרטיסיות חייבות להישאר גלויות!",
+  "audioEngine": "מנוע אודיו",
+  "audioPitchCorrection": "תיקון גובה שמע",
+  "authenticationOptional": "אימות (אופציונלי)",
+  "auto": "אוטומטי",
+  "autoPlay": "הפעלה אוטומטית",
+  "autoScroll": "גלילה אוטומטית",
+  "autoScrollSpeed": "מהירות גלילה אוטומטית",
+  "autoSkipEd": "דלג אוטומטי ED",
+  "autoSkipFiller": "מילוי אוטומטי לדלג",
+  "autoSkipOnceOnly": "דילוג אוטומטי פעם אחת בלבד",
+  "autoSkipOnlyOncePerWatch": "דילוג אוטומטי רק פעם אחת בכל שעון",
+  "autoSkipOp": "דלג אוטומטי על OP",
+  "autoSkipRecap": "דלג אוטומטי על סיכום",
+  "autoSkipTheEndingSong": "דלג אוטומטית על שיר הסיום",
+  "autoSkipTheOpeningSong": "דלג אוטומטית על שיר הפתיחה",
+  "autoSkipTheRecapSection": "דלג אוטומטית על קטע הסיכום",
+  "autoSwitchToVerticalMode": "מעבר אוטומטי למצב אנכי",
+  "autoTranslateSubtitles": "תרגום אוטומטי של כתוביות",
+  "autoWebtoonMode": "מצב Webtoon אוטומטי",
+  "autoClearThreshold": "סף ניקוי אוטומטי",
+  "autoSelectDefault": "בחירה אוטומטית (ברירת מחדל)",
+  "autoSelectThisServerQualityFor": "בחר אוטומטית את איכות השרת הזו עבור האנימה הזו",
+  "automaticallyMoveToNextTextSegment": "העבר אוטומטית לפלח הטקסט הבא",
+  "automaticallyScrollContent": "גלילה אוטומטית של תוכן",
+  "automaticallyScrollPages": "גלול דפים אוטומטית",
+  "automaticallySkipFillerEpisodesWhenGoing": "דלג אוטומטית על פרקי מילוי כאשר אתה עובר לפרק הבא",
+  "automaticallyUpdateEntriesWhenImportingThe": "עדכן אוטומטית ערכים בעת ייבוא ה-XML",
+  "availableAddOns": "תוספות זמינות",
+  "availableKeybindings": "חיבורי מפתחות זמינים:",
+  "avatarDecorations": "קישוטי אווטאר",
+  "avatarDecorationsNameplatesBannersProfileEffects": "קישוטי אווטאר, לוחיות שם, באנרים ואפקטי פרופיל",
+  "avgChapters": "ממוצע פרקים",
+  "avgEpisodes": "ממוצע פרקים",
+  "back": "חזרה",
+  "backdropScope": "רקע והיקף",
+  "backdropBrightness": "בהירות רקע",
+  "backdropSource": "מקור רקע",
+  "backgroundOpacity": "אטימות רקע",
+  "backup": "גיבוי",
+  "backupRestore": "גיבוי ושחזור",
+  "backupAndRestoreYourLibrary": "גבה ושחזר את הספרייה שלך",
+  "backupArchive": "ארכיון גיבוי",
+  "backupOwner": "בעל גיבוי",
+  "backupRestoredSuccessfully": "הגיבוי שוחזר בהצלחה!",
+  "backupSavedSuccessfully": "הגיבוי נשמר בהצלחה!",
+  "badge": "תג",
+  "banUser": "חסום משתמש",
+  "baseUrlNotAvailableForThis": "כתובת האתר הבסיסית אינה זמינה עבור מקור זה",
+  "basedOnYourFavouriteCharacters": "מבוסס על הדמויות האהובות עליך.",
+  "basedOnYourFavouriteStaff": "מבוסס על הצוות האהוב עליך.",
+  "basedOnYourTop10Tags": "מבוסס על 10 התגים המובילים שלך.",
+  "basedOnYourTop3Studios": "מבוסס על 3 האולפנים המובילים שלך.",
+  "basedOnYourTop5Genres": "מבוסס על 5 הז'אנרים המובילים שלך.",
+  "basedOnYourTop6Voice": "מבוסס על 6 שחקני הקול המובילים שלך.",
+  "batchDownload": "הורדת אצווה",
+  "beTheFirstToRecommendThis": "היה הראשון להמליץ על התואר הזה!",
+  "betterSubtitleRenderingUsingLibassLibrary": "עיבוד כתוביות טוב יותר באמצעות ספריית libass",
+  "blockquote": "Blockquote",
+  "blurBackdropTuning": "טשטוש וכוונון רקע",
+  "blurAmount": "כמות טשטוש",
+  "blurColorTint": "טשטוש גוון צבע",
+  "blurMechanism": "מנגנון טשטוש",
+  "blurMultiplier": "מכפיל טשטוש",
+  "blurStyle": "סגנון טשטוש",
+  "bold": "נועז",
+  "boldItalic": "מודגש + נטוי",
+  "botUrlNotConfigured": "כתובת האתר של הבוט לא הוגדרה",
+  "bottomControls": "בקרות תחתונות",
+  "bottomMargin": "שוליים תחתונים",
+  "bottomNavBarMargin": "Nav Bar Margin תחתון",
+  "broadcastYourActivityToDiscord": "שדר את הפעילות שלך ל-Discord",
+  "browsingIdle": "גלישה / סרק",
+  "browsingPhrasing": "ניסוח גלישה",
+  "bufferSize": "גודל מאגר",
+  "builtInStyles": "סגנונות מובנים",
+  "byDisablingThisYouCanAvoid": "על ידי השבתה זו תוכל להימנע ממעבר בין כתוביות.",
+  "byIndex": "לפי אינדקס",
+  "byUserId": "לפי זיהוי משתמש",
+  "byUsername": "לפי שם משתמש",
+  "bypassCloudflare": "עוקף את Cloudflare",
+  "cacheStorage": "מטמון ואחסון",
+  "cacheMinutes": "דקות מטמון",
+  "cacheOverview": "סקירת מטמון",
+  "cachedImages": "תמונות מאוחסנות במטמון",
+  "calculateCompatibility": "חשב תאימות",
+  "calculatedBasedOnWhichReleaseDecades": "מחושב על סמך עשורים של מהדורה שצפית הכי הרבה והניקוד הכי גבוה.",
+  "calendar": "לוח שנה",
+  "cancel": "בטל",
+  "cannotCompareAUserWithThemselves": "לא יכול להשוות משתמש עם עצמו! נא להזין שני שמות משתמש שונים.",
+  "cannotCompareYourProfileWithYourself": "לא יכול להשוות את הפרופיל שלך לעצמך! נא להזין שם משתמש אחר.",
+  "cantPlaySinceUserClosedThe": "לא ניתן לשחק מאז שהמשתמש סגר את האפליקציה בפתאומיות",
+  "cantReadSinceUserClosedThe": "לא ניתן לקרוא מאחר שהמשתמש סגר את האפליקציה בפתאומיות",
+  "cardAnimationDuration": "משך הנפשת כרטיסים",
+  "cardRoundness": "עגולות קלפים",
+  "cardStyle": "סגנון כרטיס",
+  "carouselStyle": "סגנון קרוסלה",
+  "changeFile": "שנה קובץ",
+  "changeRole": "שנה תפקיד",
+  "changeService": "שינוי שירות",
+  "changeSubtitleBackgroundColor": "שנה את צבע הרקע של הכתוביות",
+  "changeSubtitleColors": "שנה את צבעי הכתוביות",
+  "changeSubtitleOutlineColor": "שנה את צבע מתאר הכתוביות",
+  "changelog": "CHANGELOG",
+  "chapterListSettings": "הגדרות רשימת פרקים",
+  "chapterNumber": "מספר פרק",
+  "chapterTileStyle": "סגנון אריחי פרק",
+  "chapters": "פרקים",
+  "chaptersUpper": "פרקים",
+  "chaptersVolumes": "פרקים וכרכים",
+  "chaptersRead": "קרא פרקים",
+  "characters": "דמויות",
+  "checkCompatibility": "בדוק תאימות",
+  "checkForAddOnUpdates": "בדוק אם קיימים עדכוני תוספים",
+  "checkForUpdates": "בדוק אם קיימים עדכונים",
+  "checkUpdatesFromBetaChannel": "בדוק עדכונים מערוץ בטא",
+  "checkingForUpdates": "מחפש עדכונים!",
+  "chooseABackupFileAnymex": "בחר קובץ גיבוי (.anymex)",
+  "chooseACustomBackgroundForLiquid": "בחר רקע מותאם אישית למצב נוזלי.",
+  "chooseADirectoryToBrowseYour": "בחר ספרייה כדי לעיין בקבצי המדיה שלך",
+  "chooseDifferentImage": "בחר תמונה אחרת",
+  "chooseDownloadFolder": "בחר הורד תיקייה",
+  "chooseImage": "בחר תמונה",
+  "chooseProvider": "בחר ספק",
+  "chooseQuality": "בחר איכות",
+  "chooseServer": "בחר שרת",
+  "chooseServiceTracker": "בחר שירות / מעקב",
+  "chooseShaderProfile": "בחר פרופיל Shader",
+  "chooseUpiApp": "בחר באפליקציית UPI",
+  "chooseWhichListToShowOn": "בחר איזו רשימה להציג בדף הבית",
+  "chooseYourFavouriteColor": "בחר את הצבע האהוב עליך!",
+  "chooseYourFavouritePalette": "בחר את הפלטה האהובה עליך!",
+  "chromaScaler": "Chroma scaler",
+  "classicCarouselCardLayoutFeaturingVertical": "פריסת כרטיסי קרוסלה קלאסית הכוללת כרטיסי פוסטר אנכיים.",
+  "clear": "ברור",
+  "clearAll": "נקה הכל",
+  "clearAllHistory": "נקה את כל ההיסטוריה",
+  "clearAppCache": "נקה את המטמון של האפליקציה",
+  "clearAppCacheNow": "נקה את המטמון של האפליקציה כעת",
+  "clearCache": "נקה את המטמון",
+  "clearCacheCookies": "נקה מטמון וקובצי Cookie",
+  "clearCookies": "נקה עוגיות",
+  "clearCookies2": "נקה קובצי Cookie",
+  "clearHistory": "נקה היסטוריה",
+  "clearImageCacheNow": "נקה את מטמון התמונה כעת",
+  "clearProxy": "נקה פרוקסי",
+  "clearSelected": "נקה את הבחירה",
+  "clientAll": "לקוח: הכל",
+  "close": "סגור",
+  "closetCommunity": "ארון וקהילה",
+  "cloudflareChallengeSolved": "אתגר Cloudflare נפתר!",
+  "collectionName": "שם האוסף",
+  "collections": "אוספים",
+  "combineBackupDataWithExistingData": "שלב נתוני גיבוי עם נתונים קיימים במכשיר זה",
+  "commentDeleted": "התגובה נמחקה",
+  "commentPolicy": "מדיניות הערות",
+  "commentReplies": "תגובה תגובות",
+  "commentRules": "כללי הערות",
+  "commentSystem": "מערכת הערות",
+  "comments": "הערות",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 היא מערכת הערות מתקדמת המספקת:",
+  "commentumV2SettingsModerationPreferences": "Commentum v2 הגדרות, ניהול והעדפות",
+  "common": "נפוץ",
+  "commonCharacters": "דמויות נפוצות",
+  "commonFavouriteStaff": "צוות מועדף משותף",
+  "commonGenres": "ז'אנרים נפוצים",
+  "commonSettings": "הגדרות נפוצות",
+  "commonStudios": "אולפני משותף",
+  "commonTags": "תגים נפוצים",
+  "commonVoiceActors": "שחקנים קוליים נפוצים",
+  "communityDriven": "מונע קהילה",
+  "communityForksOfAnymex": "מזלגות קהילתיים של AnymeX",
+  "communityLeaderboard": "Leaderboard בקהילה",
+  "communityRecommendations": "המלצות קהילה",
+  "compact": "קומפקטי",
+  "compactCardWithEpisodeThumbnailAnd": "כרטיס קומפקטי עם תמונה ממוזערת של פרק וכותרת",
+  "compactGridOfChapterNumbers": "רשת קומפקטית של מספרי פרקים",
+  "compatibility": "תאימות",
+  "compatibilityRanks": "דירוגי תאימות",
+  "compatibleWithGooglePayPhonepePaytm": "תואם ל-Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay וכל אפליקציות הבנקאות UPI.",
+  "completeAnyCloudflareChallengeThenTap": "השלם כל אתגר של Cloudflare ולאחר מכן הקש על \"סנכרן קובצי Cookie\" כדי להעביר את ההפעלה להרחבות.",
+  "compose": "חיבור",
+  "concurrencyLimits": "מקיפות ומגבלות",
+  "configurationsRepos": "תצורות & Repos",
+  "configureExport": "הגדר וייצוא",
+  "configureDiscordRichPresenceActivityStatus": "קבע את התצורה של נוכחות ופעילות עשירה של Discord",
+  "configureDnsOverHttpsProxyTls": "הגדר הגדרות DNS-over-HTTPS, proxy ו-TLS",
+  "configureMangaAndNovelReaderDefaults": "הגדר ברירות מחדל של מנגה וקורא רומן",
+  "configureParallelDownloadsAndDirectory": "הגדר הורדות מקבילות וספרייה",
+  "configurePosterBlurScopeTintBackdrop": "הגדר את טשטוש הפוסטר, היקף, גוון ומקור רקע",
+  "confirm": "אשר",
+  "confirmRestore": "אשר ושחזר",
+  "confirmBackupPassword": "אשר את סיסמת הגיבוי",
+  "conflictHandling": "טיפול בעימותים",
+  "connect": "התחבר",
+  "continueReading": "המשך קריאה",
+  "continueWatching": "המשך לצפות",
+  "continuousModeOnly": "מצב רציף בלבד",
+  "contributors": "תורמים",
+  "controlTheme": "נושא שליטה",
+  "controlsSubtitlesAndPlaybackPreferences": "פקדים, כתוביות והעדפות השמעה",
+  "cookiesUserAgentSynced": "קובצי Cookie ו-User-Agent מסונכרנים!",
+  "copy": "העתק",
+  "copyPath": "העתק נתיב",
+  "copyUpiId": "העתק את מזהה UPI",
+  "copyUserId": "העתק את מזהה המשתמש",
+  "coreTeam": "צוות ליבה",
+  "couldNotCalculateCompatibility": "לא ניתן היה לחשב תאימות.",
+  "couldNotFetchChaptersForThis": "לא ניתן היה להביא פרקים עבור הכותרת הזו",
+  "couldNotFetchEpisodesForThis": "לא ניתן היה להביא פרקים עבור הכותר הזה",
+  "couldNotOpenDonationLink": "לא ניתן היה לפתוח קישור לתרומה",
+  "couldNotOpenLink": "לא ניתן היה לפתוח את הקישור",
+  "couldNotOpenReleasesPage": "לא ניתן היה לפתוח את דף ההפצות",
+  "couldntOpenAppSettingsOpenIt": "לא ניתן היה לפתוח את הגדרות האפליקציה. פתח אותו ידנית.",
+  "count": "לספור",
+  "countryDistribution": "תפוצה במדינה",
+  "countryOfOrigin": "ארץ מוצא",
+  "create": "צור",
+  "createAFullAnymexArchiveOf": "צור ארכיון .anymex מלא של ספריית המדיה, ההגדרות, ההרחבות וזמן הריצה של המארח שלך",
+  "createActivity": "צור פעילות",
+  "createBackup": "צור גיבוי",
+  "createNewList": "צור רשימה חדשה",
+  "createStatus": "צור סטטוס",
+  "cropBorders": "גבולות יבול",
+  "current": "נוכחי •",
+  "custom": "מותאם אישית",
+  "customBanners": "באנרים מותאמים אישית",
+  "customColorPicker": "בוחר צבעים מותאם אישית",
+  "customDohUrl": "כתובת URL מותאמת אישית",
+  "customFonts": "גופנים מותאמים אישית",
+  "customLists": "רשימות מותאמות אישית",
+  "customLogos": "לוגו מותאמים אישית",
+  "customPlayerFlagsParameters": "דגלים ופרמטרים של שחקן מותאמים אישית",
+  "customScale": "סולם מותאם אישית",
+  "customTheme": "ערכת נושא מותאמת אישית",
+  "customUserAgent": "סוכן משתמש מותאם אישית",
+  "customValue": "ערך מותאם אישית",
+  "customEllipsis": "מותאם אישית...",
+  "customizeCardHistoryCardCarouselNav": "התאם אישית סגנונות כרטיס, כרטיס היסטוריה, קרוסלה ובר ניווט",
+  "customizeTheInterfaceToYourLiking": "התאם אישית את הממשק לטעמך",
+  "customizeYourLogoAnimationStyle": "התאם אישית את סגנון הנפשת הלוגו שלך",
+  "dailyActivitiesWatchAndReadMetrics": "פעילויות יומיומיות, צפייה וקריאה של מדדים",
+  "dailyActivityAndWatchReadProgress": "פעילות יומית ומעקב אחר התקדמות צפייה/קריאה",
+  "dataCache": "נתונים ומטמון",
+  "dataToRestore": "נתונים לשחזור",
+  "days": "DAYS",
+  "days2": "ימים",
+  "daysActive": "ימים פעילים",
+  "debanding": "ביטול הרצועה",
+  "debugStuffs": "איתור באגים",
+  "decoder": "מפענח",
+  "decoderHwdec": "מפענח (HWDec)",
+  "decoderThreads": "חוטי מפענח",
+  "decorationCloset": "ארון קישוט",
+  "defaultLabel": "ברירת מחדל",
+  "defaultAndroidAudiotrackApi": "ממשק API של Android AudioTrack",
+  "defaultAppleCoreaudioApi": "ברירת המחדל של Apple CoreAudio API",
+  "defaultListOrder": "סדר ברירת מחדל",
+  "defaultOrientation": "כיוון ברירת מחדל",
+  "defaultPortrait": "דיוקן ברירת מחדל",
+  "defaultPulseaudioApi": "ממשק API של PulseAudio",
+  "defaultSize200px": "גודל ברירת מחדל (200 פיקסלים)",
+  "defaultSystemAudioDriver": "מנהל התקן אודיו של מערכת ברירת המחדל",
+  "defaultTheme": "ערכת נושא המוגדרת כברירת מחדל",
+  "defaultWindowsAudioDriver": "מנהל התקן שמע ברירת מחדל של Windows",
+  "delete": "מחק",
+  "deleteActivity": "מחק פעילות",
+  "deleteAll": "מחק הכל",
+  "deleteAllCachedImagesTorrentStream": "מחק את כל התמונות המאוחסנות במטמון, נתחי זרם טורנטים וקבצים זמניים.",
+  "deleteAllStoredHttpCookiesAcross": "מחק את כל קובצי ה-HTTP המאוחסנים בכל הדומיינים.",
+  "deleteChapter": "מחק פרק",
+  "deleteChapterQuestion": "למחוק פרק?",
+  "deleteComment": "מחק תגובה",
+  "deleteCustomLogo": "מחק לוגו מותאם אישית",
+  "deleteEpisode": "מחק את הפרק",
+  "deleteEpisodeQuestion": "למחוק את הפרק?",
+  "deleteEverythingStoredOfAnymexPermanently": "מחק את כל מה שמאוחסן ב-AnymeX לצמיתות.",
+  "deleteExtension": "מחק הרחבה",
+  "deleteFont": "מחק גופן",
+  "deleteHistoryItem": "מחק פריט היסטוריה",
+  "deleteList": "מחק רשימה",
+  "deleteLogo": "מחק לוגו",
+  "deleteReason": "למחוק סיבה?",
+  "deleteRecommendation": "למחוק את ההמלצה?",
+  "deleteReply": "מחק תגובה",
+  "deleteReportedComment": "מחק תגובה מדווחת",
+  "deleteSavedCookiesAndCloudflareTokens": "מחק קובצי Cookie שמורים ואסימוני Cloudflare",
+  "deleteSavedCookiesCloudflareTokensAnd": "מחק קובצי Cookie שמורים, אסימוני Cloudflare ומטמון זמני",
+  "deleteSelected": "מחק את נבחרות",
+  "deleteTemporaryNetworkAndImageCache": "מחק מטמון רשת ותמונות זמניים",
+  "deletionRequestSentToAdminsFor": "בקשת מחיקה נשלחה למנהלי מערכת לבדיקה.",
+  "demuxerMaxBuffer": "Demuxer Max Buffer",
+  "demuxerReadahead": "Demuxer Readahead",
+  "description": "תיאור",
+  "detailedClassic": "מפורט (קלאסי)",
+  "detailedInsights": "תובנות מפורטות",
+  "detailsPage": "דף פרטים",
+  "developer": "מפתח",
+  "development": "פיתוח",
+  "direct": "ישיר",
+  "directSurfaceRenderingAndroidOnly": "עיבוד ישיר של פני השטח (אנדרואיד בלבד)",
+  "direction": "כיוון",
+  "disableToShowAndHidePlayer": "השבת כדי להציג ולהסתיר פקדי שחקן באופן מיידי",
+  "disablingMayBypassCaptivePortalsOr": "השבתה עשויה לעקוף פורטלים שבויים או בדיקת SSL, אך מפחיתה את האבטחה.",
+  "discard": "לזרוק",
+  "discardMessage": "למחוק את ההודעה?",
+  "discardReply": "למחוק את התשובה?",
+  "discardStatus": "למחוק את הסטטוס?",
+  "disconnect": "התנתק",
+  "disconnectDiscord": "לנתק את Discord?",
+  "discordTakenDown": "Discord הוסר",
+  "dismiss": "לבטל",
+  "display": "תצוגה",
+  "displayAnimeMangaMoviesAndShows": "הצג אנימה, מנגה, סרטים ותוכניות המומלצות על ידי הקהילה בדף הבית.",
+  "displayMode": "מצב תצוגה",
+  "displayModeTuningIsNotApplicable": "כוונון מצב תצוגה אינו ישים בפלטפורמות שולחניות.",
+  "displayPlaybackOrReadingProgressTimestamps": "הצגת חותמות זמן של השמעה או קריאת התקדמות",
+  "displayRefreshRateResolutionAndFrame": "הצג קצב רענון, רזולוציה וכוונון מסגרת",
+  "distanceBetweenLines": "מרחק בין שורות",
+  "distanceFromBottomOfScreen": "מרחק מתחתית המסך",
+  "ditherDepth": "עומק זוהר",
+  "dnsProxy": "DNS ופרוקסי",
+  "dontShowAgain": "אל תראה שוב",
+  "donate": "לתרום",
+  "donateSupport": "תרומה ותמיכה",
+  "donateViaPaypal": "תרומה באמצעות PayPal",
+  "donateViaUpiOrPaypalTo": "תרמו באמצעות UPI או PayPal כדי לתמוך בפיתוח",
+  "donateViaUpiPaypalSupportDevelopment": "תרומה באמצעות UPI, PayPal ופיתוח תמיכה",
+  "done": "בוצע",
+  "done2": "בוצע",
+  "doubletapToSeek": "הקש פעמיים כדי לחפש",
+  "downgradeOrSwitchToASpecific": "שדרג לאחור או עבור לגרסת פלאגין ספציפית",
+  "download": "הורד",
+  "download4kShaders": "הורד 4K Shaders",
+  "downloadAllChapters": "הורד את כל הפרקים",
+  "downloadAllEpisodes": "הורד את כל הפרקים",
+  "downloadChapter": "הורד פרק",
+  "downloadChunks": "הורד צ'אנקס",
+  "downloadCurrentSection": "הורד את הקטע הנוכחי",
+  "downloadEpisode": "הורד את הפרק",
+  "downloadFailedTapToRetry": "ההורדה נכשלה. הקש כדי לנסות שוב.",
+  "downloadPath": "הורד נתיב",
+  "downloadPathsAndQualitySettings": "הורד נתיבים והגדרות איכות",
+  "downloadPathsAndStorageSettings": "הורד נתיבים והגדרות אחסון",
+  "downloadPermissions": "הרשאות הורדה",
+  "downloadQualityStoragePaths": "איכות הורדה, נתיבי אחסון",
+  "downloadSettings": "הגדרות הורדה",
+  "downloadSize4mb": "גודל הורדה: ~4MB",
+  "downloadStarted": "ההורדה החלה",
+  "downloadUnreadChapters": "הורד פרקים שלא נקראו",
+  "downloadUnwatchedEpisodes": "הורד פרקים שלא נצפו",
+  "downloaded": "הורד",
+  "downloaded2": "הורד",
+  "downloadedMedia": "הורד מדיה",
+  "downloadingImage": "מוריד תמונה...",
+  "downloadingPackage": "מוריד חבילה...",
+  "downloads": "הורדות",
+  "downloadsStorage": "הורדות ואחסון",
+  "downloadsPage": "עמוד הורדות",
+  "downscalingAlgorithm": "אלגוריתם להורדת קנה מידה",
+  "dragAndDropToReorderNavigation": "גרור ושחרר כדי לסדר מחדש את כרטיסיות סרגל הניווט",
+  "dragToReorderStatusSections": "גרור כדי לסדר מחדש את מקטעי הסטטוס",
+  "dualPageMode": "מצב עמוד כפול",
+  "dynamicVariablesWillBeReplacedAutomatically": "משתנים דינמיים יוחלפו אוטומטית. אתה יכול גם להשתמש בביטוי סטטי.",
+  "edit": "ערוך",
+  "editActivity": "ערוך פעילות",
+  "editCustomMpvFlagsPropertiesAnd": "ערוך דגלי mpv מותאמים אישית, מאפיינים וקובץ תצורה",
+  "editLogoSettings": "ערוך הגדרות לוגו",
+  "editMediaEntry": "ערוך ערך מדיה",
+  "editReason": "ערוך סיבה",
+  "editRecommendationReasonMin30Chars": "עריכת סיבת ההמלצה (מינימום 30 תווים)",
+  "edited": "נערך",
+  "enableAnimation": "הפעל אנימציה",
+  "enableAnimationOnCarouselsForSmooth": "אפשר אנימציה בקרוסלות לתנועה חלקה",
+  "enableBackgroundMediaControlsForBluetooth": "אפשר פקדי מדיה ברקע עבור אוזניות Bluetooth והודעות מדיה במערכת. הערה: הפעלה זו תגדיל את השימוש בסוללה.",
+  "enableBetaUpdates": "הפעל עדכוני ביטא",
+  "enableClassicSimpleHeaderStyleOn": "אפשר סגנון כותרות פשוט קלאסי במסכי בית",
+  "enableDiscordRpc": "אפשר Discord RPC",
+  "enableExperimentalSettings": "הפעל הגדרות ניסוי",
+  "enableHoldingOnPlayerScreenTo": "אפשר לחיצה על מסך הנגן כדי להאיץ זמנית את הפעלת הווידאו",
+  "enableHorizontalSwipingOnPlayerScreen": "אפשר החלקה אופקית על מסך הנגן כדי לחפש דרך וידאו",
+  "enableKenBurns": "אפשר את Ken Burns",
+  "enableLongPressQuickActions": "אפשר פעולות מהירות של לחיצה ארוכה",
+  "enableNotificationsForUpcomingAiringEpisodes": "אפשר התראות עבור פרקי שידור קרובים.",
+  "enableNsfwAdultEntriesInAnilist": "אפשר ערכים של NSFW/מבוגרים בתוכן AniList.",
+  "enableShaders": "אפשר Shaders",
+  "enableSwipeControls": "הפעל את בקרות החלקה",
+  "enableTapZones": "הפעל אזורי הקשה",
+  "enableThisIfYouWantTo": "הפעל זאת אם אתה רוצה לשמור על הצבע המקורי של הטפט שלך",
+  "enableTranslucentNavigationBar": "אפשר סרגל ניווט שקוף",
+  "enableTts": "הפעל את TTS",
+  "enableVerticalSwipingOnTheLeft": "אפשר החלקה אנכית בצד שמאל/ימין של מסך הנגן כדי לכוונן את הבהירות והווליום",
+  "enablesASoftGlowingGradientEffect": "מאפשר אפקט שיפוע רך וזוהר.",
+  "encryptWithAes256RecommendedFor": "הצפנה באמצעות AES-256 (מומלץ עבור אסימוני אישור)",
+  "encrypted": "מוצפן •",
+  "endChapter": "פרק סיום",
+  "enterAmount": "הזן סכום...",
+  "enterAnilistUsername": "הזן את שם המשתמש AniList",
+  "enterAtLeast2Characters": "הזן לפחות 2 תווים",
+  "enterBackupPassword": "הזן סיסמת גיבוי",
+  "enterFirstAnilistUsername": "הזן את שם המשתמש הראשון AniList",
+  "enterGithubRepositoryUrl": "הזן את כתובת האתר של מאגר GitHub",
+  "enterListName": "הזן את שם הרשימה",
+  "enterPassword": "הזן סיסמה",
+  "enterReasonOrDetailsForThis": "הזן סיבה או פרטים לפעולה זו...",
+  "enterSearchQuery": "הזן שאילתת חיפוש",
+  "enterUsername": "הזן שם משתמש",
+  "enterValue": "הזן ערך",
+  "entryDeleted": "הערך נמחק.",
+  "episode1": "פרק 1",
+  "episodeListSettings": "הגדרות רשימת פרקים",
+  "episodes": "פרקים",
+  "episodesDuration": "פרקים ומשך",
+  "episodesWatched": "פרקים נצפו",
+  "errorOccured": "אירעה שגיאה",
+  "errorOccurred": "אירעה שגיאה",
+  "errorSavingImage": "שגיאה בשמירת התמונה",
+  "errorSharingImage": "שגיאה בשיתוף התמונה",
+  "errorMissingRequiredDataItSeems": "שגיאה: חסרים נתונים נדרשים. נראה שסגרת את האפליקציה ישירות לאחר קריאת הפרק!",
+  "errorMissingRequiredMediaItSeems": "שגיאה: חסרה מדיה נדרשת. נראה שסגרת את האפליקציה ישירות לאחר קריאת הפרק!",
+  "errorMissingRequiredMediaItSeemsYou": "שגיאה: חסרה מדיה נדרשת. נראה שסגרת את האפליקציה ישירות לאחר הצפייה בפרק!",
+  "everyScoreIsMappedToA": "כל ניקוד ממופה לדרגה. הטבלה למטה מציגה כל סוגר, התג שלו ומה הטווח מייצג.",
+  "experimental": "ניסיוני",
+  "experimentalHighPerformanceRenderer": "מעבד נסיוני בעל ביצועים גבוהים",
+  "explore": "חקור",
+  "exploreTheProjectAndContribute": "חקור את הפרויקט ותרום",
+  "exportLabel": "ייצוא",
+  "exportBackup": "ייצוא גיבוי",
+  "exportCancelled": "הייצוא בוטל.",
+  "exportDeviceBackup": "ייצוא גיבוי מכשיר",
+  "exportSettings": "ייצוא הגדרות",
+  "exportYourAnimeList": "ייצא את רשימת האנימה שלך",
+  "exportYourMangaList": "ייצא את רשימת המנגה שלך",
+  "extensionConfigurations": "תצורות הרחבה",
+  "extensionConfigurationsRepos": "תצורות הרחבות & Repos",
+  "extensionManager": "מנהל הרחבה",
+  "extensionPackages": "חבילות הרחבה",
+  "extensionPreferences": "העדפות הרחבה",
+  "extensionSettings": "הגדרות הרחבה",
+  "extensionSettingsAndSourceConfigurations": "הגדרות הרחבה ותצורות מקור",
+  "extensionTesting": "בדיקת הרחבה",
+  "extensionType": "סוג הרחבה",
+  "extensions": "הרחבות",
+  "extensionsDiagnostics": "הרחבות ואבחון",
+  "extensionsRepositories": "הרחבות ומאגרים",
+  "extensionsSources": "הרחבות ומקורות",
+  "extensionsTailoredToYourNeeds": "הרחבות מותאמות לצרכים שלך",
+  "externalStreamingLinks": "קישורים חיצוניים וזרימים",
+  "externalBackupsRestoreMetadataAndConfigurations": "גיבויים חיצוניים משחזרים מטא נתונים ותצורות בבטחה.",
+  "externalBrowser": "דפדפן חיצוני",
+  "extras": "תוספות",
+  "factoryReset": "איפוס להגדרות היצרן",
+  "factoryReset2": "איפוס להגדרות היצרן",
+  "failedToCheckForUpdates": "נכשל בדיקת העדכונים.",
+  "failedToCheckPluginUpdates": "בדיקת עדכוני הפלאגין נכשלה.",
+  "failedToDeleteChapter": "מחיקת הפרק נכשלה",
+  "failedToDeleteEpisode": "מחיקת הפרק נכשלה",
+  "failedToDeleteListEntry": "מחיקת רשומת הרשימה נכשלה",
+  "failedToDeleteMedia": "מחיקת המדיה נכשלה",
+  "failedToDownloadImage": "הורדת התמונה נכשלה",
+  "failedToFetchChapters": "אחזור הפרקים נכשל",
+  "failedToFetchDetails": "שליפת הפרטים נכשלה",
+  "failedToFetchImageForSharing": "אחזור התמונה לשיתוף נכשל",
+  "failedToFetchPluginReleaseDetails": "אחזור פרטי שחרור הפלאגין נכשל.",
+  "failedToFetchPolicy": "אחזור המדיניות נכשל.",
+  "failedToFetchReleaseDetails": "אחזור פרטי ההפצה נכשל.",
+  "failedToFetchServers": "אחזור השרתים נכשל",
+  "failedToLoadDetails": "טעינת הפרטים נכשלה",
+  "failedToLoadFontFile": "טעינת קובץ הגופן נכשלה",
+  "failedToLoadProfileAccountMay": "טעינת הפרופיל נכשלה - ייתכן שהחשבון פרטי או לא נמצא",
+  "failedToLoadTorrentMetadata": "טעינת מטא נתונים של טורנט נכשלה",
+  "failedToPerformAction": "ביצוע הפעולה נכשל",
+  "failedToRemoveRepo": "הסרת ריפו נכשלה",
+  "failedToStartExtensionRuntime": "התחלת זמן ריצת ההרחבה נכשלה",
+  "failedToUpdateAnilist": "עדכון AniList נכשל",
+  "failedToUpdateListEntry": "עדכון רשומת הרשימה נכשל",
+  "failedToUpdatePreference": "עדכון ההעדפה נכשל",
+  "failedToUpdateRole": "עדכון התפקיד נכשל",
+  "favoriteTitle": "כותרת אהובה",
+  "favouriteAnime": "אנימה אהובה",
+  "favouriteCharacters": "דמויות אהובות",
+  "favouriteManga": "מנגה אהובה",
+  "favouriteStaff": "צוות אהוב",
+  "favouriteStudios": "אולפנים אהובים",
+  "featuresIssues": "תכונות/בעיות",
+  "fetchingAvailableServers": "מביא שרתים זמינים...",
+  "fetchingLatestReleaseDetails": "מביא את פרטי הגרסה האחרונה...",
+  "fetchingTorrentFileList": "מביא רשימת קבצי טורנט...",
+  "filler": "FILLER",
+  "filter": "מסנן",
+  "filterActivities": "פעילויות סינון",
+  "filterActivity": "פעילות סינון",
+  "filterByChapterCount": "סנן לפי ספירת פרקים",
+  "filterByDurationMin": "סינון לפי משך (דקות)",
+  "filterByEpisodeCount": "סנן לפי ספירת פרקים",
+  "filterByGenre": "סנן לפי ז'אנר",
+  "filterByVolumeCount": "סינון לפי ספירת נפח",
+  "filterGenres": "סינון ז'אנרים",
+  "filterOutAdultNsfwEntriesFrom": "סנן ערכי מבוגרים/NSFW מהמלצות הקהילה.",
+  "filterOutEntriesAlreadyInYour": "סנן ערכים שכבר נמצאים ברשימה שלך",
+  "filterOutEntriesAlreadyInYourList": "סנן ערכים שכבר נמצאים ברשימה שלך על סמך סטטוס צפייה/קריאה.",
+  "filterSettings": "הגדרות סינון",
+  "filters": "מסננים",
+  "findAndManageSpecificUsers": "מצא ונהל משתמשים ספציפיים",
+  "findAnimeSauceByScreenshots": "מצא רוטב אנימה לפי צילומי מסך",
+  "findSource": "מצא מקור",
+  "findYourFavouriteAnimeOrManga": "מצא את האנימה או המנגה האהובים עליך, מנהווה או מה שאתה אוהב!",
+  "findYourFavouriteAnimeMangaManhwa": "מצא את האנימה, מנגה, מנהווה האהובים עליך או מה שאתה אוהב!",
+  "finishDate": "תאריך סיום",
+  "firstChapter": "פרק ראשון",
+  "firstUser": "משתמש ראשון",
+  "fitToScreenWidth": "התאמה לרוחב המסך",
+  "fontFamily": "משפחת גופנים",
+  "fontSize": "גודל גופן",
+  "forceReDownload": "כפה הורדה מחדש",
+  "forceSyncFromSdCard": "כפה סנכרון מכרטיס SD",
+  "forks": "מזלגות",
+  "format": "פורמט",
+  "formatDistribution": "הפצת פורמטים",
+  "frameInterpolation": "אינטרפולציה למסגרת",
+  "freeSupport": "תמיכה חינם",
+  "frequentlyRevisited": "ביקור תדיר",
+  "fromUrl": "מ-URL",
+  "fullWidthDetailedCardWithLarge": "כרטיס מפורט ברוחב מלא עם מטא-נתונים של תמונות ממוזערות גדולות ופרק",
+  "fullWidthDetailedCardsWithProgress": "כרטיסים מפורטים ברוחב מלא עם כפתור התקדמות וקריאה",
+  "fullWidthHeroBannerWithCompact": "באנר גיבור ברוחב מלא עם פרטים קומפקטיים ותקציר מהיר.",
+  "general": "כללי",
+  "generalPrivacy": "כללי ופרטיות",
+  "generalSync": "כללי וסנכרון",
+  "generalAppPreferencesAndSyncServices": "העדפות אפליקציה כלליות ושירותי סנכרון",
+  "generalAppSettingsAndSyncServices": "הגדרות כלליות של אפליקציה ושירותי סנכרון",
+  "generalPreferences": "העדפות כלליות",
+  "genres": "ז'אנרים",
+  "genresUpper": "ז'אנרים",
+  "gestureForBrightnessVolume": "מחווה עבור בהירות ועוצמת קול",
+  "getHelpWithTheCommentSystem": "קבל עזרה עם מערכת התגובות",
+  "getStarted": "התחל",
+  "globalConcurrencyLimit": "מגבלת מקבילות גלובלית",
+  "glowMultiplier": "מכפיל זוהר",
+  "goSuperDarkMode": "עבור למצב סופר אפל!",
+  "goToDownloads": "עבור אל הורדות",
+  "goToExtensionsToGetStarted": "עבור אל הרחבות כדי להתחיל",
+  "goToPluginDownloader": "עבור אל הורדת הפלאגין",
+  "goToRuntimeManager": "עבור אל מנהל זמן ריצה",
+  "goodAfternoon": "צהריים טובים",
+  "goodEvening": "ערב טוב",
+  "goodMorning": "בוקר טוב",
+  "goodnight": "לילה טוב",
+  "gotIt": "הבנתי",
+  "grainIntensity": "עוצמת דגן",
+  "grainTextureOverlay": "שכבת על מרקם גרגרים",
+  "grantPermission": "תן רשות",
+  "grantPermissions": "הענק הרשאות",
+  "grid": "רשת",
+  "gridSize": "גודל רשת",
+  "gridView": "תצוגת רשת",
+  "guest": "אורח",
+  "happySnacking": "נשנוש שמח",
+  "hardwareDisplayModeSwitchingIsNot": "החלפת מצב תצוגת חומרה אינה נתמכת על ידי המכשיר שלך.",
+  "helpSupport": "עזרה ותמיכה",
+  "hexColorCode": "קוד צבע משושה",
+  "hey": "היי",
+  "hidden": "מוסתר",
+  "hiddenFromYourPublicProfile": "מוסתר מהפרופיל הציבורי שלך",
+  "hiddenTabs": "כרטיסיות נסתרות",
+  "hideAdultContent": "הסתר תוכן למבוגרים",
+  "hideButton": "כפתור הסתר",
+  "hideByListStatus": "הסתר לפי סטטוס רשימה",
+  "hideCompleted": "הסתרה הושלמה",
+  "hideDropped": "הסתר ירד",
+  "hideEntriesThatAreInYour": "הסתר ערכים שנמצאים ברשימת התוכניות שלך.",
+  "hideEntriesThatAreMarkedAs": "הסתר ערכים המסומנים כהשלמה ברשימה שלך.",
+  "hideEntriesThatYouAreCurrently": "הסתר ערכים שאתה צופה או קורא כעת.",
+  "hideEntriesThatYouAreRewatching": "הסתר ערכים שאתה צופה בהם מחדש.",
+  "hideEntriesThatYouHaveDropped": "הסתר ערכים שהסרת.",
+  "hideEntriesThatYouHavePut": "הסתר ערכים שהפסקת.",
+  "hideNsfw": "הסתר NSFW",
+  "hideNsfw18Content": "הסתר תוכן NSFW / 18+",
+  "hideNsfwContent": "הסתר תוכן NSFW",
+  "hideNsfwRecommendations": "הסתר המלצות NSFW",
+  "hideOnHoldPaused": "הסתר בהמתנה / מושהה",
+  "hidePlanning": "הסתר תכנון",
+  "hideRewatching": "הסתר צפייה חוזרת",
+  "hideSystemStatusAndNavigationBars": "הסתר סטטוס מערכת וסרגלי ניווט",
+  "hideWatchingReading": "הסתר צפייה / קריאה",
+  "history": "היסטוריה",
+  "historyStatistics": "היסטוריה וסטטיסטיקה",
+  "historyCardStyle": "סגנון כרטיסי היסטוריה",
+  "historyItemDeleted": "פריט ההיסטוריה נמחק",
+  "hlsParallelSegments": "מקטעים מקבילים של HLS",
+  "holdAndDragAnyItemTo": "החזק וגרור כל פריט כדי לסדר מחדש",
+  "holdToAccessHistoryEditor": "החזק כדי לגשת לעורך ההיסטוריה",
+  "holdToDelete": "החזק כדי למחוק",
+  "holdToSpeedUp": "החזק כדי להאיץ",
+  "home": "בית",
+  "horizontal": "אופקי",
+  "hostEG12700": "מארח (למשל 127.0.0.1)",
+  "hours": "שעות",
+  "howItWorksCompatibilityRanks": "איך זה עובד ודירוגי תאימות",
+  "howMuchInPercentageToMark": "כמה באחוזים לסמן את הפרק כנצפה",
+  "howToUseTheCommentSystem": "כיצד להשתמש במערכת התגובות:",
+  "hue": "גוון",
+  "ifEnabledAContinueWatchingBar": "אם מופעל, סרגל המשך צפייה יוצג מעל סרגל הניווט התחתון בדף הבית.",
+  "ifEnabledAllLibraryItemsWill": "אם מופעל, כל פריטי הספרייה ישותפו בין כל שירותי המעקב.",
+  "ifEnabledAnymexWillAskFor": "אם מופעלת, Anymex תבקש הרשאת מעקב אם לא אז היא תעקוב כברירת מחדל.",
+  "ifEnabledYouWillNotGet": "אם מופעל, לא תקבל הנחיה להפעלת תוכן למבוגרים ב-Anilist/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "אם מטמון האפליקציה הזמני מגיע לגודל זה, הוא יימחק באופן אוטומטי.",
+  "ifYouAreUsingAJson": "אם אתה משתמש בערכת נושא JSON, שינויים כאן לא ישפיעו על בקרות הנגן. עבור לערכת נושא מובנית כדי להחיל הגדרות אלה.",
+  "ifYouCantDonateWatchThis": "אם אינך יכול לתרום, צפה במודעה זו כדי לתמוך",
+  "image": "תמונה",
+  "imageShowsThumbnail": "תמונה (מראה תמונה ממוזערת)",
+  "imageFilterQuality": "איכות מסנן תמונה",
+  "imageSharedFromAnymex": "תמונה שותפה מ-AnymeX",
+  "imagesWillBeDownloadedInFull": "התמונות יורדו באיכות מלאה. כל פרק מאוחסן בתיקייה משלו.",
+  "immersiveMode": "מצב סוחף",
+  "importLabel": "יבוא",
+  "importLabel2": "ייבוא",
+  "importManageCustomJsonThemes": "ייבוא ונהל ערכות נושא מותאמות אישית של JSON",
+  "importBackup": "ייבוא גיבוי",
+  "importCustomFont": "ייבוא גופן מותאם אישית",
+  "importFromUrl": "ייבא מ-URL",
+  "includeAdultNsfwSuggestions": "כלול הצעות למבוגרים ו-NSFW",
+  "incognito": "גלישה בסתר",
+  "incognitoActive": "גלישה בסתר (פעיל)",
+  "incognitoMode2": "מצב גלישה בסתר",
+  "indiaUpi": "הודו (UPI)",
+  "info": "מידע",
+  "inlineCode": "קוד מוטבע",
+  "insert": "הכנס",
+  "installPermission": "הרשאת התקנה",
+  "installPermissionIsRequiredToUpdate": "נדרשת הרשאת התקנה כדי לעדכן את האפליקציה",
+  "installedPackages": "חבילות מותקנות",
+  "installedThemes": "ערכות נושא מותקנות",
+  "interfaceStyling": "עיצוב ממשק",
+  "internalBrowser": "דפדפן פנימי",
+  "international": "בינלאומי",
+  "invalidBackupFileOrIncorrectPassword": "קובץ גיבוי לא חוקי או סיסמה שגויה",
+  "invertVolumeKeys": "היפוך מקשי עוצמת הקול",
+  "italic": "נטוי",
+  "joinDiscordCommunity": "הצטרף לקהילת Discord",
+  "joinNewDiscord": "הצטרף ל-Discord החדש",
+  "joinTelegramChannel": "הצטרפו לערוץ טלגרם",
+  "joinUsForDroppingFeedbackOr": "הצטרפו אלינו לביטול משוב או בקשות לתכונה",
+  "jsonThemeManager": "מנהל ערכות נושא JSON",
+  "judgment": "שיפוט",
+  "keepEditing": "תמשיך לערוך",
+  "keepItChill": "שמור את זה קריר",
+  "keepScreenOn": "השאר את המסך דולק",
+  "keepVoicePitchStableAtHigher": "שמור על גובה קול יציב במהירויות גבוהות יותר",
+  "koFiSupport": "תמיכה ב-Ko-Fi",
+  "languageVariant": "וריאנט שפה",
+  "lastAdded": "נוסף לאחרונה",
+  "lastChapter": "פרק אחרון",
+  "later": "מאוחר יותר",
+  "latest": "אחרון",
+  "latestManga": "המנגה האחרונה",
+  "layout": "פריסה",
+  "layoutStyle": "סגנון פריסה",
+  "leaderboard": "Leaderboard",
+  "learnHowToFormatYourComments": "למד כיצד לעצב את ההערות שלך",
+  "leftSide": "צד שמאל",
+  "letterSpacing": "מרווח בין אותיות",
+  "levelProgress": "התקדמות רמה",
+  "libraryLabel": "ספריה",
+  "librarySettings": "הגדרות ספרייה",
+  "libraryStatistics": "סטטיסטיקת הספרייה",
+  "lightness": "קלילות",
+  "likedBy": "אהב על ידי",
+  "lineHeight": "גובה קו",
+  "linkAutoDetected": "קישור (זוהה אוטומטית)",
+  "linkCopiedToClipboard": "הקישור הועתק ללוח!",
+  "linkHasExpiredAndEpisodeUrl": "פג תוקף הקישור וכתובת האתר של הפרק אינה זמינה.",
+  "linkHasExpiredAndNoAlternative": "הקישור פג ולא נמצא זרם חלופי.",
+  "linotteDefault": "לינוטה (ברירת מחדל)",
+  "liquidBackground": "רקע נוזלי",
+  "liquidMode": "מצב נוזלי",
+  "listEntryUpdatedSuccessfully": "רשומת הרשימה עודכנה בהצלחה!",
+  "listExporter": "יצואן רשימה",
+  "listNameAlreadyExists": "שם הרשימה כבר קיים",
+  "listOptions": "רשימת אפשרויות",
+  "liveBlurIsUnavailableWhenUsing": "טשטוש חי אינו זמין בעת שימוש ב- Fluid Mesh.",
+  "livePreview": "תצוגה מקדימה בשידור חי",
+  "livePreview2": "תצוגה מקדימה חיה",
+  "loadTemplate": "טען תבנית",
+  "loadingMediaFiles": "טוען קבצי מדיה...",
+  "loadingMedia": "טוען מדיה...",
+  "local": "מקומי",
+  "localLibrary": "ספרייה מקומית",
+  "localMedia": "מדיה מקומית",
+  "location": "מיקום",
+  "logCapture": "לכידת יומן",
+  "logDirectory": "ספריית יומן",
+  "logIn": "התחבר",
+  "logInRequired": "נדרשת כניסה",
+  "logInToCustomizeYourPush": "היכנס כדי להתאים אישית את העדפות הודעות הדחיפה שלך.",
+  "logInToJoinTheConversation": "היכנס כדי להצטרף לשיחה ולהגיב.",
+  "logOut": "התנתק",
+  "loggedInTrackingServices": "שירותי מעקב מחוברים",
+  "login": "התחבר",
+  "loginAuthTokens": "אסימוני התחברות ואישור",
+  "loginInsideTheAppRecommended": "כניסה בתוך האפליקציה (מומלץ)",
+  "loginSessions": "הפעלות כניסה",
+  "loginUsingYourDefaultBrowser": "התחבר באמצעות דפדפן ברירת המחדל שלך",
+  "loginWithToken": "התחבר עם Token",
+  "logoAnimation": "אנימציית לוגו",
+  "logoName": "שם לוגו:",
+  "logs": "יומנים",
+  "longPressPageActions": "לחיצה ארוכה על פעולות עמוד",
+  "makeEverythingGlassyLiquidy": "הפוך את הכל לזכוכית ונוזל...",
+  "manageAnilistLists": "ניהול רשימות אניליסטים",
+  "manageCachedImagesThresholdsAndReset": "נהל תמונות שמור, ערכי סף ואיפוס נתוני אפליקציה",
+  "manageDeviceStorageAndNotificationsTo": "נהל אחסון מכשירים והתראות כדי להוריד ולנהל את המדיה שלך במצב לא מקוון.",
+  "manageLogCaptureAndShareSaved": "נהל לכידת יומנים ושתף יומנים שמורים",
+  "manageMyanimelistLists": "נהל רשימות MyAnimeList",
+  "managePluginsSources": "נהל תוספים ומקורות",
+  "manageSimklLists": "נהל רשימות Simkl",
+  "manageSourcesAndRepositoriesToUse": "נהל מקורות ומאגרים כדי להשתמש באפליקציה במלוא הפוטנציאל שלה",
+  "manageYourMyanimelistAnilistSimklAccounts": "נהל את חשבונות ה-MyAnimeList, Anilist, Simkl שלך!",
+  "management": "ניהול",
+  "manga": "מנגה",
+  "mangaNovelReaderSettingsTapZones": "הגדרות קורא מנגה ורומן, אזורי הקשה",
+  "mangaNovelViewerSettingsTapZones": "הגדרות מנגה וצופה רומן, אזורי הקשה",
+  "mangaAndNovelReaderStylesAnd": "סגנונות קורא מנגה ורומנים ואזורי ברז",
+  "mangaCustomLists": "רשימות מותאמות אישית של מנגה",
+  "mangaDetailsPhrasing": "ניסוח פרטי מנגה",
+  "mangaLibrary": "ספריית מנגה",
+  "mangaList": "רשימת מנגה",
+  "mangaScore": "ציון מנגה",
+  "mangaSectionOrder": "צו מדור מנגה",
+  "manuallyPasteOauthAccessToken": "הדבק ידנית אסימון גישה של OAuth",
+  "markAllRead": "סמן הכל כנקראו",
+  "markAsWatched": "סמן כנצפה",
+  "markdownGuide": "מדריך סימון",
+  "maximumDemuxerBufferMb": "חיץ מרבי של דה-מקס (MB)",
+  "maybeLater": "אולי מאוחר יותר",
+  "mean": "ממוצע",
+  "meanScore": "ציון ממוצע",
+  "mediaPlayback": "מדיה והשמעה",
+  "mediaLibrary": "ספריית מדיה",
+  "mediaSessionBluetoothSupport": "הפעלת מדיה (תמיכה ב-Bluetooth)",
+  "mediaTypeBreakdown": "פירוט סוגי מדיה",
+  "mediaYouDownloadWillAppearHere": "מדיה שתוריד תופיע כאן.",
+  "megaskipDuration": "משך MegaSkip",
+  "mention": "להזכיר",
+  "mentions": "אזכורים",
+  "merge": "מיזוג",
+  "messageFriend": "הודעה חבר",
+  "minutesWatched": "דקות צפייה",
+  "miscellaneous": "שונות",
+  "missingRuntimeHost": "מארח זמן ריצה חסר",
+  "moderation": "מתינות",
+  "moderationActions": "פעולות מתן",
+  "moderationPanel": "פאנל ניהול",
+  "moderator": "מנחה",
+  "moreOptions": "אפשרויות נוספות",
+  "morePopularManga": "מנגה פופולרית יותר",
+  "moveToLeft": "זז שמאלה",
+  "moveToRight": "זז ימינה",
+  "movie": "סרט",
+  "mpvConfiguration": "תצורת MPV",
+  "muteUser": "השתקת משתמש",
+  "mutualConnections": "קשרים הדדיים",
+  "mutualFriends": "חברים משותפים",
+  "nameplates": "לוחיות שם",
+  "navBarLayout": "פריסת נאב בר",
+  "navBarStyle": "Nav Bar Style",
+  "navigationLayout": "פריסת ניווט",
+  "needHelp": "צריך עזרה?",
+  "network": "רשת",
+  "newLabel": "חדש",
+  "newCollection": "אוסף חדש",
+  "newCustomListName": "שם רשימה מותאמת אישית חדש",
+  "newDownload": "הורדה חדשה",
+  "newList": "רשימה חדשה",
+  "newestFirst": "הכי חדש ראשון",
+  "nextRelease": "מהדורה הבאה",
+  "nextReleasePrediction": "חיזוי השחרור הבא",
+  "noActiveDownloads": "אין הורדות פעילות",
+  "noActiveSourceOrMediaFound": "לא נמצא מקור או מדיה פעילים",
+  "noActiveSourceSelected": "לא נבחר מקור פעיל",
+  "noActivity": "אין פעילות",
+  "noAnimeFound": "לא נמצאה אנימה",
+  "noAudioTracksAvailable": "אין רצועות שמע זמינות",
+  "noChaptersFound": "לא נמצאו פרקים",
+  "noChaptersFound2": "לא נמצאו פרקים",
+  "noCommonGenres": "אין ז'אנרים נפוצים",
+  "noCommonTags": "אין תגים נפוצים",
+  "noContributorsFound": "לא נמצאו תורמים.",
+  "noCustomListsAvailable": "אין רשימות מותאמות אישית זמינות.",
+  "noCustomListsYet": "אין עדיין רשימות מותאמות אישית",
+  "noCustomListsYet2": "אין עדיין רשימות מותאמות אישית.",
+  "noDataAvailableForThisSection": "אין נתונים זמינים עבור סעיף זה",
+  "noDataAvailable": "אין נתונים זמינים.",
+  "noDecadeBreakdownAvailable": "אין פירוט של עשור זמין",
+  "noDescriptionAvailable": "אין תיאור זמין",
+  "noDownloadedChaptersFoundForThis": "לא נמצאו פרקים שהורדו עבור המנגה הזו",
+  "noDownloadedEpisodesFoundForThis": "לא נמצאו פרקים שהורדו עבור האנימה הזו",
+  "noEntriesFound": "לא נמצאו ערכים",
+  "noEpisodesFound": "לא נמצאו פרקים",
+  "noExtensionManagersFound": "לא נמצאו מנהלי תוספים.",
+  "noExtensionsFound": "לא נמצאו תוספים",
+  "noExtensionsInstalled": "לא הותקנו הרחבות",
+  "noGenresAvailableAnilistApiMay": "אין ז'אנרים זמינים. AniList API עשוי להיות מושבת זמנית.",
+  "noHiddenTabs": "אין כרטיסיות נסתרות",
+  "noInsightsAvailableYetAddItems": "אין עדיין תובנות זמינות. הוסף פריטים לספרייה שלך!",
+  "noItemsInThisLibrary": "אין פריטים בספרייה זו.",
+  "noLoggedStatsYetStartWatching": "עדיין אין נתונים סטטיסטיים. התחל לצפות/לקרוא!",
+  "noMediaFilesFound": "לא נמצאו קבצי מדיה",
+  "noMediaFoundForThisStudio": "לא נמצאה מדיה לאולפן הזה",
+  "noMediaInThisList": "אין מדיה ברשימה זו.",
+  "noMoreActivities": "אין יותר פעילויות",
+  "noMoreRecommendations": "אין יותר המלצות",
+  "noMoreUsers": "אין יותר משתמשים",
+  "noNotificationsYet": "עדיין אין התראות",
+  "noNovelExtensionsInstalledToRead": "לא הותקנו הרחבות חדשות כדי לקרוא את הרומן הזה.",
+  "noPendingReports": "אין דוחות ממתינים",
+  "noPlayableStreamAvailableForThis": "אין זרם ניתן להשמעה זמין לפרק זה.",
+  "noPlayableStreamWasReturnedBy": "לא הוחזר זרם שניתן לשחק על ידי מקור זה.",
+  "noRecentActivityFoundForSelected": "לא נמצאה פעילות אחרונה עבור המסננים שנבחרו",
+  "noRecommendationsFound": "לא נמצאו המלצות",
+  "noRecommendationsYet": "עדיין אין המלצות",
+  "noReleasesFound": "לא נמצאו מהדורות.",
+  "noRepliesYetBeTheFirst": "עדיין אין תשובות. תהיה הראשון!",
+  "noRepositoriesYet": "עדיין אין מאגרים",
+  "noResult": "אין תוצאה",
+  "noResultsFound": "לא נמצאו תוצאות.",
+  "noResultsYet": "עדיין אין תוצאות",
+  "noResultsTrySearchingByTitle": "אין תוצאות. נסה לחפש לפי כותרת.",
+  "noSearchResults": "אין תוצאות חיפוש",
+  "noServersAvailable": "אין שרתים זמינים",
+  "noServersFound": "לא נמצאו שרתים.",
+  "noServicesAvailable": "אין שירותים זמינים",
+  "noSourceInstalled": "אין מקור מותקן",
+  "noSourceSelected": "לא נבחר מקור",
+  "noSourcesFound": "לא נמצאו מקורות",
+  "noStatsAvailable": "אין סטטיסטיקה זמינה",
+  "noSubtitleTracksAvailable": "אין רצועות כתוביות זמינות",
+  "noTestsRunning": "לא פועלים בדיקות",
+  "noThemesYet": "עדיין אין ערכות נושא",
+  "noTrackingServiceConnected": "אין שירות מעקב מחובר",
+  "noUsersFound": "לא נמצאו משתמשים",
+  "noVisibleTabs": "אין כרטיסיות גלויות",
+  "noVisualsFoundForThisAnime": "לא נמצאו תמונות חזותיות עבור האנימה הזו (╥﹏╥)",
+  "noWatchOrderFound": "לא נמצאה סדר שעון.",
+  "notNow": "לא עכשיו",
+  "notSupported": "לא נתמך",
+  "notTracked": "לא במעקב",
+  "noteAddingKotatsuRepositoryWillTake": "הערה: הוספת מאגר Kotatsu תארך לפחות 1-2 דקות מכיוון שהיא צריכה להוריד ולהמיר את תוסף ההרחבה בטעינה ראשונה.",
+  "nothingDownloadedYet": "עדיין לא הורד שום דבר",
+  "nothingToPreview": "אין מה לצפות בתצוגה מקדימה",
+  "nothingToPreviewYet": "עדיין אין מה לתצוגה מקדימה.",
+  "notificationPreferences": "העדפות הודעה",
+  "notifications": "התראות",
+  "notifyForOfficialAnnouncementsAndApp": "הודע על הודעות רשמיות ועדכוני אפליקציה",
+  "notifyIfYourCommentIsRemoved": "הודע אם התגובה שלך הוסרה על ידי מנחה",
+  "notifyOnNewCommentsForMedia": "הודע על הערות חדשות לתקשורת שבה דנית",
+  "notifyOnUpvotesAndDownvotes": "הודע על הצבעות כלפי מעלה והצבעות כלפי מטה",
+  "notifyOnWarningsPinnedCommentsOr": "הודע על אזהרות, הערות מוצמדות או נעילות שרשור",
+  "notifyWhenSomeoneMentionsYourUsername": "הודע כאשר מישהו @ מזכיר את שם המשתמש שלך",
+  "notifyWhenSomeoneRepliesToYour": "הודע כשמישהו משיב לתגובה שלך",
+  "novel": "רומן",
+  "novelCustomLists": "רשימות מותאמות אישית רומן",
+  "novelDetailsPhrasing": "ניסוח פרטי רומן",
+  "novelFontFamily": "משפחת גופנים רומן",
+  "novelLibrary": "ספריית רומן",
+  "novelSnapshots": "תמונות מצב רומן",
+  "novelTheme": "נושא רומן",
+  "novels": "רומנים",
+  "numberOfActiveDownloadTasks": "מספר משימות הורדה פעילות",
+  "numberOfParallelChunksPerDownload": "מספר נתחים מקבילים להורדה",
+  "okay": "בסדר",
+  "oldestFirst": "המבוגר ביותר ראשון",
+  "oledMode": "מצב אולד",
+  "onMyList": "ברשימה שלי",
+  "oneOptionPerLineLikeHwdec": "אפשרות אחת בכל שורה, כמו hwdec=auto או scale=ewa_lanczossharp. שורות המתחילות ב-# הן הערות. מתעלמים מפרופילים בסוגריים.",
+  "online": "באינטרנט",
+  "openCloset": "פתח ארון",
+  "openInBrowser": "פתח בדפדפן",
+  "openSettings": "פתח את ההגדרות",
+  "openSource": "קוד פתוח",
+  "openSupportedLinks": "פתח קישורים נתמכים",
+  "openTheDownloadsScreenFromThe": "פתח את מסך ההורדות מהתפריט",
+  "openVideoStreamInExternalPlayer": "פתח את זרם הווידאו בנגן חיצוני כברירת מחדל",
+  "openWebview": "פתח את Webview",
+  "openingsEndings": "פתחים וסופים",
+  "openslEsNativeAudioEngine": "מנוע שמע מקורי OpenSL ES",
+  "options": "אפשרויות",
+  "order": "סדר",
+  "originalSize": "גודל מקורי",
+  "otakuRankLevel": "רמת דירוג אוטאקו",
+  "other": "אחר",
+  "otherFeatures": "תכונות אחרות",
+  "otherRecommendations": "המלצות אחרות",
+  "otherStuffs": "דברים אחרים",
+  "otherTemporaryFiles": "קבצים זמניים אחרים",
+  "otherWaysToSupport": "דרכים אחרות לתמוך",
+  "others": "אחרים",
+  "outlineType": "סוג מתאר",
+  "overscroll": "גלילה יתרה",
+  "overscrollToPrevNextChapter": "גלילה יתרה לפרק הקודם/הבא",
+  "overview": "סקירה כללית",
+  "overwrite": "החלף",
+  "pageAnimationDemo": "הדגמת הנפשת עמוד",
+  "pageReaderMode": "מצב קורא עמודים",
+  "paged": "דפדפן",
+  "palette": "פלטה",
+  "palettes": "פלטות",
+  "paragraphSpacing": "מרווח בין פסקאות",
+  "parallelSegmentsForVideoDownloader": "מקטעים מקבילים עבור הורדת וידאו",
+  "password": "סיסמה",
+  "passwordProtectBackup": "גיבוי הגנת סיסמה",
+  "passwordRequired": "סיסמה נדרשת",
+  "passwordsDontMatch": "הסיסמאות אינן תואמות!",
+  "pasteCustomImageUrl": "הדבק כתובת אתר של תמונה מותאמת אישית...",
+  "pasteUrlHere": "הדבק כאן כתובת אתר...",
+  "pathCopiedToClipboard": "הנתיב הועתק ללוח",
+  "payViaAnyUpiApp": "שלם באמצעות כל אפליקציית UPI",
+  "paypalDonation": "תרומת PayPal",
+  "paypalRecipientNotice": "הודעת נמען PayPal",
+  "penaltyDuration": "משך העונש",
+  "performance": "ביצועים",
+  "permissionsRequired": "נדרשות הרשאות",
+  "persistentPageIndicator": "מחוון עמוד מתמיד",
+  "personalizeTheLookAndMakeIt": "התאם אישית את המראה והפוך אותו לשלך",
+  "personalizedRecommendations": "המלצות מותאמות אישית",
+  "platform": "פלטפורמה",
+  "playAroundWithAppTheme": "שחק עם נושא האפליקציה",
+  "playAroundWithTheVideoPlayer": "שחק עם נגן הווידאו",
+  "playback": "השמעה",
+  "playbackSpeed": "מהירות השמעה",
+  "playbackSpeeds": "מהירויות השמעה",
+  "player": "שחקן",
+  "playerControlsSubtitlesAndPlaybackPreferences": "בקרות נגן, כתוביות והעדפות השמעה",
+  "playerSettings": "הגדרות נגן",
+  "playerTheme": "ערכת נושא של שחקן",
+  "playerThemes": "ערכות נושא של שחקן",
+  "pleaseChooseALogoFile": "נא לבחור קובץ לוגו.",
+  "pleaseEnterAPasswordOrDisable": "אנא הזן סיסמה או השבת את הגנת הסיסמה.",
+  "pleaseEnterASearchTerm": "נא להזין מונח חיפוש",
+  "pleaseEnterAUsernameToCompare": "נא להזין שם משתמש להשוואה.",
+  "pleaseGrantStoragePermissionToBrowse": "אנא הענק הרשאת אחסון כדי לעיין בקבצי המדיה שלך",
+  "pleaseLoginFirst": "אנא התחבר תחילה",
+  "pleaseLoginFirstToExportYour": "אנא התחבר תחילה כדי לייצא את הרשימה שלך.",
+  "pleaseLoginToFavorite": "אנא התחבר למועדפים!",
+  "pleaseLoginToUseThisFilter": "אנא התחבר כדי להשתמש במסנן זה!",
+  "pleaseProvideAReasonForThis": "אנא ספק סיבה לפעולה זו",
+  "pleaseRestartTheAppToApply": "אנא הפעל מחדש את האפליקציה כדי להחיל שינויים.",
+  "pleaseSelectABackupFileFirst": "אנא בחר תחילה קובץ גיבוי",
+  "pleaseSelectAValidApkFile": "אנא בחר קובץ APK חוקי.",
+  "pleaseSelectAValidJarFile": "אנא בחר קובץ JAR חוקי.",
+  "pleaseSelectAtLeastOneItem": "אנא בחר פריט אחד לפחות לגיבוי.",
+  "pleaseSelectAtLeastOneItemTo": "אנא בחר לפחות פריט אחד לשחזור.",
+  "pleaseWriteAtLeast30Characters": "נא לכתוב לפחות 30 תווים",
+  "pluginInstallationSync": "התקנה וסנכרון של תוסף",
+  "pluginIsAlreadyUpToDate": "הפלאגין כבר מעודכן.",
+  "pluginJarCopiedPleaseRestartThe": "צנצנת הפלאגין הועתקה. אנא הפעל מחדש את האפליקציה.",
+  "pluginNotInstalled": "תוסף לא מותקן",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "הפלאגין הורד מחדש בהצלחה. אנא התחל מחדש כדי להגיש בקשה.",
+  "pluginReDownloadedPleaseRestartThe": "תוסף הורדה מחדש. הפעל מחדש את האפליקציה כדי להגיש בקשה.",
+  "pluginSyncedFromLocalApk": "פלאגין מסונכרן מ-APK מקומי.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (מקסימום 20MB)",
+  "popular": "פופולרי",
+  "popularAnime": "אנימה פופולרית",
+  "popularAnimes": "אנימות פופולריות",
+  "popularManga": "מנגה פופולרית",
+  "posterBlurMode": "מצב טשטוש פוסטר",
+  "posterBlurScope": "היקף טשטוש פוסטר",
+  "poweredByAnimatch16PointCompatibility": "מופעל על ידי AniMatch ניתוח תאימות של 16 נקודות ב-AnymeX",
+  "poweredByCommentumV2AdvancedComment": "מופעל על ידי Commentum v2 - מערכת הערות מתקדמת עם ניהול",
+  "preferences": "העדפות",
+  "preferencesSystem": "העדפות ומערכת",
+  "preferredSubtitleLanguage": "שפת כתוביות מועדפת",
+  "preparingImageToShare": "מכין תמונה לשיתוף...",
+  "preparingStream": "מכין זרם",
+  "presetProviders": "ספקים מוגדרים מראש",
+  "preventScreenFromSleeping": "מנע מהמסך לישון",
+  "preview": "תצוגה מקדימה",
+  "previewUpper": "תצוגה מקדימה",
+  "privacySafety": "פרטיות ובטיחות",
+  "privacySettingsAndSafetyFeatures": "הגדרות פרטיות ותכונות בטיחות",
+  "private": "פרטי",
+  "privateEntry": "כניסה פרטית",
+  "profileEffects": "אפקטי פרופיל",
+  "profileIcon": "סמל פרופיל",
+  "progress": "התקדמות",
+  "progressHistory": "התקדמות והיסטוריה",
+  "proposeNewFeaturesReportBugsAnd": "הצע תכונות חדשות, דווח על באגים וצ'אט עם חברים אחרים",
+  "protocol": "פרוטוקול",
+  "proxy": "פרוקסי",
+  "proxyConfiguration": "תצורת פרוקסי",
+  "pulseaudioSoundServer": "שרת קול PulseAudio",
+  "queryRemoteRepositoryForAddOn": "שאילתה במאגר מרוחק עבור עדכוני תוספים",
+  "queuedForDownload": "בתור להורדה",
+  "quickSelectFollowing": "בחירה מהירה (בהמשך)",
+  "radiusMultiplier": "מכפיל רדיוס",
+  "random": "אקראי",
+  "range": "טווח",
+  "rank": "דרגה",
+  "rating": "דירוג",
+  "reDownloadAndReinstallThePlugin": "הורד מחדש והתקן מחדש את הפלאגין מאפס",
+  "read": "קרא",
+  "readArticle": "קרא מאמר",
+  "readLatestUpdatesAboutThisAnime": "קרא את העדכונים האחרונים על האנימה הזו",
+  "readLatestUpdatesAboutThisManga": "קרא את העדכונים האחרונים על המנגה הזו",
+  "readOnePageAtATime": "קראו עמוד אחד בכל פעם",
+  "readAheadDurationInMinutes": "משך קריאה קדימה בדקות",
+  "readaheadSeconds": "שניות לקריאה",
+  "reader": "קורא",
+  "readerBackgroundOpacity": "אטימות רקע הקורא",
+  "readerControlTheme": "ערכת נושא בקרת קורא",
+  "readerPreferences": "העדפות קורא",
+  "readerSettings": "הגדרות קורא",
+  "readingDirection": "כיוון קריאה",
+  "readingLayout": "פריסת קריאה",
+  "readingManga": "קורא מנגה",
+  "readingMangaPhrasing": "קריאת ביטויי מנגה",
+  "readingNovel": "רומן קריאה",
+  "readingNovelPhrasing": "קריאת ניסוח רומן",
+  "realTime4kUpscalingForAnime": "העלאת קנה מידה 4K בזמן אמת לתוכן אנימה",
+  "reason": "סיבה",
+  "reasonDeleted": "הסיבה נמחקה.",
+  "reasonUpdated": "הסיבה עודכנה!",
+  "recentActivity": "פעילות אחרונה",
+  "recentMediaComments": "הערות מדיה אחרונות",
+  "recentNews": "חדשות אחרונות",
+  "recentSearches": "חיפושים אחרונים",
+  "recentlyCompleted": "הושלם לאחרונה",
+  "recentlyUpdated": "עודכן לאחרונה",
+  "recommend": "ממליץ",
+  "recommendationSubmitted": "ההמלצה הוגשה! 🎉",
+  "recommended": "מומלץ",
+  "recommendedAnime": "אנימה מומלצת",
+  "recommendedBy": "מומלץ על ידי",
+  "recommendedManga": "מנגה מומלצת",
+  "recommendedNovels": "רומנים מומלצים",
+  "reduceColorBandingArtifacts": "צמצם חפצי פסי צבע",
+  "refreshComments": "רענן הערות",
+  "refreshRate": "קצב רענון",
+  "relations": "יחסים",
+  "releaseDate": "תאריך יציאה",
+  "releaseYear": "שנת יציאה",
+  "releaseYearStats": "נתונים סטטיסטיים של שנת יציאה",
+  "rememberMyChoice": "זכור את הבחירה שלי",
+  "rememberServer": "זכור את השרת",
+  "removalRequestSentToAdminsFor": "בקשת הסרה נשלחה למנהלי מערכת לבדיקה.",
+  "remove": "הסר",
+  "removeBanner": "הסר באנר",
+  "removeDecoration": "הסר עיטור",
+  "removeEffect": "הסר אפקט",
+  "removeFromHistory": "הסר מההיסטוריה",
+  "removeItems": "הסר פריטים",
+  "removeNameplate": "הסר לוחית שם",
+  "removeTheme": "הסר עיצוב",
+  "removeWhiteBlackBorders": "הסר גבולות לבנים/שחורים",
+  "removeYourReason": "להסיר את הסיבה שלך?",
+  "rename": "שנה שם",
+  "renameList": "שנה שם רשימה",
+  "reorderNavigationTabs": "סדר מחדש את כרטיסיות הניווט",
+  "replaceExistingDataOnThisDevice": "החלף נתונים קיימים במכשיר זה בגיבוי",
+  "replay": "שידור חוזר",
+  "reportsQueue": "תור דוחות",
+  "repositories": "מאגרים",
+  "repositoryUrl": "כתובת האתר של מאגר",
+  "repositoryUrlUpper": "כתובת האתר של מאגר",
+  "requests": "בקשות",
+  "requiredForCoreAndVisualTuning": "נדרש לכוונון Core ו-Visual. הישאר כבוי במכשירים מתקדמים.",
+  "reset": "אפס",
+  "resetUpper": "איפוס",
+  "resetDownloadPath": "אפס נתיב הורדה",
+  "resetNovelReaderSettings": "אפס את הגדרות Novel Reader",
+  "resetToDefault": "אפס לברירת המחדל",
+  "resetToDefault2": "אפס לברירת מחדל",
+  "resetToDefaultPicture": "אפס לתמונה ברירת המחדל",
+  "resetToDefaultWallpaper": "אפס לטפט ברירת מחדל!",
+  "resizeMode": "שינוי גודל מצב",
+  "resizeModes": "שינוי גודל מצבים",
+  "resolution": "רזולוציה",
+  "resolve": "פתרון",
+  "restartTheAppToApplyThe": "הפעל מחדש את האפליקציה כדי להחיל את העדכון.",
+  "restoreAllNovelReaderDefaults": "שחזר את כל ברירות המחדל של קורא הרומן",
+  "restoreData": "שחזור נתונים",
+  "restorePreview": "שחזר תצוגה מקדימה",
+  "restoreToDefaultInternalStorage": "שחזר לאחסון פנימי המוגדר כברירת מחדל",
+  "restoringWillOverwriteYourSelectedLocal": "השחזור ידרוס את הפריטים וההגדרות של הספרייה המקומית שבחרת בתוכן של גיבוי זה.",
+  "restrictMessagesToFollowing": "הגבל הודעות למעקב",
+  "results": "תוצאות",
+  "resultsWillAppearGroupedByExtension": "התוצאות יופיעו מקובצות לפי הרחבה",
+  "retainOriginalColor": "שמור על הצבע המקורי",
+  "retry": "נסה שוב",
+  "rightSide": "צד ימין",
+  "riseAndShine": "לעלות ולהאיר",
+  "roleUpdatedSuccessfully": "התפקיד עודכן בהצלחה",
+  "roleAll": "תפקיד: הכל",
+  "rollbackVersion": "גרסה לאחור",
+  "romajiTitle": "כותרת Romaji",
+  "roundUpScores": "ציוני סיבוב למעלה",
+  "runtimeHost": "מארח זמן ריצה",
+  "runtimeHostReleases": "מהדורות מארח בזמן ריצה",
+  "runtimeHostRequired": "מארח זמן ריצה נדרש",
+  "safetyFeatures": "תכונות בטיחות:",
+  "saturation": "רוויה",
+  "sauceSearcher": "מחפש רטבים",
+  "save": "שמור",
+  "saveEquip": "שמור והצטייד",
+  "saveChanges": "שמור שינויים",
+  "saveChanges2": "שמור שינויים",
+  "saveLastFrame": "שמור את המסגרת האחרונה",
+  "saveLogo": "שמור לוגו",
+  "savedAnimeEntriesAndProgress": "ערכים והתקדמות של אנימה שמורים",
+  "savedLightNovelsAndReadingState": "רומנים קלים שמורים ומצב קריאה",
+  "savedMangaEntriesAndChapters": "ערכים ופרקים של מנגה שמורים",
+  "savedStreamLinkHasExpiredFetching": "פג תוקפו של קישור הזרם השמור. מביא קישור חדש...",
+  "savesAScreenshotOfTheLast": "שומר צילום מסך של הפריים האחרון שצפית בו. השבתה זו מפחיתה משמעותית את השימוש באחסון",
+  "scaleFactor": "גורם קנה מידה",
+  "scalingAlgorithm": "אלגוריתם קנה מידה",
+  "scanningForMoreServers": "סורק אחר שרתים נוספים...",
+  "scanningForVideoStreams": "סורק אחר זרמי וידאו...",
+  "score": "ציון",
+  "scoreDistribution": "חלוקת ציונים",
+  "scoringSystem": "מערכת ניקוד",
+  "search": "חפש",
+  "searchUpper": "חיפוש",
+  "searchAcrossExtensions": "חפש בין תוספים...",
+  "searchAnimeMovies": "חפש באנימה, סרטים...",
+  "searchAnime": "חפש באנימה...",
+  "searchExtensions": "חיפוש הרחבות",
+  "searchExtensionsEllipsis": "תוספי חיפוש...",
+  "searchFailed": "החיפוש נכשל",
+  "searchForAnime": "חפש אנימה",
+  "searchInHistory": "חפש בהיסטוריה...",
+  "searchInLibrary": "חפש בספרייה...",
+  "searchItemsInList": "חפש פריטים ברשימה...",
+  "searchManga": "חפש במנגה...",
+  "searchQuery": "שאילתת חיפוש",
+  "searchSources": "חיפוש מקורות...",
+  "searchTags": "חפש תגיות...",
+  "searchUser": "חפש משתמש",
+  "searchingDatabase": "מחפש במסד נתונים...",
+  "searching": "מחפש...",
+  "season": "עונה",
+  "seasons": "עונות",
+  "secondsPerScreenLowerIsFaster": "שניות לכל מסך (נמוך יותר מהיר יותר)",
+  "secondsPerScreenPageLowerIs": "שניות לכל מסך/עמוד (הנמוך יותר מהיר יותר)",
+  "securityEncryption": "אבטחה והצפנה",
+  "seePeopleWhoContributedToAnymex": "ראה אנשים שתרמו ל-AnymeX",
+  "selectAFolderWhereAnymexWill": "בחר תיקייה שבה AnymeX ישמור את פרקי האנימה שהורדת ואת פרקי המנגה.",
+  "selectAnAnimeScreenshotToFind": "בחר צילום מסך של אנימה כדי למצוא את המקור שלו",
+  "selectAnilistMyanimelistSimklOrExtensions": "בחר במצב AniList, MyAnimeList, Simkl או Extensions",
+  "selectDataToIncludeInThis": "בחר נתונים לכלול בגיבוי זה",
+  "selectDirectory": "בחר מדריך",
+  "selectExtensions": "בחר הרחבות",
+  "selectFolder": "בחר תיקייה",
+  "selectLanguage": "בחר שפה",
+  "selectMediaDirectory": "בחר מדריך מדיה",
+  "selectNovelSource": "בחר מקור רומן",
+  "selectProfile": "בחר פרופיל",
+  "selectRange": "בחר טווח",
+  "selectServer": "בחר שרת",
+  "selectStatus": "בחר סטטוס",
+  "selectSubtitleFont": "בחר גופן כתוביות",
+  "selectTags": "בחר תגיות",
+  "selectTimezone": "בחר אזור זמן",
+  "selectVersionToRollback": "בחר גרסה להחזרה",
+  "selectVideoFile": "בחר קובץ וידאו",
+  "selectYourPreferredContentSource": "בחר את מקור התוכן המועדף עליך",
+  "selectedCacheCleared": "המטמון שנבחר נוקה",
+  "selectedItemsRemoved": "הפריטים שנבחרו הוסרו",
+  "sensitiveLoginTokensForMalSimkl": "אסימוני התחברות רגישים עבור MAL, Simkl ו-AniList",
+  "sensitiveSessionTokensForMalSimkl": "אסימוני הפעלה רגישים עבור MAL, Simkl ו-AniList",
+  "separateCompletedAnimeListIntoSections": "הפרד את רשימת האנימות שהושלמה לחלקים לפי פורמט.",
+  "separateCompletedMangaListIntoSections": "הפרד את רשימת המנגה שהושלמה למקטעים לפי פורמט.",
+  "serverDetails": "פרטי שרת",
+  "serverChanIsTakingANap": "Server-chan לוקח תנומה!",
+  "setUpYourPreferencesForThe": "הגדר את ההעדפות שלך לקבלת החוויה הטובה ביותר",
+  "settings": "הגדרות",
+  "settingsAccount": "הגדרות וחשבון",
+  "settingsAuthentication": "הגדרות ואימות",
+  "settingsSavedSuccessfully": "ההגדרות נשמרו בהצלחה.",
+  "shaderProfilesInitialized": "פרופילי Shader אתחול",
+  "shadowBanUser": "משתמש איסור צל",
+  "shareLogs": "שתף יומנים",
+  "shareMatchCard": "שתף כרטיס התאמה",
+  "shareProfile": "שתף פרופיל",
+  "shareTheSavedLogFileOr": "שתף את קובץ היומן השמור או העתק את תוכנו.",
+  "sharedFromAnymex": "שותף מ-AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "הצג שכבות-על של אפקט מונפש על באנרים בפרופיל",
+  "showAnimatedFramesAroundUserAvatars": "הצג מסגרות מונפשות סביב אווטרים של משתמשים",
+  "showBatteryTime": "הצג סוללה וזמן",
+  "showChapterTransitionEvenWithoutGaps": "הצג מעבר פרק גם ללא פערים",
+  "showCommunityRecommendations": "הצג המלצות קהילה",
+  "showContinueWatchingCard": "הצג כרטיס המשך צפייה",
+  "showContinueWatchingOnHome": "הצג המשך צפייה בדף הבית",
+  "showCustomProfileBannersFallsBack": "הצג באנרים מותאמים אישית של פרופיל (נופל בחזרה לכיסוי AniList אם כבוי)",
+  "showNameplateBackgroundsOnCommentCards": "הצג רקע של לוחית שם בכרטיסי הערות וב-Leaderboard",
+  "showOnLeft": "הצג משמאל",
+  "showOnRight": "הצג מימין",
+  "showReadingProgress": "הצג התקדמות הקריאה",
+  "showTimestamps": "הצג חותמות זמן",
+  "simpleCompactListView": "תצוגת רשימה קומפקטית פשוטה",
+  "simpleDirectmediaLayerAudioOutput": "פלט שמע פשוט של DirectMedia Layer",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "פריסה פשוטה המציגה את מספר הפרק, הכותרת וההתקדמות ללא תמונה ממוזערת",
+  "sizeMode": "מצב גודל:",
+  "smartMangaSuggestions": "הצעות מנגה חכמות",
+  "smootherMotionCanIncreaseGpuUsage": "תנועה חלקה יותר, יכולה להגביר את השימוש ב-GPU",
+  "social": "חברתי",
+  "somethingWentWrong": "משהו השתבש",
+  "sort": "מיון",
+  "sort2": "מיון",
+  "sortBy": "מיון לפי",
+  "sortBy2": "מיין לפי",
+  "sortComments": "מיין הערות",
+  "source": "מקור",
+  "sourceAndPluginConfigurations": "תצורות מקור ותוספים",
+  "sourcePreferences": "העדפות מקור",
+  "spaceBetweenLetters": "רווח בין אותיות",
+  "spaceBetweenParagraphs": "רווח בין פסקאות",
+  "spaceBetweenWords": "רווח בין מילים",
+  "spacedPages": "דפים מרווחים",
+  "splitCompletedAnimeList": "פיצול רשימת אנימות שהושלמה",
+  "splitCompletedMangaList": "פיצול רשימת מנגה שהושלמה",
+  "spoiler": "ספוילר",
+  "spoilerTapToReveal": "ספוילר (הקש כדי לחשוף)",
+  "staff": "צוות",
+  "staffCharacterNameLanguage": "שפת שם צוות ודמות",
+  "standardGpuRendering": "עיבוד GPU סטנדרטי",
+  "starOnGithub": "כוכב על GitHub",
+  "startANewDownloadFromThe": "התחל הורדה חדשה מהכרטיסייה \"הורדה חדשה\".",
+  "startChapter": "התחל פרק",
+  "startDate": "תאריך התחלה",
+  "startMangaDownload": "התחל הורדת מנגה",
+  "startTest": "התחל בדיקה",
+  "startingExtensionRuntime": "מתחיל זמן ריצה של הרחבה...",
+  "statistics": "סטטיסטיקה",
+  "stats": "סטטיסטיקות",
+  "status": "סטטוס",
+  "statusDistribution": "חלוקת סטטוסים",
+  "statusPostedSuccessfully": "סטטוס פורסם בהצלחה!",
+  "stayUpdatedWithTheLatestReleases": "הישאר מעודכן עם המהדורות האחרונות, ההכרזות והדיונים",
+  "storagePath": "אחסון ונתיב",
+  "storageManager": "מנהל אחסון",
+  "storageOptions": "אפשרויות אחסון",
+  "storagePermission": "הרשאת אחסון",
+  "storagePermissionIsRequiredToDownload": "נדרשת הרשאת אחסון כדי להוריד עדכונים",
+  "storagePermissionRequired": "נדרשת הרשאת אחסון",
+  "streakCurLong": "פס (עקום/ארוך)",
+  "stretchImagesToFitScreenWidth": "למתוח תמונות כך שיתאימו לרוחב המסך",
+  "strikethrough": "חוצה",
+  "studios": "אולפנים",
+  "style": "STYLE",
+  "subtitleBackgroundColor": "צבע רקע של כתוביות",
+  "subtitleColor": "צבע כתוביות",
+  "subtitleFont": "גופן כתוביות",
+  "subtitleOutlineColor": "צבע מתאר כתוביות",
+  "subtitleOutlineWidth": "רוחב מתאר כתוביות",
+  "subtitlePreview": "תצוגה מקדימה של כתוביות",
+  "subtitlePreviewText": "טקסט תצוגה מקדימה של כתוביות",
+  "subtitleSize": "גודל כתוביות",
+  "subtitleTransparency": "שקיפות כתוביות",
+  "subtitles": "כתוביות",
+  "summary": "סיכום",
+  "superAdmin": "סופר אדמין",
+  "supportTtfAndOtfFiles": "תמיכה בקבצי .ttf ו-.otf",
+  "supportAnymex": "תומך ב-AnymeX",
+  "supportedModes": "מצבים נתמכים",
+  "supportedUpiApps": "אפליקציות UPI נתמכות",
+  "suppressActivityWhenWatchingOrReading": "דיכוי פעילות בעת צפייה או קריאה של תוכן NSFW",
+  "swapUpDownActions": "החלף פעולות למעלה/למטה",
+  "swipeBetweenChapters": "החלק בין פרקים",
+  "swipeIndicatorTheme": "נושא מחוון החלקה",
+  "swipeToSeek": "החלק לחיפוש",
+  "switchBetweenDefaultTitleAndRomaji": "החלף בין כותרת ברירת המחדל ל-romaji/כותרת חלופית בספרייה ובכרטיסים",
+  "switchToOnline": "עבור למצב מקוון",
+  "syncCompletedButThePluginIs": "הסנכרון הושלם, אך הפלאגין עדיין לא מוכן.",
+  "syncDetails": "פרטי סנכרון",
+  "syncFailed": "הסנכרון נכשל",
+  "synonyms": "מילים נרדפות",
+  "synopsis": "תקציר",
+  "tags": "תגים",
+  "tags2": "תגים",
+  "takeColorFromYourWallpaperA12": "קח צבע מהטפט שלך (A12+)",
+  "tapToAddARepositoryUrl": "הקש על + כדי להוסיף כתובת אתר של מאגר",
+  "tapAZoneToChangeIts": "הקש על אזור כדי לשנות את פעולתו",
+  "tapAction": "הקש על פעולה",
+  "tapToChooseASource": "הקש כדי לבחור מקור",
+  "tapToLogin": "הקש כדי להתחבר",
+  "tapToLogout": "הקש כדי להתנתק",
+  "tapToScroll": "הקש כדי לגלול",
+  "tapYourProfileIconInThe": "הקש על סמל הפרופיל שלך בסרגל האפליקציות העליון",
+  "tapZones": "הקש על אזורים",
+  "tellTheCommunityWhyThisDeserves": "ספר לקהילה מדוע זה ראוי ליותר תשומת לב.",
+  "temporaryAppCache": "מטמון אפליקציה זמני",
+  "termsOfServicePrivacyPolicy": "תנאי שירות/מדיניות פרטיות",
+  "test": "מבחן",
+  "testExtensions": "הרחבות בדיקה",
+  "testResults": "תוצאות בדיקה",
+  "testType": "סוג בדיקה",
+  "textSize": "גודל טקסט",
+  "theme": "נושא",
+  "themeLayoutAndColors": "נושא, פריסה וצבעים",
+  "themes": "ערכות נושא",
+  "thisBackupIsEncryptedPleaseEnter": "גיבוי זה מוצפן. נא להזין את הסיסמה כדי להמשיך.",
+  "thisDirectoryContainsNoSupportedMedia": "ספרייה זו אינה מכילה קבצי מדיה נתמכים",
+  "thisMayTakeAFewSeconds": "פעולה זו עשויה להימשך מספר שניות",
+  "thisMayTakeUpTo30": "פעולה זו עשויה להימשך עד 30 שניות",
+  "thisMightTakeAFewSeconds": "זה עשוי להימשך מספר שניות",
+  "thisReasonWillBeDeletedImmediately": "סיבה זו תימחק לאלתר.",
+  "thisWillPermanentlyDeleteAllData": "פעולה זו תמחק לצמיתות את כל הנתונים המאוחסנים של AnymeX. לא ניתן לבטל זאת.",
+  "tipYouCanCombineTheseE": "טיפ: אתה יכול לשלב את אלה! לְמָשָׁל **מודגש ו*נטוי* ביחד**",
+  "title": "כותרת",
+  "titleCopied": "הכותרת הועתקה",
+  "titleLanguage": "שפת הכותרת",
+  "toDownloadForTheFirstTime": "כדי להוריד בפעם הראשונה, הענק הרשאות על ידי ביקור תחילה בדף ההורדות:",
+  "toggleBetweenGridAndDetailedList": "החלף בין רשת לרשימה מפורטת",
+  "toneMapping": "מיפוי טון",
+  "topAnime": "אנימה מובילה",
+  "topComments": "הערות מובילות",
+  "topGenres": "ז'אנרים מובילים",
+  "topManga": "מנגה מובילה",
+  "topManhua": "מנהואה למעלה",
+  "topManhwa": "למעלה מנהווה",
+  "topStudios": "Top Studios",
+  "torrentServer": "שרת טורנט",
+  "torrentStreamCache": "מטמון זרם טורנט",
+  "torrserverStreamingAddOns": "TorrServer ותוספות סטרימינג",
+  "totalChapters": "סך הכל פרקים",
+  "totalCost": "עלות כוללת:",
+  "totalItems": "סך הכל פריטים",
+  "track": "מסלול",
+  "trackAiringSchedules": "עקוב אחר לוחות זמנים לשידור",
+  "trackYourProgress": "לעקוב אחר ההתקדמות שלך?",
+  "trackingServices": "שירותי מעקב",
+  "transitionSubtitle": "כתובית מעבר",
+  "translateTo": "תרגם ל",
+  "translationLanguage": "שפת תרגום",
+  "translucentNav": "Nav שקוף",
+  "trendingAnime": "אנימה פופולרית",
+  "trendingAnimes": "אנימות טרנדיות",
+  "trendingManga": "מנגה טרנדית",
+  "tryADifferentKeyword": "נסה מילת מפתח אחרת",
+  "tryAdjustingYourFilters": "נסה להתאים את המסננים שלך",
+  "tryAgain": "נסה שוב",
+  "tryDifferentAnimationStylesForPage": "נסה סגנונות אנימציה שונים עבור כניסות לדפים",
+  "ttsAutoAdvance": "התקדמות אוטומטית של TTS",
+  "ttsPitch": "TTS Pitch",
+  "ttsSpeed": "מהירות TTS",
+  "tweakGeneralAppSettings": "שנה את ההגדרות הכלליות של האפליקציה",
+  "typeLabel": "הקלד",
+  "typeAtLeast2CharactersTo": "הקלד לפחות 2 תווים לחיפוש",
+  "ui": "ממשק משתמש",
+  "uiComponents": "רכיבי ממשק משתמש",
+  "uiLayoutColorsAndThemes": "פריסת ממשק משתמש, צבעים ונושאים",
+  "uiLayoutColorsAndVisualStyles": "פריסת ממשק משתמש, צבעים וסגנונות חזותיים",
+  "uiSettings": "הגדרות ממשק משתמש",
+  "unableToPreparePlaybackRightNow": "לא ניתן להכין את השמעה כרגע. אנא נסה שוב.",
+  "unbanUser": "בטל חסימת משתמש",
+  "unbind": "בטל את הכריכה",
+  "unifiedLibrary": "ספרייה מאוחדת",
+  "uninstall": "הסר את ההתקנה",
+  "universal": "אוניברסלי",
+  "unlock": "פתח את הנעילה",
+  "unlockCustomizations": "בטל נעילת התאמות אישיות",
+  "unmuteUser": "בטל השתקת משתמש",
+  "unreadOnly": "לא נקרא בלבד",
+  "upcomingAnime": "אנימה בקרוב",
+  "update": "עדכון",
+  "updateAll": "עדכן הכל",
+  "updateCheckComplete": "בדיקת העדכון הושלמה",
+  "updateOnImport": "עדכון על ייבוא",
+  "updateToLatestVersion": "עדכן לגרסה האחרונה",
+  "updateYourActivity": "עדכן את הפעילות שלך...",
+  "updatesPending": "עדכונים בהמתנה",
+  "upiDonation": "תרומת UPI",
+  "uploadAnImageToGetStarted": "העלה תמונה כדי להתחיל",
+  "uploadImage": "העלה תמונה",
+  "urlCopiedToClipboard": "כתובת האתר הועתקה ללוח",
+  "usage": "שימוש:",
+  "useAiToTranslateSoftSubtitles": "השתמש בבינה מלאכותית כדי לתרגם כתוביות רכות בשידור חי",
+  "useAlternateTitle": "השתמש בכותרת חלופית",
+  "useBuffering": "השתמש ב-buffering",
+  "useCustomGesturesForReaderNavigation": "השתמש במחוות מותאמות אישית לניווט בקורא",
+  "useEnhancedEpisodeMetadataAndCovers": "השתמש במטא נתונים משופרים של פרק ובעטיפות",
+  "useExternalPlayer": "השתמש בנגן חיצוני",
+  "useKeyboardShortcutsDuringPlaybackTo": "השתמש בקיצורי מקלדת במהלך השמעה כדי להחליף פרופילים",
+  "useLegacyHeader": "השתמש בכותרת מדור קודם",
+  "useLibassForSubtitles": "השתמש ב-Libass עבור כתוביות",
+  "useLibmpvForPlayback": "השתמש ב-LibMpv להפעלה",
+  "useMpvConf": "השתמש ב-mpv.conf",
+  "usePosterColor": "השתמש בצבע פוסטר",
+  "useVolumeKeysToChangePages": "השתמש במקשי עוצמת הקול כדי להחליף עמודים",
+  "useYearRange": "השתמש בטווח שנים",
+  "user": "משתמש",
+  "userIdCopiedToClipboard": "מזהה המשתמש הועתק ללוח",
+  "userList": "רשימת משתמשים",
+  "userManagement": "ניהול משתמשים",
+  "userCreatedCustomMediaCollections": "אוספי מדיה מותאמים אישית שנוצרו על ידי המשתמש",
+  "username": "שם משתמש",
+  "verifyTlsCertificates": "אמת אישורי TLS",
+  "versionCopied": "הגרסה הועתקה",
+  "vertical": "אנכי",
+  "videoPlayer": "נגן וידאו",
+  "videoRenderer": "מעבד וידאו",
+  "videoSync": "סינכרון וידאו",
+  "viewAndFilterAllUsers": "הצג וסנן את כל המשתמשים",
+  "viewOnAnilist": "הצג ב-AniList",
+  "viewOpeningAndEndingThemes": "הצג נושאי פתיחה וסיום",
+  "viewProfile": "צפה בפרופיל",
+  "viewSourceCodeOnGithub": "הצג את קוד המקור ב-github.",
+  "viewTheChronologicalWatchOrderOf": "הצג את סדר הצפייה הכרונולוגי של האנימה הזו",
+  "viewUser": "הצג משתמש",
+  "viewUserRankingsTopContributorsReputation": "הצג דירוגי משתמשים, תורמים מובילים ומוניטין",
+  "viewingAnimeDetails": "צפייה בפרטי אנימה",
+  "viewingMangaDetails": "צפייה בפרטי מנגה",
+  "viewingNovelDetails": "צפייה בפרטי רומן",
+  "visibleTabs": "כרטיסיות גלויות",
+  "visitGithubReleasesPageForChangelogs": "בקר בדף הגרסאות של GitHub עבור יומני שינויים והורדות ידניות",
+  "visualFromAnymex": "ויזואלי מ-AnymeX",
+  "voiceActors": "שחקנים קוליים",
+  "voicedCharacters": "דמויות מושמעות",
+  "volumeButtonScrolling": "גלילה של לחצן עוצמת הקול",
+  "volumeKeysNavigation": "ניווט מקשי עוצמת הקול",
+  "volumes": "כרכים",
+  "volumesRead": "כרכים קריאה",
+  "votes": "הצבעות",
+  "wWhatAreYouDoingStep": "W-מה אתה עושה אחי, התחבר לפני שאתה עושה את זה (●´⌓`●)",
+  "wallpaper": "טפט",
+  "warnUser": "הזהר משתמש",
+  "warning": "אזהרה",
+  "wasThisHelpful": "האם זה היה מועיל?",
+  "watchAd": "צפו במודעה",
+  "watchAnAdToSupport": "צפה במודעה לתמיכה",
+  "watchAnime": "צפו באנימה",
+  "watchOrder": "סדר שעון",
+  "watchTogether": "צפו ביחד",
+  "watchTogetherPolicy": "צפו במדיניות ביחד",
+  "watchingAnime": "צופה באנימה",
+  "watchingAnimePhrasing": "צופה בניסוח אנימה",
+  "welcomeToAnymex": "ברוכים הבאים ל-AnymeX",
+  "whatsOnYourMind": "מה עובר לך בראש?",
+  "whenEnabledAnymexSavesLogsLocally": "כאשר מופעל, AnymeX שומר יומנים באופן מקומי עד להשבית.",
+  "whyAreYouRecommendingThisMin": "למה אתה ממליץ על זה? (מינימום 30 תווים)",
+  "whyIsThisUnderratedMin30": "למה זה לא מוערך? (מינימום 30 תווים)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "ריווח מילים",
+  "writeAMessage": "כתוב הודעה...",
+  "writeLogToAFile": "כתוב יומן לקובץ",
+  "writeYourAnilistBio": "כתוב את הביוגרפיה שלך AniList...",
+  "wrongTitle": "כותרת שגויה?",
+  "year": "שנה",
+  "yearUpper": "YEAR",
+  "you": "אתה",
+  "youCanUseDiscordStyleMarkdown": "אתה יכול להשתמש בסימון בסגנון Discord כדי לעצב את ההערות שלך:",
+  "youHaveUnsentTextClosingNow": "יש לך טקסט שלא נשלח. סגירה כעת תאבד את ההודעה שלך.",
+  "youHaveUnsentTextClosingNowWill": "יש לך טקסט שלא נשלח. סגירה כעת תאבד את תשובתך.",
+  "youHaveUnsentTextClosingNowWillLose": "יש לך טקסט שלא נשלח. סגירה עכשיו תאבד את הסטטוס שלך.",
+  "youNeedModeratorPermissionsToAccess": "אתה צריך הרשאות מנחה כדי לגשת ללוח זה",
+  "youreUpLate": "אתה ער מאוחר",
+  "yourBalance": "היתרה שלך:",
+  "yourPrivacyIsImportant": "הפרטיות שלך חשובה:",
+  "yourReasonHasBeenRemoved": "הסיבה שלך הוסרה.",
+  "yourRecommendation": "ההמלצה שלך",
+  "yourRichPresenceActivityWillStop": "פעילות הנוכחות העשירה שלך תפסיק להתעדכן.",
+  "yourRole": "התפקיד שלך",
+  "yourWatchReadHistory": "היסטוריית הצפייה והקריאה שלך",
+  "yourWatchReadStatistics": "סטטיסטיקות השעון והקריאה שלך",
+  "advancedLinuxSoundArchitecture": "ארכיטקטורת סאונד מתקדמת של לינוקס",
+  "al": "אל",
+  "allYourLocalShi": "כל השי המקומי שלך",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "אניליסט",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "אתה בטוח?",
+  "aspectRatio": "יחס גובה-רוחב",
+  "attackOnTitan": "התקפה על טיטאן",
+  "audio": "אודיו",
+  "audioSubtitles": "אודיו וכתוביות",
+  "audioTrack": "רצועת אודיו",
+  "audioTracks": "רצועות אודיו",
+  "audiotrack": "אודיוטראק",
+  "autoAudiotrack": "אוטומטי (AudioTrack)",
+  "autoCoreaudio": "אוטומטי (CoreAudio)",
+  "autoGpu": "אוטומטי (GPU)",
+  "autoPulseaudio": "אוטומטי (PulseAudio)",
+  "autoWasapi": "אוטומטי (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "בלום",
+  "castToDevice": "העבר למכשיר",
+  "colorFilter": "מסנן צבע",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "קוטל השדים: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "נגן חיצוני",
+  "files": "קבצים",
+  "forward": "קדימה",
+  "forward30s": "קדימה שנות ה-30",
+  "fullscreen": "מסך מלא",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (וולקן)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "מנעול בקרות",
+  "lockOrientation": "נעילת כיוון",
+  "mal": "MAL",
+  "materialYou": "חומר אתה",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "רצח הכרחי",
+  "nextEp": "פרק הבא",
+  "nextEpisode": "הפרק הבא",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "תמונה בתמונה",
+  "playlist": "רשימת השמעה",
+  "previousEpisode": "הפרק הקודם",
+  "pulseaudio": "PulseAudio",
+  "quality": "איכות",
+  "qualitySetting": "הגדרת איכות",
+  "readingMode": "מצב קריאה",
+  "reddit": "Reddit",
+  "replay30s": "שידור חוזר של שנות ה-30",
+  "ryanyuuki": "ריאן יוקי",
+  "sabitoAndMakomo": "סביטו ומקומו",
+  "sdl": "SDL",
+  "server": "שרת",
+  "servers": "שרתים",
+  "shadersColorProfiles": "הצללות ופרופילי צבע",
+  "shadersColors": "הצללות וצבעים",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "פילוס סולו",
+  "speed": "מהירות",
+  "sw": "SW",
+  "syncSubs": "סנכרון משנה",
+  "syncSubtitles": "סנכרון כתוביות",
+  "telegram": "טלגרם",
+  "theQuickBrownFoxJumpsOver": "השועל החום המהיר קופץ מעל הכלב העצלן",
+  "themeMode": "מצב ערכת נושא",
+  "thisIsFrustrating": "זה מתסכל",
+  "toYouSomeday": "אליך, מתישהו",
+  "torrentFiles": "קבצי טורנט",
+  "tracks": "מסלולים",
+  "unlockOrientation": "בטל נעילת אוריינטציה",
+  "userAgent": "משתמש-סוכן",
+  "videoQuality": "איכות וידאו",
+  "videoServers": "שרתי וידאו",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "צפו ביחד (בחדר)",
+  "webtoon": "סרטון אינטרנט",
+  "n0MeansAutomaticThreadCount": "0 פירושו ספירת חוטים אוטומטית",
+  "n18Content": "18+ תוכן",
+  "aboveAverageSimilarity": "דמיון מעל הממוצע.",
+  "account": "חשבון",
+  "activityStats": "פעילות וסטטיסטיקות",
+  "add": "הוסף",
+  "additionalNotesOptional": "הערות נוספות (אופציונלי)",
+  "adjustKeyVolumeScrollingSpeed": "התאם את מהירות הגלילה של מקש ועוצמת הקול",
+  "alpha": "אלפא",
+  "alwaysChecksCurrentChapterNumberAnd": "תמיד בודק את מספר הפרק הנוכחי ומשווה אותו לפרק הבא/הקודם, מנווט רק כאשר המספר שונה. ניווט לפי פרק פשוט יעבור לפריט הבא ברשימה גם אם יש כפילויות.",
+  "animeCompleted": "אנימה הושלמה",
+  "announcementMode": "מצב הכרזה",
+  "appIsStillLoadingTryAgain": "האפליקציה עדיין בטעינה, נסה שוב בקרוב.",
+  "applyAColorTintOverPages": "החל גוון צבעוני על הדפים",
+  "audioDelay": "השהיית שמע",
+  "audioSettings": "הגדרות שמע",
+  "audioTrack2": "רצועת אודיו",
+  "autoAdvance": "התקדמות אוטומטית",
+  "autoDeleteCompletedEntries": "מחיקה אוטומטית של ערכים שהושלמו",
+  "autoSyncProgress": "התקדמות הסנכרון האוטומטי",
+  "automaticallyMoveToNextText": "עבור אוטומטית לטקסט הבא",
+  "automaticallyScrollAdvancePages": "גלול/קדם דפים באופן אוטומטי",
+  "automaticallySwitchToContinuousModeFor": "עבור אוטומטית למצב רציף עבור מנגה ברצועה ארוכה",
+  "averageOverlap": "חפיפה ממוצעת.",
+  "background": "רקע",
+  "basedOnYourFavouriteAnime": "מבוסס על האנימה האהובה עליך.",
+  "basedOnYourFavouriteManga": "מבוסס על המנגה האהובה עליך.",
+  "basedOnYourTop10Manga": "מבוסס על 10 תגי המנגה המובילים שלך.",
+  "basedOnYourTop5Manga": "מבוסס על 5 הז'אנרים המובילים של המנגה שלך.",
+  "blue": "כחול",
+  "botL": "בוט-ל",
+  "botR": "בוט-ר",
+  "bridgeUpdateAvailable": "עדכון גשר זמין",
+  "brightness": "בהירות",
+  "bulletList": "רשימת תבליטים",
+  "calendarUpper": "לוח שנה",
+  "canadianMovies": "סרטים קנדיים",
+  "canadianShows": "מופעים קנדיים",
+  "cannotCompareTheSameProfileWith": "לא יכול להשוות את אותו פרופיל עם עצמו.",
+  "castToDevice2": "העבר למכשיר",
+  "chatModeration": "ניהול צ'אט",
+  "chooseASubtitleFileFromYour": "בחר קובץ כתוביות מהמכשיר שלך (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "בחר כיצד להחיל את קובץ ה-JSON שנבחר על תמצית הענן שלך ב-AnymeX.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "כלי ענן",
+  "code": "קוד",
+  "commonFavouriteAnime": "אנימה אהובה נפוצה",
+  "commonFavouriteCharacters": "דמויות אהובות נפוצות",
+  "commonFavouriteManga": "מנגה אהובה נפוצה",
+  "commonPerfectAnime": "אנימה מושלמת נפוצה",
+  "commonPerfectManga": "מנגה מושלמת",
+  "communityAdministratorOverseeingModerationAndPolicies": "מנהל קהילה מפקח על ניהול ומדיניות.",
+  "connectGithubFirstBeforeDeletingSync": "חבר את GitHub תחילה לפני מחיקת נתוני סנכרון.",
+  "connectGithubFirstToExportSync": "חבר תחילה את GitHub כדי לייצא נתוני סנכרון.",
+  "connectGithubFirstToImportSync": "חבר תחילה את GitHub כדי לייבא נתוני סנכרון.",
+  "connectGithubFirstToSyncProgress": "חבר את GitHub תחילה לסנכרון ההתקדמות.",
+  "connectGithubFirstToViewSync": "חבר את GitHub תחילה כדי לראות את תמצית הסנכרון.",
+  "continuousModeOnly2": "מצב רציף בלבד",
+  "controls": "בקרות",
+  "cookiesClearedSuccessfully": "קובצי Cookie נוקו בהצלחה",
+  "copied": "הועתק",
+  "copyUrl": "העתק כתובת URL",
+  "correctDownscaling": "הורדת קנה מידה נכונה",
+  "couldNotLoadStreamingServicesFrom": "לא ניתן היה לטעון שירותי סטרימינג מ-AniList API.\n ייתכן שהשירות לא זמין באופן זמני או מוגבל בקצב.",
+  "couldNotOpenGistInBrowser": "לא ניתן היה לפתוח את התמצית בדפדפן.",
+  "created": "נוצר",
+  "creatorAndDeveloperOfAnymex": "יוצר ומפתח של AnymeX.",
+  "customBrightness": "בהירות מותאמת אישית",
+  "customizeGestures": "התאם אישית מחוות",
+  "deband": "דבנד",
+  "debandIterations": "איטרציות Deband",
+  "debandThreshold": "Deband Threshold",
+  "decreaseAutoScrollSpeed": "הפחת את מהירות הגלילה האוטומטית",
+  "decreaseFontSize": "הקטנת גודל גופן",
+  "deleteAnymexSyncGist": "למחוק את AnymeX Sync Gist?",
+  "deleteCloudGist": "מחק את Cloud Gist",
+  "deleteCommentMod": "מחק תגובה (מוד)",
+  "details": "פרטים",
+  "dictionary": "מילון",
+  "differenceFromOwnMeanScore": "הבדל מהניקוד הממוצע שלו",
+  "disableChat": "השבת את הצ'אט",
+  "disconnectThisGithubAccountFromAnymex": "נתק חשבון GitHub זה מ-AnymeX",
+  "displayPagesInBlackWhite": "הצגת דפים בשחור לבן",
+  "downloading": "מוריד...",
+  "downscaler": "מטה",
+  "dynamicWidget": "יישומון דינמי",
+  "eInkDisplayRefresh": "רענון תצוגת E-ink",
+  "eGAbc123": "למשל ABC123",
+  "eGMyAnimeLogo": "למשל לוגו האנימה שלי",
+  "editYourComment": "ערוך את התגובה שלך...",
+  "embeddedContent": "תוכן מוטבע",
+  "enterTheRoomPassword": "הזן את סיסמת החדר",
+  "enterTokenHere": "הזן אסימון כאן",
+  "error": "שגיאה",
+  "exitSyncNotifications": "צא מהודעות סנכרון",
+  "exportGistJson": "ייצוא Gist JSON",
+  "exportedGistJson": "עיקרי מיוצא JSON.",
+  "failedToExportGistJson": "ייצוא עיקרי JSON נכשל.",
+  "failedToFetchDataFromSources": "אחזור הנתונים ממקורות נכשל.",
+  "failedToGetCloudGistLink": "נכשלה קבלת קישור תמצית ענן.",
+  "failedToImportGistJson": "ייבוא ​​עיקרי JSON נכשל.",
+  "failedToLaunchExternalPlayer": "הפעלת נגן חיצוני נכשלה",
+  "failedToOpenGistInBrowser": "פתיחת העיקר בדפדפן נכשלה.",
+  "flashDuration": "משך הבזק",
+  "flashEveryNPages": "פלאש כל N עמודים",
+  "flashFrequency": "תדר פלאש",
+  "flashScreenOnPageTurnTo": "מסך הבזק בעמוד הפוך לניקוי רוחות רפאים",
+  "followHost": "עקוב אחר מארח",
+  "fontSettings": "הגדרות גופן",
+  "freedomSeek": "חפש חופש",
+  "friendsNeedAPasswordToJoin": "חברים צריכים סיסמה כדי להצטרף",
+  "githubClientIdNotConfigured": "מזהה לקוח GitHub לא הוגדר.",
+  "githubLoginFailedMissingAuthorizationCode": "התחברות GitHub נכשלה: חסר קוד הרשאה.",
+  "githubLoginWasCancelledOrFailed": "התחברות GitHub בוטלה או נכשלה.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • הראה את אהבתך",
+  "goodChemistryAndSharedTaste": "כימיה טובה וטעם משותף.",
+  "grayscale": "גווני אפור",
+  "green": "ירוק",
+  "hdrToneMappingTargetPeak": "שיא יעד מיפוי גוונים HDR",
+  "higherValueIncreasesDebandingStrength": "ערך גבוה יותר מגביר את חוזק ביטול הרצועה",
+  "horizontalPadding": "ריפוד אופקי",
+  "hoursWatched": "שעות צפייה",
+  "howManyFriendsCanJoin": "כמה חברים יכולים להצטרף",
+  "ifYouHaveAnIssueOr": "אם יש לך בעיה או הצעה כלשהי בבקשה צור בעיה ב-github.",
+  "imageWidth": "רוחב תמונה",
+  "importGistJson": "ייבוא Gist JSON",
+  "importLocalSubtitle": "ייבוא כתוביות מקומיות",
+  "improveQualityWhenScalingDownVideo": "שפר את האיכות בעת הקטנת הווידאו",
+  "increaseAutoScrollSpeed": "הגדל את מהירות הגלילה האוטומטית",
+  "increaseFontSize": "הגדל את גודל הגופן",
+  "invalidCompatibilityLinkMissingUsernames": "קישור תאימות לא חוקי: חסרים שמות משתמש.",
+  "invalidGistUrl": "כתובת אתר תמצית לא חוקית.",
+  "invalidRoomCodeInLink": "קוד חדר לא חוקי בקישור",
+  "invalidWatchTogetherLink": "קישור צפה ביחד לא חוקי",
+  "invertAllPageColors": "הפוך את כל צבעי העמוד",
+  "invertColors": "הפוך צבעים",
+  "inviteLink": "קישור הזמנה",
+  "inviteLinkCopied": "קישור ההזמנה הועתק!",
+  "jDramas": "J-Dramas",
+  "joinNotifications": "הצטרפו להתראות",
+  "kDramas": "K-Dramas",
+  "keepBothUploadedAndCloudEntries": "שמור גם ערכים שהועלו וגם ערכים בענן. אם אותו ערך קיים בשני המקומות, החדש יותר נשמר. (מומלץ)",
+  "keyVolumeScrollingSpeed": "מהירות גלילה מקשים ועוצמת קול",
+  "koreanMovies": "סרטים קוריאניים",
+  "leaveNotifications": "השאר הודעות",
+  "liveComments": "תגובות בשידור חי",
+  "lockScreen": "מסך נעילה",
+  "loginToAnilist": "התחבר ל-AniList",
+  "loginToMyanimelist": "התחבר ל-MyAnimeList",
+  "loginToSimkl": "התחבר ל-Simkl",
+  "longPressForPageActions": "לחץ לחיצה ארוכה עבור פעולות עמוד",
+  "longPressAPageToSave": "לחץ לחיצה ארוכה על דף כדי לשמור, לשתף או להעתיק אותו",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "מנגה הושלמה",
+  "mangaPage": "עמוד מנגה",
+  "maxMembers": "מקסימום חברים",
+  "memberLeft": "חבר עזב",
+  "mergeUploadedEntriesOrReplaceCloud": "מיזוג ערכים שהועלו או החלף נתוני ענן",
+  "mergeWithCloud": "מיזוג עם ענן",
+  "milliseconds": "אלפיות שניות",
+  "missingTypeQueryParameterUseType": "חסר פרמטר שאילתה \"סוג\". השתמש ב-type=player.",
+  "missingUrlQueryParameterForThe": "חסר פרמטר שאילתה \"URL\" עבור ערכת הנושא JSON.",
+  "moreIterationsStrongerDebanding": "יותר איטרציות = דה-banding חזק יותר",
+  "movies": "סרטים",
+  "moviesList": "רשימת סרטים",
+  "navigateByNumber": "נווט לפי מספר",
+  "navigation": "ניווט",
+  "newMember": "חבר חדש",
+  "nextChapter": "הפרק הבא",
+  "nextParagraph": "הפסקה הבאה",
+  "noAudio": "אין אודיו",
+  "noOneCanSendMessagesIn": "אף אחד לא יכול לשלוח הודעות בצ'אט",
+  "noStreamUrlAvailable": "אין כתובת אתר זמינה לסטרימינג",
+  "noSubtitle": "ללא כתוביות",
+  "noVideo": "אין וידאו",
+  "notVeryCompatibleAtAll": "לא מאוד תואם בכלל.",
+  "numberedList": "רשימה ממוספרת",
+  "onScreenOverlays": "שכבות-על על המסך",
+  "onlyHostAndCoHostsCan": "רק מארחים ומארחים משותפים יכולים לשלוח הודעות",
+  "opacity": "אטימות",
+  "openInBrowser2": "פתח בדפדפן",
+  "openYourAnymexSyncGistOn": "פתח את עיקרי הסנכרון של AnymeX ב-GitHub",
+  "openingInExternalPlayer": "נפתח בנגן חיצוני...",
+  "orTypeCustomTag": "או הקלד תג מותאם אישית...",
+  "otherUpper": "אחר",
+  "overlayPosition": "מיקום שכבת-על",
+  "overrideSystemScreenBrightness": "לעקוף את בהירות מסך המערכת",
+  "ownerAndCreatorOfTheCommentum": "הבעלים והיוצר של פלטפורמת הקהילה Commentum.",
+  "padding": "ריפוד",
+  "pagesAheadOfTimeForFaster": "דפים מבעוד מועד לטעינה מהירה יותר",
+  "partySettings": "הגדרות מסיבה",
+  "passwordIfRequired": "סיסמא (אם נדרש)",
+  "pasteDirectGifOrImageUrl": "הדבק כתובת URL ישירה של GIF או תמונה...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • כרטיסים ויתרת PayPal",
+  "permanentlyRemoveAnymexSyncData": "הסר לצמיתות נתוני סנכרון AnymeX",
+  "pictureShaders": "תמונה והצללות",
+  "pitch": "מגרש",
+  "playbackIsLockedToTheHost": "ההשמעה נעולה למארח",
+  "playbackSpeed2": "מהירות השמעה",
+  "playerSettings2": "הגדרות הנגן",
+  "pleaseLogInFirstThenTry": "אנא היכנס תחילה, ולאחר מכן נסה שוב את הקישור.",
+  "pointsBreakdown": "פירוט נקודות",
+  "practicallyMadeForEachOther": "מעשית עשוי אחד עבור השני.",
+  "preloadPage": "טעינת עמוד מראש",
+  "preloadPages": "טעינת דפים מראש",
+  "preloadPagesAheadOfTimeFor": "טען מראש דפים מבעוד מועד לטעינה מהירה יותר (צורך יותר רשת ו-RAM)",
+  "preventScreenFromSleepingWhileReading": "מנע מהמסך לישון בזמן קריאה",
+  "previousChapter": "הפרק הקודם",
+  "previousParagraph": "פסקה קודמת",
+  "privateRoom": "חדר פרטי",
+  "profileUpdated": "הפרופיל עודכן",
+  "proportionOfTotalTimeWatched": "שיעור סך זמן הצפייה",
+  "provideAReasonForThisAction": "ספק סיבה לפעולה זו...",
+  "qualitySettings": "הגדרות איכות",
+  "quote": "ציטוט",
+  "range75DarkestTo100": "טווח: -75 (הכהה ביותר) עד 100",
+  "rateLimited": "שיעור מוגבל",
+  "reactionOverlay": "שכבת-על של תגובה",
+  "readStats": "קרא סטטיסטיקות",
+  "readTextAloud": "קרא טקסט בקול רם",
+  "red": "אדום",
+  "reduceColorBandingInGradients": "הקטנת פסי צבע בהדרגות",
+  "reduceHaloingWhileUpscaling": "הפחת הילה תוך כדי שיפור קנה המידה",
+  "refresh": "רענן",
+  "removeCurrentCloudEntriesAndReplace": "הסר את ערכי הענן הנוכחיים והחלף אותם בקובץ שהועלה.",
+  "removeWhiteBlackBordersToMaximize": "הסר גבולות לבנים/שחורים כדי למקסם את התוכן",
+  "removesFinishedMediaFromCloudGist": "מסיר מדיה מוגמרת מתמצית הענן",
+  "replaceCloudGist": "החלף את Cloud Gist",
+  "report": "דווח",
+  "resetReLogin": "איפוס והתחבר מחדש",
+  "resetTo1": "אפס ל-1×",
+  "restore": "שחזר",
+  "roomAccess": "גישה לחדר",
+  "roomCode": "קוד חדר",
+  "roomCodeCopiedToClipboard": "קוד החדר הועתק ללוח",
+  "roomDuration": "משך החדר",
+  "roomNotFoundOrExpired": "החדר לא נמצא או שפג תוקפו",
+  "roomPassword": "סיסמת חדר",
+  "roomPassword2": "סיסמת חדר",
+  "roomSettings": "הגדרות חדר",
+  "saveYourCurrentCloudProgressTo": "שמור את התקדמות הענן הנוכחית שלך בקובץ",
+  "scrollMultiplier": "מכפיל גלילה",
+  "scrollSpeed": "מהירות גלילה",
+  "searchAnimeEpisode": "חפש אנימה/פרק...",
+  "searchAnimeGifsReactions": "חפש תמונות GIF של אנימה, תגובות...",
+  "searchChapters": "חפש פרקים...",
+  "searchFiles": "חפש קבצים...",
+  "secondsPerPageScreen": "שניות לכל עמוד/מסך",
+  "seekAndControlPlaybackFreely": "חפש ושלוט בהשמעה בחופשיות",
+  "selectedFileMustContainAJson": "הקובץ שנבחר חייב להכיל אובייקט JSON.",
+  "selectedJsonHasNoValidSync": "ל-JSON שנבחר אין ערכי סנכרון חוקיים.",
+  "seriesList": "רשימת סדרות",
+  "setAPasswordForYourRoom": "הגדר סיסמה לחדר שלך",
+  "share": "שתף",
+  "showANotificationWhenSomeoneJoins": "הצג התראה כאשר מישהו מצטרף למסיבה",
+  "showANotificationWhenSomeoneLeaves": "הצג התראה כאשר מישהו עוזב את המסיבה",
+  "showAllStreams": "הצג את כל הזרמים",
+  "showChatMessagesOnThePlayer": "הצג הודעות צ'אט בנגן כשהן נכנסות",
+  "showEmojiReactionsFloatingOnThe": "הצג תגובות אמוג'י צפות על הנגן",
+  "showSyncResultWhenPlayerOr": "הצג תוצאת סנכרון כאשר נגן או קורא נסגרים",
+  "showTransitionPageEvenWhenChapters": "הצג דף מעבר גם כאשר הפרקים צמודים",
+  "shows": "מופעים",
+  "sigmoidUpscaling": "הגדלה של סיגמואיד",
+  "smootherGradientsWithSlightTemporalNoise": "שיפועים חלקים יותר עם רעש זמני קל",
+  "spacing": "מרווחים",
+  "speechSpeed": "מהירות דיבור",
+  "spoilers": "ספוילרים",
+  "stretchImagesToFitScreenWidthOn": "למתוח תמונות כך שיתאימו לרוחב המסך במסכים רחבים",
+  "subtitleSettings": "הגדרות כתוביות",
+  "superAdministratorWithSystemWideManagement": "מנהל על עם סמכות ניהול כלל מערכת.",
+  "swapUpDownActions2": "החלפת פעולות למעלה/למטה",
+  "syncMode": "מצב סנכרון",
+  "syncPreferences": "העדפות סנכרון",
+  "tapScrollAmount": "הקש על כמות הגלילה",
+  "tapToOpen": "הקש כדי לפתוח",
+  "tapToOpenInBrowser": "הקש כדי לפתוח בדפדפן",
+  "tapToOpenInSpotify": "הקש כדי לפתוח ב-Spotify",
+  "tapToViewInBrowser": "הקש כדי להציג בדפדפן",
+  "tapTopBottomToScroll": "הקש למעלה/למטה כדי לגלול",
+  "targetPeak": "שיא היעד",
+  "temporalDither": "טמפורלית",
+  "textToSpeech": "טקסט לדיבור",
+  "theCreatorOfThisCommentDiscussion": "היוצר של שרשור דיון התגובות הזה.",
+  "theresASmallSparkOfAgreement": "יש ניצוץ קטן של הסכמה.",
+  "thisPermanentlyDeletesYourAnymexCloud": "פעולה זו מוחקת לצמיתות את תמצית ההתקדמות בענן AnymeX שלך מ-GitHub ולא ניתן לבטל אותה.",
+  "toPrevNextChapter": "לפרק הקודם/הבא",
+  "topL": "Top-L",
+  "topR": "טופ-ר",
+  "totals": "סיכומים",
+  "trendingMovies": "סרטים פופולריים",
+  "trendingSeries": "סדרה טרנדית",
+  "tts": "TTS",
+  "ukMovies": "סרטי בריטניה",
+  "ukShows": "הופעות בבריטניה",
+  "unableToReadSelectedJsonFile": "לא ניתן לקרוא את קובץ JSON שנבחר.",
+  "unsupportedExtension": "הרחבה לא נתמכת",
+  "usMovies": "סרטים בארה\"ב",
+  "usShows": "הופעות בארה\"ב",
+  "useVolumeButtonsToScroll": "השתמש בלחצני עוצמת הקול כדי לגלול",
+  "userHistory": "היסטוריית משתמש",
+  "userInfo": "פרטי משתמש",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "מנחה מאומת שומר על תגובות מכבדות ובטוחות.",
+  "verticalPadding": "ריפוד אנכי",
+  "viewCloudGist": "צפה בענן Gist",
+  "viewUserHistory": "הצג היסטוריית משתמשים",
+  "viewUserInfo": "צפה בפרטי משתמש",
+  "voice": "קול",
+  "watchParty": "צפו במסיבה",
+  "watchStats": "צפו בסטטיסטיקה",
+  "watchingNow": "צופה עכשיו",
+  "webmVideo": "וידאו של WebM",
+  "whereLiveCommentsAppearOnScreen": "היכן מופיעות תגובות חיות על המסך",
+  "whileWatchingEpisodesOrReadingChapters": "בזמן צפייה בפרקים או קריאת פרקים",
+  "writeAReply": "כתוב תשובה...",
+  "youAreBasicallyTheSamePerson": "אתה בעצם אותו אדם.",
+  "youBothHaveVerySimilarTaste": "לשניכם טעם מאוד דומה.",
+  "all2": "← הכל",
+  "koFi": "קו-פי",
+  "mpvConf": "mpv.conf",
+  "styling": "סטיילינג",
+  "upscale": "יוקרתי",
+  "appearanceStyle": "מראה וסגנון",
+  "colorsLightDarkOledLogoAnimations": "צבעים, אור/כהה, OLED ואנימציות לוגו",
+  "fontsTypography": "גופנים וטיפוגרפיה",
+  "chooseTypographyCustomFontsGlobalText": "בחר טיפוגרפיה, גופנים מותאמים אישית וסולם טקסט גלובלי",
+  "globalFontScaling": "קנה מידה גלובלי של גופנים",
+  "scaling": "קנה מידה",
+  "typefaces": "אותיות דפוס",
+  "interfaceLayout": "ממשק ופריסה",
+  "navBarCardStylesDetailsBlur": "סרגל ניווט, סגנונות כרטיסים, טשטוש פרטים ופריסה",
+  "navigationHomeLayout": "ניווט ופריסה ביתית",
+  "playbackEngineSubtitlesGesturesDecoders": "מנוע השמעה, כתוביות, מחוות ומפענחים",
+  "mangaNovelReader": "קורא מנגה ורומנים",
+  "readingModesDirectionColorsTapZones": "מצבי קריאה, כיוון, צבעים ואזורי הקשה",
+  "dataNetworkSystem": "נתונים, רשת ומערכת",
+  "downloadDirectoryConcurrencyHlsSegments": "הורד מקטעי ספרייה, מקבילות ו-HLS",
+  "accountsSocial": "חשבונות וחברתיים",
+  "trackingAccounts": "מעקב אחר חשבונות",
+  "manageYourAnilistMyanimelistSimklAccounts": "נהל את חשבונות AniList, MyAnimeList ו-Simkl שלך",
+  "trackingBehavior": "מעקב אחר התנהגות",
+  "communityComments": "קהילה ותגובות",
+  "commentumProfileBadgesMarkdownPrivacy": "פרופיל הערות, תגים, סימון ופרטיות",
+  "contentPreferences": "תוכן והעדפות",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "מסנן NSFW, ספרייה מאוחדת, המלצות ורשימות",
+  "exportAndRestoreYourLibraryAnd": "ייצא ושחזר את הספרייה וההגדרות שלך",
+  "manageAnimeMangaNovelSourcesAnd": "נהל מקורות ומאגרים של אנימה, מנגה ורומן",
+  "installAndUpdateCommunityAddOns": "התקן ועדכן תוספי קהילה",
+  "storageCache": "אחסון ומטמון",
+  "manageCachedImagesThresholdsResetData": "נהל תמונות שמור, ערכי סף ואיפוס נתונים",
+  "networkProxy": "רשת ופרוקסי",
+  "logsDiagnostics": "יומנים ואבחון",
+  "inspectExportAndShareApplicationLogs": "בדוק, ייצא ושתף יומני יישומים",
+  "aboutSupport": "אודות ותמיכה",
+  "supportDevelopmentViaKoFiPaypal": "תמיכה בפיתוח באמצעות Ko-fi, PayPal ו-UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "גרסה, עדכונים, קישורים חברתיים ומדיניות משפטית",
+  "cacheAndCookiesClearedFor": "המטמון והעוגיות נוקו עבור {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "קובצי Cookie נוקו עבור {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "המטמון נוקה עבור {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "סוג {type} לא נתמך",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "הגדרות {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "קובץ מקומי לא נמצא ב: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "סנכרון נכשל: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "APK מקומי לא נמצא ב: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "שגיאה: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "התקנת הפלאגין נכשלה: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "לא נמצאו תוצאות עבור \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "עונה {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "פרק {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "חדשות {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "קהילה",
+  "logInWithAnilist": "התחבר עם AniList",
+  "episode2": "פרק {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "ההורדה הושלמה",
+  "downloadFailedHasNoUrl": "ההורדה נכשלה: ל-{chapterDisplay} אין כתובת אתר",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "ההורדה נכשלה: לא נמצאו דפים עבור {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "ההורדה נכשלה: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "פרק {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} eps",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "המקור \"{extensionName}\" לא נמצא.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "הכנת הטורנט נכשלה: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} יוסר לצמיתות מההורדות שלך.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "החיפוש נכשל: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "חפש ב-{label} את \"{title}\"...",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "פריטי ההיסטוריה של {deletedCount} נמחקו",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "להסיר את \"{itemName}\" מה-{_historyLabel} שלך?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "הוסר \"{itemName}\"",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "עולה",
+  "descending": "יורד",
+  "defaultTabOrder": "סדר הכרטיסיות המוגדר כברירת מחדל",
+  "reverseTabs": "הפוך לשוניות",
+  "id": "מזהה: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "סוג: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "פריטים: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "התקן את {sourceName} תחילה ולאחר מכן לחץ",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "עמוד {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "חפש {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "בוצע (נבחר {length})",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "ניתן לקריאה ב-",
+  "streamingOn": "סטרימינג הלאה",
+  "freedom": "חופש",
+  "shaderAdded": "Shader הוסיף: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "שגיאה בייבוא הצללה: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "סורקים",
+  "chapterRange": "טווח פרקים",
+  "downloadFailed2": "ההורדה נכשלה: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "פרק {formattedNumber} הורד",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "מוריד ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "פרקי {length}",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "טוען עמוד {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "העמוד נשמר בתמונות/AnymeX",
+  "pageSavedToAnymex": "העמוד נשמר ב-{path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "שמירת הדף נכשלה: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "שיתוף הדף נכשל: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "כתובת האתר של הדף הועתקה ללוח",
+  "failedToCopy": "ההעתקה נכשלה: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "טוען דפים...",
+  "goBack": "חזור אחורה",
+  "loadingPage2": "טוען עמוד {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "צבע הבזק",
+  "black": "שחור",
+  "white": "לבן",
+  "readerBackground": "רקע הקורא",
+  "gray": "אפור",
+  "automatic": "אוטומטי",
+  "noneNearestNeighbor": "אין (השכן הקרוב)",
+  "lowBilinear": "נמוך (ביליניארי)",
+  "mediumDefault": "בינוני (ברירת מחדל)",
+  "highBicubic": "גבוה (ביקובי)",
+  "lanczosPreScaleBestQualitySlower": "קנה מידה מראש של Lanczos (האיכות הטובה ביותר, איטי יותר)",
+  "fullscreenPreview": "תצוגה מקדימה במסך מלא",
+  "enhancementPreset": "שיפור מוגדר מראש",
+  "fineTuning": "כוונון עדין",
+  "enhancementStrength": "חוזק שיפור",
+  "strength": "חוזק {value}%.",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "דיכוי חפץ",
+  "cleanJpegCompressionRingingAroundLinework": "דחיסת JPEG נקייה מצלצלים סביב קווים",
+  "cache": "מטמון",
+  "cacheSize": "גודל מטמון",
+  "mbStoredOnDisk": "{mb} MB מאוחסן בדיסק",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "סופר רזולוציה",
+  "loadingChapter": "טוען פרק...",
+  "noContentAvailable": "אין תוכן זמין",
+  "recommendations": "המלצות {reasonCount}",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "של recs",
+  "all3": "הכל ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "פרסום ההודעה נכשל: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "סה\"כ כניסות: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "הצטרף לחדר {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "חדרים פעילים",
+  "joinWithCode": "הצטרף עם קוד",
+  "leftRoom": "עזב חדר",
+  "leaveReset": "עזוב / אפס",
+  "inRoom": "בחדר: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - פרק {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "בעט {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "חברי {length}/{maxMembers}",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "יצא מהחדר",
+  "leave": "עזוב",
+  "noActiveRooms": "אין חדרים פעילים",
+  "roomsWillAppearHereWhenSomeone": "חדרים יופיעו כאן כאשר מישהו יוצר אחד",
+  "created2": "נוצר · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "הצטרף →",
+  "full": "מלא",
+  "savedToPicturesAnymex": "נשמר בתמונות/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "נשמר להורדות/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "נשמר ב-{path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (הקש כדי לפתוח פרופיל)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "פרק",
+  "episode5": "פרק",
+  "noData": "{title} (ללא נתונים)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "חפש תוספי {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "עיין בהרחבות",
+  "goToHome": "עבור אל הבית",
+  "fetching": "מביא את {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "שגיאה באחזור מדיניות: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" נוסף בהצלחה!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "עודכן את \"{name}\" בהצלחה!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "האם אתה בטוח שברצונך למחוק את \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" נמחק",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "ההיסטוריה שלך ריקה",
+  "episode6": "פרק {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "הצג פחות",
+  "readMore": "קרא עוד",
+  "unpin": "בטל את ההצמדה",
+  "pinActivity": "פעילות סיכה",
+  "n1Recommendation": "1 המלצה",
+  "recommendations2": "המלצות {count}",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "שולח...",
+  "addRecommendation": "הוסף המלצה",
+  "submitRecommendation": "שלח המלצה",
+  "currentProvider": "ספק נוכחי",
+  "profileStatsUserActivities": "סטטיסטיקות פרופיל ופעילויות משתמשים",
+  "manageSourcesPlugins": "נהל מקורות ותוספים",
+  "savedOfflineEpisodesChapters": "נשמרו פרקים ופרקים במצב לא מקוון",
+  "watchVideoFilesFromDeviceStorage": "צפה בקבצי וידאו מאחסון המכשיר",
+  "syncWatchPartyWithFriends": "סנכרון מסיבת צפייה עם חברים",
+  "pauseWatchHistoryAndSync": "השהה את היסטוריית הצפייה וסנכרון",
+  "appearancePlayerNetwork": "מראה, נגן ורשת",
+  "joining": "מצטרף...",
+  "joinRoom": "הצטרף לחדר",
+  "shareTheCodeOrInviteLink": "שתף את הקוד או קישור ההזמנה עם חברים.",
+  "roomCreated": "חדר נוצר!",
+  "shareThisCodeWithFriends": "שתף את הקוד הזה עם חברים:",
+  "copyCode": "העתק קוד",
+  "copyLink": "העתק קישור",
+  "leaveWatchTogether": "לעזוב את השעון ביחד?",
+  "removeMember": "הסר חבר",
+  "transferHost": "העבר מארח",
+  "transferHost2": "העבר מארח",
+  "transfer": "העברה",
+  "removeMember2": "הסר חבר",
+  "removeFromThisWatchParty": "להסיר את {username} ממסיבת השעון הזו?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "חברי {onlineCount} / {maxMembers}",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} הועתק",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "אין שרתים זמינים לחדר הזה",
+  "selectStreamingServerQualityToWatch": "בחר איכות שרת סטרימינג לצפייה",
+  "thisServerHasNoPlayableUrl": "לשרת זה אין כתובת אתר ניתנת להפעלה",
+  "episode7": "פרק {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "מותאם מפרק {start} ל-{end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} חזה ב-{releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "פרק {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "רשימת MAL מיוצאת אל:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML מיוצא אל:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "הייצוא נכשל: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "מייצא את רשימת ה-{value} שלך...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "ייצוא {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "אין מדיה ניתנת להפעלה",
+  "noThemesFound": "לא נמצאו ערכות נושא",
+  "playAll": "שחק הכל",
+  "theDawnOfHumanity": "שחר האנושות",
+  "orientationUnlocked": "אוריינטציה לא נעולה",
+  "orientationLocked": "כיוון נעול",
+  "skippedOpening": "דילג על פתיחה",
+  "skippedEnding": "דילג על סיום",
+  "skippedRecap": "דילג על סיכום",
+  "ifYouSeeBlackScreenUse": "אם אתה רואה מסך שחור, השתמש בנגן חיצוני לצפייה",
+  "failedToStartTorrentStream": "הפעלת זרם הטורנט נכשלה: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "פתיחת הזרם נכשלה. אנא נסה שרת אחר",
+  "noServersFoundForThisEpisode": "לא נמצאו שרתים לפרק זה.",
+  "failedToLoadEpisodeCheckYour": "טעינת הפרק נכשלה. בדוק את החיבור שלך.",
+  "playing": "משחק {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "החלפת קובץ הטורנט נכשלה: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "כתוביות נטען: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "שגיאה בטעינת כתוביות: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "כתובית פגומה!",
+  "preTranslatingSubtitles": "תרגום מראש של כתוביות...",
+  "preTranslationFailedUsingRealTime": "התרגום המקדים נכשל, תוך שימוש בהחזר בזמן אמת",
+  "preTranslationErrorUsingRealTime": "שגיאת תרגום מראש, תוך שימוש בהחזר בזמן אמת",
+  "corruptedQuality": "איכות פגומה!",
+  "colorProfilesOnlyAvailableWithMediakit": "פרופילי צבע זמינים רק עם נגן MediaKit",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "פתח זרמי וידאו בנגן חיצוני כברירת מחדל",
+  "quickDefaults": "ברירות מחדל מהירות",
+  "orientationSpeedResizeModeExternalPlayer": "כיוון, מהירות, מצב שינוי גודל ונגן חיצוני",
+  "controlsGestures": "בקרות ומחוות",
+  "subtitlesTranslation": "כתוביות ותרגום",
+  "languagesFontsStylingLibassTranslation": "שפות, גופנים, סטיילינג, ליבאס ותרגום",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "שיפור קנה המידה של הצללות, הגדרות מוגדרות מראש ופרופילים",
+  "engineAdvanced": "מנוע ומתקדם",
+  "addSpeed": "הוסף מהירות",
+  "speedPresets": "קביעות מהירות מראש",
+  "rememberAsDefaultSpeed": "זכור כמהירות ברירת המחדל",
+  "loadedSubtitle": "כתובית נטענה: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "הורדת הכתובית נכשלה: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "קוד חדר",
+  "episodeReleasesIn": "פרק {value} משוחרר ב",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "אתה צריך להיות מחובר כדי להגיב",
+  "readFullRules": "קרא את הכללים המלאים",
+  "acceptPost": "קבל ופרסם",
+  "youNeedToBeLoggedIn2": "אתה צריך להיות מחובר כדי להשיב",
+  "commentCopiedToClipboard": "התגובה הועתקה ללוח",
+  "spam": "ספאם",
+  "offensive": "פוגעני",
+  "harassment": "הטרדה",
+  "offTopic": "מחוץ לנושא",
+  "failedToLoadUserInfo": "טעינת פרטי המשתמש נכשלה.",
+  "noUserDataFound": "לא נמצאו נתוני משתמש.",
+  "viewHistory": "הצג היסטוריה",
+  "failedToLoadComments": "טעינת התגובות נכשלה.",
+  "noCommentsFound": "לא נמצאו הערות.",
+  "deleted2": "נמחק",
+  "comment": "הערה",
+  "failedToLoadUserHistory": "טעינת היסטוריית המשתמש נכשלה.",
+  "noHistoryFound": "לא נמצאה היסטוריה.",
+  "youNeedToBeLoggedIn3": "אתה צריך להיות מחובר כדי לערוך תגובות",
+  "commentCannotBeEmpty": "התגובה לא יכולה להיות ריקה",
+  "failedToLoadCommentsPleaseTry": "טעינת התגובות נכשלה. אנא נסה שוב.",
+  "commentsLoaded": "הערות {value} נטענו",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "רענון התגובות נכשל. אנא נסה שוב.",
+  "invalidParentCommentId": "מזהה הערת הורה לא חוקי",
+  "replyPostedSuccessfully": "התגובה פורסמה בהצלחה",
+  "failedToPostReply": "פרסום תשובה נכשל",
+  "failedToPostReplyPleaseTry": "פרסום תשובה נכשל. אנא נסה שוב.",
+  "commentPostedSuccessfully": "התגובה פורסמה בהצלחה",
+  "failedToAddCommentPleaseTry": "הוספת תגובה נכשלה. אנא נסה שוב.",
+  "failedToUpdateVotePleaseTry": "עדכון ההצבעה נכשל. אנא נסה שוב.",
+  "invalidCommentId": "מזהה תגובה לא חוקי",
+  "commentEditedSuccessfully": "התגובה נערך בהצלחה",
+  "failedToEditComment": "עריכת התגובה נכשלה",
+  "commentDeletedSuccessfully": "התגובה נמחקה בהצלחה",
+  "failedToDeleteComment": "מחיקת התגובה נכשלה",
+  "failedToReportComment": "נכשל דיווח על תגובה",
+  "failedToModerateComment": "ניהול התגובה נכשל",
+  "failedToManageUser": "ניהול המשתמש נכשל",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ נקודות). הדירוג מבוסס על פעילות אמיתית ({realPoints} pts).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} הרוויח נקודות + בונוס לתפקידים {text} ({label}). הדירוג מבוסס על פעילות אמיתית.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "טווח פרקים",
+  "episodeIsDownloaded": "פרק {number} הורד",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "פרקים של {length}",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling עונה 2 - Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "פרין: מעבר לסוף המסע",
+  "bleachThousandYearBloodWar": "אקונומיקה: מלחמת אלף השנים",
+  "cardCustomizer": "התאמה אישית של כרטיסים",
+  "presetStyle": "סגנון מוגדר מראש",
+  "chooseFrom5AuthenticBuiltIn": "בחר מתוך 5 עיצובים מובנים אותנטיים",
+  "sizingGeometry": "גודל וגיאומטריה",
+  "cardSize": "גודל כרטיס",
+  "scaleCardsProportionallyWithoutDistortion": "קנה מידה של כרטיסים באופן פרופורציונלי ללא עיוות",
+  "landscapeCards": "כרטיסי נוף",
+  "formatCardsIn169Widescreen": "פרמט כרטיסים בכיוון מסך רחב של 16:9",
+  "selectPosterImageAspectRatio": "בחר יחס רוחב-גובה של תמונת פוסטר",
+  "titleLines": "שורות כותרת",
+  "maximumNumberOfTitleLinesDisplayed": "המספר המרבי של שורות כותרת המוצגות",
+  "gestureAreas": "אזורי מחוות",
+  "resetDefault": "אפס את ברירת המחדל",
+  "overlay": "שכבת-על",
+  "volume": "נפח",
+  "brightnessArea": "אזור בהירות",
+  "overlayAreaTap": "אזור שכבת-על (הקש)",
+  "volumeArea": "שטח נפח",
+  "resetToDefaultLayout": "אפס לפריסת ברירת המחדל",
+  "moveToSlot": "העבר למשבצת",
+  "topBar": "בר עליון",
+  "bottomLeft": "שמאל למטה",
+  "bottomRight": "ימין למטה",
+  "themesOverlay": "ערכות נושא ושכבת-על",
+  "gesturesSeeking": "מחוות וחיפוש",
+  "horizontalSwipeAcrossTheScreenTo": "החלק אופקי על פני המסך כדי לחפש",
+  "autoSkipCompletion": "דילוג אוטומטי והשלמה",
+  "percentageWatchedBeforeMarkingCompleted": "אחוז הצפייה לפני סימון הושלם",
+  "playerControls": "בקרות נגן",
+  "mpvConfSavedSuccessfully": "mpv.conf נשמר בהצלחה",
+  "hardwareDrivers": "חומרה ומנהלי התקנים",
+  "systemIntegrations": "מערכת ואינטגרציות",
+  "experimentalMpvTuning": "כוונון MPV ניסיוני",
+  "editMpvConf": "ערוך mpv.conf",
+  "modeA": "מצב א'",
+  "modeB": "מצב ב'",
+  "modeC": "מצב ג'",
+  "modeAA": "מצב A+A",
+  "modeBB": "מצב B+B",
+  "modeCA": "מצב C+A",
+  "natural": "טבעי",
+  "vivid": "חי",
+  "cinema": "קולנוע",
+  "soft": "רך",
+  "warm": "חם",
+  "cool": "מגניב",
+  "anime4k": "אנימה 4K",
+  "cinemaHdr": "קולנוע HDR",
+  "vividPop": "פופ חי",
+  "dark": "כהה",
+  "anime4kEngine": "מנוע Anime4K",
+  "anime4kShaders2": "Shaders של Anime4K",
+  "devicePerformanceTier": "דרגת ביצועי מכשיר",
+  "midRange": "טווח בינוני",
+  "highEnd": "ברמה גבוהה",
+  "shaderMode": "מצב הצללה",
+  "colorPreset": "צבע קבוע מראש",
+  "desktopPlaybackKeybindings": "חיבורי מפתחות לנגן שולחני",
+  "customSubtitleFonts": "גופני כתוביות מותאמים אישית",
+  "importedFont": "גופן מיובא \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "האם אתה בטוח שברצונך למחוק את \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "שפה ותרגום",
+  "renderingBehavior": "עיבוד והתנהגות",
+  "disableToAvoidFadeTransitionsBetween": "השבת כדי למנוע מעברי דהייה בין כתוביות",
+  "typographyOutline": "טיפוגרפיה ומתאר",
+  "adjustSubtitleFontSize": "התאם את גודל גופן הכתוביות",
+  "adjustSubtitleOutlineThickness": "התאם את עובי מתאר הכתוביות",
+  "colorsPosition": "צבעים ומיקום",
+  "changeSubtitleTextColor": "שנה את צבע טקסט הכתוביות",
+  "mangaReader": "קורא מנגה",
+  "layoutDirection": "פריסה וכיוון",
+  "autoSwitchToVerticalModeFor": "מעבר אוטומטי למצב אנכי עבור סרטוני אינטרנט",
+  "imageDisplay": "תמונה ותצוגה",
+  "interfaceSession": "ממשק והפעלה",
+  "mangaControlsGestures": "בקרות ומחוות מנגה",
+  "overscrollToPreviousNextChapter": "גלילה יתרה לפרק הקודם/הבא",
+  "automaticallyScrollMangaPages": "גלול אוטומטית בדפי מנגה",
+  "swapVolumeUpDownActions": "החלף פעולות הגברת/הורדת עוצמת הקול",
+  "novelReader": "קורא רומן",
+  "themeDisplay": "ערכת נושא ותצוגה",
+  "displayChapterPercentageWhileReading": "הצגת אחוז הפרקים בזמן הקריאה",
+  "displayStatusInfoInTheNovel": "הצג מידע סטטוס בקורא הרומן",
+  "typographySpacing": "טיפוגרפיה ומרווחים",
+  "novelControlsGestures": "בקרה ומחוות חדשות",
+  "tapScreenEdgesToScrollNovel": "הקש על קצוות המסך כדי לגלול עמודים חדשים",
+  "swipeGestures": "תנועות החלקה",
+  "volumeKeyScrolling": "מקש עוצמת הקול גלילה",
+  "useHardwareVolumeButtonsToScroll": "השתמש בלחצני עוצמת הקול של החומרה כדי לגלול ברומנים",
+  "automaticallyScrollNovelContent": "גלול אוטומטית של תוכן חדש",
+  "textToSpeechTts": "טקסט לדיבור (TTS)",
+  "readNovelChaptersAloud": "קרא בקול את פרקי הרומן",
+  "speechRate": "קצב דיבור",
+  "voicePitch": "גובה קול",
+  "areYouSureYouWantTo4": "האם אתה בטוח שברצונך להתנתק מ-{title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "נכשל בדיקת עדכונים: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} הותקן בהצלחה",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "התקנת {name}: {e} נכשלה",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} עודכן בהצלחה",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "נכשל עדכון {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "הסר את ההתקנה של {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} הוסר",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "הסרת ההתקנה של {name}: {e} נכשלה",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "צו מדור {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "התראות וסנכרון",
+  "enableNotifications": "הפעל התראות",
+  "syncAnilistNotificationsWithDeviceNotifications": "סנכרן הודעות AniList עם הודעות מכשיר",
+  "airingAlerts": "שידור התראות",
+  "socialAlerts": "התראות חברתיות",
+  "notifyOnNewFollowers": "הודע על עוקבים חדשים",
+  "activityAlerts": "התראות פעילות",
+  "syncInterval": "מרווח סנכרון",
+  "regionTimezone": "אזור ואזור זמן",
+  "profileBio": "פרופיל ביו",
+  "backupFailed": "הגיבוי נכשל: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "שגיאה בבחירת הקובץ: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "טעינת הגיבוי נכשלה: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "השחזור נכשל: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} כותרים והיסטוריה",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} כותרות ופרקים",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} כותרות ומצב קריאה",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} רשימות מותאמות אישית בכל מדיה",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "ערכי הרחבה רשומים ב-{extDataCount}",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "חבילות רוכסן להארכת {extFilesCount}",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "עזרה ומידע",
+  "libraryContentSafety": "בטיחות ספרייה ותוכן",
+  "homePageLists": "רשימות דפי הבית",
+  "chooseWhichListsToShowOn": "בחר אילו רשימות להציג בדף הבית",
+  "homePageCards": "כרטיסי דף הבית ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "צופה ב-$anime",
+  "viewingAnime": "צופה ב-$anime",
+  "readingManga2": "קריאת $manga",
+  "viewingManga": "צופה ב-$manga",
+  "readingNovel2": "קריאת $novel",
+  "viewingNovel": "צופה ב-$novel",
+  "browsingStatus": "גלישה ב-$status",
+  "upiIdCopied": "מזהה UPI הועתק: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "העתק מזהה UPI ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • הקש כדי להפעיל את GPay, PhonePe, Paytm וכו'.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "הורד התראות",
+  "reDownloadFailed": "ההורדה מחדש נכשלה: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "החזרה לאחור נכשלה: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "הוספת ריפו נכשלה: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "הגופן הוחל \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "הורדת \"{fontName}\" נכשלה",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" יובא והוחל",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "ייבוא קובץ הגופן נכשל",
+  "deleted3": "\"{fontName}\" נמחק",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "ספריית גופנים",
+  "linotte": "לינוטה",
+  "defaultGeometricRoundedFontDesignedFor": "גופן מעוגל גיאומטרי ברירת מחדל מיועד ל-AnymeX",
+  "systemFont": "גופן מערכת",
+  "useYourDeviceOsDefaultSystem": "השתמש בגופן מערכת ברירת המחדל של מערכת ההפעלה של המכשיר שלך",
+  "loadYourOwnTtfOrOtf": "טען קבצי טיפוגרפיה .ttf או .otf משלך",
+  "pendingReports": "{length} ממתינים לדיווחים",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "עוגיות ואחסון",
+  "monitoring": "ניטור",
+  "fpsMeter": "מד FPS",
+  "showDraggableRealTimeFpsOverlay": "הצג שכבת-על FPS ניתנת לגרירה בזמן אמת",
+  "detectedModesDisplay": "מצבים ותצוגה שזוהו",
+  "currentDisplayMode": "מצב תצוגה נוכחי",
+  "modes": "מצבי {length}",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "התאמה אישית",
+  "stylingLibass": "{subLang} • {subFont} • סטיילינג & ליבאס",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "הוריז",
+  "vert": "ורט",
+  "controlsTapZones": "פקדים ואזורי הקשה",
+  "customizeTapZones": "התאם אישית את אזורי ההקשה",
+  "configurePagedAndWebtoonTapRegions": "קבע את התצורה של אזורי הקשה של דפים ו-webtoon",
+  "fitBordersSpacing": "{value} • התאמה, גבולות ומרווחים",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "סגנון פרק, מחוון עמוד ונעילת מסך",
+  "overscrollActionsAutoScrollVolume": "גלילה יתרה, פעולות, גלילה אוטומטית ועוצמת קול",
+  "themeTypography": "נושא וטיפוגרפיה",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "מצב קריאה ותצוגה",
+  "pageModeProgressBatteryIndicator": "מצב עמוד, התקדמות ומחוון סוללה",
+  "readPageByPageInsteadOf": "קרא עמוד אחר עמוד במקום לגלול",
+  "displayPercentageInReadingBar": "הצגת אחוז בסרגל הקריאה",
+  "displayBatteryAndTimeInReader": "הצג את הסוללה והזמן בסרגל הקורא",
+  "gesturesNavigation": "מחוות וניווט",
+  "tapToScrollSwipeAutoScroll": "הקש כדי לגלול, להחליק, לגלילה אוטומטית ולנפח",
+  "tapEdgesOfScreenToScroll": "הקש על קצוות המסך כדי לגלול למעלה/למטה",
+  "swipeHorizontallyToChangeChapters": "החלק אופקית כדי לשנות פרקים",
+  "useVolumeKeysToScroll": "השתמש במקשי עוצמת הקול כדי לגלול",
+  "textToSpeechTts2": "טקסט לדיבור (TTS)",
+  "textToSpeechReadingSupport": "תמיכה בקריאת טקסט לדיבור",
+  "speechRate2": "קצב דיבור",
+  "voicePitch2": "גובה קול",
+  "appPostersIconsAvatarsSize": "פוסטרים של אפליקציה, אייקונים, אווטרים. גודל: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "נתחי וידאו זמניים. גודל: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "הורדת דפי רומן אינטרנט. גודל: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "יומנים, הורדות זמניות. גודל: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "נכשל ניקוי המטמון: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "איפוס היצרן נכשל: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 או 3F51B5",
+  "motionDisplay": "תנועה ותצוגה",
+  "visualEffectsTuning": "אפקטים חזותיים וכוונון",
+  "historyCard": "כרטיס היסטוריה",
+  "carousel": "קרוסלה",
+  "navBar": "סרגל ניווט",
+  "themeDarkModeLayoutStyling": "ערכת נושא, מצב כהה ועיצוב פריסה",
+  "gesturesSubtitlesVideoSettings": "הגדרות מחוות, כתוביות וסרטונים",
+  "settingsTiles": "אריחי הגדרות",
+  "oledMode2": "מצב OLED",
+  "primaryAccount": "חשבון ראשי ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "מחובר ל-{title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "התחבר ל-{title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "כותרות {value}",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "להסיר את \"{id}\"? לא ניתן לבטל זאת.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "מייבא...",
+  "addJsonFiles": "הוסף קבצי JSON",
+  "previousStyle": "סגנון קודם",
+  "nextStyle": "הסגנון הבא",
+  "currentStyle": "סגנון נוכחי",
+  "useThisStyle": "השתמש בסגנון זה",
+  "pleaseLogInToGetRecommendations": "נא להיכנס כדי לקבל המלצות",
+  "chapter1": "פרק 1",
+  "deletedSuccessfully": "{value} נמחק בהצלחה",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl התחבר בהצלחה!",
+  "yepFailed": "כן, נכשל",
+  "userInfoFetchingFailed": "אחזור פרטי המשתמש נכשל!",
+  "githubLoginFailed": "הכניסה ל-GitHub נכשלה: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "הסנכרון כבר מתבצע.",
+  "anotherSyncActionIsAlreadyIn": "פעולת סנכרון נוספת כבר מתבצעת.",
+  "noAnymexSyncGistFoundTo": "לא נמצאה תמצית סינכרון של AnymeX למחיקה.",
+  "noAnymexSyncGistFoundInitialize": "לא נמצאה תמצית סנכרון AnymeX. אתחול תחילה.",
+  "githubGistSync": "GitHub Gist סינכרון",
+  "manage": "נהל",
+  "manageGithubGistSync": "נהל את GitHub Gist Sync",
+  "joinedTheParty": "{username} הצטרף למסיבה",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} עזב את המפלגה",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "המארח עבר לפרק {episodeNumber} של {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "שגיאה באחזור הערות",
+  "errorAddingComment": "שגיאה בהוספת הערה",
+  "errorUpdatingVote": "שגיאה בעדכון ההצבעה",
+  "errorEditingComment": "שגיאה בעריכת התגובה",
+  "errorDeletingComment": "שגיאה במחיקת התגובה",
+  "commentReportedSuccessfully": "התגובה דווחה בהצלחה",
+  "errorReportingComment": "שגיאה בדיווח על תגובה",
+  "errorFetchingReportsQueue": "שגיאה באחזור תור הדוחות",
+  "reportResolvedSuccessfully": "הדוח נפתר בהצלחה",
+  "failedToResolveReport": "פתרון הדוח נכשל",
+  "errorResolvingReport": "שגיאה בפתרון הדוח",
+  "errorFetchingUserInfo": "שגיאה באחזור פרטי משתמש",
+  "errorFetchingUserHistory": "שגיאה באחזור היסטוריית המשתמש",
+  "errorFetchingUserStats": "שגיאה באחזור נתונים סטטיסטיים של משתמשים",
+  "errorListingUsers": "שגיאה ברישום משתמשים",
+  "errorSearchingUsers": "שגיאה בחיפוש משתמשים",
+  "errorFetchingModerationQueue": "שגיאה באחזור תור הניהול",
+  "commentModeratedSuccessfully": "התגובה טופלה בהצלחה",
+  "errorModeratingComment": "שגיאה בניהול תגובה",
+  "userManagedSuccessfully": "המשתמש נוהל בהצלחה",
+  "errorManagingUser": "שגיאה בניהול המשתמש",
+  "errorGettingInitialDeepLink": "שגיאה בהשגת קישור עמוק ראשוני: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "שגיאה בפתיחת קישור: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "העתק את פרטי השגיאה",
+  "whatSNew": "מה חדש",
+  "updatedToV": "עודכן ל-v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "לא ניתן היה לפתוח את הקישור למודעה",
+  "newAnilistUpdates": "{length} עדכוני AniList חדשים",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} עוד",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "רענן מכשירים",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "מוסיף ריפו... אנא המתן.",
+  "unsupportedThemeTypeSupportedPlayer": "סוג ערכת נושא לא נתמך \"{type}\". נתמך: שחקן.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "מייבא את עיצוב הנגן מהקישור...",
+  "themeIsInvalid": "ערכת הנושא לא חוקית: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "ערכת הנושא JSON תקפה. מיובא {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "מצטרף לחדר {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "ההצטרפות לחדר נכשלה: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "חישוב תאימות AniMatch עבור {user1} ו-{user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "שתף עם שירות המעקב שבחרת",
+  "shareAnymexLink": "שתף קישור AnymeX",
+  "opensDirectlyInAnymex": "נפתח ישירות ב-AnymeX",
+  "newCommentsRepliesAndEdits": "הערות, תשובות ועריכות חדשות",
+  "upvotesAndDownvotesOnYourComments": "הצבעות כלפי מעלה והצבעות כלפי מטה על ההערות שלך",
+  "warningsMutesBansAndModerationActions": "אזהרות, השתקות, איסורים ופעולות ניהול",
+  "reportFiledResolvedDismissed": "דוח הוגש, נפתר, נדחה",
+  "officialAnnouncements": "הודעות רשמיות",
+  "whenSomeoneMentionsYouInA": "כשמישהו @ מזכיר אותך בתגובה",
+  "notificationsForNewAnimeEpisodeReleases": "התראות על מהדורות חדשות של פרקי אנימה",
+  "notificationsForFollowsMentionsAndLikes": "התראות על מעקבים, אזכורים ולייקים",
+  "notificationsForCompletedEpisodeAndChapter": "הודעות על הורדות פרקים ופרק שהושלמו",
+  "signIn": "היכנס",
+  "failedToCheckForUpdates3": "נכשל בדיקת העדכונים",
+  "noUpdatesAvailable": "אין עדכונים זמינים",
+  "errorCheckingForUpdates": "שגיאה בבדיקת עדכונים",
+  "installPermissionRequired": "נדרשת הרשאת התקנה",
+  "downloadFailed3": "ההורדה נכשלה",
+  "newVersionAvailable": "גרסה חדשה זמינה"
 }

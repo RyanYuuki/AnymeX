@@ -176,5 +176,3834 @@
   "incognitoDisabled": "Naka-disable ang incognito mode",
   "episodeCount": "{count} Episode",
   "chapterCount": "{count} Kabanata",
-  "itemCount": "{count} Item"
+  "itemCount": "{count} Item",
+  "whatAreWeDoingToday": ", anong ginagawa natin ngayon?",
+  "aLogoWithThisNameAlready": "Mayroon nang logo na may ganitong pangalan.",
+  "about": "Tungkol sa",
+  "aboutCommentumV2": "Tungkol sa Commentum v2",
+  "aboutTheApp": "Tungkol sa App",
+  "accessModerationToolsAndReports": "I-access ang mga tool at ulat sa pag-moderate",
+  "accountTokensAnilistMalSimkl": "Mga token ng account (AniList, MAL, Simkl)",
+  "accounts": "Mga account",
+  "accountsSync": "Mga Account at Pag-sync",
+  "actionAppliedSuccessfully": "Matagumpay na nailapat ang pagkilos",
+  "activeDownloads": "Mga Aktibong Pag-download",
+  "activity": "Aktibidad",
+  "activityDeleted": "Na-delete ang aktibidad",
+  "activityHeatmap": "Heatmap ng Aktibidad",
+  "activityMergeTime": "Oras ng Pagsasama ng Aktibidad",
+  "activityPhrasing": "Activity Phrasing",
+  "activityRefreshed": "Na-refresh ang aktibidad",
+  "adFreeApp": "Ad-Free App",
+  "addCustomLogo": "Magdagdag ng Custom na Logo",
+  "addCustomLogoGifWebp": "Magdagdag ng Custom na Logo (.gif, .webp)",
+  "addRepo": "Magdagdag ng Repo",
+  "addRepository": "Magdagdag ng Repository",
+  "addYourRecommendation": "Idagdag ang Iyong Rekomendasyon",
+  "addOnExtensions": "Mga Add-on na Extension",
+  "addOns": "Mga add-on",
+  "addOnsPowerBackgroundServicesSuch": "Mga add-on na serbisyo sa background ng power gaya ng TorrServer torrent streaming engine para sa direktang pag-playback ng magnet link.",
+  "addedToDownloads": "Idinagdag sa mga pag-download",
+  "addingKotatsuRepositoryThisWillTake": "Pagdaragdag ng imbakan ng Kotatsu. Tatagal ito ng hindi bababa sa 1-2 minuto, mangyaring maghintay...",
+  "addingRepositoryFetchingExtensions": "Pagdaragdag ng repositoryo at pagkuha ng mga extension...",
+  "adjustBottomBarMarginMediaDetails": "Ayusin ang margin sa ibabang bar (pahina ng mga detalye ng media lamang)",
+  "adjustCardAnimationSpeed": "Ayusin ang bilis ng animation ng card",
+  "adjustCornerRadiusOfElements": "Ayusin ang radius ng sulok ng mga elemento",
+  "adjustDoubleTapToSeekDuration": "Isaayos ang I-double tap Para Maghanap ng Tagal",
+  "adjustElementGlowIntensity": "Ayusin ang intensity ng glow ng elemento",
+  "adjustFrostedBlurIntensity": "Ayusin ang frosted blur intensity",
+  "adjustGlowBlurIntensity": "Isaayos ang intensity ng glow blur",
+  "adjustHorizontalMarginOfBottomNavigation": "Ayusin ang pahalang na margin ng ibabang navigation bar",
+  "adjustItemsPerRow": "Ayusin ang Mga Item bawat hilera",
+  "adjustMediaBackdropExposure": "Ayusin ang pagkakalantad sa backdrop ng media",
+  "adjustMegaskipDuration": "Ayusin ang Tagal ng MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "Ayusin ang roundness ng lahat ng media card",
+  "adjustSubSize": "Ayusin ang Sub Size",
+  "adjustSubtitleOutlineWidth": "Ayusin ang Lapad ng Balangkas ng Subtitle",
+  "adjustTextVisibility": "Ayusin ang visibility ng text",
+  "admin": "Admin",
+  "adult": "Matanda",
+  "aiPicks": "Mga Pinili ng AI",
+  "airingAnimeNotifications": "Pagpapalabas ng Mga Notification sa Anime",
+  "all": "Lahat",
+  "allClearNoReportsToReview": "Malinaw ang lahat! Walang mga ulat na susuriin.",
+  "allSources": "Lahat ng Pinagmumulan",
+  "allowAnymexToAutomaticallyOpenAnime": "Payagan ang AnymeX na awtomatikong magbukas ng mga link sa web ng anime at manga",
+  "allowInstallingUpdatesForExtensionsAnd": "Payagan ang pag-install ng mga update para sa mga extension at app",
+  "allowOnlyUsersIFollowTo": "Pahintulutan lamang ang mga user na sinusundan ko na mag-message sa akin.",
+  "allowStorageAccessAndSelectDownload": "Payagan ang pag-access sa storage at piliin ang folder ng pag-download",
+  "allowStorageAccessToDownloadApp": "Payagan ang access sa storage upang mag-download ng mga update sa app at extension",
+  "alreadyRecommended": "Inirerekomenda na",
+  "alternativeTitles": "Mga Alternatibong Pamagat",
+  "alwaysShowChapterTransition": "Palaging Ipakita ang Transition ng Kabanata",
+  "alwaysShowPageIndicator": "Palaging ipakita ang indicator ng page",
+  "amountOfFilmGrainApplied": "Dami ng film grain na inilapat",
+  "anifyKitsuArtwork": "Anify / Kitsu Artwork",
+  "anilistSettings": "Mga Setting ng AniList",
+  "anilistSettings2": "Mga Setting ng Anilist",
+  "animatchCompatibility": "AniMatch Compatibility",
+  "animatchLinkCopiedToClipboard": "Nakopya ang link ng AniMatch sa clipboard!",
+  "animateControlOverlay": "Pagalawin ang Control Overlay",
+  "anime": "Anime",
+  "animeUpper": "ANIME",
+  "animeManga": "Anime at Manga",
+  "anime4kEnhancement": "Anime 4K Enhancement",
+  "animeAdaptation": "Anime Adaptation",
+  "animeCustomLists": "Mga Pasadyang Listahan ng Anime",
+  "animeDetailsPhrasing": "Mga Detalye ng Anime Phrasing",
+  "animeLibrary": "Anime Library",
+  "animeList": "LISTAHAN NG ANIME",
+  "animeScore": "Iskor ng Anime",
+  "animeSectionOrder": "Order ng Seksyon ng Anime",
+  "announcement": "Anunsyo",
+  "announcementUnavailable": "Hindi available ang anunsyo",
+  "announcements": "Mga anunsyo",
+  "anymexForkOptimisedForTv": "AnymeX fork na na-optimize para sa TV",
+  "anymexIs100FreeOpenSource": "Ang AnymeX ay 100% libre, open-source, at walang ad. Direktang nakakatulong ang iyong suporta sa mga gastos sa server at aktibong pagbuo ng feature!",
+  "anymexIs100FreeOpenSourceAnd": "Ang AnymeX ay 100% libre, open-source, at walang ad. ang iyong suporta ay nakakatulong na panatilihin akong motibasyon na patuloy na mapanatili at mapabuti ang app!",
+  "appCacheExceededThresholdAndWas": "Lumampas ang cache ng app sa threshold at na-clear",
+  "appDataHasBeenCompletelyReset": "Ganap na na-reset ang data ng app",
+  "appFonts": "Mga Font ng App",
+  "appSettingsSessions": "Mga Setting at Session ng App",
+  "appearance": "Hitsura",
+  "appearanceInterface": "Hitsura at Interface",
+  "appearanceTheme": "Hitsura at Tema",
+  "appliesAnimeMangaPosterColorOn": "Naglalapat ng kulay ng poster ng anime/manga sa pahina ng mga detalye",
+  "apply": "Mag-apply",
+  "applyASubtleFilmGrainTexture": "Maglagay ng banayad na texture ng butil ng pelikula sa ibabaw ng interface",
+  "applyFilters": "Ilapat ang Mga Filter",
+  "applyOptionsFromYourMpvConf": "Ilapat ang mga opsyon mula sa iyong mpv.conf kapag nagsimula ang playback",
+  "areYouSureYouWantTo": "Sigurado ka bang gusto mong tanggalin ang lahat ng naka-save na cookies?",
+  "areYouSureYouWantToDelete": "Sigurado ka bang gusto mong tanggalin ang komentong ito? Ito ay permanenteng aalisin at ang ulat ay malulutas.",
+  "areYouSureYouWantToDeleteThis": "Sigurado ka bang gusto mong tanggalin ang extension na ito?",
+  "areYouSureYouWantToDeleteThisReply": "Sigurado ka bang gusto mong tanggalin ang tugon na ito?",
+  "askForTrackingPermission": "Humingi ng pahintulot sa pagsubaybay",
+  "atLeast2TabsMustRemain": "Hindi bababa sa 2 tab ang dapat manatiling nakikita!",
+  "audioEngine": "Audio Engine",
+  "audioPitchCorrection": "Audio Pitch Correction",
+  "authenticationOptional": "Authentication (OPTIONAL)",
+  "auto": "Auto",
+  "autoPlay": "Auto Play",
+  "autoScroll": "Auto Scroll",
+  "autoScrollSpeed": "Bilis ng Auto Scroll",
+  "autoSkipEd": "Auto Laktawan ang ED",
+  "autoSkipFiller": "Auto Skip Filler",
+  "autoSkipOnceOnly": "Awtomatikong Laktawan Minsan Lang",
+  "autoSkipOnlyOncePerWatch": "Awtomatikong laktawan nang isang beses lang sa bawat panonood",
+  "autoSkipOp": "Auto Laktawan OP",
+  "autoSkipRecap": "Auto Skip Recap",
+  "autoSkipTheEndingSong": "Awtomatikong laktawan ang pangwakas na kanta",
+  "autoSkipTheOpeningSong": "Awtomatikong laktawan ang pambungad na kanta",
+  "autoSkipTheRecapSection": "Awtomatikong laktawan ang seksyon ng recap",
+  "autoSwitchToVerticalMode": "Awtomatikong lumipat sa vertical mode",
+  "autoTranslateSubtitles": "Awtomatikong Isalin ang Mga Subtitle",
+  "autoWebtoonMode": "Auto Webtoon Mode",
+  "autoClearThreshold": "Awtomatikong i-clear ang threshold",
+  "autoSelectDefault": "Auto-select (default)",
+  "autoSelectThisServerQualityFor": "Awtomatikong piliin ang kalidad ng server na ito para sa anime na ito",
+  "automaticallyMoveToNextTextSegment": "Awtomatikong lumipat sa susunod na segment ng teksto",
+  "automaticallyScrollContent": "Awtomatikong mag-scroll ng nilalaman",
+  "automaticallyScrollPages": "Awtomatikong mag-scroll ng mga pahina",
+  "automaticallySkipFillerEpisodesWhenGoing": "Awtomatikong laktawan ang mga episode ng tagapuno kapag pupunta sa susunod na episode",
+  "automaticallyUpdateEntriesWhenImportingThe": "Awtomatikong i-update ang mga entry kapag ini-import ang XML",
+  "availableAddOns": "Magagamit na mga Add-on",
+  "availableKeybindings": "Magagamit na Mga Keybinding:",
+  "avatarDecorations": "Mga Dekorasyon ng Avatar",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Mga dekorasyon ng avatar, nameplate, banner, at profile effect",
+  "avgChapters": "Mga Avg na Kabanata",
+  "avgEpisodes": "Mga Avg na Episode",
+  "back": "Bumalik",
+  "backdropScope": "Backdrop at Saklaw",
+  "backdropBrightness": "Liwanag ng Backdrop",
+  "backdropSource": "Pinagmulan ng Backdrop",
+  "backgroundOpacity": "Opacity ng Background",
+  "backup": "Backup",
+  "backupRestore": "I-backup at I-restore",
+  "backupAndRestoreYourLibrary": "I-backup at i-restore ang iyong library",
+  "backupArchive": "Backup Archive",
+  "backupOwner": "May-ari ng backup",
+  "backupRestoredSuccessfully": "Matagumpay na naibalik ang backup!",
+  "backupSavedSuccessfully": "Matagumpay na na-save ang backup!",
+  "badge": "Badge",
+  "banUser": "I-ban ang Gumagamit",
+  "baseUrlNotAvailableForThis": "Hindi available ang base URL para sa source na ito",
+  "basedOnYourFavouriteCharacters": "Batay sa iyong mga paboritong karakter.",
+  "basedOnYourFavouriteStaff": "Batay sa iyong paboritong tauhan.",
+  "basedOnYourTop10Tags": "Batay sa iyong nangungunang 10 tag.",
+  "basedOnYourTop3Studios": "Batay sa iyong nangungunang 3 studio.",
+  "basedOnYourTop5Genres": "Batay sa iyong nangungunang 5 genre.",
+  "basedOnYourTop6Voice": "Batay sa iyong nangungunang 6 na voice actor.",
+  "batchDownload": "Batch Download",
+  "beTheFirstToRecommendThis": "Mauna kang magrekomenda ng pamagat na ito!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Mas mahusay na pag-render ng subtitle gamit ang libass library",
+  "blockquote": "Blockquote",
+  "blurBackdropTuning": "Pag-tune ng Blur at Backdrop",
+  "blurAmount": "Blur na Dami",
+  "blurColorTint": "Blur Color Tint",
+  "blurMechanism": "Blur Mechanism",
+  "blurMultiplier": "Blur Multiplier",
+  "blurStyle": "Blur Style",
+  "bold": "Matapang",
+  "boldItalic": "Bold + Italic",
+  "botUrlNotConfigured": "Hindi na-configure ang URL ng bot",
+  "bottomControls": "Mga Kontrol sa Ibaba",
+  "bottomMargin": "Ibabang Margin",
+  "bottomNavBarMargin": "Margin sa Bottom Nav Bar",
+  "broadcastYourActivityToDiscord": "I-broadcast ang iyong aktibidad sa Discord",
+  "browsingIdle": "Nagba-browse / Idle",
+  "browsingPhrasing": "Pagba-browse ng Phrasing",
+  "bufferSize": "Laki ng Buffer",
+  "builtInStyles": "Mga Built-in na Estilo",
+  "byDisablingThisYouCanAvoid": "Sa pamamagitan ng hindi pagpapagana nito, maiiwasan mo ang paglipat sa pagitan ng mga subtitle.",
+  "byIndex": "Sa pamamagitan ng Index",
+  "byUserId": "Sa pamamagitan ng User ID",
+  "byUsername": "Sa pamamagitan ng Username",
+  "bypassCloudflare": "I-bypass ang Cloudflare",
+  "cacheStorage": "Cache at Imbakan",
+  "cacheMinutes": "Mga Minutong Cache",
+  "cacheOverview": "Pangkalahatang-ideya ng Cache",
+  "cachedImages": "Mga Naka-cache na Larawan",
+  "calculateCompatibility": "Kalkulahin ang Compatibility",
+  "calculatedBasedOnWhichReleaseDecades": "Kinakalkula batay sa kung aling mga dekada ng release ang pinakamaraming pinanood at nakakuha ng pinakamataas na marka.",
+  "calendar": "Kalendaryo",
+  "cancel": "Kanselahin",
+  "cannotCompareAUserWithThemselves": "Hindi maihambing ang isang user sa kanilang sarili! Mangyaring magpasok ng dalawang magkaibang username.",
+  "cannotCompareYourProfileWithYourself": "Hindi maihambing ang iyong profile sa iyong sarili! Mangyaring magpasok ng ibang username.",
+  "cantPlaySinceUserClosedThe": "Hindi Maglaro dahil biglang isinara ng user ang app",
+  "cantReadSinceUserClosedThe": "Hindi nababasa dahil biglang isinara ng user ang app",
+  "cardAnimationDuration": "Tagal ng Animation ng Card",
+  "cardRoundness": "Pag-ikot ng Card",
+  "cardStyle": "Estilo ng Card",
+  "carouselStyle": "Estilo ng Carousel",
+  "changeFile": "Baguhin ang File",
+  "changeRole": "Baguhin ang Tungkulin",
+  "changeService": "Baguhin ang Serbisyo",
+  "changeSubtitleBackgroundColor": "Baguhin ang kulay ng background ng subtitle",
+  "changeSubtitleColors": "Baguhin ang mga kulay ng subtitle",
+  "changeSubtitleOutlineColor": "Baguhin ang kulay ng outline ng subtitle",
+  "changelog": "CHANGELOG",
+  "chapterListSettings": "Mga Setting ng Listahan ng Kabanata",
+  "chapterNumber": "Numero ng Kabanata",
+  "chapterTileStyle": "Estilo ng Tile ng Kabanata",
+  "chapters": "Mga kabanata",
+  "chaptersUpper": "MGA KABANATA",
+  "chaptersVolumes": "MGA KABANATA AT MGA TOMO",
+  "chaptersRead": "Binasa ang mga Kabanata",
+  "characters": "Mga tauhan",
+  "checkCompatibility": "Suriin ang Compatibility",
+  "checkForAddOnUpdates": "Tingnan ang Add-on Updates",
+  "checkForUpdates": "Tingnan ang Mga Update",
+  "checkUpdatesFromBetaChannel": "Suriin ang mga update mula sa beta channel",
+  "checkingForUpdates": "Sinusuri ang mga update!",
+  "chooseABackupFileAnymex": "Pumili ng backup na file (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Pumili ng custom na background para sa liquid mode.",
+  "chooseADirectoryToBrowseYour": "Pumili ng isang direktoryo upang i-browse ang iyong mga media file",
+  "chooseDifferentImage": "Pumili ng Iba't ibang Larawan",
+  "chooseDownloadFolder": "Piliin ang I-download ang Folder",
+  "chooseImage": "Piliin ang Imahe",
+  "chooseProvider": "Piliin ang Provider",
+  "chooseQuality": "Piliin ang Kalidad",
+  "chooseServer": "Piliin ang Server",
+  "chooseServiceTracker": "Piliin ang Serbisyo / Tagasubaybay",
+  "chooseShaderProfile": "Piliin ang Shader Profile",
+  "chooseUpiApp": "Piliin ang UPI App",
+  "chooseWhichListToShowOn": "Piliin kung aling listahan ang ipapakita sa home page",
+  "chooseYourFavouriteColor": "Piliin ang iyong paboritong kulay!",
+  "chooseYourFavouritePalette": "Piliin ang iyong paboritong palette!",
+  "chromaScaler": "Chroma Scaler",
+  "classicCarouselCardLayoutFeaturingVertical": "Klasikong layout ng carousel card na nagtatampok ng mga vertical poster card.",
+  "clear": "Maaliwalas",
+  "clearAll": "I-clear ang Lahat",
+  "clearAllHistory": "I-clear ang Lahat ng Kasaysayan",
+  "clearAppCache": "I-clear ang App Cache",
+  "clearAppCacheNow": "I-clear ang cache ng app ngayon",
+  "clearCache": "I-clear ang Cache",
+  "clearCacheCookies": "I-clear ang Cache at Cookies",
+  "clearCookies": "I-clear ang cookies",
+  "clearCookies2": "I-clear ang Cookies",
+  "clearHistory": "I-clear ang Kasaysayan",
+  "clearImageCacheNow": "I-clear ang cache ng larawan ngayon",
+  "clearProxy": "I-clear ang Proxy",
+  "clearSelected": "I-clear ang Napili",
+  "clientAll": "Kliyente: Lahat",
+  "close": "Isara",
+  "closetCommunity": "Closet at Komunidad",
+  "cloudflareChallengeSolved": "Nalutas ang hamon ng Cloudflare!",
+  "collectionName": "Pangalan ng koleksyon",
+  "collections": "Mga koleksyon",
+  "combineBackupDataWithExistingData": "Pagsamahin ang backup na data sa kasalukuyang data sa device na ito",
+  "commentDeleted": "Natanggal ang Komento",
+  "commentPolicy": "Patakaran sa Komento",
+  "commentReplies": "Mga Sagot sa Komento",
+  "commentRules": "Mga Panuntunan sa Komento",
+  "commentSystem": "Sistema ng Komento",
+  "comments": "Mga komento",
+  "commentumV2IsAnAdvancedComment": "Ang Commentum v2 ay isang advanced na sistema ng komento na nagbibigay ng:",
+  "commentumV2SettingsModerationPreferences": "Mga setting ng Commentum v2, moderation at mga kagustuhan",
+  "common": "Karaniwan",
+  "commonCharacters": "Mga Karaniwang Tauhan",
+  "commonFavouriteStaff": "Karaniwang Paboritong Staff",
+  "commonGenres": "Mga Karaniwang Genre",
+  "commonSettings": "Mga Karaniwang Setting",
+  "commonStudios": "Mga Karaniwang Studio",
+  "commonTags": "Mga Karaniwang Tag",
+  "commonVoiceActors": "Mga Common Voice Actor",
+  "communityDriven": "Hinimok ng Komunidad",
+  "communityForksOfAnymex": "Mga tinidor ng komunidad ng AnymeX",
+  "communityLeaderboard": "Leaderboard ng Komunidad",
+  "communityRecommendations": "Mga Rekomendasyon ng Komunidad",
+  "compact": "Compact",
+  "compactCardWithEpisodeThumbnailAnd": "Compact card na may thumbnail at pamagat ng episode",
+  "compactGridOfChapterNumbers": "Compact na grid ng mga numero ng kabanata",
+  "compatibility": "Pagkakatugma",
+  "compatibilityRanks": "Mga Ranggo ng Pagkakatugma",
+  "compatibleWithGooglePayPhonepePaytm": "Tugma sa Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay, at lahat ng UPI banking app.",
+  "completeAnyCloudflareChallengeThenTap": "Kumpletuhin ang anumang hamon sa Cloudflare, pagkatapos ay i-tap ang \"Sync Cookies\" para ipasa ang session sa mga extension.",
+  "compose": "Mag-compose",
+  "concurrencyLimits": "Concurrency at Limitasyon",
+  "configurationsRepos": "Mga Configuration at Repos",
+  "configureExport": "I-configure at I-export",
+  "configureDiscordRichPresenceActivityStatus": "I-configure ang Discord Rich Presence at status ng aktibidad",
+  "configureDnsOverHttpsProxyTls": "I-configure ang mga setting ng DNS-over-HTTPS, proxy at TLS",
+  "configureMangaAndNovelReaderDefaults": "I-configure ang mga default ng manga at novel reader",
+  "configureParallelDownloadsAndDirectory": "I-configure ang mga parallel na pag-download at direktoryo",
+  "configurePosterBlurScopeTintBackdrop": "I-configure ang poster blur, saklaw, tint at pinagmulan ng backdrop",
+  "confirm": "Kumpirmahin",
+  "confirmRestore": "KUMPIRMA AT IBALIK",
+  "confirmBackupPassword": "Kumpirmahin ang backup na password",
+  "conflictHandling": "Paghawak ng Salungatan",
+  "connect": "Kumonekta",
+  "continueReading": "Magpatuloy sa Pagbabasa",
+  "continueWatching": "Ituloy ang Panonood",
+  "continuousModeOnly": "Continuous mode lang",
+  "contributors": "Mga kontribyutor",
+  "controlTheme": "Kontrolin ang Tema",
+  "controlsSubtitlesAndPlaybackPreferences": "Mga kontrol, subtitle, at mga kagustuhan sa pag-playback",
+  "cookiesUserAgentSynced": "Cookies at User-Agent na naka-sync!",
+  "copy": "Kopyahin",
+  "copyPath": "Kopyahin ang landas",
+  "copyUpiId": "Kopyahin ang UPI ID",
+  "copyUserId": "Kopyahin ang User ID",
+  "coreTeam": "Pangunahing Koponan",
+  "couldNotCalculateCompatibility": "Hindi makalkula ang compatibility.",
+  "couldNotFetchChaptersForThis": "Hindi makakuha ng mga kabanata para sa pamagat na ito",
+  "couldNotFetchEpisodesForThis": "Hindi makakuha ng mga episode para sa pamagat na ito",
+  "couldNotOpenDonationLink": "Hindi mabuksan ang link ng donasyon",
+  "couldNotOpenLink": "Hindi mabuksan ang link",
+  "couldNotOpenReleasesPage": "Hindi mabuksan ang page ng mga release",
+  "couldntOpenAppSettingsOpenIt": "Hindi mabuksan ang mga setting ng app. Buksan ito nang manu-mano.",
+  "count": "Bilangin",
+  "countryDistribution": "Pamamahagi ng Bansa",
+  "countryOfOrigin": "Bansang Pinagmulan",
+  "create": "Lumikha",
+  "createAFullAnymexArchiveOf": "Gumawa ng buong .anymex archive ng iyong media library, mga setting, extension, at runtime ng host",
+  "createActivity": "Lumikha ng Aktibidad",
+  "createBackup": "Gumawa ng Backup",
+  "createNewList": "Gumawa ng Bagong Listahan",
+  "createStatus": "Lumikha ng Katayuan",
+  "cropBorders": "Mga Hangganan ng I-crop",
+  "current": "Kasalukuyang •",
+  "custom": "Custom",
+  "customBanners": "Mga Custom na Banner",
+  "customColorPicker": "Custom na Tagapili ng Kulay",
+  "customDohUrl": "CUSTOM DOH URL",
+  "customFonts": "Mga Custom na Font",
+  "customLists": "Mga Custom na Listahan",
+  "customLogos": "Mga Custom na Logo",
+  "customPlayerFlagsParameters": "Mga flag at parameter ng custom na player",
+  "customScale": "Custom na Scale",
+  "customTheme": "Custom na Tema",
+  "customUserAgent": "Custom na Ahente ng Gumagamit",
+  "customValue": "Custom na Halaga",
+  "customEllipsis": "Custom...",
+  "customizeCardHistoryCardCarouselNav": "I-customize ang mga istilo ng card, history card, carousel at nav bar",
+  "customizeTheInterfaceToYourLiking": "I-customize ang interface ayon sa gusto mo",
+  "customizeYourLogoAnimationStyle": "I-customize ang istilo ng animation ng iyong logo",
+  "dailyActivitiesWatchAndReadMetrics": "Pang-araw-araw na aktibidad, panoorin at basahin ang mga sukatan",
+  "dailyActivityAndWatchReadProgress": "Pang-araw-araw na aktibidad at panoorin/basahin ang pagsubaybay sa pag-unlad",
+  "dataCache": "Data at Cache",
+  "dataToRestore": "DATA NA IBALIK",
+  "days": "MGA ARAW",
+  "days2": "Mga araw",
+  "daysActive": "DAYS ACTIVE",
+  "debanding": "Debanding",
+  "debugStuffs": "Mga bagay sa pag-debug",
+  "decoder": "Decoder",
+  "decoderHwdec": "Decoder (HWDec)",
+  "decoderThreads": "Mga Thread ng Decoder",
+  "decorationCloset": "Dekorasyon na aparador",
+  "defaultLabel": "Default",
+  "defaultAndroidAudiotrackApi": "Default na Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "Default na Apple CoreAudio API",
+  "defaultListOrder": "Default na Order ng Listahan",
+  "defaultOrientation": "Default na Oryentasyon",
+  "defaultPortrait": "Default na Portrait",
+  "defaultPulseaudioApi": "Default na PulseAudio API",
+  "defaultSize200px": "Default na Laki (200px)",
+  "defaultSystemAudioDriver": "Default na driver ng audio ng system",
+  "defaultTheme": "Default na Tema",
+  "defaultWindowsAudioDriver": "Default na Windows audio driver",
+  "delete": "Tanggalin",
+  "deleteActivity": "Tanggalin ang Aktibidad",
+  "deleteAll": "Tanggalin Lahat",
+  "deleteAllCachedImagesTorrentStream": "Tanggalin ang lahat ng naka-cache na larawan, torrent stream chunks, at pansamantalang file.",
+  "deleteAllStoredHttpCookiesAcross": "Tanggalin ang lahat ng nakaimbak na HTTP cookies sa lahat ng domain.",
+  "deleteChapter": "Tanggalin ang Kabanata",
+  "deleteChapterQuestion": "Tanggalin ang kabanata?",
+  "deleteComment": "Tanggalin ang Komento",
+  "deleteCustomLogo": "Tanggalin ang Custom na Logo",
+  "deleteEpisode": "Tanggalin ang Episode",
+  "deleteEpisodeQuestion": "Tanggalin ang episode?",
+  "deleteEverythingStoredOfAnymexPermanently": "Permanenteng tanggalin ang lahat ng nakaimbak ng AnymeX.",
+  "deleteExtension": "Tanggalin ang Extension",
+  "deleteFont": "Tanggalin ang Font",
+  "deleteHistoryItem": "Tanggalin ang Item sa Kasaysayan",
+  "deleteList": "Tanggalin ang Listahan",
+  "deleteLogo": "Tanggalin ang Logo",
+  "deleteReason": "Tanggalin ang Dahilan?",
+  "deleteRecommendation": "Tanggalin ang Rekomendasyon?",
+  "deleteReply": "Tanggalin ang Tugon",
+  "deleteReportedComment": "Tanggalin ang Naiulat na Komento",
+  "deleteSavedCookiesAndCloudflareTokens": "Tanggalin ang mga naka-save na cookies at mga token ng Cloudflare",
+  "deleteSavedCookiesCloudflareTokensAnd": "Tanggalin ang mga naka-save na cookies, Cloudflare token, at pansamantalang cache",
+  "deleteSelected": "Tanggalin ang Napili",
+  "deleteTemporaryNetworkAndImageCache": "Tanggalin ang pansamantalang network at cache ng larawan",
+  "deletionRequestSentToAdminsFor": "Ipinadala ang kahilingan sa pagtanggal sa mga admin para sa pagsusuri.",
+  "demuxerMaxBuffer": "Demuxer Max Buffer",
+  "demuxerReadahead": "Demuxer Readahead",
+  "description": "Paglalarawan",
+  "detailedClassic": "Detalyadong (Classic)",
+  "detailedInsights": "Mga Detalyadong Insight",
+  "detailsPage": "Pahina ng Mga Detalye",
+  "developer": "Developer",
+  "development": "Pag-unlad",
+  "direct": "Direkta",
+  "directSurfaceRenderingAndroidOnly": "Direktang pag-render sa ibabaw (Android lang)",
+  "direction": "Direksyon",
+  "disableToShowAndHidePlayer": "Huwag paganahin upang ipakita at itago ang mga kontrol ng player kaagad",
+  "disablingMayBypassCaptivePortalsOr": "Maaaring i-bypass ng hindi pagpapagana ang mga captive portal o SSL inspeksyon, ngunit binabawasan ang seguridad.",
+  "discard": "Itapon",
+  "discardMessage": "Itapon ang mensahe?",
+  "discardReply": "I-discard ang tugon?",
+  "discardStatus": "Itapon ang katayuan?",
+  "disconnect": "Idiskonekta",
+  "disconnectDiscord": "Idiskonekta ang Discord?",
+  "discordTakenDown": "Discord Tinanggal",
+  "dismiss": "I-dismiss",
+  "display": "Display",
+  "displayAnimeMangaMoviesAndShows": "Magpakita ng anime, manga, mga pelikula at palabas na inirerekomenda ng komunidad sa home page.",
+  "displayMode": "Display Mode",
+  "displayModeTuningIsNotApplicable": "Ang pag-tune ng display mode ay hindi naaangkop sa mga desktop platform.",
+  "displayPlaybackOrReadingProgressTimestamps": "Ipakita ang pag-playback o pagbabasa ng mga timestamp ng progreso",
+  "displayRefreshRateResolutionAndFrame": "Display refresh rate, resolution at frame tuning",
+  "distanceBetweenLines": "Distansya sa pagitan ng mga linya",
+  "distanceFromBottomOfScreen": "Distansya mula sa ibaba ng screen",
+  "ditherDepth": "Dither Depth",
+  "dnsProxy": "DNS at Proxy",
+  "dontShowAgain": "Wag ka nang magpakita ulit",
+  "donate": "Mag-donate",
+  "donateSupport": "Mag-donate at Suporta",
+  "donateViaPaypal": "Mag-donate sa pamamagitan ng PayPal",
+  "donateViaUpiOrPaypalTo": "Mag-donate sa pamamagitan ng UPI o PayPal upang suportahan ang pag-unlad",
+  "donateViaUpiPaypalSupportDevelopment": "Mag-donate sa pamamagitan ng UPI, PayPal at pag-unlad ng suporta",
+  "done": "TAPOS NA",
+  "done2": "Tapos na",
+  "doubletapToSeek": "I-doubleTap para Maghanap",
+  "downgradeOrSwitchToASpecific": "Mag-downgrade o lumipat sa isang partikular na bersyon ng plugin",
+  "download": "I-download",
+  "download4kShaders": "I-download ang 4K Shaders",
+  "downloadAllChapters": "I-download ang Lahat ng Kabanata",
+  "downloadAllEpisodes": "I-download ang Lahat ng Episode",
+  "downloadChapter": "I-download ang Kabanata",
+  "downloadChunks": "I-download ang Chunks",
+  "downloadCurrentSection": "I-download ang Kasalukuyang Seksyon",
+  "downloadEpisode": "I-download ang Episode",
+  "downloadFailedTapToRetry": "Nabigo ang pag-download. I-tap para subukang muli.",
+  "downloadPath": "I-download ang Path",
+  "downloadPathsAndQualitySettings": "Mag-download ng mga path at mga setting ng kalidad",
+  "downloadPathsAndStorageSettings": "Mag-download ng mga path at mga setting ng storage",
+  "downloadPermissions": "I-download ang Mga Pahintulot",
+  "downloadQualityStoragePaths": "Mag-download ng kalidad, mga landas ng imbakan",
+  "downloadSettings": "I-download ang Mga Setting",
+  "downloadSize4mb": "Laki ng download: ~4MB",
+  "downloadStarted": "Nagsimula na ang pag-download",
+  "downloadUnreadChapters": "I-download ang Mga Hindi Nabasang Kabanata",
+  "downloadUnwatchedEpisodes": "I-download ang Mga Hindi Napanood na Episode",
+  "downloaded": "NA-DOWNLOAD",
+  "downloaded2": "Na-download",
+  "downloadedMedia": "Na-download na Media",
+  "downloadingImage": "Dina-download ang larawan...",
+  "downloadingPackage": "Dina-download ang package...",
+  "downloads": "Mga download",
+  "downloadsStorage": "Mga Download at Storage",
+  "downloadsPage": "Pahina ng Mga Download",
+  "downscalingAlgorithm": "Downscaling Algorithm",
+  "dragAndDropToReorderNavigation": "I-drag at i-drop upang muling isaayos ang mga tab ng navigation bar",
+  "dragToReorderStatusSections": "I-drag upang muling ayusin ang mga seksyon ng katayuan",
+  "dualPageMode": "Dual Page Mode",
+  "dynamicVariablesWillBeReplacedAutomatically": "Awtomatikong papalitan ang mga dynamic na variable. Maaari ka ring gumamit ng static na parirala.",
+  "edit": "I-edit",
+  "editActivity": "I-edit ang Aktibidad",
+  "editCustomMpvFlagsPropertiesAnd": "I-edit ang mga custom na mpv flag, property, at configuration file",
+  "editLogoSettings": "I-edit ang Mga Setting ng Logo",
+  "editMediaEntry": "I-edit ang Media Entry",
+  "editReason": "I-edit ang Dahilan",
+  "editRecommendationReasonMin30Chars": "I-edit ang dahilan ng rekomendasyon (min 30 chars)",
+  "edited": "Na-edit",
+  "enableAnimation": "Paganahin ang Animation",
+  "enableAnimationOnCarouselsForSmooth": "Paganahin ang animation sa mga carousel para sa makinis na paggalaw",
+  "enableBackgroundMediaControlsForBluetooth": "Paganahin ang mga kontrol sa background media para sa mga Bluetooth headset at system media notification. Tandaan: Ang pagpapagana nito ay magpapataas ng paggamit ng baterya.",
+  "enableBetaUpdates": "Paganahin ang Beta Updates",
+  "enableClassicSimpleHeaderStyleOn": "Paganahin ang klasikong simpleng istilo ng header sa mga home screen",
+  "enableDiscordRpc": "Paganahin ang Discord RPC",
+  "enableExperimentalSettings": "Paganahin ang Mga Pang-eksperimentong Setting",
+  "enableHoldingOnPlayerScreenTo": "Paganahin ang pagpindot sa screen ng player upang pansamantalang mapabilis ang pag-playback ng video",
+  "enableHorizontalSwipingOnPlayerScreen": "Paganahin ang pahalang na pag-swipe sa screen ng player upang maghanap sa pamamagitan ng video",
+  "enableKenBurns": "Paganahin ang Ken Burns",
+  "enableLongPressQuickActions": "Paganahin ang mga mabilisang pagkilos nang matagal",
+  "enableNotificationsForUpcomingAiringEpisodes": "I-enable ang mga notification para sa paparating na pagpapalabas ng mga episode.",
+  "enableNsfwAdultEntriesInAnilist": "I-enable ang NSFW/adult na mga entry sa AniList content.",
+  "enableShaders": "Paganahin ang Shaders",
+  "enableSwipeControls": "Paganahin ang Mga Kontrol sa Pag-swipe",
+  "enableTapZones": "Paganahin ang Tap Zones",
+  "enableThisIfYouWantTo": "Paganahin ito kung gusto mong panatilihin ang orihinal na kulay ng iyong wallpaper",
+  "enableTranslucentNavigationBar": "Paganahin ang translucent navigation bar",
+  "enableTts": "Paganahin ang TTS",
+  "enableVerticalSwipingOnTheLeft": "I-enable ang vertical swiping sa kaliwa/kanang gilid ng screen ng player para isaayos ang liwanag at volume",
+  "enablesASoftGlowingGradientEffect": "Pinapagana ang malambot, kumikinang na gradient effect.",
+  "encryptWithAes256RecommendedFor": "I-encrypt gamit ang AES-256 (inirerekomenda para sa mga auth token)",
+  "encrypted": "Naka-encrypt •",
+  "endChapter": "Tapusin ang Kabanata",
+  "enterAmount": "Maglagay ng halaga...",
+  "enterAnilistUsername": "Ipasok ang AniList username",
+  "enterAtLeast2Characters": "Maglagay ng hindi bababa sa 2 character",
+  "enterBackupPassword": "Ipasok ang backup na password",
+  "enterFirstAnilistUsername": "Ilagay ang unang AniList username",
+  "enterGithubRepositoryUrl": "Ilagay ang GitHub repository URL",
+  "enterListName": "Ipasok ang pangalan ng listahan",
+  "enterPassword": "Ipasok ang password",
+  "enterReasonOrDetailsForThis": "Ilagay ang dahilan o mga detalye para sa pagkilos na ito...",
+  "enterSearchQuery": "Ipasok ang query sa paghahanap",
+  "enterUsername": "Ipasok ang Username",
+  "enterValue": "Ipasok ang halaga",
+  "entryDeleted": "Ang entry ay tinanggal.",
+  "episode1": "Episode 1",
+  "episodeListSettings": "Mga Setting ng Listahan ng Episode",
+  "episodes": "Mga episode",
+  "episodesDuration": "MGA EPISOD AT DURATION",
+  "episodesWatched": "Mga Napanood na Episode",
+  "errorOccured": "Nagkaroon ng Error",
+  "errorOccurred": "Nagkaroon ng Error",
+  "errorSavingImage": "Error sa pag-save ng larawan",
+  "errorSharingImage": "Error sa pagbabahagi ng larawan",
+  "errorMissingRequiredDataItSeems": "Error: Nawawala ang kinakailangang data. Mukhang direktang isinara mo ang app pagkatapos basahin ang kabanata!",
+  "errorMissingRequiredMediaItSeems": "Error: Nawawala ang kinakailangang media. Mukhang direktang isinara mo ang app pagkatapos basahin ang kabanata!",
+  "errorMissingRequiredMediaItSeemsYou": "Error: Nawawala ang kinakailangang media. Mukhang direktang isinara mo ang app pagkatapos panoorin ang episode!",
+  "everyScoreIsMappedToA": "Ang bawat puntos ay nakamapa sa isang ranggo. Ipinapakita ng talahanayan sa ibaba ang bawat bracket, ang badge nito, at kung ano ang kinakatawan ng hanay.",
+  "experimental": "Pang-eksperimento",
+  "experimentalHighPerformanceRenderer": "Pang-eksperimentong renderer na may mataas na pagganap",
+  "explore": "Galugarin",
+  "exploreTheProjectAndContribute": "Galugarin ang proyekto at mag-ambag",
+  "exportLabel": "EXPORT",
+  "exportBackup": "I-export ang Backup",
+  "exportCancelled": "Kinansela ang pag-export.",
+  "exportDeviceBackup": "I-export ang Backup ng Device",
+  "exportSettings": "I-export ang Mga Setting",
+  "exportYourAnimeList": "I-export ang iyong listahan ng Anime",
+  "exportYourMangaList": "I-export ang iyong listahan ng Manga",
+  "extensionConfigurations": "Mga Configuration ng Extension",
+  "extensionConfigurationsRepos": "Mga Configuration at Repos ng Extension",
+  "extensionManager": "Tagapamahala ng Extension",
+  "extensionPackages": "Mga Extension na Package",
+  "extensionPreferences": "Mga Kagustuhan sa Extension",
+  "extensionSettings": "Mga Setting ng Extension",
+  "extensionSettingsAndSourceConfigurations": "Mga setting ng extension at mga configuration ng pinagmulan",
+  "extensionTesting": "Extension Testing",
+  "extensionType": "Uri ng Extension",
+  "extensions": "Mga extension",
+  "extensionsDiagnostics": "Mga Extension at Diagnostics",
+  "extensionsRepositories": "Mga Extension at Repository",
+  "extensionsSources": "Mga Extension at Pinagmumulan",
+  "extensionsTailoredToYourNeeds": "Mga extension na iniayon sa iyong mga pangangailangan",
+  "externalStreamingLinks": "Mga Panlabas at Streaming na Link",
+  "externalBackupsRestoreMetadataAndConfigurations": "Ligtas na nire-restore ng mga external backup ang metadata at mga configuration.",
+  "externalBrowser": "Panlabas na Browser",
+  "extras": "Mga extra",
+  "factoryReset": "Factory Reset",
+  "factoryReset2": "Factory reset",
+  "failedToCheckForUpdates": "Nabigong suriin ang mga update.",
+  "failedToCheckPluginUpdates": "Nabigong suriin ang mga update sa plugin.",
+  "failedToDeleteChapter": "Nabigong tanggalin ang kabanata",
+  "failedToDeleteEpisode": "Nabigong tanggalin ang episode",
+  "failedToDeleteListEntry": "Nabigong tanggalin ang entry sa listahan",
+  "failedToDeleteMedia": "Nabigong tanggalin ang media",
+  "failedToDownloadImage": "Nabigong i-download ang larawan",
+  "failedToFetchChapters": "Nabigong kumuha ng mga kabanata",
+  "failedToFetchDetails": "Nabigong makuha ang mga detalye",
+  "failedToFetchImageForSharing": "Nabigong makuha ang larawan para sa pagbabahagi",
+  "failedToFetchPluginReleaseDetails": "Nabigong makuha ang mga detalye ng release ng plugin.",
+  "failedToFetchPolicy": "Nabigong makuha ang patakaran.",
+  "failedToFetchReleaseDetails": "Nabigong makuha ang mga detalye ng release.",
+  "failedToFetchServers": "Nabigong kumuha ng mga server",
+  "failedToLoadDetails": "Nabigong i-load ang mga detalye",
+  "failedToLoadFontFile": "Nabigong i-load ang font file",
+  "failedToLoadProfileAccountMay": "Nabigong i-load ang profile — maaaring pribado o hindi matagpuan ang account",
+  "failedToLoadTorrentMetadata": "Nabigong i-load ang torrent metadata",
+  "failedToPerformAction": "Nabigong magsagawa ng pagkilos",
+  "failedToRemoveRepo": "Nabigong alisin ang repo",
+  "failedToStartExtensionRuntime": "Nabigong Simulan ang Runtime ng Extension",
+  "failedToUpdateAnilist": "Nabigong i-update ang AniList",
+  "failedToUpdateListEntry": "Nabigong i-update ang entry sa listahan",
+  "failedToUpdatePreference": "Nabigong i-update ang kagustuhan",
+  "failedToUpdateRole": "Nabigong i-update ang tungkulin",
+  "favoriteTitle": "Paboritong Pamagat",
+  "favouriteAnime": "Paboritong Anime",
+  "favouriteCharacters": "Mga Paboritong Tauhan",
+  "favouriteManga": "Paboritong Manga",
+  "favouriteStaff": "Paboritong Staff",
+  "favouriteStudios": "Mga Paboritong Studio",
+  "featuresIssues": "Mga Tampok/Mga Isyu",
+  "fetchingAvailableServers": "Kinukuha ang mga available na server...",
+  "fetchingLatestReleaseDetails": "Kinukuha ang pinakabagong mga detalye ng release...",
+  "fetchingTorrentFileList": "Kinukuha ang listahan ng torrent file...",
+  "filler": "FILLER",
+  "filter": "Salain",
+  "filterActivities": "I-filter ang mga Aktibidad",
+  "filterActivity": "I-filter ang Aktibidad",
+  "filterByChapterCount": "I-filter ayon sa Bilang ng Kabanata",
+  "filterByDurationMin": "I-filter ayon sa Tagal (min)",
+  "filterByEpisodeCount": "I-filter ayon sa Bilang ng Episode",
+  "filterByGenre": "I-filter ayon sa Genre",
+  "filterByVolumeCount": "I-filter ayon sa Bilang ng Dami",
+  "filterGenres": "I-filter ang mga genre",
+  "filterOutAdultNsfwEntriesFrom": "I-filter ang mga entry ng adult/NSFW mula sa mga rekomendasyon ng komunidad.",
+  "filterOutEntriesAlreadyInYour": "I-filter ang mga entry na nasa iyong listahan na",
+  "filterOutEntriesAlreadyInYourList": "I-filter ang mga entry na nasa iyong listahan na batay sa status ng panonood/pagbabasa.",
+  "filterSettings": "Mga Setting ng Filter",
+  "filters": "MGA FILTER",
+  "findAndManageSpecificUsers": "Maghanap at pamahalaan ang mga partikular na user",
+  "findAnimeSauceByScreenshots": "Maghanap ng anime sauce sa pamamagitan ng mga screenshot",
+  "findSource": "Maghanap ng Pinagmulan",
+  "findYourFavouriteAnimeOrManga": "Hanapin ang iyong paboritong anime o manga, manhwa o anumang gusto mo!",
+  "findYourFavouriteAnimeMangaManhwa": "Hanapin ang iyong paboritong Anime, Manga, Manhwa o anumang gusto mo!",
+  "finishDate": "Petsa ng Pagtatapos",
+  "firstChapter": "Unang Kabanata",
+  "firstUser": "Unang Gumagamit",
+  "fitToScreenWidth": "Pagkasyahin sa Lapad ng Screen",
+  "fontFamily": "Pamilya ng Font",
+  "fontSize": "Laki ng Font",
+  "forceReDownload": "Pilitin ang muling pag-download",
+  "forceSyncFromSdCard": "Force Sync mula sa SD Card",
+  "forks": "Mga tinidor",
+  "format": "Format",
+  "formatDistribution": "Pamamahagi ng Format",
+  "frameInterpolation": "Pagsasama-sama ng Frame",
+  "freeSupport": "Libreng Suporta",
+  "frequentlyRevisited": "Madalas Muling binibisita",
+  "fromUrl": "Mula sa URL",
+  "fullWidthDetailedCardWithLarge": "Full-width na detalyadong card na may malaking thumbnail at metadata ng episode",
+  "fullWidthDetailedCardsWithProgress": "Full-width na detalyadong mga card na may progress at read button",
+  "fullWidthHeroBannerWithCompact": "Full-width na hero banner na may mga compact na detalye at mabilis na buod.",
+  "general": "Heneral",
+  "generalPrivacy": "Pangkalahatan at Privacy",
+  "generalSync": "Pangkalahatan at Pag-sync",
+  "generalAppPreferencesAndSyncServices": "Mga pangkalahatang kagustuhan sa app at mga serbisyo sa pag-sync",
+  "generalAppSettingsAndSyncServices": "Pangkalahatang mga setting ng app at mga serbisyo sa pag-sync",
+  "generalPreferences": "Pangkalahatang Kagustuhan",
+  "genres": "Mga genre",
+  "genresUpper": "GENRES",
+  "gestureForBrightnessVolume": "Gesture para sa Liwanag at Volume",
+  "getHelpWithTheCommentSystem": "Humingi ng tulong sa sistema ng komento",
+  "getStarted": "Magsimula",
+  "globalConcurrencyLimit": "Global Concurrency Limit",
+  "glowMultiplier": "Glow Multiplier",
+  "goSuperDarkMode": "Pumunta sa Super Dark Mode!",
+  "goToDownloads": "Pumunta sa Downloads",
+  "goToExtensionsToGetStarted": "Pumunta sa Mga Extension para makapagsimula",
+  "goToPluginDownloader": "Pumunta sa Plugin Downloader",
+  "goToRuntimeManager": "Pumunta sa Runtime Manager",
+  "goodAfternoon": "Magandang hapon po",
+  "goodEvening": "Magandang gabi po",
+  "goodMorning": "Magandang umaga po",
+  "goodnight": "Magandang gabi",
+  "gotIt": "Nakuha ko",
+  "grainIntensity": "Intensity ng Butil",
+  "grainTextureOverlay": "Grain Texture Overlay",
+  "grantPermission": "Magbigay ng Pahintulot",
+  "grantPermissions": "Magbigay ng Mga Pahintulot",
+  "grid": "Grid",
+  "gridSize": "Sukat ng Grid",
+  "gridView": "Grid View",
+  "guest": "panauhin",
+  "happySnacking": "Maligayang pagmemeryenda",
+  "hardwareDisplayModeSwitchingIsNot": "Ang paglipat ng hardware display mode ay hindi sinusuportahan ng iyong device.",
+  "helpSupport": "Tulong at Suporta",
+  "hexColorCode": "Code ng Kulay ng Hex",
+  "hey": "Hey",
+  "hidden": "Nakatago",
+  "hiddenFromYourPublicProfile": "Nakatago mula sa iyong pampublikong profile",
+  "hiddenTabs": "Mga Nakatagong Tab",
+  "hideAdultContent": "Itago ang Pang-adultong Nilalaman",
+  "hideButton": "Itago ang pindutan",
+  "hideByListStatus": "Itago ayon sa Status ng Listahan",
+  "hideCompleted": "Itago ang Nakumpleto",
+  "hideDropped": "Hide Dropped",
+  "hideEntriesThatAreInYour": "Itago ang mga entry na nasa listahan ng iyong plano.",
+  "hideEntriesThatAreMarkedAs": "Itago ang mga entry na minarkahan bilang nakumpleto sa iyong listahan.",
+  "hideEntriesThatYouAreCurrently": "Itago ang mga entry na kasalukuyan mong pinapanood o binabasa.",
+  "hideEntriesThatYouAreRewatching": "Itago ang mga entry na muli mong pinapanood.",
+  "hideEntriesThatYouHaveDropped": "Itago ang mga entry na iyong nalaglag.",
+  "hideEntriesThatYouHavePut": "Itago ang mga entry na na-hold mo.",
+  "hideNsfw": "Itago ang NSFW",
+  "hideNsfw18Content": "Itago ang NSFW / 18+ na Nilalaman",
+  "hideNsfwContent": "Itago ang NSFW Content",
+  "hideNsfwRecommendations": "Itago ang Mga Rekomendasyon ng NSFW",
+  "hideOnHoldPaused": "Itago Naka-hold / Naka-pause",
+  "hidePlanning": "Itago ang Pagpaplano",
+  "hideRewatching": "Itago ang Rewatching",
+  "hideSystemStatusAndNavigationBars": "Itago ang status ng system at mga navigation bar",
+  "hideWatchingReading": "Itago ang Panonood / Pagbabasa",
+  "history": "Kasaysayan",
+  "historyStatistics": "Kasaysayan at Istatistika",
+  "historyCardStyle": "Estilo ng History Card",
+  "historyItemDeleted": "Ang item sa kasaysayan ay tinanggal",
+  "hlsParallelSegments": "HLS Parallel Segment",
+  "holdAndDragAnyItemTo": "I-hold at i-drag ang anumang item upang muling ayusin",
+  "holdToAccessHistoryEditor": "I-hold para ma-access ang history editor",
+  "holdToDelete": "I-hold para tanggalin",
+  "holdToSpeedUp": "Pindutin upang Bilisan",
+  "home": "Bahay",
+  "horizontal": "Pahalang",
+  "hostEG12700": "Host (hal. 127.0.0.1)",
+  "hours": "Oras",
+  "howItWorksCompatibilityRanks": "Paano ito gumagana at Mga Ranggo ng Pagkatugma",
+  "howMuchInPercentageToMark": "Magkano ang porsyento upang markahan ang episode bilang napanood",
+  "howToUseTheCommentSystem": "Paano gamitin ang sistema ng komento:",
+  "hue": "Hue",
+  "ifEnabledAContinueWatchingBar": "Kung naka-enable, ang isang continue watching bar ay ipapakita sa itaas ng ibabang navigation bar sa home page.",
+  "ifEnabledAllLibraryItemsWill": "Kung naka-enable, ibabahagi ang lahat ng item sa library sa lahat ng serbisyo sa pagsubaybay.",
+  "ifEnabledAnymexWillAskFor": "Kung pinagana, hihilingin ng Anymex ang pahintulot sa pagsubaybay kung hindi, susubaybayan ito bilang default.",
+  "ifEnabledYouWillNotGet": "Kung pinagana, hindi ka makakatanggap ng prompt para sa pagpapagana ng nilalamang pang-adult sa Anilist/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "Kung umabot sa ganitong laki ang pansamantalang cache ng app, awtomatiko itong iki-clear.",
+  "ifYouAreUsingAJson": "Kung gumagamit ka ng JSON na tema, ang mga pagbabago dito ay hindi makakaapekto sa mga kontrol ng player. Lumipat sa isang built-in na tema para ilapat ang mga setting na ito.",
+  "ifYouCantDonateWatchThis": "Kung hindi ka makapag-donate, panoorin ang ad na ito para suportahan",
+  "image": "Imahe",
+  "imageShowsThumbnail": "Larawan (nagpapakita ng thumbnail)",
+  "imageFilterQuality": "Kalidad ng Filter ng Larawan",
+  "imageSharedFromAnymex": "Ibinahagi ang larawan mula sa AnymeX",
+  "imagesWillBeDownloadedInFull": "Ida-download ang mga larawan sa buong kalidad. Ang bawat kabanata ay naka-imbak sa sarili nitong folder.",
+  "immersiveMode": "Immersive Mode",
+  "importLabel": "IMPORT",
+  "importLabel2": "Mag-import",
+  "importManageCustomJsonThemes": "Mag-import at mamahala ng mga custom na JSON na tema",
+  "importBackup": "Mag-import ng Backup",
+  "importCustomFont": "Mag-import ng Custom na Font",
+  "importFromUrl": "Mag-import mula sa URL",
+  "includeAdultNsfwSuggestions": "Isama ang mga suhestiyon ng nasa hustong gulang at NSFW",
+  "incognito": "Incognito",
+  "incognitoActive": "Incognito (Aktibo)",
+  "incognitoMode2": "Incognito Mode",
+  "indiaUpi": "India (UPI)",
+  "info": "Impormasyon",
+  "inlineCode": "Inline na Code",
+  "insert": "Ipasok",
+  "installPermission": "Pahintulot sa Pag-install",
+  "installPermissionIsRequiredToUpdate": "Kinakailangan ang pahintulot sa pag-install para i-update ang app",
+  "installedPackages": "Mga Naka-install na Package",
+  "installedThemes": "Mga Naka-install na Tema",
+  "interfaceStyling": "Pag-istilo ng Interface",
+  "internalBrowser": "Panloob na Browser",
+  "international": "Internasyonal",
+  "invalidBackupFileOrIncorrectPassword": "Di-wastong backup file o maling password",
+  "invertVolumeKeys": "Baliktarin ang Volume Keys",
+  "italic": "Italic",
+  "joinDiscordCommunity": "Sumali sa Discord Community",
+  "joinNewDiscord": "Sumali sa Bagong Discord",
+  "joinTelegramChannel": "Sumali sa Telegram Channel",
+  "joinUsForDroppingFeedbackOr": "Sumali sa amin para sa pag-drop ng feedback o mga kahilingan sa tampok",
+  "jsonThemeManager": "JSON Theme Manager",
+  "judgment": "Paghuhukom",
+  "keepEditing": "Ituloy ang pag-edit",
+  "keepItChill": "Panatilihin itong malamig",
+  "keepScreenOn": "Panatilihing Naka-on ang Screen",
+  "keepVoicePitchStableAtHigher": "Panatilihing stable ang voice pitch sa mas mataas na bilis",
+  "koFiSupport": "Suporta sa Ko-fi",
+  "languageVariant": "Variant ng Wika",
+  "lastAdded": "Huling Nadagdag",
+  "lastChapter": "Huling Kabanata",
+  "later": "Mamaya",
+  "latest": "Pinakabago",
+  "latestManga": "Pinakabagong Manga",
+  "layout": "Layout",
+  "layoutStyle": "Estilo ng Layout",
+  "leaderboard": "Leaderboard",
+  "learnHowToFormatYourComments": "Alamin kung paano i-format ang iyong mga komento",
+  "leftSide": "Kaliwang Gilid",
+  "letterSpacing": "Spacing ng Letter",
+  "levelProgress": "Antas ng Pag-unlad",
+  "libraryLabel": "Aklatan",
+  "librarySettings": "Mga Setting ng Library",
+  "libraryStatistics": "Istatistika ng Aklatan",
+  "lightness": "Kagaanan",
+  "likedBy": "Nagustuhan ni",
+  "lineHeight": "Taas ng Linya",
+  "linkAutoDetected": "Link (auto-detected)",
+  "linkCopiedToClipboard": "Nakopya ang link sa clipboard!",
+  "linkHasExpiredAndEpisodeUrl": "Nag-expire na ang link at hindi available ang URL ng episode.",
+  "linkHasExpiredAndNoAlternative": "Nag-expire na ang link at walang nakitang alternatibong stream.",
+  "linotteDefault": "Linotte (Default)",
+  "liquidBackground": "Liquid na Background",
+  "liquidMode": "Liquid Mode",
+  "listEntryUpdatedSuccessfully": "Matagumpay na na-update ang entry sa listahan!",
+  "listExporter": "Listahan ng Exporter",
+  "listNameAlreadyExists": "Umiiral na ang pangalan ng listahan",
+  "listOptions": "Mga Opsyon sa Listahan",
+  "liveBlurIsUnavailableWhenUsing": "Hindi available ang live na blur kapag gumagamit ng Fluid Mesh.",
+  "livePreview": "LIVE PREVIEW",
+  "livePreview2": "Live Preview",
+  "loadTemplate": "I-load ang Template",
+  "loadingMediaFiles": "Nilo-load ang mga media file...",
+  "loadingMedia": "Nilo-load ang Media...",
+  "local": "Lokal",
+  "localLibrary": "Lokal na Aklatan",
+  "localMedia": "Lokal na Media",
+  "location": "Lokasyon",
+  "logCapture": "Pagkuha ng Log",
+  "logDirectory": "Direktoryo ng log",
+  "logIn": "Mag-log In",
+  "logInRequired": "Kailangang Mag-log In",
+  "logInToCustomizeYourPush": "Mag-log in upang i-customize ang iyong mga kagustuhan sa push notification.",
+  "logInToJoinTheConversation": "Mag-log in upang sumali sa pag-uusap at magkomento.",
+  "logOut": "Log Out",
+  "loggedInTrackingServices": "Naka-log-in na mga serbisyo sa pagsubaybay",
+  "login": "Mag-login",
+  "loginAuthTokens": "Mga Token sa Pag-login at Awth",
+  "loginInsideTheAppRecommended": "Mag-login sa loob ng app (Inirerekomenda)",
+  "loginSessions": "Mga Sesyon sa Pag-login",
+  "loginUsingYourDefaultBrowser": "Mag-login gamit ang iyong default na browser",
+  "loginWithToken": "Mag-login gamit ang Token",
+  "logoAnimation": "Logo Animation",
+  "logoName": "Pangalan ng Logo:",
+  "logs": "Mga log",
+  "longPressPageActions": "Long Press Page Actions",
+  "makeEverythingGlassyLiquidy": "Gawing malasalamin at likido ang lahat...",
+  "manageAnilistLists": "Pamahalaan ang Mga Listahan ng Anilist",
+  "manageCachedImagesThresholdsAndReset": "Pamahalaan ang mga naka-cache na larawan, threshold, at i-reset ang data ng app",
+  "manageDeviceStorageAndNotificationsTo": "Pamahalaan ang storage ng device at mga notification para i-download at pamahalaan ang iyong media offline.",
+  "manageLogCaptureAndShareSaved": "Pamahalaan ang pagkuha ng log at ibahagi ang mga naka-save na log",
+  "manageMyanimelistLists": "Pamahalaan ang Mga Listahan ng MyAnimeList",
+  "managePluginsSources": "Pamahalaan ang mga plugin at source",
+  "manageSimklLists": "Pamahalaan ang Mga Listahan ng Simkl",
+  "manageSourcesAndRepositoriesToUse": "Pamahalaan ang mga source at repository para magamit ang app sa buong potensyal nito",
+  "manageYourMyanimelistAnilistSimklAccounts": "Pamahalaan ang iyong MyAnimeList, Anilist, Simkl Accounts!",
+  "management": "Pamamahala",
+  "manga": "Manga",
+  "mangaNovelReaderSettingsTapZones": "Mga setting ng manga at novel reader, i-tap ang mga zone",
+  "mangaNovelViewerSettingsTapZones": "Mga setting ng manga at nobela viewer, i-tap ang mga zone",
+  "mangaAndNovelReaderStylesAnd": "Mga istilo ng mambabasa ng manga at nobela at mga tap zone",
+  "mangaCustomLists": "Mga Pasadyang Listahan ng Manga",
+  "mangaDetailsPhrasing": "Mga Detalye ng Manga Phrasing",
+  "mangaLibrary": "Manga Library",
+  "mangaList": "LISTAHAN NG MANGA",
+  "mangaScore": "Manga Score",
+  "mangaSectionOrder": "Order ng Seksyon ng Manga",
+  "manuallyPasteOauthAccessToken": "Manu-manong i-paste ang token ng OAuth access",
+  "markAllRead": "Markahan ang lahat ng nabasa",
+  "markAsWatched": "Markahan Bilang Napanood",
+  "markdownGuide": "Gabay sa Markdown",
+  "maximumDemuxerBufferMb": "Pinakamataas na demuxer buffer (MB)",
+  "maybeLater": "Baka Mamaya",
+  "mean": "MEAN",
+  "meanScore": "Mean Score",
+  "mediaPlayback": "Media at Playback",
+  "mediaLibrary": "Media Library",
+  "mediaSessionBluetoothSupport": "Media Session (Bluetooth Support)",
+  "mediaTypeBreakdown": "Pagkakasira ng Uri ng Media",
+  "mediaYouDownloadWillAppearHere": "Lalabas dito ang media na iyong dina-download.",
+  "megaskipDuration": "Tagal ng MegaSkip",
+  "mention": "Banggitin",
+  "mentions": "Mga pagbanggit",
+  "merge": "Pagsamahin",
+  "messageFriend": "Mensahe Kaibigan",
+  "minutesWatched": "Minutong Napanood",
+  "miscellaneous": "Miscellaneous",
+  "missingRuntimeHost": "Nawawala ang Runtime Host",
+  "moderation": "Moderation",
+  "moderationActions": "Mga Aksyon sa Pag-moderate",
+  "moderationPanel": "Moderation Panel",
+  "moderator": "Moderator",
+  "moreOptions": "Higit pang mga Opsyon",
+  "morePopularManga": "Mas Sikat na Manga",
+  "moveToLeft": "Lumipat sa kaliwa",
+  "moveToRight": "Ilipat sa kanan",
+  "movie": "Pelikula",
+  "mpvConfiguration": "Configuration ng MPV",
+  "muteUser": "I-mute ang User",
+  "mutualConnections": "Mutual Connections",
+  "mutualFriends": "Magkakaibigan",
+  "nameplates": "Mga nameplate",
+  "navBarLayout": "Layout ng Nav Bar",
+  "navBarStyle": "Estilo ng Nav Bar",
+  "navigationLayout": "Layout ng Nabigasyon",
+  "needHelp": "Kailangan ng tulong?",
+  "network": "Network",
+  "newLabel": "BAGO",
+  "newCollection": "Bagong Koleksyon",
+  "newCustomListName": "Bagong custom na pangalan ng listahan",
+  "newDownload": "Bagong Download",
+  "newList": "Bagong Listahan",
+  "newestFirst": "Pinakabago muna",
+  "nextRelease": "Susunod na Paglabas",
+  "nextReleasePrediction": "Susunod na Hula sa Paglabas",
+  "noActiveDownloads": "Walang aktibong pag-download",
+  "noActiveSourceOrMediaFound": "Walang nakitang aktibong pinagmulan o media",
+  "noActiveSourceSelected": "Walang napiling aktibong pinagmulan",
+  "noActivity": "Walang aktibidad",
+  "noAnimeFound": "Walang nakitang Anime",
+  "noAudioTracksAvailable": "Walang available na audio track",
+  "noChaptersFound": "Walang Nahanap na Kabanata",
+  "noChaptersFound2": "Walang nakitang mga kabanata",
+  "noCommonGenres": "Walang mga karaniwang genre",
+  "noCommonTags": "Walang karaniwang mga tag",
+  "noContributorsFound": "Walang nakitang mga kontribyutor.",
+  "noCustomListsAvailable": "Walang available na custom na listahan.",
+  "noCustomListsYet": "Wala pang custom na listahan",
+  "noCustomListsYet2": "Wala pang custom na listahan.",
+  "noDataAvailableForThisSection": "Walang available na data para sa seksyong ito",
+  "noDataAvailable": "Walang available na data.",
+  "noDecadeBreakdownAvailable": "Walang available na breakdown ng dekada",
+  "noDescriptionAvailable": "Walang Magagamit na Paglalarawan",
+  "noDownloadedChaptersFoundForThis": "Walang nakitang na-download na mga kabanata para sa manga na ito",
+  "noDownloadedEpisodesFoundForThis": "Walang nakitang na-download na mga episode para sa anime na ito",
+  "noEntriesFound": "Walang nakitang mga entry",
+  "noEpisodesFound": "Walang nakitang mga episode",
+  "noExtensionManagersFound": "Walang nakitang extension manager.",
+  "noExtensionsFound": "Walang nakitang mga extension",
+  "noExtensionsInstalled": "Walang naka-install na extension",
+  "noGenresAvailableAnilistApiMay": "Walang available na genre. Maaaring pansamantalang down ang AniList API.",
+  "noHiddenTabs": "Walang mga nakatagong tab",
+  "noInsightsAvailableYetAddItems": "Wala pang available na insight. Magdagdag ng mga item sa iyong library!",
+  "noItemsInThisLibrary": "Walang mga item sa library na ito.",
+  "noLoggedStatsYetStartWatching": "Wala pang naka-log na istatistika. Simulan ang panonood/pagbasa!",
+  "noMediaFilesFound": "Walang Nahanap na Media Files",
+  "noMediaFoundForThisStudio": "Walang nakitang media para sa studio na ito",
+  "noMediaInThisList": "Walang media sa listahang ito.",
+  "noMoreActivities": "Wala nang mga aktibidad",
+  "noMoreRecommendations": "Wala nang rekomendasyon",
+  "noMoreUsers": "Wala nang gumagamit",
+  "noNotificationsYet": "Wala pang notification",
+  "noNovelExtensionsInstalledToRead": "Walang naka-install na mga extension ng nobela upang mabasa ang nobelang ito.",
+  "noPendingReports": "Walang mga nakabinbing ulat",
+  "noPlayableStreamAvailableForThis": "Walang available na mapaglarong stream para sa episode na ito.",
+  "noPlayableStreamWasReturnedBy": "Walang nape-play na stream ang ibinalik ng source na ito.",
+  "noRecentActivityFoundForSelected": "Walang nakitang kamakailang aktibidad para sa mga napiling filter",
+  "noRecommendationsFound": "Walang nakitang rekomendasyon",
+  "noRecommendationsYet": "Wala pang rekomendasyon",
+  "noReleasesFound": "Walang nakitang release.",
+  "noRepliesYetBeTheFirst": "Wala pang reply. Maging una!",
+  "noRepositoriesYet": "Wala pang mga repositoryo",
+  "noResult": "Walang resulta",
+  "noResultsFound": "Walang nakitang resulta.",
+  "noResultsYet": "Wala pang resulta",
+  "noResultsTrySearchingByTitle": "Walang resulta. Subukang maghanap ayon sa pamagat.",
+  "noSearchResults": "Walang resulta ng paghahanap",
+  "noServersAvailable": "Walang available na mga server",
+  "noServersFound": "Walang nakitang mga server.",
+  "noServicesAvailable": "Walang Magagamit na Serbisyo",
+  "noSourceInstalled": "Walang Naka-install na Pinagmulan",
+  "noSourceSelected": "Walang napiling pinagmulan",
+  "noSourcesFound": "Walang nakitang source",
+  "noStatsAvailable": "Walang available na istatistika",
+  "noSubtitleTracksAvailable": "Walang magagamit na mga subtitle na track",
+  "noTestsRunning": "Walang mga pagsubok na tumatakbo",
+  "noThemesYet": "Wala pang tema",
+  "noTrackingServiceConnected": "Walang nakakonektang serbisyo sa pagsubaybay",
+  "noUsersFound": "Walang nakitang mga user",
+  "noVisibleTabs": "Walang nakikitang tab",
+  "noVisualsFoundForThisAnime": "Walang nakitang Visual para sa Anime na ito (╥﹏╥)",
+  "noWatchOrderFound": "Walang nakitang order ng relo.",
+  "notNow": "Hindi ngayon",
+  "notSupported": "Hindi suportado",
+  "notTracked": "Hindi sinusubaybayan",
+  "noteAddingKotatsuRepositoryWillTake": "Tandaan: Ang pagdaragdag ng Kotatsu repository ay tatagal ng hindi bababa sa 1-2 minuto dahil kailangan nitong i-download at i-convert ang extension plugin sa unang pag-load.",
+  "nothingDownloadedYet": "Wala pang na-download",
+  "nothingToPreview": "Walang i-preview",
+  "nothingToPreviewYet": "Wala pang i-preview.",
+  "notificationPreferences": "Mga Kagustuhan sa Notification",
+  "notifications": "Mga abiso",
+  "notifyForOfficialAnnouncementsAndApp": "Mag-notify para sa mga opisyal na anunsyo at mga update sa app",
+  "notifyIfYourCommentIsRemoved": "Ipaalam kung ang iyong komento ay inalis ng isang moderator",
+  "notifyOnNewCommentsForMedia": "Ipaalam sa mga bagong komento para sa media na iyong tinalakay",
+  "notifyOnUpvotesAndDownvotes": "Ipaalam sa mga upvote at downvote",
+  "notifyOnWarningsPinnedCommentsOr": "Mag-notify sa mga babala, naka-pin na komento, o mga lock ng thread",
+  "notifyWhenSomeoneMentionsYourUsername": "Ipaalam kapag may @nagbanggit ng iyong username",
+  "notifyWhenSomeoneRepliesToYour": "Abisuhan kapag may tumugon sa iyong komento",
+  "novel": "nobela",
+  "novelCustomLists": "Mga Pasadyang Listahan ng Novel",
+  "novelDetailsPhrasing": "Mga Detalye ng Novel Phrasing",
+  "novelFontFamily": "Pamilya ng Novel Font",
+  "novelLibrary": "Aklatan ng Nobela",
+  "novelSnapshots": "Mga Snapshot ng Novel",
+  "novelTheme": "Tema ng Nobela",
+  "novels": "Mga nobela",
+  "numberOfActiveDownloadTasks": "Bilang ng mga aktibong gawain sa pag-download",
+  "numberOfParallelChunksPerDownload": "Bilang ng mga parallel na chunks sa bawat pag-download",
+  "okay": "Okay",
+  "oldestFirst": "Pinakamatanda muna",
+  "oledMode": "Oled Mode",
+  "onMyList": "Sa Aking Listahan",
+  "oneOptionPerLineLikeHwdec": "Isang opsyon sa bawat linya, tulad ng hwdec=auto o scale=ewa_lanczossharp. Ang mga linyang nagsisimula sa # ay mga komento. Ang mga profile sa [mga bracket] ay hindi pinapansin.",
+  "online": "Online",
+  "openCloset": "Buksan ang Closet",
+  "openInBrowser": "Buksan sa Browser",
+  "openSettings": "Buksan ang Mga Setting",
+  "openSource": "Open Source",
+  "openSupportedLinks": "Buksan ang Mga Suportadong Link",
+  "openTheDownloadsScreenFromThe": "Buksan ang screen ng Mga Download mula sa menu",
+  "openVideoStreamInExternalPlayer": "Buksan ang video stream sa external na player bilang default",
+  "openWebview": "Buksan ang Webview",
+  "openingsEndings": "Mga Pagbubukas at Pagtatapos",
+  "openslEsNativeAudioEngine": "OpenSL ES native na audio engine",
+  "options": "MGA OPSYON",
+  "order": "ORDER",
+  "originalSize": "Orihinal na Sukat",
+  "otakuRankLevel": "Antas ng Ranggo ng Otaku",
+  "other": "Iba pa",
+  "otherFeatures": "Iba pang Mga Tampok",
+  "otherRecommendations": "Iba pang mga Rekomendasyon",
+  "otherStuffs": "Iba pang mga Bagay",
+  "otherTemporaryFiles": "Iba pang Temporary Files",
+  "otherWaysToSupport": "Iba pang Mga Paraan para Suportahan",
+  "others": "Iba",
+  "outlineType": "Uri ng Balangkas",
+  "overscroll": "Overscroll",
+  "overscrollToPrevNextChapter": "Mag-overscroll sa prev/next chapter",
+  "overview": "Pangkalahatang-ideya",
+  "overwrite": "I-overwrite",
+  "pageAnimationDemo": "Demo ng Animasyon ng Pahina",
+  "pageReaderMode": "Mode ng Page Reader",
+  "paged": "Paged",
+  "palette": "Palette",
+  "palettes": "Mga palette",
+  "paragraphSpacing": "Paragraph Spacing",
+  "parallelSegmentsForVideoDownloader": "Parallel na mga segment para sa video downloader",
+  "password": "Password",
+  "passwordProtectBackup": "Password Protektahan ang Backup",
+  "passwordRequired": "Kinakailangan ang Password",
+  "passwordsDontMatch": "Hindi tugma ang mga password!",
+  "pasteCustomImageUrl": "I-paste ang custom na URL ng larawan...",
+  "pasteUrlHere": "I-paste ang URL dito...",
+  "pathCopiedToClipboard": "Nakopya ang landas sa clipboard",
+  "payViaAnyUpiApp": "Magbayad sa pamamagitan ng anumang UPI App",
+  "paypalDonation": "Donasyon ng PayPal",
+  "paypalRecipientNotice": "Notice ng Tatanggap ng PayPal",
+  "penaltyDuration": "Tagal ng Parusa",
+  "performance": "Pagganap",
+  "permissionsRequired": "Kinakailangan ang mga Pahintulot",
+  "persistentPageIndicator": "Persistent Page Indicator",
+  "personalizeTheLookAndMakeIt": "I-personalize ang hitsura at gawin itong sa iyo",
+  "personalizedRecommendations": "Mga personalized na rekomendasyon",
+  "platform": "Plataporma",
+  "playAroundWithAppTheme": "Maglaro sa tema ng App",
+  "playAroundWithTheVideoPlayer": "Maglaro sa video player",
+  "playback": "Pag-playback",
+  "playbackSpeed": "Bilis ng Playback",
+  "playbackSpeeds": "Mga Bilis ng PlayBack",
+  "player": "Manlalaro",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Mga kontrol ng player, mga subtitle, at mga kagustuhan sa pag-playback",
+  "playerSettings": "Mga Setting ng Manlalaro",
+  "playerTheme": "Tema ng Manlalaro",
+  "playerThemes": "Mga Tema ng Manlalaro",
+  "pleaseChooseALogoFile": "Mangyaring pumili ng logo file.",
+  "pleaseEnterAPasswordOrDisable": "Mangyaring magpasok ng password o huwag paganahin ang proteksyon ng password.",
+  "pleaseEnterASearchTerm": "Mangyaring magpasok ng termino para sa paghahanap",
+  "pleaseEnterAUsernameToCompare": "Mangyaring magpasok ng isang username na ihahambing sa.",
+  "pleaseGrantStoragePermissionToBrowse": "Mangyaring magbigay ng pahintulot sa pag-iimbak upang i-browse ang iyong mga media file",
+  "pleaseLoginFirst": "Mangyaring mag-login muna",
+  "pleaseLoginFirstToExportYour": "Mangyaring mag-login muna upang i-export ang iyong listahan.",
+  "pleaseLoginToFavorite": "Mangyaring mag-login sa paborito!",
+  "pleaseLoginToUseThisFilter": "Mangyaring mag-login upang magamit ang filter na ito!",
+  "pleaseProvideAReasonForThis": "Mangyaring magbigay ng dahilan para sa pagkilos na ito",
+  "pleaseRestartTheAppToApply": "Mangyaring i-restart ang app upang ilapat ang mga pagbabago.",
+  "pleaseSelectABackupFileFirst": "Mangyaring pumili muna ng backup na file",
+  "pleaseSelectAValidApkFile": "Mangyaring pumili ng wastong APK file.",
+  "pleaseSelectAValidJarFile": "Mangyaring pumili ng wastong JAR file.",
+  "pleaseSelectAtLeastOneItem": "Mangyaring pumili ng hindi bababa sa isang item na iba-back up.",
+  "pleaseSelectAtLeastOneItemTo": "Mangyaring pumili ng hindi bababa sa isang item na ire-restore.",
+  "pleaseWriteAtLeast30Characters": "Mangyaring sumulat ng hindi bababa sa 30 character",
+  "pluginInstallationSync": "Pag-install at Pag-sync ng Plugin",
+  "pluginIsAlreadyUpToDate": "Ang plugin ay napapanahon na.",
+  "pluginJarCopiedPleaseRestartThe": "Nakopya ang plugin jar. Mangyaring i-restart ang app.",
+  "pluginNotInstalled": "Hindi Naka-install ang Plugin",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "Matagumpay na na-download muli ang plugin. Mangyaring i-restart upang mag-apply.",
+  "pluginReDownloadedPleaseRestartThe": "Muling na-download ang plugin. Paki-restart ang app para mag-apply.",
+  "pluginSyncedFromLocalApk": "Naka-sync ang plugin mula sa lokal na APK.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (Max 20MB)",
+  "popular": "Sikat",
+  "popularAnime": "Sikat na Anime",
+  "popularAnimes": "Mga sikat na Anime",
+  "popularManga": "Sikat na Manga",
+  "posterBlurMode": "Poster Blur Mode",
+  "posterBlurScope": "Saklaw ng Pag-blur ng Poster",
+  "poweredByAnimatch16PointCompatibility": "Pinapatakbo ng AniMatch 16-point compatibility analysis sa AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Pinapatakbo ng Commentum v2 - Advanced na sistema ng komento na may moderation",
+  "preferences": "Mga Kagustuhan",
+  "preferencesSystem": "Mga Kagustuhan at System",
+  "preferredSubtitleLanguage": "Ginustong Subtitle na Wika",
+  "preparingImageToShare": "Inihahanda ang larawang ibabahagi...",
+  "preparingStream": "Inihahanda ang stream",
+  "presetProviders": "PRESET NA MGA PROVIDER",
+  "preventScreenFromSleeping": "Pigilan ang screen mula sa pagtulog",
+  "preview": "Silipin",
+  "previewUpper": "PREVIEW",
+  "privacySafety": "Privacy at Kaligtasan",
+  "privacySettingsAndSafetyFeatures": "Mga setting ng privacy at mga tampok sa kaligtasan",
+  "private": "Pribado",
+  "privateEntry": "Pribadong Entry",
+  "profileEffects": "Mga Epekto ng Profile",
+  "profileIcon": "Icon ng Profile",
+  "progress": "Pag-unlad",
+  "progressHistory": "Pag-unlad at Kasaysayan",
+  "proposeNewFeaturesReportBugsAnd": "Magmungkahi ng mga bagong feature, mag-ulat ng mga bug, at makipag-chat sa ibang mga miyembro",
+  "protocol": "PROTOCOL",
+  "proxy": "Proxy",
+  "proxyConfiguration": "Configuration ng Proxy",
+  "pulseaudioSoundServer": "PulseAudio sound server",
+  "queryRemoteRepositoryForAddOn": "Query remote repository para sa mga add-on na update",
+  "queuedForDownload": "Nakapila para sa pag-download",
+  "quickSelectFollowing": "Mabilis na Pagpili (Sumusunod)",
+  "radiusMultiplier": "Radius Multiplier",
+  "random": "Random",
+  "range": "Saklaw",
+  "rank": "Ranggo",
+  "rating": "Rating",
+  "reDownloadAndReinstallThePlugin": "Muling i-download at muling i-install ang plugin mula sa simula",
+  "read": "Basahin",
+  "readArticle": "Basahin ang Artikulo",
+  "readLatestUpdatesAboutThisAnime": "Basahin ang pinakabagong mga update tungkol sa anime na ito",
+  "readLatestUpdatesAboutThisManga": "Basahin ang pinakabagong mga update tungkol sa manga na ito",
+  "readOnePageAtATime": "Basahin ang isang pahina sa isang pagkakataon",
+  "readAheadDurationInMinutes": "Ang tagal ng read-ahead sa Minutes",
+  "readaheadSeconds": "Readahead na mga segundo",
+  "reader": "Reader",
+  "readerBackgroundOpacity": "Opacity ng background ng mambabasa",
+  "readerControlTheme": "Tema ng Kontrol ng Mambabasa",
+  "readerPreferences": "Mga Kagustuhan sa Mambabasa",
+  "readerSettings": "Mga Setting ng Reader",
+  "readingDirection": "Direksyon sa Pagbasa",
+  "readingLayout": "Pagbabasa ng Layout",
+  "readingManga": "Nagbabasa ng Manga",
+  "readingMangaPhrasing": "Pagbabasa ng Manga Phrasing",
+  "readingNovel": "Pagbasa ng Nobela",
+  "readingNovelPhrasing": "Pagbasa ng Novel Phrasing",
+  "realTime4kUpscalingForAnime": "Real-time na 4K upscaling para sa anime content",
+  "reason": "Dahilan",
+  "reasonDeleted": "Tinanggal ang dahilan.",
+  "reasonUpdated": "Na-update ang dahilan!",
+  "recentActivity": "Kamakailang Aktibidad",
+  "recentMediaComments": "Kamakailang Mga Komento sa Media",
+  "recentNews": "Kamakailang Balita",
+  "recentSearches": "Mga Kamakailang Paghahanap",
+  "recentlyCompleted": "Kamakailang Nakumpleto",
+  "recentlyUpdated": "Kamakailang Na-update",
+  "recommend": "Magrekomenda",
+  "recommendationSubmitted": "Naisumite ang rekomendasyon! 🎉",
+  "recommended": "Inirerekomenda",
+  "recommendedAnime": "Inirerekomenda ang Anime",
+  "recommendedBy": "Inirerekomenda ni",
+  "recommendedManga": "Inirerekomenda ang Manga",
+  "recommendedNovels": "Mga Inirerekomendang Nobela",
+  "reduceColorBandingArtifacts": "Bawasan ang color banding artifacts",
+  "refreshComments": "I-refresh ang mga komento",
+  "refreshRate": "Rate ng Pag-refresh",
+  "relations": "Relasyon",
+  "releaseDate": "Petsa ng Paglabas",
+  "releaseYear": "Taon ng Paglabas",
+  "releaseYearStats": "Mga Istatistika ng Taon ng Paglabas",
+  "rememberMyChoice": "Tandaan ang aking pinili",
+  "rememberServer": "Tandaan ang Server",
+  "removalRequestSentToAdminsFor": "Ipinadala ang kahilingan sa pag-alis sa mga admin para sa pagsusuri.",
+  "remove": "Alisin",
+  "removeBanner": "Alisin ang Banner",
+  "removeDecoration": "Alisin ang Dekorasyon",
+  "removeEffect": "Alisin ang Epekto",
+  "removeFromHistory": "Alisin sa History",
+  "removeItems": "Alisin ang Mga Item",
+  "removeNameplate": "Alisin ang Nameplate",
+  "removeTheme": "Alisin ang Tema",
+  "removeWhiteBlackBorders": "Alisin ang puti/itim na mga hangganan",
+  "removeYourReason": "Alisin ang Iyong Dahilan?",
+  "rename": "Palitan ang pangalan",
+  "renameList": "Palitan ang pangalan ng Listahan",
+  "reorderNavigationTabs": "Muling ayusin ang Mga Tab ng Navigation",
+  "replaceExistingDataOnThisDevice": "Palitan ang kasalukuyang data sa device na ito ng backup",
+  "replay": "I-replay",
+  "reportsQueue": "Queue ng Mga Ulat",
+  "repositories": "Mga repositoryo",
+  "repositoryUrl": "URL ng repositoryo",
+  "repositoryUrlUpper": "REPOSITORY URL",
+  "requests": "Mga kahilingan",
+  "requiredForCoreAndVisualTuning": "Kinakailangan para sa Core at Visual na tuning. Itago sa mga low-end na device.",
+  "reset": "I-reset",
+  "resetUpper": "I-RESET",
+  "resetDownloadPath": "I-reset ang Download Path",
+  "resetNovelReaderSettings": "I-reset ang Mga Setting ng Novel Reader",
+  "resetToDefault": "I-reset sa default",
+  "resetToDefault2": "I-reset sa Default",
+  "resetToDefaultPicture": "I-reset sa Default na Larawan",
+  "resetToDefaultWallpaper": "I-reset sa default na wallpaper!",
+  "resizeMode": "Baguhin ang laki ng Mode",
+  "resizeModes": "Baguhin ang laki ng mga Mode",
+  "resolution": "Resolusyon",
+  "resolve": "Lutasin",
+  "restartTheAppToApplyThe": "I-restart ang App para ilapat ang update.",
+  "restoreAllNovelReaderDefaults": "Ibalik ang lahat ng mga default ng novel reader",
+  "restoreData": "Ibalik ang Data",
+  "restorePreview": "Ibalik ang Preview",
+  "restoreToDefaultInternalStorage": "I-restore sa default na internal storage",
+  "restoringWillOverwriteYourSelectedLocal": "O-overwrite ng pagpapanumbalik ang iyong mga napiling item at setting ng lokal na library kasama ang mga nilalaman ng backup na ito.",
+  "restrictMessagesToFollowing": "Limitahan ang Mga Mensahe sa Pagsubaybay",
+  "results": "Mga resulta",
+  "resultsWillAppearGroupedByExtension": "Lilitaw ang mga resulta na nakapangkat ayon sa extension",
+  "retainOriginalColor": "Panatilihin ang Orihinal na Kulay",
+  "retry": "Subukan muli",
+  "rightSide": "Kanan Gilid",
+  "riseAndShine": "Bumangon at sumikat",
+  "roleUpdatedSuccessfully": "Matagumpay na na-update ang tungkulin",
+  "roleAll": "Tungkulin: Lahat",
+  "rollbackVersion": "Rollback na Bersyon",
+  "romajiTitle": "Pamagat ng Romaji",
+  "roundUpScores": "Round Up Scores",
+  "runtimeHost": "Runtime Host",
+  "runtimeHostReleases": "Mga Paglabas ng Runtime Host",
+  "runtimeHostRequired": "Kinakailangan ang Runtime Host",
+  "safetyFeatures": "Mga tampok ng kaligtasan:",
+  "saturation": "Saturation",
+  "sauceSearcher": "Sauce Searcher",
+  "save": "I-save",
+  "saveEquip": "I-save at Equip",
+  "saveChanges": "I-save ang mga pagbabago",
+  "saveChanges2": "I-save ang Mga Pagbabago",
+  "saveLastFrame": "I-save ang Huling Frame",
+  "saveLogo": "I-save ang Logo",
+  "savedAnimeEntriesAndProgress": "Naka-save na mga entry at pag-unlad ng anime",
+  "savedLightNovelsAndReadingState": "Naka-save na mga light novel at estado ng pagbabasa",
+  "savedMangaEntriesAndChapters": "Naka-save na mga entry at kabanata ng manga",
+  "savedStreamLinkHasExpiredFetching": "Ang naka-save na link ng stream ay nag-expire na. Kumukuha ng bagong link...",
+  "savesAScreenshotOfTheLast": "Sine-save ang isang screenshot ng huling frame na iyong pinanood. Ang pag-disable nito ay makabuluhang nakakabawas sa paggamit ng storage",
+  "scaleFactor": "Scale Factor",
+  "scalingAlgorithm": "Algorithm ng Pag-scale",
+  "scanningForMoreServers": "Nag-scan para sa higit pang mga server...",
+  "scanningForVideoStreams": "Nag-scan para sa mga video stream...",
+  "score": "Puntos",
+  "scoreDistribution": "Pamamahagi ng Kalidad",
+  "scoringSystem": "Sistema ng Pagmamarka",
+  "search": "Maghanap",
+  "searchUpper": "PAGHAHANAP",
+  "searchAcrossExtensions": "Maghanap sa mga extension...",
+  "searchAnimeMovies": "Maghanap ng anime, mga pelikula...",
+  "searchAnime": "Maghanap ng anime...",
+  "searchExtensions": "Mga Extension sa Paghahanap",
+  "searchExtensionsEllipsis": "Mga extension sa paghahanap...",
+  "searchFailed": "Nabigo ang paghahanap",
+  "searchForAnime": "Maghanap ng anime",
+  "searchInHistory": "Maghanap sa Kasaysayan...",
+  "searchInLibrary": "Maghanap sa Library...",
+  "searchItemsInList": "Maghanap ng mga item sa listahan...",
+  "searchManga": "Maghanap ng manga...",
+  "searchQuery": "Query sa Paghahanap",
+  "searchSources": "Maghanap ng mga mapagkukunan...",
+  "searchTags": "Maghanap ng mga tag...",
+  "searchUser": "Maghanap ng User",
+  "searchingDatabase": "Naghahanap sa database...",
+  "searching": "Naghahanap...",
+  "season": "Season",
+  "seasons": "Mga panahon",
+  "secondsPerScreenLowerIsFaster": "Segundo bawat screen (mas mabilis ang ibaba)",
+  "secondsPerScreenPageLowerIs": "Segundo bawat screen/pahina (mas mabilis ang ibaba)",
+  "securityEncryption": "Seguridad at Pag-encrypt",
+  "seePeopleWhoContributedToAnymex": "Tingnan ang mga taong nag-ambag sa AnymeX",
+  "selectAFolderWhereAnymexWill": "Pumili ng folder kung saan ise-save ng AnymeX ang iyong mga na-download na episode ng anime at manga chapters.",
+  "selectAnAnimeScreenshotToFind": "Pumili ng screenshot ng anime upang mahanap ang pinagmulan nito",
+  "selectAnilistMyanimelistSimklOrExtensions": "Piliin ang AniList, MyAnimeList, Simkl, o Extension mode",
+  "selectDataToIncludeInThis": "Pumili ng data na isasama sa backup na ito",
+  "selectDirectory": "Piliin ang Direktoryo",
+  "selectExtensions": "Piliin ang Mga Extension",
+  "selectFolder": "Piliin ang Folder",
+  "selectLanguage": "Piliin ang Wika",
+  "selectMediaDirectory": "Piliin ang Direktoryo ng Media",
+  "selectNovelSource": "Piliin ang Pinagmulan ng Novel",
+  "selectProfile": "PUMILI NG PROFILE",
+  "selectRange": "Piliin ang Saklaw",
+  "selectServer": "Piliin ang Server",
+  "selectStatus": "Piliin ang Katayuan",
+  "selectSubtitleFont": "Piliin ang Subtitle na Font",
+  "selectTags": "PUMILI NG MGA TAG",
+  "selectTimezone": "Piliin ang Timezone",
+  "selectVersionToRollback": "Piliin ang Bersyon para i-rollback",
+  "selectVideoFile": "Piliin ang Video File",
+  "selectYourPreferredContentSource": "Piliin ang iyong gustong pinagmulan ng nilalaman",
+  "selectedCacheCleared": "Na-clear ang napiling cache",
+  "selectedItemsRemoved": "Inalis ang mga napiling item",
+  "sensitiveLoginTokensForMalSimkl": "Mga sensitibong token sa pag-log in para sa MAL, Simkl, at AniList",
+  "sensitiveSessionTokensForMalSimkl": "Mga token ng sensitibong session para sa MAL, Simkl, at AniList",
+  "separateCompletedAnimeListIntoSections": "Paghiwalayin ang nakumpletong listahan ng anime sa mga seksyon ayon sa format.",
+  "separateCompletedMangaListIntoSections": "Paghiwalayin ang nakumpletong listahan ng manga sa mga seksyon ayon sa format.",
+  "serverDetails": "MGA DETALYE NG SERVER",
+  "serverChanIsTakingANap": "Si server-chan ay umiidlip!",
+  "setUpYourPreferencesForThe": "I-set up ang iyong mga kagustuhan para sa pinakamagandang karanasan",
+  "settings": "Mga setting",
+  "settingsAccount": "Mga Setting at Account",
+  "settingsAuthentication": "Mga Setting at Pagpapatotoo",
+  "settingsSavedSuccessfully": "Matagumpay na na-save ang mga setting.",
+  "shaderProfilesInitialized": "Nasimulan ang Mga Profile ng Shader",
+  "shadowBanUser": "Gumagamit ng Shadow Ban",
+  "shareLogs": "Ibahagi ang mga log",
+  "shareMatchCard": "Ibahagi ang Match Card",
+  "shareProfile": "Ibahagi ang Profile",
+  "shareTheSavedLogFileOr": "Ibahagi ang naka-save na log file o kopyahin ang mga nilalaman nito.",
+  "sharedFromAnymex": "Ibinahagi mula sa AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Ipakita ang mga animated na overlay ng epekto sa mga banner ng profile",
+  "showAnimatedFramesAroundUserAvatars": "Ipakita ang mga animated na frame sa paligid ng mga avatar ng user",
+  "showBatteryTime": "Ipakita ang Baterya at Oras",
+  "showChapterTransitionEvenWithoutGaps": "Ipakita ang paglipat ng kabanata kahit na walang mga puwang",
+  "showCommunityRecommendations": "Ipakita ang Mga Rekomendasyon ng Komunidad",
+  "showContinueWatchingCard": "Ipakita ang Continue Watching Card",
+  "showContinueWatchingOnHome": "Ipakita ang Magpatuloy sa Panonood sa Tahanan",
+  "showCustomProfileBannersFallsBack": "Ipakita ang mga custom na banner ng profile (bumabalik sa AniList cover kung naka-off)",
+  "showNameplateBackgroundsOnCommentCards": "Ipakita ang mga background ng nameplate sa mga card ng komento at leaderboard",
+  "showOnLeft": "Ipakita sa kaliwa",
+  "showOnRight": "Ipakita sa kanan",
+  "showReadingProgress": "Ipakita ang Pag-unlad ng Pagbasa",
+  "showTimestamps": "Ipakita ang mga timestamp",
+  "simpleCompactListView": "Simpleng compact list view",
+  "simpleDirectmediaLayerAudioOutput": "Simpleng DirectMedia Layer na audio output",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Simpleng layout na nagpapakita ng numero ng episode, pamagat, at progreso nang walang thumbnail",
+  "sizeMode": "Mode ng Laki:",
+  "smartMangaSuggestions": "Mga mungkahi ng matalinong manga",
+  "smootherMotionCanIncreaseGpuUsage": "Mas makinis na paggalaw, maaaring tumaas ang paggamit ng GPU",
+  "social": "Sosyal",
+  "somethingWentWrong": "Nagkaproblema",
+  "sort": "PAG-URI",
+  "sort2": "Pagbukud-bukurin",
+  "sortBy": "PAGSAY-BAYIN NG",
+  "sortBy2": "Pagbukud-bukurin Ayon",
+  "sortComments": "Pagbukud-bukurin ang mga komento",
+  "source": "Pinagmulan",
+  "sourceAndPluginConfigurations": "Mga pagsasaayos ng pinagmulan at plugin",
+  "sourcePreferences": "Mga Kagustuhan sa Pinagmulan",
+  "spaceBetweenLetters": "Puwang sa pagitan ng mga titik",
+  "spaceBetweenParagraphs": "Puwang sa pagitan ng mga talata",
+  "spaceBetweenWords": "Puwang sa pagitan ng mga salita",
+  "spacedPages": "Mga Spaced na Pahina",
+  "splitCompletedAnimeList": "Hatiin ang Nakumpletong Listahan ng Anime",
+  "splitCompletedMangaList": "Hatiin ang Nakumpletong Listahan ng Manga",
+  "spoiler": "Spoiler",
+  "spoilerTapToReveal": "Spoiler (i-tap para ipakita)",
+  "staff": "Mga tauhan",
+  "staffCharacterNameLanguage": "Wika ng Pangalan ng Staff at Character",
+  "standardGpuRendering": "Karaniwang pag-render ng GPU",
+  "starOnGithub": "Bituin sa GitHub",
+  "startANewDownloadFromThe": "Magsimula ng bagong pag-download mula sa tab na \"Bagong Pag-download.\"",
+  "startChapter": "Simulan ang Kabanata",
+  "startDate": "Petsa ng Pagsisimula",
+  "startMangaDownload": "Simulan ang Pag-download ng Manga",
+  "startTest": "Simulan ang Pagsusulit",
+  "startingExtensionRuntime": "Sinisimulan ang runtime ng extension...",
+  "statistics": "Mga istatistika",
+  "stats": "Stats",
+  "status": "Katayuan",
+  "statusDistribution": "Pamamahagi ng Katayuan",
+  "statusPostedSuccessfully": "Matagumpay na nai-post ang status!",
+  "stayUpdatedWithTheLatestReleases": "Manatiling updated sa mga pinakabagong release, anunsyo, at talakayan",
+  "storagePath": "Storage at Path",
+  "storageManager": "Tagapamahala ng Imbakan",
+  "storageOptions": "Mga Pagpipilian sa Imbakan",
+  "storagePermission": "Pahintulot sa Pag-iimbak",
+  "storagePermissionIsRequiredToDownload": "Kinakailangan ang pahintulot sa storage para mag-download ng mga update",
+  "storagePermissionRequired": "Kinakailangan ang Pahintulot sa Pag-iimbak",
+  "streakCurLong": "Streak (Cur/Long)",
+  "stretchImagesToFitScreenWidth": "I-stretch ang mga larawan upang magkasya sa lapad ng screen",
+  "strikethrough": "Strikethrough",
+  "studios": "Mga studio",
+  "style": "Estilo",
+  "subtitleBackgroundColor": "Kulay ng Background ng Subtitle",
+  "subtitleColor": "Kulay ng Subtitle",
+  "subtitleFont": "Font ng Subtitle",
+  "subtitleOutlineColor": "Kulay ng Outline ng Subtitle",
+  "subtitleOutlineWidth": "Lapad ng Balangkas ng Subtitle",
+  "subtitlePreview": "Preview ng Subtitle",
+  "subtitlePreviewText": "Teksto ng Preview ng Subtitle",
+  "subtitleSize": "Laki ng Subtitle",
+  "subtitleTransparency": "Transparency ng Subtitle",
+  "subtitles": "Mga subtitle",
+  "summary": "Buod",
+  "superAdmin": "Super Admin",
+  "supportTtfAndOtfFiles": "Suportahan ang mga .ttf at .otf na file",
+  "supportAnymex": "Suportahan ang AnymeX",
+  "supportedModes": "Mga Sinusuportahang Mode",
+  "supportedUpiApps": "Mga sinusuportahang UPI Apps",
+  "suppressActivityWhenWatchingOrReading": "Pigilan ang aktibidad kapag nanonood o nagbabasa ng nilalaman ng NSFW",
+  "swapUpDownActions": "Magpalit ng pataas/pababang pagkilos",
+  "swipeBetweenChapters": "Mag-swipe sa Pagitan ng mga Kabanata",
+  "swipeIndicatorTheme": "Swipe Indicator Theme",
+  "swipeToSeek": "Mag-swipe para Maghanap",
+  "switchBetweenDefaultTitleAndRomaji": "Lumipat sa pagitan ng default na pamagat at romaji/alternate na pamagat sa library at card",
+  "switchToOnline": "Lumipat sa Online",
+  "syncCompletedButThePluginIs": "Nakumpleto ang pag-sync, ngunit hindi pa handa ang plugin.",
+  "syncDetails": "I-sync ang mga Detalye",
+  "syncFailed": "Nabigo ang pag-sync",
+  "synonyms": "Mga kasingkahulugan",
+  "synopsis": "buod",
+  "tags": "MGA TAGS",
+  "tags2": "Mga tag",
+  "takeColorFromYourWallpaperA12": "Kumuha ng kulay mula sa iyong wallpaper (A12+)",
+  "tapToAddARepositoryUrl": "I-tap ang + para magdagdag ng URL ng repositoryo",
+  "tapAZoneToChangeIts": "I-tap ang isang zone para baguhin ang pagkilos nito",
+  "tapAction": "I-tap ang Aksyon",
+  "tapToChooseASource": "I-tap para pumili ng pinagmulan",
+  "tapToLogin": "I-tap para mag-login",
+  "tapToLogout": "I-tap para mag-logout",
+  "tapToScroll": "I-tap para Mag-scroll",
+  "tapYourProfileIconInThe": "I-tap ang icon ng iyong profile sa itaas na app bar",
+  "tapZones": "I-tap ang Mga Zone",
+  "tellTheCommunityWhyThisDeserves": "Sabihin sa komunidad kung bakit ito ay nararapat na higit na pansin.",
+  "temporaryAppCache": "Pansamantalang App Cache",
+  "termsOfServicePrivacyPolicy": "Mga Tuntunin ng Serbisyo/Patakaran sa Privacy",
+  "test": "Pagsubok",
+  "testExtensions": "Mga Extension ng Pagsubok",
+  "testResults": "Mga Resulta ng Pagsusulit",
+  "testType": "Uri ng Pagsubok",
+  "textSize": "Laki ng text",
+  "theme": "Tema",
+  "themeLayoutAndColors": "Tema, layout, at mga kulay",
+  "themes": "Mga tema",
+  "thisBackupIsEncryptedPleaseEnter": "Naka-encrypt ang backup na ito. Mangyaring ipasok ang password upang magpatuloy.",
+  "thisDirectoryContainsNoSupportedMedia": "Walang sinusuportahang media file ang direktoryo na ito",
+  "thisMayTakeAFewSeconds": "Maaaring tumagal ito ng ilang segundo",
+  "thisMayTakeUpTo30": "Maaaring tumagal ito ng hanggang 30 segundo",
+  "thisMightTakeAFewSeconds": "Maaaring tumagal ito ng ilang segundo",
+  "thisReasonWillBeDeletedImmediately": "Ang dahilan na ito ay tatanggalin kaagad.",
+  "thisWillPermanentlyDeleteAllData": "Permanente nitong tatanggalin ang lahat ng data na nakaimbak ng AnymeX. Hindi na ito maaaring bawiin.",
+  "tipYouCanCombineTheseE": "Tip: Maaari mong pagsamahin ang mga ito! hal. **naka-bold at *italic* magkasama**",
+  "title": "Pamagat",
+  "titleCopied": "Nakopya ang pamagat",
+  "titleLanguage": "Wika ng Pamagat",
+  "toDownloadForTheFirstTime": "Upang mag-download sa unang pagkakataon, magbigay ng mga pahintulot sa pamamagitan ng pagbisita muna sa pahina ng Mga Download:",
+  "toggleBetweenGridAndDetailedList": "Mag-toggle sa pagitan ng grid at detalyadong listahan",
+  "toneMapping": "Tone Mapping",
+  "topAnime": "Nangungunang Anime",
+  "topComments": "Mga nangungunang komento",
+  "topGenres": "Mga Nangungunang Genre",
+  "topManga": "Nangungunang Manga",
+  "topManhua": "Nangungunang Manhua",
+  "topManhwa": "Nangungunang Manhwa",
+  "topStudios": "Mga Nangungunang Studio",
+  "torrentServer": "Server ng Torrent",
+  "torrentStreamCache": "Torrent Stream Cache",
+  "torrserverStreamingAddOns": "TorrServer at streaming add-on",
+  "totalChapters": "Kabuuang mga Kabanata",
+  "totalCost": "Kabuuang Gastos:",
+  "totalItems": "Kabuuang Mga Item",
+  "track": "Subaybayan",
+  "trackAiringSchedules": "Subaybayan ang mga iskedyul ng pagsasahimpapawid",
+  "trackYourProgress": "Subaybayan ang iyong pag-unlad?",
+  "trackingServices": "Mga Serbisyo sa Pagsubaybay",
+  "transitionSubtitle": "Subtitle ng Transition",
+  "translateTo": "Isalin Sa",
+  "translationLanguage": "Wika ng Pagsasalin",
+  "translucentNav": "Translucent Nav",
+  "trendingAnime": "Trending na Anime",
+  "trendingAnimes": "Mga Trending na Anime",
+  "trendingManga": "Trending Manga",
+  "tryADifferentKeyword": "Subukan ang ibang keyword",
+  "tryAdjustingYourFilters": "Subukang ayusin ang iyong mga filter",
+  "tryAgain": "Subukan Muli",
+  "tryDifferentAnimationStylesForPage": "Subukan ang iba't ibang istilo ng animation para sa mga pasukan ng page",
+  "ttsAutoAdvance": "TTS Auto Advance",
+  "ttsPitch": "TTS Pitch",
+  "ttsSpeed": "Bilis ng TTS",
+  "tweakGeneralAppSettings": "I-tweak ang mga pangkalahatang setting ng app",
+  "typeLabel": "Uri",
+  "typeAtLeast2CharactersTo": "Mag-type ng hindi bababa sa 2 character na hahanapin",
+  "ui": "UI",
+  "uiComponents": "Mga Bahagi ng UI",
+  "uiLayoutColorsAndThemes": "Layout ng UI, mga kulay, at mga tema",
+  "uiLayoutColorsAndVisualStyles": "Layout ng UI, mga kulay, at mga visual na istilo",
+  "uiSettings": "Mga Setting ng UI",
+  "unableToPreparePlaybackRightNow": "Hindi maihanda ang pag-playback sa ngayon. Pakisubukang muli.",
+  "unbanUser": "I-unban ang User",
+  "unbind": "Alisin ang pagkakatali",
+  "unifiedLibrary": "Pinag-isang Aklatan",
+  "uninstall": "I-uninstall",
+  "universal": "Pangkalahatan",
+  "unlock": "I-unlock",
+  "unlockCustomizations": "I-unlock ang Mga Pag-customize",
+  "unmuteUser": "I-unmute ang User",
+  "unreadOnly": "Hindi pa nababasa",
+  "upcomingAnime": "Paparating na Anime",
+  "update": "Update",
+  "updateAll": "I-update Lahat",
+  "updateCheckComplete": "Kumpleto na ang pagsusuri sa pag-update",
+  "updateOnImport": "Update sa Import",
+  "updateToLatestVersion": "Update sa Pinakabagong Bersyon",
+  "updateYourActivity": "I-update ang iyong aktibidad...",
+  "updatesPending": "Nakabinbin ang mga Update",
+  "upiDonation": "UPI Donasyon",
+  "uploadAnImageToGetStarted": "Mag-upload ng larawan para makapagsimula",
+  "uploadImage": "Mag-upload ng Larawan",
+  "urlCopiedToClipboard": "Nakopya ang URL sa clipboard",
+  "usage": "Paggamit:",
+  "useAiToTranslateSoftSubtitles": "Gamitin ang AI para magsalin ng mga soft-subtitle nang live",
+  "useAlternateTitle": "Gumamit ng Kahaliling Pamagat",
+  "useBuffering": "Gumamit ng Buffering",
+  "useCustomGesturesForReaderNavigation": "Gumamit ng mga custom na galaw para sa nabigasyon ng mambabasa",
+  "useEnhancedEpisodeMetadataAndCovers": "Gumamit ng pinahusay na metadata ng episode at mga pabalat",
+  "useExternalPlayer": "Gamitin ang Panlabas na Manlalaro",
+  "useKeyboardShortcutsDuringPlaybackTo": "Gumamit ng mga keyboard shortcut habang nagpe-playback para lumipat ng profile",
+  "useLegacyHeader": "Gamitin ang Legacy Header",
+  "useLibassForSubtitles": "Gamitin ang Libass para sa Mga Subtitle",
+  "useLibmpvForPlayback": "Gamitin ang LibMpv para sa Playback",
+  "useMpvConf": "Gumamit ng mpv.conf",
+  "usePosterColor": "Gumamit ng Kulay ng Poster",
+  "useVolumeKeysToChangePages": "Gumamit ng mga volume key upang baguhin ang mga pahina",
+  "useYearRange": "Gamitin ang Saklaw ng Taon",
+  "user": "Gumagamit",
+  "userIdCopiedToClipboard": "Nakopya ang User ID sa clipboard",
+  "userList": "Listahan ng Gumagamit",
+  "userManagement": "Pamamahala ng User",
+  "userCreatedCustomMediaCollections": "Mga koleksyon ng custom na media na ginawa ng user",
+  "username": "Username",
+  "verifyTlsCertificates": "I-verify ang mga TLS certificate",
+  "versionCopied": "Nakopya ang bersyon",
+  "vertical": "Patayo",
+  "videoPlayer": "Video Player",
+  "videoRenderer": "Tagapag-render ng Video",
+  "videoSync": "Pag-sync ng Video",
+  "viewAndFilterAllUsers": "Tingnan at salain ang lahat ng user",
+  "viewOnAnilist": "Tingnan sa AniList",
+  "viewOpeningAndEndingThemes": "Tingnan ang pambungad at pagtatapos na mga tema",
+  "viewProfile": "Tingnan ang Profile",
+  "viewSourceCodeOnGithub": "Tingnan ang Source code sa github.",
+  "viewTheChronologicalWatchOrderOf": "Tingnan ang pagkakasunod-sunod ng panonood ng anime na ito",
+  "viewUser": "Tingnan ang User",
+  "viewUserRankingsTopContributorsReputation": "Tingnan ang mga ranggo ng user, nangungunang contributor at reputasyon",
+  "viewingAnimeDetails": "Pagtingin sa Mga Detalye ng Anime",
+  "viewingMangaDetails": "Pagtingin sa Mga Detalye ng Manga",
+  "viewingNovelDetails": "Pagtingin sa Mga Detalye ng Novel",
+  "visibleTabs": "Mga Nakikitang Tab",
+  "visitGithubReleasesPageForChangelogs": "Bisitahin ang pahina ng mga release ng GitHub para sa mga changelog at manu-manong pag-download",
+  "visualFromAnymex": "Visual mula sa AnymeX",
+  "voiceActors": "Mga Boses na Artista",
+  "voicedCharacters": "Mga Boses na Karakter",
+  "volumeButtonScrolling": "Pag-scroll ng Volume Button",
+  "volumeKeysNavigation": "Volume Keys Navigation",
+  "volumes": "MGA VOLUME",
+  "volumesRead": "Mga Volume na Binasa",
+  "votes": "Mga boto",
+  "wWhatAreYouDoingStep": "A-anong ginagawa mo step-bro, login ka muna bago mo gawin yan (●´⌓`●)",
+  "wallpaper": "Wallpaper",
+  "warnUser": "Babalaan ang User",
+  "warning": "Babala",
+  "wasThisHelpful": "Nakakatulong ba ito?",
+  "watchAd": "Manood ng Ad",
+  "watchAnAdToSupport": "Manood ng Ad na Susuportahan",
+  "watchAnime": "Manood ng Anime",
+  "watchOrder": "Manood ng Order",
+  "watchTogether": "Manood ng Sama-sama",
+  "watchTogetherPolicy": "Panoorin ang Sama-samang Patakaran",
+  "watchingAnime": "Nanonood ng Anime",
+  "watchingAnimePhrasing": "Nanonood ng Anime Phrasing",
+  "welcomeToAnymex": "Maligayang pagdating sa AnymeX",
+  "whatsOnYourMind": "Ano ang nasa isip mo?",
+  "whenEnabledAnymexSavesLogsLocally": "Kapag pinagana, ang AnymeX ay nagse-save ng mga log nang lokal hanggang sa hindi pinagana.",
+  "whyAreYouRecommendingThisMin": "Bakit mo ito inirerekomenda? (min 30 chars)",
+  "whyIsThisUnderratedMin30": "Bakit underrated ito? (min 30 chars)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "Word Spacing",
+  "writeAMessage": "Sumulat ng mensahe...",
+  "writeLogToAFile": "Sumulat ng log sa isang file",
+  "writeYourAnilistBio": "Isulat ang iyong AniList bio...",
+  "wrongTitle": "Maling Pamagat?",
+  "year": "taon",
+  "yearUpper": "YEAR",
+  "you": "Ikaw",
+  "youCanUseDiscordStyleMarkdown": "Maaari mong gamitin ang Discord-style markdown para i-format ang iyong mga komento:",
+  "youHaveUnsentTextClosingNow": "Mayroon kang hindi naipadalang text. Ang pagsasara ngayon ay mawawala ang iyong mensahe.",
+  "youHaveUnsentTextClosingNowWill": "Mayroon kang hindi naipadalang text. Ang pagsasara ngayon ay mawawala ang iyong tugon.",
+  "youHaveUnsentTextClosingNowWillLose": "Mayroon kang hindi naipadalang text. Ang pagsasara ngayon ay mawawala ang iyong katayuan.",
+  "youNeedModeratorPermissionsToAccess": "Kailangan mo ng mga pahintulot ng moderator para ma-access ang panel na ito",
+  "youreUpLate": "Late ka ng gising",
+  "yourBalance": "Iyong Balanse:",
+  "yourPrivacyIsImportant": "Mahalaga ang iyong privacy:",
+  "yourReasonHasBeenRemoved": "Inalis na ang iyong dahilan.",
+  "yourRecommendation": "Ang Iyong Rekomendasyon",
+  "yourRichPresenceActivityWillStop": "Hihinto sa pag-update ang iyong rich presence activity.",
+  "yourRole": "Ang iyong Papel",
+  "yourWatchReadHistory": "Ang iyong kasaysayan sa panonood at pagbabasa",
+  "yourWatchReadStatistics": "Ang iyong mga istatistika sa relo at nabasa",
+  "advancedLinuxSoundArchitecture": "Advanced na Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "Lahat ng iyong lokal na shi",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "Sigurado ka ba?",
+  "aspectRatio": "Aspect Ratio",
+  "attackOnTitan": "Pag-atake sa Titan",
+  "audio": "Audio",
+  "audioSubtitles": "Audio at Mga Subtitle",
+  "audioTrack": "Audio Track",
+  "audioTracks": "Mga Audio Track",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Auto (AudioTrack)",
+  "autoCoreaudio": "Auto (CoreAudio)",
+  "autoGpu": "Auto (GPU)",
+  "autoPulseaudio": "Auto (PulseAudio)",
+  "autoWasapi": "Auto (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Bloom",
+  "castToDevice": "I-cast sa Device",
+  "colorFilter": "Filter ng Kulay",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "Panlabas na Manlalaro",
+  "files": "Mga file",
+  "forward": "Pasulong",
+  "forward30s": "Forward 30s",
+  "fullscreen": "Fullscreen",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Lock Controls",
+  "lockOrientation": "Lock Orientation",
+  "mal": "MAL",
+  "materialYou": "Materyal Ikaw",
+  "mediacodecEmbed": "MediaCodec I-embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Kinakailangang Pagpatay",
+  "nextEp": "Susunod na Ep.",
+  "nextEpisode": "Susunod na Episode",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Larawan sa Larawan",
+  "playlist": "Playlist",
+  "previousEpisode": "Nakaraang Episode",
+  "pulseaudio": "PulseAudio",
+  "quality": "Kalidad",
+  "qualitySetting": "Setting ng Kalidad",
+  "readingMode": "Reading Mode",
+  "reddit": "Reddit",
+  "replay30s": "I-replay ang 30s",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito at Makomo",
+  "sdl": "SDL",
+  "server": "server",
+  "servers": "Mga server",
+  "shadersColorProfiles": "Mga Shader at Profile ng Kulay",
+  "shadersColors": "Mga Shader at Kulay",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "Bilis",
+  "sw": "SW",
+  "syncSubs": "I-sync ang Mga Sub",
+  "syncSubtitles": "I-sync ang Mga Subtitle",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Ang mabilis na brown fox ay tumalon sa ibabaw ng tamad na aso",
+  "themeMode": "Mode ng Tema",
+  "thisIsFrustrating": "Nakakadismaya Ito",
+  "toYouSomeday": "Sa Iyo, Balang Araw",
+  "torrentFiles": "Mga Torrent File",
+  "tracks": "Mga track",
+  "unlockOrientation": "I-unlock ang Oryentasyon",
+  "userAgent": "Ahente ng Gumagamit",
+  "videoQuality": "Kalidad ng Video",
+  "videoServers": "Mga Server ng Video",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Manood ng Magkasama (Sa Kwarto)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "0 ay nangangahulugan ng awtomatikong bilang ng thread",
+  "n18Content": "18+ Nilalaman",
+  "aboveAverageSimilarity": "Above-average na pagkakatulad.",
+  "account": "Account",
+  "activityStats": "Aktibidad at Istatistika",
+  "add": "Idagdag",
+  "additionalNotesOptional": "Mga karagdagang tala (opsyonal)",
+  "adjustKeyVolumeScrollingSpeed": "Ayusin ang Bilis ng Pag-scroll ng Key at Volume",
+  "alpha": "Alpha",
+  "alwaysChecksCurrentChapterNumberAnd": "Palaging suriin ang kasalukuyang numero ng kabanata at ikinukumpara ito sa susunod/nakaraang kabanata, nagna-navigate lang kapag iba ang numero. Mag-navigate sa pamamagitan ng Kabanata ay lilipat lamang sa susunod na item sa listahan kahit na may mga duplicate.",
+  "animeCompleted": "Natapos ang Anime",
+  "announcementMode": "Mode ng Anunsyo",
+  "appIsStillLoadingTryAgain": "Naglo-load pa rin ang app, subukang muli sa ilang sandali.",
+  "applyAColorTintOverPages": "Maglagay ng color tint sa mga pahina",
+  "audioDelay": "Pagkaantala ng Audio",
+  "audioSettings": "Mga Setting ng Audio",
+  "audioTrack2": "Audio track",
+  "autoAdvance": "Auto Advance",
+  "autoDeleteCompletedEntries": "Awtomatikong tanggalin ang mga nakumpletong entry",
+  "autoSyncProgress": "Auto-sync na pag-unlad",
+  "automaticallyMoveToNextText": "Awtomatikong lumipat sa susunod na teksto",
+  "automaticallyScrollAdvancePages": "Awtomatikong mag-scroll/mag-advance ng mga pahina",
+  "automaticallySwitchToContinuousModeFor": "Awtomatikong lumipat sa tuloy-tuloy na mode para sa long-strip na manga",
+  "averageOverlap": "Average na overlap.",
+  "background": "Background",
+  "basedOnYourFavouriteAnime": "Batay sa iyong paboritong anime.",
+  "basedOnYourFavouriteManga": "Batay sa iyong paboritong manga.",
+  "basedOnYourTop10Manga": "Batay sa iyong nangungunang 10 manga tag.",
+  "basedOnYourTop5Manga": "Batay sa iyong nangungunang 5 manga genre.",
+  "blue": "Asul",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "Magagamit ang Bridge Update",
+  "brightness": "Liwanag",
+  "bulletList": "Listahan ng Bullet",
+  "calendarUpper": "CALENDAR",
+  "canadianMovies": "Mga Pelikulang Canadian",
+  "canadianShows": "Mga Palabas sa Canada",
+  "cannotCompareTheSameProfileWith": "Hindi maihambing ang parehong profile sa sarili nito.",
+  "castToDevice2": "I-cast sa device",
+  "chatModeration": "Pag-moderate ng Chat",
+  "chooseASubtitleFileFromYour": "Pumili ng subtitle file mula sa iyong device (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Piliin kung paano ilapat ang napiling JSON file sa iyong AnymeX cloud gist.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "Mga Tool sa Cloud",
+  "code": "Code",
+  "commonFavouriteAnime": "Karaniwang Paboritong Anime",
+  "commonFavouriteCharacters": "Mga Karaniwang Paboritong Tauhan",
+  "commonFavouriteManga": "Karaniwang Paboritong Manga",
+  "commonPerfectAnime": "Karaniwang Perpektong Anime",
+  "commonPerfectManga": "Common Perfect Manga",
+  "communityAdministratorOverseeingModerationAndPolicies": "Administrator ng komunidad na nangangasiwa sa pagmo-moderate at mga patakaran.",
+  "connectGithubFirstBeforeDeletingSync": "Ikonekta muna ang GitHub bago tanggalin ang data ng pag-sync.",
+  "connectGithubFirstToExportSync": "Ikonekta muna ang GitHub upang i-export ang data ng pag-sync.",
+  "connectGithubFirstToImportSync": "Ikonekta muna ang GitHub para mag-import ng data ng pag-sync.",
+  "connectGithubFirstToSyncProgress": "Ikonekta muna ang GitHub para i-sync ang progreso.",
+  "connectGithubFirstToViewSync": "Ikonekta muna ang GitHub para tingnan ang sync gist.",
+  "continuousModeOnly2": "Continuous Mode lang",
+  "controls": "Mga kontrol",
+  "cookiesClearedSuccessfully": "Matagumpay na na-clear ang cookies",
+  "copied": "Kinopya",
+  "copyUrl": "Kopyahin ang URL",
+  "correctDownscaling": "Tamang Downscaling",
+  "couldNotLoadStreamingServicesFrom": "Hindi ma-load ang mga serbisyo ng streaming mula sa AniList API.\nAng serbisyo ay maaaring pansamantalang hindi available o limitado ang rate.",
+  "couldNotOpenGistInBrowser": "Hindi mabuksan ang gist sa browser.",
+  "created": "Nilikha",
+  "creatorAndDeveloperOfAnymex": "Tagalikha at developer ng AnymeX.",
+  "customBrightness": "Custom na Liwanag",
+  "customizeGestures": "I-customize ang mga galaw",
+  "deband": "Deband",
+  "debandIterations": "Mga Pag-uulit ng Deband",
+  "debandThreshold": "Deband Threshold",
+  "decreaseAutoScrollSpeed": "Bawasan ang bilis ng auto-scroll",
+  "decreaseFontSize": "Bawasan ang Laki ng Font",
+  "deleteAnymexSyncGist": "Tanggalin ang AnymeX Sync Gist?",
+  "deleteCloudGist": "Tanggalin ang Cloud Gist",
+  "deleteCommentMod": "Tanggalin ang Komento (Mod)",
+  "details": "Mga Detalye",
+  "dictionary": "Diksyunaryo",
+  "differenceFromOwnMeanScore": "Pagkakaiba sa sariling Mean Score",
+  "disableChat": "Huwag paganahin ang Chat",
+  "disconnectThisGithubAccountFromAnymex": "Idiskonekta ang GitHub account na ito sa AnymeX",
+  "displayPagesInBlackWhite": "Ipakita ang mga pahina sa itim at puti",
+  "downloading": "Dina-download…",
+  "downscaler": "Downscaler",
+  "dynamicWidget": "Dynamic na Widget",
+  "eInkDisplayRefresh": "E-ink Display Refresh",
+  "eGAbc123": "hal. ABC123",
+  "eGMyAnimeLogo": "hal. Ang Logo ng Anime Ko",
+  "editYourComment": "I-edit ang iyong komento...",
+  "embeddedContent": "Naka-embed na nilalaman",
+  "enterTheRoomPassword": "Ilagay ang password ng kwarto",
+  "enterTokenHere": "Maglagay ng token dito",
+  "error": "Error",
+  "exitSyncNotifications": "Lumabas sa mga notification sa pag-sync",
+  "exportGistJson": "I-export ang Gist JSON",
+  "exportedGistJson": "Na-export ang buod ng JSON.",
+  "failedToExportGistJson": "Nabigong i-export ang gist JSON.",
+  "failedToFetchDataFromSources": "Nabigong kumuha ng data mula sa mga pinagmulan.",
+  "failedToGetCloudGistLink": "Nabigong makuha ang cloud gist link.",
+  "failedToImportGistJson": "Nabigong i-import ang gist JSON.",
+  "failedToLaunchExternalPlayer": "Nabigong ilunsad ang external na player",
+  "failedToOpenGistInBrowser": "Nabigong buksan ang gist sa browser.",
+  "flashDuration": "Tagal ng Flash",
+  "flashEveryNPages": "I-flash ang Bawat N Page",
+  "flashFrequency": "Dalas ng flash",
+  "flashScreenOnPageTurnTo": "Flash screen sa page turn para i-clear ang ghosting",
+  "followHost": "Sundin ang Host",
+  "fontSettings": "Mga Setting ng Font",
+  "freedomSeek": "Hinahanap ang Kalayaan",
+  "friendsNeedAPasswordToJoin": "Kailangan ng mga kaibigan ng password para makasali",
+  "githubClientIdNotConfigured": "Hindi na-configure ang GitHub client ID.",
+  "githubLoginFailedMissingAuthorizationCode": "Nabigo ang GitHub login: nawawala ang authorization code.",
+  "githubLoginWasCancelledOrFailed": "Kinansela o nabigo ang pag-log in sa GitHub.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Ipakita ang iyong pagmamahal",
+  "goodChemistryAndSharedTaste": "Magandang chemistry at shared taste.",
+  "grayscale": "Grayscale",
+  "green": "Berde",
+  "hdrToneMappingTargetPeak": "HDR tone mapping target peak",
+  "higherValueIncreasesDebandingStrength": "Ang mas mataas na halaga ay nagpapataas ng lakas ng debanding",
+  "horizontalPadding": "Pahalang na Padding",
+  "hoursWatched": "Mga Oras na Napanood",
+  "howManyFriendsCanJoin": "Gaano karaming mga kaibigan ang maaaring sumali",
+  "ifYouHaveAnIssueOr": "kung mayroon kang isyu o anumang mungkahi mangyaring gumawa ng isyu sa github.",
+  "imageWidth": "Lapad ng Larawan",
+  "importGistJson": "Mag-import ng Gist JSON",
+  "importLocalSubtitle": "Mag-import ng Lokal na Subtitle",
+  "improveQualityWhenScalingDownVideo": "Pahusayin ang kalidad kapag binabawasan ang video",
+  "increaseAutoScrollSpeed": "Dagdagan ang bilis ng auto-scroll",
+  "increaseFontSize": "Palakihin ang Laki ng Font",
+  "invalidCompatibilityLinkMissingUsernames": "Di-wastong link ng compatibility: nawawalang mga username.",
+  "invalidGistUrl": "Di-wastong gist URL.",
+  "invalidRoomCodeInLink": "Di-wastong room code sa link",
+  "invalidWatchTogetherLink": "Di-wastong link ng Watch Together",
+  "invertAllPageColors": "Baliktarin ang lahat ng kulay ng pahina",
+  "invertColors": "Baliktarin ang mga Kulay",
+  "inviteLink": "Link ng Imbitahan",
+  "inviteLinkCopied": "Nakopya ang link ng imbitasyon!",
+  "jDramas": "Mga J-Drama",
+  "joinNotifications": "Sumali sa mga notification",
+  "kDramas": "Mga K-Drama",
+  "keepBothUploadedAndCloudEntries": "Panatilihin ang parehong na-upload at cloud na mga entry. Kung ang parehong entry ay umiiral sa parehong mga lugar, ang mas bago ay pinananatili. (Inirerekomenda)",
+  "keyVolumeScrollingSpeed": "Bilis ng Pag-scroll ng Key at Volume",
+  "koreanMovies": "Mga Pelikulang Koreano",
+  "leaveNotifications": "Mag-iwan ng mga notification",
+  "liveComments": "Mga live na komento",
+  "lockScreen": "Lock screen",
+  "loginToAnilist": "Mag-login sa AniList",
+  "loginToMyanimelist": "Mag-login sa MyAnimeList",
+  "loginToSimkl": "Mag-login sa Simkl",
+  "longPressForPageActions": "Pindutin nang matagal para sa Mga Pagkilos sa Pahina",
+  "longPressAPageToSave": "Pindutin nang matagal ang isang pahina upang i-save, ibahagi, o kopyahin ito",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "Nakumpleto ang Manga",
+  "mangaPage": "Manga page",
+  "maxMembers": "Mga Max na Miyembro",
+  "memberLeft": "Umalis ang miyembro",
+  "mergeUploadedEntriesOrReplaceCloud": "Pagsamahin ang mga na-upload na entry o palitan ang cloud data",
+  "mergeWithCloud": "Pagsamahin Sa Cloud",
+  "milliseconds": "Milliseconds",
+  "missingTypeQueryParameterUseType": "Nawawalang \"uri\" na parameter ng query. Gamitin ang type=player.",
+  "missingUrlQueryParameterForThe": "Nawawala ang parameter ng query na \"url\" para sa temang JSON.",
+  "moreIterationsStrongerDebanding": "Higit pang mga pag-ulit = mas malakas na debanding",
+  "movies": "Mga pelikula",
+  "moviesList": "LISTAHAN NG MGA PELIKULA",
+  "navigateByNumber": "Mag-navigate ayon sa Numero",
+  "navigation": "Pag-navigate",
+  "newMember": "Bagong miyembro",
+  "nextChapter": "Susunod na Kabanata",
+  "nextParagraph": "Susunod na Talata",
+  "noAudio": "Walang Audio",
+  "noOneCanSendMessagesIn": "Walang makakapagpadala ng mga mensahe sa chat",
+  "noStreamUrlAvailable": "Walang available na URL ng stream",
+  "noSubtitle": "Walang Subtitle",
+  "noVideo": "Walang Video",
+  "notVeryCompatibleAtAll": "Hindi masyadong compatible sa lahat.",
+  "numberedList": "Listahan ng Numero",
+  "onScreenOverlays": "Mga Overlay sa Screen",
+  "onlyHostAndCoHostsCan": "Ang host at co-host lang ang makakapagpadala ng mga mensahe",
+  "opacity": "Opacity",
+  "openInBrowser2": "Buksan sa browser",
+  "openYourAnymexSyncGistOn": "Buksan ang iyong AnymeX sync gist sa GitHub",
+  "openingInExternalPlayer": "Binubuksan sa external na player...",
+  "orTypeCustomTag": "O i-type ang custom na tag...",
+  "otherUpper": "IBA",
+  "overlayPosition": "Posisyon ng overlay",
+  "overrideSystemScreenBrightness": "I-override ang liwanag ng screen ng system",
+  "ownerAndCreatorOfTheCommentum": "May-ari at tagalikha ng platform ng komunidad ng Commentum.",
+  "padding": "Padding",
+  "pagesAheadOfTimeForFaster": "Mga pahina nang maaga para sa mas mabilis na pag-load",
+  "partySettings": "Mga Setting ng Party",
+  "passwordIfRequired": "Password (kung kinakailangan)",
+  "pasteDirectGifOrImageUrl": "I-paste ang direktang GIF o URL ng larawan...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Mga Card at Balanse sa PayPal",
+  "permanentlyRemoveAnymexSyncData": "Permanenteng alisin ang AnymeX sync data",
+  "pictureShaders": "Larawan at mga shader",
+  "pitch": "Pitch",
+  "playbackIsLockedToTheHost": "Ang pag-playback ay naka-lock sa host",
+  "playbackSpeed2": "Bilis ng playback",
+  "playerSettings2": "Mga setting ng player",
+  "pleaseLogInFirstThenTry": "Mangyaring mag-log in muna, pagkatapos ay subukang muli ang link.",
+  "pointsBreakdown": "Pagbagsak ng mga Puntos",
+  "practicallyMadeForEachOther": "Praktikal na ginawa para sa isa't isa.",
+  "preloadPage": "Paunang ikarga ang Pahina",
+  "preloadPages": "Preload Pages",
+  "preloadPagesAheadOfTimeFor": "I-preload ang Mga Pahina nang maaga para sa mas mabilis na paglo-load (Kumokonsumo ng mas maraming network at ram)",
+  "preventScreenFromSleepingWhileReading": "Pigilan ang screen sa pagtulog habang nagbabasa",
+  "previousChapter": "Nakaraang Kabanata",
+  "previousParagraph": "Nakaraang Talata",
+  "privateRoom": "Pribadong Kwarto",
+  "profileUpdated": "Na-update ang Profile",
+  "proportionOfTotalTimeWatched": "Proporsyon ng Kabuuang Oras na Napanood",
+  "provideAReasonForThisAction": "Magbigay ng dahilan para sa pagkilos na ito...",
+  "qualitySettings": "Mga Setting ng Kalidad",
+  "quote": "Quote",
+  "range75DarkestTo100": "Saklaw: -75 (pinakamadilim) hanggang 100",
+  "rateLimited": "Limitado ang rate",
+  "reactionOverlay": "Overlay ng reaksyon",
+  "readStats": "Basahin ang Stats",
+  "readTextAloud": "Basahin ang teksto nang malakas",
+  "red": "Pula",
+  "reduceColorBandingInGradients": "Bawasan ang color banding sa mga gradient",
+  "reduceHaloingWhileUpscaling": "Bawasan ang haloing habang nag-upscale",
+  "refresh": "I-refresh",
+  "removeCurrentCloudEntriesAndReplace": "Alisin ang kasalukuyang mga entry sa cloud at palitan ang mga ito ng na-upload na file.",
+  "removeWhiteBlackBordersToMaximize": "Alisin ang puti/itim na mga hangganan upang i-maximize ang nilalaman",
+  "removesFinishedMediaFromCloudGist": "Inaalis ang natapos na media mula sa cloud gist",
+  "replaceCloudGist": "Palitan ang Cloud Gist",
+  "report": "Ulat",
+  "resetReLogin": "I-reset at muling mag-login",
+  "resetTo1": "I-reset sa 1×",
+  "restore": "Ibalik",
+  "roomAccess": "Access sa kwarto",
+  "roomCode": "Code ng kwarto",
+  "roomCodeCopiedToClipboard": "Nakopya ang room code sa clipboard",
+  "roomDuration": "Tagal ng Kwarto",
+  "roomNotFoundOrExpired": "Hindi nahanap o nag-expire ang kwarto",
+  "roomPassword": "Password ng kwarto",
+  "roomPassword2": "Password ng kwarto",
+  "roomSettings": "Mga Setting ng Kwarto",
+  "saveYourCurrentCloudProgressTo": "I-save ang iyong kasalukuyang pag-usad sa cloud sa isang file",
+  "scrollMultiplier": "Mag-scroll Multiplier",
+  "scrollSpeed": "Bilis ng Pag-scroll",
+  "searchAnimeEpisode": "Maghanap ng anime / episode...",
+  "searchAnimeGifsReactions": "Maghanap ng mga anime GIF, reaksyon...",
+  "searchChapters": "Maghanap ng mga kabanata...",
+  "searchFiles": "Maghanap ng mga file...",
+  "secondsPerPageScreen": "Segundo bawat pahina / screen",
+  "seekAndControlPlaybackFreely": "Malayang maghanap at kontrolin ang pag-playback",
+  "selectedFileMustContainAJson": "Ang napiling file ay dapat maglaman ng JSON object.",
+  "selectedJsonHasNoValidSync": "Ang napiling JSON ay walang wastong mga entry sa pag-sync.",
+  "seriesList": "LISTAHAN NG SERYE",
+  "setAPasswordForYourRoom": "Magtakda ng password para sa iyong kuwarto",
+  "share": "Ibahagi",
+  "showANotificationWhenSomeoneJoins": "Magpakita ng notification kapag may sumali sa party",
+  "showANotificationWhenSomeoneLeaves": "Magpakita ng notification kapag may umalis sa party",
+  "showAllStreams": "Ipakita ang lahat ng stream",
+  "showChatMessagesOnThePlayer": "Ipakita ang mga mensahe sa chat sa player habang papasok sila",
+  "showEmojiReactionsFloatingOnThe": "Ipakita ang mga reaksyon ng emoji na lumulutang sa player",
+  "showSyncResultWhenPlayerOr": "Ipakita ang resulta ng pag-sync kapag nagsara ang player o reader",
+  "showTransitionPageEvenWhenChapters": "Ipakita ang pahina ng transition kahit na magkatabi ang mga kabanata",
+  "shows": "Mga palabas",
+  "sigmoidUpscaling": "Sigmoid Upscaling",
+  "smootherGradientsWithSlightTemporalNoise": "Mas makinis na mga gradient na may bahagyang temporal na ingay",
+  "spacing": "Spacing",
+  "speechSpeed": "Bilis ng Pagsasalita",
+  "spoilers": "Mga Spoiler",
+  "stretchImagesToFitScreenWidthOn": "I-stretch ang mga larawan upang magkasya sa lapad ng screen sa malalawak na screen",
+  "subtitleSettings": "Mga Setting ng Subtitle",
+  "superAdministratorWithSystemWideManagement": "Super Administrator na may awtoridad sa pamamahala sa buong system.",
+  "swapUpDownActions2": "Pagpalitin ang Pataas/Pababa na mga pagkilos",
+  "syncMode": "Sync Mode",
+  "syncPreferences": "Mga Kagustuhan sa Pag-sync",
+  "tapScrollAmount": "I-tap ang Mag-scroll na Halaga",
+  "tapToOpen": "I-tap para buksan",
+  "tapToOpenInBrowser": "I-tap para buksan sa browser",
+  "tapToOpenInSpotify": "I-tap para buksan sa Spotify",
+  "tapToViewInBrowser": "I-tap para tingnan sa browser",
+  "tapTopBottomToScroll": "I-tap ang itaas/ibaba para mag-scroll",
+  "targetPeak": "Target Peak",
+  "temporalDither": "Temporal Dither",
+  "textToSpeech": "Text-to-Speech",
+  "theCreatorOfThisCommentDiscussion": "Ang gumawa ng comment discussion thread na ito.",
+  "theresASmallSparkOfAgreement": "Mayroong isang maliit na spark ng kasunduan.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Permanente nitong tinatanggal ang iyong AnymeX cloud progress gist mula sa GitHub at hindi na maa-undo.",
+  "toPrevNextChapter": "Sa Prev/Next Chapter",
+  "topL": "Top-L",
+  "topR": "Top-R",
+  "totals": "Mga kabuuan",
+  "trendingMovies": "Mga Trending na Pelikula",
+  "trendingSeries": "Trending na Serye",
+  "tts": "TTS",
+  "ukMovies": "Mga Pelikulang UK",
+  "ukShows": "Mga Palabas sa UK",
+  "unableToReadSelectedJsonFile": "Hindi mabasa ang napiling JSON file.",
+  "unsupportedExtension": "Hindi sinusuportahang Extension",
+  "usMovies": "Mga Pelikulang US",
+  "usShows": "Mga Palabas sa US",
+  "useVolumeButtonsToScroll": "Gumamit ng mga volume button para mag-scroll",
+  "userHistory": "Kasaysayan ng Gumagamit",
+  "userInfo": "Impormasyon ng Gumagamit",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "Na-verify na moderator na pinananatiling magalang at ligtas ang mga komento.",
+  "verticalPadding": "Vertical Padding",
+  "viewCloudGist": "Tingnan ang Cloud Gist",
+  "viewUserHistory": "Tingnan ang Kasaysayan ng Gumagamit",
+  "viewUserInfo": "Tingnan ang Impormasyon ng Gumagamit",
+  "voice": "Boses",
+  "watchParty": "Manood ng Party",
+  "watchStats": "Panoorin ang Stats",
+  "watchingNow": "Nanonood Ngayon",
+  "webmVideo": "WebM Video",
+  "whereLiveCommentsAppearOnScreen": "Kung saan lumalabas ang mga live na komento sa screen",
+  "whileWatchingEpisodesOrReadingChapters": "Habang nanonood ng mga episode o nagbabasa ng mga kabanata",
+  "writeAReply": "Sumulat ng tugon...",
+  "youAreBasicallyTheSamePerson": "Ikaw ay karaniwang iisang tao.",
+  "youBothHaveVerySimilarTaste": "Pareho kayong magkapareho ng lasa.",
+  "all2": "← Lahat",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "Pag-istilo",
+  "upscale": "Upscale",
+  "appearanceStyle": "Hitsura at Estilo",
+  "colorsLightDarkOledLogoAnimations": "Mga Kulay, Maliwanag/Madilim, OLED at mga animation ng logo",
+  "fontsTypography": "Mga Font at Typography",
+  "chooseTypographyCustomFontsGlobalText": "Pumili ng typography, custom na font, at global text scale",
+  "globalFontScaling": "Global Font Scaling",
+  "scaling": "Pagsusukat",
+  "typefaces": "Mga typeface",
+  "interfaceLayout": "Interface at Layout",
+  "navBarCardStylesDetailsBlur": "Nav bar, mga istilo ng card, blur at layout ng mga detalye",
+  "navigationHomeLayout": "Navigation at Home Layout",
+  "playbackEngineSubtitlesGesturesDecoders": "Playback engine, mga subtitle, kilos at decoder",
+  "mangaNovelReader": "Manga at Novel Reader",
+  "readingModesDirectionColorsTapZones": "Mga mode ng pagbabasa, direksyon, mga kulay at mga tap zone",
+  "dataNetworkSystem": "Data, Network at System",
+  "downloadDirectoryConcurrencyHlsSegments": "Mag-download ng mga segment ng direktoryo, concurrency at HLS",
+  "accountsSocial": "Mga Account at Social",
+  "trackingAccounts": "Mga Account sa Pagsubaybay",
+  "manageYourAnilistMyanimelistSimklAccounts": "Pamahalaan ang iyong AniList, MyAnimeList at Simkl account",
+  "trackingBehavior": "Pagsubaybay sa Gawi",
+  "communityComments": "Komunidad at Mga Komento",
+  "commentumProfileBadgesMarkdownPrivacy": "Profile ng komento, mga badge, markdown at privacy",
+  "contentPreferences": "Nilalaman at Mga Kagustuhan",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "Filter ng NSFW, pinag-isang library, mga rekomendasyon at listahan",
+  "exportAndRestoreYourLibraryAnd": "I-export at i-restore ang iyong library at mga setting",
+  "manageAnimeMangaNovelSourcesAnd": "Pamahalaan ang mga source at repo ng Anime, Manga at Novel",
+  "installAndUpdateCommunityAddOns": "Mag-install at mag-update ng mga add-on ng komunidad",
+  "storageCache": "Imbakan at Cache",
+  "manageCachedImagesThresholdsResetData": "Pamahalaan ang mga naka-cache na larawan, mga limitasyon at pag-reset ng data",
+  "networkProxy": "Network at Proxy",
+  "logsDiagnostics": "Mga Log at Diagnostics",
+  "inspectExportAndShareApplicationLogs": "Siyasatin, i-export at ibahagi ang mga log ng application",
+  "aboutSupport": "Tungkol sa & Suporta",
+  "supportDevelopmentViaKoFiPaypal": "Suportahan ang pagbuo sa pamamagitan ng Ko-fi, PayPal at UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Bersyon, mga update, mga social link, at mga legal na patakaran",
+  "cacheAndCookiesClearedFor": "Na-clear ang cache at cookies para sa {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Na-clear ang cookies para sa {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Na-clear ang cache para sa {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Hindi sinusuportahang uri {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Mga Setting ng {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Hindi natagpuan ang lokal na file sa: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Nabigo ang pag-sync: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Hindi nakita ang lokal na APK sa: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Error: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Nabigo ang pag-install ng plugin: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Walang nahanap na mga resulta para sa \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Season {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Episode {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "Balita ng {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Komunidad",
+  "logInWithAnilist": "Mag-log In gamit ang AniList",
+  "episode2": "Episode {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Nakumpleto ang Pag-download",
+  "downloadFailedHasNoUrl": "Nabigo ang pag-download: Walang URL ang {chapterDisplay}",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Nabigo ang pag-download: Walang nakitang pahina para sa {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Nabigo ang pag-download: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Episode {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} eps",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Hindi nahanap ang source na \"{extensionName}\".",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Nabigong ihanda ang torrent: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "Ang {display} ay permanenteng aalisin sa iyong mga pag-download.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Nabigo ang paghahanap: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Hanapin ang {label} para sa \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "Ang mga item sa kasaysayan ng {deletedCount} ay tinanggal",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Alisin ang \"{itemName}\" sa iyong {_historyLabel}?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "Inalis ang \"{itemName}\"",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Paakyat",
+  "descending": "Pababa",
+  "defaultTabOrder": "Default na pagkakasunud-sunod ng tab",
+  "reverseTabs": "Baliktarin ang mga tab",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Uri: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Mga item: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "I-install muna ang {sourceName}, Pagkatapos ay I-click",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "PAGE {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Hanapin ang {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "DONE ({length} ang napili)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "MABASA SA",
+  "streamingOn": "NAG-STREAM NA",
+  "freedom": "Kalayaan",
+  "shaderAdded": "Idinagdag ni Shader: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Error sa pag-import ng shader: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Mga Scanlator",
+  "chapterRange": "Saklaw ng Kabanata",
+  "downloadFailed2": "Nabigo ang pag-download: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Na-download ang Kabanata {formattedNumber}",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Dina-download ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} na mga kabanata",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Nilo-load ang pahina {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Na-save ang page sa Pictures/AnymeX",
+  "pageSavedToAnymex": "Na-save ang page sa {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Nabigong i-save ang pahina: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Nabigong ibahagi ang pahina: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "Nakopya ang URL ng page sa clipboard",
+  "failedToCopy": "Nabigong kopyahin: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Naglo-load ng mga page...",
+  "goBack": "Bumalik ka",
+  "loadingPage2": "Nilo-load ang pahina {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Kulay ng Flash",
+  "black": "Itim",
+  "white": "Puti",
+  "readerBackground": "Background ng Mambabasa",
+  "gray": "Gray",
+  "automatic": "Awtomatiko",
+  "noneNearestNeighbor": "Wala (Pinakamalapit na kapitbahay)",
+  "lowBilinear": "Mababa (Bilinear)",
+  "mediumDefault": "Katamtaman (Default)",
+  "highBicubic": "Mataas (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (Pinakamahusay na kalidad, mas mabagal)",
+  "fullscreenPreview": "Fullscreen Preview",
+  "enhancementPreset": "Preset ng Enhancement",
+  "fineTuning": "Fine Tuning",
+  "enhancementStrength": "Lakas ng Pagpapahusay",
+  "strength": "{value}% lakas",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Artifact Suppression",
+  "cleanJpegCompressionRingingAroundLinework": "Malinis na JPEG compression na tumutunog sa paligid ng linework",
+  "cache": "Cache",
+  "cacheSize": "Laki ng Cache",
+  "mbStoredOnDisk": "{mb} MB na nakaimbak sa disk",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Super Resolution",
+  "loadingChapter": "Nilo-load ang kabanata...",
+  "noContentAvailable": "Walang available na content",
+  "recommendations": "Mga rekomendasyon ng {reasonCount}",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "ni Recs",
+  "all3": "Lahat ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Nabigong mag-post ng mensahe: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Kabuuang mga entry: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Sumali sa kwarto {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Mga Aktibong Kwarto",
+  "joinWithCode": "Sumali sa Code",
+  "leftRoom": "Kaliwang kwarto",
+  "leaveReset": "Umalis / I-reset",
+  "inRoom": "Sa Kwarto: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Episode {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Sinipa ang {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "Mga miyembro ng {length}/{maxMembers}",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Umalis sa kwarto",
+  "leave": "umalis",
+  "noActiveRooms": "Walang aktibong kwarto",
+  "roomsWillAppearHereWhenSomeone": "Lalabas dito ang mga kwarto kapag may gumawa nito",
+  "created2": "Nilikha · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Sumali →",
+  "full": "Puno",
+  "savedToPicturesAnymex": "Na-save sa Pictures/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Na-save sa Downloads/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Na-save sa {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (I-tap para buksan ang profile)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Kabanata",
+  "episode5": "Episode",
+  "noData": "{title} (Walang Data)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Maghanap ng mga extension ng {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Mag-browse ng Mga Extension",
+  "goToHome": "Pumunta sa Bahay",
+  "fetching": "Kinukuha ang {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Error sa pagkuha ng patakaran: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "Matagumpay na naidagdag ang \"{name}\"!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "Matagumpay na na-update ang \"{name}\"!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Sigurado ka bang gusto mong tanggalin ang \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "Tinanggal ang \"{name}\"",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Walang laman ang iyong kasaysayan",
+  "episode6": "Episode {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Magpakita ng Mas Kaunti",
+  "readMore": "Magbasa pa",
+  "unpin": "I-unpin",
+  "pinActivity": "Aktibidad sa Pin",
+  "n1Recommendation": "1 Rekomendasyon",
+  "recommendations2": "Mga Rekomendasyon ng {count}",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Isinusumite…",
+  "addRecommendation": "Magdagdag ng Rekomendasyon",
+  "submitRecommendation": "Magsumite ng Rekomendasyon",
+  "currentProvider": "KASALUKUYANG PROVIDER",
+  "profileStatsUserActivities": "Mga istatistika ng profile at aktibidad ng user",
+  "manageSourcesPlugins": "Pamahalaan ang mga mapagkukunan at plugin",
+  "savedOfflineEpisodesChapters": "Naka-save na mga offline na episode at kabanata",
+  "watchVideoFilesFromDeviceStorage": "Manood ng mga video file mula sa storage ng device",
+  "syncWatchPartyWithFriends": "I-sync ang watch party kasama ang mga kaibigan",
+  "pauseWatchHistoryAndSync": "I-pause ang history ng panonood at i-sync",
+  "appearancePlayerNetwork": "Hitsura, player at network",
+  "joining": "Sumasali...",
+  "joinRoom": "Join Room",
+  "shareTheCodeOrInviteLink": "Ibahagi ang code o link ng imbitasyon sa mga kaibigan.",
+  "roomCreated": "Nagawa ang Kwarto!",
+  "shareThisCodeWithFriends": "Ibahagi ang code na ito sa mga kaibigan:",
+  "copyCode": "Kopyahin ang Code",
+  "copyLink": "Kopyahin ang Link",
+  "leaveWatchTogether": "Umalis sa Panoorin Sama-sama?",
+  "removeMember": "Alisin ang Miyembro",
+  "transferHost": "Ilipat ang Host",
+  "transferHost2": "Ilipat ang host",
+  "transfer": "Paglipat",
+  "removeMember2": "Alisin ang miyembro",
+  "removeFromThisWatchParty": "Alisin ang {username} sa watch party na ito?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "Mga miyembro ng {onlineCount} / {maxMembers}",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "Kinopya ang {label}",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Walang available na server para sa kwartong ito",
+  "selectStreamingServerQualityToWatch": "Piliin ang kalidad ng streaming server upang panoorin",
+  "thisServerHasNoPlayableUrl": "Walang puwedeng laruin na URL ang server na ito",
+  "episode7": "Episode {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Iniangkop mula sa Kabanata {start} hanggang {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} na hinulaang sa {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "EPISODE {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "Ang listahan ng MAL ay na-export sa:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML na-export sa:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Nabigo ang pag-export: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Ini-export ang iyong listahan ng {value}...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "I-export ang {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Walang magagamit na nape-play na media",
+  "noThemesFound": "Walang nakitang tema",
+  "playAll": "I-play ang Lahat",
+  "theDawnOfHumanity": "Ang Liwayway ng Sangkatauhan",
+  "orientationUnlocked": "Naka-unlock ang Oryentasyon",
+  "orientationLocked": "Naka-lock ang Oryentasyon",
+  "skippedOpening": "Nilaktawan ang Pagbubukas",
+  "skippedEnding": "Nilaktawan ang Pagtatapos",
+  "skippedRecap": "Nilaktawan ang Recap",
+  "ifYouSeeBlackScreenUse": "Kung makakita ka ng itim na screen, gumamit ng external na player para sa panonood",
+  "failedToStartTorrentStream": "Nabigong simulan ang torrent stream: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Nabigong buksan ang stream. Pakisubukan ang ibang server",
+  "noServersFoundForThisEpisode": "Walang nakitang mga server para sa episode na ito.",
+  "failedToLoadEpisodeCheckYour": "Nabigong i-load ang episode. Suriin ang iyong koneksyon.",
+  "playing": "Naglalaro ng {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Nabigong ilipat ang torrent file: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Na-load ang subtitle: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Error sa paglo-load ng subtitle: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Sirang Subtitle!",
+  "preTranslatingSubtitles": "Paunang pagsasalin ng mga subtitle...",
+  "preTranslationFailedUsingRealTime": "Nabigo ang paunang pagsasalin, gamit ang real-time na fallback",
+  "preTranslationErrorUsingRealTime": "Error bago ang pagsasalin, gamit ang real-time na fallback",
+  "corruptedQuality": "Sirang Kalidad!",
+  "colorProfilesOnlyAvailableWithMediakit": "Available lang ang mga color profile sa MediaKit player",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Buksan ang mga video stream sa isang external na player bilang default",
+  "quickDefaults": "Mga Mabilisang Default",
+  "orientationSpeedResizeModeExternalPlayer": "Oryentasyon, bilis, resize mode at external na player",
+  "controlsGestures": "Mga Kontrol at Galaw",
+  "subtitlesTranslation": "Mga Subtitle at Pagsasalin",
+  "languagesFontsStylingLibassTranslation": "Mga wika, font, styling, libass at pagsasalin",
+  "anime4kShaders": "Anime4K at Mga Shader",
+  "upscalingShadersPresetsProfiles": "Pinapataas ang mga shader, preset, at profile",
+  "engineAdvanced": "Engine at Advanced",
+  "addSpeed": "Magdagdag ng Bilis",
+  "speedPresets": "Mga Preset ng Bilis",
+  "rememberAsDefaultSpeed": "Tandaan bilang default na bilis",
+  "loadedSubtitle": "Na-load na subtitle: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Nabigong i-download ang subtitle: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "ROOM CODE",
+  "episodeReleasesIn": "EPISODE {value} ILABAS SA",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Kailangan mong naka-log in para makapagkomento",
+  "readFullRules": "Basahin ang Buong Panuntunan",
+  "acceptPost": "Tanggapin at I-post",
+  "youNeedToBeLoggedIn2": "Kailangan mong naka-log in upang tumugon",
+  "commentCopiedToClipboard": "Nakopya ang komento sa clipboard",
+  "spam": "Spam",
+  "offensive": "Nakakasakit",
+  "harassment": "Panliligalig",
+  "offTopic": "Wala sa Paksa",
+  "failedToLoadUserInfo": "Nabigong i-load ang impormasyon ng user.",
+  "noUserDataFound": "Walang nakitang data ng user.",
+  "viewHistory": "Tingnan ang Kasaysayan",
+  "failedToLoadComments": "Nabigong i-load ang mga komento.",
+  "noCommentsFound": "Walang nakitang komento.",
+  "deleted2": "NABURA",
+  "comment": "COMMENT",
+  "failedToLoadUserHistory": "Nabigong i-load ang kasaysayan ng user.",
+  "noHistoryFound": "Walang nakitang kasaysayan.",
+  "youNeedToBeLoggedIn3": "Kailangan mong naka-log in para mag-edit ng mga komento",
+  "commentCannotBeEmpty": "Hindi maaaring walang laman ang komento",
+  "failedToLoadCommentsPleaseTry": "Nabigong i-load ang mga komento. Pakisubukang muli.",
+  "commentsLoaded": "Na-load ang mga komento ng {value}",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Nabigong i-refresh ang mga komento. Pakisubukang muli.",
+  "invalidParentCommentId": "Di-wastong ID ng komento ng magulang",
+  "replyPostedSuccessfully": "Matagumpay na nai-post ang tugon",
+  "failedToPostReply": "Nabigong mag-post ng tugon",
+  "failedToPostReplyPleaseTry": "Nabigong mag-post ng tugon. Pakisubukang muli.",
+  "commentPostedSuccessfully": "Matagumpay na nai-post ang komento",
+  "failedToAddCommentPleaseTry": "Nabigong magdagdag ng komento. Pakisubukang muli.",
+  "failedToUpdateVotePleaseTry": "Nabigong i-update ang boto. Pakisubukang muli.",
+  "invalidCommentId": "Di-wastong ID ng komento",
+  "commentEditedSuccessfully": "Matagumpay na na-edit ang komento",
+  "failedToEditComment": "Nabigong i-edit ang komento",
+  "commentDeletedSuccessfully": "Matagumpay na natanggal ang komento",
+  "failedToDeleteComment": "Nabigong tanggalin ang komento",
+  "failedToReportComment": "Nabigong mag-ulat ng komento",
+  "failedToModerateComment": "Nabigong i-moderate ang komento",
+  "failedToManageUser": "Nabigong pamahalaan ang user",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ puntos). Ang ranggo ay batay sa totoong aktibidad ({realPoints} pts).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: Nagkamit ang {realPoints} ng pts + {text} role bonus ({label}). Ang ranggo ay batay sa tunay na aktibidad.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Saklaw ng Episode",
+  "episodeIsDownloaded": "Na-download ang episode {number}",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "Mga episode ng {length}",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Bumangon mula sa Anino",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "Card Customizer",
+  "presetStyle": "Preset na Estilo",
+  "chooseFrom5AuthenticBuiltIn": "Pumili mula sa 5 tunay na built-in na disenyo",
+  "sizingGeometry": "Sukat at Geometry",
+  "cardSize": "Laki ng Card",
+  "scaleCardsProportionallyWithoutDistortion": "I-scale ang mga card nang proporsyonal nang walang pagbaluktot",
+  "landscapeCards": "Mga Landscape Card",
+  "formatCardsIn169Widescreen": "I-format ang mga card sa 16:9 widescreen na oryentasyon",
+  "selectPosterImageAspectRatio": "Piliin ang poster image aspect ratio",
+  "titleLines": "Mga Linya ng Pamagat",
+  "maximumNumberOfTitleLinesDisplayed": "Pinakamataas na bilang ng mga linya ng pamagat na ipinapakita",
+  "gestureAreas": "Mga Lugar ng Kumpas",
+  "resetDefault": "I-reset ang Default",
+  "overlay": "Overlay",
+  "volume": "Dami",
+  "brightnessArea": "Lugar ng Liwanag",
+  "overlayAreaTap": "Overlay Area (I-tap)",
+  "volumeArea": "Lugar ng Dami",
+  "resetToDefaultLayout": "I-reset sa default na layout",
+  "moveToSlot": "Ilipat sa slot",
+  "topBar": "Nangungunang Bar",
+  "bottomLeft": "Kaliwa sa ibaba",
+  "bottomRight": "Kanan sa ibaba",
+  "themesOverlay": "Mga Tema at Overlay",
+  "gesturesSeeking": "Mga kilos at Paghahanap",
+  "horizontalSwipeAcrossTheScreenTo": "Pahalang na pag-swipe sa screen para maghanap",
+  "autoSkipCompletion": "Auto Laktawan at Pagkumpleto",
+  "percentageWatchedBeforeMarkingCompleted": "Porsiyento ng napanood bago nakumpleto ang pagmamarka",
+  "playerControls": "Mga Kontrol ng Manlalaro",
+  "mpvConfSavedSuccessfully": "Matagumpay na na-save ang mpv.conf",
+  "hardwareDrivers": "Hardware at Driver",
+  "systemIntegrations": "Sistema at Pagsasama",
+  "experimentalMpvTuning": "Pang-eksperimentong Pag-tune ng MPV",
+  "editMpvConf": "I-edit ang mpv.conf",
+  "modeA": "Mode A",
+  "modeB": "Mode B",
+  "modeC": "Mode C",
+  "modeAA": "Mode A+A",
+  "modeBB": "Mode B+B",
+  "modeCA": "Mode C+A",
+  "natural": "Natural",
+  "vivid": "Matingkad",
+  "cinema": "Sinehan",
+  "soft": "Malambot",
+  "warm": "Mainit",
+  "cool": "Astig",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinema HDR",
+  "vividPop": "Matingkad na Pop",
+  "dark": "Madilim",
+  "anime4kEngine": "Anime4K Engine",
+  "anime4kShaders2": "Mga shader ng Anime4K",
+  "devicePerformanceTier": "Tier ng Pagganap ng Device",
+  "midRange": "Mid-range",
+  "highEnd": "High-end",
+  "shaderMode": "Shader Mode",
+  "colorPreset": "Preset ng Kulay",
+  "desktopPlaybackKeybindings": "Mga Keybinding sa Pag-playback sa Desktop",
+  "customSubtitleFonts": "Mga Custom na Subtitle na Font",
+  "importedFont": "Na-import na font \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Sigurado ka bang gusto mong tanggalin ang \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Wika at Pagsasalin",
+  "renderingBehavior": "Pag-render at Pag-uugali",
+  "disableToAvoidFadeTransitionsBetween": "Huwag paganahin upang maiwasan ang fade transition sa pagitan ng mga subtitle",
+  "typographyOutline": "Typography at Balangkas",
+  "adjustSubtitleFontSize": "Ayusin ang laki ng font ng subtitle",
+  "adjustSubtitleOutlineThickness": "Ayusin ang kapal ng balangkas ng subtitle",
+  "colorsPosition": "Mga Kulay at Posisyon",
+  "changeSubtitleTextColor": "Baguhin ang kulay ng teksto ng subtitle",
+  "mangaReader": "Manga Reader",
+  "layoutDirection": "Layout at Direksyon",
+  "autoSwitchToVerticalModeFor": "Awtomatikong lumipat sa vertical mode para sa mga webtoon",
+  "imageDisplay": "Larawan at Display",
+  "interfaceSession": "Interface at Session",
+  "mangaControlsGestures": "Manga Controls at Gestures",
+  "overscrollToPreviousNextChapter": "Mag-overscroll sa nakaraan/susunod na kabanata",
+  "automaticallyScrollMangaPages": "Awtomatikong mag-scroll ng mga pahina ng manga",
+  "swapVolumeUpDownActions": "Pagpalitin ang volume pataas/pababa na mga pagkilos",
+  "novelReader": "Tagabasa ng Nobela",
+  "themeDisplay": "Tema at Display",
+  "displayChapterPercentageWhileReading": "Ipakita ang porsyento ng kabanata habang nagbabasa",
+  "displayStatusInfoInTheNovel": "Ipakita ang impormasyon ng katayuan sa mambabasa ng nobela",
+  "typographySpacing": "Typography at Spacing",
+  "novelControlsGestures": "Mga Kontrol at Galaw ng Novel",
+  "tapScreenEdgesToScrollNovel": "I-tap ang mga gilid ng screen para mag-scroll ng mga novel page",
+  "swipeGestures": "Mag-swipe ng Mga Galaw",
+  "volumeKeyScrolling": "Pag-scroll ng Volume Key",
+  "useHardwareVolumeButtonsToScroll": "Gumamit ng mga pindutan ng volume ng hardware upang mag-scroll ng mga nobela",
+  "automaticallyScrollNovelContent": "Awtomatikong mag-scroll ng nobela na nilalaman",
+  "textToSpeechTts": "Text-to-Speech (TTS)",
+  "readNovelChaptersAloud": "Basahin nang malakas ang mga kabanata ng nobela",
+  "speechRate": "Bilis ng pagsasalita",
+  "voicePitch": "pitch ng boses",
+  "areYouSureYouWantTo4": "Sigurado ka bang gusto mong mag-log out mula sa {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Nabigong suriin ang mga update: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "Matagumpay na na-install ang {name}",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Nabigong i-install ang {name}: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "Matagumpay na na-update ang {name}",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Nabigong i-update ang {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "I-uninstall ang {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "Na-uninstall ang {name}",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Nabigong i-uninstall ang {name}: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "Order ng Seksyon ng {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Mga Notification at Sync",
+  "enableNotifications": "Paganahin ang Mga Notification",
+  "syncAnilistNotificationsWithDeviceNotifications": "I-sync ang mga notification ng AniList sa mga notification ng device",
+  "airingAlerts": "Mga Alerto sa Pagpapalabas",
+  "socialAlerts": "Mga Social na Alerto",
+  "notifyOnNewFollowers": "Ipaalam sa mga bagong tagasubaybay",
+  "activityAlerts": "Mga Alerto sa Aktibidad",
+  "syncInterval": "Sync Interval",
+  "regionTimezone": "Rehiyon at Timezone",
+  "profileBio": "Profile Bio",
+  "backupFailed": "Nabigo ang pag-backup: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Error sa pagpili ng file: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Nabigong i-load ang backup: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Nabigo ang pag-restore: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "Mga pamagat at kasaysayan ng {animeCount}",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "Mga pamagat at kabanata ng {mangaCount}",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "Mga pamagat ng {novelCount} at estado ng pagbabasa",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "Mga custom na listahan ng {totalLists} sa buong media",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} nakarehistrong mga entry ng extension",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} extension zip bundle",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Tulong at Impormasyon",
+  "libraryContentSafety": "Kaligtasan sa Aklatan at Nilalaman",
+  "homePageLists": "Mga Listahan ng Home Page",
+  "chooseWhichListsToShowOn": "Piliin kung aling mga listahan ang ipapakita sa home page",
+  "homePageCards": "Mga Card ng Home Page ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Nanonood ng $anime",
+  "viewingAnime": "Tinitingnan ang $anime",
+  "readingManga2": "Binabasa ang $manga",
+  "viewingManga": "Tinitingnan ang $manga",
+  "readingNovel2": "Binabasa ang $novel",
+  "viewingNovel": "Tinitingnan ang $novel",
+  "browsingStatus": "Nagba-browse sa $status",
+  "upiIdCopied": "UPI ID na kinopya: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Kopyahin ang UPI ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • I-tap para ilunsad ang GPay, PhonePe, Paytm, atbp.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "I-download ang Mga Notification",
+  "reDownloadFailed": "Nabigo ang muling pag-download: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Nabigo ang rollback: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Nabigong magdagdag ng repo: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Inilapat ang font na \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Nabigong i-download ang \"{fontName}\"",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "Na-import at inilapat ang \"{fontName}\"",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Nabigong mag-import ng font file",
+  "deleted3": "Tinanggal ang \"{fontName}\"",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Font Library",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Default na geometric na bilugan na font na idinisenyo para sa AnymeX",
+  "systemFont": "Font ng System",
+  "useYourDeviceOsDefaultSystem": "Gamitin ang iyong device OS default system typeface",
+  "loadYourOwnTtfOrOtf": "I-load ang iyong sariling .ttf o .otf typography file",
+  "pendingReports": "{length} nakabinbing mga ulat",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies at Imbakan",
+  "monitoring": "Pagsubaybay",
+  "fpsMeter": "FPS Metro",
+  "showDraggableRealTimeFpsOverlay": "Ipakita ang draggable real-time na FPS overlay",
+  "detectedModesDisplay": "Mga Natukoy na Mode at Display",
+  "currentDisplayMode": "Kasalukuyang Display Mode",
+  "modes": "{length} mode",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "I-customize",
+  "stylingLibass": "{subLang} • {subFont} • Pag-istilo at libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Mga Kontrol at I-tap ang Mga Sona",
+  "customizeTapZones": "I-customize ang Mga Tap Zone",
+  "configurePagedAndWebtoonTapRegions": "I-configure ang paged at webtoon tap regions",
+  "fitBordersSpacing": "{value} • Pagkasyahin, mga hangganan at espasyo",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Estilo ng kabanata, tagapagpahiwatig ng pahina at lock ng screen",
+  "overscrollActionsAutoScrollVolume": "Overscroll, actions, auto scroll & volume",
+  "themeTypography": "Tema at Typography",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Reading Mode at Display",
+  "pageModeProgressBatteryIndicator": "Page mode, progreso at indicator ng baterya",
+  "readPageByPageInsteadOf": "Basahin ang bawat pahina sa halip na mag-scroll",
+  "displayPercentageInReadingBar": "Ipakita ang porsyento sa reading bar",
+  "displayBatteryAndTimeInReader": "Ipakita ang baterya at oras sa reader bar",
+  "gesturesNavigation": "Mga galaw at Nabigasyon",
+  "tapToScrollSwipeAutoScroll": "I-tap para mag-scroll, mag-swipe, mag-auto scroll at mag-volume",
+  "tapEdgesOfScreenToScroll": "I-tap ang mga gilid ng screen para mag-scroll pataas/pababa",
+  "swipeHorizontallyToChangeChapters": "Mag-swipe nang pahalang upang baguhin ang mga kabanata",
+  "useVolumeKeysToScroll": "Gumamit ng mga volume key para mag-scroll",
+  "textToSpeechTts2": "Text to Speech (TTS)",
+  "textToSpeechReadingSupport": "Text-to-speech na suporta sa pagbabasa",
+  "speechRate2": "Bilis ng Pagsasalita",
+  "voicePitch2": "Voice pitch",
+  "appPostersIconsAvatarsSize": "Mga poster ng app, icon, avatar. Sukat: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Pansamantalang mga tipak ng video. Sukat: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Na-download na mga web novel page. Sukat: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Mga log, pag-download ng temp. Sukat: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Nabigong i-clear ang cache: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Nabigo ang factory reset: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 o 3F51B5",
+  "motionDisplay": "Paggalaw at Pagpapakita",
+  "visualEffectsTuning": "Mga Visual Effect at Pag-tune",
+  "historyCard": "Kard ng kasaysayan",
+  "carousel": "Carousel",
+  "navBar": "Nav bar",
+  "themeDarkModeLayoutStyling": "Tema, dark mode, at pag-istilo ng layout",
+  "gesturesSubtitlesVideoSettings": "Mga galaw, subtitle at setting ng video",
+  "settingsTiles": "Mga tile ng setting",
+  "oledMode2": "OLED Mode",
+  "primaryAccount": "Pangunahing Account ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Nakakonekta sa {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Kumonekta sa {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "Mga pamagat ng {value}",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Alisin ang \"{id}\"? Hindi na ito maaaring bawiin.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Ini-import…",
+  "addJsonFiles": "Magdagdag ng JSON Files",
+  "previousStyle": "Nakaraang istilo",
+  "nextStyle": "Susunod na istilo",
+  "currentStyle": "Kasalukuyang istilo",
+  "useThisStyle": "Gamitin ang istilong ito",
+  "pleaseLogInToGetRecommendations": "Mangyaring mag-log in upang makakuha ng mga rekomendasyon",
+  "chapter1": "Kabanata 1",
+  "deletedSuccessfully": "Matagumpay na Natanggal ang {value}",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Matagumpay na Nakapag-log in ang Simkl!",
+  "yepFailed": "Oo, Nabigo",
+  "userInfoFetchingFailed": "Nabigo ang Pagkuha ng Impormasyon ng User!",
+  "githubLoginFailed": "Nabigo ang pag-log in sa GitHub: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Isinasagawa na ang pag-sync.",
+  "anotherSyncActionIsAlreadyIn": "Ang isa pang pagkilos sa pag-sync ay isinasagawa na.",
+  "noAnymexSyncGistFoundTo": "Walang AnymeX sync gist na nakitang tanggalin.",
+  "noAnymexSyncGistFoundInitialize": "Walang nakitang AnymeX sync gist. Magsimula muna.",
+  "githubGistSync": "GitHub Gist Sync",
+  "manage": "Pamahalaan",
+  "manageGithubGistSync": "Pamahalaan ang GitHub Gist Sync",
+  "joinedTheParty": "Sumali si {username} sa party",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "Umalis si {username} sa party",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Lumipat ang host sa Episode {episodeNumber} ng {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Error sa pagkuha ng mga komento",
+  "errorAddingComment": "Error sa pagdaragdag ng komento",
+  "errorUpdatingVote": "Error sa pag-update ng boto",
+  "errorEditingComment": "Error sa pag-edit ng komento",
+  "errorDeletingComment": "Error sa pagtanggal ng komento",
+  "commentReportedSuccessfully": "Matagumpay na naiulat ang komento",
+  "errorReportingComment": "Error sa pag-uulat ng komento",
+  "errorFetchingReportsQueue": "Error sa pagkuha ng queue ng mga ulat",
+  "reportResolvedSuccessfully": "Matagumpay na naresolba ang ulat",
+  "failedToResolveReport": "Nabigong lutasin ang ulat",
+  "errorResolvingReport": "Error sa paglutas ng ulat",
+  "errorFetchingUserInfo": "Error sa pagkuha ng impormasyon ng user",
+  "errorFetchingUserHistory": "Error sa pagkuha ng history ng user",
+  "errorFetchingUserStats": "Error sa pagkuha ng mga istatistika ng user",
+  "errorListingUsers": "Error sa paglilista ng mga user",
+  "errorSearchingUsers": "Error sa paghahanap ng mga user",
+  "errorFetchingModerationQueue": "Error sa pagkuha ng moderation queue",
+  "commentModeratedSuccessfully": "Matagumpay na na-moderate ang komento",
+  "errorModeratingComment": "Error sa pagmo-moderate ng komento",
+  "userManagedSuccessfully": "Matagumpay na pinamamahalaan ng user",
+  "errorManagingUser": "Error sa pamamahala ng user",
+  "errorGettingInitialDeepLink": "Error sa pagkuha ng paunang deep link: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Error sa Pagbubukas ng link: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Kopyahin ang mga detalye ng error",
+  "whatSNew": "Ano'ng Bago",
+  "updatedToV": "Na-update sa v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Hindi mabuksan ang link ng ad",
+  "newAnilistUpdates": "{length} Bagong AniList Update",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} higit pa",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "I-refresh ang mga device",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Nagdaragdag ng repo... mangyaring maghintay.",
+  "unsupportedThemeTypeSupportedPlayer": "Hindi sinusuportahang uri ng tema na \"{type}\". Sinusuportahan: manlalaro.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Ini-import ang tema ng player mula sa link...",
+  "themeIsInvalid": "Di-wasto ang tema: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Ang temang JSON ay may bisa. Na-import na {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Sumasali sa kwarto {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Nabigong sumali sa kwarto: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Kinakalkula ang AniMatch compatibility para sa {user1} at {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Ibahagi sa iyong napiling serbisyo sa pagsubaybay",
+  "shareAnymexLink": "Ibahagi ang link ng AnymeX",
+  "opensDirectlyInAnymex": "Direktang nagbubukas sa AnymeX",
+  "newCommentsRepliesAndEdits": "Mga bagong komento, tugon, at pag-edit",
+  "upvotesAndDownvotesOnYourComments": "Upvotes at downvotes sa iyong mga komento",
+  "warningsMutesBansAndModerationActions": "Mga babala, pag-mute, pagbabawal, at pag-moderate na mga pagkilos",
+  "reportFiledResolvedDismissed": "Nai-file ang ulat, nalutas, na-dismiss",
+  "officialAnnouncements": "Mga opisyal na anunsyo",
+  "whenSomeoneMentionsYouInA": "Kapag may @nagbanggit sa iyo sa isang komento",
+  "notificationsForNewAnimeEpisodeReleases": "Mga notification para sa mga bagong release ng episode ng anime",
+  "notificationsForFollowsMentionsAndLikes": "Mga abiso para sa mga pagsubaybay, pagbanggit, at paggusto",
+  "notificationsForCompletedEpisodeAndChapter": "Mga abiso para sa nakumpletong pag-download ng episode at kabanata",
+  "signIn": "Mag-sign In",
+  "failedToCheckForUpdates3": "Nabigong suriin ang mga update",
+  "noUpdatesAvailable": "Walang available na update",
+  "errorCheckingForUpdates": "Error sa pagsuri para sa mga update",
+  "installPermissionRequired": "Kinakailangan ang pahintulot sa pag-install",
+  "downloadFailed3": "Nabigo ang pag-download",
+  "newVersionAvailable": "Available ang Bagong Bersyon"
 }

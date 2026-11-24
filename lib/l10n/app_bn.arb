@@ -176,5 +176,3834 @@
   "incognitoDisabled": "ছদ্মবেশী মোড অক্ষম",
   "episodeCount": "{count} পর্ব",
   "chapterCount": "{count} অধ্যায়",
-  "itemCount": "{count} আইটেম"
+  "itemCount": "{count} আইটেম",
+  "whatAreWeDoingToday": ", আমরা আজ কি করছি?",
+  "aLogoWithThisNameAlready": "এই নামের একটি লোগো ইতিমধ্যেই বিদ্যমান৷",
+  "about": "সম্পর্কে",
+  "aboutCommentumV2": "মন্তব্য v2 সম্পর্কে",
+  "aboutTheApp": "অ্যাপ সম্পর্কে",
+  "accessModerationToolsAndReports": "মডারেশন টুল এবং রিপোর্ট অ্যাক্সেস করুন",
+  "accountTokensAnilistMalSimkl": "অ্যাকাউন্ট টোকেন (AniList, MAL, Simkl)",
+  "accounts": "হিসাব",
+  "accountsSync": "অ্যাকাউন্ট এবং সিঙ্ক",
+  "actionAppliedSuccessfully": "অ্যাকশন সফলভাবে প্রয়োগ করা হয়েছে",
+  "activeDownloads": "সক্রিয় ডাউনলোড",
+  "activity": "কার্যকলাপ",
+  "activityDeleted": "কার্যকলাপ মুছে ফেলা হয়েছে",
+  "activityHeatmap": "কার্যকলাপ হিটম্যাপ",
+  "activityMergeTime": "কার্যকলাপ মার্জ সময়",
+  "activityPhrasing": "কার্যকলাপ বাক্যাংশ",
+  "activityRefreshed": "কার্যকলাপ রিফ্রেশ",
+  "adFreeApp": "বিজ্ঞাপন-মুক্ত অ্যাপ",
+  "addCustomLogo": "কাস্টম লোগো যোগ করুন",
+  "addCustomLogoGifWebp": "কাস্টম লোগো যোগ করুন (.gif, .webp)",
+  "addRepo": "রেপো যোগ করুন",
+  "addRepository": "সংগ্রহস্থল যোগ করুন",
+  "addYourRecommendation": "আপনার সুপারিশ যোগ করুন",
+  "addOnExtensions": "অ্যাড-অন এক্সটেনশন",
+  "addOns": "অ্যাড-অন",
+  "addOnsPowerBackgroundServicesSuch": "অ্যাড-অন পাওয়ার ব্যাকগ্রাউন্ড পরিষেবা যেমন টর সার্ভার টরেন্ট স্ট্রিমিং ইঞ্জিন সরাসরি চুম্বক লিঙ্ক প্লেব্যাকের জন্য।",
+  "addedToDownloads": "ডাউনলোড যোগ করা হয়েছে",
+  "addingKotatsuRepositoryThisWillTake": "Kotatsu সংগ্রহস্থল যোগ করা হচ্ছে। এটি কমপক্ষে 1-2 মিনিট সময় নেবে, অনুগ্রহ করে অপেক্ষা করুন...",
+  "addingRepositoryFetchingExtensions": "সংগ্রহস্থল যোগ করা হচ্ছে এবং এক্সটেনশন আনা হচ্ছে...",
+  "adjustBottomBarMarginMediaDetails": "নীচের বারের মার্জিন সামঞ্জস্য করুন (শুধু মিডিয়া বিবরণ পৃষ্ঠা)",
+  "adjustCardAnimationSpeed": "কার্ড অ্যানিমেশন গতি সামঞ্জস্য করুন",
+  "adjustCornerRadiusOfElements": "উপাদানগুলির কোণার ব্যাসার্ধ সামঞ্জস্য করুন",
+  "adjustDoubleTapToSeekDuration": "সময়কাল জানতে ডবল ট্যাপ অ্যাডজাস্ট করুন",
+  "adjustElementGlowIntensity": "উপাদান গ্লো তীব্রতা সামঞ্জস্য",
+  "adjustFrostedBlurIntensity": "হিমায়িত অস্পষ্টতার তীব্রতা সামঞ্জস্য করুন",
+  "adjustGlowBlurIntensity": "গ্লো ব্লার তীব্রতা সামঞ্জস্য করুন",
+  "adjustHorizontalMarginOfBottomNavigation": "নীচের নেভিগেশন বারের অনুভূমিক মার্জিন সামঞ্জস্য করুন",
+  "adjustItemsPerRow": "সারি প্রতি আইটেম সামঞ্জস্য",
+  "adjustMediaBackdropExposure": "মিডিয়া ব্যাকড্রপ এক্সপোজার সামঞ্জস্য করুন",
+  "adjustMegaskipDuration": "মেগাস্কিপ সময়কাল সামঞ্জস্য করুন",
+  "adjustRoundnessOfAllMediaCards": "সমস্ত মিডিয়া কার্ডের গোলাকারতা সামঞ্জস্য করুন",
+  "adjustSubSize": "সাব সাইজ সামঞ্জস্য করুন",
+  "adjustSubtitleOutlineWidth": "সাবটাইটেল আউটলাইন প্রস্থ সামঞ্জস্য করুন",
+  "adjustTextVisibility": "পাঠ্যের দৃশ্যমানতা সামঞ্জস্য করুন",
+  "admin": "অ্যাডমিন",
+  "adult": "প্রাপ্তবয়স্ক",
+  "aiPicks": "এআই পিকস",
+  "airingAnimeNotifications": "অ্যানিমে বিজ্ঞপ্তি সম্প্রচার",
+  "all": "সব",
+  "allClearNoReportsToReview": "সব পরিষ্কার! পর্যালোচনা করার জন্য কোন রিপোর্ট নেই.",
+  "allSources": "সমস্ত সূত্র",
+  "allowAnymexToAutomaticallyOpenAnime": "AnymeX কে স্বয়ংক্রিয়ভাবে অ্যানিমে এবং মাঙ্গা ওয়েব লিঙ্ক খুলতে অনুমতি দিন",
+  "allowInstallingUpdatesForExtensionsAnd": "এক্সটেনশন এবং অ্যাপের জন্য আপডেট ইনস্টল করার অনুমতি দিন",
+  "allowOnlyUsersIFollowTo": "শুধুমাত্র আমি অনুসরণকারী ব্যবহারকারীদের আমাকে বার্তা পাঠাতে অনুমতি দিন।",
+  "allowStorageAccessAndSelectDownload": "স্টোরেজ অ্যাক্সেসের অনুমতি দিন এবং ডাউনলোড ফোল্ডার নির্বাচন করুন",
+  "allowStorageAccessToDownloadApp": "অ্যাপ এবং এক্সটেনশন আপডেট ডাউনলোড করতে স্টোরেজ অ্যাক্সেসের অনুমতি দিন",
+  "alreadyRecommended": "ইতিমধ্যে সুপারিশ করা হয়েছে",
+  "alternativeTitles": "বিকল্প শিরোনাম",
+  "alwaysShowChapterTransition": "সর্বদা চ্যাপ্টার ট্রানজিশন দেখান",
+  "alwaysShowPageIndicator": "সর্বদা পৃষ্ঠা নির্দেশক দেখান",
+  "amountOfFilmGrainApplied": "ফিল্ম শস্য প্রয়োগ করা পরিমাণ",
+  "anifyKitsuArtwork": "অ্যানিফাই / কিটসু আর্টওয়ার্ক",
+  "anilistSettings": "AniList সেটিংস",
+  "anilistSettings2": "অ্যানিলিস্ট সেটিংস",
+  "animatchCompatibility": "AniMatch সামঞ্জস্য",
+  "animatchLinkCopiedToClipboard": "AniMatch লিঙ্ক ক্লিপবোর্ডে অনুলিপি করা হয়েছে!",
+  "animateControlOverlay": "অ্যানিমেট কন্ট্রোল ওভারলে",
+  "anime": "এনিমে",
+  "animeUpper": "এনিমে",
+  "animeManga": "অ্যানিমে এবং মাঙ্গা",
+  "anime4kEnhancement": "Anime 4K এনহান্সমেন্ট",
+  "animeAdaptation": "অ্যানিমে অভিযোজন",
+  "animeCustomLists": "এনিমে কাস্টম তালিকা",
+  "animeDetailsPhrasing": "এনিমে বিস্তারিত বাক্যাংশ",
+  "animeLibrary": "অ্যানিমে লাইব্রেরি",
+  "animeList": "এনিমে তালিকা",
+  "animeScore": "অ্যানিমে স্কোর",
+  "animeSectionOrder": "এনিমে সেকশন অর্ডার",
+  "announcement": "ঘোষণা",
+  "announcementUnavailable": "ঘোষণা অনুপলব্ধ",
+  "announcements": "ঘোষণা",
+  "anymexForkOptimisedForTv": "AnymeX ফর্ক টিভির জন্য অপ্টিমাইজ করা হয়েছে",
+  "anymexIs100FreeOpenSource": "AnymeX 100% বিনামূল্যে, ওপেন সোর্স এবং বিজ্ঞাপন-মুক্ত। আপনার সমর্থন সরাসরি সার্ভার খরচ এবং সক্রিয় বৈশিষ্ট্য উন্নয়নে সাহায্য করে!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX 100% বিনামূল্যে, ওপেন সোর্স এবং বিজ্ঞাপন-মুক্ত। আপনার সমর্থন আমাকে ক্রমাগত রক্ষণাবেক্ষণ এবং অ্যাপ্লিকেশন উন্নত করতে অনুপ্রাণিত রাখতে সাহায্য করে!",
+  "appCacheExceededThresholdAndWas": "অ্যাপ ক্যাশে থ্রেশহোল্ড অতিক্রম করেছে এবং সাফ করা হয়েছে",
+  "appDataHasBeenCompletelyReset": "অ্যাপ ডেটা সম্পূর্ণ রিসেট করা হয়েছে",
+  "appFonts": "অ্যাপ ফন্ট",
+  "appSettingsSessions": "অ্যাপ সেটিংস এবং সেশন",
+  "appearance": "চেহারা",
+  "appearanceInterface": "চেহারা এবং ইন্টারফেস",
+  "appearanceTheme": "চেহারা এবং থিম",
+  "appliesAnimeMangaPosterColorOn": "বিশদ পৃষ্ঠায় অ্যানিমে/মাঙ্গা পোস্টার রঙ প্রয়োগ করে",
+  "apply": "আবেদন করুন",
+  "applyASubtleFilmGrainTexture": "ইন্টারফেসের উপরে একটি সূক্ষ্ম ফিল্ম গ্রেইন টেক্সচার প্রয়োগ করুন",
+  "applyFilters": "ফিল্টার প্রয়োগ করুন",
+  "applyOptionsFromYourMpvConf": "প্লেব্যাক শুরু হলে আপনার mpv.conf থেকে বিকল্পগুলি প্রয়োগ করুন৷",
+  "areYouSureYouWantTo": "আপনি কি সব সংরক্ষিত কুকি মুছে ফেলার বিষয়ে নিশ্চিত?",
+  "areYouSureYouWantToDelete": "আপনি কি এই মন্তব্যটি মুছতে চান? এটি স্থায়ীভাবে মুছে ফেলা হবে এবং রিপোর্টটি সমাধান করা হবে।",
+  "areYouSureYouWantToDeleteThis": "আপনি কি এই এক্সটেনশনটি মুছতে চান?",
+  "areYouSureYouWantToDeleteThisReply": "আপনি কি এই উত্তরটি মুছে দেওয়ার বিষয়ে নিশ্চিত?",
+  "askForTrackingPermission": "ট্র্যাকিং অনুমতির জন্য জিজ্ঞাসা করুন",
+  "atLeast2TabsMustRemain": "অন্তত 2টি ট্যাব দৃশ্যমান থাকতে হবে!",
+  "audioEngine": "অডিও ইঞ্জিন",
+  "audioPitchCorrection": "অডিও পিচ সংশোধন",
+  "authenticationOptional": "প্রমাণীকরণ (ঐচ্ছিক)",
+  "auto": "অটো",
+  "autoPlay": "অটো প্লে",
+  "autoScroll": "অটো স্ক্রল",
+  "autoScrollSpeed": "স্বয়ংক্রিয় স্ক্রোল গতি",
+  "autoSkipEd": "অটো স্কিপ ED",
+  "autoSkipFiller": "অটো স্কিপ ফিলার",
+  "autoSkipOnceOnly": "অটো স্কিপ একবার মাত্র",
+  "autoSkipOnlyOncePerWatch": "অটো স্কিপ শুধুমাত্র একবার ঘড়ি প্রতি",
+  "autoSkipOp": "অটো স্কিপ OP",
+  "autoSkipRecap": "অটো স্কিপ রিক্যাপ",
+  "autoSkipTheEndingSong": "অটো শেষ গান এড়িয়ে যান",
+  "autoSkipTheOpeningSong": "স্বয়ংক্রিয়ভাবে খোলার গান এড়িয়ে যান",
+  "autoSkipTheRecapSection": "রিক্যাপ বিভাগটি স্বয়ংক্রিয়ভাবে এড়িয়ে যান",
+  "autoSwitchToVerticalMode": "স্বয়ংক্রিয়ভাবে উল্লম্ব মোডে সুইচ করুন",
+  "autoTranslateSubtitles": "স্বয়ংক্রিয় অনুবাদ সাবটাইটেল",
+  "autoWebtoonMode": "অটো ওয়েবটুন মোড",
+  "autoClearThreshold": "অটো-ক্লিয়ার থ্রেশহোল্ড",
+  "autoSelectDefault": "অটো-সিলেক্ট (ডিফল্ট)",
+  "autoSelectThisServerQualityFor": "এই অ্যানিমের জন্য এই সার্ভারের গুণমান স্বয়ংক্রিয়ভাবে নির্বাচন করুন",
+  "automaticallyMoveToNextTextSegment": "স্বয়ংক্রিয়ভাবে পরবর্তী পাঠ্য বিভাগে যান",
+  "automaticallyScrollContent": "স্বয়ংক্রিয়ভাবে সামগ্রী স্ক্রোল করুন",
+  "automaticallyScrollPages": "স্বয়ংক্রিয়ভাবে পৃষ্ঠাগুলি স্ক্রোল করুন",
+  "automaticallySkipFillerEpisodesWhenGoing": "পরের পর্বে যাওয়ার সময় স্বয়ংক্রিয়ভাবে ফিলার পর্বগুলি এড়িয়ে যান",
+  "automaticallyUpdateEntriesWhenImportingThe": "XML আমদানি করার সময় স্বয়ংক্রিয়ভাবে এন্ট্রি আপডেট করুন",
+  "availableAddOns": "উপলব্ধ অ্যাড-অন",
+  "availableKeybindings": "উপলব্ধ কীবাইন্ডিং:",
+  "avatarDecorations": "অবতার সজ্জা",
+  "avatarDecorationsNameplatesBannersProfileEffects": "অবতার সজ্জা, নেমপ্লেট, ব্যানার এবং প্রোফাইল প্রভাব",
+  "avgChapters": "গড় অধ্যায়",
+  "avgEpisodes": "গড় পর্ব",
+  "back": "ফিরে",
+  "backdropScope": "ব্যাকড্রপ এবং স্কোপ",
+  "backdropBrightness": "ব্যাকড্রপ উজ্জ্বলতা",
+  "backdropSource": "ব্যাকড্রপ সোর্স",
+  "backgroundOpacity": "পটভূমির অস্বচ্ছতা",
+  "backup": "ব্যাকআপ",
+  "backupRestore": "ব্যাকআপ এবং পুনরুদ্ধার করুন",
+  "backupAndRestoreYourLibrary": "ব্যাকআপ এবং আপনার লাইব্রেরি পুনরুদ্ধার করুন",
+  "backupArchive": "ব্যাকআপ আর্কাইভ",
+  "backupOwner": "ব্যাকআপ মালিক",
+  "backupRestoredSuccessfully": "ব্যাকআপ সফলভাবে পুনরুদ্ধার করা হয়েছে!",
+  "backupSavedSuccessfully": "ব্যাকআপ সফলভাবে সংরক্ষিত হয়েছে!",
+  "badge": "ব্যাজ",
+  "banUser": "ব্যান ব্যবহারকারী",
+  "baseUrlNotAvailableForThis": "এই উৎসের জন্য বেস URL উপলব্ধ নয়",
+  "basedOnYourFavouriteCharacters": "আপনার প্রিয় চরিত্রের উপর ভিত্তি করে।",
+  "basedOnYourFavouriteStaff": "আপনার প্রিয় কর্মীদের উপর ভিত্তি করে.",
+  "basedOnYourTop10Tags": "আপনার শীর্ষ 10 ট্যাগের উপর ভিত্তি করে।",
+  "basedOnYourTop3Studios": "আপনার শীর্ষ 3 স্টুডিওর উপর ভিত্তি করে।",
+  "basedOnYourTop5Genres": "আপনার শীর্ষ 5 ঘরানার উপর ভিত্তি করে.",
+  "basedOnYourTop6Voice": "আপনার সেরা 6 ভয়েস অভিনেতার উপর ভিত্তি করে।",
+  "batchDownload": "ব্যাচ ডাউনলোড",
+  "beTheFirstToRecommendThis": "এই শিরোনাম সুপারিশ প্রথম হতে!",
+  "betterSubtitleRenderingUsingLibassLibrary": "libass লাইব্রেরি ব্যবহার করে ভাল সাবটাইটেল রেন্ডারিং",
+  "blockquote": "ব্লককোট",
+  "blurBackdropTuning": "ব্লার এবং ব্যাকড্রপ টিউনিং",
+  "blurAmount": "অস্পষ্ট পরিমাণ",
+  "blurColorTint": "ব্লার কালার টিন্ট",
+  "blurMechanism": "ব্লার মেকানিজম",
+  "blurMultiplier": "অস্পষ্ট গুণক",
+  "blurStyle": "ব্লার স্টাইল",
+  "bold": "সাহসী",
+  "boldItalic": "বোল্ড + ইটালিক",
+  "botUrlNotConfigured": "বট URL কনফিগার করা হয়নি",
+  "bottomControls": "নীচের নিয়ন্ত্রণ",
+  "bottomMargin": "নিচের মার্জিন",
+  "bottomNavBarMargin": "নিচের এনভি বার মার্জিন",
+  "broadcastYourActivityToDiscord": "আপনার কার্যকলাপ Discord এ সম্প্রচার করুন",
+  "browsingIdle": "ব্রাউজিং / নিষ্ক্রিয়",
+  "browsingPhrasing": "ব্রাউজিং বাক্যাংশ",
+  "bufferSize": "বাফার সাইজ",
+  "builtInStyles": "অন্তর্নির্মিত শৈলী",
+  "byDisablingThisYouCanAvoid": "এটি অক্ষম করে আপনি সাবটাইটেলগুলির মধ্যে পরিবর্তন এড়াতে পারেন৷",
+  "byIndex": "সূচক দ্বারা",
+  "byUserId": "ইউজার আইডি দ্বারা",
+  "byUsername": "ব্যবহারকারীর নাম দ্বারা",
+  "bypassCloudflare": "বাইপাস ক্লাউডফ্লেয়ার",
+  "cacheStorage": "ক্যাশে এবং স্টোরেজ",
+  "cacheMinutes": "ক্যাশে মিনিট",
+  "cacheOverview": "ক্যাশে ওভারভিউ",
+  "cachedImages": "ক্যাশে করা ছবি",
+  "calculateCompatibility": "সামঞ্জস্যতা গণনা",
+  "calculatedBasedOnWhichReleaseDecades": "আপনি কোন রিলিজ দশকে সবচেয়ে বেশি দেখেছেন এবং সর্বোচ্চ স্কোর করেছেন তার উপর ভিত্তি করে গণনা করা হয়।",
+  "calendar": "ক্যালেন্ডার",
+  "cancel": "বাতিল করুন",
+  "cannotCompareAUserWithThemselves": "একজন ব্যবহারকারীকে নিজেদের সাথে তুলনা করা যায় না! দুটি ভিন্ন ব্যবহারকারীর নাম লিখুন.",
+  "cannotCompareYourProfileWithYourself": "নিজের সাথে আপনার প্রোফাইল তুলনা করা যায় না! অনুগ্রহ করে একটি ভিন্ন ব্যবহারকারীর নাম লিখুন৷",
+  "cantPlaySinceUserClosedThe": "ব্যবহারকারী অ্যাপটি হঠাৎ বন্ধ করার কারণে প্লে করা যাবে না",
+  "cantReadSinceUserClosedThe": "ব্যবহারকারী অ্যাপটি হঠাৎ বন্ধ করার কারণে পড়তে পারে না",
+  "cardAnimationDuration": "কার্ড অ্যানিমেশন সময়কাল",
+  "cardRoundness": "কার্ড বৃত্তাকার",
+  "cardStyle": "কার্ড স্টাইল",
+  "carouselStyle": "ক্যারোজেল স্টাইল",
+  "changeFile": "ফাইল পরিবর্তন করুন",
+  "changeRole": "ভূমিকা পরিবর্তন করুন",
+  "changeService": "পরিষেবা পরিবর্তন করুন",
+  "changeSubtitleBackgroundColor": "সাবটাইটেলের পটভূমির রঙ পরিবর্তন করুন",
+  "changeSubtitleColors": "সাবটাইটেল রং পরিবর্তন করুন",
+  "changeSubtitleOutlineColor": "সাবটাইটেলের রূপরেখার রঙ পরিবর্তন করুন",
+  "changelog": "চেঞ্জলগ",
+  "chapterListSettings": "অধ্যায় তালিকা সেটিংস",
+  "chapterNumber": "অধ্যায় সংখ্যা",
+  "chapterTileStyle": "অধ্যায় টাইল শৈলী",
+  "chapters": "অধ্যায়",
+  "chaptersUpper": "অধ্যায়",
+  "chaptersVolumes": "অধ্যায় ও ভলিউম",
+  "chaptersRead": "অধ্যায় পঠিত",
+  "characters": "অক্ষর",
+  "checkCompatibility": "সামঞ্জস্য পরীক্ষা করুন",
+  "checkForAddOnUpdates": "অ্যাড-অন আপডেটের জন্য চেক করুন",
+  "checkForUpdates": "আপডেটের জন্য চেক করুন",
+  "checkUpdatesFromBetaChannel": "বিটা চ্যানেল থেকে আপডেট চেক করুন",
+  "checkingForUpdates": "আপডেটের জন্য পরীক্ষা করা হচ্ছে!",
+  "chooseABackupFileAnymex": "একটি ব্যাকআপ ফাইল চয়ন করুন (.anymex)",
+  "chooseACustomBackgroundForLiquid": "তরল মোডের জন্য একটি কাস্টম পটভূমি চয়ন করুন।",
+  "chooseADirectoryToBrowseYour": "আপনার মিডিয়া ফাইল ব্রাউজ করতে একটি ডিরেক্টরি নির্বাচন করুন",
+  "chooseDifferentImage": "ভিন্ন চিত্র নির্বাচন করুন",
+  "chooseDownloadFolder": "ডাউনলোড ফোল্ডার নির্বাচন করুন",
+  "chooseImage": "ছবি নির্বাচন করুন",
+  "chooseProvider": "প্রদানকারী নির্বাচন করুন",
+  "chooseQuality": "গুণমান চয়ন করুন",
+  "chooseServer": "সার্ভার নির্বাচন করুন",
+  "chooseServiceTracker": "পরিষেবা / ট্র্যাকার চয়ন করুন",
+  "chooseShaderProfile": "Shader প্রোফাইল নির্বাচন করুন",
+  "chooseUpiApp": "UPI অ্যাপ বেছে নিন",
+  "chooseWhichListToShowOn": "হোম পেজে কোন তালিকা দেখাতে হবে তা বেছে নিন",
+  "chooseYourFavouriteColor": "আপনার প্রিয় রং চয়ন করুন!",
+  "chooseYourFavouritePalette": "আপনার প্রিয় প্যালেট চয়ন করুন!",
+  "chromaScaler": "ক্রোমা স্কেলার",
+  "classicCarouselCardLayoutFeaturingVertical": "উল্লম্ব পোস্টার কার্ড সমন্বিত ক্লাসিক ক্যারোজেল কার্ড লেআউট।",
+  "clear": "পরিষ্কার",
+  "clearAll": "সব সাফ করুন",
+  "clearAllHistory": "সমস্ত ইতিহাস সাফ করুন",
+  "clearAppCache": "অ্যাপ ক্যাশে সাফ করুন",
+  "clearAppCacheNow": "এখন অ্যাপ ক্যাশে সাফ করুন",
+  "clearCache": "ক্যাশে সাফ করুন",
+  "clearCacheCookies": "ক্যাশে এবং কুকিজ সাফ করুন",
+  "clearCookies": "কুকিজ সাফ করুন",
+  "clearCookies2": "কুকিজ সাফ করুন",
+  "clearHistory": "ইতিহাস সাফ করুন",
+  "clearImageCacheNow": "এখন ইমেজ ক্যাশে সাফ করুন",
+  "clearProxy": "প্রক্সি সাফ করুন",
+  "clearSelected": "নির্বাচিত সাফ করুন",
+  "clientAll": "ক্লায়েন্ট: সব",
+  "close": "বন্ধ",
+  "closetCommunity": "পায়খানা এবং সম্প্রদায়",
+  "cloudflareChallengeSolved": "Cloudflare চ্যালেঞ্জ সমাধান!",
+  "collectionName": "সংগ্রহের নাম",
+  "collections": "সংগ্রহ",
+  "combineBackupDataWithExistingData": "এই ডিভাইসে বিদ্যমান ডেটার সাথে ব্যাকআপ ডেটা একত্রিত করুন৷",
+  "commentDeleted": "মন্তব্য মুছে ফেলা হয়েছে",
+  "commentPolicy": "মন্তব্য নীতি",
+  "commentReplies": "মন্তব্য উত্তর",
+  "commentRules": "মন্তব্যের নিয়ম",
+  "commentSystem": "মন্তব্য সিস্টেম",
+  "comments": "মন্তব্য",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 হল একটি উন্নত মন্তব্য সিস্টেম যা প্রদান করে:",
+  "commentumV2SettingsModerationPreferences": "মন্তব্য v2 সেটিংস, সংযম এবং পছন্দ",
+  "common": "সাধারণ",
+  "commonCharacters": "সাধারণ অক্ষর",
+  "commonFavouriteStaff": "কমন ফেভারিট স্টাফ",
+  "commonGenres": "সাধারণ জেনারস",
+  "commonSettings": "সাধারণ সেটিংস",
+  "commonStudios": "সাধারণ স্টুডিও",
+  "commonTags": "সাধারণ ট্যাগ",
+  "commonVoiceActors": "কমন ভয়েস অভিনেতা",
+  "communityDriven": "সম্প্রদায় চালিত",
+  "communityForksOfAnymex": "AnymeX এর কমিউনিটি ফর্ক",
+  "communityLeaderboard": "কমিউনিটি লিডারবোর্ড",
+  "communityRecommendations": "সম্প্রদায়ের সুপারিশ",
+  "compact": "কমপ্যাক্ট",
+  "compactCardWithEpisodeThumbnailAnd": "পর্বের থাম্বনেল এবং শিরোনাম সহ কমপ্যাক্ট কার্ড",
+  "compactGridOfChapterNumbers": "অধ্যায় সংখ্যার কম্প্যাক্ট গ্রিড",
+  "compatibility": "সামঞ্জস্য",
+  "compatibilityRanks": "সামঞ্জস্যতা র‌্যাঙ্ক",
+  "compatibleWithGooglePayPhonepePaytm": "Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay এবং সমস্ত UPI ব্যাঙ্কিং অ্যাপের সাথে সামঞ্জস্যপূর্ণ।",
+  "completeAnyCloudflareChallengeThenTap": "যেকোন ক্লাউডফ্লেয়ার চ্যালেঞ্জ সম্পূর্ণ করুন, তারপর সেশনটি এক্সটেনশনে পাস করতে \"সিঙ্ক কুকিজ\" এ আলতো চাপুন।",
+  "compose": "রচনা করুন",
+  "concurrencyLimits": "সঙ্গতি এবং সীমা",
+  "configurationsRepos": "কনফিগারেশন এবং রিপোজ",
+  "configureExport": "কনফিগার এবং রপ্তানি",
+  "configureDiscordRichPresenceActivityStatus": "Discord সমৃদ্ধ উপস্থিতি এবং কার্যকলাপের স্থিতি কনফিগার করুন",
+  "configureDnsOverHttpsProxyTls": "DNS-ওভার-HTTPS, প্রক্সি এবং TLS সেটিংস কনফিগার করুন",
+  "configureMangaAndNovelReaderDefaults": "মাঙ্গা এবং নভেল রিডার ডিফল্ট কনফিগার করুন",
+  "configureParallelDownloadsAndDirectory": "সমান্তরাল ডাউনলোড এবং ডিরেক্টরি কনফিগার করুন",
+  "configurePosterBlurScopeTintBackdrop": "পোস্টার ব্লার, স্কোপ, টিন্ট এবং ব্যাকড্রপ সোর্স কনফিগার করুন",
+  "confirm": "নিশ্চিত করুন",
+  "confirmRestore": "নিশ্চিত করুন এবং পুনরুদ্ধার করুন",
+  "confirmBackupPassword": "ব্যাকআপ পাসওয়ার্ড নিশ্চিত করুন",
+  "conflictHandling": "দ্বন্দ্ব পরিচালনা",
+  "connect": "সংযোগ করুন",
+  "continueReading": "পড়া চালিয়ে যান",
+  "continueWatching": "দেখা চালিয়ে যান",
+  "continuousModeOnly": "শুধুমাত্র অবিচ্ছিন্ন মোড",
+  "contributors": "অবদানকারী",
+  "controlTheme": "নিয়ন্ত্রণ থিম",
+  "controlsSubtitlesAndPlaybackPreferences": "কন্ট্রোল, সাবটাইটেল এবং প্লেব্যাক পছন্দ",
+  "cookiesUserAgentSynced": "কুকিজ এবং ব্যবহারকারী-এজেন্ট সিঙ্ক হয়েছে!",
+  "copy": "কপি",
+  "copyPath": "পাথ কপি করুন",
+  "copyUpiId": "UPI আইডি কপি করুন",
+  "copyUserId": "ইউজার আইডি কপি করুন",
+  "coreTeam": "মূল দল",
+  "couldNotCalculateCompatibility": "সামঞ্জস্য গণনা করা যায়নি.",
+  "couldNotFetchChaptersForThis": "এই শিরোনামের জন্য অধ্যায়গুলি আনা যায়নি৷",
+  "couldNotFetchEpisodesForThis": "এই শিরোনামের জন্য পর্বগুলি আনা যায়নি৷",
+  "couldNotOpenDonationLink": "অনুদান লিঙ্ক খুলতে পারেনি",
+  "couldNotOpenLink": "লিঙ্ক খুলতে পারেনি",
+  "couldNotOpenReleasesPage": "রিলিজ পৃষ্ঠা খোলা যায়নি",
+  "couldntOpenAppSettingsOpenIt": "অ্যাপ সেটিংস খোলা যায়নি। ম্যানুয়ালি খুলুন।",
+  "count": "গণনা",
+  "countryDistribution": "দেশ বন্টন",
+  "countryOfOrigin": "উৎপত্তি দেশ",
+  "create": "তৈরি করুন",
+  "createAFullAnymexArchiveOf": "আপনার মিডিয়া লাইব্রেরি, সেটিংস, এক্সটেনশন এবং হোস্ট রানটাইমের একটি সম্পূর্ণ .anymex সংরক্ষণাগার তৈরি করুন",
+  "createActivity": "কার্যকলাপ তৈরি করুন",
+  "createBackup": "ব্যাকআপ তৈরি করুন",
+  "createNewList": "নতুন তালিকা তৈরি করুন",
+  "createStatus": "স্ট্যাটাস তৈরি করুন",
+  "cropBorders": "ফসলের সীমানা",
+  "current": "বর্তমান •",
+  "custom": "কাস্টম",
+  "customBanners": "কাস্টম ব্যানার",
+  "customColorPicker": "কাস্টম কালার পিকার",
+  "customDohUrl": "কাস্টম DOH URL",
+  "customFonts": "কাস্টম ফন্ট",
+  "customLists": "কাস্টম তালিকা",
+  "customLogos": "কাস্টম লোগো",
+  "customPlayerFlagsParameters": "কাস্টম প্লেয়ার পতাকা এবং পরামিতি",
+  "customScale": "কাস্টম স্কেল",
+  "customTheme": "কাস্টম থিম",
+  "customUserAgent": "কাস্টম ব্যবহারকারী-এজেন্ট",
+  "customValue": "কাস্টম মান",
+  "customEllipsis": "কাস্টম...",
+  "customizeCardHistoryCardCarouselNav": "কার্ড, ইতিহাস কার্ড, ক্যারোজেল এবং নেভি বার শৈলী কাস্টমাইজ করুন",
+  "customizeTheInterfaceToYourLiking": "আপনার পছন্দ মত ইন্টারফেস কাস্টমাইজ করুন",
+  "customizeYourLogoAnimationStyle": "আপনার লোগো অ্যানিমেশন শৈলী কাস্টমাইজ করুন",
+  "dailyActivitiesWatchAndReadMetrics": "দৈনন্দিন কার্যকলাপ, দেখুন এবং মেট্রিক্স পড়া",
+  "dailyActivityAndWatchReadProgress": "দৈনিক কার্যকলাপ এবং প্রগতি ট্র্যাকিং দেখুন/পড়ুন",
+  "dataCache": "ডেটা এবং ক্যাশে",
+  "dataToRestore": "পুনরুদ্ধার করার জন্য ডেটা",
+  "days": "দিন",
+  "days2": "দিন",
+  "daysActive": "সক্রিয় দিন",
+  "debanding": "ডিবন্ডিং",
+  "debugStuffs": "ডিবাগ স্টাফ",
+  "decoder": "ডিকোডার",
+  "decoderHwdec": "ডিকোডার (HWDec)",
+  "decoderThreads": "ডিকোডার থ্রেড",
+  "decorationCloset": "সজ্জা পায়খানা",
+  "defaultLabel": "ডিফল্ট",
+  "defaultAndroidAudiotrackApi": "ডিফল্ট Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "ডিফল্ট Apple CoreAudio API",
+  "defaultListOrder": "ডিফল্ট তালিকা অর্ডার",
+  "defaultOrientation": "ডিফল্ট ওরিয়েন্টেশন",
+  "defaultPortrait": "ডিফল্ট পোর্ট্রেট",
+  "defaultPulseaudioApi": "ডিফল্ট PulseAudio API",
+  "defaultSize200px": "ডিফল্ট আকার (200px)",
+  "defaultSystemAudioDriver": "ডিফল্ট সিস্টেম অডিও ড্রাইভার",
+  "defaultTheme": "ডিফল্ট থিম",
+  "defaultWindowsAudioDriver": "ডিফল্ট উইন্ডোজ অডিও ড্রাইভার",
+  "delete": "মুছে দিন",
+  "deleteActivity": "কার্যকলাপ মুছুন",
+  "deleteAll": "সব মুছুন",
+  "deleteAllCachedImagesTorrentStream": "সমস্ত ক্যাশে করা ছবি, টরেন্ট স্ট্রিম খণ্ড এবং অস্থায়ী ফাইল মুছুন।",
+  "deleteAllStoredHttpCookiesAcross": "সমস্ত ডোমেন জুড়ে সমস্ত সংরক্ষিত HTTP কুকি মুছুন৷",
+  "deleteChapter": "অধ্যায় মুছুন",
+  "deleteChapterQuestion": "অধ্যায় মুছবেন?",
+  "deleteComment": "মন্তব্য মুছুন",
+  "deleteCustomLogo": "কাস্টম লোগো মুছুন",
+  "deleteEpisode": "পর্ব মুছুন",
+  "deleteEpisodeQuestion": "পর্ব মুছবেন?",
+  "deleteEverythingStoredOfAnymexPermanently": "AnymeX এর সংরক্ষিত সবকিছু স্থায়ীভাবে মুছুন।",
+  "deleteExtension": "এক্সটেনশন মুছুন",
+  "deleteFont": "ফন্ট মুছুন",
+  "deleteHistoryItem": "ইতিহাস আইটেম মুছুন",
+  "deleteList": "তালিকা মুছুন",
+  "deleteLogo": "লোগো মুছুন",
+  "deleteReason": "কারণ মুছবেন?",
+  "deleteRecommendation": "প্রস্তাবনা মুছবেন?",
+  "deleteReply": "উত্তর মুছুন",
+  "deleteReportedComment": "রিপোর্ট করা মন্তব্য মুছুন",
+  "deleteSavedCookiesAndCloudflareTokens": "সংরক্ষিত কুকিজ এবং ক্লাউডফ্লেয়ার টোকেন মুছুন",
+  "deleteSavedCookiesCloudflareTokensAnd": "সংরক্ষিত কুকিজ, ক্লাউডফ্লেয়ার টোকেন এবং অস্থায়ী ক্যাশে মুছুন",
+  "deleteSelected": "নির্বাচিত মুছুন",
+  "deleteTemporaryNetworkAndImageCache": "অস্থায়ী নেটওয়ার্ক এবং চিত্র ক্যাশে মুছুন",
+  "deletionRequestSentToAdminsFor": "পর্যালোচনার জন্য প্রশাসকদের কাছে মুছে ফেলার অনুরোধ পাঠানো হয়েছে৷",
+  "demuxerMaxBuffer": "ডেমুক্সার ম্যাক্স বাফার",
+  "demuxerReadahead": "Demuxer Readahead",
+  "description": "বর্ণনা",
+  "detailedClassic": "বিস্তারিত (ক্লাসিক)",
+  "detailedInsights": "বিস্তারিত অন্তর্দৃষ্টি",
+  "detailsPage": "বিস্তারিত পৃষ্ঠা",
+  "developer": "বিকাশকারী",
+  "development": "উন্নয়ন",
+  "direct": "সরাসরি",
+  "directSurfaceRenderingAndroidOnly": "সরাসরি পৃষ্ঠ রেন্ডারিং (শুধুমাত্র অ্যান্ড্রয়েড)",
+  "direction": "দিকনির্দেশনা",
+  "disableToShowAndHidePlayer": "তাৎক্ষণিকভাবে প্লেয়ার কন্ট্রোল দেখাতে এবং লুকাতে অক্ষম করুন",
+  "disablingMayBypassCaptivePortalsOr": "অক্ষম করা ক্যাপটিভ পোর্টাল বা SSL পরিদর্শন বাইপাস করতে পারে, কিন্তু নিরাপত্তা হ্রাস করে।",
+  "discard": "বাতিল করুন",
+  "discardMessage": "বার্তা বাতিল করবেন?",
+  "discardReply": "উত্তর বাতিল করবেন?",
+  "discardStatus": "স্ট্যাটাস বাতিল করবেন?",
+  "disconnect": "সংযোগ বিচ্ছিন্ন করুন",
+  "disconnectDiscord": "Discord সংযোগ বিচ্ছিন্ন করবেন?",
+  "discordTakenDown": "Discord নামানো হয়েছে",
+  "dismiss": "খারিজ",
+  "display": "প্রদর্শন",
+  "displayAnimeMangaMoviesAndShows": "হোম পেজে সম্প্রদায়ের দ্বারা প্রস্তাবিত অ্যানিমে, মাঙ্গা, চলচ্চিত্র এবং শোগুলি প্রদর্শন করুন৷",
+  "displayMode": "প্রদর্শন মোড",
+  "displayModeTuningIsNotApplicable": "ডিসপ্লে মোড টিউনিং ডেস্কটপ প্ল্যাটফর্মগুলিতে প্রযোজ্য নয়।",
+  "displayPlaybackOrReadingProgressTimestamps": "প্লেব্যাক বা পড়ার অগ্রগতি টাইমস্ট্যাম্প প্রদর্শন করুন",
+  "displayRefreshRateResolutionAndFrame": "রিফ্রেশ রেট, রেজোলিউশন এবং ফ্রেম টিউনিং প্রদর্শন করুন",
+  "distanceBetweenLines": "লাইনের মধ্যে দূরত্ব",
+  "distanceFromBottomOfScreen": "পর্দার নিচ থেকে দূরত্ব",
+  "ditherDepth": "ডিথার ডেপথ",
+  "dnsProxy": "DNS এবং প্রক্সি",
+  "dontShowAgain": "আবার দেখাবেন না",
+  "donate": "দান করুন",
+  "donateSupport": "দান এবং সমর্থন",
+  "donateViaPaypal": "পেপ্যালের মাধ্যমে দান করুন",
+  "donateViaUpiOrPaypalTo": "উন্নয়ন সমর্থন করতে UPI বা PayPal এর মাধ্যমে দান করুন",
+  "donateViaUpiPaypalSupportDevelopment": "UPI, PayPal এবং সহায়তা উন্নয়নের মাধ্যমে দান করুন",
+  "done": "সম্পন্ন",
+  "done2": "সম্পন্ন",
+  "doubletapToSeek": "খুঁজতে ডবলট্যাপ করুন",
+  "downgradeOrSwitchToASpecific": "ডাউনগ্রেড করুন বা একটি নির্দিষ্ট প্লাগইন সংস্করণে স্যুইচ করুন",
+  "download": "ডাউনলোড করুন",
+  "download4kShaders": "4K Shaders ডাউনলোড করুন",
+  "downloadAllChapters": "সমস্ত অধ্যায় ডাউনলোড করুন",
+  "downloadAllEpisodes": "সকল পর্ব ডাউনলোড করুন",
+  "downloadChapter": "অধ্যায় ডাউনলোড করুন",
+  "downloadChunks": "খণ্ডগুলি ডাউনলোড করুন",
+  "downloadCurrentSection": "বর্তমান বিভাগ ডাউনলোড করুন",
+  "downloadEpisode": "পর্ব ডাউনলোড করুন",
+  "downloadFailedTapToRetry": "ডাউনলোড ব্যর্থ হয়েছে৷ আবার চেষ্টা করতে আলতো চাপুন।",
+  "downloadPath": "পাথ ডাউনলোড করুন",
+  "downloadPathsAndQualitySettings": "পাথ এবং গুণমান সেটিংস ডাউনলোড করুন",
+  "downloadPathsAndStorageSettings": "পাথ এবং স্টোরেজ সেটিংস ডাউনলোড করুন",
+  "downloadPermissions": "অনুমতি ডাউনলোড করুন",
+  "downloadQualityStoragePaths": "ডাউনলোড গুণমান, স্টোরেজ পাথ",
+  "downloadSettings": "সেটিংস ডাউনলোড করুন",
+  "downloadSize4mb": "ডাউনলোড সাইজ: ~4MB",
+  "downloadStarted": "ডাউনলোড শুরু হয়েছে",
+  "downloadUnreadChapters": "অপঠিত অধ্যায় ডাউনলোড করুন",
+  "downloadUnwatchedEpisodes": "না দেখা পর্ব ডাউনলোড করুন",
+  "downloaded": "ডাউনলোড করা হয়েছে",
+  "downloaded2": "ডাউনলোড করা হয়েছে",
+  "downloadedMedia": "ডাউনলোড করা মিডিয়া",
+  "downloadingImage": "ছবি ডাউনলোড হচ্ছে...",
+  "downloadingPackage": "প্যাকেজ ডাউনলোড হচ্ছে...",
+  "downloads": "ডাউনলোড",
+  "downloadsStorage": "ডাউনলোড এবং স্টোরেজ",
+  "downloadsPage": "ডাউনলোড পৃষ্ঠা",
+  "downscalingAlgorithm": "ডাউনস্কেলিং অ্যালগরিদম",
+  "dragAndDropToReorderNavigation": "নেভিগেশন বার ট্যাবগুলি পুনরায় সাজাতে টেনে আনুন",
+  "dragToReorderStatusSections": "স্থিতি বিভাগগুলি পুনরায় সাজাতে টেনে আনুন",
+  "dualPageMode": "ডুয়াল পেজ মোড",
+  "dynamicVariablesWillBeReplacedAutomatically": "ডায়নামিক ভেরিয়েবল স্বয়ংক্রিয়ভাবে প্রতিস্থাপিত হবে। আপনি একটি স্থির বাক্যাংশও ব্যবহার করতে পারেন।",
+  "edit": "সম্পাদনা করুন",
+  "editActivity": "কার্যকলাপ সম্পাদনা করুন",
+  "editCustomMpvFlagsPropertiesAnd": "কাস্টম mpv পতাকা, বৈশিষ্ট্য, এবং কনফিগারেশন ফাইল সম্পাদনা করুন",
+  "editLogoSettings": "লোগো সেটিংস সম্পাদনা করুন",
+  "editMediaEntry": "মিডিয়া এন্ট্রি সম্পাদনা করুন",
+  "editReason": "কারণ সম্পাদনা করুন",
+  "editRecommendationReasonMin30Chars": "সুপারিশের কারণ সম্পাদনা করুন (ন্যূনতম 30 অক্ষর)",
+  "edited": "সম্পাদিত",
+  "enableAnimation": "অ্যানিমেশন সক্ষম করুন",
+  "enableAnimationOnCarouselsForSmooth": "মসৃণ গতির জন্য ক্যারোসেলগুলিতে অ্যানিমেশন সক্ষম করুন",
+  "enableBackgroundMediaControlsForBluetooth": "ব্লুটুথ হেডসেট এবং সিস্টেম মিডিয়া বিজ্ঞপ্তিগুলির জন্য পটভূমি মিডিয়া নিয়ন্ত্রণ সক্ষম করুন৷ দ্রষ্টব্য: এটি সক্ষম করলে ব্যাটারি ব্যবহার বৃদ্ধি পাবে।",
+  "enableBetaUpdates": "বিটা আপডেট সক্রিয় করুন",
+  "enableClassicSimpleHeaderStyleOn": "হোম স্ক্রিনে ক্লাসিক সহজ শিরোনাম শৈলী সক্ষম করুন",
+  "enableDiscordRpc": "Discord RPC সক্ষম করুন৷",
+  "enableExperimentalSettings": "পরীক্ষামূলক সেটিংস সক্ষম করুন৷",
+  "enableHoldingOnPlayerScreenTo": "অস্থায়ীভাবে ভিডিও প্লেব্যাকের গতি বাড়াতে প্লেয়ার স্ক্রিনে ধরে রাখা সক্ষম করুন",
+  "enableHorizontalSwipingOnPlayerScreen": "ভিডিও খোঁজার জন্য প্লেয়ার স্ক্রিনে অনুভূমিক সোয়াইপিং সক্ষম করুন",
+  "enableKenBurns": "কেন বার্নস সক্ষম করুন",
+  "enableLongPressQuickActions": "দীর্ঘক্ষণ প্রেস দ্রুত অ্যাকশন সক্রিয় করুন",
+  "enableNotificationsForUpcomingAiringEpisodes": "আসন্ন সম্প্রচার পর্বের জন্য বিজ্ঞপ্তি সক্ষম করুন৷",
+  "enableNsfwAdultEntriesInAnilist": "AniList সামগ্রীতে NSFW/প্রাপ্তবয়স্কদের এন্ট্রি সক্ষম করুন৷",
+  "enableShaders": "শেডার্স সক্ষম করুন",
+  "enableSwipeControls": "সোয়াইপ কন্ট্রোল সক্ষম করুন",
+  "enableTapZones": "ট্যাপ জোন সক্ষম করুন",
+  "enableThisIfYouWantTo": "আপনি যদি আপনার ওয়ালপেপারের আসল রঙ ধরে রাখতে চান তবে এটি সক্ষম করুন",
+  "enableTranslucentNavigationBar": "স্বচ্ছ নেভিগেশন বার সক্ষম করুন",
+  "enableTts": "TTS সক্ষম করুন৷",
+  "enableVerticalSwipingOnTheLeft": "উজ্জ্বলতা এবং ভলিউম সামঞ্জস্য করতে প্লেয়ার স্ক্রিনের বাম/ডান দিকে উল্লম্ব সোয়াইপিং সক্ষম করুন",
+  "enablesASoftGlowingGradientEffect": "একটি নরম, উজ্জ্বল গ্রেডিয়েন্ট প্রভাব সক্ষম করে।",
+  "encryptWithAes256RecommendedFor": "AES-256 দিয়ে এনক্রিপ্ট করুন (প্রমাণ টোকেনের জন্য প্রস্তাবিত)",
+  "encrypted": "এনক্রিপ্ট করা •",
+  "endChapter": "অধ্যায় শেষ করুন",
+  "enterAmount": "পরিমাণ লিখুন...",
+  "enterAnilistUsername": "AniList ব্যবহারকারীর নাম লিখুন",
+  "enterAtLeast2Characters": "কমপক্ষে 2টি অক্ষর লিখুন",
+  "enterBackupPassword": "ব্যাকআপ পাসওয়ার্ড লিখুন",
+  "enterFirstAnilistUsername": "প্রথম AniList ব্যবহারকারীর নাম লিখুন",
+  "enterGithubRepositoryUrl": "GitHub সংগ্রহস্থলের URL লিখুন",
+  "enterListName": "তালিকার নাম লিখুন",
+  "enterPassword": "পাসওয়ার্ড লিখুন",
+  "enterReasonOrDetailsForThis": "এই কর্মের কারণ বা বিশদ বিবরণ লিখুন...",
+  "enterSearchQuery": "অনুসন্ধান ক্যোয়ারী লিখুন",
+  "enterUsername": "ব্যবহারকারীর নাম লিখুন",
+  "enterValue": "মান লিখুন",
+  "entryDeleted": "এন্ট্রি মুছে ফেলা হয়েছে।",
+  "episode1": "পর্ব 1",
+  "episodeListSettings": "পর্বের তালিকা সেটিংস",
+  "episodes": "পর্বগুলি",
+  "episodesDuration": "পর্ব এবং সময়কাল",
+  "episodesWatched": "এপিসোড দেখা",
+  "errorOccured": "ত্রুটি ঘটেছে",
+  "errorOccurred": "ত্রুটি ঘটেছে",
+  "errorSavingImage": "ছবি সংরক্ষণে ত্রুটি",
+  "errorSharingImage": "ছবি শেয়ার করার ক্ষেত্রে ত্রুটি",
+  "errorMissingRequiredDataItSeems": "ত্রুটি: প্রয়োজনীয় ডেটা অনুপস্থিত৷ মনে হচ্ছে আপনি অধ্যায় পড়ে সরাসরি অ্যাপটি বন্ধ করে দিয়েছেন!",
+  "errorMissingRequiredMediaItSeems": "ত্রুটি: প্রয়োজনীয় মিডিয়া অনুপস্থিত৷ মনে হচ্ছে আপনি অধ্যায় পড়ে সরাসরি অ্যাপটি বন্ধ করে দিয়েছেন!",
+  "errorMissingRequiredMediaItSeemsYou": "ত্রুটি: প্রয়োজনীয় মিডিয়া অনুপস্থিত৷ মনে হচ্ছে আপনি পর্বটি দেখার পর সরাসরি অ্যাপটি বন্ধ করে দিয়েছেন!",
+  "everyScoreIsMappedToA": "প্রতিটি স্কোর একটি র্যাঙ্ক ম্যাপ করা হয়. নীচের সারণীটি প্রতিটি বন্ধনী, এর ব্যাজ এবং পরিসরটি কী উপস্থাপন করে তা দেখায়।",
+  "experimental": "পরীক্ষামূলক",
+  "experimentalHighPerformanceRenderer": "পরীক্ষামূলক উচ্চ-পারফরম্যান্স রেন্ডারার",
+  "explore": "অন্বেষণ",
+  "exploreTheProjectAndContribute": "প্রকল্প অন্বেষণ এবং অবদান",
+  "exportLabel": "রপ্তানি",
+  "exportBackup": "ব্যাকআপ রপ্তানি করুন",
+  "exportCancelled": "রপ্তানি বাতিল করা হয়েছে।",
+  "exportDeviceBackup": "ডিভাইস ব্যাকআপ রপ্তানি করুন",
+  "exportSettings": "রপ্তানি সেটিংস",
+  "exportYourAnimeList": "আপনার Anime তালিকা রপ্তানি করুন",
+  "exportYourMangaList": "আপনার মাঙ্গা তালিকা রপ্তানি করুন",
+  "extensionConfigurations": "এক্সটেনশন কনফিগারেশন",
+  "extensionConfigurationsRepos": "এক্সটেনশন কনফিগারেশন এবং Repos",
+  "extensionManager": "এক্সটেনশন ম্যানেজার",
+  "extensionPackages": "এক্সটেনশন প্যাকেজ",
+  "extensionPreferences": "এক্সটেনশন পছন্দসমূহ",
+  "extensionSettings": "এক্সটেনশন সেটিংস",
+  "extensionSettingsAndSourceConfigurations": "এক্সটেনশন সেটিংস এবং উৎস কনফিগারেশন",
+  "extensionTesting": "এক্সটেনশন টেস্টিং",
+  "extensionType": "এক্সটেনশন টাইপ",
+  "extensions": "এক্সটেনশন",
+  "extensionsDiagnostics": "এক্সটেনশন এবং ডায়াগনস্টিকস",
+  "extensionsRepositories": "এক্সটেনশন এবং সংগ্রহস্থল",
+  "extensionsSources": "এক্সটেনশন এবং উত্স",
+  "extensionsTailoredToYourNeeds": "আপনার প্রয়োজন অনুযায়ী এক্সটেনশন",
+  "externalStreamingLinks": "বহিরাগত এবং স্ট্রিমিং লিঙ্ক",
+  "externalBackupsRestoreMetadataAndConfigurations": "বাহ্যিক ব্যাকআপগুলি নিরাপদে মেটাডেটা এবং কনফিগারেশন পুনরুদ্ধার করে।",
+  "externalBrowser": "বাহ্যিক ব্রাউজার",
+  "extras": "অতিরিক্ত",
+  "factoryReset": "ফ্যাক্টরি রিসেট",
+  "factoryReset2": "ফ্যাক্টরি রিসেট",
+  "failedToCheckForUpdates": "আপডেটের জন্য চেক করতে ব্যর্থ.",
+  "failedToCheckPluginUpdates": "প্লাগইন আপডেট চেক করতে ব্যর্থ.",
+  "failedToDeleteChapter": "অধ্যায় মুছে ফেলতে ব্যর্থ হয়েছে",
+  "failedToDeleteEpisode": "পর্ব মুছে ফেলতে ব্যর্থ হয়েছে",
+  "failedToDeleteListEntry": "তালিকা এন্ট্রি মুছে ফেলতে ব্যর্থ হয়েছে",
+  "failedToDeleteMedia": "মিডিয়া মুছে ফেলতে ব্যর্থ হয়েছে৷",
+  "failedToDownloadImage": "ছবি ডাউনলোড করতে ব্যর্থ হয়েছে",
+  "failedToFetchChapters": "অধ্যায় আনতে ব্যর্থ হয়েছে",
+  "failedToFetchDetails": "বিস্তারিত আনতে ব্যর্থ হয়েছে",
+  "failedToFetchImageForSharing": "শেয়ার করার জন্য ছবি আনতে ব্যর্থ হয়েছে৷",
+  "failedToFetchPluginReleaseDetails": "প্লাগইন রিলিজের বিবরণ আনতে ব্যর্থ হয়েছে৷",
+  "failedToFetchPolicy": "নীতি আনতে ব্যর্থ হয়েছে.",
+  "failedToFetchReleaseDetails": "রিলিজের বিবরণ আনতে ব্যর্থ হয়েছে৷",
+  "failedToFetchServers": "সার্ভার আনতে ব্যর্থ হয়েছে",
+  "failedToLoadDetails": "বিবরণ লোড করতে ব্যর্থ হয়েছে",
+  "failedToLoadFontFile": "ফন্ট ফাইল লোড করতে ব্যর্থ হয়েছে",
+  "failedToLoadProfileAccountMay": "প্রোফাইল লোড করতে ব্যর্থ হয়েছে — অ্যাকাউন্ট ব্যক্তিগত হতে পারে বা পাওয়া যায়নি৷",
+  "failedToLoadTorrentMetadata": "টরেন্ট মেটাডেটা লোড করতে ব্যর্থ হয়েছে",
+  "failedToPerformAction": "কর্ম সম্পাদন করতে ব্যর্থ হয়েছে",
+  "failedToRemoveRepo": "রেপো সরাতে ব্যর্থ হয়েছে৷",
+  "failedToStartExtensionRuntime": "এক্সটেনশন রানটাইম শুরু করতে ব্যর্থ হয়েছে৷",
+  "failedToUpdateAnilist": "AniList আপডেট করতে ব্যর্থ হয়েছে৷",
+  "failedToUpdateListEntry": "তালিকা এন্ট্রি আপডেট করতে ব্যর্থ হয়েছে",
+  "failedToUpdatePreference": "পছন্দ আপডেট করতে ব্যর্থ হয়েছে",
+  "failedToUpdateRole": "ভূমিকা আপডেট করতে ব্যর্থ হয়েছে৷",
+  "favoriteTitle": "প্রিয় শিরোনাম",
+  "favouriteAnime": "প্রিয় এনিমে",
+  "favouriteCharacters": "প্রিয় চরিত্র",
+  "favouriteManga": "প্রিয় মাঙ্গা",
+  "favouriteStaff": "প্রিয় স্টাফ",
+  "favouriteStudios": "প্রিয় স্টুডিও",
+  "featuresIssues": "বৈশিষ্ট্য/ইস্যু",
+  "fetchingAvailableServers": "উপলব্ধ সার্ভার আনা হচ্ছে...",
+  "fetchingLatestReleaseDetails": "সর্বশেষ রিলিজের বিবরণ আনা হচ্ছে...",
+  "fetchingTorrentFileList": "টরেন্ট ফাইলের তালিকা আনা হচ্ছে...",
+  "filler": "ফিলার",
+  "filter": "ফিল্টার",
+  "filterActivities": "ফিল্টার কার্যক্রম",
+  "filterActivity": "ফিল্টার কার্যকলাপ",
+  "filterByChapterCount": "অধ্যায় সংখ্যা দ্বারা ফিল্টার",
+  "filterByDurationMin": "সময়কাল অনুসারে ফিল্টার করুন (মিনিট)",
+  "filterByEpisodeCount": "পর্বের সংখ্যা অনুসারে ফিল্টার করুন",
+  "filterByGenre": "ধরন অনুসারে ফিল্টার করুন",
+  "filterByVolumeCount": "ভলিউম কাউন্ট দ্বারা ফিল্টার",
+  "filterGenres": "ধরনগুলি ফিল্টার করুন",
+  "filterOutAdultNsfwEntriesFrom": "সম্প্রদায়ের সুপারিশ থেকে প্রাপ্তবয়স্ক/NSFW এন্ট্রিগুলি ফিল্টার করুন।",
+  "filterOutEntriesAlreadyInYour": "ইতিমধ্যে আপনার তালিকায় থাকা এন্ট্রিগুলি ফিল্টার করুন৷",
+  "filterOutEntriesAlreadyInYourList": "দেখার/পড়ার অবস্থার উপর ভিত্তি করে আপনার তালিকায় ইতিমধ্যেই থাকা এন্ট্রিগুলিকে ফিল্টার করুন৷",
+  "filterSettings": "ফিল্টার সেটিংস",
+  "filters": "ফিল্টার",
+  "findAndManageSpecificUsers": "নির্দিষ্ট ব্যবহারকারীদের খুঁজুন এবং পরিচালনা করুন",
+  "findAnimeSauceByScreenshots": "স্ক্রিনশট দ্বারা অ্যানিমে সস খুঁজুন",
+  "findSource": "উৎস খুঁজুন",
+  "findYourFavouriteAnimeOrManga": "আপনার পছন্দের অ্যানিমে বা মাঙ্গা, মানহওয়া বা আপনি যা পছন্দ করেন তা সন্ধান করুন!",
+  "findYourFavouriteAnimeMangaManhwa": "আপনার প্রিয় Anime, Manga, Manhwa বা আপনি যা চান তা খুঁজুন!",
+  "finishDate": "শেষ তারিখ",
+  "firstChapter": "প্রথম অধ্যায়",
+  "firstUser": "প্রথম ব্যবহারকারী",
+  "fitToScreenWidth": "স্ক্রীন প্রস্থে ফিট করুন",
+  "fontFamily": "ফন্ট পরিবার",
+  "fontSize": "ফন্ট সাইজ",
+  "forceReDownload": "জোর করে পুনরায় ডাউনলোড করুন",
+  "forceSyncFromSdCard": "SD কার্ড থেকে জোর করে সিঙ্ক করুন",
+  "forks": "কাঁটা",
+  "format": "বিন্যাস",
+  "formatDistribution": "বিন্যাস বিতরণ",
+  "frameInterpolation": "ফ্রেম ইন্টারপোলেশন",
+  "freeSupport": "বিনামূল্যে সমর্থন",
+  "frequentlyRevisited": "ঘন ঘন পুনর্বিবেচনা",
+  "fromUrl": "URL থেকে",
+  "fullWidthDetailedCardWithLarge": "বড় থাম্বনেল এবং পর্বের মেটাডেটা সহ সম্পূর্ণ-প্রস্থের বিস্তারিত কার্ড",
+  "fullWidthDetailedCardsWithProgress": "অগ্রগতি এবং পড়ার বোতাম সহ পূর্ণ-প্রস্থের বিস্তারিত কার্ড",
+  "fullWidthHeroBannerWithCompact": "কমপ্যাক্ট বিবরণ এবং দ্রুত সারসংক্ষেপ সহ সম্পূর্ণ-প্রস্থ নায়ক ব্যানার।",
+  "general": "সাধারণ",
+  "generalPrivacy": "সাধারণ এবং গোপনীয়তা",
+  "generalSync": "সাধারণ এবং সিঙ্ক",
+  "generalAppPreferencesAndSyncServices": "সাধারণ অ্যাপ পছন্দ এবং সিঙ্ক পরিষেবা",
+  "generalAppSettingsAndSyncServices": "সাধারণ অ্যাপ সেটিংস এবং সিঙ্ক পরিষেবা",
+  "generalPreferences": "সাধারণ পছন্দ",
+  "genres": "জেনারস",
+  "genresUpper": "GENRES",
+  "gestureForBrightnessVolume": "উজ্জ্বলতা এবং ভলিউমের জন্য অঙ্গভঙ্গি",
+  "getHelpWithTheCommentSystem": "মন্তব্য সিস্টেমের সাহায্য পান",
+  "getStarted": "শুরু করুন",
+  "globalConcurrencyLimit": "গ্লোবাল কনকারেন্সি লিমিট",
+  "glowMultiplier": "গ্লো মাল্টিপ্লায়ার",
+  "goSuperDarkMode": "সুপার ডার্ক মোডে যান!",
+  "goToDownloads": "ডাউনলোড এ যান",
+  "goToExtensionsToGetStarted": "শুরু করতে এক্সটেনশনে যান",
+  "goToPluginDownloader": "প্লাগইন ডাউনলোডার এ যান",
+  "goToRuntimeManager": "রানটাইম ম্যানেজারে যান",
+  "goodAfternoon": "শুভ বিকাল",
+  "goodEvening": "শুভ সন্ধ্যা",
+  "goodMorning": "শুভ সকাল",
+  "goodnight": "শুভরাত্রি",
+  "gotIt": "বুঝেছি",
+  "grainIntensity": "শস্য তীব্রতা",
+  "grainTextureOverlay": "শস্য টেক্সচার ওভারলে",
+  "grantPermission": "অনুমতি দিন",
+  "grantPermissions": "অনুমতি প্রদান করুন",
+  "grid": "গ্রিড",
+  "gridSize": "গ্রিডের আকার",
+  "gridView": "গ্রিড ভিউ",
+  "guest": "অতিথি",
+  "happySnacking": "হ্যাপি স্ন্যাকিং",
+  "hardwareDisplayModeSwitchingIsNot": "হার্ডওয়্যার প্রদর্শন মোড স্যুইচিং আপনার ডিভাইস দ্বারা সমর্থিত নয়.",
+  "helpSupport": "সাহায্য এবং সমর্থন",
+  "hexColorCode": "হেক্স কালার কোড",
+  "hey": "আরে",
+  "hidden": "লুকানো",
+  "hiddenFromYourPublicProfile": "আপনার পাবলিক প্রোফাইল থেকে লুকানো",
+  "hiddenTabs": "লুকানো ট্যাব",
+  "hideAdultContent": "প্রাপ্তবয়স্কদের সামগ্রী লুকান",
+  "hideButton": "লুকান বোতাম",
+  "hideByListStatus": "তালিকা স্থিতি দ্বারা লুকান",
+  "hideCompleted": "লুকান সম্পূর্ণ",
+  "hideDropped": "লুকান বাদ",
+  "hideEntriesThatAreInYour": "আপনার পরিকল্পনা তালিকায় থাকা এন্ট্রিগুলি লুকান৷",
+  "hideEntriesThatAreMarkedAs": "আপনার তালিকায় সম্পন্ন হিসাবে চিহ্নিত করা এন্ট্রিগুলি লুকান৷",
+  "hideEntriesThatYouAreCurrently": "আপনি বর্তমানে দেখছেন বা পড়ছেন এমন এন্ট্রি লুকান।",
+  "hideEntriesThatYouAreRewatching": "আপনি পুনরায় দেখছেন যে এন্ট্রি লুকান.",
+  "hideEntriesThatYouHaveDropped": "আপনি বাদ দিয়েছেন যে এন্ট্রি লুকান.",
+  "hideEntriesThatYouHavePut": "আপনি হোল্ড রাখা এন্ট্রি লুকান.",
+  "hideNsfw": "NSFW লুকান",
+  "hideNsfw18Content": "NSFW / 18+ কন্টেন্ট লুকান",
+  "hideNsfwContent": "NSFW কন্টেন্ট লুকান",
+  "hideNsfwRecommendations": "NSFW সুপারিশ লুকান",
+  "hideOnHoldPaused": "হাইড অন হোল্ড/পজড",
+  "hidePlanning": "পরিকল্পনা লুকান",
+  "hideRewatching": "রিভিচিং লুকান",
+  "hideSystemStatusAndNavigationBars": "সিস্টেম স্থিতি এবং নেভিগেশন বার লুকান",
+  "hideWatchingReading": "Hide Watching/Reading",
+  "history": "ইতিহাস",
+  "historyStatistics": "ইতিহাস ও পরিসংখ্যান",
+  "historyCardStyle": "ইতিহাস কার্ড শৈলী",
+  "historyItemDeleted": "ইতিহাস আইটেম মুছে ফেলা হয়েছে",
+  "hlsParallelSegments": "HLS সমান্তরাল সেগমেন্ট",
+  "holdAndDragAnyItemTo": "পুনঃক্রম করার জন্য যেকোন আইটেম ধরে রাখুন এবং টেনে আনুন",
+  "holdToAccessHistoryEditor": "ইতিহাস সম্পাদক অ্যাক্সেস করতে ধরে রাখুন",
+  "holdToDelete": "মুছে ফেলার জন্য ধরে রাখুন",
+  "holdToSpeedUp": "গতি বাড়াতে হোল্ড করুন",
+  "home": "বাড়ি",
+  "horizontal": "অনুভূমিক",
+  "hostEG12700": "হোস্ট (যেমন 127.0.0.1)",
+  "hours": "ঘন্টা",
+  "howItWorksCompatibilityRanks": "এটা কিভাবে কাজ করে এবং সামঞ্জস্যতা র‌্যাঙ্ক",
+  "howMuchInPercentageToMark": "পর্বটিকে দেখা হিসাবে চিহ্নিত করতে কত শতাংশ",
+  "howToUseTheCommentSystem": "মন্তব্য সিস্টেম কিভাবে ব্যবহার করবেন:",
+  "hue": "হিউ",
+  "ifEnabledAContinueWatchingBar": "যদি সক্ষম করা থাকে, তাহলে হোম পেজে নীচের নেভিগেশন বারের উপরে একটি অবিরত দেখার বার দেখানো হবে৷",
+  "ifEnabledAllLibraryItemsWill": "সক্ষম হলে, সমস্ত লাইব্রেরি আইটেম সমস্ত ট্র্যাকিং পরিষেবা জুড়ে ভাগ করা হবে৷",
+  "ifEnabledAnymexWillAskFor": "সক্ষম হলে, Anymex ট্র্যাকিং অনুমতি চাইবে যদি না হয় তবে এটি ডিফল্টরূপে ট্র্যাক করবে।",
+  "ifEnabledYouWillNotGet": "সক্ষম হলে, আপনি Anilist/MyAnimeList এ প্রাপ্তবয়স্কদের সামগ্রী সক্ষম করার জন্য একটি প্রম্পট পাবেন না৷",
+  "ifTemporaryAppCacheReachesThis": "অস্থায়ী অ্যাপ ক্যাশে এই আকারে পৌঁছালে, এটি স্বয়ংক্রিয়ভাবে সাফ হয়ে যাবে।",
+  "ifYouAreUsingAJson": "আপনি যদি একটি JSON থিম ব্যবহার করেন তবে এখানে পরিবর্তনগুলি প্লেয়ার নিয়ন্ত্রণগুলিকে প্রভাবিত করবে না৷ এই সেটিংস প্রয়োগ করতে একটি অন্তর্নির্মিত থিমে স্যুইচ করুন৷",
+  "ifYouCantDonateWatchThis": "আপনি দান করতে না পারলে, সমর্থন করার জন্য এই বিজ্ঞাপনটি দেখুন",
+  "image": "ছবি",
+  "imageShowsThumbnail": "ছবি (থাম্বনেল দেখায়)",
+  "imageFilterQuality": "ছবি ফিল্টার গুণমান",
+  "imageSharedFromAnymex": "ছবি AnymeX থেকে শেয়ার করা হয়েছে",
+  "imagesWillBeDownloadedInFull": "ছবি পূর্ণ মানের ডাউনলোড করা হবে. প্রতিটি অধ্যায় তার নিজস্ব ফোল্ডারে সংরক্ষণ করা হয়.",
+  "immersiveMode": "ইমারসিভ মোড",
+  "importLabel": "আমদানি",
+  "importLabel2": "আমদানি",
+  "importManageCustomJsonThemes": "কাস্টম JSON থিম আমদানি ও পরিচালনা করুন",
+  "importBackup": "ব্যাকআপ আমদানি করুন",
+  "importCustomFont": "কাস্টম ফন্ট আমদানি করুন",
+  "importFromUrl": "URL থেকে আমদানি করুন",
+  "includeAdultNsfwSuggestions": "প্রাপ্তবয়স্ক এবং NSFW পরামর্শ অন্তর্ভুক্ত করুন",
+  "incognito": "ছদ্মবেশী",
+  "incognitoActive": "ছদ্মবেশী (সক্রিয়)",
+  "incognitoMode2": "ছদ্মবেশী মোড",
+  "indiaUpi": "ভারত (UPI)",
+  "info": "তথ্য",
+  "inlineCode": "ইনলাইন কোড",
+  "insert": "ঢোকান",
+  "installPermission": "অনুমতি ইনস্টল করুন",
+  "installPermissionIsRequiredToUpdate": "অ্যাপটি আপডেট করার জন্য ইনস্টল করার অনুমতি প্রয়োজন",
+  "installedPackages": "ইনস্টল করা প্যাকেজ",
+  "installedThemes": "ইনস্টল করা থিম",
+  "interfaceStyling": "ইন্টারফেস স্টাইলিং",
+  "internalBrowser": "অভ্যন্তরীণ ব্রাউজার",
+  "international": "আন্তর্জাতিক",
+  "invalidBackupFileOrIncorrectPassword": "অবৈধ ব্যাকআপ ফাইল বা ভুল পাসওয়ার্ড",
+  "invertVolumeKeys": "ইনভার্ট ভলিউম কী",
+  "italic": "তির্যক",
+  "joinDiscordCommunity": "Discord কমিউনিটিতে যোগ দিন",
+  "joinNewDiscord": "নতুন Discord যোগ দিন",
+  "joinTelegramChannel": "টেলিগ্রাম চ্যানেলে যোগ দিন",
+  "joinUsForDroppingFeedbackOr": "প্রতিক্রিয়া বা বৈশিষ্ট্য অনুরোধ ড্রপ করার জন্য আমাদের সাথে যোগদান করুন",
+  "jsonThemeManager": "JSON থিম ম্যানেজার",
+  "judgment": "বিচার",
+  "keepEditing": "সম্পাদনা করতে থাকুন",
+  "keepItChill": "ঠান্ডা রাখুন",
+  "keepScreenOn": "স্ক্রীন অন রাখুন",
+  "keepVoicePitchStableAtHigher": "উচ্চ গতিতে ভয়েস পিচ স্থিতিশীল রাখুন",
+  "koFiSupport": "কো-ফাই সমর্থন",
+  "languageVariant": "ভাষার বৈকল্পিক",
+  "lastAdded": "সর্বশেষ যোগ করা হয়েছে",
+  "lastChapter": "শেষ অধ্যায়",
+  "later": "পরে",
+  "latest": "সর্বশেষ",
+  "latestManga": "সর্বশেষ মাঙ্গা",
+  "layout": "লেআউট",
+  "layoutStyle": "লেআউট শৈলী",
+  "leaderboard": "লিডারবোর্ড",
+  "learnHowToFormatYourComments": "আপনার মন্তব্য বিন্যাস কিভাবে শিখুন",
+  "leftSide": "বাম পাশ",
+  "letterSpacing": "অক্ষর ব্যবধান",
+  "levelProgress": "স্তরের অগ্রগতি",
+  "libraryLabel": "লাইব্রেরি",
+  "librarySettings": "লাইব্রেরি সেটিংস",
+  "libraryStatistics": "লাইব্রেরি পরিসংখ্যান",
+  "lightness": "হালকাতা",
+  "likedBy": "পছন্দ করেছে",
+  "lineHeight": "লাইনের উচ্চতা",
+  "linkAutoDetected": "লিঙ্ক (স্বয়ংক্রিয়ভাবে সনাক্ত)",
+  "linkCopiedToClipboard": "লিঙ্ক ক্লিপবোর্ডে অনুলিপি করা হয়েছে!",
+  "linkHasExpiredAndEpisodeUrl": "লিঙ্কের মেয়াদ শেষ হয়ে গেছে এবং পর্বের URL অনুপলব্ধ।",
+  "linkHasExpiredAndNoAlternative": "লিঙ্কের মেয়াদ শেষ হয়ে গেছে এবং কোন বিকল্প স্ট্রীম পাওয়া যায়নি।",
+  "linotteDefault": "লিনোট (ডিফল্ট)",
+  "liquidBackground": "তরল পটভূমি",
+  "liquidMode": "তরল মোড",
+  "listEntryUpdatedSuccessfully": "তালিকা এন্ট্রি সফলভাবে আপডেট হয়েছে!",
+  "listExporter": "তালিকা রপ্তানিকারক",
+  "listNameAlreadyExists": "তালিকার নাম ইতিমধ্যেই বিদ্যমান",
+  "listOptions": "তালিকা বিকল্প",
+  "liveBlurIsUnavailableWhenUsing": "ফ্লুইড মেশ ব্যবহার করার সময় লাইভ ব্লার অনুপলব্ধ।",
+  "livePreview": "লাইভ প্রিভিউ",
+  "livePreview2": "লাইভ প্রিভিউ",
+  "loadTemplate": "টেমপ্লেট লোড করুন",
+  "loadingMediaFiles": "মিডিয়া ফাইল লোড হচ্ছে...",
+  "loadingMedia": "মিডিয়া লোড হচ্ছে...",
+  "local": "স্থানীয়",
+  "localLibrary": "স্থানীয় লাইব্রেরি",
+  "localMedia": "স্থানীয় মিডিয়া",
+  "location": "অবস্থান",
+  "logCapture": "লগ ক্যাপচার",
+  "logDirectory": "লগ ডিরেক্টরি",
+  "logIn": "লগ ইন করুন",
+  "logInRequired": "লগ ইন আবশ্যক",
+  "logInToCustomizeYourPush": "আপনার পুশ বিজ্ঞপ্তি পছন্দগুলি কাস্টমাইজ করতে লগ ইন করুন৷",
+  "logInToJoinTheConversation": "কথোপকথনে যোগ দিতে লগ ইন করুন এবং মন্তব্য করুন।",
+  "logOut": "লগ আউট করুন",
+  "loggedInTrackingServices": "লগ ইন ট্র্যাকিং পরিষেবা",
+  "login": "লগইন করুন",
+  "loginAuthTokens": "লগইন এবং প্রমাণীকরণ টোকেন",
+  "loginInsideTheAppRecommended": "অ্যাপের ভিতরে লগইন করুন (প্রস্তাবিত)",
+  "loginSessions": "লগইন সেশন",
+  "loginUsingYourDefaultBrowser": "আপনার ডিফল্ট ব্রাউজার ব্যবহার করে লগইন করুন",
+  "loginWithToken": "টোকেন দিয়ে লগইন করুন",
+  "logoAnimation": "লোগো অ্যানিমেশন",
+  "logoName": "লোগোর নাম:",
+  "logs": "লগ",
+  "longPressPageActions": "দীর্ঘ প্রেস পেজ অ্যাকশন",
+  "makeEverythingGlassyLiquidy": "সবকিছু গ্লাসযুক্ত এবং তরল করুন...",
+  "manageAnilistLists": "অ্যানিলিস্ট তালিকা পরিচালনা করুন",
+  "manageCachedImagesThresholdsAndReset": "ক্যাশে করা ছবি, থ্রেশহোল্ড এবং রিসেট অ্যাপ ডেটা পরিচালনা করুন",
+  "manageDeviceStorageAndNotificationsTo": "আপনার মিডিয়া অফলাইনে ডাউনলোড এবং পরিচালনা করতে ডিভাইস স্টোরেজ এবং বিজ্ঞপ্তিগুলি পরিচালনা করুন৷",
+  "manageLogCaptureAndShareSaved": "লগ ক্যাপচার পরিচালনা করুন এবং সংরক্ষিত লগ শেয়ার করুন",
+  "manageMyanimelistLists": "MyAnimeList তালিকা পরিচালনা করুন",
+  "managePluginsSources": "প্লাগইন এবং উত্স পরিচালনা করুন",
+  "manageSimklLists": "Simkl তালিকা পরিচালনা করুন",
+  "manageSourcesAndRepositoriesToUse": "অ্যাপটিকে তার পূর্ণ সম্ভাবনায় ব্যবহার করতে উত্স এবং সংগ্রহস্থলগুলি পরিচালনা করুন৷",
+  "manageYourMyanimelistAnilistSimklAccounts": "আপনার MyAnimeList, Anilist, Simkl অ্যাকাউন্টগুলি পরিচালনা করুন!",
+  "management": "ব্যবস্থাপনা",
+  "manga": "মাঙ্গা",
+  "mangaNovelReaderSettingsTapZones": "মাঙ্গা এবং উপন্যাস পাঠক সেটিংস, ট্যাপ জোন",
+  "mangaNovelViewerSettingsTapZones": "মাঙ্গা এবং নভেল ভিউয়ার সেটিংস, ট্যাপ জোন",
+  "mangaAndNovelReaderStylesAnd": "মাঙ্গা এবং উপন্যাস পাঠক শৈলী এবং ট্যাপ জোন",
+  "mangaCustomLists": "মাঙ্গা কাস্টম তালিকা",
+  "mangaDetailsPhrasing": "মাঙ্গা বিশদ বাক্যাংশ",
+  "mangaLibrary": "মঙ্গা লাইব্রেরি",
+  "mangaList": "মাঙ্গা তালিকা",
+  "mangaScore": "মাঙ্গা স্কোর",
+  "mangaSectionOrder": "মাঙ্গা সেকশন অর্ডার",
+  "manuallyPasteOauthAccessToken": "OAuth অ্যাক্সেস টোকেন ম্যানুয়ালি পেস্ট করুন",
+  "markAllRead": "সব পড়া চিহ্নিত করুন",
+  "markAsWatched": "দেখা হয়েছে হিসাবে চিহ্নিত করুন",
+  "markdownGuide": "মার্কডাউন গাইড",
+  "maximumDemuxerBufferMb": "সর্বোচ্চ ডেমুক্সার বাফার (এমবি)",
+  "maybeLater": "হয়তো পরে",
+  "mean": "মানে",
+  "meanScore": "গড় স্কোর",
+  "mediaPlayback": "মিডিয়া এবং প্লেব্যাক",
+  "mediaLibrary": "মিডিয়া লাইব্রেরি",
+  "mediaSessionBluetoothSupport": "মিডিয়া সেশন (ব্লুটুথ সমর্থন)",
+  "mediaTypeBreakdown": "মিডিয়া টাইপ ব্রেকডাউন",
+  "mediaYouDownloadWillAppearHere": "আপনি ডাউনলোড মিডিয়া এখানে প্রদর্শিত হবে.",
+  "megaskipDuration": "মেগাস্কিপ সময়কাল",
+  "mention": "উল্লেখ",
+  "mentions": "উল্লেখ",
+  "merge": "একত্রিত করুন",
+  "messageFriend": "বন্ধুকে মেসেজ করুন",
+  "minutesWatched": "মিনিট প্রেক্ষিত",
+  "miscellaneous": "বিবিধ",
+  "missingRuntimeHost": "অনুপস্থিত রানটাইম হোস্ট",
+  "moderation": "সংযম",
+  "moderationActions": "মডারেশন অ্যাকশন",
+  "moderationPanel": "মডারেশন প্যানেল",
+  "moderator": "মডারেটর",
+  "moreOptions": "আরও বিকল্প",
+  "morePopularManga": "আরও জনপ্রিয় মাঙ্গা",
+  "moveToLeft": "বাম দিকে সরান",
+  "moveToRight": "ডানদিকে সরান",
+  "movie": "মুভি",
+  "mpvConfiguration": "MPV কনফিগারেশন",
+  "muteUser": "নিঃশব্দ ব্যবহারকারী",
+  "mutualConnections": "পারস্পরিক সংযোগ",
+  "mutualFriends": "মিউচুয়াল ফ্রেন্ডস",
+  "nameplates": "নেমপ্লেট",
+  "navBarLayout": "নেভি বার লেআউট",
+  "navBarStyle": "এনভি বার স্টাইল",
+  "navigationLayout": "নেভিগেশন লেআউট",
+  "needHelp": "সাহায্য প্রয়োজন?",
+  "network": "নেটওয়ার্ক",
+  "newLabel": "নতুন",
+  "newCollection": "নতুন সংগ্রহ",
+  "newCustomListName": "নতুন কাস্টম তালিকার নাম",
+  "newDownload": "নতুন ডাউনলোড",
+  "newList": "নতুন তালিকা",
+  "newestFirst": "নতুন প্রথম",
+  "nextRelease": "পরবর্তী রিলিজ",
+  "nextReleasePrediction": "পরবর্তী রিলিজ পূর্বাভাস",
+  "noActiveDownloads": "কোনো সক্রিয় ডাউনলোড নেই",
+  "noActiveSourceOrMediaFound": "কোন সক্রিয় উৎস বা মিডিয়া পাওয়া যায়নি",
+  "noActiveSourceSelected": "কোন সক্রিয় উৎস নির্বাচন করা হয়নি",
+  "noActivity": "কোনো কার্যকলাপ নেই",
+  "noAnimeFound": "কোনো অ্যানিমে পাওয়া যায়নি",
+  "noAudioTracksAvailable": "কোন অডিও ট্র্যাক উপলব্ধ",
+  "noChaptersFound": "কোন অধ্যায় পাওয়া যায়নি",
+  "noChaptersFound2": "কোন অধ্যায় পাওয়া যায়নি",
+  "noCommonGenres": "কোন সাধারণ ঘরানা",
+  "noCommonTags": "কোনো সাধারণ ট্যাগ নেই",
+  "noContributorsFound": "কোন অবদানকারী খুঁজে পাওয়া যায়নি.",
+  "noCustomListsAvailable": "কোন কাস্টম তালিকা উপলব্ধ.",
+  "noCustomListsYet": "এখনও কোন কাস্টম তালিকা",
+  "noCustomListsYet2": "এখনও কোন কাস্টম তালিকা.",
+  "noDataAvailableForThisSection": "এই বিভাগের জন্য কোন তথ্য উপলব্ধ",
+  "noDataAvailable": "কোন তথ্য উপলব্ধ নেই.",
+  "noDecadeBreakdownAvailable": "কোন দশক ভাঙ্গন উপলব্ধ",
+  "noDescriptionAvailable": "কোন বর্ণনা উপলব্ধ নেই",
+  "noDownloadedChaptersFoundForThis": "এই মাঙ্গার জন্য কোনো ডাউনলোড করা অধ্যায় পাওয়া যায়নি",
+  "noDownloadedEpisodesFoundForThis": "এই অ্যানিমের জন্য কোনো ডাউনলোড করা পর্ব পাওয়া যায়নি",
+  "noEntriesFound": "কোন এন্ট্রি পাওয়া যায়নি",
+  "noEpisodesFound": "কোন পর্ব পাওয়া যায়নি",
+  "noExtensionManagersFound": "কোনো এক্সটেনশন ম্যানেজার পাওয়া যায়নি।",
+  "noExtensionsFound": "কোনো এক্সটেনশন পাওয়া যায়নি",
+  "noExtensionsInstalled": "কোন এক্সটেনশন ইনস্টল করা নেই",
+  "noGenresAvailableAnilistApiMay": "কোন শৈলী উপলব্ধ. AniList API সাময়িকভাবে বন্ধ হতে পারে।",
+  "noHiddenTabs": "কোনো লুকানো ট্যাব নেই",
+  "noInsightsAvailableYetAddItems": "এখনও কোন অন্তর্দৃষ্টি উপলব্ধ. আপনার লাইব্রেরিতে আইটেম যোগ করুন!",
+  "noItemsInThisLibrary": "এই লাইব্রেরিতে কোন আইটেম নেই।",
+  "noLoggedStatsYetStartWatching": "এখনও কোন লগ করা পরিসংখ্যান. দেখা/পড়া শুরু করুন!",
+  "noMediaFilesFound": "কোন মিডিয়া ফাইল পাওয়া যায়নি",
+  "noMediaFoundForThisStudio": "এই স্টুডিওর জন্য কোন মিডিয়া পাওয়া যায়নি",
+  "noMediaInThisList": "এই তালিকায় কোনো মিডিয়া নেই।",
+  "noMoreActivities": "আর কোনো কার্যক্রম নেই",
+  "noMoreRecommendations": "আর কোন সুপারিশ নেই",
+  "noMoreUsers": "আর ব্যবহারকারী নেই",
+  "noNotificationsYet": "এখনও কোন বিজ্ঞপ্তি নেই",
+  "noNovelExtensionsInstalledToRead": "এই উপন্যাসটি পড়ার জন্য কোনো নভেল এক্সটেনশন ইনস্টল করা নেই৷",
+  "noPendingReports": "কোন মুলতুবি রিপোর্ট",
+  "noPlayableStreamAvailableForThis": "এই পর্বের জন্য কোনো খেলার যোগ্য স্ট্রিম উপলব্ধ নেই৷",
+  "noPlayableStreamWasReturnedBy": "এই উৎস দ্বারা কোনো খেলার যোগ্য স্ট্রীম ফেরত দেওয়া হয়নি৷",
+  "noRecentActivityFoundForSelected": "নির্বাচিত ফিল্টারগুলির জন্য কোনো সাম্প্রতিক কার্যকলাপ পাওয়া যায়নি৷",
+  "noRecommendationsFound": "কোন সুপারিশ পাওয়া যায়নি",
+  "noRecommendationsYet": "এখনও কোন সুপারিশ নেই",
+  "noReleasesFound": "কোন রিলিজ পাওয়া যায়নি.",
+  "noRepliesYetBeTheFirst": "এখনো কোন উত্তর নেই. প্রথম হতে!",
+  "noRepositoriesYet": "এখনও কোন সংগ্রহস্থল",
+  "noResult": "কোনো ফল নেই",
+  "noResultsFound": "কোন ফলাফল পাওয়া যায়নি.",
+  "noResultsYet": "এখনো কোনো ফলাফল নেই",
+  "noResultsTrySearchingByTitle": "কোনো ফলাফল নেই। শিরোনাম দ্বারা অনুসন্ধান করার চেষ্টা করুন.",
+  "noSearchResults": "কোন অনুসন্ধান ফলাফল",
+  "noServersAvailable": "কোন সার্ভার উপলব্ধ",
+  "noServersFound": "কোনো সার্ভার পাওয়া যায়নি।",
+  "noServicesAvailable": "কোন সেবা উপলব্ধ নেই",
+  "noSourceInstalled": "কোন উৎস ইনস্টল করা নেই",
+  "noSourceSelected": "কোন উৎস নির্বাচন করা হয়নি",
+  "noSourcesFound": "কোনো সূত্র পাওয়া যায়নি",
+  "noStatsAvailable": "কোন পরিসংখ্যান উপলব্ধ",
+  "noSubtitleTracksAvailable": "কোন সাবটাইটেল ট্র্যাক উপলব্ধ",
+  "noTestsRunning": "কোনো পরীক্ষা চলছে না",
+  "noThemesYet": "এখনো কোনো থিম নেই",
+  "noTrackingServiceConnected": "কোনো ট্র্যাকিং পরিষেবা সংযুক্ত নেই৷",
+  "noUsersFound": "কোনো ব্যবহারকারী পাওয়া যায়নি",
+  "noVisibleTabs": "কোনো দৃশ্যমান ট্যাব নেই",
+  "noVisualsFoundForThisAnime": "এই অ্যানিমে (╥﹏╥) এর জন্য কোন ভিজ্যুয়াল পাওয়া যায়নি",
+  "noWatchOrderFound": "কোন ঘড়ি অর্ডার পাওয়া যায়নি.",
+  "notNow": "এখন না",
+  "notSupported": "সমর্থিত নয়",
+  "notTracked": "ট্র্যাক করা হয়নি",
+  "noteAddingKotatsuRepositoryWillTake": "দ্রষ্টব্য: Kotatsu সংগ্রহস্থল যোগ করতে কমপক্ষে 1-2 মিনিট সময় লাগবে কারণ এটি প্রথম লোডে এক্সটেনশন প্লাগইন ডাউনলোড এবং রূপান্তর করতে হবে।",
+  "nothingDownloadedYet": "এখনো কিছুই ডাউনলোড করা হয়নি",
+  "nothingToPreview": "প্রিভিউ করার কিছু নেই",
+  "nothingToPreviewYet": "এখনও পূর্বরূপ কিছুই নেই.",
+  "notificationPreferences": "বিজ্ঞপ্তি পছন্দ",
+  "notifications": "বিজ্ঞপ্তি",
+  "notifyForOfficialAnnouncementsAndApp": "অফিসিয়াল ঘোষণা এবং অ্যাপ আপডেটের জন্য অবহিত করুন",
+  "notifyIfYourCommentIsRemoved": "আপনার মন্তব্য একটি মডারেটর দ্বারা সরানো হলে বিজ্ঞপ্তি",
+  "notifyOnNewCommentsForMedia": "আপনার আলোচনা করা মিডিয়ার জন্য নতুন মন্তব্য সম্পর্কে অবহিত করুন",
+  "notifyOnUpvotesAndDownvotes": "আপভোট এবং ডাউনভোট সম্পর্কে অবহিত করুন",
+  "notifyOnWarningsPinnedCommentsOr": "সতর্কতা, পিন করা মন্তব্য, বা থ্রেড লক সম্পর্কে অবহিত করুন",
+  "notifyWhenSomeoneMentionsYourUsername": "কেউ আপনার ব্যবহারকারীর নাম উল্লেখ করলে বিজ্ঞপ্তি দিন",
+  "notifyWhenSomeoneRepliesToYour": "কেউ আপনার মন্তব্যের উত্তর দিলে জানান",
+  "novel": "উপন্যাস",
+  "novelCustomLists": "উপন্যাস কাস্টম তালিকা",
+  "novelDetailsPhrasing": "উপন্যাসের বিস্তারিত বাক্যাংশ",
+  "novelFontFamily": "নভেল ফন্ট পরিবার",
+  "novelLibrary": "নভেল লাইব্রেরি",
+  "novelSnapshots": "নভেল স্ন্যাপশট",
+  "novelTheme": "নভেল থিম",
+  "novels": "উপন্যাস",
+  "numberOfActiveDownloadTasks": "সক্রিয় ডাউনলোড কাজের সংখ্যা",
+  "numberOfParallelChunksPerDownload": "ডাউনলোড প্রতি সমান্তরাল খণ্ড সংখ্যা",
+  "okay": "ঠিক আছে",
+  "oldestFirst": "প্রাচীনতম প্রথম",
+  "oledMode": "ওলেড মোড",
+  "onMyList": "আমার তালিকায়",
+  "oneOptionPerLineLikeHwdec": "প্রতি লাইনে একটি বিকল্প, যেমন hwdec=auto বা স্কেল=ewa_lanczossharp। # দিয়ে শুরু হওয়া লাইন হল মন্তব্য। [বন্ধনীতে] প্রোফাইলগুলি উপেক্ষা করা হয়৷",
+  "online": "অনলাইন",
+  "openCloset": "ক্লোজেট খুলুন",
+  "openInBrowser": "ব্রাউজারে খুলুন",
+  "openSettings": "সেটিংস খুলুন",
+  "openSource": "ওপেন সোর্স",
+  "openSupportedLinks": "সমর্থিত লিঙ্ক খুলুন",
+  "openTheDownloadsScreenFromThe": "মেনু থেকে ডাউনলোড স্ক্রিন খুলুন",
+  "openVideoStreamInExternalPlayer": "ডিফল্টরূপে বাহ্যিক প্লেয়ারে ভিডিও স্ট্রিম খুলুন",
+  "openWebview": "ওয়েবভিউ খুলুন",
+  "openingsEndings": "খোলা এবং শেষ",
+  "openslEsNativeAudioEngine": "OpenSL ES নেটিভ অডিও ইঞ্জিন",
+  "options": "বিকল্প",
+  "order": "অর্ডার করুন",
+  "originalSize": "আসল আকার",
+  "otakuRankLevel": "ওটাকু র‌্যাঙ্ক লেভেল",
+  "other": "অন্যান্য",
+  "otherFeatures": "অন্যান্য বৈশিষ্ট্য",
+  "otherRecommendations": "অন্যান্য সুপারিশ",
+  "otherStuffs": "অন্যান্য স্টাফ",
+  "otherTemporaryFiles": "অন্যান্য অস্থায়ী ফাইল",
+  "otherWaysToSupport": "সমর্থন অন্যান্য উপায়",
+  "others": "অন্যরা",
+  "outlineType": "রূপরেখার ধরন",
+  "overscroll": "ওভারস্ক্রোল",
+  "overscrollToPrevNextChapter": "পূর্ববর্তী/পরবর্তী অধ্যায়ে ওভারস্ক্রোল করুন",
+  "overview": "ওভারভিউ",
+  "overwrite": "ওভাররাইট করুন",
+  "pageAnimationDemo": "পৃষ্ঠা অ্যানিমেশন ডেমো",
+  "pageReaderMode": "পৃষ্ঠা পাঠক মোড",
+  "paged": "পাতাযুক্ত",
+  "palette": "প্যালেট",
+  "palettes": "প্যালেট",
+  "paragraphSpacing": "অনুচ্ছেদ ব্যবধান",
+  "parallelSegmentsForVideoDownloader": "ভিডিও ডাউনলোডারের জন্য সমান্তরাল অংশ",
+  "password": "পাসওয়ার্ড",
+  "passwordProtectBackup": "পাসওয়ার্ড সুরক্ষা ব্যাকআপ",
+  "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
+  "passwordsDontMatch": "পাসওয়ার্ড মেলে না!",
+  "pasteCustomImageUrl": "কাস্টম ছবির URL আটকান...",
+  "pasteUrlHere": "এখানে URL আটকান...",
+  "pathCopiedToClipboard": "ক্লিপবোর্ডে পাথ কপি করা হয়েছে",
+  "payViaAnyUpiApp": "যেকোনো UPI অ্যাপের মাধ্যমে অর্থপ্রদান করুন",
+  "paypalDonation": "পেপ্যাল দান",
+  "paypalRecipientNotice": "পেপ্যাল প্রাপক বিজ্ঞপ্তি",
+  "penaltyDuration": "শাস্তির সময়কাল",
+  "performance": "কর্মক্ষমতা",
+  "permissionsRequired": "অনুমতি প্রয়োজন",
+  "persistentPageIndicator": "ক্রমাগত পৃষ্ঠা নির্দেশক",
+  "personalizeTheLookAndMakeIt": "চেহারা ব্যক্তিগত করুন এবং এটি আপনার করুন",
+  "personalizedRecommendations": "ব্যক্তিগতকৃত সুপারিশ",
+  "platform": "প্ল্যাটফর্ম",
+  "playAroundWithAppTheme": "অ্যাপ থিমের সাথে খেলা করুন",
+  "playAroundWithTheVideoPlayer": "ভিডিও প্লেয়ারের সাথে চারপাশে খেলুন",
+  "playback": "প্লেব্যাক",
+  "playbackSpeed": "প্লেব্যাক গতি",
+  "playbackSpeeds": "প্লেব্যাক গতি",
+  "player": "প্লেয়ার",
+  "playerControlsSubtitlesAndPlaybackPreferences": "প্লেয়ার কন্ট্রোল, সাবটাইটেল এবং প্লেব্যাক পছন্দ",
+  "playerSettings": "প্লেয়ার সেটিংস",
+  "playerTheme": "প্লেয়ার থিম",
+  "playerThemes": "প্লেয়ার থিম",
+  "pleaseChooseALogoFile": "একটি লোগো ফাইল চয়ন করুন.",
+  "pleaseEnterAPasswordOrDisable": "একটি পাসওয়ার্ড লিখুন বা পাসওয়ার্ড সুরক্ষা নিষ্ক্রিয় করুন.",
+  "pleaseEnterASearchTerm": "একটি অনুসন্ধান শব্দ লিখুন",
+  "pleaseEnterAUsernameToCompare": "অনুগ্রহ করে তুলনা করার জন্য একটি ব্যবহারকারীর নাম লিখুন।",
+  "pleaseGrantStoragePermissionToBrowse": "আপনার মিডিয়া ফাইল ব্রাউজ করার জন্য স্টোরেজ অনুমতি মঞ্জুর করুন",
+  "pleaseLoginFirst": "প্রথমে লগইন করুন",
+  "pleaseLoginFirstToExportYour": "আপনার তালিকা রপ্তানি করতে প্রথমে লগইন করুন.",
+  "pleaseLoginToFavorite": "প্রিয় লগইন করুন!",
+  "pleaseLoginToUseThisFilter": "এই ফিল্টার ব্যবহার করতে লগইন করুন!",
+  "pleaseProvideAReasonForThis": "এই কর্মের জন্য একটি কারণ প্রদান করুন",
+  "pleaseRestartTheAppToApply": "পরিবর্তনগুলি প্রয়োগ করতে অনুগ্রহ করে অ্যাপটি পুনরায় চালু করুন৷",
+  "pleaseSelectABackupFileFirst": "অনুগ্রহ করে প্রথমে একটি ব্যাকআপ ফাইল নির্বাচন করুন৷",
+  "pleaseSelectAValidApkFile": "একটি বৈধ APK ফাইল নির্বাচন করুন.",
+  "pleaseSelectAValidJarFile": "একটি বৈধ JAR ফাইল নির্বাচন করুন.",
+  "pleaseSelectAtLeastOneItem": "ব্যাক আপ করতে অন্তত একটি আইটেম নির্বাচন করুন.",
+  "pleaseSelectAtLeastOneItemTo": "পুনরুদ্ধার করতে অন্তত একটি আইটেম নির্বাচন করুন.",
+  "pleaseWriteAtLeast30Characters": "অন্তত 30 অক্ষর লিখুন",
+  "pluginInstallationSync": "প্লাগইন ইনস্টলেশন এবং সিঙ্ক",
+  "pluginIsAlreadyUpToDate": "প্লাগইন ইতিমধ্যেই আপ টু ডেট৷",
+  "pluginJarCopiedPleaseRestartThe": "প্লাগইন জার কপি করা হয়েছে. অনুগ্রহ করে অ্যাপটি পুনরায় চালু করুন।",
+  "pluginNotInstalled": "প্লাগইন ইনস্টল করা হয়নি",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "প্লাগইন সফলভাবে পুনরায় ডাউনলোড করা হয়েছে৷ আবেদন করতে পুনরায় আরম্ভ করুন.",
+  "pluginReDownloadedPleaseRestartThe": "প্লাগইন পুনরায় ডাউনলোড করা হয়েছে। আবেদন করতে অ্যাপটি পুনরায় চালু করুন।",
+  "pluginSyncedFromLocalApk": "স্থানীয় APK থেকে প্লাগইন সিঙ্ক করা হয়েছে।",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (সর্বোচ্চ 20MB)",
+  "popular": "জনপ্রিয়",
+  "popularAnime": "জনপ্রিয় অ্যানিমে",
+  "popularAnimes": "জনপ্রিয় Animes",
+  "popularManga": "জনপ্রিয় মাঙ্গা",
+  "posterBlurMode": "পোস্টার ব্লার মোড",
+  "posterBlurScope": "পোস্টার ব্লার স্কোপ",
+  "poweredByAnimatch16PointCompatibility": "AnymeX-এ AniMatch 16-পয়েন্ট সামঞ্জস্য বিশ্লেষণ দ্বারা চালিত",
+  "poweredByCommentumV2AdvancedComment": "Commentum v2 দ্বারা চালিত - সংযম সহ উন্নত মন্তব্য সিস্টেম",
+  "preferences": "পছন্দসমূহ",
+  "preferencesSystem": "পছন্দ এবং সিস্টেম",
+  "preferredSubtitleLanguage": "পছন্দের সাবটাইটেল ভাষা",
+  "preparingImageToShare": "শেয়ার করার জন্য ছবি প্রস্তুত করা হচ্ছে...",
+  "preparingStream": "স্ট্রীম প্রস্তুত করা হচ্ছে",
+  "presetProviders": "প্রিসেট প্রদানকারী",
+  "preventScreenFromSleeping": "ঘুম থেকে পর্দা প্রতিরোধ করুন",
+  "preview": "পূর্বরূপ",
+  "previewUpper": "পূর্বরূপ",
+  "privacySafety": "গোপনীয়তা এবং নিরাপত্তা",
+  "privacySettingsAndSafetyFeatures": "গোপনীয়তা সেটিংস এবং নিরাপত্তা বৈশিষ্ট্য",
+  "private": "ব্যক্তিগত",
+  "privateEntry": "প্রাইভেট এন্ট্রি",
+  "profileEffects": "প্রোফাইল প্রভাব",
+  "profileIcon": "প্রোফাইল আইকন",
+  "progress": "অগ্রগতি",
+  "progressHistory": "অগ্রগতি এবং ইতিহাস",
+  "proposeNewFeaturesReportBugsAnd": "নতুন বৈশিষ্ট্য প্রস্তাব করুন, বাগ রিপোর্ট করুন এবং অন্যান্য সদস্যদের সাথে চ্যাট করুন৷",
+  "protocol": "প্রোটোকল",
+  "proxy": "প্রক্সি",
+  "proxyConfiguration": "প্রক্সি কনফিগারেশন",
+  "pulseaudioSoundServer": "পালসঅডিও সাউন্ড সার্ভার",
+  "queryRemoteRepositoryForAddOn": "অ্যাড-অন আপডেটের জন্য রিমোট রিপোজিটরি কোয়েরি করুন",
+  "queuedForDownload": "ডাউনলোডের জন্য সারিবদ্ধ",
+  "quickSelectFollowing": "দ্রুত নির্বাচন (অনুসরণ করা)",
+  "radiusMultiplier": "ব্যাসার্ধ গুণক",
+  "random": "এলোমেলো",
+  "range": "পরিসর",
+  "rank": "পদমর্যাদা",
+  "rating": "রেটিং",
+  "reDownloadAndReinstallThePlugin": "স্ক্র্যাচ থেকে প্লাগইনটি পুনরায় ডাউনলোড করুন এবং পুনরায় ইনস্টল করুন",
+  "read": "পড়ুন",
+  "readArticle": "প্রবন্ধ পড়ুন",
+  "readLatestUpdatesAboutThisAnime": "এই এনিমে সম্পর্কে সর্বশেষ আপডেট পড়ুন",
+  "readLatestUpdatesAboutThisManga": "এই মাঙ্গা সম্পর্কে সর্বশেষ আপডেট পড়ুন",
+  "readOnePageAtATime": "একবারে একটি পৃষ্ঠা পড়ুন",
+  "readAheadDurationInMinutes": "মিনিটে পড়ার সময়কাল",
+  "readaheadSeconds": "সেকেন্ড পড়ুন",
+  "reader": "পাঠক",
+  "readerBackgroundOpacity": "পাঠক পটভূমির অস্বচ্ছতা",
+  "readerControlTheme": "পাঠক নিয়ন্ত্রণ থিম",
+  "readerPreferences": "পাঠকের পছন্দ",
+  "readerSettings": "পাঠক সেটিংস",
+  "readingDirection": "পড়ার দিকনির্দেশ",
+  "readingLayout": "পড়া লেআউট",
+  "readingManga": "মাঙ্গা পড়ছে",
+  "readingMangaPhrasing": "মাঙ্গা বাক্যাংশ পড়া",
+  "readingNovel": "উপন্যাস পড়া",
+  "readingNovelPhrasing": "পড়া উপন্যাস বাক্যাংশ",
+  "realTime4kUpscalingForAnime": "এনিমে সামগ্রীর জন্য রিয়েল-টাইম 4K আপস্কেলিং",
+  "reason": "কারণ",
+  "reasonDeleted": "কারণ মুছে ফেলা হয়েছে।",
+  "reasonUpdated": "কারণ আপডেট!",
+  "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+  "recentMediaComments": "সাম্প্রতিক মিডিয়া মন্তব্য",
+  "recentNews": "সাম্প্রতিক খবর",
+  "recentSearches": "সাম্প্রতিক অনুসন্ধান",
+  "recentlyCompleted": "সম্প্রতি সম্পন্ন হয়েছে",
+  "recentlyUpdated": "সম্প্রতি আপডেট করা হয়েছে",
+  "recommend": "সুপারিশ করুন",
+  "recommendationSubmitted": "সুপারিশ জমা! 🎉",
+  "recommended": "প্রস্তাবিত",
+  "recommendedAnime": "প্রস্তাবিত Anime",
+  "recommendedBy": "দ্বারা প্রস্তাবিত",
+  "recommendedManga": "প্রস্তাবিত Manga",
+  "recommendedNovels": "প্রস্তাবিত উপন্যাস",
+  "reduceColorBandingArtifacts": "রঙ ব্যান্ডিং শিল্পকর্ম হ্রাস",
+  "refreshComments": "মন্তব্য রিফ্রেশ করুন",
+  "refreshRate": "রিফ্রেশ হার",
+  "relations": "সম্পর্ক",
+  "releaseDate": "মুক্তির তারিখ",
+  "releaseYear": "মুক্তির বছর",
+  "releaseYearStats": "রিলিজ বছরের পরিসংখ্যান",
+  "rememberMyChoice": "আমার পছন্দ মনে রাখবেন",
+  "rememberServer": "সার্ভার মনে রাখবেন",
+  "removalRequestSentToAdminsFor": "অপসারণের অনুরোধ পর্যালোচনার জন্য প্রশাসকদের কাছে পাঠানো হয়েছে৷",
+  "remove": "সরান",
+  "removeBanner": "ব্যানার সরান",
+  "removeDecoration": "সজ্জা সরান",
+  "removeEffect": "প্রভাব সরান",
+  "removeFromHistory": "ইতিহাস থেকে সরান",
+  "removeItems": "আইটেম সরান",
+  "removeNameplate": "নেমপ্লেট সরান",
+  "removeTheme": "থিম সরান",
+  "removeWhiteBlackBorders": "সাদা/কালো সীমানা সরান",
+  "removeYourReason": "আপনার কারণ সরান?",
+  "rename": "নাম পরিবর্তন করুন",
+  "renameList": "পুনঃনামকরণ তালিকা",
+  "reorderNavigationTabs": "নেভিগেশন ট্যাবগুলি পুনরায় সাজান",
+  "replaceExistingDataOnThisDevice": "ব্যাকআপ দিয়ে এই ডিভাইসে বিদ্যমান ডেটা প্রতিস্থাপন করুন",
+  "replay": "রিপ্লে",
+  "reportsQueue": "রিপোর্ট সারি",
+  "repositories": "ভান্ডার",
+  "repositoryUrl": "সংগ্রহস্থল URL",
+  "repositoryUrlUpper": "ভান্ডার ইউআরএল",
+  "requests": "অনুরোধ",
+  "requiredForCoreAndVisualTuning": "কোর এবং ভিজ্যুয়াল টিউনিংয়ের জন্য প্রয়োজনীয়। লো-এন্ড ডিভাইসে বন্ধ রাখুন।",
+  "reset": "রিসেট করুন",
+  "resetUpper": "রিসেট",
+  "resetDownloadPath": "ডাউনলোড পাথ রিসেট করুন",
+  "resetNovelReaderSettings": "নভেল রিডার সেটিংস রিসেট করুন",
+  "resetToDefault": "ডিফল্টে রিসেট করুন",
+  "resetToDefault2": "ডিফল্টে রিসেট করুন",
+  "resetToDefaultPicture": "ডিফল্ট ছবিতে রিসেট করুন",
+  "resetToDefaultWallpaper": "ডিফল্ট ওয়ালপেপারে রিসেট করুন!",
+  "resizeMode": "রিসাইজ মোড",
+  "resizeModes": "রিসাইজ মোড",
+  "resolution": "রেজোলিউশন",
+  "resolve": "সমাধান করুন",
+  "restartTheAppToApplyThe": "আপডেটটি প্রয়োগ করতে অ্যাপটি পুনরায় চালু করুন।",
+  "restoreAllNovelReaderDefaults": "সমস্ত নভেল রিডার ডিফল্ট পুনরুদ্ধার করুন",
+  "restoreData": "ডেটা পুনরুদ্ধার করুন",
+  "restorePreview": "পূর্বরূপ পুনরুদ্ধার করুন",
+  "restoreToDefaultInternalStorage": "ডিফল্ট অভ্যন্তরীণ সঞ্চয়স্থানে পুনরুদ্ধার করুন",
+  "restoringWillOverwriteYourSelectedLocal": "পুনরুদ্ধার করা এই ব্যাকআপের বিষয়বস্তুর সাথে আপনার নির্বাচিত স্থানীয় লাইব্রেরি আইটেম এবং সেটিংস ওভাররাইট করবে।",
+  "restrictMessagesToFollowing": "অনুসরণ করার জন্য বার্তা সীমাবদ্ধ করুন",
+  "results": "ফলাফল",
+  "resultsWillAppearGroupedByExtension": "ফলাফল এক্সটেনশন দ্বারা গোষ্ঠীবদ্ধ প্রদর্শিত হবে",
+  "retainOriginalColor": "আসল রঙ ধরে রাখুন",
+  "retry": "আবার চেষ্টা করুন",
+  "rightSide": "ডান দিক",
+  "riseAndShine": "উঠুন এবং চকমক করুন",
+  "roleUpdatedSuccessfully": "ভূমিকা সফলভাবে আপডেট করা হয়েছে",
+  "roleAll": "ভূমিকা: সব",
+  "rollbackVersion": "রোলব্যাক সংস্করণ",
+  "romajiTitle": "রোমাজি শিরোনাম",
+  "roundUpScores": "রাউন্ড আপ স্কোর",
+  "runtimeHost": "রানটাইম হোস্ট",
+  "runtimeHostReleases": "রানটাইম হোস্ট রিলিজ",
+  "runtimeHostRequired": "রানটাইম হোস্ট প্রয়োজন",
+  "safetyFeatures": "নিরাপত্তা বৈশিষ্ট্য:",
+  "saturation": "স্যাচুরেশন",
+  "sauceSearcher": "সস অনুসন্ধানকারী",
+  "save": "সংরক্ষণ করুন",
+  "saveEquip": "সংরক্ষণ এবং সজ্জিত",
+  "saveChanges": "পরিবর্তনগুলি সংরক্ষণ করুন",
+  "saveChanges2": "পরিবর্তনগুলি সংরক্ষণ করুন",
+  "saveLastFrame": "শেষ ফ্রেম সংরক্ষণ করুন",
+  "saveLogo": "লোগো সংরক্ষণ করুন",
+  "savedAnimeEntriesAndProgress": "সংরক্ষিত এনিমে এন্ট্রি এবং অগ্রগতি",
+  "savedLightNovelsAndReadingState": "সংরক্ষিত হালকা উপন্যাস এবং পড়া অবস্থা",
+  "savedMangaEntriesAndChapters": "সংরক্ষিত মঙ্গা এন্ট্রি এবং অধ্যায়",
+  "savedStreamLinkHasExpiredFetching": "সংরক্ষিত স্ট্রিম লিঙ্ক মেয়াদ শেষ হয়েছে. একটি নতুন লিঙ্ক আনা হচ্ছে...",
+  "savesAScreenshotOfTheLast": "আপনার দেখা শেষ ফ্রেমের একটি স্ক্রিনশট সংরক্ষণ করে। এটি অক্ষম করা উল্লেখযোগ্যভাবে স্টোরেজ ব্যবহার হ্রাস করে",
+  "scaleFactor": "স্কেল ফ্যাক্টর",
+  "scalingAlgorithm": "স্কেলিং অ্যালগরিদম",
+  "scanningForMoreServers": "আরও সার্ভারের জন্য স্ক্যান করা হচ্ছে...",
+  "scanningForVideoStreams": "ভিডিও স্ট্রিমের জন্য স্ক্যান করা হচ্ছে...",
+  "score": "স্কোর",
+  "scoreDistribution": "স্কোর বিতরণ",
+  "scoringSystem": "স্কোরিং সিস্টেম",
+  "search": "অনুসন্ধান করুন",
+  "searchUpper": "অনুসন্ধান করুন",
+  "searchAcrossExtensions": "এক্সটেনশন জুড়ে অনুসন্ধান করুন...",
+  "searchAnimeMovies": "এনিমে, সিনেমা খুঁজুন...",
+  "searchAnime": "এনিমে অনুসন্ধান করুন...",
+  "searchExtensions": "অনুসন্ধান এক্সটেনশন",
+  "searchExtensionsEllipsis": "এক্সটেনশন অনুসন্ধান করুন...",
+  "searchFailed": "অনুসন্ধান ব্যর্থ হয়েছে৷",
+  "searchForAnime": "এনিমে জন্য অনুসন্ধান করুন",
+  "searchInHistory": "ইতিহাসে অনুসন্ধান করুন...",
+  "searchInLibrary": "লাইব্রেরিতে অনুসন্ধান করুন...",
+  "searchItemsInList": "তালিকায় আইটেম খুঁজুন...",
+  "searchManga": "মাঙ্গা অনুসন্ধান করুন...",
+  "searchQuery": "অনুসন্ধান ক্যোয়ারী",
+  "searchSources": "উত্স অনুসন্ধান করুন...",
+  "searchTags": "ট্যাগ অনুসন্ধান করুন...",
+  "searchUser": "ব্যবহারকারী অনুসন্ধান করুন",
+  "searchingDatabase": "ডাটাবেস অনুসন্ধান করা হচ্ছে...",
+  "searching": "অনুসন্ধান করা হচ্ছে...",
+  "season": "ঋতু",
+  "seasons": "ঋতু",
+  "secondsPerScreenLowerIsFaster": "প্রতি স্ক্রীন সেকেন্ড (নিম্ন দ্রুততর)",
+  "secondsPerScreenPageLowerIs": "স্ক্রীন/পৃষ্ঠা প্রতি সেকেন্ড (নিম্নটি দ্রুত)",
+  "securityEncryption": "নিরাপত্তা এবং এনক্রিপশন",
+  "seePeopleWhoContributedToAnymex": "যারা AnymeX তে অবদান রেখেছেন তাদের দেখুন",
+  "selectAFolderWhereAnymexWill": "একটি ফোল্ডার নির্বাচন করুন যেখানে AnymeX আপনার ডাউনলোড করা অ্যানিমে পর্ব এবং মাঙ্গা অধ্যায়গুলি সংরক্ষণ করবে৷",
+  "selectAnAnimeScreenshotToFind": "এর উৎস খুঁজে পেতে একটি অ্যানিমে স্ক্রিনশট নির্বাচন করুন",
+  "selectAnilistMyanimelistSimklOrExtensions": "AniList, MyAnimeList, Simkl বা এক্সটেনশন মোড নির্বাচন করুন",
+  "selectDataToIncludeInThis": "এই ব্যাকআপে অন্তর্ভুক্ত করার জন্য ডেটা নির্বাচন করুন",
+  "selectDirectory": "ডিরেক্টরি নির্বাচন করুন",
+  "selectExtensions": "এক্সটেনশন নির্বাচন করুন",
+  "selectFolder": "ফোল্ডার নির্বাচন করুন",
+  "selectLanguage": "ভাষা নির্বাচন করুন",
+  "selectMediaDirectory": "মিডিয়া ডিরেক্টরি নির্বাচন করুন",
+  "selectNovelSource": "উপন্যাসের উৎস নির্বাচন করুন",
+  "selectProfile": "প্রোফাইল নির্বাচন করুন",
+  "selectRange": "রেঞ্জ নির্বাচন করুন",
+  "selectServer": "সার্ভার নির্বাচন করুন",
+  "selectStatus": "স্থিতি নির্বাচন করুন",
+  "selectSubtitleFont": "সাবটাইটেল ফন্ট নির্বাচন করুন",
+  "selectTags": "ট্যাগ নির্বাচন করুন",
+  "selectTimezone": "টাইমজোন নির্বাচন করুন",
+  "selectVersionToRollback": "রোলব্যাক করতে সংস্করণ নির্বাচন করুন",
+  "selectVideoFile": "ভিডিও ফাইল নির্বাচন করুন",
+  "selectYourPreferredContentSource": "আপনার পছন্দের বিষয়বস্তুর উৎস নির্বাচন করুন",
+  "selectedCacheCleared": "নির্বাচিত ক্যাশে সাফ করা হয়েছে৷",
+  "selectedItemsRemoved": "নির্বাচিত আইটেম সরানো হয়েছে",
+  "sensitiveLoginTokensForMalSimkl": "MAL, Simkl, এবং AniList-এর জন্য সংবেদনশীল লগইন টোকেন",
+  "sensitiveSessionTokensForMalSimkl": "MAL, Simkl, এবং AniList-এর জন্য সংবেদনশীল সেশন টোকেন",
+  "separateCompletedAnimeListIntoSections": "সম্পূর্ণ অ্যানিমে তালিকাকে বিন্যাস অনুসারে বিভাগে আলাদা করুন।",
+  "separateCompletedMangaListIntoSections": "সম্পূর্ণ করা মাঙ্গা তালিকাকে ফরম্যাট অনুসারে বিভাগে আলাদা করুন।",
+  "serverDetails": "সার্ভারের বিবরণ",
+  "serverChanIsTakingANap": "সার্ভার-চ্যান ঘুমাচ্ছে!",
+  "setUpYourPreferencesForThe": "সেরা অভিজ্ঞতার জন্য আপনার পছন্দগুলি সেট আপ করুন",
+  "settings": "সেটিংস",
+  "settingsAccount": "সেটিংস এবং অ্যাকাউন্ট",
+  "settingsAuthentication": "সেটিংস এবং প্রমাণীকরণ",
+  "settingsSavedSuccessfully": "সেটিংস সফলভাবে সংরক্ষিত হয়েছে৷",
+  "shaderProfilesInitialized": "শেডার প্রোফাইল শুরু হয়েছে",
+  "shadowBanUser": "শ্যাডো ব্যান ব্যবহারকারী",
+  "shareLogs": "লগ শেয়ার করুন",
+  "shareMatchCard": "ম্যাচ কার্ড শেয়ার করুন",
+  "shareProfile": "প্রোফাইল শেয়ার করুন",
+  "shareTheSavedLogFileOr": "সংরক্ষিত লগ ফাইল শেয়ার করুন বা এর বিষয়বস্তু অনুলিপি করুন।",
+  "sharedFromAnymex": "AnymeX থেকে শেয়ার করা হয়েছে",
+  "showAnimatedEffectOverlaysOnProfile": "প্রোফাইল ব্যানারে অ্যানিমেটেড প্রভাব ওভারলে দেখান",
+  "showAnimatedFramesAroundUserAvatars": "ব্যবহারকারী অবতারের চারপাশে অ্যানিমেটেড ফ্রেম দেখান",
+  "showBatteryTime": "ব্যাটারি এবং সময় দেখান",
+  "showChapterTransitionEvenWithoutGaps": "এমনকি ফাঁক ছাড়া অধ্যায় স্থানান্তর দেখান",
+  "showCommunityRecommendations": "সম্প্রদায়ের সুপারিশ দেখান",
+  "showContinueWatchingCard": "কন্টিনিউ ওয়াচিং কার্ড দেখান",
+  "showContinueWatchingOnHome": "বাড়িতে দেখা চালিয়ে যান",
+  "showCustomProfileBannersFallsBack": "কাস্টম প্রোফাইল ব্যানার দেখান (বন্ধ থাকলে AniList কভারে ফিরে আসে)",
+  "showNameplateBackgroundsOnCommentCards": "মন্তব্য কার্ড এবং লিডারবোর্ডে নেমপ্লেট ব্যাকগ্রাউন্ড দেখান",
+  "showOnLeft": "বাম দিকে দেখান",
+  "showOnRight": "ডানদিকে দেখান",
+  "showReadingProgress": "পড়ার অগ্রগতি দেখান",
+  "showTimestamps": "টাইমস্ট্যাম্প দেখান",
+  "simpleCompactListView": "সহজ কমপ্যাক্ট তালিকা দৃশ্য",
+  "simpleDirectmediaLayerAudioOutput": "সহজ ডাইরেক্টমিডিয়া লেয়ার অডিও আউটপুট",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "থাম্বনেইল ছাড়াই পর্ব সংখ্যা, শিরোনাম এবং অগ্রগতি প্রদর্শন করা সহজ বিন্যাস",
+  "sizeMode": "আকার মোড:",
+  "smartMangaSuggestions": "স্মার্ট মাঙ্গা পরামর্শ",
+  "smootherMotionCanIncreaseGpuUsage": "মসৃণ গতি, GPU ব্যবহার বাড়াতে পারে",
+  "social": "সামাজিক",
+  "somethingWentWrong": "কিছু ভুল হয়েছে",
+  "sort": "সাজান",
+  "sort2": "সাজান",
+  "sortBy": "সাজান",
+  "sortBy2": "অনুসারে সাজান",
+  "sortComments": "মন্তব্য সাজান",
+  "source": "উৎস",
+  "sourceAndPluginConfigurations": "উৎস এবং প্লাগইন কনফিগারেশন",
+  "sourcePreferences": "উত্স পছন্দ",
+  "spaceBetweenLetters": "অক্ষরের মধ্যে স্থান",
+  "spaceBetweenParagraphs": "অনুচ্ছেদের মধ্যে স্থান",
+  "spaceBetweenWords": "শব্দের মধ্যে স্থান",
+  "spacedPages": "ফাঁকা পৃষ্ঠা",
+  "splitCompletedAnimeList": "বিভক্ত সম্পূর্ণ অ্যানিমে তালিকা",
+  "splitCompletedMangaList": "বিভক্ত সম্পন্ন Manga তালিকা",
+  "spoiler": "স্পয়লার",
+  "spoilerTapToReveal": "স্পয়লার (প্রকাশ করতে আলতো চাপুন)",
+  "staff": "স্টাফ",
+  "staffCharacterNameLanguage": "স্টাফ এবং অক্ষরের নাম ভাষা",
+  "standardGpuRendering": "স্ট্যান্ডার্ড GPU রেন্ডারিং",
+  "starOnGithub": "GitHub-এ তারকা",
+  "startANewDownloadFromThe": "\"নতুন ডাউনলোড\" ট্যাব থেকে একটি নতুন ডাউনলোড শুরু করুন",
+  "startChapter": "অধ্যায় শুরু করুন",
+  "startDate": "শুরুর তারিখ",
+  "startMangaDownload": "মাঙ্গা ডাউনলোড শুরু করুন",
+  "startTest": "পরীক্ষা শুরু করুন",
+  "startingExtensionRuntime": "এক্সটেনশন রানটাইম শুরু হচ্ছে...",
+  "statistics": "পরিসংখ্যান",
+  "stats": "পরিসংখ্যান",
+  "status": "স্ট্যাটাস",
+  "statusDistribution": "স্ট্যাটাস ডিস্ট্রিবিউশন",
+  "statusPostedSuccessfully": "স্ট্যাটাস সফলভাবে পোস্ট করা হয়েছে!",
+  "stayUpdatedWithTheLatestReleases": "সর্বশেষ রিলিজ, ঘোষণা এবং আলোচনার সাথে আপডেট থাকুন",
+  "storagePath": "সঞ্চয়স্থান এবং পথ",
+  "storageManager": "স্টোরেজ ম্যানেজার",
+  "storageOptions": "স্টোরেজ বিকল্প",
+  "storagePermission": "স্টোরেজ অনুমতি",
+  "storagePermissionIsRequiredToDownload": "আপডেট ডাউনলোড করার জন্য স্টোরেজ অনুমতি প্রয়োজন",
+  "storagePermissionRequired": "স্টোরেজ অনুমতি প্রয়োজন",
+  "streakCurLong": "স্ট্রিক (Cur/Long)",
+  "stretchImagesToFitScreenWidth": "স্ক্রিনের প্রস্থের সাথে মানানসই চিত্রগুলি প্রসারিত করুন",
+  "strikethrough": "স্ট্রাইকথ্রু",
+  "studios": "স্টুডিও",
+  "style": "শৈলী",
+  "subtitleBackgroundColor": "সাবটাইটেল ব্যাকগ্রাউন্ড কালার",
+  "subtitleColor": "সাবটাইটেল রঙ",
+  "subtitleFont": "সাবটাইটেল ফন্ট",
+  "subtitleOutlineColor": "সাবটাইটেল আউটলাইন রঙ",
+  "subtitleOutlineWidth": "সাবটাইটেল আউটলাইন প্রস্থ",
+  "subtitlePreview": "সাবটাইটেল প্রিভিউ",
+  "subtitlePreviewText": "সাবটাইটেল প্রিভিউ টেক্সট",
+  "subtitleSize": "সাবটাইটেল সাইজ",
+  "subtitleTransparency": "সাবটাইটেল স্বচ্ছতা",
+  "subtitles": "সাবটাইটেল",
+  "summary": "সারাংশ",
+  "superAdmin": "সুপার অ্যাডমিন",
+  "supportTtfAndOtfFiles": ".ttf এবং .otf ফাইল সমর্থন",
+  "supportAnymex": "সমর্থন AnymeX",
+  "supportedModes": "সমর্থিত মোড",
+  "supportedUpiApps": "সমর্থিত UPI অ্যাপ",
+  "suppressActivityWhenWatchingOrReading": "NSFW বিষয়বস্তু দেখার বা পড়ার সময় কার্যকলাপ দমন করুন",
+  "swapUpDownActions": "আপ/ডাউন অ্যাকশন অদলবদল করুন",
+  "swipeBetweenChapters": "অধ্যায়গুলির মধ্যে সোয়াইপ করুন",
+  "swipeIndicatorTheme": "সোয়াইপ ইন্ডিকেটর থিম",
+  "swipeToSeek": "খুঁজতে সোয়াইপ করুন",
+  "switchBetweenDefaultTitleAndRomaji": "লাইব্রেরি এবং কার্ড জুড়ে ডিফল্ট শিরোনাম এবং রোমাজি/বিকল্প শিরোনামের মধ্যে স্যুইচ করুন",
+  "switchToOnline": "অনলাইনে স্যুইচ করুন",
+  "syncCompletedButThePluginIs": "সিঙ্ক সম্পূর্ণ হয়েছে, কিন্তু প্লাগইন এখনও প্রস্তুত নয়৷",
+  "syncDetails": "সিঙ্ক বিবরণ",
+  "syncFailed": "সিঙ্ক ব্যর্থ হয়েছে৷",
+  "synonyms": "সমার্থক শব্দ",
+  "synopsis": "সারমর্ম",
+  "tags": "ট্যাগ",
+  "tags2": "ট্যাগ",
+  "takeColorFromYourWallpaperA12": "আপনার ওয়ালপেপার থেকে রঙ নিন (A12+)",
+  "tapToAddARepositoryUrl": "একটি সংগ্রহস্থল URL যোগ করতে + আলতো চাপুন",
+  "tapAZoneToChangeIts": "একটি জোন এর ক্রিয়া পরিবর্তন করতে আলতো চাপুন৷",
+  "tapAction": "অ্যাকশনে ট্যাপ করুন",
+  "tapToChooseASource": "একটি উত্স চয়ন করতে আলতো চাপুন৷",
+  "tapToLogin": "লগইন করতে আলতো চাপুন",
+  "tapToLogout": "লগআউট করতে আলতো চাপুন",
+  "tapToScroll": "স্ক্রোল করতে আলতো চাপুন",
+  "tapYourProfileIconInThe": "উপরের অ্যাপ বারে আপনার প্রোফাইল আইকনে আলতো চাপুন",
+  "tapZones": "জোন ট্যাপ করুন",
+  "tellTheCommunityWhyThisDeserves": "সম্প্রদায়কে বলুন কেন এটি আরও মনোযোগের যোগ্য।",
+  "temporaryAppCache": "অস্থায়ী অ্যাপ ক্যাশে",
+  "termsOfServicePrivacyPolicy": "পরিষেবার শর্তাবলী/গোপনীয়তা নীতি",
+  "test": "পরীক্ষা",
+  "testExtensions": "পরীক্ষা এক্সটেনশন",
+  "testResults": "পরীক্ষার ফলাফল",
+  "testType": "পরীক্ষার ধরন",
+  "textSize": "পাঠ্যের আকার",
+  "theme": "থিম",
+  "themeLayoutAndColors": "থিম, লেআউট এবং রং",
+  "themes": "থিম",
+  "thisBackupIsEncryptedPleaseEnter": "এই ব্যাকআপ এনক্রিপ্ট করা হয়. চালিয়ে যেতে পাসওয়ার্ড লিখুন.",
+  "thisDirectoryContainsNoSupportedMedia": "এই ডিরেক্টরিতে কোনো সমর্থিত মিডিয়া ফাইল নেই",
+  "thisMayTakeAFewSeconds": "এতে কয়েক সেকেন্ড সময় লাগতে পারে",
+  "thisMayTakeUpTo30": "এটি 30 সেকেন্ড পর্যন্ত সময় নিতে পারে",
+  "thisMightTakeAFewSeconds": "এতে কয়েক সেকেন্ড সময় লাগতে পারে",
+  "thisReasonWillBeDeletedImmediately": "এই কারণ অবিলম্বে মুছে ফেলা হবে.",
+  "thisWillPermanentlyDeleteAllData": "এটি AnymeX এর সংরক্ষিত সমস্ত ডেটা স্থায়ীভাবে মুছে ফেলবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "tipYouCanCombineTheseE": "টিপ: আপনি এই একত্রিত করতে পারেন! যেমন **বোল্ড এবং *ইটালিক* একসাথে**",
+  "title": "শিরোনাম",
+  "titleCopied": "শিরোনাম অনুলিপি করা হয়েছে৷",
+  "titleLanguage": "শিরোনামের ভাষা",
+  "toDownloadForTheFirstTime": "প্রথমবার ডাউনলোড করতে, প্রথমে ডাউনলোড পৃষ্ঠায় গিয়ে অনুমতি দিন:",
+  "toggleBetweenGridAndDetailedList": "গ্রিড এবং বিস্তারিত তালিকার মধ্যে টগল করুন",
+  "toneMapping": "টোন ম্যাপিং",
+  "topAnime": "শীর্ষ এনিমে",
+  "topComments": "শীর্ষ মন্তব্য",
+  "topGenres": "শীর্ষ ঘরানার",
+  "topManga": "শীর্ষ মাঙ্গা",
+  "topManhua": "শীর্ষ মানহুয়া",
+  "topManhwa": "শীর্ষ মানহওয়া",
+  "topStudios": "শীর্ষ স্টুডিও",
+  "torrentServer": "টরেন্ট সার্ভার",
+  "torrentStreamCache": "টরেন্ট স্ট্রিম ক্যাশে",
+  "torrserverStreamingAddOns": "TorrServer এবং স্ট্রিমিং অ্যাড-অন",
+  "totalChapters": "মোট অধ্যায়",
+  "totalCost": "মোট খরচ:",
+  "totalItems": "মোট আইটেম",
+  "track": "ট্র্যাক",
+  "trackAiringSchedules": "সম্প্রচারের সময়সূচী ট্র্যাক করুন",
+  "trackYourProgress": "আপনার অগ্রগতি ট্র্যাক?",
+  "trackingServices": "ট্র্যাকিং পরিষেবা",
+  "transitionSubtitle": "ট্রানজিশন সাবটাইটেল",
+  "translateTo": "এতে অনুবাদ করুন",
+  "translationLanguage": "অনুবাদের ভাষা",
+  "translucentNav": "স্বচ্ছ নেভি",
+  "trendingAnime": "ট্রেন্ডিং অ্যানিমে",
+  "trendingAnimes": "ট্রেন্ডিং অ্যানিমেস",
+  "trendingManga": "প্রবণতা মাঙ্গা",
+  "tryADifferentKeyword": "একটি ভিন্ন কীওয়ার্ড চেষ্টা করুন",
+  "tryAdjustingYourFilters": "আপনার ফিল্টার সামঞ্জস্য করার চেষ্টা করুন",
+  "tryAgain": "আবার চেষ্টা করুন",
+  "tryDifferentAnimationStylesForPage": "পৃষ্ঠা প্রবেশের জন্য বিভিন্ন অ্যানিমেশন শৈলী চেষ্টা করুন",
+  "ttsAutoAdvance": "TTS অটো অ্যাডভান্স",
+  "ttsPitch": "TTS পিচ",
+  "ttsSpeed": "TTS গতি",
+  "tweakGeneralAppSettings": "সাধারণ অ্যাপ সেটিংস পরিবর্তন করুন",
+  "typeLabel": "টাইপ",
+  "typeAtLeast2CharactersTo": "অনুসন্ধান করতে কমপক্ষে 2টি অক্ষর টাইপ করুন৷",
+  "ui": "UI",
+  "uiComponents": "UI উপাদান",
+  "uiLayoutColorsAndThemes": "UI লেআউট, রঙ এবং থিম",
+  "uiLayoutColorsAndVisualStyles": "UI লেআউট, রঙ এবং ভিজ্যুয়াল শৈলী",
+  "uiSettings": "UI সেটিংস",
+  "unableToPreparePlaybackRightNow": "এই মুহূর্তে প্লেব্যাক প্রস্তুত করতে অক্ষম৷ আবার চেষ্টা করুন.",
+  "unbanUser": "ব্যবহারকারীকে নিষিদ্ধ করুন",
+  "unbind": "আবদ্ধ করুন",
+  "unifiedLibrary": "ইউনিফাইড লাইব্রেরি",
+  "uninstall": "আনইনস্টল করুন",
+  "universal": "সর্বজনীন",
+  "unlock": "আনলক",
+  "unlockCustomizations": "কাস্টমাইজেশন আনলক করুন",
+  "unmuteUser": "ব্যবহারকারীকে আনমিউট করুন",
+  "unreadOnly": "শুধুমাত্র অপঠিত",
+  "upcomingAnime": "আসন্ন অ্যানিমে",
+  "update": "আপডেট",
+  "updateAll": "সব আপডেট করুন",
+  "updateCheckComplete": "আপডেট চেক সম্পূর্ণ",
+  "updateOnImport": "আমদানির উপর আপডেট",
+  "updateToLatestVersion": "সর্বশেষ সংস্করণে আপডেট করুন",
+  "updateYourActivity": "আপনার কার্যকলাপ আপডেট করুন...",
+  "updatesPending": "মুলতুবি আপডেট",
+  "upiDonation": "UPI দান",
+  "uploadAnImageToGetStarted": "শুরু করতে একটি ছবি আপলোড করুন",
+  "uploadImage": "ছবি আপলোড করুন",
+  "urlCopiedToClipboard": "ক্লিপবোর্ডে URL কপি করা হয়েছে",
+  "usage": "ব্যবহার:",
+  "useAiToTranslateSoftSubtitles": "সফট-সাবটাইটেল লাইভ অনুবাদ করতে AI ব্যবহার করুন",
+  "useAlternateTitle": "বিকল্প শিরোনাম ব্যবহার করুন",
+  "useBuffering": "বাফারিং ব্যবহার করুন",
+  "useCustomGesturesForReaderNavigation": "পাঠক নেভিগেশন জন্য কাস্টম অঙ্গভঙ্গি ব্যবহার করুন",
+  "useEnhancedEpisodeMetadataAndCovers": "উন্নত পর্বের মেটাডেটা এবং কভার ব্যবহার করুন",
+  "useExternalPlayer": "এক্সটার্নাল প্লেয়ার ব্যবহার করুন",
+  "useKeyboardShortcutsDuringPlaybackTo": "প্রোফাইল পরিবর্তন করতে প্লেব্যাকের সময় কীবোর্ড শর্টকাট ব্যবহার করুন",
+  "useLegacyHeader": "লিগ্যাসি হেডার ব্যবহার করুন",
+  "useLibassForSubtitles": "সাবটাইটেলের জন্য Libass ব্যবহার করুন",
+  "useLibmpvForPlayback": "প্লেব্যাকের জন্য LibMpv ব্যবহার করুন",
+  "useMpvConf": "mpv.conf ব্যবহার করুন",
+  "usePosterColor": "পোস্টারের রঙ ব্যবহার করুন",
+  "useVolumeKeysToChangePages": "পৃষ্ঠা পরিবর্তন করতে ভলিউম কী ব্যবহার করুন",
+  "useYearRange": "বছরের পরিসীমা ব্যবহার করুন",
+  "user": "ব্যবহারকারী",
+  "userIdCopiedToClipboard": "ক্লিপবোর্ডে ইউজার আইডি কপি করা হয়েছে",
+  "userList": "ব্যবহারকারীর তালিকা",
+  "userManagement": "ব্যবহারকারী ব্যবস্থাপনা",
+  "userCreatedCustomMediaCollections": "ব্যবহারকারীর তৈরি কাস্টম মিডিয়া সংগ্রহ",
+  "username": "ব্যবহারকারীর নাম",
+  "verifyTlsCertificates": "TLS শংসাপত্র যাচাই করুন",
+  "versionCopied": "সংস্করণ অনুলিপি করা হয়েছে",
+  "vertical": "উল্লম্ব",
+  "videoPlayer": "ভিডিও প্লেয়ার",
+  "videoRenderer": "ভিডিও রেন্ডারার",
+  "videoSync": "ভিডিও সিঙ্ক",
+  "viewAndFilterAllUsers": "সমস্ত ব্যবহারকারীকে দেখুন এবং ফিল্টার করুন৷",
+  "viewOnAnilist": "AniList এ দেখুন",
+  "viewOpeningAndEndingThemes": "প্রারম্ভিক এবং শেষ থিম দেখুন",
+  "viewProfile": "প্রোফাইল দেখুন",
+  "viewSourceCodeOnGithub": "Github এ সোর্স কোড দেখুন।",
+  "viewTheChronologicalWatchOrderOf": "এই অ্যানিমের কালানুক্রমিক ঘড়ির ক্রম দেখুন",
+  "viewUser": "ব্যবহারকারী দেখুন",
+  "viewUserRankingsTopContributorsReputation": "ব্যবহারকারীর র‍্যাঙ্কিং, শীর্ষ অবদানকারী এবং খ্যাতি দেখুন",
+  "viewingAnimeDetails": "এনিমে বিস্তারিত দেখা",
+  "viewingMangaDetails": "মাঙ্গার বিবরণ দেখা হচ্ছে",
+  "viewingNovelDetails": "উপন্যাসের বিবরণ দেখা হচ্ছে",
+  "visibleTabs": "দৃশ্যমান ট্যাব",
+  "visitGithubReleasesPageForChangelogs": "চেঞ্জলগ এবং ম্যানুয়াল ডাউনলোডের জন্য GitHub রিলিজ পৃষ্ঠা দেখুন",
+  "visualFromAnymex": "AnymeX থেকে ভিজ্যুয়াল",
+  "voiceActors": "ভয়েস অভিনেতা",
+  "voicedCharacters": "ভয়েসড অক্ষর",
+  "volumeButtonScrolling": "ভলিউম বোতাম স্ক্রোলিং",
+  "volumeKeysNavigation": "ভলিউম কী নেভিগেশন",
+  "volumes": "ভলিউম",
+  "volumesRead": "ভলিউম পড়া",
+  "votes": "ভোট",
+  "wWhatAreYouDoingStep": "ভাই আপনি কি করছেন স্টেপ-ভাই, এটা করার আগে লগইন করুন (●´⌓`●)",
+  "wallpaper": "ওয়ালপেপার",
+  "warnUser": "ব্যবহারকারীকে সতর্ক করুন",
+  "warning": "সতর্কতা",
+  "wasThisHelpful": "এই সহায়ক ছিল?",
+  "watchAd": "বিজ্ঞাপন দেখুন",
+  "watchAnAdToSupport": "সমর্থন করার জন্য একটি বিজ্ঞাপন দেখুন",
+  "watchAnime": "অ্যানিমে দেখুন",
+  "watchOrder": "ওয়াচ অর্ডার",
+  "watchTogether": "একসাথে দেখুন",
+  "watchTogetherPolicy": "একসাথে দেখুন নীতি",
+  "watchingAnime": "অ্যানিমে দেখছি",
+  "watchingAnimePhrasing": "অ্যানিমে শব্দচয়ন দেখছি",
+  "welcomeToAnymex": "AnymeX এ স্বাগতম",
+  "whatsOnYourMind": "আপনার মনে কি আছে?",
+  "whenEnabledAnymexSavesLogsLocally": "সক্রিয় করা হলে, নিষ্ক্রিয় না হওয়া পর্যন্ত AnymeX স্থানীয়ভাবে লগ সংরক্ষণ করে।",
+  "whyAreYouRecommendingThisMin": "কেন আপনি এই সুপারিশ করছেন? (মিনিট 30 অক্ষর)",
+  "whyIsThisUnderratedMin30": "কেন এই underrated হয়? (মিনিট 30 অক্ষর)",
+  "windowsAudioSessionApi": "উইন্ডোজ অডিও সেশন API",
+  "wordSpacing": "শব্দ ব্যবধান",
+  "writeAMessage": "একটি বার্তা লিখুন...",
+  "writeLogToAFile": "একটি ফাইলে লগ লিখুন",
+  "writeYourAnilistBio": "আপনার AniList বায়ো লিখুন...",
+  "wrongTitle": "ভুল শিরোনাম?",
+  "year": "বছর",
+  "yearUpper": "বছর",
+  "you": "আপনি",
+  "youCanUseDiscordStyleMarkdown": "আপনি আপনার মন্তব্য বিন্যাস করতে Discord-শৈলী মার্কডাউন ব্যবহার করতে পারেন:",
+  "youHaveUnsentTextClosingNow": "আপনি অপ্রেরিত টেক্সট আছে. এখন বন্ধ করা আপনার বার্তা হারাবে.",
+  "youHaveUnsentTextClosingNowWill": "আপনি অপ্রেরিত টেক্সট আছে. এখন বন্ধ করা আপনার উত্তর হারাবে.",
+  "youHaveUnsentTextClosingNowWillLose": "আপনি অপ্রেরিত টেক্সট আছে. এখন বন্ধ করলে আপনার স্থিতি হারাবে।",
+  "youNeedModeratorPermissionsToAccess": "এই প্যানেল অ্যাক্সেস করার জন্য আপনার মডারেটরের অনুমতি প্রয়োজন",
+  "youreUpLate": "আপনি দেরী করে উঠছেন",
+  "yourBalance": "আপনার ব্যালেন্স:",
+  "yourPrivacyIsImportant": "আপনার গোপনীয়তা গুরুত্বপূর্ণ:",
+  "yourReasonHasBeenRemoved": "আপনার কারণ মুছে ফেলা হয়েছে.",
+  "yourRecommendation": "আপনার সুপারিশ",
+  "yourRichPresenceActivityWillStop": "আপনার সমৃদ্ধ উপস্থিতি কার্যকলাপ আপডেট করা বন্ধ হবে.",
+  "yourRole": "আপনার ভূমিকা",
+  "yourWatchReadHistory": "আপনার দেখার এবং পড়ার ইতিহাস",
+  "yourWatchReadStatistics": "আপনার ঘড়ি এবং পড়া পরিসংখ্যান",
+  "advancedLinuxSoundArchitecture": "উন্নত লিনাক্স সাউন্ড আর্কিটেকচার",
+  "al": "এ.এল",
+  "allYourLocalShi": "আপনার সমস্ত স্থানীয় শি",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "অ্যান্ড্রয়েড অডিওট্র্যাক API",
+  "anilist": "AniList",
+  "anilist2": "অ্যানিলিস্ট",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "আপনি কি নিশ্চিত?",
+  "aspectRatio": "আকৃতির অনুপাত",
+  "attackOnTitan": "টাইটানের উপর আক্রমণ",
+  "audio": "অডিও",
+  "audioSubtitles": "অডিও এবং সাবটাইটেল",
+  "audioTrack": "অডিও ট্র্যাক",
+  "audioTracks": "অডিও ট্র্যাক",
+  "audiotrack": "অডিওট্র্যাক",
+  "autoAudiotrack": "স্বয়ংক্রিয় (অডিওট্র্যাক)",
+  "autoCoreaudio": "অটো (কোরঅডিও)",
+  "autoGpu": "স্বয়ংক্রিয় (GPU)",
+  "autoPulseaudio": "অটো (পালসঅডিও)",
+  "autoWasapi": "অটো (ওয়াসাপি)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "পুষ্প",
+  "castToDevice": "ডিভাইসে কাস্ট করুন",
+  "colorFilter": "রঙ ফিল্টার",
+  "coreaudio": "কোরঅডিও",
+  "demonSlayerKimetsuNoYaiba": "রাক্ষস হত্যাকারী: কিমেৎসু নো ইয়াইবা",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-ওভার-HTTPS",
+  "externalPlayer": "এক্সটার্নাল প্লেয়ার",
+  "files": "ফাইল",
+  "forward": "ফরোয়ার্ড",
+  "forward30s": "ফরোয়ার্ড 30",
+  "fullscreen": "ফুলস্ক্রিন",
+  "gif": "জিআইএফ",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "জিপিইউ",
+  "gpuNextVulkan": "GPU নেক্সট (ভুলকান)",
+  "hls": "এইচএলএস",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "জুজুৎসু কাইসেন",
+  "lockControls": "লক কন্ট্রোল",
+  "lockOrientation": "লক ওরিয়েন্টেশন",
+  "mal": "MAL",
+  "materialYou": "উপাদান আপনি",
+  "mediacodecEmbed": "মিডিয়াকোডেক এম্বেড",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "প্রয়োজনীয় হত্যা",
+  "nextEp": "পরবর্তী পর্ব।",
+  "nextEpisode": "পরবর্তী পর্ব",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "ছবিতে ছবি",
+  "playlist": "প্লেলিস্ট",
+  "previousEpisode": "আগের পর্ব",
+  "pulseaudio": "পালস অডিও",
+  "quality": "গুণমান",
+  "qualitySetting": "গুণমান সেটিং",
+  "readingMode": "পড়ার মোড",
+  "reddit": "রেডডিট",
+  "replay30s": "30s রিপ্লে করুন",
+  "ryanyuuki": "রায়ানইউকি",
+  "sabitoAndMakomo": "সাবিতো এবং মাকোমো",
+  "sdl": "এসডিএল",
+  "server": "সার্ভার",
+  "servers": "সার্ভার",
+  "shadersColorProfiles": "শেডার্স এবং কালার প্রোফাইল",
+  "shadersColors": "ছায়া এবং রং",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "একক সমতলকরণ",
+  "speed": "গতি",
+  "sw": "SW",
+  "syncSubs": "সিঙ্ক সাব",
+  "syncSubtitles": "সাবটাইটেল সিঙ্ক করুন",
+  "telegram": "টেলিগ্রাম",
+  "theQuickBrownFoxJumpsOver": "দ্রুত বাদামী শিয়াল অলস কুকুরের উপর ঝাঁপিয়ে পড়ে",
+  "themeMode": "থিম মোড",
+  "thisIsFrustrating": "এই হতাশাজনক",
+  "toYouSomeday": "তোমার কাছে, কোনো দিন",
+  "torrentFiles": "টরেন্ট ফাইল",
+  "tracks": "ট্র্যাক",
+  "unlockOrientation": "ওরিয়েন্টেশন আনলক করুন",
+  "userAgent": "ব্যবহারকারী-এজেন্ট",
+  "videoQuality": "ভিডিও কোয়ালিটি",
+  "videoServers": "ভিডিও সার্ভার",
+  "vs": "ভিএস",
+  "wasapi": "ওয়াসাপি",
+  "watchTogetherInRoom": "একসাথে দেখুন (রুমে)",
+  "webtoon": "ওয়েবটুন",
+  "n0MeansAutomaticThreadCount": "0 মানে স্বয়ংক্রিয় থ্রেড গণনা",
+  "n18Content": "18+ বিষয়বস্তু",
+  "aboveAverageSimilarity": "উপরে-গড় মিল।",
+  "account": "হিসাব",
+  "activityStats": "কার্যকলাপ এবং পরিসংখ্যান",
+  "add": "যোগ করুন",
+  "additionalNotesOptional": "অতিরিক্ত নোট (ঐচ্ছিক)",
+  "adjustKeyVolumeScrollingSpeed": "কী এবং ভলিউম স্ক্রোলিং গতি সামঞ্জস্য করুন",
+  "alpha": "আলফা",
+  "alwaysChecksCurrentChapterNumberAnd": "সর্বদা বর্তমান অধ্যায়ের সংখ্যা পরীক্ষা করে এবং পরবর্তী/পূর্ব অধ্যায়ের সাথে এটি তুলনা করে, সংখ্যাটি ভিন্ন হলেই নেভিগেট করে। অনুলিপি থাকলেও অধ্যায় দ্বারা নেভিগেট করলে তালিকার পরবর্তী আইটেমে চলে যাবে।",
+  "animeCompleted": "অ্যানিমে সম্পন্ন",
+  "announcementMode": "ঘোষণা মোড",
+  "appIsStillLoadingTryAgain": "অ্যাপ এখনও লোড হচ্ছে, শীঘ্রই আবার চেষ্টা করুন।",
+  "applyAColorTintOverPages": "পৃষ্ঠাগুলিতে একটি রঙিন আভা লাগান",
+  "audioDelay": "অডিও বিলম্ব",
+  "audioSettings": "অডিও সেটিংস",
+  "audioTrack2": "অডিও ট্র্যাক",
+  "autoAdvance": "অটো অ্যাডভান্স",
+  "autoDeleteCompletedEntries": "সম্পূর্ণ এন্ট্রি স্বয়ংক্রিয়ভাবে মুছুন",
+  "autoSyncProgress": "অটো-সিঙ্ক অগ্রগতি",
+  "automaticallyMoveToNextText": "স্বয়ংক্রিয়ভাবে পরবর্তী টেক্সটে যান",
+  "automaticallyScrollAdvancePages": "স্বয়ংক্রিয়ভাবে পৃষ্ঠাগুলি স্ক্রোল/অগ্রিম করুন",
+  "automaticallySwitchToContinuousModeFor": "লং-স্ট্রিপ মাঙ্গার জন্য স্বয়ংক্রিয়ভাবে একটানা মোডে স্যুইচ করুন",
+  "averageOverlap": "গড় ওভারল্যাপ।",
+  "background": "পটভূমি",
+  "basedOnYourFavouriteAnime": "আপনার প্রিয় anime উপর ভিত্তি করে.",
+  "basedOnYourFavouriteManga": "আপনার প্রিয় মাঙ্গার উপর ভিত্তি করে।",
+  "basedOnYourTop10Manga": "আপনার সেরা 10টি ম্যাঙ্গা ট্যাগের উপর ভিত্তি করে।",
+  "basedOnYourTop5Manga": "আপনার সেরা 5টি ম্যাঙ্গা জেনারের উপর ভিত্তি করে।",
+  "blue": "নীল",
+  "botL": "বট-এল",
+  "botR": "বট-আর",
+  "bridgeUpdateAvailable": "ব্রিজ আপডেট উপলব্ধ",
+  "brightness": "উজ্জ্বলতা",
+  "bulletList": "বুলেট তালিকা",
+  "calendarUpper": "ক্যালেন্ডার",
+  "canadianMovies": "কানাডিয়ান সিনেমা",
+  "canadianShows": "কানাডিয়ান শো",
+  "cannotCompareTheSameProfileWith": "নিজের সাথে একই প্রোফাইল তুলনা করা যায় না।",
+  "castToDevice2": "ডিভাইসে কাস্ট করুন",
+  "chatModeration": "চ্যাট সংযম",
+  "chooseASubtitleFileFromYour": "আপনার ডিভাইস থেকে একটি সাবটাইটেল ফাইল চয়ন করুন (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "আপনার AnymeX ক্লাউড সারাংশে নির্বাচিত JSON ফাইলটি কীভাবে প্রয়োগ করবেন তা চয়ন করুন।",
+  "chromaUpscaler": "ক্রোমা আপস্কেলার",
+  "cloudTools": "ক্লাউড টুলস",
+  "code": "কোড",
+  "commonFavouriteAnime": "কমন ফেভারিট অ্যানিমে",
+  "commonFavouriteCharacters": "কমন ফেভারিট ক্যারেক্টার",
+  "commonFavouriteManga": "সাধারণ প্রিয় মাঙ্গা",
+  "commonPerfectAnime": "কমন পারফেক্ট অ্যানিমে",
+  "commonPerfectManga": "কমন পারফেক্ট মাঙ্গা",
+  "communityAdministratorOverseeingModerationAndPolicies": "সম্প্রদায় প্রশাসক সংযম এবং নীতি তত্ত্বাবধান.",
+  "connectGithubFirstBeforeDeletingSync": "সিঙ্ক ডেটা মুছে ফেলার আগে প্রথমে GitHub কানেক্ট করুন।",
+  "connectGithubFirstToExportSync": "সিঙ্ক ডেটা এক্সপোর্ট করতে প্রথমে GitHub কানেক্ট করুন।",
+  "connectGithubFirstToImportSync": "সিঙ্ক ডেটা আমদানি করতে প্রথমে GitHub সংযুক্ত করুন৷",
+  "connectGithubFirstToSyncProgress": "অগ্রগতি সিঙ্ক করতে প্রথমে GitHub কানেক্ট করুন।",
+  "connectGithubFirstToViewSync": "সিঙ্ক সারাংশ দেখতে প্রথমে GitHub কানেক্ট করুন।",
+  "continuousModeOnly2": "শুধুমাত্র অবিচ্ছিন্ন মোড",
+  "controls": "নিয়ন্ত্রণ করে",
+  "cookiesClearedSuccessfully": "কুকিজ সফলভাবে সাফ করা হয়েছে৷",
+  "copied": "কপি করা হয়েছে",
+  "copyUrl": "ইউআরএল কপি করুন",
+  "correctDownscaling": "সঠিক ডাউনস্কেলিং",
+  "couldNotLoadStreamingServicesFrom": "AniList API থেকে স্ট্রিমিং পরিষেবাগুলি লোড করা যায়নি৷ \n পরিষেবাটি সাময়িকভাবে অনুপলব্ধ বা রেট-সীমিত হতে পারে৷",
+  "couldNotOpenGistInBrowser": "ব্রাউজারে সারাংশ খুলতে পারেনি।",
+  "created": "তৈরি হয়েছে",
+  "creatorAndDeveloperOfAnymex": "AnymeX এর নির্মাতা এবং বিকাশকারী।",
+  "customBrightness": "কাস্টম উজ্জ্বলতা",
+  "customizeGestures": "অঙ্গভঙ্গি কাস্টমাইজ করুন",
+  "deband": "দেববন্দ",
+  "debandIterations": "Deband পুনরাবৃত্তি",
+  "debandThreshold": "ডেব্যান্ড থ্রেশহোল্ড",
+  "decreaseAutoScrollSpeed": "স্বয়ংক্রিয়-স্ক্রোল গতি হ্রাস করুন",
+  "decreaseFontSize": "হরফের আকার হ্রাস করুন",
+  "deleteAnymexSyncGist": "AnymeX সিঙ্ক Gist মুছবেন?",
+  "deleteCloudGist": "ক্লাউড Gist মুছুন",
+  "deleteCommentMod": "মন্তব্য মুছুন (মড)",
+  "details": "বিস্তারিত",
+  "dictionary": "অভিধান",
+  "differenceFromOwnMeanScore": "নিজস্ব গড় স্কোর থেকে পার্থক্য",
+  "disableChat": "চ্যাট অক্ষম করুন",
+  "disconnectThisGithubAccountFromAnymex": "AnymeX থেকে এই GitHub অ্যাকাউন্টটি সংযোগ বিচ্ছিন্ন করুন",
+  "displayPagesInBlackWhite": "কালো এবং সাদা পৃষ্ঠাগুলি প্রদর্শন করুন",
+  "downloading": "ডাউনলোড হচ্ছে...",
+  "downscaler": "ডাউনস্কেলার",
+  "dynamicWidget": "ডাইনামিক উইজেট",
+  "eInkDisplayRefresh": "ই-কালি প্রদর্শন রিফ্রেশ",
+  "eGAbc123": "যেমন ABC123",
+  "eGMyAnimeLogo": "যেমন আমার অ্যানিমে লোগো",
+  "editYourComment": "আপনার মন্তব্য সম্পাদনা করুন...",
+  "embeddedContent": "এম্বেড করা বিষয়বস্তু",
+  "enterTheRoomPassword": "রুমের পাসওয়ার্ড দিন",
+  "enterTokenHere": "এখানে টোকেন লিখুন",
+  "error": "ত্রুটি",
+  "exitSyncNotifications": "সিঙ্ক বিজ্ঞপ্তি থেকে প্রস্থান করুন",
+  "exportGistJson": "Gist JSON রপ্তানি করুন",
+  "exportedGistJson": "রপ্তানি সারাংশ JSON.",
+  "failedToExportGistJson": "সারাংশ JSON রপ্তানি করতে ব্যর্থ হয়েছে৷",
+  "failedToFetchDataFromSources": "উত্স থেকে ডেটা আনতে ব্যর্থ হয়েছে৷",
+  "failedToGetCloudGistLink": "ক্লাউড সারাংশ লিঙ্ক পেতে ব্যর্থ.",
+  "failedToImportGistJson": "Gist JSON আমদানি করতে ব্যর্থ হয়েছে৷",
+  "failedToLaunchExternalPlayer": "বহিরাগত প্লেয়ার চালু করতে ব্যর্থ হয়েছে",
+  "failedToOpenGistInBrowser": "ব্রাউজারে সারাংশ খুলতে ব্যর্থ হয়েছে৷",
+  "flashDuration": "ফ্ল্যাশ সময়কাল",
+  "flashEveryNPages": "প্রতি এন পেজ ফ্ল্যাশ করুন",
+  "flashFrequency": "ফ্ল্যাশ ফ্রিকোয়েন্সি",
+  "flashScreenOnPageTurnTo": "পৃষ্ঠায় ফ্ল্যাশ স্ক্রীন ভুতুড়ে মুছে ফেলুন",
+  "followHost": "হোস্ট অনুসরণ করুন",
+  "fontSettings": "ফন্ট সেটিংস",
+  "freedomSeek": "স্বাধীনতা অন্বেষণ",
+  "friendsNeedAPasswordToJoin": "যোগদানের জন্য বন্ধুদের একটি পাসওয়ার্ড প্রয়োজন",
+  "githubClientIdNotConfigured": "GitHub ক্লায়েন্ট আইডি কনফিগার করা হয়নি।",
+  "githubLoginFailedMissingAuthorizationCode": "GitHub লগইন ব্যর্থ হয়েছে: অনুমোদন কোড অনুপস্থিত.",
+  "githubLoginWasCancelledOrFailed": "GitHub লগইন বাতিল বা ব্যর্থ হয়েছে।",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • আপনার ভালবাসা দেখান",
+  "goodChemistryAndSharedTaste": "ভাল রসায়ন এবং ভাগ করা স্বাদ.",
+  "grayscale": "গ্রেস্কেল",
+  "green": "সবুজ",
+  "hdrToneMappingTargetPeak": "HDR টোন ম্যাপিং টার্গেট পিক",
+  "higherValueIncreasesDebandingStrength": "উচ্চ মান ডিব্যান্ডিং শক্তি বাড়ায়",
+  "horizontalPadding": "অনুভূমিক প্যাডিং",
+  "hoursWatched": "ঘন্টা প্রেক্ষিত",
+  "howManyFriendsCanJoin": "কতজন বন্ধু যোগ দিতে পারেন",
+  "ifYouHaveAnIssueOr": "আপনার যদি কোনো সমস্যা বা কোনো পরামর্শ থাকে তাহলে অনুগ্রহ করে গিথুবে একটি সমস্যা তৈরি করুন।",
+  "imageWidth": "ছবির প্রস্থ",
+  "importGistJson": "Gist JSON আমদানি করুন",
+  "importLocalSubtitle": "স্থানীয় সাবটাইটেল আমদানি করুন",
+  "improveQualityWhenScalingDownVideo": "ভিডিও স্কেল ডাউন করার সময় গুণমান উন্নত করুন",
+  "increaseAutoScrollSpeed": "স্বয়ংক্রিয়-স্ক্রোল গতি বাড়ান",
+  "increaseFontSize": "হরফের আকার বাড়ান",
+  "invalidCompatibilityLinkMissingUsernames": "অবৈধ সামঞ্জস্য লিঙ্ক: অনুপস্থিত ব্যবহারকারীর নাম.",
+  "invalidGistUrl": "ভুল সারাংশ URL",
+  "invalidRoomCodeInLink": "লিঙ্কে রুম কোড অবৈধ",
+  "invalidWatchTogetherLink": "অবৈধ ওয়াচ টুগেদার লিঙ্ক",
+  "invertAllPageColors": "পৃষ্ঠার সব রং উল্টে দিন",
+  "invertColors": "উল্টানো রং",
+  "inviteLink": "আমন্ত্রণ লিঙ্ক",
+  "inviteLinkCopied": "আমন্ত্রণ লিঙ্ক কপি করা হয়েছে!",
+  "jDramas": "জে-ড্রামাস",
+  "joinNotifications": "বিজ্ঞপ্তি যোগদান",
+  "kDramas": "কে-ড্রামাস",
+  "keepBothUploadedAndCloudEntries": "আপলোড এবং ক্লাউড এন্ট্রি উভয়ই রাখুন। উভয় স্থানে একই এন্ট্রি থাকলে, নতুনটি রাখা হয়। (প্রস্তাবিত)",
+  "keyVolumeScrollingSpeed": "কী এবং ভলিউম স্ক্রোলিং গতি",
+  "koreanMovies": "কোরিয়ান সিনেমা",
+  "leaveNotifications": "বিজ্ঞপ্তি ছেড়ে দিন",
+  "liveComments": "লাইভ মন্তব্য",
+  "lockScreen": "লক স্ক্রীন",
+  "loginToAnilist": "AniList এ লগইন করুন",
+  "loginToMyanimelist": "MyAnimeList এ লগইন করুন",
+  "loginToSimkl": "Simkl এ লগইন করুন",
+  "longPressForPageActions": "পেজ অ্যাকশনের জন্য দীর্ঘক্ষণ প্রেস করুন",
+  "longPressAPageToSave": "একটি পৃষ্ঠা সংরক্ষণ, ভাগ বা অনুলিপি করতে দীর্ঘক্ষণ চাপ দিন",
+  "lumaUpscaler": "লুমা আপস্কেলার",
+  "mangaCompleted": "মাঙ্গা সম্পূর্ণ",
+  "mangaPage": "মাঙ্গা পাতা",
+  "maxMembers": "সর্বোচ্চ সদস্য",
+  "memberLeft": "সদস্য চলে গেছে",
+  "mergeUploadedEntriesOrReplaceCloud": "আপলোড করা এন্ট্রি মার্জ করুন বা ক্লাউড ডেটা প্রতিস্থাপন করুন",
+  "mergeWithCloud": "মেঘের সাথে মার্জ করুন",
+  "milliseconds": "মিলিসেকেন্ড",
+  "missingTypeQueryParameterUseType": "অনুপস্থিত \"টাইপ\" ক্যোয়ারী প্যারামিটার। টাইপ = প্লেয়ার ব্যবহার করুন।",
+  "missingUrlQueryParameterForThe": "JSON থিমের জন্য \"url\" ক্যোয়ারী প্যারামিটার অনুপস্থিত৷",
+  "moreIterationsStrongerDebanding": "আরো পুনরাবৃত্তি = শক্তিশালী debanding",
+  "movies": "সিনেমা",
+  "moviesList": "সিনেমার তালিকা",
+  "navigateByNumber": "সংখ্যা দ্বারা নেভিগেট করুন",
+  "navigation": "নেভিগেশন",
+  "newMember": "নতুন সদস্য",
+  "nextChapter": "পরবর্তী অধ্যায়",
+  "nextParagraph": "পরবর্তী অনুচ্ছেদ",
+  "noAudio": "কোনো অডিও নেই",
+  "noOneCanSendMessagesIn": "চ্যাটে কেউ মেসেজ পাঠাতে পারবে না",
+  "noStreamUrlAvailable": "কোনো স্ট্রিম URL উপলব্ধ নেই৷",
+  "noSubtitle": "কোন সাবটাইটেল নেই",
+  "noVideo": "ভিডিও নেই",
+  "notVeryCompatibleAtAll": "মোটেও খুব সামঞ্জস্যপূর্ণ নয়।",
+  "numberedList": "সংখ্যাযুক্ত তালিকা",
+  "onScreenOverlays": "অন-স্ক্রিন ওভারলে",
+  "onlyHostAndCoHostsCan": "শুধুমাত্র হোস্ট এবং সহ-হোস্ট বার্তা পাঠাতে পারেন",
+  "opacity": "অস্বচ্ছতা",
+  "openInBrowser2": "ব্রাউজারে খুলুন",
+  "openYourAnymexSyncGistOn": "GitHub এ আপনার AnymeX সিঙ্ক সারাংশ খুলুন",
+  "openingInExternalPlayer": "বহিরাগত প্লেয়ারে খোলা হচ্ছে...",
+  "orTypeCustomTag": "অথবা কাস্টম ট্যাগ টাইপ করুন...",
+  "otherUpper": "অন্যান্য",
+  "overlayPosition": "ওভারলে অবস্থান",
+  "overrideSystemScreenBrightness": "সিস্টেমের পর্দার উজ্জ্বলতা ওভাররাইড করুন",
+  "ownerAndCreatorOfTheCommentum": "কমেন্টাম কমিউনিটি প্ল্যাটফর্মের মালিক এবং স্রষ্টা।",
+  "padding": "প্যাডিং",
+  "pagesAheadOfTimeForFaster": "দ্রুত লোড করার জন্য পৃষ্ঠাগুলি সময়ের আগে",
+  "partySettings": "পার্টি সেটিংস",
+  "passwordIfRequired": "পাসওয়ার্ড (যদি প্রয়োজন হয়)",
+  "pasteDirectGifOrImageUrl": "সরাসরি GIF বা ছবির URL পেস্ট করুন...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • কার্ড এবং পেপ্যাল ব্যালেন্স",
+  "permanentlyRemoveAnymexSyncData": "স্থায়ীভাবে AnymeX সিঙ্ক ডেটা সরান",
+  "pictureShaders": "ছবি ও শেডার",
+  "pitch": "পিচ",
+  "playbackIsLockedToTheHost": "প্লেব্যাক হোস্টে লক করা আছে",
+  "playbackSpeed2": "প্লেব্যাক গতি",
+  "playerSettings2": "প্লেয়ার সেটিংস",
+  "pleaseLogInFirstThenTry": "প্রথমে লগ ইন করুন, তারপর আবার লিঙ্ক চেষ্টা করুন.",
+  "pointsBreakdown": "পয়েন্ট ব্রেকডাউন",
+  "practicallyMadeForEachOther": "কার্যত একে অপরের জন্য তৈরি.",
+  "preloadPage": "প্রিলোড পৃষ্ঠা",
+  "preloadPages": "প্রিলোড পেজ",
+  "preloadPagesAheadOfTimeFor": "দ্রুত লোড করার জন্য পৃষ্ঠাগুলি আগে থেকে লোড করুন (আরও নেটওয়ার্ক এবং র‌্যাম ব্যবহার করে)",
+  "preventScreenFromSleepingWhileReading": "পড়ার সময় ঘুম থেকে স্ক্রীন আটকান",
+  "previousChapter": "পূর্ববর্তী অধ্যায়",
+  "previousParagraph": "পূর্ববর্তী অনুচ্ছেদ",
+  "privateRoom": "প্রাইভেট রুম",
+  "profileUpdated": "প্রোফাইল আপডেট করা হয়েছে",
+  "proportionOfTotalTimeWatched": "মোট দেখা সময়ের অনুপাত",
+  "provideAReasonForThisAction": "এই কর্মের জন্য একটি কারণ প্রদান করুন...",
+  "qualitySettings": "গুণমান সেটিংস",
+  "quote": "উদ্ধৃতি",
+  "range75DarkestTo100": "পরিসর: -75 (অন্ধকার) থেকে 100",
+  "rateLimited": "হার সীমিত",
+  "reactionOverlay": "প্রতিক্রিয়া ওভারলে",
+  "readStats": "পরিসংখ্যান পড়ুন",
+  "readTextAloud": "উচ্চস্বরে পাঠ্য পড়ুন",
+  "red": "লাল",
+  "reduceColorBandingInGradients": "গ্রেডিয়েন্টে রঙের ব্যান্ডিং হ্রাস করুন",
+  "reduceHaloingWhileUpscaling": "আপস্কেলিং করার সময় হ্যালোইং হ্রাস করুন",
+  "refresh": "রিফ্রেশ",
+  "removeCurrentCloudEntriesAndReplace": "বর্তমান ক্লাউড এন্ট্রিগুলি সরান এবং আপলোড করা ফাইলের সাথে তাদের প্রতিস্থাপন করুন।",
+  "removeWhiteBlackBordersToMaximize": "বিষয়বস্তু সর্বাধিক করতে সাদা/কালো সীমানা সরান",
+  "removesFinishedMediaFromCloudGist": "ক্লাউড সারাংশ থেকে সমাপ্ত মিডিয়া সরিয়ে দেয়",
+  "replaceCloudGist": "ক্লাউড Gist প্রতিস্থাপন করুন",
+  "report": "রিপোর্ট",
+  "resetReLogin": "রিসেট করুন এবং পুনরায় লগইন করুন",
+  "resetTo1": "1× এ রিসেট করুন",
+  "restore": "পুনরুদ্ধার করুন",
+  "roomAccess": "রুম অ্যাক্সেস",
+  "roomCode": "রুম কোড",
+  "roomCodeCopiedToClipboard": "ক্লিপবোর্ডে রুম কোড কপি করা হয়েছে",
+  "roomDuration": "রুম সময়কাল",
+  "roomNotFoundOrExpired": "রুম পাওয়া যায় নি বা মেয়াদ শেষ",
+  "roomPassword": "রুম পাসওয়ার্ড",
+  "roomPassword2": "রুমের পাসওয়ার্ড",
+  "roomSettings": "রুম সেটিংস",
+  "saveYourCurrentCloudProgressTo": "একটি ফাইলে আপনার বর্তমান ক্লাউড অগ্রগতি সংরক্ষণ করুন",
+  "scrollMultiplier": "স্ক্রোল গুণক",
+  "scrollSpeed": "স্ক্রোল গতি",
+  "searchAnimeEpisode": "অ্যানিমে / পর্ব খুঁজুন...",
+  "searchAnimeGifsReactions": "অ্যানিমে জিআইএফ, প্রতিক্রিয়া অনুসন্ধান করুন...",
+  "searchChapters": "অধ্যায় অনুসন্ধান করুন...",
+  "searchFiles": "ফাইল অনুসন্ধান করুন...",
+  "secondsPerPageScreen": "পৃষ্ঠা/স্ক্রিন প্রতি সেকেন্ড",
+  "seekAndControlPlaybackFreely": "অবাধে প্লেব্যাক সন্ধান করুন এবং নিয়ন্ত্রণ করুন",
+  "selectedFileMustContainAJson": "নির্বাচিত ফাইলে অবশ্যই একটি JSON অবজেক্ট থাকতে হবে।",
+  "selectedJsonHasNoValidSync": "নির্বাচিত JSON এর কোনো বৈধ সিঙ্ক এন্ট্রি নেই।",
+  "seriesList": "সিরিজের তালিকা",
+  "setAPasswordForYourRoom": "আপনার রুমের জন্য একটি পাসওয়ার্ড সেট করুন",
+  "share": "শেয়ার করুন",
+  "showANotificationWhenSomeoneJoins": "কেউ পার্টিতে যোগ দিলে একটি বিজ্ঞপ্তি দেখান",
+  "showANotificationWhenSomeoneLeaves": "কেউ পার্টি ছেড়ে গেলে একটি বিজ্ঞপ্তি দেখান",
+  "showAllStreams": "সমস্ত স্ট্রীম দেখান৷",
+  "showChatMessagesOnThePlayer": "প্লেয়ার আসার সাথে সাথে চ্যাট বার্তাগুলি দেখান৷",
+  "showEmojiReactionsFloatingOnThe": "প্লেয়ারে ভাসমান ইমোজি প্রতিক্রিয়া দেখান",
+  "showSyncResultWhenPlayerOr": "প্লেয়ার বা রিডার বন্ধ হলে সিঙ্ক ফলাফল দেখান",
+  "showTransitionPageEvenWhenChapters": "এমনকি অধ্যায়গুলি সংলগ্ন থাকলেও রূপান্তর পৃষ্ঠা দেখান",
+  "shows": "দেখায়",
+  "sigmoidUpscaling": "সিগময়েড আপস্কেলিং",
+  "smootherGradientsWithSlightTemporalNoise": "সামান্য টেম্পোরাল শব্দ সহ মসৃণ গ্রেডিয়েন্ট",
+  "spacing": "ব্যবধান",
+  "speechSpeed": "কথার গতি",
+  "spoilers": "স্পয়লার",
+  "stretchImagesToFitScreenWidthOn": "প্রশস্ত স্ক্রিনে পর্দার প্রস্থ ফিট করার জন্য চিত্রগুলি প্রসারিত করুন",
+  "subtitleSettings": "সাবটাইটেল সেটিংস",
+  "superAdministratorWithSystemWideManagement": "সিস্টেম-ওয়াইড ব্যবস্থাপনা কর্তৃপক্ষের সাথে সুপার অ্যাডমিনিস্ট্রেটর।",
+  "swapUpDownActions2": "অদলবদল আপ/ডাউন অ্যাকশন",
+  "syncMode": "সিঙ্ক মোড",
+  "syncPreferences": "সিঙ্ক পছন্দসমূহ",
+  "tapScrollAmount": "স্ক্রোল পরিমাণ আলতো চাপুন",
+  "tapToOpen": "খুলতে আলতো চাপুন",
+  "tapToOpenInBrowser": "ব্রাউজারে খুলতে আলতো চাপুন",
+  "tapToOpenInSpotify": "Spotify-এ খুলতে ট্যাপ করুন",
+  "tapToViewInBrowser": "ব্রাউজারে দেখতে ট্যাপ করুন",
+  "tapTopBottomToScroll": "স্ক্রোল করতে উপরে/নীচে আলতো চাপুন",
+  "targetPeak": "টার্গেট পিক",
+  "temporalDither": "টেম্পোরাল ডিথার",
+  "textToSpeech": "টেক্সট-টু-স্পিচ",
+  "theCreatorOfThisCommentDiscussion": "এই মন্তব্য আলোচনা থ্রেড নির্মাতা.",
+  "theresASmallSparkOfAgreement": "চুক্তির একটি ছোট স্ফুলিঙ্গ আছে।",
+  "thisPermanentlyDeletesYourAnymexCloud": "এটি GitHub থেকে আপনার AnymeX ক্লাউড অগ্রগতির সারাংশ স্থায়ীভাবে মুছে দেয় এবং পূর্বাবস্থায় ফেরানো যাবে না।",
+  "toPrevNextChapter": "পূর্ববর্তী/পরবর্তী অধ্যায়ে",
+  "topL": "টপ-এল",
+  "topR": "টপ-আর",
+  "totals": "মোট",
+  "trendingMovies": "ট্রেন্ডিং মুভি",
+  "trendingSeries": "ট্রেন্ডিং সিরিজ",
+  "tts": "TTS",
+  "ukMovies": "ইউকে সিনেমা",
+  "ukShows": "ইউকে শো",
+  "unableToReadSelectedJsonFile": "নির্বাচিত JSON ফাইল পড়তে অক্ষম৷",
+  "unsupportedExtension": "অসমর্থিত এক্সটেনশন",
+  "usMovies": "মার্কিন চলচ্চিত্র",
+  "usShows": "মার্কিন শো",
+  "useVolumeButtonsToScroll": "স্ক্রোল করতে ভলিউম বোতাম ব্যবহার করুন",
+  "userHistory": "ব্যবহারকারীর ইতিহাস",
+  "userInfo": "ব্যবহারকারীর তথ্য",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "যাচাইকৃত মডারেটর মন্তব্যকে সম্মানজনক এবং নিরাপদ রাখছেন।",
+  "verticalPadding": "উল্লম্ব প্যাডিং",
+  "viewCloudGist": "ক্লাউড Gist দেখুন",
+  "viewUserHistory": "ব্যবহারকারীর ইতিহাস দেখুন",
+  "viewUserInfo": "ব্যবহারকারীর তথ্য দেখুন",
+  "voice": "ভয়েস",
+  "watchParty": "ওয়াচ পার্টি",
+  "watchStats": "পরিসংখ্যান দেখুন",
+  "watchingNow": "এখন দেখছি",
+  "webmVideo": "ওয়েবএম ভিডিও",
+  "whereLiveCommentsAppearOnScreen": "যেখানে লাইভ মন্তব্য পর্দায় প্রদর্শিত হবে",
+  "whileWatchingEpisodesOrReadingChapters": "পর্ব দেখার সময় বা অধ্যায় পড়ার সময়",
+  "writeAReply": "একটি উত্তর লিখুন...",
+  "youAreBasicallyTheSamePerson": "আপনি মূলত একই ব্যক্তি.",
+  "youBothHaveVerySimilarTaste": "আপনার উভয়ের স্বাদ খুব একই রকম।",
+  "all2": "← সব",
+  "koFi": "কো-ফাই",
+  "mpvConf": "mpv.conf",
+  "styling": "স্টাইলিং",
+  "upscale": "আপস্কেল",
+  "appearanceStyle": "চেহারা এবং শৈলী",
+  "colorsLightDarkOledLogoAnimations": "রঙ, হালকা/গাঢ়, OLED এবং লোগো অ্যানিমেশন",
+  "fontsTypography": "ফন্ট এবং টাইপোগ্রাফি",
+  "chooseTypographyCustomFontsGlobalText": "টাইপোগ্রাফি, কাস্টম ফন্ট এবং গ্লোবাল টেক্সট স্কেল বেছে নিন",
+  "globalFontScaling": "গ্লোবাল ফন্ট স্কেলিং",
+  "scaling": "স্কেলিং",
+  "typefaces": "টাইপফেস",
+  "interfaceLayout": "ইন্টারফেস এবং লেআউট",
+  "navBarCardStylesDetailsBlur": "নেভি বার, কার্ড শৈলী, বিশদ অস্পষ্টতা এবং লেআউট",
+  "navigationHomeLayout": "নেভিগেশন এবং হোম লেআউট",
+  "playbackEngineSubtitlesGesturesDecoders": "প্লেব্যাক ইঞ্জিন, সাবটাইটেল, অঙ্গভঙ্গি এবং ডিকোডার",
+  "mangaNovelReader": "মাঙ্গা ও উপন্যাস পাঠক",
+  "readingModesDirectionColorsTapZones": "পড়ার মোড, দিকনির্দেশ, রঙ এবং ট্যাপ জোন",
+  "dataNetworkSystem": "ডেটা, নেটওয়ার্ক এবং সিস্টেম",
+  "downloadDirectoryConcurrencyHlsSegments": "ডাইরেক্টরি, কনকারেন্সি এবং এইচএলএস সেগমেন্ট ডাউনলোড করুন",
+  "accountsSocial": "অ্যাকাউন্টস এবং সামাজিক",
+  "trackingAccounts": "ট্র্যাকিং অ্যাকাউন্ট",
+  "manageYourAnilistMyanimelistSimklAccounts": "আপনার AniList, MyAnimeList এবং Simkl অ্যাকাউন্টগুলি পরিচালনা করুন",
+  "trackingBehavior": "ট্র্যাকিং আচরণ",
+  "communityComments": "সম্প্রদায় এবং মন্তব্য",
+  "commentumProfileBadgesMarkdownPrivacy": "মন্তব্য প্রোফাইল, ব্যাজ, মার্কডাউন এবং গোপনীয়তা",
+  "contentPreferences": "বিষয়বস্তু এবং পছন্দসমূহ",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFW ফিল্টার, ইউনিফাইড লাইব্রেরি, সুপারিশ এবং তালিকা",
+  "exportAndRestoreYourLibraryAnd": "আপনার লাইব্রেরি এবং সেটিংস রপ্তানি এবং পুনরুদ্ধার করুন",
+  "manageAnimeMangaNovelSourcesAnd": "অ্যানিমে, মাঙ্গা এবং উপন্যাসের উত্স এবং রেপো পরিচালনা করুন",
+  "installAndUpdateCommunityAddOns": "কমিউনিটি অ্যাড-অন ইনস্টল এবং আপডেট করুন",
+  "storageCache": "স্টোরেজ এবং ক্যাশে",
+  "manageCachedImagesThresholdsResetData": "ক্যাশে করা ছবি, থ্রেশহোল্ড এবং রিসেট ডেটা পরিচালনা করুন",
+  "networkProxy": "নেটওয়ার্ক এবং প্রক্সি",
+  "logsDiagnostics": "লগ এবং ডায়াগনস্টিকস",
+  "inspectExportAndShareApplicationLogs": "অ্যাপ্লিকেশন লগগুলি পরিদর্শন, রপ্তানি এবং ভাগ করুন৷",
+  "aboutSupport": "সম্পর্কে এবং সমর্থন",
+  "supportDevelopmentViaKoFiPaypal": "Ko-fi, PayPal এবং UPI এর মাধ্যমে উন্নয়ন সমর্থন করুন",
+  "versionUpdatesSocialLinksLegalPolicies": "সংস্করণ, আপডেট, সামাজিক লিঙ্ক এবং আইনি নীতি",
+  "cacheAndCookiesClearedFor": "{name} এর জন্য ক্যাশে এবং কুকিজ সাফ করা হয়েছে",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "{name}-এর জন্য কুকিজ সাফ করা হয়েছে",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "{name} এর জন্য ক্যাশে সাফ করা হয়েছে",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "অসমর্থিত প্রকার {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "{name} সেটিংস",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "স্থানীয় ফাইল এখানে পাওয়া যায়নি: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "সিঙ্ক ব্যর্থ হয়েছে: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "স্থানীয় APK পাওয়া যায়নি: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "ত্রুটি: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "প্লাগইন ইনস্টলেশন ব্যর্থ হয়েছে: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "\"{query}\" এর জন্য কোন ফলাফল পাওয়া যায়নি",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "সিজন {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "পর্ব {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title} খবর",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "সম্প্রদায়",
+  "logInWithAnilist": "AniList দিয়ে লগ ইন করুন",
+  "episode2": "পর্ব {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "ডাউনলোড সম্পূর্ণ",
+  "downloadFailedHasNoUrl": "ডাউনলোড ব্যর্থ হয়েছে: {chapterDisplay} এর কোনো URL নেই",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "ডাউনলোড ব্যর্থ হয়েছে: {chapterDisplay}-এর জন্য কোনো পৃষ্ঠা পাওয়া যায়নি",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "ডাউনলোড ব্যর্থ হয়েছে: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "পর্ব {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} eps",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "উৎস \"{extensionName}\" পাওয়া যায়নি।",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "টরেন্ট প্রস্তুত করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "আপনার ডাউনলোডগুলি থেকে {display} স্থায়ীভাবে মুছে ফেলা হবে৷",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "অনুসন্ধান ব্যর্থ হয়েছে: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "\"{title}\" এর জন্য {label} অনুসন্ধান করুন…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} ইতিহাস আইটেম মুছে ফেলা হয়েছে",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "আপনার {_historyLabel} থেকে \"{itemName}\" সরাতে চান?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" সরানো হয়েছে",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "আরোহী",
+  "descending": "অবরোহী",
+  "defaultTabOrder": "ডিফল্ট ট্যাব অর্ডার",
+  "reverseTabs": "বিপরীত ট্যাব",
+  "id": "আইডি: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "প্রকার: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "আইটেম: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "প্রথমে {sourceName} ইনস্টল করুন, তারপরে ক্লিক করুন",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "পৃষ্ঠা {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "{value} অনুসন্ধান করুন...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "হয়ে গেছে ({length} নির্বাচিত)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "পঠনযোগ্য চালু",
+  "streamingOn": "স্ট্রিমিং চালু",
+  "freedom": "স্বাধীনতা",
+  "shaderAdded": "Shader যোগ করেছেন: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "শেডার আমদানিতে ত্রুটি: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "স্ক্যানলেটর",
+  "chapterRange": "অধ্যায় পরিসীমা",
+  "downloadFailed2": "ডাউনলোড ব্যর্থ হয়েছে: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "অধ্যায় {formattedNumber} ডাউনলোড করা হয়",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "ডাউনলোড হচ্ছে ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} অধ্যায়",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "{pageNumber}{progressText} পৃষ্ঠা লোড হচ্ছে...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "পৃষ্ঠা ছবি/AnymeX এ সংরক্ষিত",
+  "pageSavedToAnymex": "পৃষ্ঠা {path}/AnymeX এ সংরক্ষণ করা হয়েছে",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "পৃষ্ঠা সংরক্ষণ করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "পৃষ্ঠা ভাগ করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "পৃষ্ঠার URL ক্লিপবোর্ডে অনুলিপি করা হয়েছে৷",
+  "failedToCopy": "অনুলিপি করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "পৃষ্ঠাগুলি লোড হচ্ছে...",
+  "goBack": "ফিরে যান",
+  "loadingPage2": "{value}{progressText} পৃষ্ঠা লোড হচ্ছে...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "ফ্ল্যাশ রঙ",
+  "black": "কালো",
+  "white": "সাদা",
+  "readerBackground": "পাঠক পটভূমি",
+  "gray": "ধূসর",
+  "automatic": "স্বয়ংক্রিয়",
+  "noneNearestNeighbor": "কোনটিই নয় (নিকটতম-প্রতিবেশী)",
+  "lowBilinear": "নিম্ন (দ্বৈরৈখিক)",
+  "mediumDefault": "মাঝারি (ডিফল্ট)",
+  "highBicubic": "উচ্চ (বাইকিউবিক)",
+  "lanczosPreScaleBestQualitySlower": "ল্যাঙ্কজোস প্রাক-স্কেল (সেরা মানের, ধীর)",
+  "fullscreenPreview": "ফুলস্ক্রিন প্রিভিউ",
+  "enhancementPreset": "এনহান্সমেন্ট প্রিসেট",
+  "fineTuning": "ফাইন টিউনিং",
+  "enhancementStrength": "এনহান্সমেন্ট স্ট্রেন্থ",
+  "strength": "{value}% শক্তি",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "আর্টিফ্যাক্ট দমন",
+  "cleanJpegCompressionRingingAroundLinework": "লাইনওয়ার্কের চারপাশে বাজানো JPEG কম্প্রেশন পরিষ্কার করুন",
+  "cache": "ক্যাশে",
+  "cacheSize": "ক্যাশ সাইজ",
+  "mbStoredOnDisk": "{mb} MB ডিস্কে সংরক্ষিত",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "সুপার রেজোলিউশন",
+  "loadingChapter": "অধ্যায় লোড হচ্ছে...",
+  "noContentAvailable": "কোন বিষয়বস্তু উপলব্ধ",
+  "recommendations": "{reasonCount} সুপারিশ",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "এর Recs",
+  "all3": "সব ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "বার্তা পোস্ট করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "মোট এন্ট্রি: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "রুম {code} যোগদান!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "সক্রিয় রুম",
+  "joinWithCode": "কোড দিয়ে যোগ দিন",
+  "leftRoom": "বাম ঘর",
+  "leaveReset": "ছেড়ে দিন / রিসেট করুন",
+  "inRoom": "রুমে: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - পর্ব {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} লাথি মেরেছে",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} সদস্য",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "রুম থেকে বেরিয়ে গেল",
+  "leave": "ছেড়ে দিন",
+  "noActiveRooms": "কোনো সক্রিয় কক্ষ নেই",
+  "roomsWillAppearHereWhenSomeone": "কেউ একটি তৈরি করলে রুমগুলি এখানে উপস্থিত হবে৷",
+  "created2": "তৈরি করা হয়েছে · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "যোগ দিন →",
+  "full": "পূর্ণ",
+  "savedToPicturesAnymex": "Pictures/AnymeX/{fileName} এ সংরক্ষিত",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "ডাউনলোড/AnymeX/{fileName} এ সংরক্ষিত",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "{path}/AnymeX এ সংরক্ষিত",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (প্রোফাইল খুলতে আলতো চাপুন)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "অধ্যায়",
+  "episode5": "পর্ব",
+  "noData": "{title} (কোন ডেটা নেই)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "{title} এক্সটেনশন অনুসন্ধান করুন...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "এক্সটেনশন ব্রাউজ করুন",
+  "goToHome": "হোম এ যান",
+  "fetching": "{title} আনা হচ্ছে...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "নীতি আনয়নে ত্রুটি: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" সফলভাবে যোগ করা হয়েছে!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" সফলভাবে আপডেট হয়েছে!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "আপনি কি \"{name}\" মুছতে চান?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" মুছে ফেলা হয়েছে",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "আপনার ইতিহাস খালি",
+  "episode6": "পর্ব {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "কম দেখান",
+  "readMore": "আরও পড়ুন",
+  "unpin": "আনপিন করুন",
+  "pinActivity": "পিন কার্যকলাপ",
+  "n1Recommendation": "1 সুপারিশ",
+  "recommendations2": "{count} সুপারিশ",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "জমা দেওয়া হচ্ছে...",
+  "addRecommendation": "সুপারিশ যোগ করুন",
+  "submitRecommendation": "সুপারিশ জমা দিন",
+  "currentProvider": "বর্তমান প্রদানকারী",
+  "profileStatsUserActivities": "প্রোফাইল পরিসংখ্যান এবং ব্যবহারকারী কার্যকলাপ",
+  "manageSourcesPlugins": "উত্স এবং প্লাগইনগুলি পরিচালনা করুন৷",
+  "savedOfflineEpisodesChapters": "অফলাইন পর্ব এবং অধ্যায় সংরক্ষিত",
+  "watchVideoFilesFromDeviceStorage": "ডিভাইস স্টোরেজ থেকে ভিডিও ফাইল দেখুন",
+  "syncWatchPartyWithFriends": "বন্ধুদের সাথে ওয়াচ পার্টি সিঙ্ক করুন",
+  "pauseWatchHistoryAndSync": "দেখার ইতিহাস এবং সিঙ্ক বিরাম দিন",
+  "appearancePlayerNetwork": "চেহারা, প্লেয়ার এবং নেটওয়ার্ক",
+  "joining": "যোগদান করা হচ্ছে...",
+  "joinRoom": "রুমে যোগ দিন",
+  "shareTheCodeOrInviteLink": "কোড শেয়ার করুন বা বন্ধুদের সাথে লিঙ্ক আমন্ত্রণ করুন.",
+  "roomCreated": "রুম তৈরি!",
+  "shareThisCodeWithFriends": "বন্ধুদের সাথে এই কোড শেয়ার করুন:",
+  "copyCode": "কোড কপি করুন",
+  "copyLink": "লিংক কপি করুন",
+  "leaveWatchTogether": "ওয়াচ টুগেদার ছেড়ে দিন?",
+  "removeMember": "সদস্য সরান",
+  "transferHost": "ট্রান্সফার হোস্ট",
+  "transferHost2": "ট্রান্সফার হোস্ট",
+  "transfer": "স্থানান্তর",
+  "removeMember2": "সদস্য সরান",
+  "removeFromThisWatchParty": "এই ওয়াচ পার্টি থেকে {username} সরাবেন?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} সদস্য",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} কপি করা হয়েছে",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "এই রুমের জন্য কোনো সার্ভার উপলব্ধ নেই",
+  "selectStreamingServerQualityToWatch": "দেখার জন্য স্ট্রিমিং সার্ভারের গুণমান নির্বাচন করুন",
+  "thisServerHasNoPlayableUrl": "এই সার্ভারে কোনো খেলার যোগ্য URL নেই৷",
+  "episode7": "পর্ব {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "{start} অধ্যায় থেকে {end} এ অভিযোজিত",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} {releaseDate}-এ ভবিষ্যদ্বাণী করা হয়েছে",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "পর্ব {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MAL তালিকা এতে রপ্তানি করা হয়েছে:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML এতে রপ্তানি করা হয়েছে:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "রপ্তানি ব্যর্থ হয়েছে: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "আপনার {value} তালিকা রপ্তানি করা হচ্ছে...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "{value} XML রপ্তানি করুন",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "কোনো খেলার যোগ্য মিডিয়া উপলব্ধ নেই৷",
+  "noThemesFound": "কোনো থিম পাওয়া যায়নি",
+  "playAll": "সব খেলা",
+  "theDawnOfHumanity": "মানবতার ভোর",
+  "orientationUnlocked": "ওরিয়েন্টেশন আনলক করা হয়েছে",
+  "orientationLocked": "ওরিয়েন্টেশন লক করা হয়েছে",
+  "skippedOpening": "এড়িয়ে যাওয়া খোলা",
+  "skippedEnding": "এড়িয়ে যাওয়া শেষ",
+  "skippedRecap": "এড়িয়ে যাওয়া রিক্যাপ",
+  "ifYouSeeBlackScreenUse": "আপনি যদি কালো পর্দা দেখতে পান, দেখার জন্য বহিরাগত প্লেয়ার ব্যবহার করুন",
+  "failedToStartTorrentStream": "টরেন্ট স্ট্রিম শুরু করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "স্ট্রীম খুলতে ব্যর্থ হয়েছে৷ অন্য সার্ভার চেষ্টা করুন",
+  "noServersFoundForThisEpisode": "এই পর্বের জন্য কোন সার্ভার পাওয়া যায়নি.",
+  "failedToLoadEpisodeCheckYour": "পর্ব লোড করতে ব্যর্থ হয়েছে. আপনার সংযোগ পরীক্ষা করুন.",
+  "playing": "{value} বাজানো হচ্ছে",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "টরেন্ট ফাইল স্যুইচ করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "সাবটাইটেল লোড হয়েছে: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "সাবটাইটেল লোড করার সময় ত্রুটি: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "দূষিত সাবটাইটেল!",
+  "preTranslatingSubtitles": "প্রি-অনুবাদ করা হচ্ছে সাবটাইটেল...",
+  "preTranslationFailedUsingRealTime": "রিয়েল-টাইম ফলব্যাক ব্যবহার করে প্রাক-অনুবাদ ব্যর্থ হয়েছে",
+  "preTranslationErrorUsingRealTime": "প্রাক-অনুবাদ ত্রুটি, রিয়েল-টাইম ফলব্যাক ব্যবহার করে",
+  "corruptedQuality": "নষ্ট গুণমান!",
+  "colorProfilesOnlyAvailableWithMediakit": "রঙ প্রোফাইল শুধুমাত্র MediaKit প্লেয়ারের সাথে উপলব্ধ",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "ডিফল্টরূপে একটি বহিরাগত প্লেয়ারে ভিডিও স্ট্রীম খুলুন",
+  "quickDefaults": "দ্রুত ডিফল্ট",
+  "orientationSpeedResizeModeExternalPlayer": "ওরিয়েন্টেশন, গতি, রিসাইজ মোড এবং এক্সটার্নাল প্লেয়ার",
+  "controlsGestures": "নিয়ন্ত্রণ এবং অঙ্গভঙ্গি",
+  "subtitlesTranslation": "সাবটাইটেল ও অনুবাদ",
+  "languagesFontsStylingLibassTranslation": "ভাষা, ফন্ট, স্টাইলিং, লিবাস এবং অনুবাদ",
+  "anime4kShaders": "Anime4K এবং Shaders",
+  "upscalingShadersPresetsProfiles": "আপস্কেলিং শেডার, প্রিসেট এবং প্রোফাইল",
+  "engineAdvanced": "ইঞ্জিন এবং উন্নত",
+  "addSpeed": "গতি যোগ করুন",
+  "speedPresets": "গতি প্রিসেট",
+  "rememberAsDefaultSpeed": "ডিফল্ট গতি হিসাবে মনে রাখবেন",
+  "loadedSubtitle": "লোড করা সাবটাইটেল: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "সাবটাইটেল ডাউনলোড করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "রুম কোড",
+  "episodeReleasesIn": "এপিসোড {value} রিলিজ",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "মন্তব্য করার জন্য আপনাকে লগ ইন করতে হবে",
+  "readFullRules": "সম্পূর্ণ নিয়মাবলী পড়ুন",
+  "acceptPost": "গ্রহণ করুন এবং পোস্ট করুন",
+  "youNeedToBeLoggedIn2": "উত্তর দিতে আপনাকে লগ ইন করতে হবে",
+  "commentCopiedToClipboard": "মন্তব্য ক্লিপবোর্ডে অনুলিপি করা হয়েছে৷",
+  "spam": "স্প্যাম",
+  "offensive": "আক্রমণাত্মক",
+  "harassment": "হয়রানি",
+  "offTopic": "অফ-টপিক",
+  "failedToLoadUserInfo": "ব্যবহারকারীর তথ্য লোড করতে ব্যর্থ হয়েছে৷",
+  "noUserDataFound": "কোনো ব্যবহারকারীর তথ্য পাওয়া যায়নি।",
+  "viewHistory": "ইতিহাস দেখুন",
+  "failedToLoadComments": "মন্তব্য লোড করতে ব্যর্থ.",
+  "noCommentsFound": "কোন মন্তব্য পাওয়া যায়নি.",
+  "deleted2": "মুছে ফেলা হয়েছে",
+  "comment": "মন্তব্য করুন",
+  "failedToLoadUserHistory": "ব্যবহারকারীর ইতিহাস লোড করতে ব্যর্থ হয়েছে৷",
+  "noHistoryFound": "কোনো ইতিহাস পাওয়া যায়নি।",
+  "youNeedToBeLoggedIn3": "মন্তব্য সম্পাদনা করতে আপনাকে লগ ইন করতে হবে",
+  "commentCannotBeEmpty": "মন্তব্য খালি হতে পারে না",
+  "failedToLoadCommentsPleaseTry": "মন্তব্য লোড করতে ব্যর্থ. আবার চেষ্টা করুন.",
+  "commentsLoaded": "{value} মন্তব্য লোড হয়েছে",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "মন্তব্য রিফ্রেশ করতে ব্যর্থ. আবার চেষ্টা করুন.",
+  "invalidParentCommentId": "অবৈধ অভিভাবক মন্তব্য আইডি",
+  "replyPostedSuccessfully": "উত্তর সফলভাবে পোস্ট করা হয়েছে",
+  "failedToPostReply": "উত্তর পোস্ট করতে ব্যর্থ",
+  "failedToPostReplyPleaseTry": "উত্তর পোস্ট করতে ব্যর্থ. আবার চেষ্টা করুন.",
+  "commentPostedSuccessfully": "মন্তব্য সফলভাবে পোস্ট করা হয়েছে",
+  "failedToAddCommentPleaseTry": "মন্তব্য যোগ করতে ব্যর্থ. আবার চেষ্টা করুন.",
+  "failedToUpdateVotePleaseTry": "ভোট আপডেট করতে ব্যর্থ হয়েছে৷ আবার চেষ্টা করুন.",
+  "invalidCommentId": "অবৈধ মন্তব্য আইডি",
+  "commentEditedSuccessfully": "মন্তব্য সফলভাবে সম্পাদনা করা হয়েছে",
+  "failedToEditComment": "মন্তব্য সম্পাদনা করতে ব্যর্থ",
+  "commentDeletedSuccessfully": "মন্তব্য সফলভাবে মুছে ফেলা হয়েছে",
+  "failedToDeleteComment": "মন্তব্য মুছে ফেলতে ব্যর্থ",
+  "failedToReportComment": "মন্তব্য রিপোর্ট করতে ব্যর্থ",
+  "failedToModerateComment": "মন্তব্য সংযত করতে ব্যর্থ",
+  "failedToManageUser": "ব্যবহারকারী পরিচালনা করতে ব্যর্থ হয়েছে",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ পয়েন্ট)। র‍্যাঙ্কিং প্রকৃত কার্যকলাপের উপর ভিত্তি করে ({realPoints} pts)।",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} অর্জিত pts + {text} ভূমিকা বোনাস ({label})। র্যাঙ্কিং বাস্তব কার্যকলাপের উপর ভিত্তি করে।",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "পর্বের পরিসর",
+  "episodeIsDownloaded": "পর্ব {number} ডাউনলোড করা হয়েছে",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} পর্ব",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "সোলো লেভেলিং সিজন 2 - ছায়া থেকে উঠুন",
+  "frierenBeyondJourneySEnd": "ফ্রিরেন: বিয়ন্ড জার্নি'স এন্ড",
+  "bleachThousandYearBloodWar": "ব্লিচ: হাজার বছরের রক্ত যুদ্ধ",
+  "cardCustomizer": "কার্ড কাস্টমাইজার",
+  "presetStyle": "প্রিসেট স্টাইল",
+  "chooseFrom5AuthenticBuiltIn": "5টি খাঁটি বিল্ট-ইন ডিজাইন থেকে বেছে নিন",
+  "sizingGeometry": "সাইজিং এবং জ্যামিতি",
+  "cardSize": "কার্ড সাইজ",
+  "scaleCardsProportionallyWithoutDistortion": "বিকৃতি ছাড়াই আনুপাতিকভাবে কার্ড স্কেল করুন",
+  "landscapeCards": "ল্যান্ডস্কেপ কার্ড",
+  "formatCardsIn169Widescreen": "16:9 ওয়াইডস্ক্রিন ওরিয়েন্টেশনে কার্ড ফরম্যাট করুন",
+  "selectPosterImageAspectRatio": "পোস্টার ইমেজ আকৃতির অনুপাত নির্বাচন করুন",
+  "titleLines": "শিরোনাম লাইন",
+  "maximumNumberOfTitleLinesDisplayed": "সর্বাধিক সংখ্যক শিরোনাম লাইন প্রদর্শিত হয়৷",
+  "gestureAreas": "অঙ্গভঙ্গি এলাকা",
+  "resetDefault": "ডিফল্ট রিসেট করুন",
+  "overlay": "ওভারলে",
+  "volume": "আয়তন",
+  "brightnessArea": "উজ্জ্বলতা এলাকা",
+  "overlayAreaTap": "ওভারলে এলাকা (ট্যাপ)",
+  "volumeArea": "আয়তনের এলাকা",
+  "resetToDefaultLayout": "ডিফল্ট লেআউটে রিসেট করুন",
+  "moveToSlot": "স্লটে সরান",
+  "topBar": "শীর্ষ বার",
+  "bottomLeft": "নীচে বাম",
+  "bottomRight": "নীচে ডান",
+  "themesOverlay": "থিম এবং ওভারলে",
+  "gesturesSeeking": "অঙ্গভঙ্গি এবং চাওয়া",
+  "horizontalSwipeAcrossTheScreenTo": "খুঁজতে স্ক্রীন জুড়ে অনুভূমিক সোয়াইপ করুন",
+  "autoSkipCompletion": "স্বয়ংক্রিয় এড়িয়ে যাওয়া এবং সমাপ্তি",
+  "percentageWatchedBeforeMarkingCompleted": "মার্কিং সম্পূর্ণ হওয়ার আগে দেখা শতাংশ",
+  "playerControls": "প্লেয়ার কন্ট্রোল",
+  "mpvConfSavedSuccessfully": "mpv.conf সফলভাবে সংরক্ষণ করা হয়েছে",
+  "hardwareDrivers": "হার্ডওয়্যার এবং ড্রাইভার",
+  "systemIntegrations": "সিস্টেম এবং ইন্টিগ্রেশন",
+  "experimentalMpvTuning": "পরীক্ষামূলক MPV টিউনিং",
+  "editMpvConf": "mpv.conf সম্পাদনা করুন",
+  "modeA": "মোড এ",
+  "modeB": "মোড বি",
+  "modeC": "মোড সি",
+  "modeAA": "মোড A+A",
+  "modeBB": "মোড B+B",
+  "modeCA": "মোড C+A",
+  "natural": "প্রাকৃতিক",
+  "vivid": "প্রাণবন্ত",
+  "cinema": "সিনেমা",
+  "soft": "নরম",
+  "warm": "উষ্ণ",
+  "cool": "কুল",
+  "anime4k": "অ্যানিমে 4K",
+  "cinemaHdr": "সিনেমা এইচডিআর",
+  "vividPop": "প্রাণবন্ত পপ",
+  "dark": "অন্ধকার",
+  "anime4kEngine": "Anime4K ইঞ্জিন",
+  "anime4kShaders2": "Anime4K শেডার্স",
+  "devicePerformanceTier": "ডিভাইস কর্মক্ষমতা স্তর",
+  "midRange": "মিড-রেঞ্জ",
+  "highEnd": "হাই-এন্ড",
+  "shaderMode": "শেডার মোড",
+  "colorPreset": "কালার প্রিসেট",
+  "desktopPlaybackKeybindings": "ডেস্কটপ প্লেব্যাক কীবাইন্ডিং",
+  "customSubtitleFonts": "কাস্টম সাবটাইটেল ফন্ট",
+  "importedFont": "আমদানিকৃত ফন্ট \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "আপনি কি \"{font}\" মুছতে চান?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "ভাষা ও অনুবাদ",
+  "renderingBehavior": "রেন্ডারিং এবং আচরণ",
+  "disableToAvoidFadeTransitionsBetween": "সাবটাইটেলগুলির মধ্যে বিবর্ণ রূপান্তর এড়াতে অক্ষম করুন৷",
+  "typographyOutline": "টাইপোগ্রাফি এবং রূপরেখা",
+  "adjustSubtitleFontSize": "সাবটাইটেল ফন্টের আকার সামঞ্জস্য করুন",
+  "adjustSubtitleOutlineThickness": "সাবটাইটেল আউটলাইন বেধ সামঞ্জস্য করুন",
+  "colorsPosition": "রং এবং অবস্থান",
+  "changeSubtitleTextColor": "সাবটাইটেল টেক্সট রঙ পরিবর্তন করুন",
+  "mangaReader": "মাঙ্গা পাঠক",
+  "layoutDirection": "বিন্যাস এবং দিকনির্দেশ",
+  "autoSwitchToVerticalModeFor": "ওয়েবটুনের জন্য উল্লম্ব মোডে স্বয়ংক্রিয়ভাবে স্যুইচ করুন",
+  "imageDisplay": "ছবি ও প্রদর্শন",
+  "interfaceSession": "ইন্টারফেস এবং সেশন",
+  "mangaControlsGestures": "মাঙ্গা নিয়ন্ত্রণ এবং অঙ্গভঙ্গি",
+  "overscrollToPreviousNextChapter": "পূর্ববর্তী/পরবর্তী অধ্যায়ে ওভারস্ক্রোল করুন",
+  "automaticallyScrollMangaPages": "স্বয়ংক্রিয়ভাবে মাঙ্গা পৃষ্ঠাগুলি স্ক্রোল করুন",
+  "swapVolumeUpDownActions": "ভলিউম আপ/ডাউন অ্যাকশন অদলবদল করুন",
+  "novelReader": "উপন্যাস পাঠক",
+  "themeDisplay": "থিম এবং প্রদর্শন",
+  "displayChapterPercentageWhileReading": "পড়ার সময় অধ্যায় শতাংশ প্রদর্শন করুন",
+  "displayStatusInfoInTheNovel": "নভেল রিডারে স্থিতির তথ্য প্রদর্শন করুন",
+  "typographySpacing": "টাইপোগ্রাফি এবং ব্যবধান",
+  "novelControlsGestures": "অভিনব নিয়ন্ত্রণ এবং অঙ্গভঙ্গি",
+  "tapScreenEdgesToScrollNovel": "উপন্যাসের পৃষ্ঠাগুলি স্ক্রোল করতে পর্দার প্রান্তগুলিতে আলতো চাপুন৷",
+  "swipeGestures": "সোয়াইপ অঙ্গভঙ্গি",
+  "volumeKeyScrolling": "ভলিউম কী স্ক্রোলিং",
+  "useHardwareVolumeButtonsToScroll": "উপন্যাস স্ক্রোল করতে হার্ডওয়্যার ভলিউম বোতাম ব্যবহার করুন",
+  "automaticallyScrollNovelContent": "স্বয়ংক্রিয়ভাবে উপন্যাস বিষয়বস্তু স্ক্রোল",
+  "textToSpeechTts": "টেক্সট-টু-স্পিচ (TTS)",
+  "readNovelChaptersAloud": "উপন্যাসের অধ্যায়গুলো জোরে জোরে পড়ুন",
+  "speechRate": "বক্তৃতা হার",
+  "voicePitch": "ভয়েস পিচ",
+  "areYouSureYouWantTo4": "আপনি কি {title} থেকে লগ আউট করার বিষয়ে নিশ্চিত?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "আপডেটের জন্য চেক করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} সফলভাবে ইনস্টল করা হয়েছে",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} ইনস্টল করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} সফলভাবে আপডেট হয়েছে",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} আপডেট করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "{name} আনইনস্টল করুন",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} আনইনস্টল করা হয়েছে",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} আনইনস্টল করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} সেকশন অর্ডার",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "বিজ্ঞপ্তি এবং সিঙ্ক",
+  "enableNotifications": "বিজ্ঞপ্তি সক্রিয় করুন",
+  "syncAnilistNotificationsWithDeviceNotifications": "ডিভাইস বিজ্ঞপ্তিগুলির সাথে AniList বিজ্ঞপ্তিগুলি সিঙ্ক করুন৷",
+  "airingAlerts": "সম্প্রচার সতর্কতা",
+  "socialAlerts": "সামাজিক সতর্কতা",
+  "notifyOnNewFollowers": "নতুন অনুগামীদের অবহিত করুন",
+  "activityAlerts": "কার্যকলাপ সতর্কতা",
+  "syncInterval": "সিঙ্ক ইন্টারভাল",
+  "regionTimezone": "অঞ্চল এবং সময় অঞ্চল",
+  "profileBio": "প্রোফাইল বায়ো",
+  "backupFailed": "ব্যাকআপ ব্যর্থ হয়েছে: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "ফাইল নির্বাচন করতে ত্রুটি: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "ব্যাকআপ লোড করতে ব্যর্থ হয়েছে: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "পুনরুদ্ধার ব্যর্থ হয়েছে: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} শিরোনাম এবং ইতিহাস",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} শিরোনাম এবং অধ্যায়",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} শিরোনাম এবং পড়ার অবস্থা",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "মিডিয়া জুড়ে {totalLists} কাস্টম তালিকা",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} নিবন্ধিত এক্সটেনশন এন্ট্রি",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} এক্সটেনশন জিপ বান্ডেল",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "সাহায্য এবং তথ্য",
+  "libraryContentSafety": "লাইব্রেরি এবং বিষয়বস্তু নিরাপত্তা",
+  "homePageLists": "হোম পেজ তালিকা",
+  "chooseWhichListsToShowOn": "হোম পেজে কোন তালিকা দেখাতে হবে তা বেছে নিন",
+  "homePageCards": "হোম পেজ কার্ড ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "$anime দেখছি",
+  "viewingAnime": "$anime দেখা হচ্ছে",
+  "readingManga2": "$manga পড়া",
+  "viewingManga": "$manga দেখা হচ্ছে",
+  "readingNovel2": "$novel পড়া",
+  "viewingNovel": "$novel দেখা হচ্ছে",
+  "browsingStatus": "$status ব্রাউজিং",
+  "upiIdCopied": "UPI আইডি কপি করা হয়েছে: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "UPI ID ({_upiId}) কপি করুন",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • GPay, PhonePe, Paytm, ইত্যাদি চালু করতে আলতো চাপুন।",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "বিজ্ঞপ্তি ডাউনলোড করুন",
+  "reDownloadFailed": "পুনরায় ডাউনলোড ব্যর্থ হয়েছে: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "রোলব্যাক ব্যর্থ হয়েছে: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "রেপো যোগ করতে ব্যর্থ হয়েছে: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "ফলিত ফন্ট \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "\"{fontName}\" ডাউনলোড করতে ব্যর্থ হয়েছে",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "আমদানি ও প্রয়োগ করা \"{fontName}\"",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "ফন্ট ফাইল আমদানি করতে ব্যর্থ হয়েছে",
+  "deleted3": "\"{fontName}\" মুছে ফেলা হয়েছে",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "ফন্ট লাইব্রেরি",
+  "linotte": "লিনোট",
+  "defaultGeometricRoundedFontDesignedFor": "AnymeX-এর জন্য ডিজাইন করা ডিফল্ট জ্যামিতিক বৃত্তাকার ফন্ট",
+  "systemFont": "সিস্টেম ফন্ট",
+  "useYourDeviceOsDefaultSystem": "আপনার ডিভাইস OS ডিফল্ট সিস্টেম টাইপফেস ব্যবহার করুন",
+  "loadYourOwnTtfOrOtf": "আপনার নিজস্ব .ttf বা .otf টাইপোগ্রাফি ফাইল লোড করুন৷",
+  "pendingReports": "{length} মুলতুবি প্রতিবেদন",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "কুকিজ এবং স্টোরেজ",
+  "monitoring": "মনিটরিং",
+  "fpsMeter": "FPS মিটার",
+  "showDraggableRealTimeFpsOverlay": "ড্র্যাগেবল রিয়েল-টাইম FPS ওভারলে দেখান",
+  "detectedModesDisplay": "সনাক্ত করা মোড এবং প্রদর্শন",
+  "currentDisplayMode": "বর্তমান ডিসপ্লে মোড",
+  "modes": "{length} মোড",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "কাস্টমাইজ করুন",
+  "stylingLibass": "{subLang} • {subFont} • স্টাইলিং এবং libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "হরিজ",
+  "vert": "ভার্ট",
+  "controlsTapZones": "কন্ট্রোল এবং ট্যাপ জোন",
+  "customizeTapZones": "ট্যাপ জোন কাস্টমাইজ করুন",
+  "configurePagedAndWebtoonTapRegions": "পৃষ্ঠাযুক্ত এবং ওয়েবটুন ট্যাপ অঞ্চলগুলি কনফিগার করুন",
+  "fitBordersSpacing": "{value} • ফিট, সীমানা এবং ব্যবধান",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "অধ্যায় শৈলী, পৃষ্ঠা নির্দেশক এবং স্ক্রিন লক",
+  "overscrollActionsAutoScrollVolume": "ওভারস্ক্রোল, অ্যাকশন, অটো স্ক্রোল এবং ভলিউম",
+  "themeTypography": "থিম এবং টাইপোগ্রাফি",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "রিডিং মোড এবং ডিসপ্লে",
+  "pageModeProgressBatteryIndicator": "পৃষ্ঠা মোড, অগ্রগতি এবং ব্যাটারি সূচক",
+  "readPageByPageInsteadOf": "স্ক্রল করার পরিবর্তে পৃষ্ঠায় পৃষ্ঠা পড়ুন",
+  "displayPercentageInReadingBar": "রিডিং বারে শতাংশ প্রদর্শন করুন",
+  "displayBatteryAndTimeInReader": "রিডার বারে ব্যাটারি এবং সময় প্রদর্শন করুন",
+  "gesturesNavigation": "অঙ্গভঙ্গি এবং নেভিগেশন",
+  "tapToScrollSwipeAutoScroll": "স্ক্রোল, সোয়াইপ, স্বয়ংক্রিয় স্ক্রোল এবং ভলিউম করতে আলতো চাপুন",
+  "tapEdgesOfScreenToScroll": "উপরে/নীচে স্ক্রোল করতে স্ক্রিনের প্রান্তে ট্যাপ করুন",
+  "swipeHorizontallyToChangeChapters": "অধ্যায় পরিবর্তন করতে অনুভূমিকভাবে সোয়াইপ করুন",
+  "useVolumeKeysToScroll": "স্ক্রোল করতে ভলিউম কী ব্যবহার করুন",
+  "textToSpeechTts2": "টেক্সট টু স্পিচ (TTS)",
+  "textToSpeechReadingSupport": "টেক্সট-টু-স্পিচ রিডিং সাপোর্ট",
+  "speechRate2": "বক্তৃতা হার",
+  "voicePitch2": "ভয়েস পিচ",
+  "appPostersIconsAvatarsSize": "অ্যাপ পোস্টার, আইকন, অবতার। আকার: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "অস্থায়ী ভিডিও খণ্ড. আকার: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "ডাউনলোড করা ওয়েব উপন্যাস পাতা. আকার: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "লগ, অস্থায়ী ডাউনলোড। আকার: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "ক্যাশে সাফ করতে ব্যর্থ হয়েছে: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "ফ্যাক্টরি রিসেট ব্যর্থ হয়েছে: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 বা 3F51B5",
+  "motionDisplay": "মোশন ও ডিসপ্লে",
+  "visualEffectsTuning": "ভিজ্যুয়াল ইফেক্ট এবং টিউনিং",
+  "historyCard": "ইতিহাস কার্ড",
+  "carousel": "ক্যারোসেল",
+  "navBar": "নেভি বার",
+  "themeDarkModeLayoutStyling": "থিম, ডার্ক মোড এবং লেআউট স্টাইলিং",
+  "gesturesSubtitlesVideoSettings": "অঙ্গভঙ্গি, সাবটাইটেল এবং ভিডিও সেটিংস",
+  "settingsTiles": "সেটিংস টাইলস",
+  "oledMode2": "OLED মোড",
+  "primaryAccount": "প্রাথমিক অ্যাকাউন্ট ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "{title} এর সাথে সংযুক্ত",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "{title} এর সাথে সংযোগ করুন",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} শিরোনাম",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "\"{id}\" সরান? এটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "আমদানি করা হচ্ছে...",
+  "addJsonFiles": "JSON ফাইল যোগ করুন",
+  "previousStyle": "আগের স্টাইল",
+  "nextStyle": "পরবর্তী শৈলী",
+  "currentStyle": "বর্তমান শৈলী",
+  "useThisStyle": "এই শৈলী ব্যবহার করুন",
+  "pleaseLogInToGetRecommendations": "সুপারিশ পেতে লগ ইন করুন",
+  "chapter1": "অধ্যায় 1",
+  "deletedSuccessfully": "{value} সফলভাবে মুছে ফেলা হয়েছে৷",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl সফলভাবে লগইন হয়েছে!",
+  "yepFailed": "হ্যাঁ, ব্যর্থ",
+  "userInfoFetchingFailed": "ব্যবহারকারীর তথ্য আনা ব্যর্থ হয়েছে!",
+  "githubLoginFailed": "GitHub লগইন ব্যর্থ হয়েছে: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "সিঙ্ক ইতিমধ্যেই চলছে৷",
+  "anotherSyncActionIsAlreadyIn": "আরেকটি সিঙ্ক অ্যাকশন ইতিমধ্যেই চলছে৷",
+  "noAnymexSyncGistFoundTo": "মুছে ফেলার জন্য কোন AnymeX সিঙ্ক সারাংশ পাওয়া যায়নি।",
+  "noAnymexSyncGistFoundInitialize": "কোন AnymeX সিঙ্ক সারাংশ পাওয়া যায়নি। প্রথমে শুরু করুন।",
+  "githubGistSync": "GitHub Gist সিঙ্ক",
+  "manage": "পরিচালনা করুন",
+  "manageGithubGistSync": "GitHub Gist সিঙ্ক পরিচালনা করুন",
+  "joinedTheParty": "{username} পার্টিতে যোগ দিয়েছেন",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} দল ছেড়েছে",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "হোস্ট {title}-এর {episodeNumber} পর্বে স্যুইচ করেছে",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "মন্তব্য আনার সময় ত্রুটি",
+  "errorAddingComment": "মন্তব্য যোগ করার সময় ত্রুটি",
+  "errorUpdatingVote": "ভোট আপডেট করার সময় ত্রুটি",
+  "errorEditingComment": "মন্তব্য সম্পাদনা ত্রুটি",
+  "errorDeletingComment": "মন্তব্য মোছার সময় ত্রুটি",
+  "commentReportedSuccessfully": "মন্তব্য সফলভাবে রিপোর্ট করা হয়েছে",
+  "errorReportingComment": "মন্তব্য প্রতিবেদনে ত্রুটি",
+  "errorFetchingReportsQueue": "রিপোর্ট সারিতে আনার সময় ত্রুটি",
+  "reportResolvedSuccessfully": "রিপোর্ট সফলভাবে সমাধান করা হয়েছে",
+  "failedToResolveReport": "রিপোর্ট সমাধান করতে ব্যর্থ হয়েছে",
+  "errorResolvingReport": "রিপোর্ট সমাধানে ত্রুটি",
+  "errorFetchingUserInfo": "ব্যবহারকারীর তথ্য আনার সময় ত্রুটি",
+  "errorFetchingUserHistory": "ব্যবহারকারীর ইতিহাস আনার সময় ত্রুটি৷",
+  "errorFetchingUserStats": "ব্যবহারকারীর পরিসংখ্যান আনার সময় ত্রুটি",
+  "errorListingUsers": "ব্যবহারকারীদের তালিকায় ত্রুটি",
+  "errorSearchingUsers": "ব্যবহারকারীদের অনুসন্ধানে ত্রুটি৷",
+  "errorFetchingModerationQueue": "সংযম সারি আনার সময় ত্রুটি৷",
+  "commentModeratedSuccessfully": "মন্তব্য সফলভাবে পরিচালনা করা হয়েছে",
+  "errorModeratingComment": "মন্তব্য নিয়ন্ত্রণে ত্রুটি৷",
+  "userManagedSuccessfully": "ব্যবহারকারী সফলভাবে পরিচালিত",
+  "errorManagingUser": "ব্যবহারকারী পরিচালনায় ত্রুটি৷",
+  "errorGettingInitialDeepLink": "প্রাথমিক গভীর লিঙ্ক পেতে ত্রুটি: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "লিঙ্ক খুলতে ত্রুটি: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "ত্রুটি বিবরণ অনুলিপি",
+  "whatSNew": "নতুন কি",
+  "updatedToV": "v{current} এ আপডেট করা হয়েছে",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "বিজ্ঞাপন লিঙ্ক খুলতে পারেনি",
+  "newAnilistUpdates": "{length} নতুন AniList আপডেট",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} আরও",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "ডিভাইস রিফ্রেশ করুন",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "রেপো যোগ করা হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।",
+  "unsupportedThemeTypeSupportedPlayer": "অসমর্থিত থিম টাইপ \"{type}\"। সমর্থিত: প্লেয়ার।",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "লিঙ্ক থেকে প্লেয়ার থিম আমদানি করা হচ্ছে...",
+  "themeIsInvalid": "থিম অবৈধ: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "থিম JSON বৈধ। আমদানি করা {imported} {label}।",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "{code} রুমে যোগদান করা হচ্ছে...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "রুমে যোগ দিতে ব্যর্থ হয়েছে: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "{user1} এবং {user2} এর জন্য AniMatch সামঞ্জস্যের গণনা করা হচ্ছে...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "আপনার নির্বাচিত ট্র্যাকিং পরিষেবার সাথে শেয়ার করুন",
+  "shareAnymexLink": "AnymeX লিঙ্ক শেয়ার করুন",
+  "opensDirectlyInAnymex": "সরাসরি AnymeX এ খোলে",
+  "newCommentsRepliesAndEdits": "নতুন মন্তব্য, উত্তর, এবং সম্পাদনা",
+  "upvotesAndDownvotesOnYourComments": "আপনার মন্তব্যে আপভোট এবং ডাউনভোট",
+  "warningsMutesBansAndModerationActions": "সতর্কতা, নিঃশব্দ, নিষেধাজ্ঞা, এবং সংযম ক্রিয়া",
+  "reportFiledResolvedDismissed": "প্রতিবেদন দাখিল, নিষ্পত্তি, খারিজ",
+  "officialAnnouncements": "অফিসিয়াল ঘোষণা",
+  "whenSomeoneMentionsYouInA": "যখন কেউ আপনাকে মন্তব্যে উল্লেখ করে",
+  "notificationsForNewAnimeEpisodeReleases": "নতুন এনিমে পর্ব রিলিজের জন্য বিজ্ঞপ্তি",
+  "notificationsForFollowsMentionsAndLikes": "অনুসরণ, উল্লেখ, এবং পছন্দ জন্য বিজ্ঞপ্তি",
+  "notificationsForCompletedEpisodeAndChapter": "সমাপ্ত পর্ব এবং অধ্যায় ডাউনলোডের জন্য বিজ্ঞপ্তি",
+  "signIn": "সাইন ইন করুন",
+  "failedToCheckForUpdates3": "আপডেটের জন্য চেক করতে ব্যর্থ",
+  "noUpdatesAvailable": "কোন আপডেট উপলব্ধ নেই",
+  "errorCheckingForUpdates": "আপডেটের জন্য পরীক্ষা করা ত্রুটি৷",
+  "installPermissionRequired": "অনুমতি প্রয়োজন ইনস্টল",
+  "downloadFailed3": "ডাউনলোড ব্যর্থ হয়েছে৷",
+  "newVersionAvailable": "নতুন সংস্করণ উপলব্ধ"
 }

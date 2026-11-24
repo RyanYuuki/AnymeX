@@ -176,5 +176,3834 @@
   "incognitoDisabled": "Inkognitotilstand deaktiveret",
   "episodeCount": "{count} episoder",
   "chapterCount": "{count} kapitler",
-  "itemCount": "{count} elementer"
+  "itemCount": "{count} elementer",
+  "whatAreWeDoingToday": ", hvad skal vi lave i dag?",
+  "aLogoWithThisNameAlready": "Der findes allerede et logo med dette navn.",
+  "about": "Om",
+  "aboutCommentumV2": "Om Commentum v2",
+  "aboutTheApp": "Om appen",
+  "accessModerationToolsAndReports": "Få adgang til modereringsværktøjer og rapporter",
+  "accountTokensAnilistMalSimkl": "Konto-tokens (AniList, MAL, Simkl)",
+  "accounts": "Konti",
+  "accountsSync": "Konti og synkronisering",
+  "actionAppliedSuccessfully": "Handlingen blev udført uden problemer",
+  "activeDownloads": "Aktive downloads",
+  "activity": "Aktivitet",
+  "activityDeleted": "Aktivitet slettet",
+  "activityHeatmap": "Aktivitets-heatmap",
+  "activityMergeTime": "Tidspunkt for sammenlægning af aktiviteter",
+  "activityPhrasing": "Formulering af aktiviteter",
+  "activityRefreshed": "Aktiviteten er opdateret",
+  "adFreeApp": "App uden reklamer",
+  "addCustomLogo": "Tilføj brugerdefineret logo",
+  "addCustomLogoGifWebp": "Tilføj brugerdefineret logo (.gif, .webp)",
+  "addRepo": "Tilføj repo",
+  "addRepository": "Tilføj arkiv",
+  "addYourRecommendation": "Tilføj dit forslag",
+  "addOnExtensions": "Tilføjelsesudvidelser",
+  "addOns": "Tilføjelser",
+  "addOnsPowerBackgroundServicesSuch": "Tilføjelsesprogrammer understøtter baggrundstjenester såsom TorrServer-torrent-streamingmotoren til direkte afspilning af magnet-links.",
+  "addedToDownloads": "Føjet til downloads",
+  "addingKotatsuRepositoryThisWillTake": "Kotatsu-repositoriet tilføjes. Det vil tage mindst 1-2 minutter, vent venligst...",
+  "addingRepositoryFetchingExtensions": "Tilføjer repository og henter udvidelser...",
+  "adjustBottomBarMarginMediaDetails": "Juster margenen på den nederste bjælke (kun på siden med medieoplysninger)",
+  "adjustCardAnimationSpeed": "Juster hastigheden på kortanimationen",
+  "adjustCornerRadiusOfElements": "Juster elementernes hjørneradius",
+  "adjustDoubleTapToSeekDuration": "Juster varigheden af dobbelttryk for at søge frem",
+  "adjustElementGlowIntensity": "Juster intensiteten af elementets glød",
+  "adjustFrostedBlurIntensity": "Juster intensiteten af den matte sløring",
+  "adjustGlowBlurIntensity": "Juster intensiteten af glød-sløringen",
+  "adjustHorizontalMarginOfBottomNavigation": "Juster den vandrette margen på den nederste navigationsbjælke",
+  "adjustItemsPerRow": "Juster antallet af poster pr. række",
+  "adjustMediaBackdropExposure": "Juster eksponeringen af mediebaggrunden",
+  "adjustMegaskipDuration": "Juster varigheden af MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "Juster rundingen på alle mediekort",
+  "adjustSubSize": "Juster undermål",
+  "adjustSubtitleOutlineWidth": "Juster bredden på undertekstkonturen",
+  "adjustTextVisibility": "Juster tekstens synlighed",
+  "admin": "Admin",
+  "adult": "Voksen",
+  "aiPicks": "AI-valg",
+  "airingAnimeNotifications": "Meddelelser om udsendelse af anime",
+  "all": "Alle",
+  "allClearNoReportsToReview": "Alt i orden! Der er ingen rapporter, der skal gennemgås.",
+  "allSources": "Alle kilder",
+  "allowAnymexToAutomaticallyOpenAnime": "Tillad AnymeX at åbne links til anime og manga automatisk",
+  "allowInstallingUpdatesForExtensionsAnd": "Tillad installation af opdateringer til udvidelser og apps",
+  "allowOnlyUsersIFollowTo": "Tillad kun brugere, som jeg følger, at sende mig beskeder.",
+  "allowStorageAccessAndSelectDownload": "Tillad adgang til lagringspladsen, og vælg downloadmappe",
+  "allowStorageAccessToDownloadApp": "Tillad lagringsadgang for at kunne downloade opdateringer til apps og udvidelser",
+  "alreadyRecommended": "Allerede anbefalet",
+  "alternativeTitles": "Alternative titler",
+  "alwaysShowChapterTransition": "Vis altid kapitelovergang",
+  "alwaysShowPageIndicator": "Vis altid sideindikator",
+  "amountOfFilmGrainApplied": "Mængden af filmkorn, der er anvendt",
+  "anifyKitsuArtwork": "Anify / Kitsu-kunstværk",
+  "anilistSettings": "AniList-indstillinger",
+  "anilistSettings2": "Anilist-indstillinger",
+  "animatchCompatibility": "AniMatch-kompatibilitet",
+  "animatchLinkCopiedToClipboard": "AniMatch-linket er kopieret til udklipsholderen!",
+  "animateControlOverlay": "Animeret kontroloverlay",
+  "anime": "Anime",
+  "animeUpper": "ANIME",
+  "animeManga": "Anime og manga",
+  "anime4kEnhancement": "4K-forbedring af anime",
+  "animeAdaptation": "Anime-filmatisering",
+  "animeCustomLists": "Brugerdefinerede anime-lister",
+  "animeDetailsPhrasing": "Formulering af anime-oplysninger",
+  "animeLibrary": "Anime-bibliotek",
+  "animeList": "ANIME-LISTE",
+  "animeScore": "Anime-score",
+  "animeSectionOrder": "Rækkefølge i anime-sektionen",
+  "announcement": "Meddelelse",
+  "announcementUnavailable": "Meddelelsen er ikke tilgængelig",
+  "announcements": "Meddelelser",
+  "anymexForkOptimisedForTv": "AnymeX-fork, der er optimeret til tv",
+  "anymexIs100FreeOpenSource": "AnymeX er 100 % gratis, open source og uden reklamer. Din støtte går direkte til at dække serveromkostningerne og den løbende udvikling af nye funktioner!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX er 100 % gratis, open source og uden reklamer. Din støtte er med til at holde mig motiveret til løbende at vedligeholde og forbedre appen!",
+  "appCacheExceededThresholdAndWas": "Appens cache overskred tærsklen og blev ryddet",
+  "appDataHasBeenCompletelyReset": "App-dataene er blevet fuldstændigt nulstillet",
+  "appFonts": "App-skrifttyper",
+  "appSettingsSessions": "App-indstillinger og sessioner",
+  "appearance": "Udseende",
+  "appearanceInterface": "Udseende og brugergrænseflade",
+  "appearanceTheme": "Udseende og tema",
+  "appliesAnimeMangaPosterColorOn": "Anvender anime-/manga-plakatfarve på detaljesiden",
+  "apply": "Ansøg",
+  "applyASubtleFilmGrainTexture": "Anvend en diskret filmkornstruktur på brugergrænsefladen",
+  "applyFilters": "Anvend filtre",
+  "applyOptionsFromYourMpvConf": "Anvend indstillingerne fra din mpv.conf, når afspilningen starter",
+  "areYouSureYouWantTo": "Er du sikker på, at du vil slette alle gemte cookies?",
+  "areYouSureYouWantToDelete": "Er du sikker på, at du vil slette denne kommentar? Den vil blive slettet permanent, og anmeldelsen vil blive afsluttet.",
+  "areYouSureYouWantToDeleteThis": "Er du sikker på, at du vil slette denne udvidelse?",
+  "areYouSureYouWantToDeleteThisReply": "Er du sikker på, at du vil slette dette svar?",
+  "askForTrackingPermission": "Anmod om tilladelse til sporing",
+  "atLeast2TabsMustRemain": "Der skal være mindst 2 faner, der forbliver synlige!",
+  "audioEngine": "Lydmotor",
+  "audioPitchCorrection": "Korrektion af lydtonelejet",
+  "authenticationOptional": "AUTENTIFICERING (VALGFRIT)",
+  "auto": "Bil",
+  "autoPlay": "Automatisk afspilning",
+  "autoScroll": "Automatisk rulning",
+  "autoScrollSpeed": "Hastighed for automatisk rulning",
+  "autoSkipEd": "Automatisk spring over ED",
+  "autoSkipFiller": "Automatisk spring over fyldstof",
+  "autoSkipOnceOnly": "Automatisk spring over én gang",
+  "autoSkipOnlyOncePerWatch": "Automatisk spring kun én gang pr. visning",
+  "autoSkipOp": "Spring automatisk OP over",
+  "autoSkipRecap": "Automatisk spring over resumé",
+  "autoSkipTheEndingSong": "Spring automatisk slutningssangen over",
+  "autoSkipTheOpeningSong": "Spring automatisk åbningssangen over",
+  "autoSkipTheRecapSection": "Spring automatisk over afsnittet med resuméet",
+  "autoSwitchToVerticalMode": "Automatisk skift til lodret tilstand",
+  "autoTranslateSubtitles": "Automatisk oversættelse af undertekster",
+  "autoWebtoonMode": "Automatisk Webtoon-tilstand",
+  "autoClearThreshold": "Tærskel for automatisk sletning",
+  "autoSelectDefault": "Automatisk valg (standard)",
+  "autoSelectThisServerQualityFor": "Vælg automatisk denne serverkvalitet til denne anime",
+  "automaticallyMoveToNextTextSegment": "Gå automatisk videre til næste tekstsegment",
+  "automaticallyScrollContent": "Rul automatisk gennem indholdet",
+  "automaticallyScrollPages": "Rul automatisk gennem siderne",
+  "automaticallySkipFillerEpisodesWhenGoing": "Spring automatisk over udfyldningsafsnit, når du går videre til næste afsnit",
+  "automaticallyUpdateEntriesWhenImportingThe": "Opdater poster automatisk ved import af XML-filen",
+  "availableAddOns": "Tilgængelige tilføjelsesprogrammer",
+  "availableKeybindings": "Tilgængelige tastkombinationer:",
+  "avatarDecorations": "Avatar-dekorationer",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Avatar-dekorationer, navneskilte, bannere og profileffekter",
+  "avgChapters": "Gennemsnitlige kapitler",
+  "avgEpisodes": "Gennemsnitligt antal afsnit",
+  "back": "Tilbage",
+  "backdropScope": "Baggrund og omfang",
+  "backdropBrightness": "Baggrundslysstyrke",
+  "backdropSource": "Kilde til baggrunden",
+  "backgroundOpacity": "Baggrundsopacitet",
+  "backup": "Sikkerhedskopi",
+  "backupRestore": "Sikkerhedskopiering og gendannelse",
+  "backupAndRestoreYourLibrary": "Sikkerhedskopiering og gendannelse af dit bibliotek",
+  "backupArchive": "Sikkerhedskopieringsarkiv",
+  "backupOwner": "Reserveejer",
+  "backupRestoredSuccessfully": "Sikkerhedskopien er gendannet!",
+  "backupSavedSuccessfully": "Sikkerhedskopien er gemt!",
+  "badge": "Mærke",
+  "banUser": "Blokér bruger",
+  "baseUrlNotAvailableForThis": "Der findes ingen basis-URL for denne kilde",
+  "basedOnYourFavouriteCharacters": "Baseret på dine yndlingsfigurer.",
+  "basedOnYourFavouriteStaff": "Baseret på dine yndlingsmedarbejdere.",
+  "basedOnYourTop10Tags": "Baseret på dine 10 mest anvendte tags.",
+  "basedOnYourTop3Studios": "Baseret på dine 3 foretrukne studier.",
+  "basedOnYourTop5Genres": "Baseret på dine 5 foretrukne genrer.",
+  "basedOnYourTop6Voice": "Baseret på dine 6 foretrukne stemmeskuespillere.",
+  "batchDownload": "Download af flere filer på én gang",
+  "beTheFirstToRecommendThis": "Vær den første til at anbefale denne titel!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Bedre gengivelse af undertekster ved hjælp af libass-biblioteket",
+  "blockquote": "Citat",
+  "blurBackdropTuning": "Justering af sløring og baggrund",
+  "blurAmount": "Sløringsgrad",
+  "blurColorTint": "Sløring af farvetone",
+  "blurMechanism": "Sløringsmekanisme",
+  "blurMultiplier": "Sløringsmultiplikator",
+  "blurStyle": "Blur-stil",
+  "bold": "Fed",
+  "boldItalic": "Fed + kursiv",
+  "botUrlNotConfigured": "Bot-URL er ikke konfigureret",
+  "bottomControls": "Betjeningsknapper nederst",
+  "bottomMargin": "Nederste margen",
+  "bottomNavBarMargin": "Margen på den nederste navigationsbjælke",
+  "broadcastYourActivityToDiscord": "Del din aktivitet på Discord",
+  "browsingIdle": "Surfing / Inaktivitet",
+  "browsingPhrasing": "Formuleringer ved gennemsyn",
+  "bufferSize": "Bufferstørrelse",
+  "builtInStyles": "Indbyggede stilarter",
+  "byDisablingThisYouCanAvoid": "Ved at deaktivere denne funktion kan du undgå overgangen mellem underteksterne.",
+  "byIndex": "Efter indeks",
+  "byUserId": "Efter bruger-ID",
+  "byUsername": "Efter brugernavn",
+  "bypassCloudflare": "Omgå Cloudflare",
+  "cacheStorage": "Cache og lagerplads",
+  "cacheMinutes": "Cache-referat",
+  "cacheOverview": "Oversigt over cachen",
+  "cachedImages": "Billeder i cachen",
+  "calculateCompatibility": "Beregn kompatibilitet",
+  "calculatedBasedOnWhichReleaseDecades": "Beregnet ud fra, hvilke udgivelsesårtier du har set mest af og opnået de højeste point i.",
+  "calendar": "Kalender",
+  "cancel": "Annuller",
+  "cannotCompareAUserWithThemselves": "Man kan ikke sammenligne en bruger med sig selv! Indtast venligst to forskellige brugernavne.",
+  "cannotCompareYourProfileWithYourself": "Det er ikke muligt at sammenligne din profil med dig selv! Indtast venligst et andet brugernavn.",
+  "cantPlaySinceUserClosedThe": "Kan ikke afspilles, da brugeren lukkede appen brat",
+  "cantReadSinceUserClosedThe": "Kan ikke læse, da brugeren lukkede appen brat",
+  "cardAnimationDuration": "Varighed af kortanimation",
+  "cardRoundness": "Kortets rundhed",
+  "cardStyle": "Korttype",
+  "carouselStyle": "Karrusel-stil",
+  "changeFile": "Rediger fil",
+  "changeRole": "Skift rolle",
+  "changeService": "Ændringstjeneste",
+  "changeSubtitleBackgroundColor": "Skift baggrundsfarven på underteksterne",
+  "changeSubtitleColors": "Skift farverne på underteksterne",
+  "changeSubtitleOutlineColor": "Skift farve på undertekstens kontur",
+  "changelog": "ÆNDRINGSLISTE",
+  "chapterListSettings": "Indstillinger for kapitelliste",
+  "chapterNumber": "Kapitelnummer",
+  "chapterTileStyle": "Kapiteloverskriftsstil",
+  "chapters": "Kapitler",
+  "chaptersUpper": "KAPITLER",
+  "chaptersVolumes": "KAPITLER OG BIND",
+  "chaptersRead": "Læste kapitler",
+  "characters": "Personer",
+  "checkCompatibility": "Tjek kompatibilitet",
+  "checkForAddOnUpdates": "Tjek for opdateringer til tilføjelsesprogrammer",
+  "checkForUpdates": "Se efter opdateringer",
+  "checkUpdatesFromBetaChannel": "Se opdateringer fra betakanalen",
+  "checkingForUpdates": "Søger efter opdateringer!",
+  "chooseABackupFileAnymex": "Vælg en sikkerhedskopifil (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Vælg en brugerdefineret baggrund til Liquid Mode.",
+  "chooseADirectoryToBrowseYour": "Vælg en mappe for at gennemse dine mediefiler",
+  "chooseDifferentImage": "Vælg et andet billede",
+  "chooseDownloadFolder": "Vælg downloadmappe",
+  "chooseImage": "Vælg billede",
+  "chooseProvider": "Vælg udbyder",
+  "chooseQuality": "Vælg kvalitet",
+  "chooseServer": "Vælg server",
+  "chooseServiceTracker": "Vælg tjeneste / Tracker",
+  "chooseShaderProfile": "Vælg shaderprofil",
+  "chooseUpiApp": "Vælg UPI-appen",
+  "chooseWhichListToShowOn": "Vælg, hvilken liste der skal vises på startsiden",
+  "chooseYourFavouriteColor": "Vælg din yndlingsfarve!",
+  "chooseYourFavouritePalette": "Vælg din yndlingsfarvepalet!",
+  "chromaScaler": "Chroma Scaler",
+  "classicCarouselCardLayoutFeaturingVertical": "Klassisk karrusellkortlayout med lodrette plakatkort.",
+  "clear": "Ryd",
+  "clearAll": "Ryd alt",
+  "clearAllHistory": "Slet al historik",
+  "clearAppCache": "Ryd appens cache",
+  "clearAppCacheNow": "Ryd appens cache nu",
+  "clearCache": "Ryd cache",
+  "clearCacheCookies": "Ryd cache og cookies",
+  "clearCookies": "Slet cookies",
+  "clearCookies2": "Slet cookies",
+  "clearHistory": "Ryd historik",
+  "clearImageCacheNow": "Ryd billedcachen nu",
+  "clearProxy": "Ryd proxy",
+  "clearSelected": "Fjern markering af det valgte",
+  "clientAll": "Kunde: Alle",
+  "close": "Luk",
+  "closetCommunity": "Garderobe & Fællesskab",
+  "cloudflareChallengeSolved": "Cloudflare-udfordringen er løst!",
+  "collectionName": "Samlingens navn",
+  "collections": "Samlinger",
+  "combineBackupDataWithExistingData": "Kombiner sikkerhedskopierede data med de eksisterende data på denne enhed",
+  "commentDeleted": "Kommentar slettet",
+  "commentPolicy": "Retningslinjer for kommentarer",
+  "commentReplies": "Svar på kommentarer",
+  "commentRules": "Regler for kommentarer",
+  "commentSystem": "Kommentarsystem",
+  "comments": "Kommentarer",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 er et avanceret kommentarsystem, der tilbyder:",
+  "commentumV2SettingsModerationPreferences": "Indstillinger, moderering og præferencer i Commentum v2",
+  "common": "Almindeligt",
+  "commonCharacters": "Fælles karaktertræk",
+  "commonFavouriteStaff": "Populære medarbejdere",
+  "commonGenres": "Almindelige genrer",
+  "commonSettings": "Generelle indstillinger",
+  "commonStudios": "Common Studios",
+  "commonTags": "Almindelige tags",
+  "commonVoiceActors": "Almindelige stemmeskuespillere",
+  "communityDriven": "Fællesskabsdrevet",
+  "communityForksOfAnymex": "Community-forks af AnymeX",
+  "communityLeaderboard": "Fællesskabets rangliste",
+  "communityRecommendations": "Anbefalinger fra fællesskabet",
+  "compact": "Kompakt",
+  "compactCardWithEpisodeThumbnailAnd": "Kompakt kort med miniaturebillede og titel på episoden",
+  "compactGridOfChapterNumbers": "Kompakt oversigt over kapitelnumre",
+  "compatibility": "Kompatibilitet",
+  "compatibilityRanks": "Kompatibilitetsranglister",
+  "compatibleWithGooglePayPhonepePaytm": "Kompatibel med Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay og alle UPI-bankapps.",
+  "completeAnyCloudflareChallengeThenTap": "Gennemfør en hvilken som helst Cloudflare-udfordring, og tryk derefter på »Synkroniser cookies« for at videregive sessionen til udvidelserne.",
+  "compose": "Skriv",
+  "concurrencyLimits": "Samtidighed og begrænsninger",
+  "configurationsRepos": "Konfigurationer og repos",
+  "configureExport": "Konfigurer og eksporter",
+  "configureDiscordRichPresenceActivityStatus": "Konfigurer Discord Rich Presence og aktivitetsstatus",
+  "configureDnsOverHttpsProxyTls": "Konfigurer DNS-over-HTTPS, proxy- og TLS-indstillinger",
+  "configureMangaAndNovelReaderDefaults": "Konfigurer standardindstillinger for manga- og romanlæser",
+  "configureParallelDownloadsAndDirectory": "Konfigurer parallelle downloads og mappe",
+  "configurePosterBlurScopeTintBackdrop": "Konfigurer sløring af plakater, omfang, farvetone og kilde til baggrund",
+  "confirm": "Bekræft",
+  "confirmRestore": "BEKRÆFT & GENOPRET",
+  "confirmBackupPassword": "Bekræft sikkerhedskode til sikkerhedskopien",
+  "conflictHandling": "Håndtering af konflikter",
+  "connect": "Opret forbindelse",
+  "continueReading": "Læs videre",
+  "continueWatching": "Fortsæt med at se",
+  "continuousModeOnly": "Kun kontinuerlig tilstand",
+  "contributors": "Medvirkende",
+  "controlTheme": "Kontroltema",
+  "controlsSubtitlesAndPlaybackPreferences": "Indstillinger for betjening, undertekster og afspilning",
+  "cookiesUserAgentSynced": "Cookies og User-Agent er synkroniseret!",
+  "copy": "Kopier",
+  "copyPath": "Kopier sti",
+  "copyUpiId": "Kopier UPI-ID",
+  "copyUserId": "Kopier bruger-ID",
+  "coreTeam": "Kerneteamet",
+  "couldNotCalculateCompatibility": "Det var ikke muligt at beregne kompatibiliteten.",
+  "couldNotFetchChaptersForThis": "Det var ikke muligt at hente kapitlerne til denne titel",
+  "couldNotFetchEpisodesForThis": "Det var ikke muligt at hente afsnit til denne titel",
+  "couldNotOpenDonationLink": "Det var ikke muligt at åbne donationslinket",
+  "couldNotOpenLink": "Det var ikke muligt at åbne linket",
+  "couldNotOpenReleasesPage": "Det var ikke muligt at åbne siden med udgivelser",
+  "couldntOpenAppSettingsOpenIt": "Det var ikke muligt at åbne appens indstillinger. Åbn den manuelt.",
+  "count": "Antal",
+  "countryDistribution": "Fordeling efter land",
+  "countryOfOrigin": "Oprindelsesland",
+  "create": "Opret",
+  "createAFullAnymexArchiveOf": "Opret et komplet .anymex-arkiv af dit mediebibliotek, dine indstillinger, udvidelser og værtskørselsmiljøet",
+  "createActivity": "Opret aktivitet",
+  "createBackup": "Opret sikkerhedskopi",
+  "createNewList": "Opret ny liste",
+  "createStatus": "Opret status",
+  "cropBorders": "Afgrænser til beplantninger",
+  "current": "Aktuelt • ",
+  "custom": "Brugerdefineret",
+  "customBanners": "Skræddersyede bannere",
+  "customColorPicker": "Brugerdefineret farvevælger",
+  "customDohUrl": "BRUGERDEFINERET DOH-URL",
+  "customFonts": "Brugerdefinerede skrifttyper",
+  "customLists": "Brugerdefinerede lister",
+  "customLogos": "Brugerdefinerede logoer",
+  "customPlayerFlagsParameters": "Brugerdefinerede afspillerflag og parametre",
+  "customScale": "Brugerdefineret skala",
+  "customTheme": "Brugerdefineret tema",
+  "customUserAgent": "Brugerdefineret User-Agent",
+  "customValue": "Brugerdefineret værdi",
+  "customEllipsis": "Brugerdefineret...",
+  "customizeCardHistoryCardCarouselNav": "Tilpas stilarter for kort, historikkort, karrusel og navigationsbjælke",
+  "customizeTheInterfaceToYourLiking": "Tilpas brugergrænsefladen efter dine præferencer",
+  "customizeYourLogoAnimationStyle": "Tilpas stilen på din logoanimation",
+  "dailyActivitiesWatchAndReadMetrics": "Daglige aktiviteter, overvågning og gennemgang af nøgletal",
+  "dailyActivityAndWatchReadProgress": "Daglig aktivitet og overvågning af fremskridt med at se tv og læse",
+  "dataCache": "Data og cache",
+  "dataToRestore": "DATA, DER SKAL GENOPRETTES",
+  "days": "DAGE",
+  "days2": "Dage",
+  "daysActive": "AKTIVE DAGE",
+  "debanding": "Fjernelse af bånd",
+  "debugStuffs": "Fejlfindingsværktøjer",
+  "decoder": "Dekoder",
+  "decoderHwdec": "Dekoder (HWDec)",
+  "decoderThreads": "Dekoder-tråde",
+  "decorationCloset": "Dekorationsskab",
+  "defaultLabel": "Standard",
+  "defaultAndroidAudiotrackApi": "Standard-API’et til Android AudioTrack",
+  "defaultAppleCoreaudioApi": "Standard Apple CoreAudio-API",
+  "defaultListOrder": "Standardrækkefølge på listen",
+  "defaultOrientation": "Standardretning",
+  "defaultPortrait": "Standardportræt",
+  "defaultPulseaudioApi": "Standard-PulseAudio-API",
+  "defaultSize200px": "Standardstørrelse (200 px)",
+  "defaultSystemAudioDriver": "Standardlyddriver til systemet",
+  "defaultTheme": "Standardtema",
+  "defaultWindowsAudioDriver": "Standardlyddriver til Windows",
+  "delete": "Slet",
+  "deleteActivity": "Slet aktivitet",
+  "deleteAll": "Slet alt",
+  "deleteAllCachedImagesTorrentStream": "Slet alle billeder i cachen, torrent-stream-blokke og midlertidige filer.",
+  "deleteAllStoredHttpCookiesAcross": "Slet alle gemte HTTP-cookies på tværs af alle domæner.",
+  "deleteChapter": "Slet kapitel",
+  "deleteChapterQuestion": "Skal kapitlet slettes?",
+  "deleteComment": "Slet kommentar",
+  "deleteCustomLogo": "Slet brugerdefineret logo",
+  "deleteEpisode": "Slet afsnit",
+  "deleteEpisodeQuestion": "Skal episoden slettes?",
+  "deleteEverythingStoredOfAnymexPermanently": "Slet alt, der er gemt fra AnymeX, permanent.",
+  "deleteExtension": "Slet filtypenavn",
+  "deleteFont": "Slet skrifttype",
+  "deleteHistoryItem": "Slet et element i historikken",
+  "deleteList": "Slet liste",
+  "deleteLogo": "Slet logo",
+  "deleteReason": "Årsag til sletning?",
+  "deleteRecommendation": "Skal anbefalingen slettes?",
+  "deleteReply": "Slet Svar",
+  "deleteReportedComment": "Slet anmeldt kommentar",
+  "deleteSavedCookiesAndCloudflareTokens": "Slet gemte cookies og Cloudflare-tokens",
+  "deleteSavedCookiesCloudflareTokensAnd": "Slet gemte cookies, Cloudflare-tokens og midlertidig cache",
+  "deleteSelected": "Slet det valgte",
+  "deleteTemporaryNetworkAndImageCache": "Slet midlertidig netværks- og billedcache",
+  "deletionRequestSentToAdminsFor": "Anmodning om sletning sendt til administratorerne til gennemgang.",
+  "demuxerMaxBuffer": "Demuxer med maksimal buffer",
+  "demuxerReadahead": "Demuxer-forhåndsindlæsning",
+  "description": "Beskrivelse",
+  "detailedClassic": "Detaljeret (Klassisk)",
+  "detailedInsights": "Detaljerede indsigter",
+  "detailsPage": "Detaljeside",
+  "developer": "Udvikler",
+  "development": "Udvikling",
+  "direct": "Direkte",
+  "directSurfaceRenderingAndroidOnly": "Direkte overfladegengivelse (kun Android)",
+  "direction": "Retning",
+  "disableToShowAndHidePlayer": "Deaktiver for straks at vise og skjule afspillerens betjeningsknapper",
+  "disablingMayBypassCaptivePortalsOr": "Deaktivering kan omgå captive portals eller SSL-inspektion, men mindsker sikkerheden.",
+  "discard": "Slet",
+  "discardMessage": "Skal beskeden slettes?",
+  "discardReply": "Skal svaret slettes?",
+  "discardStatus": "Skal status slettes?",
+  "disconnect": "Afbryd forbindelsen",
+  "disconnectDiscord": "Skal jeg afbryde forbindelsen til Discord?",
+  "discordTakenDown": "Discord er blevet lukket ned",
+  "dismiss": "Afvis",
+  "display": "Skærm",
+  "displayAnimeMangaMoviesAndShows": "Vis anime, manga, film og tv-serier, som fællesskabet anbefaler, på forsiden.",
+  "displayMode": "Visningsindstilling",
+  "displayModeTuningIsNotApplicable": "Indstilling af skærmtilstand er ikke mulig på stationære platforme.",
+  "displayPlaybackOrReadingProgressTimestamps": "Vis tidsstempler for afspilning eller læsefremskridt",
+  "displayRefreshRateResolutionAndFrame": "Skærmens opdateringshastighed, opløsning og billedjustering",
+  "distanceBetweenLines": "Afstand mellem linjerne",
+  "distanceFromBottomOfScreen": "Afstand fra skærmens nederste kant",
+  "ditherDepth": "Dither-dybde",
+  "dnsProxy": "DNS og proxy",
+  "dontShowAgain": "Vis ikke igen",
+  "donate": "Donér",
+  "donateSupport": "Donér og støt",
+  "donateViaPaypal": "Donér via PayPal",
+  "donateViaUpiOrPaypalTo": "Donér via UPI eller PayPal for at støtte udviklingen",
+  "donateViaUpiPaypalSupportDevelopment": "Donér via UPI og PayPal, og støt udviklingen",
+  "done": "FÆRDIG",
+  "done2": "Færdig",
+  "doubletapToSeek": "Dobbelttryk for at søge",
+  "downgradeOrSwitchToASpecific": "Nedgrader eller skift til en bestemt plugin-version",
+  "download": "Download",
+  "download4kShaders": "Download 4K-shaders",
+  "downloadAllChapters": "Download alle kapitler",
+  "downloadAllEpisodes": "Download alle afsnit",
+  "downloadChapter": "Download kapitel",
+  "downloadChunks": "Download-dele",
+  "downloadCurrentSection": "Download det aktuelle afsnit",
+  "downloadEpisode": "Download afsnit",
+  "downloadFailedTapToRetry": "Downloaden mislykkedes. Tryk her for at prøve igen.",
+  "downloadPath": "Downloadsti",
+  "downloadPathsAndQualitySettings": "Downloadstier og kvalitetsindstillinger",
+  "downloadPathsAndStorageSettings": "Downloadstier og lagringsindstillinger",
+  "downloadPermissions": "Downloadrettigheder",
+  "downloadQualityStoragePaths": "Downloadkvalitet, lagringsstier",
+  "downloadSettings": "Indstillinger for download",
+  "downloadSize4mb": "Filstørrelse: ~4 MB",
+  "downloadStarted": "Download er påbegyndt",
+  "downloadUnreadChapters": "Download ulæste kapitler",
+  "downloadUnwatchedEpisodes": "Download episoder, du ikke har set endnu",
+  "downloaded": "DOWNLOADET",
+  "downloaded2": "Downloadet",
+  "downloadedMedia": "Downloadede medier",
+  "downloadingImage": "Henter billede...",
+  "downloadingPackage": "Pakken downloades...",
+  "downloads": "Downloads",
+  "downloadsStorage": "Downloads og lagring",
+  "downloadsPage": "Side med downloads",
+  "downscalingAlgorithm": "Algoritme til nedskalering",
+  "dragAndDropToReorderNavigation": "Træk og slip for at ændre rækkefølgen på fanerne i navigationslinjen",
+  "dragToReorderStatusSections": "Træk for at ændre rækkefølgen af statusafsnittene",
+  "dualPageMode": "Tosidetilstand",
+  "dynamicVariablesWillBeReplacedAutomatically": "Dynamiske variabler erstattes automatisk. Du kan også bruge en statisk sætning.",
+  "edit": "Rediger",
+  "editActivity": "Rediger aktivitet",
+  "editCustomMpvFlagsPropertiesAnd": "Rediger brugerdefinerede mpv-flags, egenskaber og konfigurationsfiler",
+  "editLogoSettings": "Rediger logoindstillinger",
+  "editMediaEntry": "Rediger mediepost",
+  "editReason": "Årsag til redigering",
+  "editRecommendationReasonMin30Chars": "Rediger begrundelsen for anbefalingen (mindst 30 tegn)",
+  "edited": "Redigeret",
+  "enableAnimation": "Aktivér animation",
+  "enableAnimationOnCarouselsForSmooth": "Aktivér animation på karruseller for at sikre jævn bevægelse",
+  "enableBackgroundMediaControlsForBluetooth": "Aktivér mediekontroller i baggrunden for Bluetooth-headset og systemmediemeddelelser. Bemærk: Hvis du aktiverer denne funktion, vil batteriforbruget stige.",
+  "enableBetaUpdates": "Aktivér beta-opdateringer",
+  "enableClassicSimpleHeaderStyleOn": "Aktivér den klassiske, enkle overskriftsstil på startskærmene",
+  "enableDiscordRpc": "Aktivér Discord RPC",
+  "enableExperimentalSettings": "Aktivér eksperimentelle indstillinger",
+  "enableHoldingOnPlayerScreenTo": "Aktivér funktionen, hvor man kan holde fingeren på afspillerskærmen for midlertidigt at øge afspilningshastigheden",
+  "enableHorizontalSwipingOnPlayerScreen": "Aktivér vandret strygning på afspillerens skærm for at springe frem og tilbage i videoen",
+  "enableKenBurns": "Aktivér Ken Burns",
+  "enableLongPressQuickActions": "Aktivér hurtighandlinger ved langt tryk",
+  "enableNotificationsForUpcomingAiringEpisodes": "Aktivér notifikationer om kommende afsnit.",
+  "enableNsfwAdultEntriesInAnilist": "Aktivér NSFW/voksenindhold i AniList-indholdet.",
+  "enableShaders": "Aktivér shaders",
+  "enableSwipeControls": "Aktivér strygebetjening",
+  "enableTapZones": "Aktivér trykzoner",
+  "enableThisIfYouWantTo": "Aktivér denne indstilling, hvis du ønsker at bevare baggrundsbilledets oprindelige farve",
+  "enableTranslucentNavigationBar": "Aktivér gennemsigtig navigationsbjælke",
+  "enableTts": "Aktivér TTS",
+  "enableVerticalSwipingOnTheLeft": "Aktivér lodret strygning til venstre og højre på afspillerens skærm for at justere lysstyrken og lydstyrken",
+  "enablesASoftGlowingGradientEffect": "Giver en blød, glødende farveovergangseffekt.",
+  "encryptWithAes256RecommendedFor": "Krypter med AES-256 (anbefales til godkendelsestokener)",
+  "encrypted": "Krypteret • ",
+  "endChapter": "Slut på kapitel",
+  "enterAmount": "Indtast beløb...",
+  "enterAnilistUsername": "Indtast dit AniList-brugernavn",
+  "enterAtLeast2Characters": "Indtast mindst 2 tegn",
+  "enterBackupPassword": "Indtast sikkerhedskode",
+  "enterFirstAnilistUsername": "Indtast først dit AniList-brugernavn",
+  "enterGithubRepositoryUrl": "Indtast URL’en til GitHub-repositoriet",
+  "enterListName": "Indtast listenavn",
+  "enterPassword": "Indtast adgangskode",
+  "enterReasonOrDetailsForThis": "Indtast en begrundelse eller yderligere oplysninger om denne handling...",
+  "enterSearchQuery": "Indtast søgeord",
+  "enterUsername": "Indtast brugernavn",
+  "enterValue": "Indtast værdi",
+  "entryDeleted": "Indlægget er slettet.",
+  "episode1": "Afsnit 1",
+  "episodeListSettings": "Indstillinger for episodeliste",
+  "episodes": "Afsnit",
+  "episodesDuration": "AFSNIT OG VARIGHED",
+  "episodesWatched": "Set afsnit",
+  "errorOccured": "Der opstod en fejl",
+  "errorOccurred": "Der opstod en fejl",
+  "errorSavingImage": "Fejl ved gemning af billede",
+  "errorSharingImage": "Fejl ved deling af billede",
+  "errorMissingRequiredDataItSeems": "Fejl: Der mangler nødvendige oplysninger. Det ser ud til, at du lukkede appen lige efter at have læst kapitlet!",
+  "errorMissingRequiredMediaItSeems": "Fejl: Der mangler et påkrævet medie. Det ser ud til, at du lukkede appen lige efter at have læst kapitlet!",
+  "errorMissingRequiredMediaItSeemsYou": "Fejl: Det nødvendige medie mangler. Det ser ud til, at du lukkede appen lige efter at have set afsnittet!",
+  "everyScoreIsMappedToA": "Hvert pointtal knyttes til en placering. Tabellen nedenfor viser de enkelte grupper, deres badge og det interval, de repræsenterer.",
+  "experimental": "Eksperimentel",
+  "experimentalHighPerformanceRenderer": "Eksperimentel højtydende renderer",
+  "explore": "Udforsk",
+  "exploreTheProjectAndContribute": "Udforsk projektet og bidrag",
+  "exportLabel": "EKSPORT",
+  "exportBackup": "Eksporter sikkerhedskopi",
+  "exportCancelled": "Eksporten er afbrudt.",
+  "exportDeviceBackup": "Eksporter sikkerhedskopi af enhed",
+  "exportSettings": "Eksportindstillinger",
+  "exportYourAnimeList": "Eksporter din anime-liste",
+  "exportYourMangaList": "Eksporter din mangaliste",
+  "extensionConfigurations": "Udvidelseskonfigurationer",
+  "extensionConfigurationsRepos": "Udvidelseskonfigurationer og repos",
+  "extensionManager": "Udvidelsesadministrator",
+  "extensionPackages": "Udvidelsespakker",
+  "extensionPreferences": "Indstillinger for udvidelser",
+  "extensionSettings": "Indstillinger for udvidelser",
+  "extensionSettingsAndSourceConfigurations": "Indstillinger for udvidelser og konfigurationer af kilder",
+  "extensionTesting": "Test af udvidelser",
+  "extensionType": "Udvidelsestype",
+  "extensions": "Udvidelser",
+  "extensionsDiagnostics": "Udvidelser og fejlfinding",
+  "extensionsRepositories": "Udvidelser og arkiver",
+  "extensionsSources": "Udvidelser og kilder",
+  "extensionsTailoredToYourNeeds": "Udvidelser, der er skræddersyet til dine behov",
+  "externalStreamingLinks": "Eksterne links og streaming-links",
+  "externalBackupsRestoreMetadataAndConfigurations": "Eksterne sikkerhedskopier gendanner metadata og konfigurationer på en sikker måde.",
+  "externalBrowser": "Ekstern browser",
+  "extras": "Ekstraudstyr",
+  "factoryReset": "Fabriksindstilling",
+  "factoryReset2": "Fabriksindstilling",
+  "failedToCheckForUpdates": "Det lykkedes ikke at søge efter opdateringer.",
+  "failedToCheckPluginUpdates": "Det lykkedes ikke at kontrollere, om der var opdateringer til plugins.",
+  "failedToDeleteChapter": "Det lykkedes ikke at slette kapitlet",
+  "failedToDeleteEpisode": "Det lykkedes ikke at slette afsnittet",
+  "failedToDeleteListEntry": "Det lykkedes ikke at slette listeposten",
+  "failedToDeleteMedia": "Det lykkedes ikke at slette mediefilen",
+  "failedToDownloadImage": "Det lykkedes ikke at downloade billedet",
+  "failedToFetchChapters": "Det lykkedes ikke at hente kapitlerne",
+  "failedToFetchDetails": "Det lykkedes ikke at hente oplysninger",
+  "failedToFetchImageForSharing": "Det lykkedes ikke at hente billedet til deling",
+  "failedToFetchPluginReleaseDetails": "Det lykkedes ikke at hente oplysninger om plugin-udgivelsen.",
+  "failedToFetchPolicy": "Det lykkedes ikke at hente politikken.",
+  "failedToFetchReleaseDetails": "Det lykkedes ikke at hente oplysninger om udgivelsen.",
+  "failedToFetchServers": "Det lykkedes ikke at hente serverne",
+  "failedToLoadDetails": "Det lykkedes ikke at indlæse oplysninger",
+  "failedToLoadFontFile": "Det lykkedes ikke at indlæse skrifttypefilen",
+  "failedToLoadProfileAccountMay": "Det lykkedes ikke at indlæse profilen — kontoen er muligvis privat eller kunne ikke findes",
+  "failedToLoadTorrentMetadata": "Det lykkedes ikke at indlæse torrent-metadata",
+  "failedToPerformAction": "Handlingen kunne ikke udføres",
+  "failedToRemoveRepo": "Det lykkedes ikke at fjerne repoen",
+  "failedToStartExtensionRuntime": "Det lykkedes ikke at starte udvidelsens kørselstid",
+  "failedToUpdateAnilist": "Det lykkedes ikke at opdatere AniList",
+  "failedToUpdateListEntry": "Det lykkedes ikke at opdatere listeposten",
+  "failedToUpdatePreference": "Det lykkedes ikke at opdatere indstillingen",
+  "failedToUpdateRole": "Det lykkedes ikke at opdatere rollen",
+  "favoriteTitle": "Favorit-titel",
+  "favouriteAnime": "Favoritanime",
+  "favouriteCharacters": "Favoritfigurer",
+  "favouriteManga": "Favoritmanga",
+  "favouriteStaff": "Favoritmedarbejdere",
+  "favouriteStudios": "Favoritstudier",
+  "featuresIssues": "Funktioner/Problemer",
+  "fetchingAvailableServers": "Henter tilgængelige servere...",
+  "fetchingLatestReleaseDetails": "Henter oplysninger om den seneste udgivelse...",
+  "fetchingTorrentFileList": "Henter liste over torrent-filer...",
+  "filler": "UDFYLDNING",
+  "filter": "Filter",
+  "filterActivities": "Filtrer aktiviteter",
+  "filterActivity": "Filtrer aktiviteter",
+  "filterByChapterCount": "Filtrer efter antal kapitler",
+  "filterByDurationMin": "Filtrer efter varighed (min)",
+  "filterByEpisodeCount": "Filtrer efter antal afsnit",
+  "filterByGenre": "Filtrer efter genre",
+  "filterByVolumeCount": "Filtrer efter antal enheder",
+  "filterGenres": "Filtrer efter genrer",
+  "filterOutAdultNsfwEntriesFrom": "Filtrer indlæg med voksenindhold/NSFW fra fællesskabets anbefalinger.",
+  "filterOutEntriesAlreadyInYour": "Filtrer de poster fra, der allerede er på din liste",
+  "filterOutEntriesAlreadyInYourList": "Filtrer de poster, der allerede er på din liste, ud fra, om du har set eller læst dem.",
+  "filterSettings": "Filterindstillinger",
+  "filters": "FILTRE",
+  "findAndManageSpecificUsers": "Find og administrer bestemte brugere",
+  "findAnimeSauceByScreenshots": "Find anime-sider ved hjælp af skærmbilleder",
+  "findSource": "Find kilde",
+  "findYourFavouriteAnimeOrManga": "Find din yndlingsanime, manga, manhwa eller hvad du nu har lyst til!",
+  "findYourFavouriteAnimeMangaManhwa": "Find din yndlingsanime, manga, manhwa eller hvad du nu har lyst til!",
+  "finishDate": "Afslutningsdato",
+  "firstChapter": "Første kapitel",
+  "firstUser": "Første bruger",
+  "fitToScreenWidth": "Tilpas til skærmbredde",
+  "fontFamily": "Skrifttypefamilie",
+  "fontSize": "Skriftstørrelse",
+  "forceReDownload": "Tving genindlæsning",
+  "forceSyncFromSdCard": "Tving synkronisering fra SD-kort",
+  "forks": "Gafler",
+  "format": "Format",
+  "formatDistribution": "Formatfordeling",
+  "frameInterpolation": "Billedinterpolation",
+  "freeSupport": "Gratis support",
+  "frequentlyRevisited": "Ofte besøgt",
+  "fromUrl": "Fra URL",
+  "fullWidthDetailedCardWithLarge": "Detaljeret kort i fuld bredde med stort miniaturebillede og episodemetadata",
+  "fullWidthDetailedCardsWithProgress": "Detaljerede kort i fuld bredde med fremskridtsindikator og »Læs«-knap",
+  "fullWidthHeroBannerWithCompact": "Hero-banner i fuld bredde med kortfattede oplysninger og en kort oversigt.",
+  "general": "Generelt",
+  "generalPrivacy": "Generelt og privatlivspolitik",
+  "generalSync": "Generelt og synkronisering",
+  "generalAppPreferencesAndSyncServices": "Generelle app-indstillinger og synkroniseringstjenester",
+  "generalAppSettingsAndSyncServices": "Generelle app-indstillinger og synkroniseringstjenester",
+  "generalPreferences": "Generelle indstillinger",
+  "genres": "Genrer",
+  "genresUpper": "GENRER",
+  "gestureForBrightnessVolume": "Gestus til lysstyrke og lydstyrke",
+  "getHelpWithTheCommentSystem": "Få hjælp til kommentarsystemet",
+  "getStarted": "Kom i gang",
+  "globalConcurrencyLimit": "Global grænse for samtidighed",
+  "glowMultiplier": "Glødmultiplikator",
+  "goSuperDarkMode": "Skift til Super Dark Mode!",
+  "goToDownloads": "Gå til Downloads",
+  "goToExtensionsToGetStarted": "Gå til »Udvidelser« for at komme i gang",
+  "goToPluginDownloader": "Gå til Plugin Downloader",
+  "goToRuntimeManager": "Gå til Runtime Manager",
+  "goodAfternoon": "God eftermiddag",
+  "goodEvening": "Godaften",
+  "goodMorning": "Godmorgen",
+  "goodnight": "Godnat",
+  "gotIt": "Forstået",
+  "grainIntensity": "Kornintensitet",
+  "grainTextureOverlay": "Overlejring med kornstruktur",
+  "grantPermission": "Giv tilladelse",
+  "grantPermissions": "Tildel tilladelser",
+  "grid": "Gitter",
+  "gridSize": "Gitterstørrelse",
+  "gridView": "Gittervisning",
+  "guest": "Gæst",
+  "happySnacking": "God fornøjelse med snackene",
+  "hardwareDisplayModeSwitchingIsNot": "Din enhed understøtter ikke skift af skærmtilstand via hardware.",
+  "helpSupport": "Hjælp og support",
+  "hexColorCode": "Hex-farvekode",
+  "hey": "Hej ",
+  "hidden": "Skjult",
+  "hiddenFromYourPublicProfile": "Skjult på din offentlige profil",
+  "hiddenTabs": "Skjulte faner",
+  "hideAdultContent": "Skjul indhold for voksne",
+  "hideButton": "Skjul-knap",
+  "hideByListStatus": "Skjul efter listestatus",
+  "hideCompleted": "Skjul afsluttet",
+  "hideDropped": "Skjul fjernet",
+  "hideEntriesThatAreInYour": "Skjul poster, der er på din planliste.",
+  "hideEntriesThatAreMarkedAs": "Skjul de poster på din liste, der er markeret som afsluttede.",
+  "hideEntriesThatYouAreCurrently": "Skjul de indlæg, du lige nu ser eller læser.",
+  "hideEntriesThatYouAreRewatching": "Skjul de indlæg, du ser igen.",
+  "hideEntriesThatYouHaveDropped": "Skjul de poster, du har slettet.",
+  "hideEntriesThatYouHavePut": "Skjul de poster, du har sat på vent.",
+  "hideNsfw": "Skjul NSFW",
+  "hideNsfw18Content": "Skjul indhold, der ikke er egnet for arbejdspladsen / 18+",
+  "hideNsfwContent": "Skjul indhold, der ikke er egnet til arbejdspladsen",
+  "hideNsfwRecommendations": "Skjul anbefalinger, der ikke er egnet til arbejdspladsen",
+  "hideOnHoldPaused": "Skjul »På vent« / »Pauset«",
+  "hidePlanning": "Skjul planlægning",
+  "hideRewatching": "Skjul »Se igen«",
+  "hideSystemStatusAndNavigationBars": "Skjul systemstatus- og navigationsbjælker",
+  "hideWatchingReading": "Skjul visning/læsning",
+  "history": "Historie",
+  "historyStatistics": "Historie og statistik",
+  "historyCardStyle": "Historiekort-stil",
+  "historyItemDeleted": "Historikpost slettet",
+  "hlsParallelSegments": "HLS-parallelle segmenter",
+  "holdAndDragAnyItemTo": "Hold et hvilket som helst element nede og træk det for at ændre rækkefølgen",
+  "holdToAccessHistoryEditor": "Hold nede for at åbne historikredigeringsværktøjet",
+  "holdToDelete": "Hold nede for at slette",
+  "holdToSpeedUp": "Hold nede for at øge hastigheden",
+  "home": "Hjem",
+  "horizontal": "Vandret",
+  "hostEG12700": "Vært (f.eks. 127.0.0.1)",
+  "hours": "Åbningstider",
+  "howItWorksCompatibilityRanks": "Sådan fungerer det & Kompatibilitetsrangeringer",
+  "howMuchInPercentageToMark": "Hvor stor en procentdel skal der angives for at markere et afsnit som set?",
+  "howToUseTheCommentSystem": "Sådan bruger du kommentarsystemet:",
+  "hue": "Hue",
+  "ifEnabledAContinueWatchingBar": "Hvis denne funktion er aktiveret, vises der en »Fortsæt med at se«-bjælke over den nederste navigationsbjælke på startsiden.",
+  "ifEnabledAllLibraryItemsWill": "Hvis denne funktion er aktiveret, vil alle biblioteksposter blive delt på tværs af alle sporings tjenester.",
+  "ifEnabledAnymexWillAskFor": "Hvis funktionen er aktiveret, vil Anymex anmode om tilladelse til sporing; hvis ikke, vil den som standard foretage sporing.",
+  "ifEnabledYouWillNotGet": "Hvis denne indstilling er aktiveret, vil du ikke blive bedt om at godkende indhold for voksne på Anilist/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "Hvis den midlertidige app-cache når denne størrelse, slettes den automatisk.",
+  "ifYouAreUsingAJson": "Hvis du bruger et JSON-tema, vil ændringer her ikke påvirke afspillerens betjeningsknapper. Skift til et indbygget tema for at anvende disse indstillinger.",
+  "ifYouCantDonateWatchThis": "Hvis du ikke har mulighed for at donere, kan du se denne reklame for at støtte",
+  "image": "Billede",
+  "imageShowsThumbnail": "Billede (viser miniaturebillede)",
+  "imageFilterQuality": "Billedfilterkvalitet",
+  "imageSharedFromAnymex": "Billede delt fra AnymeX",
+  "imagesWillBeDownloadedInFull": "Billederne downloades i fuld kvalitet. Hvert kapitel gemmes i sin egen mappe.",
+  "immersiveMode": "Immersiv tilstand",
+  "importLabel": "IMPORT",
+  "importLabel2": "Import",
+  "importManageCustomJsonThemes": "Importer og administrer brugerdefinerede JSON-temaer",
+  "importBackup": "Importer sikkerhedskopi",
+  "importCustomFont": "Importer brugerdefineret skrifttype",
+  "importFromUrl": "Import fra URL",
+  "includeAdultNsfwSuggestions": "Medtag forslag til voksne og NSFW-indhold",
+  "incognito": "Inkognito",
+  "incognitoActive": "Inkognito (Aktiv)",
+  "incognitoMode2": "Inkognitotilstand",
+  "indiaUpi": "Indien (UPI)",
+  "info": "Info",
+  "inlineCode": "Inline-kode",
+  "insert": "Indsæt",
+  "installPermission": "Installationsrettighed",
+  "installPermissionIsRequiredToUpdate": "Der kræves installationsrettigheder for at opdatere appen",
+  "installedPackages": "Installerede pakker",
+  "installedThemes": "Installerede temaer",
+  "interfaceStyling": "Design af brugergrænsefladen",
+  "internalBrowser": "Intern browser",
+  "international": "Internationalt",
+  "invalidBackupFileOrIncorrectPassword": "Ugyldig sikkerhedskopifil eller forkert adgangskode",
+  "invertVolumeKeys": "Vend lydstyrketasterne",
+  "italic": "Kursiv",
+  "joinDiscordCommunity": "Bliv medlem af Discord-fællesskabet",
+  "joinNewDiscord": "Bliv medlem af den nye Discord-server",
+  "joinTelegramChannel": "Bliv medlem af Telegram-kanalen",
+  "joinUsForDroppingFeedbackOr": "Kom og giv os feedback eller fremsæt forslag til nye funktioner",
+  "jsonThemeManager": "JSON-temahåndtering",
+  "judgment": "Dom",
+  "keepEditing": "Fortsæt med at redigere",
+  "keepItChill": "Tag det roligt",
+  "keepScreenOn": "Hold skærmen tændt",
+  "keepVoicePitchStableAtHigher": "Hold stemmehøjden stabil ved højere hastigheder",
+  "koFiSupport": "Ko-fi-støtte",
+  "languageVariant": "Sprogvariant",
+  "lastAdded": "Senest tilføjet",
+  "lastChapter": "Sidste kapitel",
+  "later": "Senere",
+  "latest": "Seneste",
+  "latestManga": "Seneste manga",
+  "layout": "Opsætning",
+  "layoutStyle": "Layoutstil",
+  "leaderboard": "Rangliste",
+  "learnHowToFormatYourComments": "Lær, hvordan du formaterer dine kommentarer",
+  "leftSide": "Venstre side",
+  "letterSpacing": "Bogstavafstand",
+  "levelProgress": "Fremskridt på niveauet",
+  "libraryLabel": "Bibliotek",
+  "librarySettings": "Biblioteksindstillinger",
+  "libraryStatistics": "Biblioteksstatistikker",
+  "lightness": "Lethed",
+  "likedBy": "Fået et »Like« af",
+  "lineHeight": "Linjehøjde",
+  "linkAutoDetected": "Link (automatisk registreret)",
+  "linkCopiedToClipboard": "Linket er kopieret til udklipsholderen!",
+  "linkHasExpiredAndEpisodeUrl": "Linket er udløbet, og URL’en til afsnittet er ikke tilgængelig.",
+  "linkHasExpiredAndNoAlternative": "Linket er udløbet, og der blev ikke fundet nogen alternativ stream.",
+  "linotteDefault": "Linotte (standard)",
+  "liquidBackground": "Flydende baggrund",
+  "liquidMode": "Flydende tilstand",
+  "listEntryUpdatedSuccessfully": "Oplysningerne i listen er blevet opdateret!",
+  "listExporter": "Listeeksportør",
+  "listNameAlreadyExists": "Navnet på listen findes allerede",
+  "listOptions": "Listeindstillinger",
+  "liveBlurIsUnavailableWhenUsing": "Live-sløring er ikke tilgængelig, når man bruger Fluid Mesh.",
+  "livePreview": "LIVE-FORHÅNDSSNIT",
+  "livePreview2": "Live-forhåndsvisning",
+  "loadTemplate": "Indlæs skabelon",
+  "loadingMediaFiles": "Indlæser mediefiler...",
+  "loadingMedia": "Indlæser medier...",
+  "local": "Lokalt",
+  "localLibrary": "Det lokale bibliotek",
+  "localMedia": "Lokale medier",
+  "location": "Placering",
+  "logCapture": "Logoptagelse",
+  "logDirectory": "Logmappe",
+  "logIn": "Log ind",
+  "logInRequired": "Login påkrævet",
+  "logInToCustomizeYourPush": "Log ind for at tilpasse dine indstillinger for push-beskeder.",
+  "logInToJoinTheConversation": "Log ind for at deltage i diskussionen og skrive en kommentar.",
+  "logOut": "Log ud",
+  "loggedInTrackingServices": "Sporingstjenester for indloggede brugere",
+  "login": "Log ind",
+  "loginAuthTokens": "Login- og godkendelsestokener",
+  "loginInsideTheAppRecommended": "Log ind via appen (anbefales)",
+  "loginSessions": "Loginsessioner",
+  "loginUsingYourDefaultBrowser": "Log ind via din standardbrowser",
+  "loginWithToken": "Log ind med token",
+  "logoAnimation": "Logoanimation",
+  "logoName": "Logo-navn:",
+  "logs": "Logs",
+  "longPressPageActions": "Handlinger ved langt tryk på en side",
+  "makeEverythingGlassyLiquidy": "Gør det hele glasagtigt og flydende...",
+  "manageAnilistLists": "Administrer Anilist-lister",
+  "manageCachedImagesThresholdsAndReset": "Administrer cachelagrede billeder, tærskelværdier og nulstil appdata",
+  "manageDeviceStorageAndNotificationsTo": "Administrer enhedens lagerplads og notifikationer for at downloade og administrere dine mediefiler offline.",
+  "manageLogCaptureAndShareSaved": "Administrer logindsamling og del gemte logfiler",
+  "manageMyanimelistLists": "Administrer lister på MyAnimeList",
+  "managePluginsSources": "Administrer plugins og kilder",
+  "manageSimklLists": "Administrer Simkl-lister",
+  "manageSourcesAndRepositoriesToUse": "Administrer kilder og arkiver for at udnytte appens fulde potentiale",
+  "manageYourMyanimelistAnilistSimklAccounts": "Administrer dine MyAnimeList-, Anilist- og Simkl-konti!",
+  "management": "Ledelse",
+  "manga": "Manga",
+  "mangaNovelReaderSettingsTapZones": "Indstillinger for manga- og romanlæser, trykzoner",
+  "mangaNovelViewerSettingsTapZones": "Indstillinger for manga- og romanvisning, trykzoner",
+  "mangaAndNovelReaderStylesAnd": "Læsermodeller til manga og romaner samt trykzoner",
+  "mangaCustomLists": "Brugerdefinerede mangalister",
+  "mangaDetailsPhrasing": "Formulering af manga-oplysninger",
+  "mangaLibrary": "Manga-bibliotek",
+  "mangaList": "MANGA-LISTE",
+  "mangaScore": "Manga-score",
+  "mangaSectionOrder": "Bestilling af manga-afdelingen",
+  "manuallyPasteOauthAccessToken": "Indsæt OAuth-adgangstoken manuelt",
+  "markAllRead": "Marker alle som læst",
+  "markAsWatched": "Markér som set",
+  "markdownGuide": "Vejledning i Markdown",
+  "maximumDemuxerBufferMb": "Maksimal demuxer-buffer (MB)",
+  "maybeLater": "Måske senere",
+  "mean": "GEMENDSOM",
+  "meanScore": "Gennemsnitsscore",
+  "mediaPlayback": "Medier og afspilning",
+  "mediaLibrary": "Mediebibliotek",
+  "mediaSessionBluetoothSupport": "Mediesession (Bluetooth-understøttelse)",
+  "mediaTypeBreakdown": "Fordeling efter medietype",
+  "mediaYouDownloadWillAppearHere": "De medier, du downloader, vises her.",
+  "megaskipDuration": "MegaSkip-varighed",
+  "mention": "Omtale",
+  "mentions": "Omtaler",
+  "merge": "Flet",
+  "messageFriend": "Send besked til ven",
+  "minutesWatched": "Antal minutter set",
+  "miscellaneous": "Diverse",
+  "missingRuntimeHost": "Manglende kørselsvært",
+  "moderation": "Moderation",
+  "moderationActions": "Moderationshandlinger",
+  "moderationPanel": "Moderationspanel",
+  "moderator": "Moderator",
+  "moreOptions": "Flere muligheder",
+  "morePopularManga": "Flere populære mangaer",
+  "moveToLeft": "Flyt til venstre",
+  "moveToRight": "Flyt til højre",
+  "movie": "Film",
+  "mpvConfiguration": "MPV-konfiguration",
+  "muteUser": "Dæmp bruger",
+  "mutualConnections": "Gensidige forbindelser",
+  "mutualFriends": "Fælles venner",
+  "nameplates": "Navneskilte",
+  "navBarLayout": "Navigationsbjælkens layout",
+  "navBarStyle": "Navigationsbjælkens stil",
+  "navigationLayout": "Navigationslayout",
+  "needHelp": "Brug for hjælp?",
+  "network": "Netværk",
+  "newLabel": "NYT",
+  "newCollection": "Ny kollektion",
+  "newCustomListName": "Nyt navn på brugerdefineret liste",
+  "newDownload": "Ny download",
+  "newList": "Ny liste",
+  "newestFirst": "Nyeste først",
+  "nextRelease": "Næste udgivelse",
+  "nextReleasePrediction": "Forudsigelse af næste udgivelse",
+  "noActiveDownloads": "Ingen aktive downloads",
+  "noActiveSourceOrMediaFound": "Der blev ikke fundet nogen aktive kilder eller medier",
+  "noActiveSourceSelected": "Der er ikke valgt nogen aktiv kilde",
+  "noActivity": "Ingen aktivitet",
+  "noAnimeFound": "Der blev ikke fundet nogen anime",
+  "noAudioTracksAvailable": "Der er ingen lydspor tilgængelige",
+  "noChaptersFound": "Der blev ikke fundet nogen kapitler",
+  "noChaptersFound2": "Der blev ikke fundet nogen kapitler",
+  "noCommonGenres": "Ingen almindelige genrer",
+  "noCommonTags": "Ingen fælles tags",
+  "noContributorsFound": "Der blev ikke fundet nogen bidragydere.",
+  "noCustomListsAvailable": "Der er ingen brugerdefinerede lister tilgængelige.",
+  "noCustomListsYet": "Der er endnu ingen brugerdefinerede lister",
+  "noCustomListsYet2": "Der er endnu ingen brugerdefinerede lister.",
+  "noDataAvailableForThisSection": "Der foreligger ingen data for dette afsnit",
+  "noDataAvailable": "Der foreligger ingen data.",
+  "noDecadeBreakdownAvailable": "Der foreligger ingen opdeling efter årti",
+  "noDescriptionAvailable": "Der findes ingen beskrivelse",
+  "noDownloadedChaptersFoundForThis": "Der blev ikke fundet nogen downloadede kapitler til denne manga",
+  "noDownloadedEpisodesFoundForThis": "Der blev ikke fundet nogen downloadede episoder til denne anime",
+  "noEntriesFound": "Der blev ikke fundet nogen poster",
+  "noEpisodesFound": "Der blev ikke fundet nogen episoder",
+  "noExtensionManagersFound": "Der blev ikke fundet nogen udvidelsesadministratorer.",
+  "noExtensionsFound": "Der blev ikke fundet nogen udvidelser",
+  "noExtensionsInstalled": "Der er ikke installeret nogen udvidelser",
+  "noGenresAvailableAnilistApiMay": "Der er ingen genrer tilgængelige. AniList API er muligvis midlertidigt nede.",
+  "noHiddenTabs": "Ingen skjulte faner",
+  "noInsightsAvailableYetAddItems": "Der er endnu ingen indblik tilgængelige. Tilføj emner til dit bibliotek!",
+  "noItemsInThisLibrary": "Der er ingen poster i dette bibliotek.",
+  "noLoggedStatsYetStartWatching": "Der er endnu ingen registrerede statistikker. Begynd at se/læse!",
+  "noMediaFilesFound": "Der blev ikke fundet nogen mediefiler",
+  "noMediaFoundForThisStudio": "Der blev ikke fundet noget medie til dette studie",
+  "noMediaInThisList": "Der er ingen medier på denne liste.",
+  "noMoreActivities": "Der er ikke flere aktiviteter",
+  "noMoreRecommendations": "Ingen flere anbefalinger",
+  "noMoreUsers": "Der er ikke flere brugere",
+  "noNotificationsYet": "Der er endnu ingen meddelelser",
+  "noNovelExtensionsInstalledToRead": "Der er ikke installeret nogen udvidelser til at læse denne roman.",
+  "noPendingReports": "Ingen udestående rapporter",
+  "noPlayableStreamAvailableForThis": "Der er ingen afspilbar stream tilgængelig for dette afsnit.",
+  "noPlayableStreamWasReturnedBy": "Denne kilde returnerede ingen afspilbar stream.",
+  "noRecentActivityFoundForSelected": "Der blev ikke fundet nogen nylige aktiviteter for de valgte filtre",
+  "noRecommendationsFound": "Der blev ikke fundet nogen anbefalinger",
+  "noRecommendationsYet": "Der er endnu ingen anbefalinger",
+  "noReleasesFound": "Der blev ikke fundet nogen udgivelser.",
+  "noRepliesYetBeTheFirst": "Der er endnu ingen svar. Vær den første!",
+  "noRepositoriesYet": "Der er endnu ingen arkiver",
+  "noResult": "Intet resultat",
+  "noResultsFound": "Der blev ikke fundet nogen resultater.",
+  "noResultsYet": "Der er endnu ingen resultater",
+  "noResultsTrySearchingByTitle": "Ingen resultater. Prøv at søge efter titel.",
+  "noSearchResults": "Ingen søgeresultater",
+  "noServersAvailable": "Der er ingen servere tilgængelige",
+  "noServersFound": "Der blev ikke fundet nogen servere.",
+  "noServicesAvailable": "Der er ingen tjenester tilgængelige",
+  "noSourceInstalled": "Der er ikke installeret nogen kilde",
+  "noSourceSelected": "Der er ikke valgt nogen kilde",
+  "noSourcesFound": "Der blev ikke fundet nogen kilder",
+  "noStatsAvailable": "Der foreligger ingen statistikker",
+  "noSubtitleTracksAvailable": "Der findes ingen undertekstspor",
+  "noTestsRunning": "Der kører ingen tests",
+  "noThemesYet": "Der er endnu ingen temaer",
+  "noTrackingServiceConnected": "Der er ingen sporingsservice tilsluttet",
+  "noUsersFound": "Der blev ikke fundet nogen brugere",
+  "noVisibleTabs": "Ingen synlige faner",
+  "noVisualsFoundForThisAnime": "Der blev ikke fundet billeder til denne anime (╥﹏╥)",
+  "noWatchOrderFound": "Der blev ikke fundet nogen overvågningskendelse.",
+  "notNow": "Ikke nu",
+  "notSupported": "Understøttes ikke",
+  "notTracked": "Spores ikke",
+  "noteAddingKotatsuRepositoryWillTake": "Bemærk: Det tager mindst 1–2 minutter at tilføje Kotatsu-repositoriet, da udvidelsespluginet skal downloades og konverteres ved den første indlæsning.",
+  "nothingDownloadedYet": "Der er endnu ikke hentet noget",
+  "nothingToPreview": "Der er intet at få et smugkig på",
+  "nothingToPreviewYet": "Der er endnu ikke noget at se.",
+  "notificationPreferences": "Indstillinger for notifikationer",
+  "notifications": "Meddelelser",
+  "notifyForOfficialAnnouncementsAndApp": "Få besked om officielle meddelelser og app-opdateringer",
+  "notifyIfYourCommentIsRemoved": "Du får besked, hvis din kommentar bliver slettet af en moderator",
+  "notifyOnNewCommentsForMedia": "Få besked om nye kommentarer til de medier, du har diskuteret",
+  "notifyOnUpvotesAndDownvotes": "Giv besked om op- og nedstemmer",
+  "notifyOnWarningsPinnedCommentsOr": "Giv besked om advarsler, fastgjorte kommentarer eller låste tråde",
+  "notifyWhenSomeoneMentionsYourUsername": "Giv besked, når nogen @mentioner dit brugernavn",
+  "notifyWhenSomeoneRepliesToYour": "Giv besked, når nogen svarer på din kommentar",
+  "novel": "Roman",
+  "novelCustomLists": "Nye brugerdefinerede lister",
+  "novelDetailsPhrasing": "Formulering af romanoplysninger",
+  "novelFontFamily": "Ny skrifttypefamilie",
+  "novelLibrary": "Romanbibliotek",
+  "novelSnapshots": "Nye øjebliksbilleder",
+  "novelTheme": "Nyt tema",
+  "novels": "Romaner",
+  "numberOfActiveDownloadTasks": "Antal aktive downloadopgaver",
+  "numberOfParallelChunksPerDownload": "Antal parallelle blokke pr. download",
+  "okay": "Okay",
+  "oldestFirst": "Ældste først",
+  "oledMode": "OLED-tilstand",
+  "onMyList": "På min liste",
+  "oneOptionPerLineLikeHwdec": "Én indstilling pr. linje, f.eks. hwdec=auto eller scale=ewa_lanczossharp. Linjer, der begynder med #, er kommentarer. Profiler i [parenteser] ignoreres.",
+  "online": "Online",
+  "openCloset": "Åben garderobe",
+  "openInBrowser": "Åbn i browseren",
+  "openSettings": "Åbn Indstillinger",
+  "openSource": "Open Source",
+  "openSupportedLinks": "Åbn understøttede links",
+  "openTheDownloadsScreenFromThe": "Åbn skærmbilledet »Downloads« fra menuen",
+  "openVideoStreamInExternalPlayer": "Åbn videostrømmen som standard i en ekstern afspiller",
+  "openWebview": "Åbn Webview",
+  "openingsEndings": "Begyndelser og afslutninger",
+  "openslEsNativeAudioEngine": "OpenSL ES’ indbyggede lydmotor",
+  "options": "INDSTILLINGER",
+  "order": "BESTILLING",
+  "originalSize": "Oprindelig størrelse",
+  "otakuRankLevel": "Otaku-rangniveau",
+  "other": "Andet",
+  "otherFeatures": "Andre funktioner",
+  "otherRecommendations": "Andre anbefalinger",
+  "otherStuffs": "Andet",
+  "otherTemporaryFiles": "Andre midlertidige filer",
+  "otherWaysToSupport": "Andre måder at støtte på",
+  "others": "Andre",
+  "outlineType": "Konturtype",
+  "overscroll": "Overscroll",
+  "overscrollToPrevNextChapter": "Rul ned for at gå til forrige/næste kapitel",
+  "overview": "Oversigt",
+  "overwrite": "Overskriv",
+  "pageAnimationDemo": "Demo af sideanimation",
+  "pageReaderMode": "Sidelæser-tilstand",
+  "paged": "Sideinddelt",
+  "palette": "Palet",
+  "palettes": "Paletter",
+  "paragraphSpacing": "Abstandsindstilling mellem afsnit",
+  "parallelSegmentsForVideoDownloader": "Parallelle segmenter til videodownloader",
+  "password": "Adgangskode",
+  "passwordProtectBackup": "Beskytt sikkerhedskopien med adgangskode",
+  "passwordRequired": "Adgangskode påkrævet",
+  "passwordsDontMatch": "Adgangskoderne stemmer ikke overens!",
+  "pasteCustomImageUrl": "Indsæt URL til et brugerdefineret billede...",
+  "pasteUrlHere": "Indsæt URL her...",
+  "pathCopiedToClipboard": "Stien er kopieret til udklipsholderen",
+  "payViaAnyUpiApp": "Betal via en hvilken som helst UPI-app",
+  "paypalDonation": "PayPal-donation",
+  "paypalRecipientNotice": "Meddelelse til modtageren via PayPal",
+  "penaltyDuration": "Straffens varighed",
+  "performance": "Ydeevne",
+  "permissionsRequired": "Nødvendige tilladelser",
+  "persistentPageIndicator": "Indikator for vedvarende side",
+  "personalizeTheLookAndMakeIt": "Giv udseendet et personligt præg og gør det til dit eget",
+  "personalizedRecommendations": "Personlige anbefalinger",
+  "platform": "Platform",
+  "playAroundWithAppTheme": "Prøv dig frem med app-temaet",
+  "playAroundWithTheVideoPlayer": "Prøv at lege lidt med videoafspilleren",
+  "playback": "Afspilning",
+  "playbackSpeed": "Afspilningshastighed",
+  "playbackSpeeds": "Afspilningshastigheder",
+  "player": "Spiller",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Spillerindstillinger, undertekster og afspilningsindstillinger",
+  "playerSettings": "Spillerindstillinger",
+  "playerTheme": "Spillertema",
+  "playerThemes": "Spillertemaer",
+  "pleaseChooseALogoFile": "Vælg venligst en logo-fil.",
+  "pleaseEnterAPasswordOrDisable": "Indtast venligst en adgangskode, eller deaktiver adgangskodebeskyttelsen.",
+  "pleaseEnterASearchTerm": "Indtast venligst et søgeord",
+  "pleaseEnterAUsernameToCompare": "Indtast venligst et brugernavn, der skal sammenlignes med.",
+  "pleaseGrantStoragePermissionToBrowse": "Giv venligst tilladelse til opbevaring, så vi kan gennemse dine mediefiler",
+  "pleaseLoginFirst": "Log venligst ind først",
+  "pleaseLoginFirstToExportYour": "Du skal først logge ind for at kunne eksportere din liste.",
+  "pleaseLoginToFavorite": "Log ind for at tilføje til favoritter!",
+  "pleaseLoginToUseThisFilter": "Log ind for at kunne bruge dette filter!",
+  "pleaseProvideAReasonForThis": "Angiv venligst en begrundelse for denne handling",
+  "pleaseRestartTheAppToApply": "Genstart venligst appen for at gemme ændringerne.",
+  "pleaseSelectABackupFileFirst": "Vælg venligst først en sikkerhedskopifil",
+  "pleaseSelectAValidApkFile": "Vælg venligst en gyldig APK-fil.",
+  "pleaseSelectAValidJarFile": "Vælg venligst en gyldig JAR-fil.",
+  "pleaseSelectAtLeastOneItem": "Vælg venligst mindst én fil, der skal sikkerhedskopieres.",
+  "pleaseSelectAtLeastOneItemTo": "Vælg venligst mindst én post, der skal gendannes.",
+  "pleaseWriteAtLeast30Characters": "Skriv venligst mindst 30 tegn",
+  "pluginInstallationSync": "Installation og synkronisering af plugin",
+  "pluginIsAlreadyUpToDate": "Pluginet er allerede opdateret.",
+  "pluginJarCopiedPleaseRestartThe": "Plugin-jar-filen er kopieret. Genstart venligst appen.",
+  "pluginNotInstalled": "Plugin er ikke installeret",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "Pluginet er blevet downloadet igen uden problemer. Genstart for at aktivere ændringerne.",
+  "pluginReDownloadedPleaseRestartThe": "Pluginet er blevet downloadet igen. Genstart venligst appen for at aktivere ændringerne.",
+  "pluginSyncedFromLocalApk": "Plugin synkroniseret fra lokal APK.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (maks. 20 MB)",
+  "popular": "Populært",
+  "popularAnime": "Populære anime-serier",
+  "popularAnimes": "Populære anime-serier",
+  "popularManga": "Populære mangaer",
+  "posterBlurMode": "Plakat-sløringstilstand",
+  "posterBlurScope": "Omfanget af sløring på plakater",
+  "poweredByAnimatch16PointCompatibility": "Baseret på AniMatch’ 16-punkts kompatibilitetsanalyse i AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Drevet af Commentum v2 – Avanceret kommentarsystem med moderering",
+  "preferences": "Indstillinger",
+  "preferencesSystem": "Indstillinger og system",
+  "preferredSubtitleLanguage": "Foretrukket sprog for undertekster",
+  "preparingImageToShare": "Forbereder billedet til deling...",
+  "preparingStream": "Forberedelse af stream",
+  "presetProviders": "FORUDINDSTILLEDE UDBYDERE",
+  "preventScreenFromSleeping": "Forhindr skærmen i at gå i dvale",
+  "preview": "Forhåndsvisning",
+  "previewUpper": "FORHÅNDSSIGT",
+  "privacySafety": "Privatliv og sikkerhed",
+  "privacySettingsAndSafetyFeatures": "Privatlivsindstillinger og sikkerhedsfunktioner",
+  "private": "Privat",
+  "privateEntry": "Privat indgang",
+  "profileEffects": "Profilvirkninger",
+  "profileIcon": "Profilikon",
+  "progress": "Fremskridt",
+  "progressHistory": "Fremskridt og historie",
+  "proposeNewFeaturesReportBugsAnd": "Foreslå nye funktioner, indberet fejl og snak med andre medlemmer",
+  "protocol": "PROTOKOL",
+  "proxy": "Proxy",
+  "proxyConfiguration": "Proxy-konfiguration",
+  "pulseaudioSoundServer": "PulseAudio-lydserver",
+  "queryRemoteRepositoryForAddOn": "Søg i det eksterne arkiv efter opdateringer til tilføjelsesprogrammer",
+  "queuedForDownload": "I kø til download",
+  "quickSelectFollowing": "Hurtigvalg (Følgende)",
+  "radiusMultiplier": "Radiusmultiplikator",
+  "random": "Tilfældigt",
+  "range": "Rækkevidde",
+  "rank": "Rang",
+  "rating": "Bedømmelse",
+  "reDownloadAndReinstallThePlugin": "Download og geninstaller plugin'et fra bunden",
+  "read": "Læs",
+  "readArticle": "Læs artiklen",
+  "readLatestUpdatesAboutThisAnime": "Læs de seneste nyheder om denne anime",
+  "readLatestUpdatesAboutThisManga": "Læs de seneste nyheder om denne manga",
+  "readOnePageAtATime": "Læs én side ad gangen",
+  "readAheadDurationInMinutes": "Forudlæsningstid i minutter",
+  "readaheadSeconds": "Readahead-sekunder",
+  "reader": "Læser",
+  "readerBackgroundOpacity": "Læserens baggrundsopacitet",
+  "readerControlTheme": "Tema med læserstyring",
+  "readerPreferences": "Læserindstillinger",
+  "readerSettings": "Læserindstillinger",
+  "readingDirection": "Læseretning",
+  "readingLayout": "Læselayout",
+  "readingManga": "At læse manga",
+  "readingMangaPhrasing": "Læsning af manga-udtryk",
+  "readingNovel": "Læse en roman",
+  "readingNovelPhrasing": "Læsning af romaner – formuleringer",
+  "realTime4kUpscalingForAnime": "4K-opskalering i realtid af anime-indhold",
+  "reason": "Begrundelse",
+  "reasonDeleted": "Begrundelsen er slettet.",
+  "reasonUpdated": "Begrundelsen er opdateret!",
+  "recentActivity": "Seneste aktivitet",
+  "recentMediaComments": "Seneste udtalelser i medierne",
+  "recentNews": "Seneste nyheder",
+  "recentSearches": "Seneste søgninger",
+  "recentlyCompleted": "Nyligt afsluttet",
+  "recentlyUpdated": "Senest opdateret",
+  "recommend": "Anbefal",
+  "recommendationSubmitted": "Anbefalingen er indsendt! 🎉",
+  "recommended": "Anbefalet",
+  "recommendedAnime": "Anbefalede anime-serier",
+  "recommendedBy": "Anbefalet af",
+  "recommendedManga": "Anbefalede mangaer",
+  "recommendedNovels": "Anbefalede romaner",
+  "reduceColorBandingArtifacts": "Reducer farvebåndsartefakter",
+  "refreshComments": "Opdater kommentarer",
+  "refreshRate": "Opdateringshastighed",
+  "relations": "Forhold",
+  "releaseDate": "Udgivelsesdato",
+  "releaseYear": "Udgivelsesår",
+  "releaseYearStats": "Statistikker for udgivelsesår",
+  "rememberMyChoice": "Husk mit valg",
+  "rememberServer": "Husk serveren",
+  "removalRequestSentToAdminsFor": "Anmodning om fjernelse sendt til administratorerne til gennemgang.",
+  "remove": "Fjern",
+  "removeBanner": "Fjern banner",
+  "removeDecoration": "Fjern dekorationen",
+  "removeEffect": "Fjern effekt",
+  "removeFromHistory": "Fjern fra historikken",
+  "removeItems": "Fjern varer",
+  "removeNameplate": "Fjern typeskiltet",
+  "removeTheme": "Fjern tema",
+  "removeWhiteBlackBorders": "Fjern hvide/sorte kanter",
+  "removeYourReason": "Fjerne din fornuft?",
+  "rename": "Omdøb",
+  "renameList": "Liste over navneændringer",
+  "reorderNavigationTabs": "Omarrangér navigationsfaner",
+  "replaceExistingDataOnThisDevice": "Erstat eksisterende data på denne enhed med sikkerhedskopien",
+  "replay": "Afspil igen",
+  "reportsQueue": "Kø med rapporter",
+  "repositories": "Arkiver",
+  "repositoryUrl": "URL til arkivet",
+  "repositoryUrlUpper": "URL til arkivet",
+  "requests": "Anmodninger",
+  "requiredForCoreAndVisualTuning": "Nødvendigt til Core- og Visual-optimering. Skal være slået fra på enheder med lav ydeevne.",
+  "reset": "Nulstil",
+  "resetUpper": "NULSTIL",
+  "resetDownloadPath": "Nulstil downloadsti",
+  "resetNovelReaderSettings": "Nulstil indstillingerne for Novel Reader",
+  "resetToDefault": "Nulstil til standardindstillinger",
+  "resetToDefault2": "Nulstil til standardindstillinger",
+  "resetToDefaultPicture": "Nulstil til standardbillede",
+  "resetToDefaultWallpaper": "Nulstil til standardbaggrund!",
+  "resizeMode": "Tilpas størrelse-tilstand",
+  "resizeModes": "Tilpasningsfunktioner",
+  "resolution": "Beslutning",
+  "resolve": "Beslutning",
+  "restartTheAppToApplyThe": "Genstart appen for at aktivere opdateringen.",
+  "restoreAllNovelReaderDefaults": "Gendan alle standardindstillinger for Novel Reader",
+  "restoreData": "Gendan data",
+  "restorePreview": "Gendan forhåndsvisning",
+  "restoreToDefaultInternalStorage": "Gendan standardindstillingerne for det interne lager",
+  "restoringWillOverwriteYourSelectedLocal": "Ved gendannelse overskrives de valgte elementer og indstillinger i dit lokale bibliotek med indholdet af denne sikkerhedskopi.",
+  "restrictMessagesToFollowing": "Begræns beskeder til følgende",
+  "results": "Resultater",
+  "resultsWillAppearGroupedByExtension": "Resultaterne vises grupperet efter filtypenavn",
+  "retainOriginalColor": "Bevar den oprindelige farve",
+  "retry": "Prøv igen",
+  "rightSide": "Højre side",
+  "riseAndShine": "Op og ud af sengen!",
+  "roleUpdatedSuccessfully": "Rollen er blevet opdateret uden problemer",
+  "roleAll": "Rolle: Alle",
+  "rollbackVersion": "Tidligere version",
+  "romajiTitle": "Titel på romaji",
+  "roundUpScores": "Samlet stilling",
+  "runtimeHost": "Kørselstid-vært",
+  "runtimeHostReleases": "Udgivelser af Runtime Host",
+  "runtimeHostRequired": "Krav til kørselsmiljø",
+  "safetyFeatures": "Sikkerhedsfunktioner:",
+  "saturation": "Mætning",
+  "sauceSearcher": "Sauce-søgemaskine",
+  "save": "Gem",
+  "saveEquip": "Gem og udstyr",
+  "saveChanges": "Gem ændringer",
+  "saveChanges2": "Gem ændringer",
+  "saveLastFrame": "Gem sidste billede",
+  "saveLogo": "Gem logo",
+  "savedAnimeEntriesAndProgress": "Gemte anime-poster og fremskridt",
+  "savedLightNovelsAndReadingState": "Gemte light novels og læsestatus",
+  "savedMangaEntriesAndChapters": "Gemte manga-poster og kapitler",
+  "savedStreamLinkHasExpiredFetching": "Det gemte link til streamen er udløbet. Henter et nyt link...",
+  "savesAScreenshotOfTheLast": "Gemmer et skærmbillede af det sidste billede, du har set. Hvis du deaktiverer denne funktion, reduceres lagerforbruget betydeligt",
+  "scaleFactor": "Skaleringsfaktor",
+  "scalingAlgorithm": "Skaleringsalgoritme",
+  "scanningForMoreServers": "Søger efter flere servere...",
+  "scanningForVideoStreams": "Søger efter videostreams...",
+  "score": "Resultat",
+  "scoreDistribution": "Pointfordeling",
+  "scoringSystem": "Pointsystem",
+  "search": "Søg",
+  "searchUpper": "SØG",
+  "searchAcrossExtensions": "Søg på tværs af udvidelser...",
+  "searchAnimeMovies": "Søg efter anime, film...",
+  "searchAnime": "Søg efter anime...",
+  "searchExtensions": "Søgeudvidelser",
+  "searchExtensionsEllipsis": "Søgeudvidelser...",
+  "searchFailed": "Søgningen mislykkedes",
+  "searchForAnime": "Søg efter anime",
+  "searchInHistory": "Søg i historikken...",
+  "searchInLibrary": "Søg i biblioteket...",
+  "searchItemsInList": "Søg efter emner på listen...",
+  "searchManga": "Søg efter manga...",
+  "searchQuery": "Søgeforespørgsel",
+  "searchSources": "Søg i kilder...",
+  "searchTags": "Søgeord...",
+  "searchUser": "Søg efter bruger",
+  "searchingDatabase": "Søger i databasen...",
+  "searching": "Søger...",
+  "season": "Sæson",
+  "seasons": "Årstider",
+  "secondsPerScreenLowerIsFaster": "Sekunder pr. skærmbillede (jo lavere, desto hurtigere)",
+  "secondsPerScreenPageLowerIs": "Sekunder pr. skærmbillede/side (jo lavere, desto hurtigere)",
+  "securityEncryption": "Sikkerhed og kryptering",
+  "seePeopleWhoContributedToAnymex": "Se de personer, der har bidraget til AnymeX",
+  "selectAFolderWhereAnymexWill": "Vælg en mappe, hvor AnymeX skal gemme de anime-afsnit og manga-kapitler, du downloader.",
+  "selectAnAnimeScreenshotToFind": "Vælg et skærmbillede fra en anime for at finde kilden",
+  "selectAnilistMyanimelistSimklOrExtensions": "Vælg AniList, MyAnimeList, Simkl eller tilstanden »Udvidelser«",
+  "selectDataToIncludeInThis": "Vælg de data, der skal medtages i denne sikkerhedskopi",
+  "selectDirectory": "Vælg mappe",
+  "selectExtensions": "Vælg udvidelser",
+  "selectFolder": "Vælg mappe",
+  "selectLanguage": "Vælg sprog",
+  "selectMediaDirectory": "Vælg mediebibliotek",
+  "selectNovelSource": "Vælg romanens kilde",
+  "selectProfile": "VÆLG PROFIL",
+  "selectRange": "Vælg område",
+  "selectServer": "Vælg server",
+  "selectStatus": "Vælg status",
+  "selectSubtitleFont": "Vælg skrifttype til undertekster",
+  "selectTags": "VÆLG TAGS",
+  "selectTimezone": "Vælg tidszone",
+  "selectVersionToRollback": "Vælg den version, der skal rulles tilbage til",
+  "selectVideoFile": "Vælg videofil",
+  "selectYourPreferredContentSource": "Vælg din foretrukne indholdskilde",
+  "selectedCacheCleared": "Udvalgt cache ryddet",
+  "selectedItemsRemoved": "Udvalgte varer er fjernet",
+  "sensitiveLoginTokensForMalSimkl": "Følsomme login-tokens til MAL, Simkl og AniList",
+  "sensitiveSessionTokensForMalSimkl": "Følsomme sessionstokens til MAL, Simkl og AniList",
+  "separateCompletedAnimeListIntoSections": "Opdel den færdige anime-liste i sektioner efter format.",
+  "separateCompletedMangaListIntoSections": "Opdel listen over færdiglæste mangaer i sektioner efter format.",
+  "serverDetails": "SERVEROPLYSNINGER",
+  "serverChanIsTakingANap": "Server-chan tager en lur!",
+  "setUpYourPreferencesForThe": "Indstil dine præferencer for at få den bedste oplevelse",
+  "settings": "Indstillinger",
+  "settingsAccount": "Indstillinger og konto",
+  "settingsAuthentication": "Indstillinger og godkendelse",
+  "settingsSavedSuccessfully": "Indstillingerne er gemt.",
+  "shaderProfilesInitialized": "Shader-profiler initialiseret",
+  "shadowBanUser": "Bruger med skjult udelukkelse",
+  "shareLogs": "Del logfiler",
+  "shareMatchCard": "Del kampkortet",
+  "shareProfile": "Del profil",
+  "shareTheSavedLogFileOr": "Del den gemte logfil, eller kopier dens indhold.",
+  "sharedFromAnymex": "Delt fra AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Vis animerede effektoverlejringer på profilbannere",
+  "showAnimatedFramesAroundUserAvatars": "Vis animerede rammer omkring brugeravatarer",
+  "showBatteryTime": "Vis batteri og klokkeslæt",
+  "showChapterTransitionEvenWithoutGaps": "Vis kapitelovergange, selvom der ikke er mellemrum",
+  "showCommunityRecommendations": "Vis anbefalinger fra fællesskabet",
+  "showContinueWatchingCard": "Vis kortet »Fortsæt med at se«",
+  "showContinueWatchingOnHome": "Vis »Fortsæt med at se« på startsiden",
+  "showCustomProfileBannersFallsBack": "Vis brugerdefinerede profilbannere (viser AniList-omslag, hvis indstillingen er slået fra)",
+  "showNameplateBackgroundsOnCommentCards": "Vis baggrunde med navneskilte på kommentarkort og på ranglisten",
+  "showOnLeft": "Vis til venstre",
+  "showOnRight": "Vis til højre",
+  "showReadingProgress": "Vis læsefremskridt",
+  "showTimestamps": "Vis tidsstempler",
+  "simpleCompactListView": "Enkel og kompakt listevisning",
+  "simpleDirectmediaLayerAudioOutput": "Enkel DirectMedia Layer-lydudgang",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Enkelt layout, der viser afsnitnummer, titel og fremskridt uden miniaturebillede",
+  "sizeMode": "Størrelsesindstilling:",
+  "smartMangaSuggestions": "Gode forslag til mangaer",
+  "smootherMotionCanIncreaseGpuUsage": "Mere jævn bevægelse kan øge GPU-udnyttelsen",
+  "social": "Socialt",
+  "somethingWentWrong": "Der opstod en fejl",
+  "sort": "SORTER",
+  "sort2": "Sorter",
+  "sortBy": "SORTER EFTER",
+  "sortBy2": "Sorter efter",
+  "sortComments": "Sorter kommentarer",
+  "source": "Kilde",
+  "sourceAndPluginConfigurations": "Konfigurationer af kilder og plugins",
+  "sourcePreferences": "Indstillinger for kilder",
+  "spaceBetweenLetters": "Afstand mellem bogstaverne",
+  "spaceBetweenParagraphs": "Afstand mellem afsnit",
+  "spaceBetweenWords": "Mellemrum mellem ord",
+  "spacedPages": "Sider med mellemrum",
+  "splitCompletedAnimeList": "Liste over færdigproducerede anime-serier",
+  "splitCompletedMangaList": "Liste over færdigudgivne mangaer i Split",
+  "spoiler": "Spoiler",
+  "spoilerTapToReveal": "Spoiler (tryk for at vise)",
+  "staff": "Medarbejdere",
+  "staffCharacterNameLanguage": "Medarbejdere og personernes navne – sprog",
+  "standardGpuRendering": "Standard GPU-rendering",
+  "starOnGithub": "Følg på GitHub",
+  "startANewDownloadFromThe": "Start en ny download fra fanen »Ny download«",
+  "startChapter": "Start kapitel",
+  "startDate": "Startdato",
+  "startMangaDownload": "Start download af manga",
+  "startTest": "Start test",
+  "startingExtensionRuntime": "Start af udvidelsens kørselstid...",
+  "statistics": "Statistik",
+  "stats": "Statistikker",
+  "status": "Status",
+  "statusDistribution": "Statusfordeling",
+  "statusPostedSuccessfully": "Status er blevet offentliggjort!",
+  "stayUpdatedWithTheLatestReleases": "Hold dig opdateret om de seneste udgivelser, meddelelser og diskussioner",
+  "storagePath": "Lagring og sti",
+  "storageManager": "Lagringsadministrator",
+  "storageOptions": "Opbevaringsmuligheder",
+  "storagePermission": "Tilladelse til lagring",
+  "storagePermissionIsRequiredToDownload": "Der kræves lagringstilladelse for at downloade opdateringer",
+  "storagePermissionRequired": "Der kræves tilladelse til lagring",
+  "streakCurLong": "Serie (kort/lang)",
+  "stretchImagesToFitScreenWidth": "Stræk billederne, så de passer til skærmens bredde",
+  "strikethrough": "Gennemstreget",
+  "studios": "Studier",
+  "style": "STIL",
+  "subtitleBackgroundColor": "Undertekstens baggrundsfarve",
+  "subtitleColor": "Farve på undertekster",
+  "subtitleFont": "Skrifttype til undertekster",
+  "subtitleOutlineColor": "Farve på undertekstoversigt",
+  "subtitleOutlineWidth": "Bredde på undertekstoversigt",
+  "subtitlePreview": "Forhåndsvisning af undertekster",
+  "subtitlePreviewText": "Tekst til forhåndsvisning af undertekster",
+  "subtitleSize": "Undertekststørrelse",
+  "subtitleTransparency": "Gennemsigtighed i undertekster",
+  "subtitles": "Undertekster",
+  "summary": "Resumé",
+  "superAdmin": "Superadministrator",
+  "supportTtfAndOtfFiles": "Understøtter .ttf- og .otf-filer",
+  "supportAnymex": "Støt AnymeX",
+  "supportedModes": "Understøttede tilstande",
+  "supportedUpiApps": "Understøttede UPI-apps",
+  "suppressActivityWhenWatchingOrReading": "Undertryk aktivitet, når du ser eller læser indhold, der ikke er egnet til arbejdspladsen (NSFW)",
+  "swapUpDownActions": "Handlinger til at skifte op/ned",
+  "swipeBetweenChapters": "Bladr mellem kapitlerne",
+  "swipeIndicatorTheme": "Tema med strygeindikator",
+  "swipeToSeek": "Stryg for at søge",
+  "switchBetweenDefaultTitleAndRomaji": "Skift mellem standardtitel og romaji/alternativ titel på tværs af biblioteket og kortene",
+  "switchToOnline": "Skift til online",
+  "syncCompletedButThePluginIs": "Synkroniseringen er afsluttet, men plugin'et er endnu ikke klar.",
+  "syncDetails": "Synkroniseringsoplysninger",
+  "syncFailed": "Synkroniseringen mislykkedes",
+  "synonyms": "Synonymer",
+  "synopsis": "Handlingsresumé",
+  "tags": "TAGS",
+  "tags2": "Tags",
+  "takeColorFromYourWallpaperA12": "Vælg en farve fra dit tapet (A12+)",
+  "tapToAddARepositoryUrl": "Tryk på + for at tilføje en URL til et repository",
+  "tapAZoneToChangeIts": "Tryk på en zone for at ændre dens handling",
+  "tapAction": "Tryk på handling",
+  "tapToChooseASource": "Tryk for at vælge en kilde",
+  "tapToLogin": "Tryk for at logge ind",
+  "tapToLogout": "Tryk her for at logge ud",
+  "tapToScroll": "Tryk for at rulle",
+  "tapYourProfileIconInThe": "Tryk på dit profilikon i den øverste app-bjælke",
+  "tapZones": "Trykzoner",
+  "tellTheCommunityWhyThisDeserves": "Fortæl fællesskabet, hvorfor dette fortjener mere opmærksomhed.",
+  "temporaryAppCache": "Midlertidig app-cache",
+  "termsOfServicePrivacyPolicy": "Brugsbetingelser/Privatlivspolitik",
+  "test": "Test",
+  "testExtensions": "Testudvidelser",
+  "testResults": "Testresultater",
+  "testType": "Testtype",
+  "textSize": "Tekststørrelse",
+  "theme": "Tema",
+  "themeLayoutAndColors": "Tema, layout og farver",
+  "themes": "Temaer",
+  "thisBackupIsEncryptedPleaseEnter": "Denne sikkerhedskopi er krypteret. Indtast adgangskoden for at fortsætte.",
+  "thisDirectoryContainsNoSupportedMedia": "Dette bibliotek indeholder ingen understøttede mediefiler",
+  "thisMayTakeAFewSeconds": "Det kan tage et par sekunder",
+  "thisMayTakeUpTo30": "Det kan tage op til 30 sekunder",
+  "thisMightTakeAFewSeconds": "Det kan tage et par sekunder",
+  "thisReasonWillBeDeletedImmediately": "Denne begrundelse vil blive slettet med det samme.",
+  "thisWillPermanentlyDeleteAllData": "Dette vil slette alle data, der er gemt i AnymeX, permanent. Dette kan ikke fortrydes.",
+  "tipYouCanCombineTheseE": "Tip: Du kan kombinere disse! F.eks. **fed og *kursiv* sammen**",
+  "title": "Titel",
+  "titleCopied": "Titel kopieret",
+  "titleLanguage": "Titel Sprog",
+  "toDownloadForTheFirstTime": "Hvis du skal downloade for første gang, skal du først give tilladelser ved at gå til siden »Downloads«:",
+  "toggleBetweenGridAndDetailedList": "Skift mellem gittervisning og detaljeret liste",
+  "toneMapping": "Tone-mapping",
+  "topAnime": "De bedste anime-serier",
+  "topComments": "De mest populære kommentarer",
+  "topGenres": "Populære genrer",
+  "topManga": "De bedste mangaer",
+  "topManhua": "De bedste manhua",
+  "topManhwa": "De bedste manhwa",
+  "topStudios": "De bedste studier",
+  "torrentServer": "Torrent-server",
+  "torrentStreamCache": "Torrent-stream-cache",
+  "torrserverStreamingAddOns": "TorrServer og streaming-tilføjelsesprogrammer",
+  "totalChapters": "Antal kapitler i alt",
+  "totalCost": "Samlede omkostninger:",
+  "totalItems": "Antal varer i alt",
+  "track": "Spor",
+  "trackAiringSchedules": "Se udsendelsestiderne",
+  "trackYourProgress": "Vil du følge med i dine fremskridt?",
+  "trackingServices": "Sporingstjenester",
+  "transitionSubtitle": "Overgangsundertekst",
+  "translateTo": "Oversæt til",
+  "translationLanguage": "Oversættelsessprog",
+  "translucentNav": "Gennemsigtig navigation",
+  "trendingAnime": "Populære anime-serier",
+  "trendingAnimes": "Populære anime-serier",
+  "trendingManga": "Populære mangaer",
+  "tryADifferentKeyword": "Prøv et andet søgeord",
+  "tryAdjustingYourFilters": "Prøv at justere dine filtre",
+  "tryAgain": "Prøv igen",
+  "tryDifferentAnimationStylesForPage": "Prøv forskellige animationsstilarter til sideindgange",
+  "ttsAutoAdvance": "TTS Automatisk fremføring",
+  "ttsPitch": "TTS-tonehøjde",
+  "ttsSpeed": "TTS-hastighed",
+  "tweakGeneralAppSettings": "Juster de generelle app-indstillinger",
+  "typeLabel": "Type",
+  "typeAtLeast2CharactersTo": "Indtast mindst 2 tegn for at søge",
+  "ui": "Brugergrænseflade",
+  "uiComponents": "UI-komponenter",
+  "uiLayoutColorsAndThemes": "Brugergrænsefladens layout, farver og temaer",
+  "uiLayoutColorsAndVisualStyles": "Brugergrænsefladens layout, farver og visuelle stilarter",
+  "uiSettings": "Indstillinger for brugergrænsefladen",
+  "unableToPreparePlaybackRightNow": "Det er ikke muligt at forberede afspilningen lige nu. Prøv venligst igen.",
+  "unbanUser": "Fjern blokering af bruger",
+  "unbind": "Fjern binding",
+  "unifiedLibrary": "Samlet bibliotek",
+  "uninstall": "Afinstaller",
+  "universal": "Universal",
+  "unlock": "Lås op",
+  "unlockCustomizations": "Få adgang til tilpasningsmuligheder",
+  "unmuteUser": "Fjern lyddæmpning af bruger",
+  "unreadOnly": "Kun ulæste",
+  "upcomingAnime": "Kommende anime",
+  "update": "Opdatering",
+  "updateAll": "Opdater alt",
+  "updateCheckComplete": "Kontrol af opdateringer afsluttet",
+  "updateOnImport": "Opdatering vedrørende import",
+  "updateToLatestVersion": "Opdater til den nyeste version",
+  "updateYourActivity": "Opdater din aktivitet...",
+  "updatesPending": "Opdateringer afventes",
+  "upiDonation": "UPI-donation",
+  "uploadAnImageToGetStarted": "Upload et billede for at komme i gang",
+  "uploadImage": "Upload billede",
+  "urlCopiedToClipboard": "URL'en er kopieret til udklipsholderen",
+  "usage": "Anvendelse:",
+  "useAiToTranslateSoftSubtitles": "Brug AI til at oversætte soft-undertekster i realtid",
+  "useAlternateTitle": "Brug alternativ titel",
+  "useBuffering": "Brug buffering",
+  "useCustomGesturesForReaderNavigation": "Brug brugerdefinerede gestus til navigation i læseren",
+  "useEnhancedEpisodeMetadataAndCovers": "Brug udvidede metadata og omslag til episoder",
+  "useExternalPlayer": "Brug ekstern afspiller",
+  "useKeyboardShortcutsDuringPlaybackTo": "Brug tastaturgenveje under afspilning til at skifte mellem profiler",
+  "useLegacyHeader": "Brug den gamle overskrift",
+  "useLibassForSubtitles": "Brug Libass til undertekster",
+  "useLibmpvForPlayback": "Brug LibMpv til afspilning",
+  "useMpvConf": "Brug mpv.conf",
+  "usePosterColor": "Brug plakatfarve",
+  "useVolumeKeysToChangePages": "Brug lydstyrkeknapperne til at skifte side",
+  "useYearRange": "Brug årinterval",
+  "user": "Bruger",
+  "userIdCopiedToClipboard": "Bruger-ID kopieret til udklipsholderen",
+  "userList": "Brugerliste",
+  "userManagement": "Brugeradministration",
+  "userCreatedCustomMediaCollections": "Brugeroprettede, tilpassede mediesamlinger",
+  "username": "Brugernavn",
+  "verifyTlsCertificates": "Bekræft TLS-certifikater",
+  "versionCopied": "Version kopieret",
+  "vertical": "Lodret",
+  "videoPlayer": "Videoafspiller",
+  "videoRenderer": "Videorenderer",
+  "videoSync": "Videosynkronisering",
+  "viewAndFilterAllUsers": "Vis og filtrer alle brugere",
+  "viewOnAnilist": "Se på AniList",
+  "viewOpeningAndEndingThemes": "Se indlednings- og afslutningsmelodierne",
+  "viewProfile": "Se profil",
+  "viewSourceCodeOnGithub": "Se kildekoden på GitHub.",
+  "viewTheChronologicalWatchOrderOf": "Se den kronologiske rækkefølge for afspilning af denne anime",
+  "viewUser": "Vis bruger",
+  "viewUserRankingsTopContributorsReputation": "Se brugerranglister, de mest aktive brugere og omdømme",
+  "viewingAnimeDetails": "Visning af anime-oplysninger",
+  "viewingMangaDetails": "Visning af manga-oplysninger",
+  "viewingNovelDetails": "Visning af oplysninger om romanen",
+  "visibleTabs": "Synlige faner",
+  "visitGithubReleasesPageForChangelogs": "Besøg GitHubs udgivelsesside for at se ændringslogger og downloade manualer",
+  "visualFromAnymex": "Billede fra AnymeX",
+  "voiceActors": "Stemmeskuespillere",
+  "voicedCharacters": "Stemmelagte figurer",
+  "volumeButtonScrolling": "Rulning med lydstyrkeknappen",
+  "volumeKeysNavigation": "Navigation med lydstyrketasterne",
+  "volumes": "BIND",
+  "volumesRead": "Antal læste bøger",
+  "votes": "Stemmer",
+  "wWhatAreYouDoingStep": "H-hvad laver du, stedbror? Log ind, før du gør det (●´⌓`●)",
+  "wallpaper": "Tapet",
+  "warnUser": "Advarsel til brugeren",
+  "warning": "Advarsel",
+  "wasThisHelpful": "Var dette nyttigt?",
+  "watchAd": "Se annonce",
+  "watchAnAdToSupport": "Se en reklame for at støtte",
+  "watchAnime": "Se anime",
+  "watchOrder": "Se rækkefølgen",
+  "watchTogether": "Se sammen",
+  "watchTogetherPolicy": "Retningslinjer for fælles visning",
+  "watchingAnime": "At se anime",
+  "watchingAnimePhrasing": "Udtryk i anime",
+  "welcomeToAnymex": "Velkommen til AnymeX",
+  "whatsOnYourMind": "Hvad tænker du på?",
+  "whenEnabledAnymexSavesLogsLocally": "Når funktionen er aktiveret, gemmer AnymeX logfiler lokalt, indtil den deaktiveres.",
+  "whyAreYouRecommendingThisMin": "Hvorfor anbefaler du dette? (min. 30 tegn)",
+  "whyIsThisUnderratedMin30": "Hvorfor er dette undervurderet? (min. 30 tegn)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "Ordafstand",
+  "writeAMessage": "Skriv en besked...",
+  "writeLogToAFile": "Skriv logfilen til en fil",
+  "writeYourAnilistBio": "Skriv din AniList-biografi...",
+  "wrongTitle": "Forkert titel?",
+  "year": "År",
+  "yearUpper": "ÅR",
+  "you": "Du",
+  "youCanUseDiscordStyleMarkdown": "Du kan bruge markdown i Discord-stil til at formatere dine kommentarer:",
+  "youHaveUnsentTextClosingNow": "Du har en uafsendt besked. Hvis du lukker nu, går din besked tabt.",
+  "youHaveUnsentTextClosingNowWill": "Du har en uafsendt besked. Hvis du lukker nu, går dit svar tabt.",
+  "youHaveUnsentTextClosingNowWillLose": "Du har en uafsendt besked. Hvis du lukker nu, går din status tabt.",
+  "youNeedModeratorPermissionsToAccess": "Du skal have moderatorrettigheder for at få adgang til dette panel",
+  "youreUpLate": "Du er længe oppe",
+  "yourBalance": "Din saldo:",
+  "yourPrivacyIsImportant": "Dit privatliv er vigtigt:",
+  "yourReasonHasBeenRemoved": "Din begrundelse er blevet fjernet.",
+  "yourRecommendation": "Din anbefaling",
+  "yourRichPresenceActivityWillStop": "Din aktivitet i »Rich Presence« vil ikke længere blive opdateret.",
+  "yourRole": "Din rolle",
+  "yourWatchReadHistory": "Din historik over, hvad du har set og læst",
+  "yourWatchReadStatistics": "Dine statistikker for set og læst",
+  "advancedLinuxSoundArchitecture": "Avanceret Linux-lydarkitektur",
+  "al": "AL",
+  "allYourLocalShi": "Alle dine lokale shi",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apples CoreAudio-API",
+  "areYouSure": "Er du sikker?",
+  "aspectRatio": "Billedformat",
+  "attackOnTitan": "Attack on Titan",
+  "audio": "Lyd",
+  "audioSubtitles": "Lyd og undertekster",
+  "audioTrack": "Lydspor",
+  "audioTracks": "Lydspor",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Auto (lydspor)",
+  "autoCoreaudio": "Auto (CoreAudio)",
+  "autoGpu": "Auto (GPU)",
+  "autoPulseaudio": "Auto (PulseAudio)",
+  "autoWasapi": "Auto (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Blomstring",
+  "castToDevice": "Overfør til enhed",
+  "colorFilter": "Farvefilter",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS via HTTPS",
+  "externalPlayer": "Ekstern afspiller",
+  "files": "Filer",
+  "forward": "Videre",
+  "forward30s": "Fremad 30'erne",
+  "fullscreen": "Fuld skærm",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Låseknapper",
+  "lockOrientation": "Låsens retning",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Et nødvendigt mord",
+  "nextEp": "Næste afsnit",
+  "nextEpisode": "Næste afsnit",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Billede i billede",
+  "playlist": "Afspilningsliste",
+  "previousEpisode": "Forrige afsnit",
+  "pulseaudio": "PulseAudio",
+  "quality": "Kvalitet",
+  "qualitySetting": "Kvalitetsindstilling",
+  "readingMode": "Læsetilstand",
+  "reddit": "Reddit",
+  "replay30s": "Afspil 30 sekunder",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito og Makomo",
+  "sdl": "SDL",
+  "server": "Server",
+  "servers": "Servere",
+  "shadersColorProfiles": "Shaders og farveprofiler",
+  "shadersColors": "Shaders og farver",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "Hastighed",
+  "sw": "SW",
+  "syncSubs": "Synkroniser abonnementer",
+  "syncSubtitles": "Synkroniser undertekster",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Den hurtige brune ræv springer over den dovne hund",
+  "themeMode": "Tematilstand",
+  "thisIsFrustrating": "Det er frustrerende",
+  "toYouSomeday": "Til dig, en dag",
+  "torrentFiles": "Torrent-filer",
+  "tracks": "Spor",
+  "unlockOrientation": "Lås retning op",
+  "userAgent": "Brugeragent",
+  "videoQuality": "Videokvalitet",
+  "videoServers": "Videoservere",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Se sammen (i samme rum)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "0 betyder automatisk trådtælling",
+  "n18Content": "Indhold for personer over 18 år",
+  "aboveAverageSimilarity": "Over gennemsnitlig lighed.",
+  "account": "Konto",
+  "activityStats": "Aktivitet og statistik",
+  "add": "Tilføj",
+  "additionalNotesOptional": "Yderligere bemærkninger (valgfrit)",
+  "adjustKeyVolumeScrollingSpeed": "Juster rullehastigheden for taster og lydstyrke",
+  "alpha": "Alfa",
+  "alwaysChecksCurrentChapterNumberAnd": "Funktionen kontrollerer altid det aktuelle kapitelnummer og sammenligner det med det næste/forrige kapitel, og navigerer kun, hvis numrene er forskellige. Funktionen »Naviger efter kapitel« springer blot til det næste punkt på listen, selvom der er dubletter.",
+  "animeCompleted": "Afsluttede anime-serier",
+  "announcementMode": "Meddelelsestilstand",
+  "appIsStillLoadingTryAgain": "Appen indlæses stadig. Prøv igen om lidt.",
+  "applyAColorTintOverPages": "Anvend en farvetone på siderne",
+  "audioDelay": "Lydforsinkelse",
+  "audioSettings": "Lydindstillinger",
+  "audioTrack2": "Lydspor",
+  "autoAdvance": "Automatisk fremføring",
+  "autoDeleteCompletedEntries": "Automatisk sletning af afsluttede poster",
+  "autoSyncProgress": "Fremdrift ved automatisk synkronisering",
+  "automaticallyMoveToNextText": "Gå automatisk videre til næste tekst",
+  "automaticallyScrollAdvancePages": "Automatisk rulning/skift mellem sider",
+  "automaticallySwitchToContinuousModeFor": "Skift automatisk til kontinuerlig visning ved manga med lange sider",
+  "averageOverlap": "Gennemsnitlig overlapning.",
+  "background": "Baggrund",
+  "basedOnYourFavouriteAnime": "Baseret på din yndlingsanime.",
+  "basedOnYourFavouriteManga": "Baseret på din yndlingsmanga.",
+  "basedOnYourTop10Manga": "Baseret på dine 10 mest populære manga-tags.",
+  "basedOnYourTop5Manga": "Baseret på dine 5 foretrukne manga-genrer.",
+  "blue": "Blå",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "Der er en opdatering til Bridge tilgængelig",
+  "brightness": "Lysstyrke",
+  "bulletList": "Punktliste",
+  "calendarUpper": "KALENDER",
+  "canadianMovies": "Canadiske film",
+  "canadianShows": "Canadiske tv-serier",
+  "cannotCompareTheSameProfileWith": "Det er ikke muligt at sammenligne den samme profil med sig selv.",
+  "castToDevice2": "Overfør til enhed",
+  "chatModeration": "Moderering af chat",
+  "chooseASubtitleFileFromYour": "Vælg en undertekstfil fra din enhed (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Vælg, hvordan den valgte JSON-fil skal anvendes på din AnymeX Cloud Gist.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "Cloud-værktøjer",
+  "code": "Kode",
+  "commonFavouriteAnime": "Populære og elskede anime-serier",
+  "commonFavouriteCharacters": "Populære yndlingsfigurer",
+  "commonFavouriteManga": "Populære og elskede mangaer",
+  "commonPerfectAnime": "Populære, perfekte anime-serier",
+  "commonPerfectManga": "Common Perfect Manga",
+  "communityAdministratorOverseeingModerationAndPolicies": "Fællesskabsadministrator med ansvar for moderering og retningslinjer.",
+  "connectGithubFirstBeforeDeletingSync": "Tilslut GitHub først, før du sletter synkroniseringsdataene.",
+  "connectGithubFirstToExportSync": "Tilslut først GitHub for at eksportere synkroniseringsdata.",
+  "connectGithubFirstToImportSync": "Tilslut først GitHub for at importere synkroniseringsdata.",
+  "connectGithubFirstToSyncProgress": "Tilslut først GitHub for at synkronisere fremskridtet.",
+  "connectGithubFirstToViewSync": "Forbind først GitHub for at se synkroniseringsoversigten.",
+  "continuousModeOnly2": "Kun kontinuerlig tilstand",
+  "controls": "Betjeningsknapper",
+  "cookiesClearedSuccessfully": "Cookies er blevet slettet",
+  "copied": "Kopieret",
+  "copyUrl": "Kopier URL",
+  "correctDownscaling": "Korrekt nedskalering",
+  "couldNotLoadStreamingServicesFrom": "Det var ikke muligt at indlæse streamingtjenester fra AniList API. \n Tjenesten er muligvis midlertidigt utilgængelig eller underlagt en hastighedsbegrænsning.",
+  "couldNotOpenGistInBrowser": "Det var ikke muligt at åbne gist i browseren.",
+  "created": "Oprettet",
+  "creatorAndDeveloperOfAnymex": "Skaber og udvikler af AnymeX.",
+  "customBrightness": "Brugerdefineret lysstyrke",
+  "customizeGestures": "Tilpas bevægelser",
+  "deband": "Fjern båndet",
+  "debandIterations": "Iterationer af debanding",
+  "debandThreshold": "Tærskelværdi for fjernelse af bånd",
+  "decreaseAutoScrollSpeed": "Sænk hastigheden for automatisk rulning",
+  "decreaseFontSize": "Formindsk skriftstørrelse",
+  "deleteAnymexSyncGist": "Skal AnymeX Sync Gist slettes?",
+  "deleteCloudGist": "Slet Cloud Gist",
+  "deleteCommentMod": "Slet kommentar (Mod)",
+  "details": "Detaljer",
+  "dictionary": "Ordbog",
+  "differenceFromOwnMeanScore": "Forskel i forhold til egen gennemsnitsscore",
+  "disableChat": "Deaktiver chat",
+  "disconnectThisGithubAccountFromAnymex": "Fjern denne GitHub-konto fra AnymeX",
+  "displayPagesInBlackWhite": "Vis sider i sort-hvid",
+  "downloading": "Henter…",
+  "downscaler": "Downscaler",
+  "dynamicWidget": "Dynamisk widget",
+  "eInkDisplayRefresh": "Opdatering af E-ink-skærm",
+  "eGAbc123": "f.eks. ABC123",
+  "eGMyAnimeLogo": "f.eks. My Anime Logo",
+  "editYourComment": "Rediger din kommentar...",
+  "embeddedContent": "Indlejret indhold",
+  "enterTheRoomPassword": "Indtast adgangskoden til rummet",
+  "enterTokenHere": "Indtast token her",
+  "error": "Fejl",
+  "exitSyncNotifications": "Meddelelser om afslutning af synkronisering",
+  "exportGistJson": "Eksporter Gist som JSON",
+  "exportedGistJson": "JSON-filen med gist er eksporteret.",
+  "failedToExportGistJson": "Det lykkedes ikke at eksportere Gist-JSON.",
+  "failedToFetchDataFromSources": "Det lykkedes ikke at hente data fra kilderne.",
+  "failedToGetCloudGistLink": "Det lykkedes ikke at hente linket til Cloud Gist.",
+  "failedToImportGistJson": "Det lykkedes ikke at importere gist-JSON-filen.",
+  "failedToLaunchExternalPlayer": "Det lykkedes ikke at starte den eksterne afspiller",
+  "failedToOpenGistInBrowser": "Det lykkedes ikke at åbne gist i browseren.",
+  "flashDuration": "Blitzvarighed",
+  "flashEveryNPages": "Vis en flash for hver N. side",
+  "flashFrequency": "Blitzfrekvens",
+  "flashScreenOnPageTurnTo": "Vis et flash-billede, når der vendes side, for at fjerne efterbilleder",
+  "followHost": "Følg værten",
+  "fontSettings": "Skrifttypeindstillinger",
+  "freedomSeek": "På jagt efter frihed",
+  "friendsNeedAPasswordToJoin": "Venner skal have en adgangskode for at kunne deltage",
+  "githubClientIdNotConfigured": "GitHub-klient-ID er ikke konfigureret.",
+  "githubLoginFailedMissingAuthorizationCode": "GitHub-login mislykkedes: autorisationskoden mangler.",
+  "githubLoginWasCancelledOrFailed": "GitHub-login blev afbrudt eller mislykkedes.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Vis din kærlighed",
+  "goodChemistryAndSharedTaste": "God kemi og fælles smag.",
+  "grayscale": "Gråtoner",
+  "green": "Grøn",
+  "hdrToneMappingTargetPeak": "HDR-tonemapping: mål for spidsværdi",
+  "higherValueIncreasesDebandingStrength": "En højere værdi øger modstandsdygtigheden mod afskalning",
+  "horizontalPadding": "Horisontal udfyldning",
+  "hoursWatched": "Antal timer set",
+  "howManyFriendsCanJoin": "Hvor mange venner kan deltage?",
+  "ifYouHaveAnIssueOr": "Hvis du har et problem eller et forslag, bedes du oprette en issue på GitHub.",
+  "imageWidth": "Billedbredde",
+  "importGistJson": "Importer Gist JSON",
+  "importLocalSubtitle": "Importer lokale undertekster",
+  "improveQualityWhenScalingDownVideo": "Forbedr kvaliteten ved nedskalering af video",
+  "increaseAutoScrollSpeed": "Forøg hastigheden for automatisk rulning",
+  "increaseFontSize": "Forstør skriftstørrelse",
+  "invalidCompatibilityLinkMissingUsernames": "Ugyldigt kompatibilitetslink: manglende brugernavne.",
+  "invalidGistUrl": "Ugyldig Gist-URL.",
+  "invalidRoomCodeInLink": "Ugyldig rumkode i linket",
+  "invalidWatchTogetherLink": "Ugyldigt »Watch Together«-link",
+  "invertAllPageColors": "Vend alle farver på siden",
+  "invertColors": "Vend farverne",
+  "inviteLink": "Inviteringslink",
+  "inviteLinkCopied": "Inviteringslinket er kopieret!",
+  "jDramas": "J-dramaer",
+  "joinNotifications": "Tilmeld dig notifikationer",
+  "kDramas": "K-dramaer",
+  "keepBothUploadedAndCloudEntries": "Bevar både de uploadede poster og dem i skyen. Hvis den samme post findes begge steder, bevares den nyeste. (Anbefales)",
+  "keyVolumeScrollingSpeed": "Hastighed for rullning efter tast og lydstyrke",
+  "koreanMovies": "Koreanske film",
+  "leaveNotifications": "Meddelelser om fravær",
+  "liveComments": "Live-kommentarer",
+  "lockScreen": "Låseskærm",
+  "loginToAnilist": "Log ind på AniList",
+  "loginToMyanimelist": "Log ind på MyAnimeList",
+  "loginToSimkl": "Log ind på Simkl",
+  "longPressForPageActions": "Tryk længe for at få vist sidefunktioner",
+  "longPressAPageToSave": "Tryk længe på en side for at gemme, dele eller kopiere den",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "Afsluttet manga",
+  "mangaPage": "Manga-side",
+  "maxMembers": "Maks. antal medlemmer",
+  "memberLeft": "Medlem til venstre",
+  "mergeUploadedEntriesOrReplaceCloud": "Flet uploadede poster eller erstat data fra skyen",
+  "mergeWithCloud": "Sammenlægning med skyen",
+  "milliseconds": "Millisekunder",
+  "missingTypeQueryParameterUseType": "Forespørgselsparameteren »type« mangler. Brug type=player.",
+  "missingUrlQueryParameterForThe": "Der mangler en \"url\"-forespørgselsparameter i temaets JSON-fil.",
+  "moreIterationsStrongerDebanding": "Flere iterationer = stærkere fjernelse af bånd",
+  "movies": "Film",
+  "moviesList": "FILMLISTE",
+  "navigateByNumber": "Naviger efter nummer",
+  "navigation": "Navigation",
+  "newMember": "Nyt medlem",
+  "nextChapter": "Næste kapitel",
+  "nextParagraph": "Næste afsnit",
+  "noAudio": "Ingen lyd",
+  "noOneCanSendMessagesIn": "Ingen kan sende beskeder i chatten",
+  "noStreamUrlAvailable": "Der er ingen stream-URL tilgængelig",
+  "noSubtitle": "Ingen undertekster",
+  "noVideo": "Ingen video",
+  "notVeryCompatibleAtAll": "Slet ikke særlig kompatible.",
+  "numberedList": "Nummereret liste",
+  "onScreenOverlays": "Overlejringer på skærmen",
+  "onlyHostAndCoHostsCan": "Kun værten og medværterne kan sende beskeder",
+  "opacity": "Opacitet",
+  "openInBrowser2": "Åbn i browseren",
+  "openYourAnymexSyncGistOn": "Åbn din AnymeX-synkroniserings-gist på GitHub",
+  "openingInExternalPlayer": "Åbnes i ekstern afspiller...",
+  "orTypeCustomTag": "Eller skriv et brugerdefineret tag...",
+  "otherUpper": "ANDET",
+  "overlayPosition": "Overlay-position",
+  "overrideSystemScreenBrightness": "Overskriv systemets skærmlysstyrke",
+  "ownerAndCreatorOfTheCommentum": "Ejer og skaber af Commentum-fællesskabsplatformen.",
+  "padding": "Polstring",
+  "pagesAheadOfTimeForFaster": "Sider indlæses på forhånd for hurtigere indlæsning",
+  "partySettings": "Festindstillinger",
+  "passwordIfRequired": "Adgangskode (hvis påkrævet)",
+  "pasteDirectGifOrImageUrl": "Indsæt en direkte GIF- eller billed-URL...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Kort og PayPal-saldo",
+  "permanentlyRemoveAnymexSyncData": "Slet AnymeX-synkroniseringsdata permanent",
+  "pictureShaders": "Billeder og shaders",
+  "pitch": "Pitch",
+  "playbackIsLockedToTheHost": "Afspilningen er låst til værten",
+  "playbackSpeed2": "Afspilningshastighed",
+  "playerSettings2": "Spillerindstillinger",
+  "pleaseLogInFirstThenTry": "Log venligst ind først, og prøv derefter linket igen.",
+  "pointsBreakdown": "Oversigt over point",
+  "practicallyMadeForEachOther": "De er nærmest skabt for hinanden.",
+  "preloadPage": "Indlæs side på forhånd",
+  "preloadPages": "Forhåndsindlæsning af sider",
+  "preloadPagesAheadOfTimeFor": "Indlæs sider på forhånd for hurtigere indlæsning (bruger mere netværksbåndbredde og RAM)",
+  "preventScreenFromSleepingWhileReading": "Undgå, at skærmen går i dvaletilstand, mens du læser",
+  "previousChapter": "Forrige kapitel",
+  "previousParagraph": "Forrige afsnit",
+  "privateRoom": "Privatværelse",
+  "profileUpdated": "Profil opdateret",
+  "proportionOfTotalTimeWatched": "Andel af den samlede seertid",
+  "provideAReasonForThisAction": "Angiv en begrundelse for denne handling...",
+  "qualitySettings": "Kvalitetsindstillinger",
+  "quote": "Citat",
+  "range75DarkestTo100": "Interval: -75 (mørkest) til 100",
+  "rateLimited": "Hastighedsbegrænset",
+  "reactionOverlay": "Reaktionsoverlay",
+  "readStats": "Læs statistikker",
+  "readTextAloud": "Læs teksten højt",
+  "red": "Rød",
+  "reduceColorBandingInGradients": "Reducer farvestriber i farveovergange",
+  "reduceHaloingWhileUpscaling": "Reducer haloeffekten ved opskalering",
+  "refresh": "Opdater",
+  "removeCurrentCloudEntriesAndReplace": "Slet de nuværende cloud-poster og erstat dem med den uploadede fil.",
+  "removeWhiteBlackBordersToMaximize": "Fjern de hvide/sorte kanter for at få mest muligt indhold til syne",
+  "removesFinishedMediaFromCloudGist": "Fjerner færdige medier fra Cloud Gist",
+  "replaceCloudGist": "Erstat Cloud Gist",
+  "report": "Rapport",
+  "resetReLogin": "Nulstil og log ind igen",
+  "resetTo1": "Nulstil til 1×",
+  "restore": "Gendan",
+  "roomAccess": "Adgang til værelset",
+  "roomCode": "Værelseskode",
+  "roomCodeCopiedToClipboard": "Værelseskoden er kopieret til udklipsholderen",
+  "roomDuration": "Værelsets varighed",
+  "roomNotFoundOrExpired": "Rummet blev ikke fundet eller er udløbet",
+  "roomPassword": "Adgangskode til værelset",
+  "roomPassword2": "Adgangskode til værelset",
+  "roomSettings": "Rumindstillinger",
+  "saveYourCurrentCloudProgressTo": "Gem din nuværende fremgang i skyen i en fil",
+  "scrollMultiplier": "Rullemultiplikator",
+  "scrollSpeed": "Rullehastighed",
+  "searchAnimeEpisode": "Søg efter anime / afsnit...",
+  "searchAnimeGifsReactions": "Søg efter anime-GIF’er, reaktioner...",
+  "searchChapters": "Søg i kapitlerne...",
+  "searchFiles": "Søg i filer...",
+  "secondsPerPageScreen": "Sekunder pr. side/skærmbillede",
+  "seekAndControlPlaybackFreely": "Søg og styr afspilningen frit",
+  "selectedFileMustContainAJson": "Den valgte fil skal indeholde et JSON-objekt.",
+  "selectedJsonHasNoValidSync": "Den valgte JSON-fil indeholder ingen gyldige synkroniseringsposter.",
+  "seriesList": "SERIELISTE",
+  "setAPasswordForYourRoom": "Indstil en adgangskode til dit værelse",
+  "share": "Del",
+  "showANotificationWhenSomeoneJoins": "Vis en meddelelse, når nogen slutter sig til gruppen",
+  "showANotificationWhenSomeoneLeaves": "Vis en meddelelse, når nogen forlader festen",
+  "showAllStreams": "Vis alle streams",
+  "showChatMessagesOnThePlayer": "Vis chatbeskeder i afspilleren, efterhånden som de kommer ind",
+  "showEmojiReactionsFloatingOnThe": "Vis emoji-reaktioner, der svæver over afspilleren",
+  "showSyncResultWhenPlayerOr": "Vis synkroniseringsresultatet, når afspilleren eller læseren lukkes",
+  "showTransitionPageEvenWhenChapters": "Vis overgangssiden, selv når kapitlerne ligger tæt på hinanden",
+  "shows": "Forestillinger",
+  "sigmoidUpscaling": "Sigmoid opskalering",
+  "smootherGradientsWithSlightTemporalNoise": "Jævnere farveovergange med let tidsmæssig støj",
+  "spacing": "Afstand",
+  "speechSpeed": "Talehastighed",
+  "spoilers": "Spoilere",
+  "stretchImagesToFitScreenWidthOn": "Stræk billeder, så de passer til skærmbredden på brede skærme",
+  "subtitleSettings": "Indstillinger for undertekster",
+  "superAdministratorWithSystemWideManagement": "Superadministrator med administrationsrettigheder på tværs af hele systemet.",
+  "swapUpDownActions2": "Handlinger for »Skift op/ned«",
+  "syncMode": "Synkroniseringsfunktion",
+  "syncPreferences": "Synkroniseringsindstillinger",
+  "tapScrollAmount": "Tryk på »Rulleafstand«",
+  "tapToOpen": "Tryk for at åbne",
+  "tapToOpenInBrowser": "Tryk for at åbne i browseren",
+  "tapToOpenInSpotify": "Tryk for at åbne i Spotify",
+  "tapToViewInBrowser": "Tryk for at se i browseren",
+  "tapTopBottomToScroll": "Tryk på toppen/bunden for at rulle",
+  "targetPeak": "Målhøjde",
+  "temporalDither": "Tidsmæssig dither",
+  "textToSpeech": "Tekst-til-tale",
+  "theCreatorOfThisCommentDiscussion": "Oprinderen af denne kommentartråd.",
+  "theresASmallSparkOfAgreement": "Der er en lille gnist af enighed.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Dette sletter din AnymeX-cloud-fremskridtsoversigt permanent fra GitHub, og handlingen kan ikke fortrydes.",
+  "toPrevNextChapter": "Til forrige/næste kapitel",
+  "topL": "Top-L",
+  "topR": "Top-R",
+  "totals": "I alt",
+  "trendingMovies": "Populære film",
+  "trendingSeries": "Populære serier",
+  "tts": "TTS",
+  "ukMovies": "Britiske film",
+  "ukShows": "Forestillinger i Storbritannien",
+  "unableToReadSelectedJsonFile": "Det er ikke muligt at læse den valgte JSON-fil.",
+  "unsupportedExtension": "Udvidelse, der ikke understøttes",
+  "usMovies": "Amerikanske film",
+  "usShows": "Amerikanske tv-serier",
+  "useVolumeButtonsToScroll": "Brug lydstyrkeknapperne til at rulle",
+  "userHistory": "Brugerhistorik",
+  "userInfo": "Brugeroplysninger",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "En verificeret moderator, der sørger for, at kommentarerne er respektfulde og sikre.",
+  "verticalPadding": "Lodret polstring",
+  "viewCloudGist": "Se Cloud Gist",
+  "viewUserHistory": "Vis brugerhistorik",
+  "viewUserInfo": "Vis brugeroplysninger",
+  "voice": "Stemme",
+  "watchParty": "Se-fest",
+  "watchStats": "Se statistikker",
+  "watchingNow": "Ser lige nu",
+  "webmVideo": "WebM-video",
+  "whereLiveCommentsAppearOnScreen": "Hvor livekommentarer vises på skærmen",
+  "whileWatchingEpisodesOrReadingChapters": "Når man ser afsnit eller læser kapitler",
+  "writeAReply": "Skriv et svar...",
+  "youAreBasicallyTheSamePerson": "I er stort set den samme person.",
+  "youBothHaveVerySimilarTaste": "I har begge to en meget ens smag.",
+  "all2": "← Alle",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "Styling",
+  "upscale": "Eksklusivt",
+  "appearanceStyle": "Udseende og stil",
+  "colorsLightDarkOledLogoAnimations": "Farver, lys/mørk, OLED og logoanimationer",
+  "fontsTypography": "Skrifttyper og typografi",
+  "chooseTypographyCustomFontsGlobalText": "Vælg typografi, brugerdefinerede skrifttyper og global tekststørrelse",
+  "globalFontScaling": "Global skalering af skrifttyper",
+  "scaling": "Skalering",
+  "typefaces": "Skrifttyper",
+  "interfaceLayout": "Brugergrænseflade og layout",
+  "navBarCardStylesDetailsBlur": "Navigationsbjælke, kortformater, sløring af detaljer og layout",
+  "navigationHomeLayout": "Navigation og hjemmesidens layout",
+  "playbackEngineSubtitlesGesturesDecoders": "Afspilningsmotor, undertekster, gestus og dekodere",
+  "mangaNovelReader": "Manga- og romanlæser",
+  "readingModesDirectionColorsTapZones": "Læsetilstande, retning, farver og trykzoner",
+  "dataNetworkSystem": "Data, netværk og systemer",
+  "downloadDirectoryConcurrencyHlsSegments": "Download-mappe, samtidighed og HLS-segmenter",
+  "accountsSocial": "Konti og sociale medier",
+  "trackingAccounts": "Sporing af konti",
+  "manageYourAnilistMyanimelistSimklAccounts": "Administrer dine AniList-, MyAnimeList- og Simkl-konti",
+  "trackingBehavior": "Sporing af adfærd",
+  "communityComments": "Fællesskab og kommentarer",
+  "commentumProfileBadgesMarkdownPrivacy": "Commentum-profil, badges, Markdown og privatliv",
+  "contentPreferences": "Indhold og indstillinger",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFW-filter, samlet bibliotek, anbefalinger og lister",
+  "exportAndRestoreYourLibraryAnd": "Eksporter og gendan dit bibliotek og dine indstillinger",
+  "manageAnimeMangaNovelSourcesAnd": "Administrer kilder og arkiver til anime, manga og romaner",
+  "installAndUpdateCommunityAddOns": "Installer og opdater community-tilføjelsesprogrammer",
+  "storageCache": "Lagring og cache",
+  "manageCachedImagesThresholdsResetData": "Administrer cachelagrede billeder, tærskelværdier og nulstilling af data",
+  "networkProxy": "Netværk og proxy",
+  "logsDiagnostics": "Logfiler og diagnostik",
+  "inspectExportAndShareApplicationLogs": "Gennemse, eksporter og del programlogfiler",
+  "aboutSupport": "Om os & Support",
+  "supportDevelopmentViaKoFiPaypal": "Støt udviklingen via Ko-fi, PayPal og UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Version, opdateringer, links til sociale medier og juridiske retningslinjer",
+  "cacheAndCookiesClearedFor": "Cache og cookies er ryddet for {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Cookies er slettet for {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Cachen er ryddet for {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Ikke-understøttet type {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Indstillinger for {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Lokal fil ikke fundet på: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Synkroniseringen mislykkedes: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Lokal APK blev ikke fundet på: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Fejl: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Installationen af plugin mislykkedes: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Der blev ikke fundet nogen resultater for »{query}«",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Sæson {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Afsnit {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "Nyheder om {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Fællesskab",
+  "logInWithAnilist": "Log ind med AniList",
+  "episode2": "Afsnit {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Download afsluttet",
+  "downloadFailedHasNoUrl": "Download mislykkedes: {chapterDisplay} har ingen URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Download mislykkedes: Der blev ikke fundet nogen sider for {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Download mislykkedes: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Afsnit {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} afsnit",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Kilden »{extensionName}« blev ikke fundet.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Det lykkedes ikke at oprette torrenten: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} vil blive slettet permanent fra dine downloads.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Søgningen mislykkedes: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Søg efter »{title}« i {label}…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} historikposter slettet",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Vil du fjerne »{itemName}« fra din {_historyLabel}?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "»{itemName}« er fjernet",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Stigende",
+  "descending": "Faldende",
+  "defaultTabOrder": "Standard rækkefølge for tabulatornavigation",
+  "reverseTabs": "Omvendte faner",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Type: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Varer: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Installer først {sourceName}, og klik derefter på",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "SIDE {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Søg efter {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "FÆRDIG ({length} valgt)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "KAN LÆSES PÅ",
+  "streamingOn": "STREAMING PÅ",
+  "freedom": "Frihed",
+  "shaderAdded": "Shader tilføjet: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Fejl ved import af shader: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Scanlatorer",
+  "chapterRange": "Kapitelinterval",
+  "downloadFailed2": "Download mislykkedes: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Kapitel {formattedNumber} er hentet",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Download ({value} %)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} kapitler",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Indlæser side {pageNumber} {progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Siden er gemt i Billeder/AnymeX",
+  "pageSavedToAnymex": "Siden er gemt i {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Det lykkedes ikke at gemme siden: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Det lykkedes ikke at dele siden: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "Sidens URL er kopieret til udklipsholderen",
+  "failedToCopy": "Det lykkedes ikke at kopiere: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Indlæser sider...",
+  "goBack": "Gå tilbage",
+  "loadingPage2": "Indlæser side {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Flash-farve",
+  "black": "Sort",
+  "white": "Hvid",
+  "readerBackground": "Læserens baggrund",
+  "gray": "Grå",
+  "automatic": "Automatisk",
+  "noneNearestNeighbor": "Ingen (nærmeste nabo)",
+  "lowBilinear": "Lav (bilineær)",
+  "mediumDefault": "Mellem (standard)",
+  "highBicubic": "Høj (bikubisk)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (bedste kvalitet, langsommere)",
+  "fullscreenPreview": "Forhåndsvisning i fuld skærm",
+  "enhancementPreset": "Forbedringsindstilling",
+  "fineTuning": "Finjustering",
+  "enhancementStrength": "Forbedringsstyrke",
+  "strength": "{value} % styrke",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Undertrykkelse af artefakter",
+  "cleanJpegCompressionRingingAroundLinework": "Tydelig JPEG-komprimeringsringning omkring stregtegningen",
+  "cache": "Cache",
+  "cacheSize": "Cache-størrelse",
+  "mbStoredOnDisk": "{mb} MB gemt på disken",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Superopløsning",
+  "loadingChapter": "Indlæser kapitel...",
+  "noContentAvailable": "Der er intet indhold tilgængeligt",
+  "recommendations": "{reasonCount} anbefalinger",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "'s anbefalinger",
+  "all3": "Alle ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Det lykkedes ikke at sende beskeden: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Samlet antal indlæg: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Er kommet ind i rummet {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Aktive værelser",
+  "joinWithCode": "Tilmeld dig med kode",
+  "leftRoom": "Forlod rummet",
+  "leaveReset": "Afbryd / Nulstil",
+  "inRoom": "I rummet: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} – Afsnit {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} er blevet smidt ud",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length} / {maxMembers} medlemmer",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Gik ud af lokalet",
+  "leave": "Afgang",
+  "noActiveRooms": "Ingen aktive rum",
+  "roomsWillAppearHereWhenSomeone": "Værelserne vises her, når nogen opretter et",
+  "created2": "Oprettet · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Tilmeld dig →",
+  "full": "Fuld",
+  "savedToPicturesAnymex": "Gemt i Billeder/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Gemt i Downloads/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Gemt i {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Tryk for at åbne profilen)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Kapitel ",
+  "episode5": "Afsnit ",
+  "noData": "{title} (Ingen data)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Søg efter filtyper med {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Gennemse udvidelser",
+  "goToHome": "Gå til forsiden",
+  "fetching": "Henter {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Fejl ved hentning af politik: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "»{name}« er blevet tilføjet!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "»{name}« er blevet opdateret!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Er du sikker på, at du vil slette »{name}«?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" er blevet slettet",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Din historik er tom",
+  "episode6": "Afsnit {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Vis mindre",
+  "readMore": "Læs mere",
+  "unpin": "Fjern fastgørelse",
+  "pinActivity": "Pin-aktivitet",
+  "n1Recommendation": "1 anbefalinger",
+  "recommendations2": "{count} anbefalinger",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Indsender…",
+  "addRecommendation": "Tilføj anbefaling",
+  "submitRecommendation": "Indsend anbefaling",
+  "currentProvider": "NUVÆRENDE UDBYDER",
+  "profileStatsUserActivities": "Profilstatistikker og brugeraktiviteter",
+  "manageSourcesPlugins": "Administrer kilder og plugins",
+  "savedOfflineEpisodesChapters": "Gemte episoder og kapitler til offline brug",
+  "watchVideoFilesFromDeviceStorage": "Se videofiler fra enhedens lagerplads",
+  "syncWatchPartyWithFriends": "Synkroniser en film- eller tv-aften med vennerne",
+  "pauseWatchHistoryAndSync": "Sæt overvågningshistorikken på pause og synkroniser",
+  "appearancePlayerNetwork": "Udseende, spiller og netværk",
+  "joining": "Tilslutter sig...",
+  "joinRoom": "Deltag i rummet",
+  "shareTheCodeOrInviteLink": "Del koden eller invitationslinket med dine venner.",
+  "roomCreated": "Rummet er oprettet!",
+  "shareThisCodeWithFriends": "Del denne kode med dine venner:",
+  "copyCode": "Kopier kode",
+  "copyLink": "Kopier link",
+  "leaveWatchTogether": "Skal vi se det sammen?",
+  "removeMember": "Fjern medlem",
+  "transferHost": "Overførselsvært",
+  "transferHost2": "Overførselsvært",
+  "transfer": "Overførsel",
+  "removeMember2": "Fjern medlem",
+  "removeFromThisWatchParty": "Skal {username} fjernes fra denne seergruppe?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} medlemmer",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} kopieret",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Der er ingen servere tilgængelige for dette rum",
+  "selectStreamingServerQualityToWatch": "Vælg kvaliteten på streamingserveren, som du vil se",
+  "thisServerHasNoPlayableUrl": "Denne server har ingen URL'er, der kan afspilles",
+  "episode7": "Afsnit {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Baseret på kapitel {start} til {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} forventes den {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "AFSNIT {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MAL-liste eksporteret til: \n {savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML eksporteret til: \n {savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Eksport mislykkedes: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Eksporterer din {value}-liste...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Eksporter {value}-XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Der er ingen afspilbare medier tilgængelige",
+  "noThemesFound": "Der blev ikke fundet nogen temaer",
+  "playAll": "Afspil alle",
+  "theDawnOfHumanity": "Menneskets begyndelse",
+  "orientationUnlocked": "Orientering låst op",
+  "orientationLocked": "Retning låst",
+  "skippedOpening": "Springet over åbningen",
+  "skippedEnding": "Udeladt slutning",
+  "skippedRecap": "Oversprungen sammenfatning",
+  "ifYouSeeBlackScreenUse": "Hvis skærmen er sort, skal du bruge en ekstern afspiller til at se indholdet",
+  "failedToStartTorrentStream": "Det lykkedes ikke at starte torrent-streamen: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Det lykkedes ikke at åbne strømmen. Prøv en anden server",
+  "noServersFoundForThisEpisode": "Der blev ikke fundet nogen servere til denne episode.",
+  "failedToLoadEpisodeCheckYour": "Det lykkedes ikke at indlæse afsnittet. Kontroller din internetforbindelse.",
+  "playing": "Spiller {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Det lykkedes ikke at skifte til torrent-filen: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Undertekster indlæst: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Fejl ved indlæsning af undertekster: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Ødelagt undertekst!",
+  "preTranslatingSubtitles": "Undertekster oversættes på forhånd...",
+  "preTranslationFailedUsingRealTime": "Foroversættelsen mislykkedes; der anvendes realtids-fallback",
+  "preTranslationErrorUsingRealTime": "Fejl før oversættelse, ved brug af realtids-fallback",
+  "corruptedQuality": "Dårlig kvalitet!",
+  "colorProfilesOnlyAvailableWithMediakit": "Farveprofiler er kun tilgængelige med MediaKit-afspilleren",
+  "x": "{value} ×",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Åbn videostrømme som standard i en ekstern afspiller",
+  "quickDefaults": "Hurtige standardindstillinger",
+  "orientationSpeedResizeModeExternalPlayer": "Orientering, hastighed, tilpasning af størrelse og ekstern afspiller",
+  "controlsGestures": "Betjening og bevægelser",
+  "subtitlesTranslation": "Undertekster og oversættelse",
+  "languagesFontsStylingLibassTranslation": "Sprog, skrifttyper, formatering, libass og oversættelse",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "Opskalering af shaders, forudindstillinger og profiler",
+  "engineAdvanced": "Motor & Avanceret",
+  "addSpeed": "Øg hastigheden",
+  "speedPresets": "Hastighedsindstillinger",
+  "rememberAsDefaultSpeed": "Gem som standardhastighed",
+  "loadedSubtitle": "Indlæst undertekst: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Det lykkedes ikke at downloade undertekster: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "VÆRELSEKODE",
+  "episodeReleasesIn": "AFSNIT {value} UDSENDES OM",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Du skal være logget ind for at kunne kommentere",
+  "readFullRules": "Læs de fulde regler",
+  "acceptPost": "Godkend og send",
+  "youNeedToBeLoggedIn2": "Du skal være logget ind for at kunne svare",
+  "commentCopiedToClipboard": "Kommentaren er kopieret til udklipsholderen",
+  "spam": "Spam",
+  "offensive": "Offensiv",
+  "harassment": "Chikane",
+  "offTopic": "Uden for emnet",
+  "failedToLoadUserInfo": "Det lykkedes ikke at indlæse brugeroplysninger.",
+  "noUserDataFound": "Der blev ikke fundet nogen brugerdata.",
+  "viewHistory": "Vis historik",
+  "failedToLoadComments": "Det lykkedes ikke at indlæse kommentarer.",
+  "noCommentsFound": "Der blev ikke fundet nogen kommentarer.",
+  "deleted2": "SLETTET",
+  "comment": "KOMMENTAR",
+  "failedToLoadUserHistory": "Det lykkedes ikke at indlæse brugerhistorikken.",
+  "noHistoryFound": "Der blev ikke fundet nogen historik.",
+  "youNeedToBeLoggedIn3": "Du skal være logget ind for at kunne redigere kommentarer",
+  "commentCannotBeEmpty": "Kommentaren må ikke være tom",
+  "failedToLoadCommentsPleaseTry": "Det lykkedes ikke at indlæse kommentarer. Prøv venligst igen.",
+  "commentsLoaded": "{value} kommentarer indlæst",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Det lykkedes ikke at opdatere kommentarerne. Prøv venligst igen.",
+  "invalidParentCommentId": "Ugyldigt ID for overordnet kommentar",
+  "replyPostedSuccessfully": "Svaret er blevet sendt",
+  "failedToPostReply": "Det lykkedes ikke at sende svaret",
+  "failedToPostReplyPleaseTry": "Det lykkedes ikke at sende svaret. Prøv venligst igen.",
+  "commentPostedSuccessfully": "Kommentaren er blevet offentliggjort",
+  "failedToAddCommentPleaseTry": "Det lykkedes ikke at tilføje en kommentar. Prøv venligst igen.",
+  "failedToUpdateVotePleaseTry": "Det lykkedes ikke at opdatere afstemningen. Prøv venligst igen.",
+  "invalidCommentId": "Ugyldigt kommentar-ID",
+  "commentEditedSuccessfully": "Kommentaren er redigeret.",
+  "failedToEditComment": "Det lykkedes ikke at redigere kommentaren",
+  "commentDeletedSuccessfully": "Kommentaren er blevet slettet",
+  "failedToDeleteComment": "Det lykkedes ikke at slette kommentaren",
+  "failedToReportComment": "Det lykkedes ikke at indberette kommentaren",
+  "failedToModerateComment": "Det lykkedes ikke at moderere kommentaren",
+  "failedToManageUser": "Det lykkedes ikke at administrere brugeren",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ point). Placeringen er baseret på reel aktivitet ({realPoints} point).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} optjente point + {text} rollebonus ({label}). Placeringen er baseret på faktisk aktivitet.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Antal episoder",
+  "episodeIsDownloaded": "Afsnit {number} er hentet",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} afsnit",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling, sæson 2 – Frem fra skyggen",
+  "frierenBeyondJourneySEnd": "Frieren: Ud over rejsenes ende",
+  "bleachThousandYearBloodWar": "BLEACH: Den tusindårige blodkrig",
+  "cardCustomizer": "Korttilpasning",
+  "presetStyle": "Forudindstillet stil",
+  "chooseFrom5AuthenticBuiltIn": "Vælg mellem 5 autentiske indbyggede designs",
+  "sizingGeometry": "Dimensioner og geometri",
+  "cardSize": "Kortstørrelse",
+  "scaleCardsProportionallyWithoutDistortion": "Skalér kortene proportionalt uden forvrængning",
+  "landscapeCards": "Landskabskort",
+  "formatCardsIn169Widescreen": "Formater kortene i 16:9-bredskærmsformat",
+  "selectPosterImageAspectRatio": "Vælg billedformat for plakaten",
+  "titleLines": "Overskrifter",
+  "maximumNumberOfTitleLinesDisplayed": "Maksimalt antal viste titellinjer",
+  "gestureAreas": "Gestusområder",
+  "resetDefault": "Nulstil til standardindstillinger",
+  "overlay": "Overlay",
+  "volume": "Volumen",
+  "brightnessArea": "Lysstyrkeområde",
+  "overlayAreaTap": "Overlay-område (tryk)",
+  "volumeArea": "Volumen Areal",
+  "resetToDefaultLayout": "Nulstil til standardlayout",
+  "moveToSlot": "Flyt til plads",
+  "topBar": "Øverste bjælke",
+  "bottomLeft": "Nederst til venstre",
+  "bottomRight": "Nederst til højre",
+  "themesOverlay": "Temaer og overlay",
+  "gesturesSeeking": "Gestus og søgen",
+  "horizontalSwipeAcrossTheScreenTo": "Stryg vandret hen over skærmen for at søge",
+  "autoSkipCompletion": "Automatisk spring over og udfyldning",
+  "percentageWatchedBeforeMarkingCompleted": "Procentdel, der er set, før markeringen er afsluttet",
+  "playerControls": "Spillerbetjening",
+  "mpvConfSavedSuccessfully": "mpv.conf er gemt",
+  "hardwareDrivers": "Hardware og drivere",
+  "systemIntegrations": "System og integrationer",
+  "experimentalMpvTuning": "Eksperimentel tuning af MPV’er",
+  "editMpvConf": "Rediger mpv.conf",
+  "modeA": "Tilstand A",
+  "modeB": "Tilstand B",
+  "modeC": "Mode C",
+  "modeAA": "Tilstand A+A",
+  "modeBB": "Tilstand B+B",
+  "modeCA": "Tilstand C+A",
+  "natural": "Naturlig",
+  "vivid": "Levende",
+  "cinema": "Biograf",
+  "soft": "Blød",
+  "warm": "Varm",
+  "cool": "Sejt",
+  "anime4k": "Anime i 4K",
+  "cinemaHdr": "HDR i biografen",
+  "vividPop": "Levende pop",
+  "dark": "Mørkt",
+  "anime4kEngine": "Anime4K-motor",
+  "anime4kShaders2": "Anime4K-shaders",
+  "devicePerformanceTier": "Enhedens ydeevneniveau",
+  "midRange": "Mellemklasse",
+  "highEnd": "Førsteklasses",
+  "shaderMode": "Shader-tilstand",
+  "colorPreset": "Farveindstilling",
+  "desktopPlaybackKeybindings": "Tastaturgenveje til afspilning på skrivebordet",
+  "customSubtitleFonts": "Brugerdefinerede skrifttyper til undertekster",
+  "importedFont": "Importeret skrifttype »{fontName}«",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Er du sikker på, at du vil slette »{font}«?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Sprog og oversættelse",
+  "renderingBehavior": "Gengivelse og adfærd",
+  "disableToAvoidFadeTransitionsBetween": "Deaktiver for at undgå overgange med udtoning mellem undertekster",
+  "typographyOutline": "Typografi og kontur",
+  "adjustSubtitleFontSize": "Juster skriftstørrelsen på underteksterne",
+  "adjustSubtitleOutlineThickness": "Juster tykkelsen på undertekstkonturen",
+  "colorsPosition": "Farver og placering",
+  "changeSubtitleTextColor": "Skift farve på undertekstteksten",
+  "mangaReader": "Manga-læser",
+  "layoutDirection": "Layout og instruktion",
+  "autoSwitchToVerticalModeFor": "Automatisk skift til lodret visning af webtoons",
+  "imageDisplay": "Billede og skærm",
+  "interfaceSession": "Grænseflade og session",
+  "mangaControlsGestures": "Manga-kontroller og -bevægelser",
+  "overscrollToPreviousNextChapter": "Rul ned for at gå til forrige/næste kapitel",
+  "automaticallyScrollMangaPages": "Rul automatisk gennem mangasiderne",
+  "swapVolumeUpDownActions": "Handlinger til at skifte mellem op/ned i lydstyrken",
+  "novelReader": "Romanlæser",
+  "themeDisplay": "Tema og visning",
+  "displayChapterPercentageWhileReading": "Vis procentdelen af kapitlet under læsningen",
+  "displayStatusInfoInTheNovel": "Vis statusoplysninger i romanlæseren",
+  "typographySpacing": "Typografi og mellemrum",
+  "novelControlsGestures": "Nye betjeningsfunktioner og bevægelser",
+  "tapScreenEdgesToScrollNovel": "Tryk på skærmens kanter for at bladre gennem romanens sider",
+  "swipeGestures": "Svejsebevægelser",
+  "volumeKeyScrolling": "Rulning med lydstyrketasten",
+  "useHardwareVolumeButtonsToScroll": "Brug lydstyrkeknapperne på enheden til at bladre i romaner",
+  "automaticallyScrollNovelContent": "Rul automatisk gennem romanens indhold",
+  "textToSpeechTts": "Tekst-til-tale (TTS)",
+  "readNovelChaptersAloud": "Læs kapitlerne i romanen højt",
+  "speechRate": "Talehastighed",
+  "voicePitch": "Stemmetone",
+  "areYouSureYouWantTo4": "Er du sikker på, at du vil logge ud af {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Det lykkedes ikke at søge efter opdateringer: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} er installeret uden problemer",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Det lykkedes ikke at installere {name}: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} er blevet opdateret",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Det lykkedes ikke at opdatere {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Afinstaller {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} er afinstalleret",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Det lykkedes ikke at afinstallere {name}: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} Rækkefølge af afsnit",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Meddelelser og synkronisering",
+  "enableNotifications": "Aktivér notifikationer",
+  "syncAnilistNotificationsWithDeviceNotifications": "Synkroniser AniList-meddelelser med enhedens meddelelser",
+  "airingAlerts": "Meddelelser om udsendelser",
+  "socialAlerts": "Sociale advarsler",
+  "notifyOnNewFollowers": "Giv besked om nye følgere",
+  "activityAlerts": "Aktivitetsadvarsler",
+  "syncInterval": "Synkroniseringsinterval",
+  "regionTimezone": "Region og tidszone",
+  "profileBio": "Profilbeskrivelse",
+  "backupFailed": "Sikkerhedskopieringen mislykkedes: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Fejl ved valg af fil: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Det lykkedes ikke at indlæse sikkerhedskopien: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Gendannelse mislykkedes: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount}-titler og historik",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} titler og kapitler",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} titler og læsestatus",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} brugerdefinerede lister på tværs af medier",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} registrerede udvidelsesposter",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount}-udvidelser i zip-pakker",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Hjælp og information",
+  "libraryContentSafety": "Bibliotek og indholdssikkerhed",
+  "homePageLists": "Lister på startsiden",
+  "chooseWhichListsToShowOn": "Vælg, hvilke lister der skal vises på startsiden",
+  "homePageCards": "Hjemmeside-kort ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Ser $anime",
+  "viewingAnime": "Visning af $anime",
+  "readingManga2": "Læser $manga",
+  "viewingManga": "Visning af $manga",
+  "readingNovel2": "Læser $novel",
+  "viewingNovel": "Visning af $novel",
+  "browsingStatus": "Gennemser $status",
+  "upiIdCopied": "UPI-ID kopieret: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Kopier UPI-ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Tryk for at åbne GPay, PhonePe, Paytm osv.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Meddelelser om download",
+  "reDownloadFailed": "Genindlæsning mislykkedes: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Tilbageførsel mislykkedes: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Det lykkedes ikke at tilføje repo: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Anvendt skrifttype »{fontName}«",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Det lykkedes ikke at downloade »{fontName}«",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "»{fontName}« er importeret og anvendt",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Det lykkedes ikke at importere fontfilen",
+  "deleted3": "»{fontName}« er blevet slettet",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Skrifttypebibliotek",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Standardskrifttype med afrundede former, designet til AnymeX",
+  "systemFont": "Systemskrifttype",
+  "useYourDeviceOsDefaultSystem": "Brug enhedens standardskrifttype i operativsystemet",
+  "loadYourOwnTtfOrOtf": "Indlæs dine egne .ttf- eller .otf-fontfiler",
+  "pendingReports": "{length} udestående rapporter",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies og lagring",
+  "monitoring": "Overvågning",
+  "fpsMeter": "FPS-måler",
+  "showDraggableRealTimeFpsOverlay": "Vis et FPS-overlay i realtid, der kan trækkes rundt",
+  "detectedModesDisplay": "Registrerede tilstande og display",
+  "currentDisplayMode": "Aktuel visningstilstand",
+  "modes": "{length}-tilstande",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Tilpas",
+  "stylingLibass": "{subLang} • {subFont} • Design & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Betjeningsknapper og trykzoner",
+  "customizeTapZones": "Tilpas trykzoner",
+  "configurePagedAndWebtoonTapRegions": "Konfigurer trykområder for sider og webtoons",
+  "fitBordersSpacing": "{value} • Tilpasning, kanter og mellemrum",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Kapitelformat, sideindikator og skærmlås",
+  "overscrollActionsAutoScrollVolume": "Overscroll, handlinger, automatisk rulning og lydstyrke",
+  "themeTypography": "Tema og typografi",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Læsemodus og skærm",
+  "pageModeProgressBatteryIndicator": "Sidetilstand, fremskridts- og batteriindikator",
+  "readPageByPageInsteadOf": "Læs side for side i stedet for at rulle ned",
+  "displayPercentageInReadingBar": "Vis procentdel i læsestangen",
+  "displayBatteryAndTimeInReader": "Vis batteri og klokkeslæt i læserbjælken",
+  "gesturesNavigation": "Gestus og navigation",
+  "tapToScrollSwipeAutoScroll": "Tryk for at rulle, stryg, automatisk rulning og lydstyrke",
+  "tapEdgesOfScreenToScroll": "Tryk på skærmens kanter for at rulle op/ned",
+  "swipeHorizontallyToChangeChapters": "Stryg vandret for at skifte kapitel",
+  "useVolumeKeysToScroll": "Brug lydstyrkeknapperne til at rulle",
+  "textToSpeechTts2": "Tekst-til-tale (TTS)",
+  "textToSpeechReadingSupport": "Støtte til oplæsning via tekst-til-tale-funktionen",
+  "speechRate2": "Talehastighed",
+  "voicePitch2": "Stemmetone",
+  "appPostersIconsAvatarsSize": "App-plakater, ikoner, avatarer. Størrelse: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Midlertidige videoklip. Størrelse: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Downloadede sider fra en webroman. Størrelse: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Logfiler, midlertidige downloads. Størrelse: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Det lykkedes ikke at rydde cachen: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Fabriksindstillingerne kunne ikke gendannes: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 eller 3F51B5",
+  "motionDisplay": "Bevægelse og skærmvisning",
+  "visualEffectsTuning": "Visuelle effekter og finjustering",
+  "historyCard": "Historiekort",
+  "carousel": "Karrusel",
+  "navBar": "Navigationsbjælke",
+  "themeDarkModeLayoutStyling": "Tema, mørk tilstand og layoutformatering",
+  "gesturesSubtitlesVideoSettings": "Gester, undertekster og videoindstillinger",
+  "settingsTiles": "Indstillingsfelter",
+  "oledMode2": "OLED-tilstand",
+  "primaryAccount": "Hovedkonto ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Forbundet med {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Opret forbindelse til {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value}-titler",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Skal »{id}« fjernes? Dette kan ikke fortrydes.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Importerer…",
+  "addJsonFiles": "Tilføj JSON-filer",
+  "previousStyle": "Forrige stil",
+  "nextStyle": "Næste stil",
+  "currentStyle": "Nuværende stil",
+  "useThisStyle": "Brug denne stil",
+  "pleaseLogInToGetRecommendations": "Log venligst ind for at få anbefalinger",
+  "chapter1": "Kapitel 1",
+  "deletedSuccessfully": "{value} er blevet slettet",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl – Du er nu logget ind!",
+  "yepFailed": "Ja, det gik ikke",
+  "userInfoFetchingFailed": "Det lykkedes ikke at hente brugeroplysninger!",
+  "githubLoginFailed": "GitHub-login mislykkedes: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Synkroniseringen er allerede i gang.",
+  "anotherSyncActionIsAlreadyIn": "Der er allerede en anden synkroniseringsproces i gang.",
+  "noAnymexSyncGistFoundTo": "Der blev ikke fundet nogen AnymeX-synkroniserings-gist, der skal slettes.",
+  "noAnymexSyncGistFoundInitialize": "Der blev ikke fundet nogen AnymeX-synkroniserings-gist. Start først.",
+  "githubGistSync": "GitHub Gist-synkronisering",
+  "manage": "Administrer",
+  "manageGithubGistSync": "Administrer GitHub Gist-synkronisering",
+  "joinedTheParty": "{username} er kommet med til festen",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} har forladt gruppen",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Værten skiftede til afsnit {episodeNumber} af {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Der opstod en fejl ved hentning af kommentarer",
+  "errorAddingComment": "Fejl ved tilføjelse af kommentar",
+  "errorUpdatingVote": "Fejl ved opdatering af afstemning",
+  "errorEditingComment": "Fejl ved redigering af kommentar",
+  "errorDeletingComment": "Fejl ved sletning af kommentar",
+  "commentReportedSuccessfully": "Kommentaren er blevet indsendt",
+  "errorReportingComment": "Kommentar til fejlrapport",
+  "errorFetchingReportsQueue": "Der opstod en fejl ved hentning af rapportkøen",
+  "reportResolvedSuccessfully": "Rapporten er blevet løst uden problemer",
+  "failedToResolveReport": "Det lykkedes ikke at behandle rapporten",
+  "errorResolvingReport": "Fejl ved oprettelse af rapport",
+  "errorFetchingUserInfo": "Der opstod en fejl ved hentning af brugeroplysninger",
+  "errorFetchingUserHistory": "Der opstod en fejl ved hentning af brugerhistorik",
+  "errorFetchingUserStats": "Der opstod en fejl ved hentning af brugerstatistikker",
+  "errorListingUsers": "Fejl ved visning af brugere",
+  "errorSearchingUsers": "Fejl ved søgning efter brugere",
+  "errorFetchingModerationQueue": "Der opstod en fejl ved hentning af moderationskøen",
+  "commentModeratedSuccessfully": "Kommentaren er blevet modereret",
+  "errorModeratingComment": "Fejl ved moderering af kommentar",
+  "userManagedSuccessfully": "Brugeren blev oprettet uden problemer",
+  "errorManagingUser": "Fejl ved administration af bruger",
+  "errorGettingInitialDeepLink": "Fejl ved hentning af det første dybe link: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Fejl ved åbning af link: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Kopier fejloplysninger",
+  "whatSNew": "Nyheder",
+  "updatedToV": "Opdateret til version {current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Det var ikke muligt at åbne annoncelinket",
+  "newAnilistUpdates": "{length} Nye opdateringer til AniList",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText} \n + {value} mere",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Opdater enheder",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Repo tilføjes... vent venligst.",
+  "unsupportedThemeTypeSupportedPlayer": "Ikke-understøttet tematype »{type}«. Understøttet: player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Importerer spiller-tema fra linket...",
+  "themeIsInvalid": "Temaet er ugyldigt: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Tema-JSON-filen er gyldig. {imported} {label} er importeret.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Opretter forbindelse til rummet {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Det lykkedes ikke at komme ind i rummet: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Beregner AniMatch-kompatibilitet for {user1} og {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Del med den valgte sporingsservice",
+  "shareAnymexLink": "Del et AnymeX-link",
+  "opensDirectlyInAnymex": "Åbnes direkte i AnymeX",
+  "newCommentsRepliesAndEdits": "Nye kommentarer, svar og redigeringer",
+  "upvotesAndDownvotesOnYourComments": "Positive og negative stemmer på dine kommentarer",
+  "warningsMutesBansAndModerationActions": "Advarsler, lydsperringer, udelukkelser og modereringsforanstaltninger",
+  "reportFiledResolvedDismissed": "Sagen er indgivet, afgjort, henlagt",
+  "officialAnnouncements": "Officielle meddelelser",
+  "whenSomeoneMentionsYouInA": "Når nogen @tager dig i en kommentar",
+  "notificationsForNewAnimeEpisodeReleases": "Meddelelser om udgivelser af nye anime-afsnit",
+  "notificationsForFollowsMentionsAndLikes": "Meddelelser om følgere, omtaler og likes",
+  "notificationsForCompletedEpisodeAndChapter": "Meddelelser om færdigoverførte episoder og kapitler",
+  "signIn": "Log ind",
+  "failedToCheckForUpdates3": "Det lykkedes ikke at søge efter opdateringer",
+  "noUpdatesAvailable": "Der er ingen opdateringer tilgængelige",
+  "errorCheckingForUpdates": "Der opstod en fejl under søgningen efter opdateringer",
+  "installPermissionRequired": "Der kræves installationsrettigheder",
+  "downloadFailed3": "Download mislykkedes",
+  "newVersionAvailable": "Ny version tilgængelig"
 }
