@@ -27,7 +27,7 @@ class ActivityLiker {
 
   factory ActivityLiker.fromJson(Map<String, dynamic> json) {
     return ActivityLiker(
-      id: json['id'] as int,
+      id: (json['id'] as num?)?.toInt() ?? 0,
       name: json['name'] as String? ?? '',
       avatarUrl: json['avatar']?['large'] as String? ??
           json['avatar']?['medium'] as String?,
@@ -84,69 +84,87 @@ class AnilistActivity {
   });
 
   factory AnilistActivity.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as String? ?? '';
+    var type = json['type'] as String? ?? '';
+    final typename = json['__typename'] as String? ?? '';
+    if (type.isEmpty && typename.isNotEmpty) {
+      if (typename == 'TextActivity') {
+        type = 'TEXT';
+      } else if (typename == 'MessageActivity') {
+        type = 'MESSAGE';
+      } else {
+        type = 'ANIME_LIST';
+      }
+    }
 
     final likesJson = json['likes'] as List<dynamic>? ?? [];
     final likes = likesJson
-        .map((e) => ActivityLiker.fromJson(e as Map<String, dynamic>))
+        .whereType<Map<String, dynamic>>()
+        .map((e) => ActivityLiker.fromJson(e))
         .toList();
+
+    final id = (json['id'] as num?)?.toInt() ?? 0;
+    final createdAt = (json['createdAt'] as num?)?.toInt() ?? 0;
+    final likeCount = (json['likeCount'] as num?)?.toInt() ?? 0;
+    final replyCount = (json['replyCount'] as num?)?.toInt() ?? 0;
+    final isLiked = json['isLiked'] as bool? ?? false;
+    final isPinned = json['isPinned'] as bool? ?? false;
+    final isSubscribed = json['isSubscribed'] as bool? ?? false;
 
     if (type == 'TEXT') {
       return AnilistActivity(
-        id: json['id'] as int,
+        id: id,
         type: type,
         text: json['text'] as String?,
-        authorId: json['user']?['id'] as int?,
+        authorId: (json['user']?['id'] as num?)?.toInt(),
         authorName: json['user']?['name'] as String?,
         authorAvatarUrl: json['user']?['avatar']?['large'] as String?,
-        createdAt: json['createdAt'] as int? ?? 0,
-        likeCount: json['likeCount'] as int? ?? 0,
-        replyCount: json['replyCount'] as int? ?? 0,
-        isLiked: json['isLiked'] as bool? ?? false,
-        isPinned: json['isPinned'] as bool? ?? false,
-        isSubscribed: json['isSubscribed'] as bool? ?? false,
+        createdAt: createdAt,
+        likeCount: likeCount,
+        replyCount: replyCount,
+        isLiked: isLiked,
+        isPinned: isPinned,
+        isSubscribed: isSubscribed,
         likes: likes,
       );
     } else if (type == 'MESSAGE') {
       return AnilistActivity(
-        id: json['id'] as int,
+        id: id,
         type: type,
         text: json['message'] as String?,
-        authorId: json['messenger']?['id'] as int?,
+        authorId: (json['messenger']?['id'] as num?)?.toInt(),
         authorName: json['messenger']?['name'] as String?,
         authorAvatarUrl: json['messenger']?['avatar']?['large'] as String?,
-        createdAt: json['createdAt'] as int? ?? 0,
-        likeCount: json['likeCount'] as int? ?? 0,
-        replyCount: json['replyCount'] as int? ?? 0,
-        isLiked: json['isLiked'] as bool? ?? false,
-        isPinned: false, // Messages don't have isPinned
-        isSubscribed: json['isSubscribed'] as bool? ?? false,
+        createdAt: createdAt,
+        likeCount: likeCount,
+        replyCount: replyCount,
+        isLiked: isLiked,
+        isPinned: false,
+        isSubscribed: isSubscribed,
         isPrivate: json['isPrivate'] as bool? ?? false,
         likes: likes,
       );
     } else {
-      // ANIME_LIST or MANGA_LIST
       final status = json['status'] as String? ?? '';
       final progress = json['progress'] as String?;
 
       return AnilistActivity(
-        id: json['id'] as int,
+        id: id,
         type: type,
         status: status,
         progress: progress,
-        mediaId: json['media']?['id'] as int?,
+        mediaId: (json['media']?['id'] as num?)?.toInt(),
         mediaTitle: json['media']?['title']?['userPreferred'] as String?,
         mediaCoverUrl: json['media']?['coverImage']?['large'] as String?,
         mediaBannerUrl: json['media']?['bannerImage'] as String?,
-        authorId: json['user']?['id'] as int?,
+        authorId: (json['user']?['id'] as num?)?.toInt(),
         authorName: json['user']?['name'] as String?,
         authorAvatarUrl: json['user']?['avatar']?['large'] as String?,
-        createdAt: json['createdAt'] as int? ?? 0,
-        likeCount: json['likeCount'] as int? ?? 0,
-        replyCount: json['replyCount'] as int? ?? 0,
-        isLiked: json['isLiked'] as bool? ?? false,
-        isPinned: json['isPinned'] as bool? ?? false,
-        isSubscribed: json['isSubscribed'] as bool? ?? false,
+        createdAt: createdAt,
+        likeCount: likeCount,
+        replyCount: replyCount,
+        isLiked: isLiked,
+        isPinned: isPinned,
+        isSubscribed: isSubscribed,
         likes: likes,
       );
     }
@@ -211,17 +229,18 @@ class ActivityReply {
   factory ActivityReply.fromJson(Map<String, dynamic> json) {
     final likesJson = json['likes'] as List<dynamic>? ?? [];
     final likes = likesJson
-        .map((e) => ActivityLiker.fromJson(e as Map<String, dynamic>))
+        .whereType<Map<String, dynamic>>()
+        .map((e) => ActivityLiker.fromJson(e))
         .toList();
 
     return ActivityReply(
-      id: json['id'] as int,
+      id: (json['id'] as num?)?.toInt() ?? 0,
       text: json['text'] as String? ?? '',
-      authorId: json['user']?['id'] as int?,
+      authorId: (json['user']?['id'] as num?)?.toInt(),
       authorName: json['user']?['name'] as String?,
       authorAvatarUrl: json['user']?['avatar']?['large'] as String?,
-      createdAt: json['createdAt'] as int? ?? 0,
-      likeCount: json['likeCount'] as int? ?? 0,
+      createdAt: (json['createdAt'] as num?)?.toInt() ?? 0,
+      likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       isLiked: json['isLiked'] as bool? ?? false,
       likes: likes,
     );

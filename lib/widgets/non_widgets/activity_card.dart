@@ -26,6 +26,8 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
     show ItemType;
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class ActivityCard extends StatefulWidget {
   final AnilistActivity activity;
@@ -123,7 +125,7 @@ class _ActivityCardState extends State<ActivityCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: AnymeXText(context.l10n.pleaseLoginFirst),
-          duration: Duration(milliseconds: 1500),
+          duration: const Duration(milliseconds: 1500),
         ),
       );
       return;
@@ -157,106 +159,88 @@ class _ActivityCardState extends State<ActivityCard> {
     final isOwner =
         currentUserIdInt != null && activity.authorId == currentUserIdInt;
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: context.theme.colorScheme.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 8),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (isOwner && widget.isOwnProfile)
-                ListTile(
-                  leading: Icon(
-                    activity.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-                  ),
-                  title: AnymeXText(activity.isPinned ? "Unpin" : "Pin Activity"),
-                  onTap: () async {
-                    Navigator.pop(sheetContext);
-                    final auth = Get.find<AnilistAuth>();
-                    setState(() => activity.isPinned = !activity.isPinned);
-                    final error = await auth.toggleActivityPin(
-                        activity.id, activity.isPinned);
-                    if (error != null && mounted) {
-                      setState(() => activity.isPinned = !activity.isPinned);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: AnymeXText(error)),
-                      );
-                    }
-                  },
-                ),
-              ListTile(
-                leading: Icon(
-                  activity.isSubscribed
-                      ? Icons.notifications_off_outlined
-                      : Icons.notifications_active_outlined,
-                ),
-                title: AnymeXText(activity.isSubscribed
-                    ? "Unsubscribe"
-                    : "Subscribe to thread"),
+    AnymeXSheet.custom(
+      Builder(builder: (sheetContext) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isOwner && widget.isOwnProfile)
+              AnymeXTile(
+                icon: activity.isPinned
+                    ? Icons.push_pin
+                    : Icons.push_pin_outlined,
+                title: activity.isPinned ? "Unpin" : "Pin Activity",
                 onTap: () async {
-                  Navigator.pop(sheetContext);
+                  Navigator.of(sheetContext).pop();
                   final auth = Get.find<AnilistAuth>();
-                  setState(
-                      () => activity.isSubscribed = !activity.isSubscribed);
-                  final success = await auth.toggleActivitySubscription(
-                      activity.id, activity.isSubscribed);
-                  if (!success && mounted) {
-                    setState(
-                        () => activity.isSubscribed = !activity.isSubscribed);
+                  setState(() => activity.isPinned = !activity.isPinned);
+                  final error = await auth.toggleActivityPin(
+                      activity.id, activity.isPinned);
+                  if (error != null && mounted) {
+                    setState(() => activity.isPinned = !activity.isPinned);
+                    snackBar(error);
                   }
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.open_in_browser),
-                title: AnymeXText(context.l10n.openInBrowser),
+            AnymeXTile(
+              icon: activity.isSubscribed
+                  ? Icons.notifications_off_outlined
+                  : Icons.notifications_active_outlined,
+              title: activity.isSubscribed
+                  ? "Unsubscribe"
+                  : "Subscribe to thread",
+              onTap: () async {
+                Navigator.of(sheetContext).pop();
+                final auth = Get.find<AnilistAuth>();
+                setState(
+                    () => activity.isSubscribed = !activity.isSubscribed);
+                final success = await auth.toggleActivitySubscription(
+                    activity.id, activity.isSubscribed);
+                if (!success && mounted) {
+                  setState(
+                      () => activity.isSubscribed = !activity.isSubscribed);
+                }
+              },
+            ),
+            AnymeXTile(
+              icon: Icons.open_in_browser,
+              title: context.l10n.openInBrowser,
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                launchUrlString('https://anilist.co/activity/${activity.id}');
+              },
+            ),
+            if (isOwner &&
+                (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
+              AnymeXTile(
+                icon: Icons.edit_outlined,
+                title: context.l10n.editActivity,
                 onTap: () {
-                  Navigator.pop(sheetContext);
-                  launchUrlString('https://anilist.co/activity/${activity.id}');
+                  Navigator.of(sheetContext).pop();
+                  _showEditSheet();
                 },
               ),
-              if (isOwner &&
-                  (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
-                ListTile(
-                  leading: const Icon(Icons.edit_outlined),
-                  title: AnymeXText(context.l10n.editActivity),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _showEditSheet();
-                  },
-                ),
-              if (isOwner)
-                ListTile(
-                  leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: AnymeXText(context.l10n.deleteActivity,
-                      style: TextStyle(color: Colors.red)),
-                  onTap: () async {
-                    Navigator.pop(sheetContext);
-                    final auth = Get.find<AnilistAuth>();
-                    final success = await auth.deleteActivity(activity.id);
-                    if (success) {
-                      widget.onDeleted?.call();
-                    }
-                  },
-                ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            if (isOwner)
+              AnymeXTile(
+                icon: Icons.delete_outline,
+                iconColor: Colors.red,
+                title: context.l10n.deleteActivity,
+                titleStyle: const TextStyle(color: Colors.red),
+                onTap: () async {
+                  Navigator.of(sheetContext).pop();
+                  final auth = Get.find<AnilistAuth>();
+                  final success = await auth.deleteActivity(activity.id);
+                  if (success) {
+                    widget.onDeleted?.call();
+                  }
+                },
+              ),
+          ],
         );
-      },
+      }),
+      context,
+      showDragHandle: true,
+      useRootNavigator: true,
     );
   }
 
@@ -266,6 +250,7 @@ class _ActivityCardState extends State<ActivityCard> {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -450,6 +435,7 @@ class _ActivityCardState extends State<ActivityCard> {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: context.theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(

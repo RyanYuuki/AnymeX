@@ -19,6 +19,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 void showActivityDetailsSheet(BuildContext context, AnilistActivity activity) {
   showModalBottomSheet(
     context: context,
+    useRootNavigator: true,
     isScrollControlled: true,
     isDismissible: false,
     enableDrag: false,
@@ -63,7 +64,6 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       setState(() {
         replies = fetched;
       });
-      // One batched lookup so every reply frame resolves from cache.
       if (Get.isRegistered<CommentumService>()) {
         Get.find<CommentumService>().prefetchCustomizations(
             [for (final r in fetched) r.authorId?.toString()]);
@@ -76,7 +76,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: AnymeXText(context.l10n.pleaseLoginFirst),
-          duration: Duration(milliseconds: 1500),
+          duration: const Duration(milliseconds: 1500),
         ),
       );
       return false;
@@ -99,11 +99,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
         .postActivityReply(widget.activity.id, text);
 
     if (success && mounted) {
-      // reply count
       setState(() {
         widget.activity.replyCount++;
       });
-      // Re-fetch replies
       await _fetchReplies();
       return true;
     }
@@ -115,7 +113,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: AnymeXText(context.l10n.pleaseLoginFirst),
-          duration: Duration(milliseconds: 1500),
+          duration: const Duration(milliseconds: 1500),
         ),
       );
       return;
@@ -175,7 +173,6 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   }
 
   Future<void> _editReply(ActivityReply reply) async {
-    // Strip html (edit)
     final rawText =
         reply.text.replaceAll('<br>', '\n').replaceAll(RegExp(r'<[^>]*>'), '');
 
@@ -287,7 +284,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             )
                           else if (replies!.isEmpty)
                             Padding(
-                              padding: EdgeInsets.all(32.0),
+                              padding: const EdgeInsets.all(32.0),
                               child: Center(
                                 child:
                                     AnymeXText(context.l10n.noRepliesYetBeTheFirst),
@@ -352,7 +349,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
           GestureDetector(
             onTap: () {
               if (reply.authorId != null) {
-                Navigator.pop(context); // Close bottom
+                Navigator.pop(context);
                 final currentUserId =
                     Get.find<ServiceHandler>().profileData.value.id;
                 if (reply.authorId.toString() == currentUserId) {
@@ -380,7 +377,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                     GestureDetector(
                       onTap: () {
                         if (reply.authorId != null) {
-                          Navigator.pop(context); // Close bottom sheet
+                          Navigator.pop(context);
                           final currentUserId =
                               Get.find<ServiceHandler>().profileData.value.id;
                           if (reply.authorId.toString() == currentUserId) {
