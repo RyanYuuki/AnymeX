@@ -4,14 +4,15 @@ import 'dart:convert';
 
 class AnimeThemesAPI {
   static const String baseUrl = 'https://api.animethemes.moe';
+  static final Map<String, List<AnimeTheme>> _themesCache = {};
 
-  // Searches for anime themes by AniList ID
-  // Returns a list of AnimeTheme objects
-  // Throws an Exception if the request fails or ID is invalid
   static Future<List<AnimeTheme>> searchAnimeThemes(String aniListId) async {
+    final key = aniListId.trim();
+    if (_themesCache.containsKey(key)) {
+      return _themesCache[key]!;
+    }
     try {
-      // Parse AniList ID
-      final int? aniId = int.tryParse(aniListId.trim());
+      final int? aniId = int.tryParse(key);
       if (aniId == null) {
         throw Exception('Please enter a valid AniList ID (numbers only)');
       }
@@ -41,7 +42,6 @@ class AnimeThemesAPI {
 
       final data = json.decode(response.body);
 
-      // Handle the anime endpoint response
       if (data['anime'] != null && data['anime'] is List) {
         final animeList = data['anime'] as List;
         if (animeList.isNotEmpty && animeList[0] is Map) {
@@ -50,18 +50,20 @@ class AnimeThemesAPI {
 
           if (themesData != null && themesData is List) {
             final themes = themesData;
-            return themes
+            final result = themes
                 .whereType<Map>()
                 .map((theme) =>
                     AnimeTheme.fromJson(theme as Map<String, dynamic>))
                 .toList();
+            _themesCache[key] = result;
+            return result;
           }
         }
       }
 
+      _themesCache[key] = [];
       return [];
     } catch (e) {
-      //print('Detailed error: $e');
       throw Exception('Error searching anime themes: $e');
     }
   }

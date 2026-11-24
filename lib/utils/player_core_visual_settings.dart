@@ -8,12 +8,12 @@ class PlayerCoreVisualSettings {
       PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
 
   static const Map<String, dynamic> mpvCoreDefaults = {
-    'hwdec': 'no',
+    'hwdec': 'auto',
     'videoSync': 'audio',
     'interpolation': false,
-    'cacheMinutes': 5,
-    'demuxerReadaheadSeconds': 30,
-    'demuxerMaxBytesMb': 128,
+    'cacheMinutes': 2,
+    'demuxerReadaheadSeconds': 20,
+    'demuxerMaxBytesMb': 32,
     'vdLavcThreads': 4,
     'audioPitchCorrection': true,
   };
@@ -84,14 +84,17 @@ class PlayerCoreVisualSettings {
 
     await _safeSet(mpv, 'video-sync', settings['videoSync']);
     await _safeSet(mpv, 'interpolation', _boolToMpv(settings['interpolation']));
-    final cacheMinutes = (settings['cacheMinutes'] as num?)?.toInt() ?? 5;
+    final cacheMinutes = (settings['cacheMinutes'] as num?)?.toInt() ?? 2;
     await _safeSet(mpv, 'cache-secs', cacheMinutes * 60);
     await _safeSet(mpv, 'demuxer-readahead-secs',
-        (settings['demuxerReadaheadSeconds'] as num?)?.toInt() ?? 30);
+        (settings['demuxerReadaheadSeconds'] as num?)?.toInt() ?? 20);
+    final demuxerMaxBytes =
+        ((settings['demuxerMaxBytesMb'] as num?)?.toInt() ?? 32) * 1024 * 1024;
+    await _safeSet(mpv, 'demuxer-max-bytes', demuxerMaxBytes);
     await _safeSet(
       mpv,
-      'demuxer-max-bytes',
-      ((settings['demuxerMaxBytesMb'] as num?)?.toInt() ?? 128) * 1024 * 1024,
+      'demuxer-max-back-bytes',
+      (demuxerMaxBytes ~/ 3).clamp(8 * 1024 * 1024, 16 * 1024 * 1024),
     );
     await _safeSet(mpv, 'vd-lavc-threads',
         (settings['vdLavcThreads'] as num?)?.toInt() ?? 0);

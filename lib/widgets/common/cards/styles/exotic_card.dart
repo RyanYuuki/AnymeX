@@ -91,6 +91,7 @@ class ExoticCard extends CarouselCard {
               ),
               sourceId: itemData.source,
               isAnime: type == ItemType.anime,
+              cacheWidth: (cardW * 3.0).round(),
             ),
           ),
           if (shouldShowTitle()) ...[

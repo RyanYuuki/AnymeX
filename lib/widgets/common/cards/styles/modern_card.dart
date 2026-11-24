@@ -70,6 +70,7 @@ class ModernCard extends CarouselCard {
               radius: 12,
               sourceId: itemData.source,
               isAnime: type == ItemType.anime,
+              cacheWidth: (cardW * 3.0).round(),
             ),
             if (shouldShowTitle())
               Positioned(

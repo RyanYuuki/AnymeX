@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "98402444842f5bc1ad85ac381401640af486fa2b"
+      resolved-ref: "569858930bbc58aa705392d3ec8ee5a2e144cd17"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -1374,14 +1374,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.20"
-  material3_expressive_loading_indicator:
-    dependency: "direct main"
-    description:
-      name: material3_expressive_loading_indicator
-      sha256: "3d5940dcdf02f488bc41c01e3105b355de59443ea89122f73500eeca83ebacc0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.2"
   material_3_expressive:
     dependency: "direct main"
     description:
@@ -1903,12 +1895,11 @@ packages:
     source: hosted
     version: "2.1.2"
   screen_brightness_windows:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: screen_brightness_windows
-      sha256: "368b9c822e1671de81616e48150006e39eff2a434957e47ee638b09a32b2297c"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/screen_brightness_windows"
+      relative: true
+    source: path
     version: "2.1.2"
   screen_retriever:
     dependency: transitive

@@ -6,6 +6,7 @@ import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -58,6 +59,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           return AnymeXTile(
                             icon: Icons.language_rounded,
                             title: context.l10n.labelLanguage,
+                            badge: AnymeXBadge.newBadge(context),
                             subtitle:
                                 '${localeController.currentLanguageNativeName} (${localeController.currentLanguageName})',
                             onTap: () => _showLanguageDialog(context),

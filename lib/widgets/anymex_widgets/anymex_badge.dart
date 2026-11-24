@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +22,27 @@ class AnymeXBadge extends StatelessWidget {
     this.offset = const Offset(-2, -2),
     this.visible = true,
   });
+
+  static Widget newBadge(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: primary.opaque(0.15, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: primary.opaque(0.3, iReallyMeanIt: true),
+          width: 1,
+        ),
+      ),
+      child: AnymeXText(
+        context.l10n.newLabel,
+        size: 9.5,
+        variant: TextVariant.bold,
+        color: primary,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

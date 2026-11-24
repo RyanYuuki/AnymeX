@@ -46,31 +46,6 @@ class ReusableCarousel extends StatefulWidget {
 }
 
 class _ReusableCarouselState extends State<ReusableCarousel> {
-  bool _canScroll = true;
-  bool _hasScrolled = false;
-  bool _isAtEnd = false;
-
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification.metrics.axis != Axis.horizontal) return false;
-    final maxScroll = notification.metrics.maxScrollExtent;
-    final pixels = notification.metrics.pixels;
-
-    final canScroll = maxScroll > 0;
-    final hasScrolled = pixels > 12.0;
-    final isAtEnd = pixels >= maxScroll - 12.0;
-
-    if (canScroll != _canScroll ||
-        hasScrolled != _hasScrolled ||
-        isAtEnd != _isAtEnd) {
-      setState(() {
-        _canScroll = canScroll;
-        _hasScrolled = hasScrolled;
-        _isAtEnd = isAtEnd;
-      });
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_isEmptyOrOffline) {
@@ -148,8 +123,8 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       final cardStyleIndex = settingsController.cardStyle;
       final _ = settingsController.customCardStyle;
 
-      final listView = NotificationListener<ScrollNotification>(
-        onNotification: _handleScrollNotification,
+      return SizedBox(
+        height: getCardHeight(cardStyleIndex, getPlatform(context)) + 15,
         child: ListView.builder(
           key: PageStorageKey<String>('carousel-${widget.title}'),
           itemCount: processedData.length,
@@ -158,51 +133,6 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
           itemBuilder: (context, index) =>
               _buildCarouselItem(processedData[index], enableAnimation, index),
         ),
-      );
-
-      final shouldMask = _canScroll && processedData.length > 2;
-
-      final content = shouldMask
-          ? ShaderMask(
-              shaderCallback: (Rect bounds) {
-                final colors = <Color>[];
-                final stops = <double>[];
-
-                if (_hasScrolled) {
-                  colors.add(Colors.transparent);
-                  colors.add(Colors.black);
-                  stops.add(0.0);
-                  stops.add(0.06);
-                } else {
-                  colors.add(Colors.black);
-                  stops.add(0.0);
-                }
-
-                if (!_isAtEnd) {
-                  colors.add(Colors.black);
-                  colors.add(Colors.transparent);
-                  stops.add(0.92);
-                  stops.add(1.0);
-                } else {
-                  colors.add(Colors.black);
-                  stops.add(1.0);
-                }
-
-                return LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: colors,
-                  stops: stops,
-                ).createShader(bounds);
-              },
-              blendMode: BlendMode.dstIn,
-              child: listView,
-            )
-          : listView;
-
-      return SizedBox(
-        height: getCardHeight(cardStyleIndex, getPlatform(context)) + 15,
-        child: content,
       );
     });
   }

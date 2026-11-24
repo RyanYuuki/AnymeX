@@ -89,6 +89,11 @@ class MediaKitPlayer extends base.BasePlayer {
       configuration: PlayerConfiguration(
         bufferSize: bufferSize,
         libass: config.useLibass,
+        libassAndroidFont: Platform.isAndroid && config.useLibass
+            ? 'assets/fonts/Linotte-Regular.otf'
+            : null,
+        libassAndroidFontName:
+            Platform.isAndroid && config.useLibass ? 'Linotte-Regular' : null,
         vo: resolvedVo,
       ),
     );
@@ -123,7 +128,12 @@ class MediaKitPlayer extends base.BasePlayer {
       await mpv.setProperty("framedrop", "no");
       await mpv.setProperty("cache-on-disk", "no");
       await mpv.setProperty("network-timeout", "30");
-      await mpv.setProperty("demuxer-readahead-secs", "30");
+      await mpv.setProperty("demuxer-readahead-secs", "20");
+      await mpv.setProperty("demuxer-max-bytes", "$bufferSize");
+      await mpv.setProperty(
+        "demuxer-max-back-bytes",
+        "${(bufferSize ~/ 3).clamp(8 * 1024 * 1024, 16 * 1024 * 1024)}",
+      );
       if (!Platform.isAndroid && !Platform.isIOS) {
         await mpv.setProperty("vd-lavc-threads", "4");
       }

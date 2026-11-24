@@ -282,7 +282,7 @@ class AnymeXScaffold extends StatelessWidget {
     final hasCustomBg = settingsController.liquidBackgroundPath.isNotEmpty;
     final imagePath = hasCustomBg
         ? "file://${settingsController.liquidBackgroundPath}"
-        : 'assets/images/bg_glass.webp';
+        : 'assets/images/bg_glass.png';
 
     final fallbackColor = isOled
         ? (theme.brightness == Brightness.dark ? Colors.black : Colors.white)
@@ -306,15 +306,6 @@ class AnymeXScaffold extends StatelessWidget {
                     imagePath: imagePath,
                     color: tintColor,
                   ),
-                  if (!hasCustomBg) ...[
-                    if (isOled)
-                      Container(color: Colors.black)
-                    else
-                      _buildGradientOverlay(
-                        gradientVariant: GradientVariant.subtle,
-                        theme: theme,
-                      ),
-                  ],
                 ],
               ),
             ),

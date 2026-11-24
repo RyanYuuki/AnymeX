@@ -316,6 +316,7 @@ enum UISettingsKeys {
   enableImmersiveMode,
   navBarStyle,
   tileStyle,
+  tileIconShape,
   appFontFamily,
   appFontScale,
   bottomNavBarMargin,

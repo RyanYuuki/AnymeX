@@ -6,6 +6,7 @@ import 'package:anymex/screens/settings/registry/settings_registry.dart';
 import 'package:anymex/screens/settings/registry/settings_search_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -148,6 +149,9 @@ class _SettingsPageState extends State<SettingsPage> {
               .map((item) => AnymeXTile(
                     leading: _buildSearchLeading(context, item),
                     title: settingsLabel(context.l10n, item.title),
+                    badge: item.title == 'App Language'
+                        ? AnymeXBadge.newBadge(context)
+                        : null,
                     subtitle: settingsLabel(context.l10n, item.section ?? category),
                     onTap: () async {
                       final builder = SettingsRegistry.categoryRoutes[category];
@@ -183,6 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: settingsLabel(context.l10n, cat.title),
                   description: settingsLabel(context.l10n, cat.description),
                   destination: cat.destination,
+                  badge: cat.id == 'common' ? AnymeXBadge.newBadge(context) : null,
                 ),
               if (entry.key == 'About & Support')
                 Builder(
@@ -209,6 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required String description,
     Widget Function()? destination,
     VoidCallback? customTap,
+    Widget? badge,
   }) {
     final colors = Theme.of(context).colorScheme;
     return AnymeXTile(
@@ -217,6 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
       iconBackgroundColor: colors.primary.opaque(0.12, iReallyMeanIt: true),
       title: title,
       subtitle: description,
+      badge: badge,
       onTap: customTap ?? () => navigate(destination),
     );
   }

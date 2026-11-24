@@ -1337,6 +1337,15 @@ averageScore
   }
 
   Future<void> fetchSecondaryDetails(String id, Media media) async {
+    final cachedData = await AnilistCache.instance.get('media_details_$id');
+    if (cachedData is Map<String, dynamic> &&
+        cachedData['relations'] != null &&
+        cachedData['recommendations'] != null) {
+      media.mergeSecondaryData(cachedData, pageJson: cachedData['page']);
+      cacheController.addCache(cachedData, ServicesType.anilist);
+      return;
+    }
+
     const String url = 'https://graphql.anilist.co/';
     final Map<String, dynamic> variables = {
       'id': int.parse(id),
@@ -1378,12 +1387,16 @@ averageScore
           if (mediaJson['staffPreview'] != null) {
             cached['staffPreview'] = mediaJson['staffPreview'];
           }
+          if (page != null) {
+            cached['page'] = page;
+          }
           AnilistCache.instance.put(
             'media_details_$id',
             cached,
             ttl: const Duration(hours: 12),
             persist: true,
           );
+          cacheController.addCache(cached, ServicesType.anilist);
         }
         Logger.i('Secondary Data Loaded for id: $id');
       } else {

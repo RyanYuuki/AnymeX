@@ -2,9 +2,11 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/common/tile_icon_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
 class AnymeXExpansionTile extends StatefulWidget {
   final String title;
@@ -24,6 +26,7 @@ class AnymeXExpansionTile extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
+  final M3EShapeKind? iconShape;
 
   const AnymeXExpansionTile({
     super.key,
@@ -44,6 +47,7 @@ class AnymeXExpansionTile extends StatefulWidget {
     this.padding,
     this.titleStyle,
     this.subtitleStyle,
+    this.iconShape,
   });
 
   @override
@@ -109,41 +113,78 @@ class _AnymeXExpansionTileState extends State<AnymeXExpansionTile>
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final effectiveShapeKind = widget.iconShape ??
+        AnymeXTileScope.of(context)?.iconShape ??
+        getTileIconShapeKind(settingsController.tileIconShape);
+    final shapeBgColor = widget.iconBackgroundColor ??
+        colors.primary.opaque(0.12, iReallyMeanIt: true);
 
     final Widget leadingWidget = widget.leading != null
         ? (widget.leading is Icon
-            ? Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: widget.iconBackgroundColor ??
-                      colors.primary.opaque(0.12, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  (widget.leading as Icon).icon,
-                  size: 20,
-                  color: (widget.leading as Icon).color ??
-                      widget.iconColor ??
-                      colors.primary,
-                ),
-              )
+            ? (effectiveShapeKind != null
+                ? M3EShapeContainer(
+                    kind: effectiveShapeKind,
+                    width: 36,
+                    height: 36,
+                    color: shapeBgColor,
+                    child: Center(
+                      child: Icon(
+                        (widget.leading as Icon).icon,
+                        size: 20,
+                        color: (widget.leading as Icon).color ??
+                            widget.iconColor ??
+                            colors.primary,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: shapeBgColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        (widget.leading as Icon).icon,
+                        size: 20,
+                        color: (widget.leading as Icon).color ??
+                            widget.iconColor ??
+                            colors.primary,
+                      ),
+                    ),
+                  ))
             : widget.leading!)
         : (widget.icon != null
-            ? Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: widget.iconBackgroundColor ??
-                      colors.primary.opaque(0.12, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  widget.icon,
-                  size: 20,
-                  color: widget.iconColor ?? colors.primary,
-                ),
-              )
+            ? (effectiveShapeKind != null
+                ? M3EShapeContainer(
+                    kind: effectiveShapeKind,
+                    width: 36,
+                    height: 36,
+                    color: shapeBgColor,
+                    child: Center(
+                      child: Icon(
+                        widget.icon,
+                        size: 20,
+                        color: widget.iconColor ?? colors.primary,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: shapeBgColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        widget.icon,
+                        size: 20,
+                        color: widget.iconColor ?? colors.primary,
+                      ),
+                    ),
+                  ))
             : const SizedBox.shrink());
 
     final header = Material(

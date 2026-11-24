@@ -6,6 +6,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:flutter/material.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
 class AnymeXSectionBuilder extends StatelessWidget {
   final String? title;
@@ -18,6 +19,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
   final BoxBorder? borderSide;
   final bool disableSeperator;
   final TileStyle? style;
+  final M3EShapeKind? iconShape;
 
   const AnymeXSectionBuilder({
     super.key,
@@ -31,6 +33,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
     this.borderSide,
     this.separatorIndent = 66.0,
     this.style,
+    this.iconShape,
   });
 
   bool _isCheckboxTile(Widget w) {
@@ -70,6 +73,8 @@ class AnymeXSectionBuilder extends StatelessWidget {
             ? TileStyle.modern
             : TileStyle.classic);
     final isModern = effectiveStyle == TileStyle.modern;
+    final effectiveIconShape =
+        iconShape ?? AnymeXTileScope.of(context)?.iconShape;
     final itemCount = children.length;
 
     final List<Widget> formattedChildren = [];
@@ -117,6 +122,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
                   ? (backgroundColor ??
                       colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true))
                   : null),
+          iconShape: child.iconShape ?? effectiveIconShape,
         );
       } else {
         tileWidget = ClipRRect(
@@ -133,6 +139,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
                   ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
                   : null),
           style: effectiveStyle,
+          iconShape: effectiveIconShape,
           child: tileWidget,
         ),
       );

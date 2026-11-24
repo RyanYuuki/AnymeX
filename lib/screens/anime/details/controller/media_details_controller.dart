@@ -187,8 +187,10 @@ class MediaDetailsController extends GetxController {
     if (Get.isRegistered<DiscordRPCController>()) {
       DiscordRPCController.instance.updateMediaPresence(media: media.value);
     }
+    final hasSecondaryCached = cached != null &&
+        (cached.relations != null && cached.relations!.isNotEmpty);
     isAnilistLoading.value = cached == null;
-    isSecondaryLoading.value = cached == null;
+    isSecondaryLoading.value = !hasSecondaryCached;
 
     final isDirectInitial =
         initialMedia.serviceType == ServicesType.extensions &&
@@ -215,16 +217,19 @@ class MediaDetailsController extends GetxController {
     };
     offlineStorage.addListener(_offlineStorageListener!);
 
-    Future.microtask(() {
-      if (!isClosed) {
-        _fetchContentFromSource();
-        fetchAnimeThemes();
-        _fetchFullDetails().then((_) {
-          if (!isClosed) {
-            _fetchSecondaryAnilistData();
-          }
-        });
-      }
+    Future.delayed(const Duration(milliseconds: 260), () {
+      if (isClosed) return;
+      _fetchFullDetails().then((_) {
+        if (!isClosed) {
+          _fetchSecondaryAnilistData();
+        }
+      });
+      Future.delayed(const Duration(milliseconds: 120), () {
+        if (!isClosed) {
+          _fetchContentFromSource();
+          fetchAnimeThemes();
+        }
+      });
     });
   }
 
@@ -512,6 +517,13 @@ class MediaDetailsController extends GetxController {
 
   Future<void> _fetchSecondaryAnilistData() async {
     if (initialMedia.serviceType != ServicesType.anilist) {
+      isSecondaryLoading.value = false;
+      return;
+    }
+    final hasSecondary = media.value.relations != null &&
+        media.value.relations!.isNotEmpty &&
+        media.value.recommendations.isNotEmpty;
+    if (hasSecondary) {
       isSecondaryLoading.value = false;
       return;
     }

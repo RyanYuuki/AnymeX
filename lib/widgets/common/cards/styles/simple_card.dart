@@ -99,6 +99,7 @@ class DefaultCard extends CarouselCard {
                 radius: 0,
                 sourceId: itemData.source,
                 isAnime: type == ItemType.anime,
+                cacheWidth: (cardW * 3.0).round(),
               ),
             ),
           ),
