@@ -26,6 +26,9 @@ import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/utils/external_player.dart';
 import 'package:anymex/utils/pip_controller.dart';
+import 'package:anymex/screens/anime/watch/preview/seek_preview_engine.dart';
+import 'package:anymex/screens/anime/watch/chapters/models/playback_chapter.dart';
+import 'package:anymex/screens/anime/watch/chapters/services/intro_db_service.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
@@ -281,6 +284,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Timer? _rpcSeekDebounceTimer;
   bool _hasAutoSelectedPreferredSub = false;
   aniskip.EpisodeSkipTimes? skipTimes;
+  final RxList<PlaybackChapter> chapters = <PlaybackChapter>[].obs;
+  final RxList<PlaybackSkipSegment> skipSegments = <PlaybackSkipSegment>[].obs;
+  SeekPreviewEngine? seekPreviewEngine;
+  final Rxn<Duration> scrubbingPosition = Rxn<Duration>();
   final isOPSkippedOnce = false.obs;
   final isEDSkippedOnce = false.obs;
   final isRecapSkippedOnce = false.obs;
@@ -1051,6 +1058,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await _basePlayer.initialize();
     _isPlayerInitialized.value = true;
     _bindPlayerStreams();
+    _initSeekPreviewEngine();
     playerReloadVersion.value++;
     refresh();
 
@@ -1216,8 +1224,49 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       episodeNumber: currentEpisode.value.number,
       episodeLength: episodeLengthSec,
     );
-    aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) {
+    aniskip.AniSkipApi().getSkipTimes(skipQuery).then((skipTimeResult) async {
       skipTimes = skipTimeResult;
+      final parsedSegments = <PlaybackSkipSegment>[];
+      if (skipTimeResult != null) {
+        if (skipTimeResult.op != null) {
+          parsedSegments.add(PlaybackSkipSegment(
+            title: 'Opening',
+            kind: PlaybackSegmentKind.opening,
+            startSeconds: skipTimeResult.op!.start.toDouble(),
+            endSeconds: skipTimeResult.op!.end.toDouble(),
+            source: 'AniSkip',
+          ));
+        }
+        if (skipTimeResult.ed != null) {
+          parsedSegments.add(PlaybackSkipSegment(
+            title: 'Ending',
+            kind: PlaybackSegmentKind.ending,
+            startSeconds: skipTimeResult.ed!.start.toDouble(),
+            endSeconds: skipTimeResult.ed!.end.toDouble(),
+            source: 'AniSkip',
+          ));
+        }
+        if (skipTimeResult.recap != null) {
+          parsedSegments.add(PlaybackSkipSegment(
+            title: 'Recap',
+            kind: PlaybackSegmentKind.recap,
+            startSeconds: skipTimeResult.recap!.start.toDouble(),
+            endSeconds: skipTimeResult.recap!.end.toDouble(),
+            source: 'AniSkip',
+          ));
+        }
+      }
+
+      if (parsedSegments.isEmpty) {
+        final epNum = int.tryParse(currentEpisode.value.number) ?? 1;
+        final introStamps = await IntroDbService.fetchSegments(
+          episode: epNum,
+          durationMs: currentEpisode.value.durationInMilliseconds,
+        );
+        parsedSegments.addAll(introStamps);
+      }
+
+      skipSegments.assignAll(parsedSegments);
     }).onError((error, stackTrace) {
       debugPrint('An error occurred: $error');
       debugPrint('Stack trace: $stackTrace');
@@ -1433,6 +1482,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           selectedVideo.value?.audios?.isNotEmpty == true) {
         _autoSelectAudioTrack();
       }
+    }));
+
+    _playerSubscriptions.add(_basePlayer.chaptersStream.listen((chaps) {
+      if (_isReloadingPlayer.value) return;
+      chapters.assignAll(chaps.cast<PlaybackChapter>());
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1734,7 +1788,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
     if (isOffline.value) {
-      // Support local file switching for offline episode list
       final videoPath = episode.link;
       if (videoPath == null || videoPath.isEmpty) return;
       _basePlayer.pause();
@@ -1762,7 +1815,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         startPosition: Duration(milliseconds: stamp ?? 0),
       );
       await _basePlayer.setRate(_sessionSpeed);
-      // Update the selected video and offline path tracking
       final offlineVideo =
           episode.videoTracks?.firstWhereOrNull((v) => v.url == videoPath) ??
               model.Video(
@@ -2163,6 +2215,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }
 
+    try {
+      await seekPreviewEngine?.dispose();
+      seekPreviewEngine = null;
+    } catch (_) {}
+
     await _basePlayer.dispose();
 
     try {
@@ -2191,6 +2248,46 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight
     ]);
+  }
+
+  void _initSeekPreviewEngine() {
+    if (!settings.enableSeekPreview.value) return;
+    if (_basePlayer is! MediaKitPlayer) return;
+
+    seekPreviewEngine = SeekPreviewEngine(
+      mainPlayerProvider: () => _basePlayer as MediaKitPlayer,
+      streamUrlProvider: () => isOffline.value ? offlineVideoPath : selectedVideo.value?.url,
+      headersProvider: () => selectedVideo.value?.headers ?? const {},
+    );
+  }
+
+  void onScrubbingUpdate(Duration pos) {
+    scrubbingPosition.value = pos;
+    if (settings.enableSeekPreview.value && seekPreviewEngine != null) {
+      seekPreviewEngine!.seek(pos);
+    }
+  }
+
+  void onScrubbingEnd() {
+    final target = scrubbingPosition.value;
+    scrubbingPosition.value = null;
+    seekPreviewEngine?.stop();
+    if (target != null) {
+      seekTo(target);
+    }
+  }
+
+  String? getChapterTitleAt(Duration pos) {
+    if (chapters.isEmpty) return null;
+    final posSec = pos.inMilliseconds / 1000.0;
+    for (int i = 0; i < chapters.length; i++) {
+      final ch = chapters[i];
+      final nextStart = i + 1 < chapters.length ? chapters[i + 1].startSeconds : double.infinity;
+      if (posSec >= ch.startSeconds && posSec < nextStart) {
+        return ch.title;
+      }
+    }
+    return null;
   }
 
   void seekTo(Duration pos) {

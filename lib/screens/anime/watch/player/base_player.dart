@@ -27,6 +27,8 @@ abstract class BasePlayer {
 
   Stream<bool> get completedStream;
 
+  Stream<List<dynamic>> get chaptersStream => const Stream.empty();
+
   PlayerState get state;
 
   Future<void> initialize();

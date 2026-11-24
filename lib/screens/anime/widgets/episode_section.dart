@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_episode_metadata.dart';
+import 'package:anymex/core/metadata/episode_metadata_service.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/widgets/common/content_error_widget.dart';
 import 'package:anymex/widgets/common/unified_source_section.dart';
@@ -66,6 +68,7 @@ class EpisodeSection extends StatelessWidget {
   }
 
   void _showEpisodeSettingsDialog(BuildContext context) {
+    final metaService = EpisodeMetadataService.instance;
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -73,43 +76,111 @@ class EpisodeSection extends StatelessWidget {
           () => AnymeXDialog(
             title: context.l10n.episodeListSettings,
             onConfirm: () {},
-            contentWidget: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (showAnify.value && !disableAnifyForCurrentSource.value) ...[
-                  _ProviderOptionTile(
-                    title: context.l10n.anifyKitsuArtwork,
-                    subtitle: context.l10n.useEnhancedEpisodeMetadataAndCovers,
-                    isSelected: isAnify.value,
-                    onTap: () {
-                      isAnify.value = !isAnify.value;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                AnymeXText(
-                  context.l10n.layoutStyle,
-                  variant: TextVariant.bold,
-                  size: 14,
-                ),
-                const SizedBox(height: 8),
-                ...EpisodeStyleRegistry.styles.map((style) {
-                  final isSelected =
-                      EpisodeStyleRegistry.currentStyleId.value == style.id;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _ProviderOptionTile(
-                      title: style.name,
-                      subtitle: style.description,
-                      isSelected: isSelected,
+            contentWidget: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText(
+                      context.l10n.layoutStyle,
+                      variant: TextVariant.bold,
+                      size: 14,
+                    ),
+                    const SizedBox(height: 8),
+                    ...EpisodeStyleRegistry.styles.map((style) {
+                      final isSelected =
+                          EpisodeStyleRegistry.currentStyleId.value == style.id;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: _ProviderOptionTile(
+                          title: style.name,
+                          subtitle: style.description,
+                          isSelected: isSelected,
+                          onTap: () {
+                            EpisodeStyleRegistry.setStyle(style.id);
+                          },
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const AnymeXText(
+                          'Episode Metadata',
+                          variant: TextVariant.bold,
+                          size: 14,
+                        ),
+                        IconButton(
+                          visualDensity: VisualDensity.compact,
+                          icon: const Icon(Icons.tune_rounded, size: 20),
+                          tooltip: 'Configure Providers & Order',
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                            navigate(() => const SettingsEpisodeMetadata());
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    _ProviderOptionTile(
+                      title: 'Configure Providers & Order',
+                      subtitle: 'Reorder sources, toggle individual providers',
+                      isSelected: false,
+                      trailing: const Icon(Icons.tune_rounded, size: 18),
                       onTap: () {
-                        EpisodeStyleRegistry.setStyle(style.id);
+                        Navigator.pop(dialogContext);
+                        navigate(() => const SettingsEpisodeMetadata());
                       },
                     ),
-                  );
-                }),
-              ],
+                    const SizedBox(height: 6),
+                    _ProviderOptionTile(
+                      title: 'Auto (Merged Priority)',
+                      subtitle: 'Merges highest-priority available data',
+                      isSelected: isAnify.value &&
+                          metaService.selectedSource.value == 'auto',
+                      onTap: () {
+                        isAnify.value = true;
+                        metaService.setSelectedSource('auto');
+                      },
+                    ),
+                    const SizedBox(height: 6),
+                    ...metaService.registeredProviders.map((provider) {
+                      final isSelected = isAnify.value &&
+                          metaService.selectedSource.value == provider.id;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: _ProviderOptionTile(
+                          title: provider.name,
+                          subtitle: provider.description,
+                          isSelected: isSelected,
+                          onTap: () {
+                            isAnify.value = true;
+                            metaService.setSelectedSource(provider.id);
+                          },
+                        ),
+                      );
+                    }),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: _ProviderOptionTile(
+                        title: 'Off',
+                        subtitle: 'Use raw provider episode titles only',
+                        isSelected: !isAnify.value ||
+                            metaService.selectedSource.value == 'none',
+                        onTap: () {
+                          isAnify.value = false;
+                          metaService.setSelectedSource('none');
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
@@ -261,12 +332,14 @@ class _ProviderOptionTile extends StatelessWidget {
     required this.subtitle,
     required this.isSelected,
     required this.onTap,
+    this.trailing,
   });
 
   final String title;
   final String subtitle;
   final bool isSelected;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -312,15 +385,16 @@ class _ProviderOptionTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                isSelected
-                    ? Icons.check_circle_rounded
-                    : Icons.radio_button_unchecked_rounded,
-                color: isSelected
-                    ? colors.primary
-                    : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-                size: 20,
-              ),
+              trailing ??
+                  Icon(
+                    isSelected
+                        ? Icons.check_circle_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                    color: isSelected
+                        ? colors.primary
+                        : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
+                    size: 20,
+                  ),
             ],
           ),
         ),

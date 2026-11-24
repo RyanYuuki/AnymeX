@@ -7,7 +7,6 @@ import 'package:anymex/screens/settings/sub_settings/player/settings_player_cont
 import 'package:anymex/screens/settings/sub_settings/player/settings_player_engine.dart';
 import 'package:anymex/screens/settings/sub_settings/player/settings_player_shaders.dart';
 import 'package:anymex/screens/settings/sub_settings/player/settings_player_subtitles.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
