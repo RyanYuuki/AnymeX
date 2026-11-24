@@ -1715,6 +1715,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (showControls.value && !isMouseHovering.value) {
       _autoHideTimer = Timer(_autoHideDuration, () {
         if (!isMouseHovering.value &&
+            !isSeeking.value &&
+            scrubbingPosition.value == null &&
             !isSourcePaneOpened.value &&
             !isTracksPaneOpened.value &&
             !isAudioPaneOpened.value &&
@@ -1726,6 +1728,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             !isSettingsPaneOpened.value &&
             !isCastPaneOpened.value) {
           showControls.value = false;
+        } else if (isSeeking.value || scrubbingPosition.value != null) {
+          _resetAutoHideTimer();
         }
       });
     }
@@ -1773,6 +1777,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _resetAutoHideTimer();
     } else {
       _cancelAutoHideTimer();
+      if (isSeeking.value || scrubbingPosition.value != null) {
+        onScrubbingEnd();
+      }
     }
   }
 
@@ -2262,6 +2269,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onScrubbingUpdate(Duration pos) {
+    isSeeking.value = true;
+    _cancelAutoHideTimer();
     scrubbingPosition.value = pos;
     if (settings.enableSeekPreview.value && seekPreviewEngine != null) {
       seekPreviewEngine!.seek(pos);
@@ -2269,12 +2278,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void onScrubbingEnd() {
+    isSeeking.value = false;
     final target = scrubbingPosition.value;
     scrubbingPosition.value = null;
     seekPreviewEngine?.stop();
     if (target != null) {
       seekTo(target);
     }
+    _resetAutoHideTimer();
   }
 
   String? getChapterTitleAt(Duration pos) {

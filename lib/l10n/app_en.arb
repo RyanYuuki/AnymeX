@@ -2216,5 +2216,54 @@
   "inspectExportAndShareApplicationLogs": "Inspect, export and share application logs",
   "aboutSupport": "About & Support",
   "supportDevelopmentViaKoFiPaypal": "Support development via Ko-fi, PayPal & UPI",
-  "versionUpdatesSocialLinksLegalPolicies": "Version, updates, social links & legal policies"
+  "versionUpdatesSocialLinksLegalPolicies": "Version, updates, social links & legal policies",
+  "newEpisodes": "New Episodes",
+  "outNowFromShowsYouAreWatching": "Out now from shows you're watching",
+  "yourStory": "Your Story",
+  "postToStory": "Post to Story",
+  "postStory": "Post Story",
+  "storyPostedToAnilist": "Story posted to AniList!",
+  "failedToPostStory": "Failed to post story",
+  "whatsOnYourMindAniList": "What's on your mind? (Posts as text activity on AniList)",
+  "anilistActivity": "AniList activity",
+  "viewInAnymex": "View in AnymeX",
+  "viewDiscussion": "View Discussion",
+  "sendAReaction": "Send a reaction",
+  "statusUpdate": "Status update",
+  "activity": "Activity",
+  "likesCount": "{count} likes",
+  "@likesCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "repliesCount": "{count} replies",
+  "@repliesCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "readChapter": "Read Ch. {chapter}",
+  "@readChapter": {
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      }
+    }
+  },
+  "watchedEpisode": "Watched Ep. {episode}",
+  "@watchedEpisode": {
+    "placeholders": {
+      "episode": {
+        "type": "String"
+      }
+    }
+  },
+  "watched": "Watched",
+  "planning": "Planning",
+  "rewatching": "Rewatching"
 }

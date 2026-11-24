@@ -55,6 +55,30 @@ class ProgressSlider extends StatefulWidget {
 }
 
 class _ProgressSliderState extends State<ProgressSlider> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(canRequestFocus: false, skipTraversal: true);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _scheduleScrubbingEndCheck(PlayerController controller) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          (controller.isSeeking.value ||
+              controller.scrubbingPosition.value != null)) {
+        controller.onScrubbingEnd();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
@@ -115,8 +139,15 @@ class _ProgressSliderState extends State<ProgressSlider> {
 
             final isScrubbing = scrubPos != null;
 
-            return SizedBox(
-              height: containerHeight,
+            return Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) {
+                controller.isSeeking.value = true;
+              },
+              onPointerUp: (_) => _scheduleScrubbingEndCheck(controller),
+              onPointerCancel: (_) => _scheduleScrubbingEndCheck(controller),
+              child: SizedBox(
+                height: containerHeight,
               child: Stack(
                 clipBehavior: Clip.none,
                 alignment: Alignment.center,
@@ -143,15 +174,12 @@ class _ProgressSliderState extends State<ProgressSlider> {
                         amplitude: 1,
                         enabled: true,
                         semanticLabel: 'Playback',
-                        focusNode: FocusNode(
-                            canRequestFocus: false, skipTraversal: true),
+                        focusNode: _focusNode,
                         onChanged: (double value) {
-                          controller.isSeeking.value = true;
                           controller.onScrubbingUpdate(
                               Duration(milliseconds: value.toInt()));
                         },
                         onChangeEnd: (double value) {
-                          controller.isSeeking.value = false;
                           controller.onScrubbingEnd();
                         },
                       ),
@@ -171,21 +199,18 @@ class _ProgressSliderState extends State<ProgressSlider> {
                               Duration(milliseconds: position)),
                       showValueIndicator: !isScrubbing,
                       divisions: null,
-                      focusNode: FocusNode(
-                          canRequestFocus: false, skipTraversal: true),
+                      focusNode: _focusNode,
                       min: 0,
                       value: clampedPosition,
                       max: maxValue,
                       secondaryTrackValue: clampedBuffer,
                       onChangeStart: (v) {
-                        controller.isSeeking.value = true;
                         controller.onScrubbingUpdate(
                             Duration(milliseconds: v.toInt()));
                       },
                       onChanged: (v) => controller
                           .onScrubbingUpdate(Duration(milliseconds: v.toInt())),
                       onChangeEnd: (v) {
-                        controller.isSeeking.value = false;
                         controller.onScrubbingEnd();
                       },
                     )
@@ -194,8 +219,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
                       data: _getSliderTheme(colorScheme, effectiveStyle,
                           isScrubbing: isScrubbing),
                       child: Slider(
-                        focusNode: FocusNode(
-                            canRequestFocus: false, skipTraversal: true),
+                        focusNode: _focusNode,
                         min: 0,
                         value: clampedPosition,
                         max: maxValue,
@@ -205,14 +229,12 @@ class _ProgressSliderState extends State<ProgressSlider> {
                             : PlayerUtils.formatDuration(
                                 Duration(milliseconds: position)),
                         onChangeStart: (v) {
-                          controller.isSeeking.value = true;
                           controller.onScrubbingUpdate(
                               Duration(milliseconds: v.toInt()));
                         },
                         onChanged: (v) => controller.onScrubbingUpdate(
                             Duration(milliseconds: v.toInt())),
                         onChangeEnd: (v) {
-                          controller.isSeeking.value = false;
                           controller.onScrubbingEnd();
                         },
                       ),
@@ -242,15 +264,18 @@ class _ProgressSliderState extends State<ProgressSlider> {
                     Positioned(
                       left: previewLeft,
                       bottom: containerHeight + 14.0,
-                      child: SeekPreviewCard(
-                        engine: engine,
-                        position: scrubPos,
-                        chapterTitle: controller.getChapterTitleAt(scrubPos),
+                      child: IgnorePointer(
+                        child: SeekPreviewCard(
+                          engine: engine,
+                          position: scrubPos,
+                          chapterTitle: controller.getChapterTitleAt(scrubPos),
+                        ),
                       ),
                     ),
                 ],
               ),
-            );
+            ),
+          );
           },
         ),
       );
