@@ -3,9 +3,11 @@ import 'package:material_3_expressive/material_3_expressive.dart';
 
 class AnymeXLinearIndicator extends StatelessWidget {
   final double? value;
+  final double? secondaryValue;
   final double? minHeight;
   final Color? backgroundColor;
   final Color? color;
+  final Color? secondaryColor;
   final double? waveAmplitude;
   final double? wavelength;
   final double? waveSpeed;
@@ -13,9 +15,11 @@ class AnymeXLinearIndicator extends StatelessWidget {
   const AnymeXLinearIndicator({
     super.key,
     this.value,
+    this.secondaryValue,
     this.minHeight,
     this.backgroundColor,
     this.color,
+    this.secondaryColor,
     this.waveAmplitude,
     this.wavelength,
     this.waveSpeed,
@@ -29,6 +33,9 @@ class AnymeXLinearIndicator extends StatelessWidget {
     final track = backgroundColor ??
         Theme.of(context).colorScheme.surfaceContainerHighest;
     final progress = value?.clamp(0.0, 1.0);
+    final secondaryProgress = secondaryValue?.clamp(0.0, 1.0);
+    final secondaryTrack =
+        secondaryColor ?? activeColor.withValues(alpha: 0.35);
     final resolvedAmplitude = waveAmplitude ?? 1.0;
     final resolvedWavelength = wavelength ?? 25.0;
     final resolvedSpeed = waveSpeed ?? 20.0;
@@ -76,6 +83,19 @@ class AnymeXLinearIndicator extends StatelessWidget {
             wavelength: resolvedWavelength,
             waveSpeed: resolvedSpeed,
           ),
+          if (secondaryProgress != null && secondaryProgress > 0)
+            M3EProgressIndicator.linearWavy(
+              value: secondaryProgress,
+              color: secondaryTrack,
+              showTrack: false,
+              strokeWidth: stroke,
+              trackStrokeWidth: stroke,
+              stopSize: 0,
+              amplitude: 1.0,
+              amplitudeForProgress: (_) => 1.0,
+              wavelength: resolvedWavelength,
+              waveSpeed: resolvedSpeed,
+            ),
           if (progress > 0)
             M3EProgressIndicator.linearWavy(
               value: progress,

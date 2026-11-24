@@ -91,6 +91,7 @@ class AnymeXSliderM3 extends StatelessWidget {
   final double max;
   final int? divisions;
   final String? label;
+  final bool showValueIndicator;
   final FocusNode? focusNode;
   final AnymeXSliderM3Theme theme;
 
@@ -105,6 +106,7 @@ class AnymeXSliderM3 extends StatelessWidget {
     this.max = 1,
     this.divisions,
     this.label,
+    this.showValueIndicator = true,
     this.focusNode,
     this.theme = const AnymeXSliderM3Theme(),
   });
@@ -121,7 +123,9 @@ class AnymeXSliderM3 extends StatelessWidget {
         secondaryActiveTrackColor: resolvedTheme.secondaryActiveColor,
         thumbColor: resolvedTheme.activeColor,
         overlayShape: SliderComponentShape.noOverlay,
-        showValueIndicator: ShowValueIndicator.always,
+        showValueIndicator: showValueIndicator
+            ? ShowValueIndicator.always
+            : ShowValueIndicator.never,
         trackShape: _AnymeXSliderM3TrackShape(
           outerRadius: resolvedTheme.outerRadius,
           innerRadius: resolvedTheme.innerRadius,

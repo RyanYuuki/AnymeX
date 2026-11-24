@@ -898,8 +898,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
           return AnymeXTile.toggle(
             icon: Icons.translate_rounded,
             title: context.l10n.useAlternateTitle,
-            subtitle:
-                context.l10n.switchBetweenDefaultTitleAndRomaji,
+            subtitle: context.l10n.switchBetweenDefaultTitleAndRomaji,
             value: settings.useAlternateTitle.value,
             onChanged: (e) {
               settings.useAlternateTitle.value = e;
@@ -1070,7 +1069,7 @@ class _FloatingHeaderWrapper extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: isTranslucent
-                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.45)
+                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.20)
                     : theme.colorScheme.surfaceContainer
                         .withValues(alpha: 0.92),
                 borderRadius: borderRadius,
