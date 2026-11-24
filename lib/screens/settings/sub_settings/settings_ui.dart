@@ -334,7 +334,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       ),
                       if (visibleTabs.isEmpty)
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: AnymeXText(context.l10n.noVisibleTabs),
                         )
                       else

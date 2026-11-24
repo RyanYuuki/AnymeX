@@ -78,6 +78,7 @@ enum PlayerUiKeys {
   useMpvConf,
   brightnessGestureWidth,
   volumeGestureWidth,
+  progressSliderStyle,
 }
 
 enum ReaderKeys {
@@ -332,6 +333,11 @@ enum UISettingsKeys {
   detailsBlurScope,
   detailsOledMode,
   customCardStyleJson,
+  episodeMetaOrder,
+  episodeMetaDisabled,
+  selectedEpisodeMetaSource,
+  enableSeekPreview,
+  seekPreviewFirstBootDetected,
 }
 
 enum DownloadKeys {

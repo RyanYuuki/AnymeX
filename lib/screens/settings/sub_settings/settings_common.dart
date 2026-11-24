@@ -15,6 +15,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/l10n/locale_controller.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_episode_metadata.dart';
+import 'package:anymex/utils/function.dart';
 
 class SettingsCommon extends StatefulWidget {
   const SettingsCommon({super.key});
@@ -65,6 +67,15 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             onTap: () => _showLanguageDialog(context),
                           );
                         }),
+                        AnymeXTile(
+                          icon: Icons.subtitles_outlined,
+                          title: 'Episode Metadata',
+                          badge: AnymeXBadge.newBadge(context),
+                          subtitle:
+                              'Configure AniZip, Kitsu, Simkl, AniList, Tenrai & fallback order',
+                          onTap: () =>
+                              navigate(() => const SettingsEpisodeMetadata()),
+                        ),
                         AnymeXTile.toggle(
                           icon: Icons.collections_bookmark_rounded,
                           title: context.l10n.unifiedLibrary,
