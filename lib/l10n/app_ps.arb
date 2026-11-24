@@ -176,5 +176,3832 @@
   "incognitoDisabled": "پټ حالت غیر فعال شوی",
   "episodeCount": "{count} قسطونه",
   "chapterCount": "{count} فصلونه",
-  "itemCount": "{count} توکي"
+  "itemCount": "{count} توکي",
+  "whatAreWeDoingToday": "، نن څه کوو؟",
+  "aLogoWithThisNameAlready": "دې نوم سره لوګو دمخه شتون لري.",
+  "about": "په اړه",
+  "aboutCommentumV2": "د Commentum v2 په اړه",
+  "aboutTheApp": "د اپ په اړه",
+  "accessModerationToolsAndReports": "د تعدیل وسیلو او راپورونو ته لاسرسی",
+  "accountTokensAnilistMalSimkl": "د حساب ټوکنې (AniList, MAL, Simkl)",
+  "accounts": "حسابونه",
+  "accountsSync": "حسابونه او همغږي",
+  "actionAppliedSuccessfully": "عمل په بریالیتوب سره پلی شو",
+  "activeDownloads": "فعال ډاونلوډونه",
+  "activity": "فعالیت",
+  "activityDeleted": "فعالیت ړنګ شو",
+  "activityHeatmap": "د فعالیت حرارتي نقشه",
+  "activityMergeTime": "د فعالیت یوځای کولو وخت",
+  "activityPhrasing": "د فعالیت جملې",
+  "activityRefreshed": "فعالیت تازه شو",
+  "adFreeApp": "له اعلانونو پاک اپ",
+  "addCustomLogo": "خپل لوګو اضافه کړئ",
+  "addCustomLogoGifWebp": "خپل لوګو اضافه کړئ (.gif, .webp)",
+  "addRepo": "ریپو اضافه کړئ",
+  "addRepository": "ذخیره اضافه کړئ",
+  "addYourRecommendation": "خپله وړاندیز اضافه کړئ",
+  "addOnExtensions": "اضافي غزیدنې",
+  "addOns": "اضافي برنامې",
+  "addOnsPowerBackgroundServicesSuch": "اضافي برنامې شاته خدمتونه ځواکمنوي، لکه د TorrServer تورنټ سټریمینګ انجن چې د مستقیم مګنټ لینک پلې کولو لپاره کارول کیږي.",
+  "addedToDownloads": "ډاونلوډونو ته اضافه شو",
+  "addingKotatsuRepositoryThisWillTake": "د Kotatsu ذخیره اضافه کیږي. دا لږ تر لږه ۱-۲ دقیقې وخت نیسي، مهرباني وکړئ انتظار وباسئ...",
+  "addingRepositoryFetchingExtensions": "ذخیره اضافه کیږي او غزیدنې راټولیږي...",
+  "adjustBottomBarMarginMediaDetails": "د ښکته بار حاشیه تنظیم کړئ (یوازې د رسنیو د توضیحاتو مخ)",
+  "adjustCardAnimationSpeed": "د کارت د انیمیشن سرعت تنظیم کړئ",
+  "adjustCornerRadiusOfElements": "د عناصرو د کونجونو ارتفاع تنظیم کړئ",
+  "adjustDoubleTapToSeekDuration": "د دوه ځله ټکولو سره د لټون موده تنظیم کړئ",
+  "adjustElementGlowIntensity": "د عناصرو د رڼا شدت تنظیم کړئ",
+  "adjustFrostedBlurIntensity": "د یخ شوي دهندې شدت تنظیم کړئ",
+  "adjustGlowBlurIntensity": "د رڼا دهندې شدت تنظیم کړئ",
+  "adjustHorizontalMarginOfBottomNavigation": "د ښکته نیویګیشن بار افقي حاشیه تنظیم کړئ",
+  "adjustItemsPerRow": "په هر قطار کې توکي تنظیم کړئ",
+  "adjustMediaBackdropExposure": "د رسنیو شاته منظره رڼا تنظیم کړئ",
+  "adjustMegaskipDuration": "د MegaSkip موده تنظیم کړئ",
+  "adjustRoundnessOfAllMediaCards": "د ټولو رسنیو کارتونو ګردوالی تنظیم کړئ",
+  "adjustSubSize": "د سب ټایټل اندازه تنظیم کړئ",
+  "adjustSubtitleOutlineWidth": "د سب ټایټل کرښې پلنوالی تنظیم کړئ",
+  "adjustTextVisibility": "د متن ښکاره کیدل تنظیم کړئ",
+  "admin": "اډمین",
+  "adult": "بالغ",
+  "aiPicks": "د AI ټاکنې",
+  "airingAnimeNotifications": "د خپرېدونکو انیمه خبرتیاوې",
+  "all": "ټول",
+  "allClearNoReportsToReview": "ټول پاک دي! د کتنې لپاره هیڅ راپور نشته.",
+  "allSources": "ټول سرچینې",
+  "allowAnymexToAutomaticallyOpenAnime": "AnymeX ته اجازه ورکړئ چې انیمه او مانګا ویب لینکونه په اوتومات ډول خلاص کړي",
+  "allowInstallingUpdatesForExtensionsAnd": "د غزیدنو او اپ تازه معلومات نصبولو ته اجازه ورکړئ",
+  "allowOnlyUsersIFollowTo": "یوازې هغه کارنان چې زه یې تعقیبوم ما ته پیغامونه ولیږي.",
+  "allowStorageAccessAndSelectDownload": "د ذخیره ځای ته لاسرسي ته اجازه ورکړئ او د ډاونلوډ فولډر وټاکئ",
+  "allowStorageAccessToDownloadApp": "د اپ او غزیدنو تازه معلومات ډاونلوډ کولو لپاره د ذخیره ځای ته لاسرسي ته اجازه ورکړئ",
+  "alreadyRecommended": "دمخه وړاندیز شوی",
+  "alternativeTitles": "بدیل سرلیکونه",
+  "alwaysShowChapterTransition": "تل د فصل لیږدېدنه وښایاست",
+  "alwaysShowPageIndicator": "تل د پاڼې ښودونکی وښایاست",
+  "amountOfFilmGrainApplied": "د فلم دانې اندازه چې پلی کیږي",
+  "anifyKitsuArtwork": "Anify / Kitsu هنري انځور",
+  "anilistSettings": "د AniList تنظیمات",
+  "anilistSettings2": "د Anilist تنظیمات",
+  "animatchCompatibility": "د AniMatch مطابقت",
+  "animatchLinkCopiedToClipboard": "د AniMatch لینک کلیپ بورډ ته کاپي شو!",
+  "animateControlOverlay": "د کنټرول پوښ انیمیشن",
+  "anime": "انیمه",
+  "animeUpper": "انیمه",
+  "animeManga": "انیمه او مانګا",
+  "anime4kEnhancement": "د انیمه 4K ښه کول",
+  "animeAdaptation": "د انیمې اقتباس",
+  "animeCustomLists": "د انیمه ځانګړي لیستونه",
+  "animeDetailsPhrasing": "د انیمې توضیحاتو جملې",
+  "animeLibrary": "د انیمو کتابتون",
+  "animeList": "د انیمو لیست",
+  "animeScore": "د انیمې نمرې",
+  "animeSectionOrder": "د انیمې برخو ترتیب",
+  "announcement": "اعلان",
+  "announcementUnavailable": "اعلان شتون نلري",
+  "announcements": "اعلانونه",
+  "anymexForkOptimisedForTv": "د TV لپاره غوره شوی AnymeX فورک",
+  "anymexIs100FreeOpenSource": "AnymeX ۱۰۰٪ وړیا، آزاد سرچینه او له اعلانونو پاک دی. ستاسو ملاتړ مستقیم د سرور لګښتونو او فعالو ځانګړتیاوو پرمختګ سره مرسته کوي!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX ۱۰۰٪ وړیا، آزاد سرچینه او له اعلانونو پاک دی. ستاسو ملاتړ ما ته مرسته کوي چې اپ په دوامداره توګه ساتم او ښه کړم!",
+  "appCacheExceededThresholdAndWas": "د اپ کیش حد ته ورسید او پاک شو",
+  "appDataHasBeenCompletelyReset": "د اپ ډاټا په بشپړه توګه بیرته ترتیب شوه",
+  "appFonts": "د اپ فونټونه",
+  "appSettingsSessions": "د اپ تنظیمات او سیشنونه",
+  "appearance": "بڼه",
+  "appearanceInterface": "بڼه او انټرفیس",
+  "appearanceTheme": "بڼه او تیم",
+  "appliesAnimeMangaPosterColorOn": "د انیمې/مانګا پوستر رنګ د توضیحاتو په مخ کې پلی کوي",
+  "apply": "پلي کړئ",
+  "applyASubtleFilmGrainTexture": "په انټرفیس باندې یوه نرمه فلم دانې بڼه پلی کړئ",
+  "applyFilters": "فلټرونه پلي کړئ",
+  "applyOptionsFromYourMpvConf": "کله چې پلی کول پیلیږي، د خپل mpv.conf څخه اختیارونه پلی کړئ",
+  "areYouSureYouWantTo": "ایا تاسو ډاډه یاست چې ټول خوندي شوي کوکیز ړنګ کړئ؟",
+  "areYouSureYouWantToDelete": "ایا تاسو ډاډه یاست چې دا تبصره ړنګ کړئ؟ دا به په دایمي ډول لیرې شي او راپور به حل شي.",
+  "areYouSureYouWantToDeleteThis": "ایا تاسو ډاډه یاست چې دا غزیدنه ړنګ کړئ؟",
+  "areYouSureYouWantToDeleteThisReply": "ایا تاسو ډاډه یاست چې دا ځواب ړنګ کړئ؟",
+  "askForTrackingPermission": "د تعقیب اجازه وغواړئ",
+  "atLeast2TabsMustRemain": "لږ تر لږه ۲ ټبونه باید ښکاره پاتې شي!",
+  "audioEngine": "د غږ انجن",
+  "audioPitchCorrection": "د غږ د پچ اصلاح",
+  "authenticationOptional": "تصدیق (اختیاري)",
+  "auto": "اتوماتیک",
+  "autoPlay": "اتوماتیک پلی",
+  "autoScroll": "اتوماتیک سکرول",
+  "autoScrollSpeed": "د اتوماتیک سکرول سرعت",
+  "autoSkipEd": "ED اتوماتیک تېر کړئ",
+  "autoSkipFiller": "د ډکونکو قسمونو اتوماتیک تېرول",
+  "autoSkipOnceOnly": "یوازې یو ځل اتوماتیک تېرول",
+  "autoSkipOnlyOncePerWatch": "د هر کتنې لپاره یوازې یو ځل اتوماتیک تېر کړئ",
+  "autoSkipOp": "OP اتوماتیک تېر کړئ",
+  "autoSkipRecap": "د لنډ پیښو لنډیز اتوماتیک تېر کړئ",
+  "autoSkipTheEndingSong": "د پای سندره اتوماتیک تېر کړئ",
+  "autoSkipTheOpeningSong": "د پیل سندره اتوماتیک تېر کړئ",
+  "autoSkipTheRecapSection": "د لنډیز برخه اتوماتیک تېر کړئ",
+  "autoSwitchToVerticalMode": "عمودي حالت ته اتوماتیک بدلون",
+  "autoTranslateSubtitles": "سب ټایټلونه اتوماتیک ژباړل",
+  "autoWebtoonMode": "اتوماتیک وېب ټون حالت",
+  "autoClearThreshold": "اتوماتیک پاکولو حد",
+  "autoSelectDefault": "اتوماتیک ټاکل (ډیفالټ)",
+  "autoSelectThisServerQualityFor": "د دې انیمې لپاره د دې سرور کیفیت اتوماتیک وټاکئ",
+  "automaticallyMoveToNextTextSegment": "په اتوماتیک ډول بل متن برخې ته لاړ شئ",
+  "automaticallyScrollContent": "منځپانګه په اتوماتیک ډول سکرول کړئ",
+  "automaticallyScrollPages": "پاڼې په اتوماتیک ډول سکرول کړئ",
+  "automaticallySkipFillerEpisodesWhenGoing": "کله چې بلې قسط ته ځئ، ډکونکي قسطونه په اتوماتیک ډول تېر کړئ",
+  "automaticallyUpdateEntriesWhenImportingThe": "د XML واردولو په وخت کې ریکارډونه په اتوماتیک ډول تازه کړئ",
+  "availableAddOns": "شته اضافي برنامې",
+  "availableKeybindings": "شته کیبورډ شارټکټونه:",
+  "avatarDecorations": "د آواتار سینګارونه",
+  "avatarDecorationsNameplatesBannersProfileEffects": "د آواتار سینګارونه، نیم پلیټونه، بینرونه او د پروفایل اغیزې",
+  "avgChapters": "اوسط فصلونه",
+  "avgEpisodes": "اوسط قسطونه",
+  "back": "شاته",
+  "backdropScope": "شاته منظره او ساحه",
+  "backdropBrightness": "د شاته منظرې رڼا",
+  "backdropSource": "د شاته منظرې سرچینه",
+  "backgroundOpacity": "د شاته زمینې شفافیت",
+  "backup": "بیک اپ",
+  "backupRestore": "بیک اپ او بیرته راګرځول",
+  "backupAndRestoreYourLibrary": "خپل کتابتون بیک اپ او بیرته راولئ",
+  "backupArchive": "د بیک اپ آرشیف",
+  "backupOwner": "د بیک اپ مالک",
+  "backupRestoredSuccessfully": "بیک اپ په بریالیتوب سره بیرته راګرځېد!",
+  "backupSavedSuccessfully": "بیک اپ په بریالیتوب سره وساتل شو!",
+  "badge": "نښه",
+  "banUser": "کارن بند کړئ",
+  "baseUrlNotAvailableForThis": "د دې سرچینې لپاره اساسي URL شتون نلري",
+  "basedOnYourFavouriteCharacters": "ستاسو د خوښې کرکټرونو پر بنسټ.",
+  "basedOnYourFavouriteStaff": "ستاسو د خوښې کارکونکو پر بنسټ.",
+  "basedOnYourTop10Tags": "ستاسو د لوړو ۱۰ ټګونو پر بنسټ.",
+  "basedOnYourTop3Studios": "ستاسو د لوړو ۳ سټوډیوګانو پر بنسټ.",
+  "basedOnYourTop5Genres": "ستاسو د لوړو ۵ ژانرونو پر بنسټ.",
+  "basedOnYourTop6Voice": "ستاسو د لوړو ۶ غږیزو اداکارانو پر بنسټ.",
+  "batchDownload": "دسته ډاونلوډ",
+  "beTheFirstToRecommendThis": "د دې سرلیک لومړی وړاندیز کونکی اوسئ!",
+  "betterSubtitleRenderingUsingLibassLibrary": "د libass کتابتون په کارولو سره غوره سب ټایټل رینډرینګ",
+  "blockquote": "بلاک کوټ",
+  "blurBackdropTuning": "د دهندې او شاته منظرې تنظیمول",
+  "blurAmount": "د دهندې اندازه",
+  "blurColorTint": "د دهندې رنګ سیوری",
+  "blurMechanism": "د دهندې میکانیزم",
+  "blurMultiplier": "د دهندې ضرب",
+  "blurStyle": "د دهندې بڼه",
+  "bold": "تور",
+  "boldItalic": "تور + مایل",
+  "botUrlNotConfigured": "د بوټ URL تنظیم شوی نه دی",
+  "bottomControls": "ښکته کنټرولونه",
+  "bottomMargin": "ښکته حاشیه",
+  "bottomNavBarMargin": "د ښکته نیویګیشن بار حاشیه",
+  "broadcastYourActivityToDiscord": "خپل فعالیت Discord ته خپور کړئ",
+  "browsingIdle": "لټون / بیکاره",
+  "browsingPhrasing": "د لټون جملې",
+  "bufferSize": "د بفر اندازه",
+  "builtInStyles": "دننه جوړ شوي بڼې",
+  "byDisablingThisYouCanAvoid": "دا بند کولو سره تاسو د سب ټایټلونو ترمنځ لیږدېدنه مخنیوی کولی شئ.",
+  "byIndex": "د شاخص له مخې",
+  "byUserId": "د کارن ID له مخې",
+  "byUsername": "د کارن نوم له مخې",
+  "bypassCloudflare": "Cloudflare تېر کړئ",
+  "cacheStorage": "کیش او ذخیره",
+  "cacheMinutes": "د کیش دقیقې",
+  "cacheOverview": "د کیش لنډ کتنه",
+  "cachedImages": "کیش شوي انځورونه",
+  "calculateCompatibility": "مطابقت محاسبه کړئ",
+  "calculatedBasedOnWhichReleaseDecades": "دا د هغو خپرونې لسیزو پر بنسټ محاسبه شوې چې تاسو ډیره کتلې او ترټولو لوړه نمره مو ورکړې.",
+  "calendar": "کلنډر",
+  "cancel": "لغوه کړئ",
+  "cannotCompareAUserWithThemselves": "یو کارن له ځان سره پرتله کېدای نشي! مهرباني وکړئ دوه بېل کارن نومونه ولیکئ.",
+  "cannotCompareYourProfileWithYourself": "ستاسو پروفایل له ځان سره پرتله کېدای نشي! مهرباني وکړئ بل کارن نوم ولیکئ.",
+  "cantPlaySinceUserClosedThe": "پلی کېدای نشي ځکه کارن اپ ناڅاپه تړلی",
+  "cantReadSinceUserClosedThe": "لوستل کېدای نشي ځکه کارن اپ ناڅاپه تړلی",
+  "cardAnimationDuration": "د کارت د انیمیشن موده",
+  "cardRoundness": "د کارت ګردوالی",
+  "cardStyle": "د کارت بڼه",
+  "carouselStyle": "د کارسیل بڼه",
+  "changeFile": "فایل بدل کړئ",
+  "changeRole": "رول بدل کړئ",
+  "changeService": "خدمت بدل کړئ",
+  "changeSubtitleBackgroundColor": "د سب ټایټل شاته زمینه رنګ بدل کړئ",
+  "changeSubtitleColors": "د سب ټایټل رنګونه بدل کړئ",
+  "changeSubtitleOutlineColor": "د سب ټایټل کرښې رنګ بدل کړئ",
+  "changelog": "د بدلونونو لیست",
+  "chapterListSettings": "د فصلونو لیست تنظیمات",
+  "chapterNumber": "د فصل شمېره",
+  "chapterTileStyle": "د فصل ټایل بڼه",
+  "chapters": "فصلونه",
+  "chaptersUpper": "فصلونه",
+  "chaptersVolumes": "فصلونه او ټوکونه",
+  "chaptersRead": "لوستل شوي فصلونه",
+  "characters": "کرکټرونه",
+  "checkCompatibility": "مطابقت وګورئ",
+  "checkForAddOnUpdates": "د اضافي برنامو تازه معلومات وګورئ",
+  "checkForUpdates": "تازه معلومات وګورئ",
+  "checkUpdatesFromBetaChannel": "د بیټا چینل څخه تازه معلومات وګورئ",
+  "checkingForUpdates": "تازه معلومات کتل کیږي!",
+  "chooseABackupFileAnymex": "د بیک اپ فایل وټاکئ (.anymex)",
+  "chooseACustomBackgroundForLiquid": "د مایع حالت لپاره خپل شاته زمینه وټاکئ.",
+  "chooseADirectoryToBrowseYour": "د خپلو رسنیو فایلونو کتلو لپاره یوه ډایرکټوري وټاکئ",
+  "chooseDifferentImage": "بل انځور وټاکئ",
+  "chooseDownloadFolder": "د ډاونلوډ فولډر وټاکئ",
+  "chooseImage": "انځور وټاکئ",
+  "chooseProvider": "چمتو کونکی وټاکئ",
+  "chooseQuality": "کیفیت وټاکئ",
+  "chooseServer": "سرور وټاکئ",
+  "chooseServiceTracker": "خدمت / تعقیبونکی وټاکئ",
+  "chooseShaderProfile": "شیډر پروفایل وټاکئ",
+  "chooseUpiApp": "UPI اپ وټاکئ",
+  "chooseWhichListToShowOn": "وټاکئ چې کوم لیست په کور پاڼه کې وښودل شي",
+  "chooseYourFavouriteColor": "خپل خوښ رنګ وټاکئ!",
+  "chooseYourFavouritePalette": "خپله خوښه پالیټ وټاکئ!",
+  "chromaScaler": "د کروما سکیلر",
+  "classicCarouselCardLayoutFeaturingVertical": "کلاسیک کارسیل د عمودي پوستر کارتونو سره.",
+  "clear": "پاکول",
+  "clearAll": "ټول پاک کړئ",
+  "clearAllHistory": "ټوله تاریخچه پاکه کړئ",
+  "clearAppCache": "د اپ کیش پاک کړئ",
+  "clearAppCacheNow": "اوس د اپ کیش پاک کړئ",
+  "clearCache": "کیش پاک کړئ",
+  "clearCacheCookies": "کیش او کوکیز پاک کړئ",
+  "clearCookies": "کوکیز پاک کړئ",
+  "clearCookies2": "کوکیز پاک کړئ",
+  "clearHistory": "تاریخچه پاکه کړئ",
+  "clearImageCacheNow": "اوس د انځور کیش پاک کړئ",
+  "clearProxy": "پراکسي پاک کړئ",
+  "clearSelected": "ټاکل شوي پاک کړئ",
+  "clientAll": "پیرودونکی: ټول",
+  "close": "بندول",
+  "failedToLoadUserHistory": "د کاروونکي تاریخچه بارول ناکام شول.",
+  "noHistoryFound": "هیڅ تاریخچه ونه موندل شوه.",
+  "youNeedToBeLoggedIn3": "د تبصرو سمولو لپاره باید ننوتلي اوسئ",
+  "commentCannotBeEmpty": "تبصره نشي خالي وي",
+  "failedToLoadCommentsPleaseTry": "تبصرې بارول ناکام شول. مهرباني وکړئ بیا هڅه وکړئ.",
+  "commentsLoaded": "{value} تبصرې بار شوې",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "تبصرې تازه کول ناکام شول. مهرباني وکړئ بیا هڅه وکړئ.",
+  "invalidParentCommentId": "د مور تبصرې ناسم ID",
+  "replyPostedSuccessfully": "ځواب په بریالیتوب سره ولیږل شو",
+  "failedToPostReply": "ځواب لیږل ناکام شو",
+  "failedToPostReplyPleaseTry": "ځواب لیږل ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.",
+  "commentPostedSuccessfully": "تبصره په بریالیتوب سره خپره شوه",
+  "failedToAddCommentPleaseTry": "تبصره اضافه کول ناکام شول. مهرباني وکړئ بیا هڅه وکړئ.",
+  "failedToUpdateVotePleaseTry": "رای تازه کول ناکام شول. مهرباني وکړئ بیا هڅه وکړئ.",
+  "invalidCommentId": "ناسم د تبصرې ID",
+  "commentEditedSuccessfully": "تبصره په بریالیتوب سره سمه شوه",
+  "failedToEditComment": "تبصره سمول ناکام شول",
+  "commentDeletedSuccessfully": "تبصره په بریالیتوب سره ړنګه شوه",
+  "failedToDeleteComment": "تبصره ړنګول ناکام شول",
+  "failedToReportComment": "تبصره راپور کول ناکام شول",
+  "failedToModerateComment": "تبصره اداره کول ناکام شول",
+  "failedToManageUser": "کاروونکي اداره کول ناکام شول",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ امتیازات). درجه بندي د ریښتینې فعالیت پر بنسټ ده ({realPoints} امتیازات).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} ترلاسه شوي امتیازات + {text} د رول بونس ({label}). درجه بندي د ریښتینې فعالیت پر بنسټ ده.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "د قسطونو لړۍ",
+  "episodeIsDownloaded": "قسط {number} ډاونلوډ شوی دی",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} قسطونه",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "ق {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "د کارت تنظیمونکی",
+  "presetStyle": "د مخکې ټاکل شوی سټایل",
+  "chooseFrom5AuthenticBuiltIn": "د 5 اصلي دننه ډیزاینونو څخه وټاکئ",
+  "sizingGeometry": "اندازه او جیومیټري",
+  "cardSize": "د کارت اندازه",
+  "scaleCardsProportionallyWithoutDistortion": "کارتونه په تناسب سره بدل کړئ، بې له بدلون",
+  "landscapeCards": "افقي کارتونه",
+  "formatCardsIn169Widescreen": "کارتونه د 16:9 پلنه سکرین بڼې کې فارمیټ کړئ",
+  "selectPosterImageAspectRatio": "د پوستر عکس د تناسب نسبت وټاکئ",
+  "titleLines": "د سرلیک کرښې",
+  "maximumNumberOfTitleLinesDisplayed": "د سرلیک د کرښو اعظمي شمیر چې ښودل کېږي",
+  "gestureAreas": "د اشارو سیمې",
+  "resetDefault": "اصلي ته بیرته",
+  "overlay": "پوښ",
+  "volume": "غږ",
+  "brightnessArea": "د رڼا سیمه",
+  "overlayAreaTap": "د پوښ سیمه (ټپ)",
+  "volumeArea": "د غږ سیمه",
+  "resetToDefaultLayout": "اصلي ترتیب ته بیرته",
+  "moveToSlot": "سلاټ ته ولیږدوئ",
+  "topBar": "پورتنۍ پټی",
+  "bottomLeft": "ښکته کیڼ",
+  "bottomRight": "ښکته ښي",
+  "themesOverlay": "موضوعات او پوښ",
+  "gesturesSeeking": "اشارې او لټول",
+  "horizontalSwipeAcrossTheScreenTo": "د لټون لپاره په سکرین کې افقي سوایپ",
+  "autoSkipCompletion": "اتوماتیک تېرول او بشپړول",
+  "percentageWatchedBeforeMarkingCompleted": "د بشپړ په توګه نښه کولو دمخه د کتل سلنه",
+  "playerControls": "د پلیر کنټرولونه",
+  "mpvConfSavedSuccessfully": "mpv.conf په بریالیتوب سره وساتل شو",
+  "hardwareDrivers": "هارډویر او ډرایورونه",
+  "systemIntegrations": "سیستم او ادغامونه",
+  "experimentalMpvTuning": "تجربوي MPV تنظیم",
+  "editMpvConf": "mpv.conf سمول",
+  "modeA": "حالت A",
+  "modeB": "حالت B",
+  "modeC": "حالت C",
+  "modeAA": "حالت A+A",
+  "modeBB": "حالت B+B",
+  "modeCA": "حالت C+A",
+  "natural": "طبیعي",
+  "vivid": "ژوندی",
+  "cinema": "سینما",
+  "soft": "نرم",
+  "warm": "ګرم",
+  "cool": "یخ",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinema HDR",
+  "vividPop": "ژوندی Pop",
+  "dark": "تیاره",
+  "anime4kEngine": "Anime4K انجن",
+  "anime4kShaders2": "Anime4K شیډرونه",
+  "devicePerformanceTier": "د وسیلې د فعالیت کچه",
+  "midRange": "منځنۍ کچه",
+  "highEnd": "لوړ کچه",
+  "shaderMode": "د شیډر حالت",
+  "colorPreset": "د رنګ مخکې ټاکل شوی",
+  "desktopPlaybackKeybindings": "د ډیسک ټاپ پلي کولو کیلي",
+  "customSubtitleFonts": "د سب ټایټل ځانګړي فونټونه",
+  "importedFont": "فونټ \"{fontName}\" وارد شو",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "ایا تاسو ډاډه یاست چې \"{font}\" ړنګ کړئ؟",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "ژبه او ژباړه",
+  "renderingBehavior": "د رینډرینګ چلند",
+  "disableToAvoidFadeTransitionsBetween": "د سب ټایټلونو ترمنځ د فیډ انتقالاتو د مخنیوي لپاره بند کړئ",
+  "typographyOutline": "ټایپوګرافي او کرښه",
+  "adjustSubtitleFontSize": "د سب ټایټل د فونټ اندازه تنظیم کړئ",
+  "adjustSubtitleOutlineThickness": "د سب ټایټل د کرښې ضخامت تنظیم کړئ",
+  "colorsPosition": "رنګونه او ځای",
+  "changeSubtitleTextColor": "د سب ټایټل د متن رنګ بدل کړئ",
+  "mangaReader": "د منګا لوستونکی",
+  "layoutDirection": "ترتیب او لوري",
+  "autoSwitchToVerticalModeFor": "د ویب ټون لپاره په اتوماتیک ډول عمودي حالت ته بدل کړئ",
+  "imageDisplay": "د عکس ښودل",
+  "interfaceSession": "انټرفیس او سیشن",
+  "mangaControlsGestures": "د منګا کنټرولونه او اشارې",
+  "overscrollToPreviousNextChapter": "مخکینی/راتلونکي فصل ته overscroll",
+  "automaticallyScrollMangaPages": "د منګا پاڼې په اتوماتیک ډول سکرول کړئ",
+  "swapVolumeUpDownActions": "د غږ پورته/ښکته عملونه بدل کړئ",
+  "novelReader": "د ناول لوستونکی",
+  "themeDisplay": "موضوع او ښودل",
+  "displayChapterPercentageWhileReading": "د لوستلو پر مهال د فصل سلنه وښایاست",
+  "displayStatusInfoInTheNovel": "د ناول لوستونکي کې د حالت معلومات وښایاست",
+  "typographySpacing": "ټایپوګرافي او فاصله",
+  "novelControlsGestures": "د ناول کنټرولونه او اشارې",
+  "tapScreenEdgesToScrollNovel": "د ناول پاڼې سکرول کولو لپاره د سکرین کنارې ټپ کړئ",
+  "swipeGestures": "د سوایپ اشارې",
+  "volumeKeyScrolling": "د غږ کیلي سره سکرول",
+  "useHardwareVolumeButtonsToScroll": "د ناولونو سکرول کولو لپاره د هارډویر د غږ تڼۍ وکاروئ",
+  "automaticallyScrollNovelContent": "د ناول منځپانګه په اتوماتیک ډول سکرول کړئ",
+  "textToSpeechTts": "متن-څخه-وینا (TTS)",
+  "readNovelChaptersAloud": "د ناول فصلونه په غږ ولولئ",
+  "speechRate": "د وینا سرعت",
+  "voicePitch": "د غږ زیړوالی",
+  "areYouSureYouWantTo4": "ایا تاسو ډاډه یاست چې له {title} څخه وتل غواړئ؟",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "د تازه کاریو لټول ناکام شول: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} په بریالیتوب سره نصب شو",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} نصبول ناکام شو: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} په بریالیتوب سره تازه شو",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} تازه کول ناکام شول: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "{name} لرې کړئ",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} لرې شو",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} لرې کول ناکام شول: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "د {title} برخې ترتیب",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "خبرتیاوې او همغږي",
+  "enableNotifications": "خبرتیاوې فعالې کړئ",
+  "syncAnilistNotificationsWithDeviceNotifications": "د AniList خبرتیاوې د وسیلې خبرتیاوو سره همغږي کړئ",
+  "airingAlerts": "د خپرېدو خبرتیاوې",
+  "socialAlerts": "ټولنیز خبرتیاوې",
+  "notifyOnNewFollowers": "د نویو تعقیبوونکو په اړه خبر کړئ",
+  "activityAlerts": "د فعالیت خبرتیاوې",
+  "syncInterval": "د همغږۍ وقفه",
+  "regionTimezone": "سیمه او وخت زون",
+  "profileBio": "د پروفایل بیو",
+  "backupFailed": "پشتیبانی ناکامه شوه: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "فایل ټاکلو کې تېروتنه: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "پشتیبانی بارول ناکام شول: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "بیا رغول ناکام شول: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} سرلیکونه او تاریخچه",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} سرلیکونه او فصلونه",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} سرلیکونه او د لوستلو حالت",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "د رسنیو په اوږدو کې {totalLists} ځانګړي لیستونه",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} ثبت شوي د توسیع ننوتنې",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} د توسیع زپ بنډلونه",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "مرسته او معلومات",
+  "libraryContentSafety": "کتابتون او د منځپانګې خوندیتوب",
+  "homePageLists": "د کور پاڼې لیستونه",
+  "chooseWhichListsToShowOn": "وټاکئ چې کوم لیستونه د کور پاڼې کې وښودل شي",
+  "homePageCards": "د کور پاڼې کارتونه ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "$anime کتل",
+  "viewingAnime": "$anime ښودل",
+  "readingManga2": "$manga لوستل",
+  "viewingManga": "$manga ښودل",
+  "readingNovel2": "$novel لوستل",
+  "viewingNovel": "$novel ښودل",
+  "browsingStatus": "د $status کتنه",
+  "upiIdCopied": "UPI ID کاپي شو: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "UPI ID کاپي کړئ ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • د GPay، PhonePe، Paytm او نورو پرانیستلو لپاره ټپ وکړئ.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "د ډاونلوډ خبرتیاوې",
+  "reDownloadFailed": "بیا ډاونلوډ ناکام شو: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "بیرته اړول ناکام شول: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "ریپو اضافه کول ناکام شو: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "فونټ \"{fontName}\" پلي شو",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "فونټ \"{fontName}\" ډاونلوډ ناکام شو",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" وارد او پلي شو",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "د فونټ فایل وارد کول ناکام شول",
+  "deleted3": "\"{fontName}\" ړنګ شو",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "د فونټونو کتابتون",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "د AnymeX لپاره ډیزاین شوی اصلي هندسي ګرد فونټ",
+  "systemFont": "د سیستم فونټ",
+  "useYourDeviceOsDefaultSystem": "د خپل وسیلې د OS اصلي سیستم فونټ وکاروئ",
+  "loadYourOwnTtfOrOtf": "خپل .ttf یا .otf ټایپوګرافي فایلونه پورته کړئ",
+  "pendingReports": "{length} انتظار کې راپورونه",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "کوکیز او ذخیره",
+  "monitoring": "څارنه",
+  "fpsMeter": "د FPS اندازه ګر",
+  "showDraggableRealTimeFpsOverlay": "د ریښتیني وخت FPS پوښ وښایاست چې کش کېدای شي",
+  "detectedModesDisplay": "موندل شوي حالتونه او ښودل",
+  "currentDisplayMode": "اوسنی د ښودلو حالت",
+  "modes": "{length} حالتونه",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "ځانګړی کول",
+  "stylingLibass": "{subLang} • {subFont} • سټایلینګ او libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "افقي",
+  "vert": "عمودي",
+  "controlsTapZones": "کنټرولونه او د ټپ سیمې",
+  "customizeTapZones": "د ټپ سیمې ځانګړې کړئ",
+  "configurePagedAndWebtoonTapRegions": "د پاڼې او ویب ټون د ټپ سیمې تنظیم کړئ",
+  "fitBordersSpacing": "{value} • برابرول، کنډې او فاصله",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "د فصل سټایل، د پاڼې ښودونکی او د سکرین قفل",
+  "overscrollActionsAutoScrollVolume": "overscroll، عملونه، اتوماتیک سکرول او غږ",
+  "themeTypography": "موضوع او ټایپوګرافي",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "د لوستلو حالت او ښودل",
+  "pageModeProgressBatteryIndicator": "د پاڼې حالت، پرمختګ او د بیټرۍ ښودونکی",
+  "readPageByPageInsteadOf": "د سکرول کولو پر ځای پاڼه په پاڼه ولولئ",
+  "displayPercentageInReadingBar": "د لوستلو بار کې سلنه وښایاست",
+  "displayBatteryAndTimeInReader": "د لوستونکي بار کې بیټرۍ او وخت وښایاست",
+  "gesturesNavigation": "اشارې او نیویګیشن",
+  "tapToScrollSwipeAutoScroll": "د سکرول لپاره ټپ، سوایپ، اتوماتیک سکرول او غږ",
+  "tapEdgesOfScreenToScroll": "د پورته/ښکته سکرول لپاره د سکرین کنارې ټپ کړئ",
+  "swipeHorizontallyToChangeChapters": "د فصلونو بدلولو لپاره افقي سوایپ وکړئ",
+  "useVolumeKeysToScroll": "د سکرول لپاره د غږ کیلي وکاروئ",
+  "textToSpeechTts2": "متن-څخه-وینا (TTS)",
+  "textToSpeechReadingSupport": "د متن-څخه-وینا د لوستلو ملاتړ",
+  "speechRate2": "د وینا سرعت",
+  "voicePitch2": "د غږ زیړوالی",
+  "appPostersIconsAvatarsSize": "د اپ پوسترونه، نښې، اوتارونه. اندازه: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "موقتي ویډیو برخې. اندازه: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "ډاونلوډ شوي ویب ناول پاڼې. اندازه: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "لاګونه، موقتي ډاونلوډونه. اندازه: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "کیشه پاکول ناکام شول: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "فابريکي بیا تنظیم ناکام شو: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 یا 3F51B5",
+  "motionDisplay": "حرکت او ښودل",
+  "visualEffectsTuning": "بصري اغیزې او تنظیم",
+  "historyCard": "د تاریخچې کارت",
+  "carousel": "کاروسیل",
+  "navBar": "د نیویګیشن پټی",
+  "themeDarkModeLayoutStyling": "موضوع، تیاره بڼه او د ترتیب سټایل",
+  "gesturesSubtitlesVideoSettings": "اشارې، سب ټایټلونه او ویډیو تنظیمات",
+  "settingsTiles": "د تنظیماتو ټایلونه",
+  "oledMode2": "OLED حالت",
+  "primaryAccount": "لومړنی حساب ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "{title} ته وصل شوی",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "{title} ته وصل شئ",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} سرلیکونه",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "\"{id}\" لرې کړم؟ دا بیرته نشي اړول کېدای.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "وارد کېږي…",
+  "addJsonFiles": "JSON فایلونه اضافه کړئ",
+  "previousStyle": "مخکینی سټایل",
+  "nextStyle": "راتلونکی سټایل",
+  "currentStyle": "اوسنی سټایل",
+  "useThisStyle": "دا سټایل وکاروئ",
+  "pleaseLogInToGetRecommendations": "مهرباني وکړئ د وړاندیزونو ترلاسه کولو لپاره ننوځئ",
+  "chapter1": "فصل 1",
+  "deletedSuccessfully": "{value} په بریالیتوب سره ړنګ شو",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl په بریالیتوب سره ننوتل!",
+  "yepFailed": "ښه، ناکامه شو",
+  "userInfoFetchingFailed": "د کارن معلومات ترلاسه کول ناکام شول!",
+  "githubLoginFailed": "د GitHub ننوتل ناکام شول: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "همغږي دمخه روانه ده.",
+  "anotherSyncActionIsAlreadyIn": "بل د همغږۍ عمل دمخه روان دی.",
+  "noAnymexSyncGistFoundTo": "د ړنګولو لپاره د AnymeX همغږۍ gist ونه موندل شو.",
+  "noAnymexSyncGistFoundInitialize": "د AnymeX همغږۍ gist ونه موندل شو. لومړی یې پیل کړئ.",
+  "githubGistSync": "د GitHub Gist همغږي",
+  "manage": "اداره کول",
+  "manageGithubGistSync": "د GitHub Gist همغږي اداره کول",
+  "joinedTheParty": "{username} ګډ شو",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} ووت",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "کوربه د {title} د قسط {episodeNumber} ته واړاوه",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "نظرونه ترلاسه کولو کې تېروتنه",
+  "errorAddingComment": "نظر اضافه کولو کې تېروتنه",
+  "errorUpdatingVote": "رایه تازه کولو کې تېروتنه",
+  "errorEditingComment": "نظر سمولو کې تېروتنه",
+  "errorDeletingComment": "نظر ړنګولو کې تېروتنه",
+  "commentReportedSuccessfully": "نظر په بریالیتوب سره راپور شو",
+  "errorReportingComment": "نظر راپور کولو کې تېروتنه",
+  "errorFetchingReportsQueue": "د راپورونو لیست ترلاسه کولو کې تېروتنه",
+  "reportResolvedSuccessfully": "راپور په بریالیتوب سره حل شو",
+  "failedToResolveReport": "راپور حل نشو",
+  "errorResolvingReport": "راپور حلولو کې تېروتنه",
+  "errorFetchingUserInfo": "د کارن معلومات ترلاسه کولو کې تېروتنه",
+  "errorFetchingUserHistory": "د کارن تاریخچه ترلاسه کولو کې تېروتنه",
+  "errorFetchingUserStats": "د کارن احصایې ترلاسه کولو کې تېروتنه",
+  "errorListingUsers": "کاروونکو لیست کولو کې تېروتنه",
+  "errorSearchingUsers": "کاروونکو لټولو کې تېروتنه",
+  "errorFetchingModerationQueue": "د ارزونې لیست ترلاسه کولو کې تېروتنه",
+  "commentModeratedSuccessfully": "نظر په بریالیتوب سره وارزول شو",
+  "errorModeratingComment": "نظر ارزولو کې تېروتنه",
+  "userManagedSuccessfully": "کارن په بریالیتوب سره اداره شو",
+  "errorManagingUser": "کارن اداره کولو کې تېروتنه",
+  "errorGettingInitialDeepLink": "لومړني ژور لینک ترلاسه کولو کې تېروتنه: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "لینک پرانیستلو کې تېروتنه: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "د تېروتنې توضیحات کاپي کړئ",
+  "whatSNew": "نوې څه دي",
+  "updatedToV": "v{current} ته تازه شو",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "د اعلان لینک پرانیستل ونشو",
+  "newAnilistUpdates": "{length} نوي AniList تازه معلومات",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} نور",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "وسایل تازه کړئ",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "ریپو اضافه کیږي... مهرباني وکړئ انتظار وباسئ.",
+  "unsupportedThemeTypeSupportedPlayer": "نا ملاتړ شوی د تیم ډول \"{type}\". ملاتړ شوی: پلیر.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "د لینک څخه د پلیر تیم راوستل کیږي...",
+  "themeIsInvalid": "تیم ناسم دی: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "د تیم JSON سم دی. {imported} {label} وارد شول.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "خونې ته ننوتل {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "خونې ته ننوتل ناکام شول: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "د {user1} او {user2} لپاره د AniMatch همغږۍ حسابیږي...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "د خپل ټاکل شوي تعقیب خدمت سره شریک کړئ",
+  "shareAnymexLink": "د AnymeX لینک شریک کړئ",
+  "opensDirectlyInAnymex": "مستقیم د AnymeX کې پرانیستل کیږي",
+  "newCommentsRepliesAndEdits": "نوي نظرونه، ځوابونه او سمونې",
+  "upvotesAndDownvotesOnYourComments": "ستاسو په نظرونو باندې مثبتې او منفي رایې",
+  "warningsMutesBansAndModerationActions": "خبرتیاوې، چوپ کول، بندیزونه او د ارزونې عملونه",
+  "reportFiledResolvedDismissed": "راپور ثبت شو، حل شو یا رد شو",
+  "officialAnnouncements": "رسمي اعلانونه",
+  "whenSomeoneMentionsYouInA": "کله چې څوک په نظر کې ستاسو @یادونه وکړي",
+  "notificationsForNewAnimeEpisodeReleases": "د نوو انیمي قسطونو خپرېدو خبرتیاوې",
+  "notificationsForFollowsMentionsAndLikes": "د تعقیب، یادونو او خوښونو خبرتیاوې",
+  "notificationsForCompletedEpisodeAndChapter": "د بشپړ شوو قسطونو او فصلونو د ډاونلوډ خبرتیاوې",
+  "signIn": "ننوتل",
+  "failedToCheckForUpdates3": "د تازه کولو چک کول ناکام شول",
+  "noUpdatesAvailable": "هیڅ تازه کول شتون نلري",
+  "errorCheckingForUpdates": "د تازه کولو چک کولو کې تېروتنه",
+  "installPermissionRequired": "د نصب اجازه اړینه ده",
+  "downloadFailed3": "ډاونلوډ ناکام شو",
+  "newVersionAvailable": "نوی نسخه شتون لري",
+  "closetCommunity": "کلوزټ او ټولنه",
+  "cloudflareChallengeSolved": "د Cloudflare ننگ حل شو!",
+  "collectionName": "د ټولګې نوم",
+  "collections": "ټولګې",
+  "combineBackupDataWithExistingData": "د پشتیبانۍ معلومات د دې وسیلې د اوسنیو معلوماتو سره یوځای کړئ",
+  "commentDeleted": "تبصره ړنګه شوه",
+  "commentPolicy": "د تبصرو پالیسي",
+  "commentReplies": "د تبصرو ځوابونه",
+  "commentRules": "د تبصرو قواعد",
+  "commentSystem": "د تبصرو سیستم",
+  "comments": "تبصرې",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 یو پرمختللی د تبصرو سیستم دی چې دا ځانګړتیاوې وړاندې کوي:",
+  "commentumV2SettingsModerationPreferences": "د Commentum v2 تنظیمات، ارزونه او غوره توبونه",
+  "common": "عمومي",
+  "commonCharacters": "عام کرکټرونه",
+  "commonFavouriteStaff": "عام خوښ کارکوونکي",
+  "commonGenres": "عام ژانرونه",
+  "commonSettings": "عمومي تنظیمات",
+  "commonStudios": "عام سټوډیوګانې",
+  "commonTags": "عام ټګونه",
+  "commonVoiceActors": "عام غږ ورکوونکي",
+  "communityDriven": "د ټولنې لخوا چلول شوی",
+  "communityForksOfAnymex": "د AnymeX ټولنیز څانګې",
+  "communityLeaderboard": "د ټولنې لیډربورډ",
+  "communityRecommendations": "د ټولنې وړاندیزونه",
+  "compact": "کمپکټ",
+  "compactCardWithEpisodeThumbnailAnd": "کمپکټ کارت د قسط وړوکي عکس او سرلیک سره",
+  "compactGridOfChapterNumbers": "د فصل شمیرو کمپکټ جدول",
+  "compatibility": "اړخیزتوب",
+  "compatibilityRanks": "د اړخیزتوب درجې",
+  "compatibleWithGooglePayPhonepePaytm": "د Google Pay، PhonePe، Paytm، BHIM، Cred، Navi، Amazon Pay او ټولو UPI بانکي اپلیکیشنونو سره همغږی.",
+  "completeAnyCloudflareChallengeThenTap": "هر Cloudflare ننگ بشپړ کړئ، بیا \"Sync Cookies\" ټک کړئ ترڅو سیشن زیاتونو ته ولیږل شي.",
+  "compose": "لیکل",
+  "concurrencyLimits": "همزمانۍ او محدودیتونه",
+  "configurationsRepos": "تنظیمات او ریپوګانې",
+  "configureExport": "ترتیب او صادرول",
+  "configureDiscordRichPresenceActivityStatus": "د Discord Rich Presence او فعالیت حالت ترتیب کړئ",
+  "configureDnsOverHttpsProxyTls": "د DNS-over-HTTPS، پراکسي او TLS تنظیمات ترتیب کړئ",
+  "configureMangaAndNovelReaderDefaults": "د مانګا او ناول لوستونکي ډیفالټ تنظیمات ترتیب کړئ",
+  "configureParallelDownloadsAndDirectory": "موازي ډاونلوډونه او ډایرکټوري ترتیب کړئ",
+  "configurePosterBlurScopeTintBackdrop": "د پوستر دھندلتیا، ساحه، رنګ او شاتنی سرچینه ترتیب کړئ",
+  "confirm": "تایید",
+  "confirmRestore": "تایید او بیرته راوستل",
+  "confirmBackupPassword": "د پشتیبانۍ پاسورډ تایید کړئ",
+  "conflictHandling": "د ټکر اداره",
+  "connect": "نښلول",
+  "continueReading": "لوستل دوام ورکړئ",
+  "continueWatching": "کتل دوام ورکړئ",
+  "continuousModeOnly": "یوازې دوامداره حالت",
+  "contributors": "مرستندویان",
+  "controlTheme": "د کنټرول سټایل",
+  "controlsSubtitlesAndPlaybackPreferences": "کنټرولونه، سب ټایټلونه او د پلې کولو غوره توبونه",
+  "cookiesUserAgentSynced": "کوکیز او User-Agent همغږي شول!",
+  "copy": "کاپي",
+  "copyPath": "لاره کاپي کړئ",
+  "copyUpiId": "UPI ID کاپي کړئ",
+  "copyUserId": "د کارن ID کاپي کړئ",
+  "coreTeam": "اصلي ټیم",
+  "couldNotCalculateCompatibility": "د اړخیزتوب حساب نشو کیدای.",
+  "couldNotFetchChaptersForThis": "د دې سرلیک فصلونه نشو راوړل کیدای",
+  "couldNotFetchEpisodesForThis": "د دې سرلیک قسطونه نشو راوړل کیدای",
+  "couldNotOpenDonationLink": "د مرستې لینک نشو خلاصیدای",
+  "couldNotOpenLink": "لینک نشو خلاصیدای",
+  "couldNotOpenReleasesPage": "د خپرونو پاڼه نشو خلاصیدای",
+  "couldntOpenAppSettingsOpenIt": "د اپلیکیشن تنظیمات نشو خلاصیدای. دا په لاس خلاص کړئ.",
+  "count": "شمیره",
+  "countryDistribution": "د هیوادونو ویش",
+  "countryOfOrigin": "د اصل هیواد",
+  "create": "جوړول",
+  "createAFullAnymexArchiveOf": "د خپلې رسنیزې کتابتون، تنظیماتو، غځونو او کوربه چلونکي بشپړ .anymex آرشیف جوړ کړئ",
+  "createActivity": "فعالیت جوړ کړئ",
+  "createBackup": "پشتیبانی جوړه کړئ",
+  "createNewList": "نوی لیست جوړ کړئ",
+  "createStatus": "حالت جوړ کړئ",
+  "cropBorders": "پولې پرې کړئ",
+  "current": "اوسنی • ",
+  "custom": "دودیز",
+  "customBanners": "دودیز بینرونه",
+  "customColorPicker": "دودیز رنګ ټاکونکی",
+  "customDohUrl": "دودیز DOH URL",
+  "customFonts": "دودیز فونټونه",
+  "customLists": "دودیز لیستونه",
+  "customLogos": "دودیز لوگوګانې",
+  "customPlayerFlagsParameters": "دودیز پلیر فلګونه او پیرامیټرونه",
+  "customScale": "دودیز اندازه",
+  "customTheme": "دودیز سټایل",
+  "customUserAgent": "دودیز User-Agent",
+  "customValue": "دودیزه ارزښت",
+  "customEllipsis": "دودیز...",
+  "customizeCardHistoryCardCarouselNav": "د کارت، تاریخچې کارت، کیروسل او نیویګیشن بار سټایلونه دودیز کړئ",
+  "customizeTheInterfaceToYourLiking": "انٹرفیس خپل خوښې ته دودیز کړئ",
+  "customizeYourLogoAnimationStyle": "د خپل لوگو انیمیشن سټایل دودیز کړئ",
+  "dailyActivitiesWatchAndReadMetrics": "ورځني فعالیتونه، کتل او لوستل شمیرې",
+  "dailyActivityAndWatchReadProgress": "ورځنی فعالیت او د کتلو/لوستلو پرمختګ تعقیب",
+  "dataCache": "معلومات او کیش",
+  "dataToRestore": "بیرته راوستل کیدونکي معلومات",
+  "days": "ورځې",
+  "days2": "ورځې",
+  "daysActive": "فعالې ورځې",
+  "debanding": "د بینډ لرې کول",
+  "debugStuffs": "د ډیبګ توکي",
+  "decoder": "ډیکوډر",
+  "decoderHwdec": "ډیکوډر (HWDec)",
+  "decoderThreads": "د ډیکوډر تارونه",
+  "decorationCloset": "د سینګارولو کلوزټ",
+  "defaultLabel": "ډیفالټ",
+  "defaultAndroidAudiotrackApi": "ډیفالټ Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "ډیفالټ Apple CoreAudio API",
+  "defaultListOrder": "ډیفالټ د لیست ترتیب",
+  "defaultOrientation": "ډیفالټ نیولو لوري",
+  "defaultPortrait": "ډیفالټ عمودي",
+  "defaultPulseaudioApi": "ډیفالټ PulseAudio API",
+  "defaultSize200px": "ډیفالټ اندازه (200px)",
+  "defaultSystemAudioDriver": "د سیستم ډیفالټ اډیو ډرایور",
+  "defaultTheme": "ډیفالټ سټایل",
+  "defaultWindowsAudioDriver": "د ویندوز ډیفالټ اډیو ډرایور",
+  "delete": "ړنګول",
+  "deleteActivity": "فعالیت ړنګ کړئ",
+  "deleteAll": "ټول ړنګ کړئ",
+  "deleteAllCachedImagesTorrentStream": "ټول ذخیره شوي انځورونه، torrent stream ټوټې او لنډمهاله فایلونه ړنګ کړئ.",
+  "deleteAllStoredHttpCookiesAcross": "د ټولو ډومینونو ټول ذخیره شوي HTTP کوکیز ړنګ کړئ.",
+  "deleteChapter": "فصل ړنګ کړئ",
+  "deleteChapterQuestion": "فصل ړنګ شي؟",
+  "deleteComment": "تبصره ړنګ کړئ",
+  "deleteCustomLogo": "دودیز لوگو ړنګ کړئ",
+  "deleteEpisode": "قسط ړنګ کړئ",
+  "deleteEpisodeQuestion": "قسط ړنګ شي؟",
+  "deleteEverythingStoredOfAnymexPermanently": "د AnymeX ټول ذخیره شوي توکي د تل لپاره ړنګ کړئ.",
+  "deleteExtension": "غځونه ړنګ کړئ",
+  "deleteFont": "فونټ ړنګ کړئ",
+  "deleteHistoryItem": "د تاریخچې توکی ړنګ کړئ",
+  "deleteList": "لیست ړنګ کړئ",
+  "deleteLogo": "لوگو ړنګ کړئ",
+  "deleteReason": "لامل ړنګ شي؟",
+  "deleteRecommendation": "وړاندیز ړنګ شي؟",
+  "deleteReply": "ځواب ړنګ کړئ",
+  "deleteReportedComment": "راپور شوې تبصره ړنګ کړئ",
+  "deleteSavedCookiesAndCloudflareTokens": "ذخیره شوي کوکیز او Cloudflare ټوکنونه ړنګ کړئ",
+  "deleteSavedCookiesCloudflareTokensAnd": "ذخیره شوي کوکیز، Cloudflare ټوکنونه او لنډمهاله کیش ړنګ کړئ",
+  "deleteSelected": "ټاکل شوي ړنګ کړئ",
+  "deleteTemporaryNetworkAndImageCache": "لنډمهاله شبکې او انځورو کیش ړنګ کړئ",
+  "deletionRequestSentToAdminsFor": "د ړنګولو غوښتنه د بیاکتنې لپاره مدیرانو ته واستول شوه.",
+  "demuxerMaxBuffer": "Demuxer اعظمي بفر",
+  "demuxerReadahead": "Demuxer مخکښ لوستل",
+  "description": "تشریح",
+  "detailedClassic": "تفصیلي (کلاسیک)",
+  "detailedInsights": "تفصیلي څیړنې",
+  "detailsPage": "د جزیاتو پاڼه",
+  "developer": "پراختیاوال",
+  "development": "پرمختیا",
+  "direct": "مستقیم",
+  "directSurfaceRenderingAndroidOnly": "مستقیم سطحې رینډرینګ (یوازې Android)",
+  "direction": "لور",
+  "disableToShowAndHidePlayer": "د پلیر کنټرولونه سمدستي ښکاره او پټ کولو لپاره بند کړئ",
+  "disablingMayBypassCaptivePortalsOr": "بندول ممکن captive portals یا SSL پلټنه له مخې لرې کړي، مګر امنیت کموي.",
+  "discard": "ړنګول",
+  "discardMessage": "پیغام ړنګ شي؟",
+  "discardReply": "ځواب ړنګ شي؟",
+  "discardStatus": "حالت ړنګ شي؟",
+  "disconnect": "قطع کول",
+  "disconnectDiscord": "Discord قطع شي؟",
+  "discordTakenDown": "Discord ړنګ شو",
+  "dismiss": "رد کول",
+  "display": "ښودنه",
+  "displayAnimeMangaMoviesAndShows": "د ټولنې لخوا وړاندیز شوي انمي، مانګا، فلمونه او نندارې په کور پاڼه کې وښایاست.",
+  "displayMode": "د ښودنې حالت",
+  "displayModeTuningIsNotApplicable": "د ښودنې حالت تنظیم په desktop پلیټفورمونو کې نه پلي کیږي.",
+  "displayPlaybackOrReadingProgressTimestamps": "د پلې کولو یا لوستلو پرمختګ وخت نښې وښایاست",
+  "displayRefreshRateResolutionAndFrame": "د ښودنې تازه کولو کچه، حل او فریم تنظیم",
+  "distanceBetweenLines": "د کرښو ترمنځ واټن",
+  "distanceFromBottomOfScreen": "د سکرین له ښکته واټن",
+  "ditherDepth": "Dither ژورتیا",
+  "dnsProxy": "DNS او پراکسي",
+  "dontShowAgain": "بیا مه ښایه",
+  "donate": "مرسته وکړئ",
+  "donateSupport": "مرسته او ملاتړ",
+  "donateViaPaypal": "د PayPal له لارې مرسته وکړئ",
+  "donateViaUpiOrPaypalTo": "د پرمختیا د ملاتړ لپاره د UPI یا PayPal له لارې مرسته وکړئ",
+  "donateViaUpiPaypalSupportDevelopment": "د UPI، PayPal له لارې مرسته وکړئ او پرمختیا ملاتړ کړئ",
+  "done": "بشپړ شو",
+  "done2": "بشپړ",
+  "doubletapToSeek": "د لوبې سمون لپاره دوه ځله ټک",
+  "downgradeOrSwitchToASpecific": "ټیټول یا یوه ځانګړې پلګ ان نسخې ته بدلول",
+  "download": "ډاونلوډ",
+  "download4kShaders": "4K شیډرونه ډاونلوډ کړئ",
+  "downloadAllChapters": "ټول فصلونه ډاونلوډ کړئ",
+  "downloadAllEpisodes": "ټول قسطونه ډاونلوډ کړئ",
+  "downloadChapter": "فصل ډاونلوډ کړئ",
+  "downloadChunks": "ټوټې ډاونلوډ کړئ",
+  "downloadCurrentSection": "اوسنۍ برخه ډاونلوډ کړئ",
+  "downloadEpisode": "قسط ډاونلوډ کړئ",
+  "downloadFailedTapToRetry": "ډاونلوډ ناکام شو. بیا هڅې لپاره ټک وکړئ.",
+  "downloadPath": "د ډاونلوډ لاره",
+  "downloadPathsAndQualitySettings": "د ډاونلوډ لارې او کیفیت تنظیمات",
+  "downloadPathsAndStorageSettings": "د ډاونلوډ لارې او ذخیره کولو تنظیمات",
+  "downloadPermissions": "د ډاونلوډ اجازې",
+  "downloadQualityStoragePaths": "د ډاونلوډ کیفیت، ذخیره کولو لارې",
+  "downloadSettings": "د ډاونلوډ تنظیمات",
+  "downloadSize4mb": "د ډاونلوډ اندازه: ~4MB",
+  "downloadStarted": "ډاونلوډ پیل شو",
+  "downloadUnreadChapters": "نه لوستل شوي فصلونه ډاونلوډ کړئ",
+  "downloadUnwatchedEpisodes": "نه کتل شوي قسطونه ډاونلوډ کړئ",
+  "downloaded": "ډاونلوډ شوی",
+  "downloaded2": "ډاونلوډ شوی",
+  "downloadedMedia": "ډاونلوډ شوې رسنۍ",
+  "downloadingImage": "انځور ډاونلوډیږي...",
+  "downloadingPackage": "بسته ډاونلوډیږي...",
+  "downloads": "ډاونلوډونه",
+  "downloadsStorage": "ډاونلوډونه او ذخیره",
+  "downloadsPage": "د ډاونلوډونو پاڼه",
+  "downscalingAlgorithm": "د کوچنۍ کولو الګوریتم",
+  "dragAndDropToReorderNavigation": "د نیویګیشن بار ټبونو بیا ترتیبولو لپاره کش او پریږدئ",
+  "dragToReorderStatusSections": "د حالت برخو بیا ترتیبولو لپاره کش کړئ",
+  "dualPageMode": "دوه پاڼې حالت",
+  "dynamicVariablesWillBeReplacedAutomatically": "ډینامیک متغیرونه به په اتومات ډول بدل شي. تاسو کولی شئ یو ثابت متن هم وکاروئ.",
+  "edit": "سمول",
+  "editActivity": "فعالیت سم کړئ",
+  "editCustomMpvFlagsPropertiesAnd": "د دودیز mpv فلګونو، ملکیتونو او تنظیماتو فایل سم کړئ",
+  "editLogoSettings": "د لوگو تنظیمات سم کړئ",
+  "editMediaEntry": "د رسنۍ ثبت سم کړئ",
+  "editReason": "لامل سم کړئ",
+  "editRecommendationReasonMin30Chars": "د وړاندیز لامل سم کړئ (لږترلږه 30 توکي)",
+  "edited": "سم شوی",
+  "enableAnimation": "انیمیشن فعال کړئ",
+  "enableAnimationOnCarouselsForSmooth": "د هموار حرکت لپاره کیروسلونو کې انیمیشن فعال کړئ",
+  "enableBackgroundMediaControlsForBluetooth": "د Bluetooth هیډسیټونو او سیستم رسنیزو خبرتیاوو لپاره د شاتنۍ رسنیزو کنټرولونه فعال کړئ. یادونه: دا فعالول د بیټرۍ کارول زیاتوي.",
+  "enableBetaUpdates": "بیټا تازه کارونه فعال کړئ",
+  "enableClassicSimpleHeaderStyleOn": "په کور پاڼو کې د کلاسیک ساده سر سټایل فعال کړئ",
+  "enableDiscordRpc": "Discord RPC فعال کړئ",
+  "enableExperimentalSettings": "تجربوي تنظیمات فعال کړئ",
+  "enableHoldingOnPlayerScreenTo": "د پلیر پر سکرین نیول فعال کړئ ترڅو ویډیو لنډمهاله ګړندۍ شي",
+  "enableHorizontalSwipingOnPlayerScreen": "د ویډیو د سمون لپاره د پلیر پر سکرین افقي سوایپ فعال کړئ",
+  "enableKenBurns": "Ken Burns فعال کړئ",
+  "enableLongPressQuickActions": "اوږد فشار چټک عملونه فعال کړئ",
+  "enableNotificationsForUpcomingAiringEpisodes": "د راتلونکو خپرېدونکو قسطونو خبرتیاوې فعالې کړئ.",
+  "enableNsfwAdultEntriesInAnilist": "د AniList منځپانګې کې NSFW/بالغ ثبتونه فعال کړئ.",
+  "enableShaders": "شیډرونه فعال کړئ",
+  "enableSwipeControls": "سوایپ کنټرولونه فعال کړئ",
+  "enableTapZones": "ټک زونونه فعال کړئ",
+  "enableThisIfYouWantTo": "دا فعال کړئ که غواړئ د خپل وال پیپر اصلي رنګ وساتئ",
+  "enableTranslucentNavigationBar": "نیم شفاف نیویګیشن بار فعال کړئ",
+  "enableTts": "TTS فعال کړئ",
+  "enableVerticalSwipingOnTheLeft": "د پلیر سکرین کیڼ/ښي خوا ته عمودي سوایپ فعال کړئ ترڅو رڼاتیا او غږ تنظیم شي",
+  "enablesASoftGlowingGradientEffect": "نرم، ځلیدونکی ګریډینټ اغیز فعالوي.",
+  "encryptWithAes256RecommendedFor": "د AES-256 سره انکریپټ کړئ (د auth ټوکنونو لپاره وړاندیز شوی)",
+  "encrypted": "انکریپټ شوی • ",
+  "endChapter": "فصل پای",
+  "enterAmount": "مقدار دننه کړئ...",
+  "enterAnilistUsername": "د AniList کارن نوم دننه کړئ",
+  "enterAtLeast2Characters": "لږترلږه 2 توکي دننه کړئ",
+  "enterBackupPassword": "د بیک اپ پټنوم داخل کړئ",
+  "enterFirstAnilistUsername": "لومړی AniList کارن نوم داخل کړئ",
+  "enterGithubRepositoryUrl": "GitHub ذخیره ځای URL داخل کړئ",
+  "enterListName": "د لیست نوم داخل کړئ",
+  "enterPassword": "پټنوم داخل کړئ",
+  "enterReasonOrDetailsForThis": "د دې عمل دلیل یا توضیحات داخل کړئ...",
+  "enterSearchQuery": "د لټون پوښتنه داخل کړئ",
+  "enterUsername": "کارن نوم داخل کړئ",
+  "enterValue": "ارزښت داخل کړئ",
+  "entryDeleted": "ثبت ړنګ شو.",
+  "episode1": "قسط 1",
+  "episodeListSettings": "د قسطونو لیست تنظیمات",
+  "episodes": "قسطونه",
+  "episodesDuration": "قسطونه او موده",
+  "episodesWatched": "کتل شوي قسطونه",
+  "errorOccured": "تېروتنه پېښه شوه",
+  "errorOccurred": "تېروتنه پېښه شوه",
+  "errorSavingImage": "انځور ساتلو کې تېروتنه",
+  "errorSharingImage": "انځور شریکولو کې تېروتنه",
+  "errorMissingRequiredDataItSeems": "تېروتنه: اړین معلومات نشته. داسې بریښي چې تاسو فصل لوستو سره سم اپلیکیشن بند کړ!",
+  "errorMissingRequiredMediaItSeems": "تېروتنه: اړین رسنۍ نشته. داسې بریښي چې تاسو فصل لوستو سره سم اپلیکیشن بند کړ!",
+  "errorMissingRequiredMediaItSeemsYou": "تېروتنه: اړینه رسنۍ نشته. داسې بریښي چې تاسو قسط کتلو سره سم اپلیکیشن بند کړ!",
+  "everyScoreIsMappedToA": "هره نمره یوې درجې ته نقشه شوې ده. لاندې جدول هر حد، د هغه نښه، او د سلسلې معنا ښيي.",
+  "experimental": "تجربوي",
+  "experimentalHighPerformanceRenderer": "تجربوي لوړ فعالیت رینډر کوونکی",
+  "explore": "سپړل",
+  "exploreTheProjectAndContribute": "پروژه وسپړئ او ونډه واخلئ",
+  "exportLabel": "صادرول",
+  "exportBackup": "بیک اپ صادرول",
+  "exportCancelled": "صادرول لغوه شو.",
+  "exportDeviceBackup": "د وسیلې بیک اپ صادرول",
+  "exportSettings": "تنظیمات صادرول",
+  "exportYourAnimeList": "خپل انمې لیست صادر کړئ",
+  "exportYourMangaList": "خپل مانګا لیست صادر کړئ",
+  "extensionConfigurations": "د زیاتوونو ترتیبات",
+  "extensionConfigurationsRepos": "د زیاتوونو ترتیبات او ذخیرې",
+  "extensionManager": "د زیاتوونو مدیر",
+  "extensionPackages": "د زیاتوونو بسته ګانې",
+  "extensionPreferences": "د زیاتوونو غوره توبونه",
+  "extensionSettings": "د زیاتوونو تنظیمات",
+  "extensionSettingsAndSourceConfigurations": "د زیاتوونو تنظیمات او د سرچینو ترتیبات",
+  "extensionTesting": "د زیاتوونو ازموینه",
+  "extensionType": "د زیاتوونو ډول",
+  "extensions": "زیاتوونه",
+  "extensionsDiagnostics": "زیاتوونه او تشخیص",
+  "extensionsRepositories": "زیاتوونه او ذخیرې",
+  "extensionsSources": "زیاتوونه او سرچینې",
+  "extensionsTailoredToYourNeeds": "ستاسو اړتیاوو ته مناسب زیاتوونه",
+  "externalStreamingLinks": "بهرني او سټریمینګ اړیکې",
+  "externalBackupsRestoreMetadataAndConfigurations": "بهرني بیک اپونه میټاډېټا او ترتیبات په خوندي ډول بیرته راوړي.",
+  "externalBrowser": "بهرنی براوزر",
+  "extras": "اضافي",
+  "factoryReset": "د فابریکې بیا تنظیمول",
+  "factoryReset2": "د فابریکې بیا تنظیمول",
+  "failedToCheckForUpdates": "د تازه کولو لټون ناکام شو.",
+  "failedToCheckPluginUpdates": "د پلگ ان تازه کولو لټون ناکام شو.",
+  "failedToDeleteChapter": "فصل ړنګ کول ناکام شول",
+  "failedToDeleteEpisode": "قسط ړنګ کول ناکام شول",
+  "failedToDeleteListEntry": "د لیست ثبت ړنګ کول ناکام شول",
+  "failedToDeleteMedia": "رسنۍ ړنګ کول ناکام شول",
+  "failedToDownloadImage": "انځور ښکته کول ناکام شول",
+  "failedToFetchChapters": "فصلونه راوړل ناکام شول",
+  "failedToFetchDetails": "توضیحات راوړل ناکام شول",
+  "failedToFetchImageForSharing": "د شریکولو لپاره انځور راوړل ناکام شول",
+  "failedToFetchPluginReleaseDetails": "د پلگ ان د خوشې کېدو توضیحات راوړل ناکام شول.",
+  "failedToFetchPolicy": "پالیسي راوړل ناکام شول.",
+  "failedToFetchReleaseDetails": "د خوشې کېدو توضیحات راوړل ناکام شول.",
+  "failedToFetchServers": "سرورونه راوړل ناکام شول",
+  "failedToLoadDetails": "توضیحات پورته کول ناکام شول",
+  "failedToLoadFontFile": "د فونټ فایل پورته کول ناکام شول",
+  "failedToLoadProfileAccountMay": "پروفایل پورته کول ناکام شول — حساب شاید خصوصي وي یا ونه موندل شي",
+  "failedToLoadTorrentMetadata": "د تورنټ میټاډېټا پورته کول ناکام شول",
+  "failedToPerformAction": "عمل ترسره کول ناکام شول",
+  "failedToRemoveRepo": "ذخیره لرې کول ناکام شول",
+  "failedToStartExtensionRuntime": "د زیاتوونو چلند پیل کول ناکام شول",
+  "failedToUpdateAnilist": "AniList تازه کول ناکام شول",
+  "failedToUpdateListEntry": "د لیست ثبت تازه کول ناکام شول",
+  "failedToUpdatePreference": "غوره توب تازه کول ناکام شول",
+  "failedToUpdateRole": "رول تازه کول ناکام شول",
+  "favoriteTitle": "خوښ سرلیک",
+  "favouriteAnime": "خوښ انمي",
+  "favouriteCharacters": "خوښ کرکټرونه",
+  "favouriteManga": "خوښ مانګا",
+  "favouriteStaff": "خوښ کارکوونکي",
+  "favouriteStudios": "خوښ سټوډیوګانې",
+  "featuresIssues": "ځانګړتیاوې/ستونزې",
+  "fetchingAvailableServers": "شته سرورونه راوړل کېږي...",
+  "fetchingLatestReleaseDetails": "د وروستي خوشې کېدو توضیحات راوړل کېږي...",
+  "fetchingTorrentFileList": "د تورنټ فایلونو لیست راوړل کېږي...",
+  "filler": "ډکونکی",
+  "filter": "فلټر",
+  "filterActivities": "فعالیتونه فلټر کړئ",
+  "filterActivity": "فعالیت فلټر کړئ",
+  "filterByChapterCount": "د فصلونو شمېر له مخې فلټر کړئ",
+  "filterByDurationMin": "د موده له مخې فلټر کړئ (دقیقې)",
+  "filterByEpisodeCount": "د قسطونو شمېر له مخې فلټر کړئ",
+  "filterByGenre": "د ژانر له مخې فلټر کړئ",
+  "filterByVolumeCount": "د ټوکونو شمېر له مخې فلټر کړئ",
+  "filterGenres": "ژانرونه فلټر کړئ",
+  "filterOutAdultNsfwEntriesFrom": "د ټولنیزو وړاندیزونو څخه بالغ/NSFW ثبتونه لرې کړئ.",
+  "filterOutEntriesAlreadyInYour": "هغه ثبتونه لرې کړئ چې دمخه ستاسو په لیست کې دي",
+  "filterOutEntriesAlreadyInYourList": "د کتلو/لوستلو حالت پر بنسټ هغه ثبتونه لرې کړئ چې دمخه ستاسو په لیست کې دي.",
+  "filterSettings": "د فلټر تنظیمات",
+  "filters": "فلټرونه",
+  "findAndManageSpecificUsers": "ځانګړي کاروونکي ومومئ او یې اداره کړئ",
+  "findAnimeSauceByScreenshots": "د سکرین شاټونو په مرسته د انمي سرچینه ومومئ",
+  "findSource": "سرچینه ومومئ",
+  "findYourFavouriteAnimeOrManga": "خپله خوښه انمي یا مانګا، مانهوا یا هر هغه څه ومومئ چې خوښ دي!",
+  "findYourFavouriteAnimeMangaManhwa": "خپله خوښه انمي، مانګا، مانهوا یا هر هغه څه ومومئ چې خوښ دي!",
+  "finishDate": "د بشپړېدو نیټه",
+  "firstChapter": "لومړی فصل",
+  "firstUser": "لومړی کاروونکی",
+  "fitToScreenWidth": "د سکرین پلن ته برابر کړئ",
+  "fontFamily": "د فونټ ډله",
+  "fontSize": "د فونټ اندازه",
+  "forceReDownload": "اجباري بیا ښکته کول",
+  "forceSyncFromSdCard": "د SD کارت څخه اجباري همغږي",
+  "forks": "فورکونه",
+  "format": "بڼه",
+  "formatDistribution": "د بڼو ویش",
+  "frameInterpolation": "د چوکاټ انٹرپولیشن",
+  "freeSupport": "وړیا ملاتړ",
+  "frequentlyRevisited": "ډیر ځلې بیا لیدل شوي",
+  "fromUrl": "له URL څخه",
+  "fullWidthDetailedCardWithLarge": "د بشپړ پلنۍ توضیحي کارت د لوی وړوکي عکس او د قسط میټاډېټا سره",
+  "fullWidthDetailedCardsWithProgress": "د بشپړ پلنۍ توضیحي کارتونه د پرمختګ او لوستلو تڼۍ سره",
+  "fullWidthHeroBannerWithCompact": "د بشپړ پلنۍ اصلي بینر د لنډو توضیحاتو او لنډ لنډیز سره.",
+  "general": "عمومي",
+  "generalPrivacy": "عمومي او محرمیت",
+  "generalSync": "عمومي او همغږي",
+  "generalAppPreferencesAndSyncServices": "د اپلیکیشن عمومي غوره توبونه او د همغږۍ خدمتونه",
+  "generalAppSettingsAndSyncServices": "د اپلیکیشن عمومي تنظیمات او د همغږۍ خدمتونه",
+  "generalPreferences": "عمومي غوره توبونه",
+  "genres": "ژانرونه",
+  "genresUpper": "ژانرونه",
+  "gestureForBrightnessVolume": "د روښانتیا او غږ لپاره اشاره",
+  "getHelpWithTheCommentSystem": "د تبصرو سیستم کې مرسته ترلاسه کړئ",
+  "getStarted": "پیل وکړئ",
+  "globalConcurrencyLimit": "نړیواله همزمانه حد",
+  "glowMultiplier": "د ځلا ضرب",
+  "goSuperDarkMode": "سوپر تیاره حالت ته لاړ شئ!",
+  "goToDownloads": "ښکته کړنو ته لاړ شئ",
+  "goToExtensionsToGetStarted": "د پیل لپاره زیاتوونو ته لاړ شئ",
+  "goToPluginDownloader": "د پلگ ان ښکته کونکي ته لاړ شئ",
+  "goToRuntimeManager": "د چلند پروسې مدیر ته لاړ شئ",
+  "goodAfternoon": "ماسپښین مو ښه شه",
+  "goodEvening": "ماښام مو ښه شه",
+  "goodMorning": "سهار مو ښه شه",
+  "goodnight": "شپه ښه",
+  "gotIt": "سمه ده",
+  "grainIntensity": "د دانو شدت",
+  "grainTextureOverlay": "د دانو بڼې پوښ",
+  "grantPermission": "اجازه ورکړئ",
+  "grantPermissions": "اجازې ورکړئ",
+  "grid": "شبکه",
+  "gridSize": "د شبکې اندازه",
+  "gridView": "د شبکې منظره",
+  "guest": "میلمه",
+  "happySnacking": "په خوښۍ سره خوراک وکړئ",
+  "hardwareDisplayModeSwitchingIsNot": "ستاسو وسیله د سخت افزار د ننندارې حالت بدلولو ملاتړ نه کوي.",
+  "helpSupport": "مرسته او ملاتړ",
+  "hexColorCode": "د هیکس رنګ کوډ",
+  "hey": "سلام ",
+  "hidden": "پټ",
+  "hiddenFromYourPublicProfile": "ستاسو له عامه پروفایل څخه پټ",
+  "hiddenTabs": "پټ ټبونه",
+  "hideAdultContent": "بالغانو منځپانګه پټه کړئ",
+  "hideButton": "تڼۍ پټه کړئ",
+  "hideByListStatus": "د لیست حالت له مخې پټ کړئ",
+  "hideCompleted": "بشپړ شوي پټ کړئ",
+  "hideDropped": "پرېښودل شوي پټ کړئ",
+  "hideEntriesThatAreInYour": "هغه ثبتونه پټ کړئ چې ستاسو په پلان لیست کې دي.",
+  "hideEntriesThatAreMarkedAs": "هغه ثبتونه پټ کړئ چې ستاسو په لیست کې د بشپړ شوي په توګه نښه شوي دي.",
+  "hideEntriesThatYouAreCurrently": "هغه ثبتونه پټ کړئ چې اوس یې کتل یا لوستل کوئ.",
+  "hideEntriesThatYouAreRewatching": "هغه ثبتونه پټ کړئ چې بیا یې کتل کوئ.",
+  "hideEntriesThatYouHaveDropped": "هغه ثبتونه پټ کړئ چې پرېښودلي یې دي.",
+  "hideEntriesThatYouHavePut": "هغه ثبتونه پټ کړئ چې ځنډ ته یې اچولي دي.",
+  "hideNsfw": "NSFW پټ کړئ",
+  "hideNsfw18Content": "NSFW / 18+ منځپانګه پټه کړئ",
+  "hideNsfwContent": "NSFW منځپانګه پټه کړئ",
+  "hideNsfwRecommendations": "NSFW وړاندیزونه پټ کړئ",
+  "hideOnHoldPaused": "ځنډ شوي / مکث شوي پټ کړئ",
+  "hidePlanning": "پلان پټ کړئ",
+  "hideRewatching": "بیا کتل پټ کړئ",
+  "hideSystemStatusAndNavigationBars": "د سیستم حالت او نیویګیشن بارونه پټ کړئ",
+  "hideWatchingReading": "کتل / لوستل پټ کړئ",
+  "history": "تاریخچه",
+  "historyStatistics": "تاریخچه او احصایې",
+  "historyCardStyle": "د تاریخچې د کارت بڼه",
+  "historyItemDeleted": "د تاریخچې توکی ړنګ شو",
+  "hlsParallelSegments": "HLS موازي برخې",
+  "holdAndDragAnyItemTo": "د بیا تنظیمولو لپاره هر توکی ونیسئ او کش یې کړئ",
+  "holdToAccessHistoryEditor": "د تاریخچې مدیر ته د لاسرسي لپاره ونیسئ",
+  "holdToDelete": "د ړنګولو لپاره ونیسئ",
+  "holdToSpeedUp": "د چټکولو لپاره ونیسئ",
+  "home": "کور",
+  "horizontal": "افقي",
+  "hostEG12700": "کوربه (د بیلګې په توګه 127.0.0.1)",
+  "hours": "ساعتونه",
+  "howItWorksCompatibilityRanks": "دا څنګه کار کوي او د مطابقت درجې",
+  "howMuchInPercentageToMark": "قسط د کتل شوي په توګه نښه کولو لپاره په سلنه کې څومره",
+  "howToUseTheCommentSystem": "د تبصرو سیستم څنګه وکاروئ:",
+  "hue": "رنګ ټون",
+  "ifEnabledAContinueWatchingBar": "که فعال شي، د کور پاڼې په ښکته نیویګیشن بار کې به د کتل دوام بار وښودل شي.",
+  "ifEnabledAllLibraryItemsWill": "که فعال شي، ټول کتابتون توکي به د ټولو تعقیبي خدمتونو ترمنځ شریک شي.",
+  "ifEnabledAnymexWillAskFor": "که فعال شي، AnymeX به د تعقیب اجازه وغواړي، که نه نو په اصل کې تعقیب کوي.",
+  "ifEnabledYouWillNotGet": "که فعال شي، تاسو به د AniList/MyAnimeList کې د بالغانو منځپانګې د فعالولو لپاره هڅه ونه لرئ.",
+  "ifTemporaryAppCacheReachesThis": "که د لنډمهاله اپلیکیشن کیش دې اندازې ته ورسیږي، په اتوماتيک ډول به پاک شي.",
+  "ifYouAreUsingAJson": "که تاسو JSON تیم کاروئ، دلته بدلونونه به د پلیر کنټرولونو باندې اغېز ونه کړي. دا تنظیمات پلي کولو لپاره جوړ شوی تیم ته واړوئ.",
+  "ifYouCantDonateWatchThis": "که تاسو عطیه نشئ کولی، د ملاتړ لپاره دا اعلان وګورئ",
+  "image": "انځور",
+  "imageShowsThumbnail": "انځور (وړوکی عکس ښيي)",
+  "imageFilterQuality": "د انځور فلټر کیفیت",
+  "imageSharedFromAnymex": "انځور د AnymeX څخه شریک شو",
+  "imagesWillBeDownloadedInFull": "انځورونه به په بشپړ کیفیت ښکته شي. هر فصل په خپل پوښي کې ساتل کیږي.",
+  "immersiveMode": "ژور حالت",
+  "importLabel": "واردول",
+  "importLabel2": "واردول",
+  "importManageCustomJsonThemes": "خپل JSON تیمونه واردول او اداره کول",
+  "importBackup": "بیک اپ واردول",
+  "importCustomFont": "خپل فونټ واردول",
+  "importFromUrl": "له URL څخه واردول",
+  "includeAdultNsfwSuggestions": "بالغ او NSFW وړاندیزونه شامل کړئ",
+  "incognito": "ناښکاره",
+  "incognitoActive": "ناښکاره (فعال)",
+  "incognitoMode2": "ناښکاره حالت",
+  "indiaUpi": "هند (UPI)",
+  "info": "معلومات",
+  "inlineCode": "داخلي کوډ",
+  "insert": "داخلول",
+  "installPermission": "د نصبولو اجازه",
+  "installPermissionIsRequiredToUpdate": "د اپلیکیشن تازه کولو لپاره د نصبولو اجازه اړینه ده",
+  "installedPackages": "نصب شوي بسته ګانې",
+  "installedThemes": "نصب شوي تیمونه",
+  "interfaceStyling": "د انٹرفیس بڼه",
+  "internalBrowser": "داخلي براوزر",
+  "international": "نړیوال",
+  "invalidBackupFileOrIncorrectPassword": "ناسم بیک اپ فایل یا غلط پټنوم",
+  "invertVolumeKeys": "د غږ تڼیو اړول",
+  "italic": "کب",
+  "joinDiscordCommunity": "د Discord ټولنې ته یوځای شئ",
+  "joinNewDiscord": "نوي Discord ته یوځای شئ",
+  "joinTelegramChannel": "د Telegram چینل ته یوځای شئ",
+  "joinUsForDroppingFeedbackOr": "د نظرونو یا د ځانګړتیا غوښتنو لپاره موږ سره یوځای شئ",
+  "jsonThemeManager": "د JSON تیم مدیر",
+  "judgment": "قضاوت",
+  "keepEditing": "سمون ته دوام ورکړئ",
+  "keepItChill": "آرام واوسئ",
+  "keepScreenOn": "سکرین روښانه وساتئ",
+  "keepVoicePitchStableAtHigher": "په لوړو سرعتونو کې د غږ ټون ثابت وساتئ",
+  "koFiSupport": "د Ko-fi ملاتړ",
+  "languageVariant": "د ژبې ډول",
+  "lastAdded": "وروستی اضافه شوی",
+  "lastChapter": "وروستۍ څپرکۍ",
+  "later": "وروسته",
+  "latest": "تازه",
+  "latestManga": "تازه مانګا",
+  "layout": "ترتیب",
+  "layoutStyle": "د ترتیب بڼه",
+  "leaderboard": "د سرښندنو جدول",
+  "learnHowToFormatYourComments": "د خپلو تبصرو د فارمټ کولو طریقه زده کړئ",
+  "leftSide": "کیڼ اړخ",
+  "letterSpacing": "د توريو ترمنځ واټن",
+  "levelProgress": "د کچې پرمختګ",
+  "libraryLabel": "کتابتون",
+  "librarySettings": "د کتابتون تنظیمات",
+  "libraryStatistics": "د کتابتون احصایې",
+  "lightness": "روښانتیا",
+  "likedBy": "خوښ شوی د لخوا",
+  "lineHeight": "د کرښې لوړوالی",
+  "linkAutoDetected": "لینک (په اتوماتیک ډول وموندل شو)",
+  "linkCopiedToClipboard": "لینک کاپي شو!",
+  "linkHasExpiredAndEpisodeUrl": "لینک نیټه تیره شوې ده او د قسط URL شتون نلري.",
+  "linkHasExpiredAndNoAlternative": "لینک نیټه تیره شوې ده او بل سټریم ونه موندل شو.",
+  "linotteDefault": "Linotte (تلپاتې)",
+  "liquidBackground": "مایع شاته زمینه",
+  "liquidMode": "مایع حالت",
+  "listEntryUpdatedSuccessfully": "د لیست ریکارډ په بریالیتوب سره تازه شو!",
+  "listExporter": "د لیست صادروونکی",
+  "listNameAlreadyExists": "د لیست نوم دمخه شتون لري",
+  "listOptions": "د لیست انتخابونه",
+  "liveBlurIsUnavailableWhenUsing": "کله چې Fluid Mesh کارول کیږي، ژوندی تیاره والی شتون نلري.",
+  "livePreview": "ژوندی مخکتنه",
+  "livePreview2": "ژوندی مخکتنه",
+  "loadTemplate": "کينډۍ پورته کړئ",
+  "loadingMediaFiles": "د رسنیو فایلونه پورته کیږي...",
+  "loadingMedia": "رسنۍ پورته کیږي...",
+  "local": "ځایی",
+  "localLibrary": "ځایی کتابتون",
+  "localMedia": "ځایی رسنۍ",
+  "location": "ځای",
+  "logCapture": "د لاګ نیول",
+  "logDirectory": "د لاګ ډایرکټوري",
+  "logIn": "ننوتل",
+  "logInRequired": "ننوتل اړین دي",
+  "logInToCustomizeYourPush": "د خپلو پوښتنو د خبرتیاوو غوره توبونو د بدلولو لپاره ننوځئ.",
+  "logInToJoinTheConversation": "د خبرو اترو کې د برخه اخستلو او تبصره کولو لپاره ننوځئ.",
+  "logOut": "وتل",
+  "loggedInTrackingServices": "ننوتل شوي د تعقیب خدمتونه",
+  "login": "ننوتل",
+  "loginAuthTokens": "ننوتل او د اعتبار ټوکنې",
+  "loginInsideTheAppRecommended": "د اپلیکیشن دننه ننوځئ (وړاندیز شوی)",
+  "loginSessions": "د ننوتلو غونډې",
+  "loginUsingYourDefaultBrowser": "خپل تلپاتې براوزر په کارولو سره ننوځئ",
+  "loginWithToken": "د ټوکن په واسطه ننوتل",
+  "logoAnimation": "د لوګو متحرک بڼه",
+  "logoName": "د لوګو نوم:",
+  "logs": "لاګونه",
+  "longPressPageActions": "د اوږدې فشار پاڼې عملونه",
+  "makeEverythingGlassyLiquidy": "هرڅه شیشه‌یي او مایع کړئ...",
+  "manageAnilistLists": "د AniList لیستونه اداره کړئ",
+  "manageCachedImagesThresholdsAndReset": "کیش شوي انځورونه اداره کړئ، حدونه وټاکئ او د اپلیکیشن معلومات بیرته وترتیب کړئ",
+  "manageDeviceStorageAndNotificationsTo": "د وسیلې ذخیره او خبرتیاوې اداره کړئ ترڅو خپلې رسنۍ افلاین ډاونلوډ او اداره کړئ.",
+  "manageLogCaptureAndShareSaved": "د لاګ نیول اداره کړئ او خوندي شوي لاګونه شریک کړئ",
+  "manageMyanimelistLists": "د MyAnimeList لیستونه اداره کړئ",
+  "managePluginsSources": "پلګ انونه او سرچینې اداره کړئ",
+  "manageSimklLists": "د Simkl لیستونه اداره کړئ",
+  "manageSourcesAndRepositoriesToUse": "سرچینې او ذخیرې اداره کړئ ترڅو له اپلیکیشن څخه بشپړ ګټه واخلئ",
+  "manageYourMyanimelistAnilistSimklAccounts": "خپل MyAnimeList، AniList او Simkl حسابونه اداره کړئ!",
+  "management": "اداره",
+  "manga": "مانګا",
+  "mangaNovelReaderSettingsTapZones": "د مانګا او ناول لوستونکي تنظیمات، د ټپ سیمې",
+  "mangaNovelViewerSettingsTapZones": "د مانګا او ناول کتونکي تنظیمات، د ټپ سیمې",
+  "mangaAndNovelReaderStylesAnd": "د مانګا او ناول د لوستونکي بڼې او د ټپ سیمې",
+  "mangaCustomLists": "د مانګا ځانګړي لیستونه",
+  "mangaDetailsPhrasing": "د مانګا جزیاتو عبارت",
+  "mangaLibrary": "د مانګا کتابتون",
+  "mangaList": "د مانګا لیست",
+  "mangaScore": "د مانګا نمره",
+  "mangaSectionOrder": "د مانګا برخو ترتیب",
+  "manuallyPasteOauthAccessToken": "د OAuth د لاسرسي ټوکن په لاس ځای کړئ",
+  "markAllRead": "ټول لوستل شوي نښه کړئ",
+  "markAsWatched": "د کتل شوي په توګه نښه کړئ",
+  "markdownGuide": "د Markdown لارښود",
+  "maximumDemuxerBufferMb": "اعظمي demuxer بفر (MB)",
+  "maybeLater": "شاید وروسته",
+  "mean": "اوسط",
+  "meanScore": "اوسط نمره",
+  "mediaPlayback": "رسنۍ او پلے بیک",
+  "mediaLibrary": "د رسنیو کتابتون",
+  "mediaSessionBluetoothSupport": "د رسنۍ سیشن (د بلوتوث ملاتړ)",
+  "mediaTypeBreakdown": "د رسنۍ ډولونو ویش",
+  "mediaYouDownloadWillAppearHere": "هغه رسنۍ چې ډاونلوډ کوئ دلته به ښکاره شي.",
+  "megaskipDuration": "د MegaSkip موده",
+  "mention": "یادونه",
+  "mentions": "یادونې",
+  "merge": "یوځای کول",
+  "messageFriend": "ملګري ته پیغام",
+  "minutesWatched": "کتل شوي دقیقې",
+  "miscellaneous": "متفرق",
+  "missingRuntimeHost": "د رن ټایم کوربه نشته",
+  "moderation": "کنټرول",
+  "moderationActions": "د کنټرول عملونه",
+  "moderationPanel": "د کنټرول پینل",
+  "moderator": "کنټرول کوونکی",
+  "moreOptions": "نور انتخابونه",
+  "morePopularManga": "نور مشهور مانګا",
+  "moveToLeft": "کیڼ ته ولېږدوئ",
+  "moveToRight": "ښي ته ولېږدوئ",
+  "movie": "فلم",
+  "mpvConfiguration": "د MPV ترتیب",
+  "muteUser": "کاروونکی چپ کړئ",
+  "mutualConnections": "متقابل اړیکې",
+  "mutualFriends": "متقابل ملګري",
+  "nameplates": "د نوم تختۍ",
+  "navBarLayout": "د نیویګیشن بار ترتیب",
+  "navBarStyle": "د نیویګیشن بار بڼه",
+  "navigationLayout": "د نیویګیشن ترتیب",
+  "needHelp": "مرسته غواړئ؟",
+  "network": "شبکه",
+  "newLabel": "نوی",
+  "newCollection": "نوی ټولګه",
+  "newCustomListName": "د نوي ځانګړي لیست نوم",
+  "newDownload": "نوی ډاونلوډ",
+  "newList": "نوی لیست",
+  "newestFirst": "نوي لومړی",
+  "nextRelease": "راتلونکی خپرېدنه",
+  "nextReleasePrediction": "د راتلونکي خپرېدنې اټکل",
+  "noActiveDownloads": "فعال ډاونلوډونه نشته",
+  "noActiveSourceOrMediaFound": "فعاله سرچینه یا رسنۍ ونه موندل شوې",
+  "noActiveSourceSelected": "فعاله سرچینه نه ده ټاکل شوې",
+  "noActivity": "فعالیت نشته",
+  "noAnimeFound": "انیمه ونه موندل شوه",
+  "noAudioTracksAvailable": "د غږ ټریکونه شتون نلري",
+  "noChaptersFound": "هیڅ څپرکي ونه موندل شول",
+  "noChaptersFound2": "هیڅ څپرکي ونه موندل شول",
+  "noCommonGenres": "ګډ ژانرونه نشته",
+  "noCommonTags": "ګډ ټاګونه نشته",
+  "noContributorsFound": "هیڅ مرستندویه ونه موندل شو.",
+  "noCustomListsAvailable": "ځانګړي لیستونه شتون نلري.",
+  "noCustomListsYet": "تر اوسه ځانګړي لیستونه نشته",
+  "noCustomListsYet2": "تر اوسه ځانګړي لیستونه نشته.",
+  "noDataAvailableForThisSection": "د دې برخې لپاره معلومات شتون نلري",
+  "noDataAvailable": "معلومات شتون نلري.",
+  "noDecadeBreakdownAvailable": "د لسیزې ویش شتون نلري",
+  "noDescriptionAvailable": "تشریح شتون نلري",
+  "noDownloadedChaptersFoundForThis": "د دې مانګا لپاره ډاونلوډ شوي څپرکي ونه موندل شول",
+  "noDownloadedEpisodesFoundForThis": "د دې انیمې لپاره ډاونلوډ شوي قسطونه ونه موندل شول",
+  "noEntriesFound": "هیڅ ریکارډ ونه موندل شو",
+  "noEpisodesFound": "هیڅ قسط ونه موندل شو",
+  "noExtensionManagersFound": "هیڅ د غځونو اداره کوونکی ونه موندل شو.",
+  "noExtensionsFound": "هیڅ غځونه ونه موندل شوې",
+  "noExtensionsInstalled": "هیڅ غځونه نصب شوې نه دي",
+  "noGenresAvailableAnilistApiMay": "ژانرونه شتون نلري. د AniList API شاید لنډمهاله بند وي.",
+  "noHiddenTabs": "پټ ټبونه نشته",
+  "noInsightsAvailableYetAddItems": "تر اوسه کومه لیدنه شتون نلري. خپل کتابتون ته توکي اضافه کړئ!",
+  "noLoggedStatsYetStartWatching": "تر اوسه ثبت شوې احصایې نشته. کتل یا لوستل پیل کړئ!",
+  "noMediaFilesFound": "د رسنیو فایلونه ونه موندل شول",
+  "noMediaFoundForThisStudio": "د دې سټوډیو لپاره رسنۍ ونه موندل شوې",
+  "noMediaInThisList": "پدې لیست کې رسنۍ نشته.",
+  "noMoreActivities": "نور فعالیتونه نشته",
+  "noMoreRecommendations": "نور وړاندیزونه نشته",
+  "noMoreUsers": "نور کاروونکي نشته",
+  "noNotificationsYet": "تر اوسه خبرتیاوې نشته",
+  "noNovelExtensionsInstalledToRead": "د دې ناول د لوستلو لپاره ناول غځونه نصب شوې نه دي.",
+  "noPendingReports": "پاتې راپورونه نشته",
+  "noPlayableStreamAvailableForThis": "د دې قسط لپاره د لوبیدونکي سټریم شتون نلري.",
+  "noPlayableStreamWasReturnedBy": "د دې سرچینې لخوا لوبیدونکی سټریم بیرته نه دی راستون شوی.",
+  "noRecentActivityFoundForSelected": "د ټاکل شویو فلټرونو لپاره وروستۍ فعالیت ونه موندل شو",
+  "noRecommendationsFound": "وړاندیزونه ونه موندل شول",
+  "noRecommendationsYet": "تر اوسه وړاندیزونه نشته",
+  "noReleasesFound": "خپرېدنې ونه موندل شوې.",
+  "noRepliesYetBeTheFirst": "تر اوسه ځوابونه نشته. لومړی ځواب ورکوونکی اوسئ!",
+  "noRepositoriesYet": "تر اوسه ذخیرې نشته",
+  "noResult": "پایله نشته",
+  "noResultsFound": "پایلې ونه موندل شوې.",
+  "noResultsYet": "تر اوسه پایلې نشته",
+  "noResultsTrySearchingByTitle": "پایلې نشته. د سرلیک په واسطه لټون وکړئ.",
+  "noSearchResults": "د لټون پایلې نشته",
+  "noServersAvailable": "سرورونه شتون نلري",
+  "noServersFound": "هیڅ سرور ونه موندل شو.",
+  "noServicesAvailable": "خدمتونه شتون نلري",
+  "noSourceInstalled": "هیڅ سرچینه نصب شوې نه ده",
+  "noSourceSelected": "سرچینه ټاکل شوې نه ده",
+  "noSourcesFound": "سرچینې ونه موندل شوې",
+  "noStatsAvailable": "احصایې شتون نلري",
+  "noSubtitleTracksAvailable": "د سب ټایټل ټریکونه شتون نلري",
+  "noTestsRunning": "هیڅ ازموینه نه ځي",
+  "noThemesYet": "تر اوسه تیمونه نشته",
+  "noTrackingServiceConnected": "د تعقیب خدمت وصل نه دی",
+  "noUsersFound": "کاروونکي ونه موندل شول",
+  "noVisibleTabs": "ښکاره ټبونه نشته",
+  "noVisualsFoundForThisAnime": "د دې انیمې لپاره انځورونه ونه موندل شول (╥﹏╥)",
+  "noWatchOrderFound": "د لیدو ترتیب ونه موندل شو.",
+  "notNow": "اوس نه",
+  "notSupported": "ملاتړ نه کیږي",
+  "notTracked": "تعقیب نه شوی",
+  "noteAddingKotatsuRepositoryWillTake": "یادونه: د Kotatsu ذخیره اضافه کول لږترلږه ۱ تر ۲ دقیقې وخت نیسي، ځکه چې په لومړي ځل کې د غځون پلګ ان ډاونلوډ او بدلول اړین دي.",
+  "nothingDownloadedYet": "تر اوسه هیڅ ډاونلوډ شوی نه دی",
+  "nothingToPreview": "د مخکتنې لپاره هیڅ نشته",
+  "nothingToPreviewYet": "تر اوسه د مخکتنې لپاره هیڅ نشته.",
+  "notificationPreferences": "د خبرتیاو غوره توبونه",
+  "notifications": "خبرتیاوې",
+  "notifyForOfficialAnnouncementsAndApp": "د رسمي اعلانونو او اپلیکیشن تازه معلوماتو لپاره خبر ورکړئ",
+  "notifyIfYourCommentIsRemoved": "که ستاسو تبصره د کنټرول کوونکي لخوا لرې شي خبر ورکړئ",
+  "notifyOnNewCommentsForMedia": "د هغو رسنیو نوي تبصرې چې پرې بحث مو کړی دی خبر ورکړئ",
+  "notifyOnUpvotesAndDownvotes": "د مثبتو او منفي رایو په اړه خبر ورکړئ",
+  "notifyOnWarningsPinnedCommentsOr": "د خبرداریو، نښلول شوو تبصرو یا بحث د قفل کیدو په اړه خبر ورکړئ",
+  "notifyWhenSomeoneMentionsYourUsername": "کله چې څوک ستاسو کاروونکي نوم @ سره یادونه کړي خبر ورکړئ",
+  "notifyWhenSomeoneRepliesToYour": "کله چې څوک ستاسو تبصرې ته ځواب ورکړي خبر ورکړئ",
+  "novel": "ناول",
+  "novelCustomLists": "د ناول ځانګړي لیستونه",
+  "novelDetailsPhrasing": "د ناول جزیاتو عبارت",
+  "novelFontFamily": "د ناول فونټ کورنۍ",
+  "novelLibrary": "د ناولونو کتابتون",
+  "novelSnapshots": "د ناول عکسونه",
+  "novelTheme": "د ناول تیم",
+  "novels": "ناولونه",
+  "numberOfActiveDownloadTasks": "د فعالو ډاونلوډ دندو شمیر",
+  "numberOfParallelChunksPerDownload": "د هر ډاونلوډ لپاره د موازي برخو شمیر",
+  "okay": "ښه ده",
+  "oldestFirst": "زوړ لومړی",
+  "oledMode": "OLED حالت",
+  "onMyList": "زما په لیست کې",
+  "oneOptionPerLineLikeHwdec": "هر کرښې کې یو انتخاب، لکه hwdec=auto یا scale=ewa_lanczossharp. هغه کرښې چې د # سره پیلیږي تبصرې دي. په [بریکټونو] کې پروفایلونه له پامه غورځول کیږي.",
+  "online": "آنلاین",
+  "openCloset": "پټ ځای پرانیزئ",
+  "openInBrowser": "په براوزر کې پرانیزئ",
+  "openSettings": "تنظیمات پرانیزئ",
+  "openSource": "خلاص سرچینه",
+  "openSupportedLinks": "ملاتړ شوي لینکونه پرانیزئ",
+  "openTheDownloadsScreenFromThe": "د مینو څخه د ډاونلوډونو پرده پرانیزئ",
+  "openVideoStreamInExternalPlayer": "ویډیو سټریم په تلپاتې ډول د بهرني لوبغاړي کې پرانیزئ",
+  "openWebview": "Webview پرانیزئ",
+  "openingsEndings": "پیلونه او پایونه",
+  "openslEsNativeAudioEngine": "د OpenSL ES ځایی غږیز انجن",
+  "options": "انتخابونه",
+  "order": "ترتیب",
+  "originalSize": "اصلي اندازه",
+  "otakuRankLevel": "د Otaku رتبې کچه",
+  "other": "نور",
+  "otherFeatures": "نور ځانګړتیاوې",
+  "otherRecommendations": "نور وړاندیزونه",
+  "otherStuffs": "نور شیان",
+  "otherTemporaryFiles": "نور لنډمهاله فایلونه",
+  "otherWaysToSupport": "د ملاتړ نور لارې",
+  "others": "نور",
+  "outlineType": "د کرښې ډول",
+  "overscroll": "د ډیر سکرول",
+  "overscrollToPrevNextChapter": "د مخکنی/راتلونکی فصل ته اوور سکرول",
+  "overview": "لنډیز",
+  "overwrite": "بدلول",
+  "pageAnimationDemo": "د پاڼې د انیمیشن ډیمو",
+  "pageReaderMode": "د پاڼې لوستونکی حالت",
+  "paged": "پاڼه پاڼه",
+  "palette": "د رنګونو پلیټ",
+  "palettes": "د رنګونو پلیټونه",
+  "paragraphSpacing": "د پراګراف واټن",
+  "parallelSegmentsForVideoDownloader": "د ویډیو ډاونلوډر لپاره موازي برخې",
+  "password": "پټنوم",
+  "passwordProtectBackup": "بیک اپ د پټنوم سره ساتل",
+  "passwordRequired": "پټنوم اړین دی",
+  "passwordsDontMatch": "پټنومونه سره نه برابرېږي!",
+  "pasteCustomImageUrl": "د ځانګړي انځور URL پیست کړئ...",
+  "pasteUrlHere": "URL دلته پیست کړئ...",
+  "pathCopiedToClipboard": "لاره کلیپ بورډ ته کاپي شوه",
+  "payViaAnyUpiApp": "د هرې UPI اپلیکیشن له لارې تادیه وکړئ",
+  "paypalDonation": "د PayPal مرسته",
+  "paypalRecipientNotice": "د PayPal ترلاسه کونکي خبرداری",
+  "penaltyDuration": "د جزا موده",
+  "performance": "فعالیت",
+  "permissionsRequired": "اجازې اړینې دي",
+  "persistentPageIndicator": "دوامداره د پاڼې ښودونکی",
+  "personalizeTheLookAndMakeIt": "بڼه شخصي کړئ او خپله یې کړئ",
+  "personalizedRecommendations": "شخصي وړاندیزونه",
+  "platform": "پلیټفارم",
+  "playAroundWithAppTheme": "د اپلیکیشن ټیم سره لوبه وکړئ",
+  "playAroundWithTheVideoPlayer": "د ویډیو پلیر سره لوبه وکړئ",
+  "playback": "پخلی",
+  "playbackSpeed": "د پخلي سرعت",
+  "playbackSpeeds": "د پخلي سرعتونه",
+  "player": "پلیر",
+  "playerControlsSubtitlesAndPlaybackPreferences": "د پلیر کنټرولونه، سب ټایټلونه او د پخلي غوره توبونه",
+  "playerSettings": "د پلیر تنظیمات",
+  "playerTheme": "د پلیر ټیم",
+  "playerThemes": "د پلیر ټیمونه",
+  "pleaseChooseALogoFile": "مهرباني وکړئ د لوګو دوتنه وټاکئ.",
+  "pleaseEnterAPasswordOrDisable": "مهرباني وکړئ پټنوم وليکئ یا د پټنوم ساتنه غیرفعاله کړئ.",
+  "pleaseEnterASearchTerm": "مهرباني وکړئ د لټون کلیمه وليکئ",
+  "pleaseEnterAUsernameToCompare": "مهرباني وکړئ د پرتله کولو لپاره کاروونکی نوم وليکئ.",
+  "pleaseGrantStoragePermissionToBrowse": "مهرباني وکړئ د خپلو رسنیو لټولو لپاره د ذخیرې اجازه ورکړئ",
+  "pleaseLoginFirst": "مهرباني وکړئ لومړی ننوځئ",
+  "pleaseLoginFirstToExportYour": "مهرباني وکړئ د خپل لیست صادولو لپاره لومړی ننوځئ.",
+  "pleaseLoginToFavorite": "مهرباني وکړئ د خوښولو لپاره ننوځئ!",
+  "pleaseLoginToUseThisFilter": "مهرباني وکړئ د دې فلټر کارولو لپاره ننوځئ!",
+  "pleaseProvideAReasonForThis": "مهرباني وکړئ د دې عمل دلیل وښایئ",
+  "pleaseSelectABackupFileFirst": "مهرباني وکړئ لومړی د بیک اپ دوتنه وټاکئ",
+  "pleaseSelectAValidApkFile": "مهرباني وکړئ سمه APK دوتنه وټاکئ.",
+  "pleaseSelectAValidJarFile": "مهرباني وکړئ سمه JAR دوتنه وټاکئ.",
+  "pleaseSelectAtLeastOneItem": "مهرباني وکړئ د بیک اپ لپاره لږترلږه یو توکی وټاکئ.",
+  "pleaseSelectAtLeastOneItemTo": "مهرباني وکړئ د بیرته راوستلو لپاره لږترلږه یو توکی وټاکئ.",
+  "pleaseWriteAtLeast30Characters": "مهرباني وکړئ لږترلږه ۳۰ توري ولیکئ",
+  "pluginInstallationSync": "د پلګ ان نصبول او همغږي",
+  "pluginIsAlreadyUpToDate": "پلګ ان لا دمخه تازه دی.",
+  "pluginJarCopiedPleaseRestartThe": "د پلګ ان JAR کاپي شو. مهرباني وکړئ اپلیکیشن بیا پیل کړئ.",
+  "pluginNotInstalled": "پلګ ان نصب شوی نه دی",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "پلګ ان په بریالیتوب سره بیا ډاونلوډ شو. مهرباني وکړئ د پلي کولو لپاره بیا پیل کړئ.",
+  "pluginReDownloadedPleaseRestartThe": "پلګ ان بیا ډاونلوډ شو. مهرباني وکړئ د پلي کولو لپاره اپلیکیشن بیا پیل کړئ.",
+  "pluginSyncedFromLocalApk": "پلګ ان د محلي APK څخه همغږی شو.",
+  "pngJpgWebpGifMax20mb": "PNG، JPG، WEBP، GIF (اعظمي ۲۰MB)",
+  "popular": "مشهور",
+  "popularAnime": "مشهور انیمه",
+  "popularAnimes": "مشهور انیمې",
+  "popularManga": "مشهور مانګا",
+  "posterBlurMode": "د پوستر دھندلا کولو حالت",
+  "posterBlurScope": "د پوستر دھندلا کولو حد",
+  "poweredByAnimatch16PointCompatibility": "د AnymeX کې د AniMatch د ۱۶ ټکو همغږۍ تحلیل لخوا ځواک شوی",
+  "poweredByCommentumV2AdvancedComment": "د Commentum v2 لخوا ځواک شوی - د تعدیل سره پرمختللی نظر سیسټم",
+  "preferences": "غوره توبونه",
+  "preferencesSystem": "غوره توبونه او سیسټم",
+  "preferredSubtitleLanguage": "غوره شوې د سب ټایټل ژبه",
+  "preparingImageToShare": "د شریکولو لپاره انځور چمتو کیږي...",
+  "preparingStream": "سټریم چمتو کیږي",
+  "presetProviders": "ټاکل شوي چمتو کونکي",
+  "preventScreenFromSleeping": "د سکرین د خوب کیدو مخنیوی",
+  "preview": "مخلیدنه",
+  "previewUpper": "مخلیدنه",
+  "privacySafety": "محرمیت او خوندیتوب",
+  "privacySettingsAndSafetyFeatures": "د محرمیت تنظیمات او د خوندیتوب ځانګړتیاوې",
+  "private": "خصوصي",
+  "privateEntry": "خصوصي ثبت",
+  "profileEffects": "د پروفایل اغیزې",
+  "profileIcon": "د پروفایل نښه",
+  "progress": "پرمختګ",
+  "progressHistory": "پرمختګ او تاریخچه",
+  "proposeNewFeaturesReportBugsAnd": "نوې ځانګړتیاوې وړاندې کړئ، بګونه راپور کړئ، او نورو غړو سره خبرې وکړئ",
+  "protocol": "پروتوکول",
+  "proxy": "پراکسي",
+  "proxyConfiguration": "د پراکسي تنظیمات",
+  "pulseaudioSoundServer": "PulseAudio د غږ سرور",
+  "queryRemoteRepositoryForAddOn": "د اضافي اپډیټونو لپاره لیرې ذخیره پوښتنه",
+  "queuedForDownload": "د ډاونلوډ لپاره په لیست کې",
+  "quickSelectFollowing": "ګړندی انتخاب (تعقیبوونکي)",
+  "radiusMultiplier": "د شعاع ضرب",
+  "random": "تصادفي",
+  "range": "لړۍ",
+  "rank": "درجه",
+  "rating": "ارزونه",
+  "reDownloadAndReinstallThePlugin": "پلګ ان له سره ډاونلوډ او بیا نصب کړئ",
+  "read": "لوستل شوی",
+  "readArticle": "مقاله ولولئ",
+  "readLatestUpdatesAboutThisAnime": "د دې انیمې وروستي معلومات ولولئ",
+  "readLatestUpdatesAboutThisManga": "د دې مانګا وروستي معلومات ولولئ",
+  "readOnePageAtATime": "یو وخت یوه پاڼه ولولئ",
+  "readAheadDurationInMinutes": "مخکښ لوستل (دقیقې)",
+  "readaheadSeconds": "مخکښ لوستل (ثانیې)",
+  "reader": "لوستونکی",
+  "readerBackgroundOpacity": "د لوستونکي شاته ځیرکتیا",
+  "readerControlTheme": "د لوستونکي د کنټرول ټیم",
+  "readerPreferences": "د لوستونکي غوره توبونه",
+  "readerSettings": "د لوستونکي تنظیمات",
+  "readingDirection": "د لوستلو لوری",
+  "readingLayout": "د لوستلو ترتیب",
+  "readingManga": "مانګا لوستل",
+  "readingMangaPhrasing": "د مانګا لوستلو جمله بندي",
+  "readingNovel": "ناول لوستل",
+  "readingNovelPhrasing": "د ناول لوستلو جمله بندي",
+  "realTime4kUpscalingForAnime": "د انیمې مینځپانګې لپاره ریښتینی وخت ۴K لوړول",
+  "reason": "دلیل",
+  "reasonDeleted": "دلیل ړنګ شو.",
+  "reasonUpdated": "دلیل تازه شو!",
+  "recentActivity": "وروستۍ فعالیت",
+  "recentMediaComments": "وروستي رسنیز نظرونه",
+  "recentNews": "وروستي خبرونه",
+  "recentSearches": "وروستي لټونې",
+  "recentlyCompleted": "وروستی بشپړ شوی",
+  "recentlyUpdated": "وروستی تازه شوی",
+  "recommend": "وړاندیز",
+  "recommendationSubmitted": "وړاندیز وسپارل شو! 🎉",
+  "recommended": "وړاندیز شوی",
+  "recommendedAnime": "وړاندیز شوې انیمې",
+  "recommendedBy": "وړاندیز شوی لخوا",
+  "recommendedManga": "وړاندیز شوې مانګا",
+  "recommendedNovels": "وړاندیز شوي ناولونه",
+  "reduceColorBandingArtifacts": "د رنګ بانډینګ اغیزې کمې کړئ",
+  "refreshComments": "نظرونه تازه کړئ",
+  "refreshRate": "د تازه کولو کچه",
+  "relations": "اړیکې",
+  "releaseDate": "د خپریدو نیټه",
+  "releaseYear": "د خپریدو کال",
+  "releaseYearStats": "د خپریدو کال احصایې",
+  "rememberMyChoice": "زما انتخاب په یاد ولرئ",
+  "rememberServer": "سرور په یاد ولرئ",
+  "removalRequestSentToAdminsFor": "د لرې کولو غوښتنه د بیاکتنې لپاره مدیرانو ته واستول شوه.",
+  "remove": "لرې کول",
+  "removeBanner": "بینر لرې کړئ",
+  "removeDecoration": "ښکلا لرې کړئ",
+  "removeEffect": "اغیزه لرې کړئ",
+  "removeFromHistory": "له تاریخچې لرې کړئ",
+  "removeItems": "توکي لرې کړئ",
+  "removeNameplate": "نوم تخته لرې کړئ",
+  "removeTheme": "ټیم لرې کړئ",
+  "removeWhiteBlackBorders": "سپینې/تورې کنارې لرې کړئ",
+  "removeYourReason": "خپل دلیل لرې کړم؟",
+  "rename": "نوم بدلول",
+  "renameList": "د لیست نوم بدلول",
+  "reorderNavigationTabs": "د نیویګیشن ټبونه بیا تنظیم کړئ",
+  "replaceExistingDataOnThisDevice": "پدې وسیله کې شته معلومات د بیک اپ سره ځای پر ځای کړئ",
+  "replay": "بیا لوبول",
+  "reportsQueue": "د راپورونو لیست",
+  "repositories": "ذخیرې",
+  "repositoryUrl": "د ذخیرې URL",
+  "repositoryUrlUpper": "د ذخیرې URL",
+  "requests": "غوښتنې",
+  "requiredForCoreAndVisualTuning": "د اصلي او بصري تنظیم لپاره اړین دی. په ټیټ کچې وسیلو کې بند وساتئ.",
+  "reset": "بیا تنظیمول",
+  "resetUpper": "بیا تنظیمول",
+  "resetDownloadPath": "د ډاونلوډ لاره بیا تنظیم کړئ",
+  "resetNovelReaderSettings": "د ناول لوستونکي تنظیمات بیا تنظیم کړئ",
+  "resetToDefault": "ډیفالټ ته بیرته راوستل",
+  "resetToDefault2": "ډیفالټ ته بیرته راوستل",
+  "resetToDefaultPicture": "انځور ډیفالټ ته بیرته راوستل",
+  "resetToDefaultWallpaper": "ځمکنی انځور ډیفالټ ته بیرته راوستل شو!",
+  "resizeMode": "د اندازې بدلون حالت",
+  "resizeModes": "د اندازې بدلون حالتونه",
+  "resolution": "ریزولوشن",
+  "resolve": "حل کول",
+  "restartTheAppToApplyThe": "د تازه کولو د پلي کولو لپاره اپلیکیشن بیا پیل کړئ.",
+  "restoreAllNovelReaderDefaults": "د ناول لوستونکي ټول ډیفالټونه بیرته راوستل",
+  "restoreData": "معلومات بیرته راوستل",
+  "restorePreview": "د بیرته راوستلو مخلیدنه",
+  "restoreToDefaultInternalStorage": "ډیفالټ داخلي ذخیره ته بیرته راوستل",
+  "restoringWillOverwriteYourSelectedLocal": "بیرته راوستل به ستاسو ټاکل شوي محلي کتابتون توکي او تنظیمات د دې بیک اپ مینځپانګې سره ځای پر ځای کړي.",
+  "restrictMessagesToFollowing": "پیغامونه تعقیبوونکو ته محدود کړئ",
+  "results": "پایلې",
+  "resultsWillAppearGroupedByExtension": "پایلې به د توسیع له مخې ډلبندي شوي ښکاره شي",
+  "retainOriginalColor": "اصلي رنګ وساتئ",
+  "retry": "بیا هڅه",
+  "rightSide": "ښي اړخ",
+  "riseAndShine": "پاڅیږه او ښه ورځ",
+  "roleUpdatedSuccessfully": "رول په بریالیتوب سره تازه شو",
+  "roleAll": "رول: ټول",
+  "rollbackVersion": "نسخه بیرته اړول",
+  "romajiTitle": "رومجي سرلیک",
+  "roundUpScores": "نمرې پورته پوره کړئ",
+  "runtimeHost": "رن ټایم کوربه",
+  "runtimeHostReleases": "د رن ټایم کوربه خپرونې",
+  "runtimeHostRequired": "رن ټایم کوربه اړین دی",
+  "safetyFeatures": "د خوندیتوب ځانګړتیاوې:",
+  "saturation": "پیاوړتیا",
+  "sauceSearcher": "د سرچینې پلټونکی",
+  "save": "ساتل",
+  "saveEquip": "وساتئ او وکاروئ",
+  "saveChanges": "بدلونونه وساتئ",
+  "saveChanges2": "بدلونونه وساتئ",
+  "saveLastFrame": "وروستی چوکاټ وساتئ",
+  "saveLogo": "لوګو وساتئ",
+  "savedAnimeEntriesAndProgress": "ساتل شوي انیمې ثبتونه او پرمختګ",
+  "savedLightNovelsAndReadingState": "ساتل شوي لنډ ناولونه او د لوستلو حالت",
+  "savedMangaEntriesAndChapters": "ساتل شوي مانګا ثبتونه او فصلونه",
+  "savedStreamLinkHasExpiredFetching": "ساتل شوی سټریم لینک پای ته رسیدلی. نوی لینک راوړل کیږي...",
+  "savesAScreenshotOfTheLast": "د هغه وروستي چوکاټ سکرین شاټ ساتي چې تاسو یې لیدلی. دا بندول د ذخیرې کارول ډیر کموي",
+  "scaleFactor": "د پیمانې فکتور",
+  "scalingAlgorithm": "د پیمانې الګوریتم",
+  "scanningForMoreServers": "د نورو سرورونو لپاره پلټنه کیږي...",
+  "scanningForVideoStreams": "د ویډیو سټریمونو لپاره پلټنه کیږي...",
+  "score": "نمره",
+  "scoreDistribution": "د نمرو ویش",
+  "scoringSystem": "د نمرې ورکولو سیسټم",
+  "search": "لټون",
+  "searchUpper": "لټون",
+  "searchAcrossExtensions": "د توسیعاتو په اوږدو کې لټون...",
+  "searchAnimeMovies": "انیمې، فلمونه لټول...",
+  "searchAnime": "انیمې لټول...",
+  "searchExtensions": "توسیعات لټول",
+  "searchExtensionsEllipsis": "توسیعات لټول...",
+  "searchFailed": "لټون ناکام شو",
+  "searchForAnime": "د انیمې لټون",
+  "searchInHistory": "په تاریخچه کې لټون...",
+  "searchInLibrary": "په کتابتون کې لټون...",
+  "searchItemsInList": "په لیست کې توکي لټول...",
+  "searchManga": "مانګا لټول...",
+  "searchQuery": "د لټون پوښتنه",
+  "searchSources": "سرچینې لټول...",
+  "searchTags": "ټګونه لټول...",
+  "searchUser": "کاروونکی لټول",
+  "searchingDatabase": "ډیټابیس لټول کیږي...",
+  "searching": "لټول کیږي...",
+  "season": "فصل",
+  "seasons": "فصلونه",
+  "secondsPerScreenLowerIsFaster": "په سکرین کې ثانیې (ټیټ ګړندی دی)",
+  "secondsPerScreenPageLowerIs": "په سکرین/پاڼه کې ثانیې (ټیټ ګړندی دی)",
+  "securityEncryption": "خوندیتوب او انکرپشن",
+  "seePeopleWhoContributedToAnymex": "هغه خلک وګورئ چې د AnymeX سره یې مرسته کړې ده",
+  "selectAFolderWhereAnymexWill": "یوه فولډر وټاکئ چیرې چې AnymeX به ستاسو ډاونلوډ شوي انیمې قسطونه او مانګا فصلونه وساتي.",
+  "selectAnAnimeScreenshotToFind": "د سرچینې موندلو لپاره د انیمې سکرین شاټ وټاکئ",
+  "selectAnilistMyanimelistSimklOrExtensions": "د AniList، MyAnimeList، Simkl، یا توسیعاتو حالت وټاکئ",
+  "selectDataToIncludeInThis": "په دې بیک اپ کې د شاملولو لپاره معلومات وټاکئ",
+  "selectDirectory": "ډایرکټری وټاکئ",
+  "selectExtensions": "پراختیاوې وټاکئ",
+  "selectFolder": "فولډر وټاکئ",
+  "selectLanguage": "ژبه وټاکئ",
+  "selectMediaDirectory": "د رسنیو ډایرکټری وټاکئ",
+  "selectNovelSource": "د ناول سرچینه وټاکئ",
+  "selectProfile": "پروفایل وټاکئ",
+  "selectRange": "حد وټاکئ",
+  "selectServer": "سرور وټاکئ",
+  "selectStatus": "حالت وټاکئ",
+  "selectSubtitleFont": "د سب ټایټل فونټ وټاکئ",
+  "selectTags": "ټګونه وټاکئ",
+  "selectTimezone": "وخت زون وټاکئ",
+  "selectVersionToRollback": "د بیرته اړولو لپاره نسخه وټاکئ",
+  "selectVideoFile": "ویډیو فایل وټاکئ",
+  "selectYourPreferredContentSource": "خپله غوره شوې مینځپانګې سرچینه وټاکئ",
+  "selectedCacheCleared": "ټاکل شوی کیش پاک شو",
+  "selectedItemsRemoved": "ټاکل شوي توکي لرې شول",
+  "sensitiveLoginTokensForMalSimkl": "د MAL، Simkl او AniList حساس ننوتو ټوکنې",
+  "sensitiveSessionTokensForMalSimkl": "د MAL، Simkl او AniList حساس سیشن ټوکنې",
+  "separateCompletedAnimeListIntoSections": "بشپړ شوې انیمې لیست د بڼې له مخې برخو ته جلا کړئ.",
+  "separateCompletedMangaListIntoSections": "بشپړ شوې مانګا لیست د بڼې له مخې برخو ته جلا کړئ.",
+  "serverDetails": "د سرور توضیحات",
+  "serverChanIsTakingANap": "Server-chan ویده دی!",
+  "setUpYourPreferencesForThe": "د غوره تجربې لپاره خپل غوره توبونه تنظیم کړئ",
+  "settings": "تنظیمات",
+  "settingsAccount": "تنظیمات او حساب",
+  "settingsAuthentication": "تنظیمات او تصدیق",
+  "settingsSavedSuccessfully": "تنظیمات په بریالیتوب سره وساتل شول.",
+  "shaderProfilesInitialized": "د شیډر پروفایلونه پیل شول",
+  "shadowBanUser": "کارن پټ بند کړئ",
+  "shareLogs": "لاګونه شریک کړئ",
+  "shareMatchCard": "د لوبې کارت شریک کړئ",
+  "shareProfile": "پروفایل شریک کړئ",
+  "shareTheSavedLogFileOr": "خوندي شوی لاګ فایل شریک کړئ یا منځپانګه یې کاپي کړئ.",
+  "sharedFromAnymex": "د AnymeX څخه شریک شوی",
+  "showAnimatedEffectOverlaysOnProfile": "د پروفایل بینرونو کې متحرک اغیزې ښکاره کړئ",
+  "showAnimatedFramesAroundUserAvatars": "د کارن عکسونو شاوخوا متحرک چوکاټونه ښکاره کړئ",
+  "showBatteryTime": "بیټرۍ او وخت ښکاره کړئ",
+  "showChapterTransitionEvenWithoutGaps": "حتی د تشې پرته هم د فصل انتقال ښکاره کړئ",
+  "showCommunityRecommendations": "د ټولنې وړاندیزونه ښکاره کړئ",
+  "showContinueWatchingCard": "د کتل دوام کارت ښکاره کړئ",
+  "showContinueWatchingOnHome": "په کور پاڼه کې د کتل دوام ښکاره کړئ",
+  "showCustomProfileBannersFallsBack": "ګمرکي پروفایل بینرونه ښکاره کړئ (که بند وي نو د AniList پوښ کارول کیږي)",
+  "showNameplateBackgroundsOnCommentCards": "د تبصرو کارتونو او لیډربورډ کې د نوم تختې شاته منظره ښکاره کړئ",
+  "showOnLeft": "چپ اړخ ته ښکاره کړئ",
+  "showOnRight": "ښی اړخ ته ښکاره کړئ",
+  "showReadingProgress": "د لوستلو پرمختګ ښکاره کړئ",
+  "showTimestamps": "د وخت نښې ښکاره کړئ",
+  "simpleCompactListView": "ساده کمپکټ لیست لید",
+  "simpleDirectmediaLayerAudioOutput": "ساده DirectMedia Layer د غږ وتلی",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "ساده بڼه چې د قسط شمېره، سرلیک او پرمختګ ښیي، پرته له کوچني عکس",
+  "sizeMode": "د اندازې حالت:",
+  "smartMangaSuggestions": "هوښیار مانګا وړاندیزونه",
+  "smootherMotionCanIncreaseGpuUsage": "نرم حرکت، د GPU کارونه زیاتولی شي",
+  "social": "ټولنیز",
+  "somethingWentWrong": "یوه ستونزه رامنځته شوه",
+  "sort": "ترتیب",
+  "sort2": "ترتیب",
+  "sortBy": "بر اساس ترتیب",
+  "sortBy2": "بر اساس ترتیب",
+  "sortComments": "تبصرې ترتیب کړئ",
+  "source": "سرچینه",
+  "sourceAndPluginConfigurations": "د سرچینې او پلگ ان ترتیبات",
+  "sourcePreferences": "د سرچینې غوره توبونه",
+  "spaceBetweenLetters": "د توریو ترمنځ ځای",
+  "spaceBetweenParagraphs": "د پاراګرافونو ترمنځ ځای",
+  "spaceBetweenWords": "د کلمو ترمنځ ځای",
+  "spacedPages": "ځای ځای پاڼې",
+  "splitCompletedAnimeList": "بشپړ شوې انیمې لیست ووېشئ",
+  "splitCompletedMangaList": "بشپړ شوې مانګا لیست ووېشئ",
+  "spoiler": "سپویلر",
+  "spoilerTapToReveal": "سپویلر (د ښودلو لپاره ټک وکړئ)",
+  "staff": "کارکوونکي",
+  "staffCharacterNameLanguage": "د کارکوونکو او کرکټرونو د نوم ژبه",
+  "standardGpuRendering": "معیاري GPU رینډرینګ",
+  "starOnGithub": "په GitHub کې ستوری ورکړئ",
+  "startANewDownloadFromThe": "د \"نوی ډاونلوډ\" ټب څخه نوی ډاونلوډ پیل کړئ",
+  "startChapter": "د پیل فصل",
+  "startDate": "د پیل نیټه",
+  "startMangaDownload": "د مانګا ډاونلوډ پیل کړئ",
+  "startTest": "ازموینه پیل کړئ",
+  "startingExtensionRuntime": "د پراختیا چلند پیلیږي...",
+  "statistics": "احصایې",
+  "stats": "احصایې",
+  "status": "حالت",
+  "statusDistribution": "د حالتونو ویش",
+  "statusPostedSuccessfully": "حالت په بریالیتوب سره خپور شو!",
+  "stayUpdatedWithTheLatestReleases": "د وروستیو خپرونو، اعلانونو او بحثونو څخه خبر پاتې شئ",
+  "storagePath": "ذخیره او لاره",
+  "storageManager": "د ذخیرې مدیر",
+  "storageOptions": "د ذخیرې اختیارونه",
+  "storagePermission": "د ذخیرې اجازه",
+  "storagePermissionIsRequiredToDownload": "د تازه معلوماتو ډاونلوډ لپاره د ذخیرې اجازه اړینه ده",
+  "storagePermissionRequired": "د ذخیرې اجازه اړینه ده",
+  "streakCurLong": "پرله‌پسې ورځې (اوسنی/اوږد)",
+  "stretchImagesToFitScreenWidth": "عکسونه د سکرین پلنوالي ته غزول",
+  "strikethrough": "کرښه کښلې",
+  "studios": "سټوډیوګانې",
+  "style": "بڼه",
+  "subtitleBackgroundColor": "د سب ټایټل شاته رنګ",
+  "subtitleColor": "د سب ټایټل رنګ",
+  "subtitleFont": "د سب ټایټل فونټ",
+  "subtitleOutlineColor": "د سب ټایټل کرښې رنګ",
+  "subtitleOutlineWidth": "د سب ټایټل کرښې پلنوالی",
+  "subtitlePreview": "د سب ټایټل مخکتنه",
+  "subtitlePreviewText": "د سب ټایټل د مخکتنې متن",
+  "subtitleSize": "د سب ټایټل اندازه",
+  "subtitleTransparency": "د سب ټایټل شفافیت",
+  "subtitles": "سب ټایټلونه",
+  "summary": "لنډیز",
+  "superAdmin": "لوی اډمین",
+  "supportTtfAndOtfFiles": "د .ttf او .otf فایلونه ملاتړ کوي",
+  "supportAnymex": "AnymeX ملاتړ کړئ",
+  "supportedModes": "ملاتړ شوي حالتونه",
+  "supportedUpiApps": "ملاتړ شوي UPI اپلیکیشنونه",
+  "suppressActivityWhenWatchingOrReading": "د NSFW مینځپانګې کتلو یا لوستلو پر مهال فعالیت پټ کړئ",
+  "swapUpDownActions": "پورته/ښکته عملونه بدل کړئ",
+  "swipeBetweenChapters": "د فصلونو ترمنځ سوائپ کړئ",
+  "swipeIndicatorTheme": "د سوائپ نښې موضوع",
+  "swipeToSeek": "د سوائپ له لارې وروسته یا مخته تلل",
+  "switchBetweenDefaultTitleAndRomaji": "د کتابتون او کارتونو کې د اصلي سرلیک او romaji/بدیل سرلیک ترمنځ بدل کړئ",
+  "switchToOnline": "انلاین ته واړوئ",
+  "syncCompletedButThePluginIs": "همغږي بشپړه شوه، خو پلګ ان لا چمتو نه دی.",
+  "syncDetails": "د همغږۍ توضیحات",
+  "syncFailed": "همغږي ناکامه شوه",
+  "synonyms": "مترادفات",
+  "synopsis": "لنډ کیسه",
+  "tags": "ټګونه",
+  "tags2": "ټګونه",
+  "takeColorFromYourWallpaperA12": "له خپل ډیوال کاغذ څخه رنګ واخلئ (A12+)",
+  "tapToAddARepositoryUrl": "د repository URL اضافه کولو لپاره + ټک وکړئ",
+  "tapAZoneToChangeIts": "د عمل بدلولو لپاره یوه سیمه ټک کړئ",
+  "tapAction": "د ټک عمل",
+  "tapToChooseASource": "د سرچینې د ټاکلو لپاره ټک وکړئ",
+  "tapToLogin": "د ننوتلو لپاره ټک وکړئ",
+  "tapToLogout": "د وتلو لپاره ټک وکړئ",
+  "tapToScroll": "د سکرول لپاره ټک وکړئ",
+  "tapYourProfileIconInThe": "په پورتنۍ اپ بار کې خپل پروفایل آیکون ټک کړئ",
+  "tapZones": "د ټک سیمې",
+  "tellTheCommunityWhyThisDeserves": "ټولنې ته ووایاست چې دا ولې ډیر پام ته ارزي.",
+  "temporaryAppCache": "لنډمهاله د اپ کیش",
+  "termsOfServicePrivacyPolicy": "د خدمتونو شرایط/د محرمیت پالیسي",
+  "test": "ازموینه",
+  "testExtensions": "پراختیاوې وازمویئ",
+  "testResults": "د ازموینې پایلې",
+  "testType": "د ازموینې ډول",
+  "textSize": "د متن اندازه",
+  "theme": "موضوع",
+  "themeLayoutAndColors": "موضوع، بڼه او رنګونه",
+  "themes": "موضوعات",
+  "thisBackupIsEncryptedPleaseEnter": "دا بیک اپ پټ شوی دی. مهرباني وکړئ د دوام لپاره پټنوم ولیکئ.",
+  "thisDirectoryContainsNoSupportedMedia": "دې ډایرکټری کې ملاتړ شوي رسنیز فایلونه نشته",
+  "thisMayTakeAFewSeconds": "دا ممکن یو څو ثانیې وخت ونیسي",
+  "thisMayTakeUpTo30": "دا ممکن تر ۳۰ ثانیو پورې وخت ونیسي",
+  "thisMightTakeAFewSeconds": "دا ممکن یو څو ثانیې وخت ونیسي",
+  "thisReasonWillBeDeletedImmediately": "دا دلیل سمدستي ړنګ به شي.",
+  "thisWillPermanentlyDeleteAllData": "دا به د AnymeX ټول ذخیره شوي معلومات د تل لپاره ړنګ کړي. دا بیرته نشي اړول کیدای.",
+  "tipYouCanCombineTheseE": "لارښوونه: تاسو کولی شئ دا یو ځای کړئ! د بیلگې په توګه **ټکي‌دار او *مایل* یو ځای**",
+  "title": "سرلیک",
+  "titleCopied": "سرلیک کاپي شو",
+  "titleLanguage": "د سرلیک ژبه",
+  "toDownloadForTheFirstTime": "د لومړي ځل لپاره ډاونلوډ کولو لپاره، لومړی د ډاونلوډ پاڼې ته ورشئ او اجازې ورکړئ:",
+  "toggleBetweenGridAndDetailedList": "د ګرډ او تفصیلي لیست ترمنځ بدل کړئ",
+  "toneMapping": "د رنګ نقشه کول",
+  "topAnime": "غوره انیمې",
+  "topComments": "غوره تبصرې",
+  "topGenres": "غوره ژانرونه",
+  "topManga": "غوره مانګا",
+  "topManhua": "غوره Manhua",
+  "topManhwa": "غوره Manhwa",
+  "topStudios": "غوره سټوډیوګانې",
+  "torrentServer": "د تورنټ سرور",
+  "torrentStreamCache": "د تورنټ سټریم کیش",
+  "torrserverStreamingAddOns": "TorrServer او سټریمینګ اضافې",
+  "totalChapters": "ټول فصلونه",
+  "totalCost": "ټوله لګښت:",
+  "totalItems": "ټول توکي",
+  "track": "تعقیب",
+  "trackAiringSchedules": "د خپرېدونکو مهالویشونو تعقیب کړئ",
+  "trackYourProgress": "خپل پرمختګ تعقیب کړم؟",
+  "trackingServices": "د تعقیب خدمتونه",
+  "transitionSubtitle": "د انتقال فرعي سرلیک",
+  "translateTo": "ژبې ته ژباړل",
+  "translationLanguage": "د ژباړې ژبه",
+  "translucentNav": "شفاف نیویګیشن",
+  "trendingAnime": "ترندي انیمې",
+  "trendingAnimes": "ترندي انیمې",
+  "trendingManga": "ترندي مانګا",
+  "tryADifferentKeyword": "بل کلیدي کلمه هڅه کړئ",
+  "tryAdjustingYourFilters": "خپل فلټرونه تنظیم کړئ",
+  "tryAgain": "بیا هڅه وکړئ",
+  "tryDifferentAnimationStylesForPage": "د پاڼو د ننوتلو لپاره مختلف انیمیشن بڼې هڅه کړئ",
+  "ttsAutoAdvance": "د TTS اتوماتیک پرمختګ",
+  "ttsPitch": "د TTS پیچ",
+  "ttsSpeed": "د TTS چټکتیا",
+  "tweakGeneralAppSettings": "عمومي د اپ تنظیمات تنظیم کړئ",
+  "typeLabel": "ډول",
+  "typeAtLeast2CharactersTo": "د لټون لپاره لږ تر لږه ۲ توري ولیکئ",
+  "ui": "UI",
+  "uiComponents": "د UI اجزا",
+  "uiLayoutColorsAndThemes": "د UI بڼه، رنګونه او موضوعات",
+  "uiLayoutColorsAndVisualStyles": "د UI بڼه، رنګونه او بصري بڼې",
+  "uiSettings": "د UI تنظیمات",
+  "unableToPreparePlaybackRightNow": "اوس د پلې کولو چمتو کول ناممکن دي. مهرباني وکړئ بیا هڅه وکړئ.",
+  "unbanUser": "کارن بیا فعال کړئ",
+  "unbind": "تړل لرې کړئ",
+  "unifiedLibrary": "یوځای شوی کتابتون",
+  "uninstall": "لرې کړئ",
+  "universal": "نړیوال",
+  "unlock": "خلاص کړئ",
+  "unlockCustomizations": "ګمرکي تنظیمات خلاص کړئ",
+  "unmuteUser": "کارن ته غږ بیرته ورکړئ",
+  "unreadOnly": "یوازې نه لوستل شوي",
+  "upcomingAnime": "راتلونکې انیمې",
+  "update": "تازه کول",
+  "updateAll": "ټول تازه کړئ",
+  "updateCheckComplete": "د تازه کولو وارسي بشپړه شوه",
+  "updateOnImport": "په واردولو کې تازه کړئ",
+  "updateToLatestVersion": "نوې نسخې ته تازه کړئ",
+  "updateYourActivity": "خپله فعالیت تازه کړئ...",
+  "updatesPending": "تازه کولونه پاتې دي",
+  "upiDonation": "UPI مرسته",
+  "uploadAnImageToGetStarted": "د پیل لپاره یو عکس پورته کړئ",
+  "uploadImage": "عکس پورته کړئ",
+  "urlCopiedToClipboard": "URL کاپي شو",
+  "usage": "کارونه:",
+  "useAiToTranslateSoftSubtitles": "د نرم سب ټایټلونو ژباړې لپاره AI وکاروئ",
+  "useAlternateTitle": "بدیل سرلیک وکاروئ",
+  "useBuffering": "بفرینګ وکاروئ",
+  "useCustomGesturesForReaderNavigation": "د لوستونکي نیویګیشن لپاره ګمرکي اشارې وکاروئ",
+  "useEnhancedEpisodeMetadataAndCovers": "پرمختللي د قسطونو میټاډیټا او پوښونه وکاروئ",
+  "useExternalPlayer": "بهرنی پلیر وکاروئ",
+  "useKeyboardShortcutsDuringPlaybackTo": "د پلې کولو پر مهال د پروفایلونو د بدلولو لپاره کیبورډ شارټ کټونه وکاروئ",
+  "useLegacyHeader": "زاړه سرلیک وکاروئ",
+  "useLibassForSubtitles": "د سب ټایټلونو لپاره Libass وکاروئ",
+  "useLibmpvForPlayback": "د پلې کولو لپاره LibMpv وکاروئ",
+  "useMpvConf": "mpv.conf وکاروئ",
+  "usePosterColor": "د پوستر رنګ وکاروئ",
+  "useVolumeKeysToChangePages": "د پاڼو بدلولو لپاره د غږ کیلي وکاروئ",
+  "useYearRange": "د کلونو سلسله وکاروئ",
+  "user": "کارن",
+  "userIdCopiedToClipboard": "د کارن ID کاپي شو",
+  "userList": "د کارن لیست",
+  "userManagement": "د کارنانو مدیریت",
+  "userCreatedCustomMediaCollections": "د کارن جوړ شوي ګمرکي رسنیز ټولګې",
+  "username": "د کارن نوم",
+  "verifyTlsCertificates": "د TLS سندونه تایید کړئ",
+  "versionCopied": "نسخه کاپي شوه",
+  "vertical": "عمودي",
+  "videoPlayer": "ویډیو پلیر",
+  "videoRenderer": "ویډیو رینډرر",
+  "videoSync": "ویډیو همغږي",
+  "viewAndFilterAllUsers": "ټول کاروونکي وګورئ او فلټر یې کړئ",
+  "viewOnAnilist": "په AniList وګورئ",
+  "viewOpeningAndEndingThemes": "پیلیدونکي او پایته رسیدونکي ټیمونه وګورئ",
+  "viewProfile": "پروفایل وګورئ",
+  "viewSourceCodeOnGithub": "سرچینه کوډ په github کې وګورئ.",
+  "viewTheChronologicalWatchOrderOf": "د دې انیمې زمانی کتلو ترتیب وګورئ",
+  "viewUser": "کاروونکی وګورئ",
+  "viewUserRankingsTopContributorsReputation": "د کاروونکو درجه بندي، غوره مرستندویان او شهرت وګورئ",
+  "viewingAnimeDetails": "د انیمې تفصیلات کتل",
+  "viewingMangaDetails": "د مانګا تفصیلات کتل",
+  "viewingNovelDetails": "د ناول تفصیلات کتل",
+  "visibleTabs": "ښکاره ټبونه",
+  "visitGithubReleasesPageForChangelogs": "د بدلونونو لیست او مستقیم ډاونلوډونو لپاره د GitHub خپرونو پاڼه وګورئ",
+  "visualFromAnymex": "د AnymeX څخه انځور",
+  "voiceActors": "غږیز لوبغاړي",
+  "voicedCharacters": "غږیز کرکټرونه",
+  "volumeButtonScrolling": "د غږ تڼۍ سکرول",
+  "volumeKeysNavigation": "د غږ کیلیو لاره ښوونه",
+  "volumes": "ټوکي",
+  "volumesRead": "لوستل شوي ټوکي",
+  "votes": "رایې",
+  "wWhatAreYouDoingStep": "و-څه کوې ورورې، مخکې له دې چې دا وکړې، ننوځه (●´⌓`●)",
+  "wallpaper": "والپیپر",
+  "warnUser": "کاروونکی خبرداری ورکړئ",
+  "warning": "خبرداری",
+  "wasThisHelpful": "دا ستاسو لپاره ګټور وو؟",
+  "watchAd": "اعلان وګورئ",
+  "watchAnAdToSupport": "د ملاتړ لپاره یو اعلان وګورئ",
+  "watchAnime": "انیمه وګورئ",
+  "watchOrder": "د کتلو ترتیب",
+  "watchTogether": "ګډ کتل",
+  "watchTogetherPolicy": "د ګډ کتلو پالیسي",
+  "watchingAnime": "انیمه کتل",
+  "watchingAnimePhrasing": "د انیمې کتلو بڼه",
+  "welcomeToAnymex": "د AnymeX ته ښه راغلاست",
+  "whatsOnYourMind": "ستاسو په ذهن کې څه دي؟",
+  "whenEnabledAnymexSavesLogsLocally": "کله چې فعال شي، AnymeX لاګونه په محلي ډول ساتي تر هغه وخته چې بند شي.",
+  "whyAreYouRecommendingThisMin": "ولې دا وړاندیز کوئ؟ (لږترلږه ۳۰ توري)",
+  "whyIsThisUnderratedMin30": "ولې دا کم ارزښته ګڼل کیږي؟ (لږترلږه ۳۰ توري)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "د ټکو ترمنځ واټن",
+  "writeAMessage": "یو پیغام ولیکئ...",
+  "writeLogToAFile": "لاګ فایل ته ولیکئ",
+  "writeYourAnilistBio": "خپل AniList بایو ولیکئ...",
+  "wrongTitle": "ناسم سرلیک؟",
+  "year": "کال",
+  "yearUpper": "کال",
+  "you": "تاسو",
+  "youCanUseDiscordStyleMarkdown": "تاسو کولی شئ د Discord ډول markdown د خپلو تبصرو د بڼې لپاره وکاروئ:",
+  "youHaveUnsentTextClosingNow": "تاسو نه لیږل شوی متن لرئ. اوس تړل به ستاسو پیغام له لاسه ورکړي.",
+  "youHaveUnsentTextClosingNowWill": "تاسو نه لیږل شوی متن لرئ. اوس تړل به ستاسو ځواب له لاسه ورکړي.",
+  "youHaveUnsentTextClosingNowWillLose": "تاسو نه لیږل شوی متن لرئ. اوس تړل به ستاسو حالت له لاسه ورکړي.",
+  "youNeedModeratorPermissionsToAccess": "د دې پینل د لیدلو لپاره د ناظم اجازې ته اړتیا لرئ",
+  "youreUpLate": "ډیر ناوخته ویښ یاست",
+  "yourBalance": "ستاسو بیلانس:",
+  "yourPrivacyIsImportant": "ستاسو محرمیت مهم دی:",
+  "yourReasonHasBeenRemoved": "ستاسو دلیل لرې شو.",
+  "yourRecommendation": "ستاسو وړاندیز",
+  "yourRichPresenceActivityWillStop": "ستاسو rich presence فعالیت به نور نوی نشي.",
+  "yourRole": "ستاسو رول",
+  "yourWatchReadHistory": "ستاسو د کتلو او لوستلو تاریخچه",
+  "yourWatchReadStatistics": "ستاسو د کتلو او لوستلو احصایې",
+  "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "ستاسو ټول محلي شیان",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "ایا ډاډه یاست؟",
+  "aspectRatio": "د انځور تناسب",
+  "attackOnTitan": "Attack on Titan",
+  "audio": "غږ",
+  "audioSubtitles": "غږ او سب ټایټلونه",
+  "audioTrack": "د غږ ټریک",
+  "audioTracks": "د غږ ټریکونه",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "اتوماتیک (AudioTrack)",
+  "autoCoreaudio": "اتوماتیک (CoreAudio)",
+  "autoGpu": "اتوماتیک (GPU)",
+  "autoPulseaudio": "اتوماتیک (PulseAudio)",
+  "autoWasapi": "اتوماتیک (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "بلوم",
+  "castToDevice": "وسیلې ته کاست کړئ",
+  "colorFilter": "د رنګ فلټر",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "بهرنی پلیر",
+  "files": "فایلونه",
+  "forward": "مخ ته",
+  "forward30s": "۳۰ ثانیې مخ ته",
+  "fullscreen": "بشپړ سکرین",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "کنټرولونه قفل کړئ",
+  "lockOrientation": "پوزیشن قفل کړئ",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Necessary Murder",
+  "nextEp": "بل قسط.",
+  "nextEpisode": "بل قسط",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "انځور په انځور کې",
+  "playlist": "پلی لیست",
+  "previousEpisode": "پخوانی قسط",
+  "pulseaudio": "PulseAudio",
+  "quality": "کیفیت",
+  "qualitySetting": "د کیفیت تنظیم",
+  "readingMode": "د لوستلو حالت",
+  "reddit": "Reddit",
+  "replay30s": "۳۰ ثانیې بیرته",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito and Makomo",
+  "sdl": "SDL",
+  "server": "سرور",
+  "servers": "سرورونه",
+  "shadersColorProfiles": "شیډرونه او د رنګ پروفایلونه",
+  "shadersColors": "شیډرونه او رنګونه",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "سرعت",
+  "sw": "SW",
+  "syncSubs": "سب ټایټلونه همغږي کړئ",
+  "syncSubtitles": "سب ټایټلونه همغږي کړئ",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "چټکه نسواره کوربه روباه د ستړي سپي له مخې تیریږي",
+  "themeMode": "د تیم حالت",
+  "thisIsFrustrating": "دا ستړی کوونکی دی",
+  "toYouSomeday": "تا ته، یوه ورځ",
+  "torrentFiles": "Torrent فایلونه",
+  "tracks": "ټریکونه",
+  "unlockOrientation": "پوزیشن خلاص کړئ",
+  "userAgent": "User-Agent",
+  "videoQuality": "د ویډیو کیفیت",
+  "videoServers": "د ویډیو سرورونه",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "ګډ کتل (په خونه کې)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "۰ د اتوماتیک تریډ شمیر معنی لري",
+  "n18Content": "۱۸+ مینځپانګه",
+  "aboveAverageSimilarity": "له اوسط څخه پورته ورته والی.",
+  "account": "حساب",
+  "activityStats": "فعالیت او احصایې",
+  "add": "اضافه کړئ",
+  "additionalNotesOptional": "اضافي یادښتونه (اختیاري)",
+  "adjustKeyVolumeScrollingSpeed": "د کیلیو او غږ د سکرول سرعت تنظیم کړئ",
+  "alpha": "الفا",
+  "alwaysChecksCurrentChapterNumberAnd": "تل د اوسني فصل شمېره چک کوي او له راتلونکي/پخواني فصل سره یې پرتله کوي، یوازې هغه وخت ناوبری کوي چې شمېره توپیر ولري. د فصل له مخې ناوبری به یوازې په لیست کې بل توکي ته ولاړ شي، حتی که نقلونه وي.",
+  "animeCompleted": "انیمه بشپړه شوه",
+  "announcementMode": "د اعلان حالت",
+  "appIsStillLoadingTryAgain": "اپلیکیشن لا هم پورته کیږي، څو شیبې وروسته بیا هڅه وکړئ.",
+  "applyAColorTintOverPages": "پاڼو ته د رنګ ټینټ پلي کړئ",
+  "audioDelay": "د غږ ځنډ",
+  "audioSettings": "د غږ تنظیمات",
+  "audioTrack2": "د غږ ټریک",
+  "autoAdvance": "اتوماتیک مخ ته تلل",
+  "autoDeleteCompletedEntries": "بشپړ شوي ثبتونه اتوماتیک حذف کړئ",
+  "autoSyncProgress": "پرمختګ اتوماتیک همغږي کړئ",
+  "automaticallyMoveToNextText": "اتوماتیک بل متن ته لاړ شئ",
+  "automaticallyScrollAdvancePages": "پاڼې اتوماتیک سکرول/مخ ته کړئ",
+  "automaticallySwitchToContinuousModeFor": "د اوږدو مانګا لپاره اتوماتیک دوامداره حالت ته واوړئ",
+  "averageOverlap": "اوسط تداخل.",
+  "background": "شاته منظره",
+  "basedOnYourFavouriteAnime": "ستاسو د خوښې انیمو پر بنسټ.",
+  "basedOnYourFavouriteManga": "ستاسو د خوښې مانګا پر بنسټ.",
+  "basedOnYourTop10Manga": "ستاسو د غوره ۱۰ مانګا ټګونو پر بنسټ.",
+  "basedOnYourTop5Manga": "ستاسو د غوره ۵ مانګا ژانرونو پر بنسټ.",
+  "blue": "شین",
+  "botL": "ښکته-چپ",
+  "botR": "ښکته-ښي",
+  "bridgeUpdateAvailable": "د پل تازه کول شتون لري",
+  "brightness": "روښانتیا",
+  "bulletList": "د ټکو لیست",
+  "calendarUpper": "کیلنډر",
+  "canadianMovies": "کاناډايي فلمونه",
+  "canadianShows": "کاناډايي خپرونې",
+  "cannotCompareTheSameProfileWith": "یو پروفایل له ځانه سره پرتله کېدای نشي.",
+  "castToDevice2": "وسیلې ته کاست کړئ",
+  "chatModeration": "د چټ کنټرول",
+  "chooseASubtitleFileFromYour": "خپل وسیلې څخه سب ټایټل فایل وټاکئ (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "وټاکئ چې ټاکل شوی JSON فایل څنګه ستاسو AnymeX کلاوډ gist ته پلي شي.",
+  "chromaUpscaler": "د Chroma اپسکیلر",
+  "cloudTools": "د کلاوډ وسایل",
+  "code": "کوډ",
+  "commonFavouriteAnime": "ګډ خوښ انیمې",
+  "commonFavouriteCharacters": "ګډ خوښ کرکټرونه",
+  "commonFavouriteManga": "ګډ خوښ مانګا",
+  "commonPerfectAnime": "ګډ کامل انیمې",
+  "commonPerfectManga": "ګډ کامل مانګا",
+  "communityAdministratorOverseeingModerationAndPolicies": "د ټولنې مدیر چې کنټرول او پالیسۍ څاري.",
+  "connectGithubFirstBeforeDeletingSync": "د همغږي ډیټا له حذف کولو مخکې GitHub وصل کړئ.",
+  "connectGithubFirstToExportSync": "د همغږي ډیټا صادرولو لپاره لومړی GitHub وصل کړئ.",
+  "connectGithubFirstToImportSync": "د همغږي ډیټا وارد کولو لپاره لومړی GitHub وصل کړئ.",
+  "connectGithubFirstToSyncProgress": "د پرمختګ همغږي کولو لپاره لومړی GitHub وصل کړئ.",
+  "connectGithubFirstToViewSync": "د همغږي gist کتلو لپاره لومړی GitHub وصل کړئ.",
+  "continuousModeOnly2": "یوازې دوامداره حالت",
+  "controls": "کنټرولونه",
+  "cookiesClearedSuccessfully": "کوکیز په بریالیتوب سره پاک شول",
+  "copied": "کاپي شو",
+  "copyUrl": "URL کاپي کړئ",
+  "correctDownscaling": "سم ټیټول",
+  "couldNotLoadStreamingServicesFrom": "د AniList API څخه د سټریمینګ خدمتونه پورته نشول.\nشاید خدمت لنډمهاله شتون ونلري یا محدود شوی وي.",
+  "couldNotOpenGistInBrowser": "gist په براوزر کې خلاص نشو.",
+  "created": "جوړ شو",
+  "creatorAndDeveloperOfAnymex": "د AnymeX جوړونکی او پراختیا کونکی.",
+  "customBrightness": "ځانګړې روښانتیا",
+  "customizeGestures": "اشارې دودیز کړئ",
+  "deband": "Deband",
+  "debandIterations": "د Deband تکرارونه",
+  "debandThreshold": "د Deband حد",
+  "decreaseAutoScrollSpeed": "د اتوماتیک سکرول سرعت کم کړئ",
+  "decreaseFontSize": "د لیکنې اندازه کمه کړئ",
+  "deleteAnymexSyncGist": "د AnymeX همغږي gist حذف شي؟",
+  "deleteCloudGist": "کلاوډ gist حذف کړئ",
+  "deleteCommentMod": "تبصره حذف کړئ (ناظم)",
+  "details": "تفصیلات",
+  "dictionary": "فرهنګ",
+  "differenceFromOwnMeanScore": "د ځان له اوسط نمرې څخه توپیر",
+  "disableChat": "چټ بند کړئ",
+  "disconnectThisGithubAccountFromAnymex": "دا GitHub حساب د AnymeX څخه ناوصل کړئ",
+  "displayPagesInBlackWhite": "پاڼې په تور او سپین ښکاره کړئ",
+  "downloading": "ډاونلوډ کیږي…",
+  "downscaler": "ټیټونکی",
+  "dynamicWidget": "متحرک ویجټ",
+  "eInkDisplayRefresh": "د E-ink ښودنې تازه کول",
+  "eGAbc123": "مثال: ABC123",
+  "eGMyAnimeLogo": "مثال: زما انمي لوګو",
+  "editYourComment": "خپله تبصره سمه کړئ...",
+  "embeddedContent": "ځای پر ځای شوې منځپانګه",
+  "enterTheRoomPassword": "د خونې پټنوم ولیکئ",
+  "enterTokenHere": "ټوکن دلته ولیکئ",
+  "error": "تېروتنه",
+  "exitSyncNotifications": "د همغږۍ خبرتیاوې وتل",
+  "exportGistJson": "Gist JSON صادر کړئ",
+  "exportedGistJson": "gist JSON صادر شو.",
+  "failedToExportGistJson": "gist JSON صادرول ناکام شول.",
+  "failedToFetchDataFromSources": "له سرچینو معلومات راوړل ناکام شول.",
+  "failedToGetCloudGistLink": "د کلاوډ gist لینک ترلاسه کول ناکام شول.",
+  "failedToImportGistJson": "gist JSON وارد کول ناکام شول.",
+  "failedToLaunchExternalPlayer": "بهرنی پلیر پیل کول ناکام شول",
+  "failedToOpenGistInBrowser": "gist په براوزر کې خلاصول ناکام شول.",
+  "flashDuration": "د فلش موده",
+  "flashEveryNPages": "هر N مخ کې فلش",
+  "flashFrequency": "د فلش تکرار",
+  "flashScreenOnPageTurnTo": "د مخ اړولو پر وخت سکرین فلش کړئ ترڅو ghosting له منځه لاړ شي",
+  "followHost": "کوربه تعقیب کړئ",
+  "fontSettings": "د فونټ تنظیمات",
+  "freedomSeek": "Freedom Seek",
+  "friendsNeedAPasswordToJoin": "ملګرو ته د ګډون لپاره پټنوم اړین دی",
+  "githubClientIdNotConfigured": "د GitHub client ID تنظیم شوی نه دی.",
+  "githubLoginFailedMissingAuthorizationCode": "د GitHub ننوتل ناکام شول: د اجازې کوډ نشته.",
+  "githubLoginWasCancelledOrFailed": "د GitHub ننوتل لغوه شو یا ناکام شو.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • خپله مینه ښکاره کړئ",
+  "goodChemistryAndSharedTaste": "ښه کیمیا او ورته خوند.",
+  "grayscale": "تور او سپین",
+  "green": "شنه",
+  "hdrToneMappingTargetPeak": "د HDR ټون میپینګ هدف لوړ ټکی",
+  "higherValueIncreasesDebandingStrength": "لوړ ارزښت د debanding ځواک زیاتوي",
+  "horizontalPadding": "افقي فاصله",
+  "hoursWatched": "کتل شوې ساعتونه",
+  "howManyFriendsCanJoin": "څو ملګري کولی شي ګډون وکړي",
+  "ifYouHaveAnIssueOr": "که ستونزه یا وړاندیز لرئ، مهرباني وکړئ په GitHub کې issue جوړ کړئ.",
+  "imageWidth": "د انځور پلنوالی",
+  "importGistJson": "Gist JSON وارد کړئ",
+  "importLocalSubtitle": "ځایی سب ټایټل وارد کړئ",
+  "improveQualityWhenScalingDownVideo": "ویډیو کوچنۍ کولو پر وخت کیفیت ښه کړئ",
+  "increaseAutoScrollSpeed": "د اتوماتیک سکرول سرعت زیات کړئ",
+  "increaseFontSize": "د فونټ اندازه زیاته کړئ",
+  "invalidCompatibilityLinkMissingUsernames": "ناسم د مطابقت لینک: د کارن نومونه نشته.",
+  "invalidGistUrl": "ناسم gist URL.",
+  "invalidRoomCodeInLink": "په لینک کې ناسم د خونې کوډ",
+  "invalidWatchTogetherLink": "ناسم د یوځای کتلو لینک",
+  "invertAllPageColors": "د ټولو مخونو رنګونه معکوس کړئ",
+  "invertColors": "رنګونه معکوس کړئ",
+  "inviteLink": "د بلنې لینک",
+  "inviteLinkCopied": "د بلنې لینک کاپي شو!",
+  "jDramas": "جاپاني ډراماګانې",
+  "joinNotifications": "د ګډون خبرتیاوې",
+  "kDramas": "کوریایي ډراماګانې",
+  "keepBothUploadedAndCloudEntries": "پورته شوي او کلاوډ ریکارډونه دواړه وساتئ. که ورته ریکارډ دواړو ځایونو کې وي، نوی یې ساتل کیږي. (وړاندیز شوی)",
+  "keyVolumeScrollingSpeed": "د تڼیو او غږ کچې د سکرولولو سرعت",
+  "koreanMovies": "کوریایي فلمونه",
+  "leaveNotifications": "د وتلو خبرتیاوې",
+  "liveComments": "ژوندي تبصرې",
+  "lockScreen": "سکرین قفل کړئ",
+  "loginToAnilist": "په AniList کې ننوځئ",
+  "loginToMyanimelist": "په MyAnimeList کې ننوځئ",
+  "loginToSimkl": "په Simkl کې ننوځئ",
+  "longPressForPageActions": "د مخ عملیاتو لپاره اوږده کېکاږئ",
+  "longPressAPageToSave": "د ساتلو، شریکولو یا کاپي کولو لپاره یو مخ اوږد کېکاږئ",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "مانګا بشپړه شوه",
+  "mangaPage": "د مانګا مخ",
+  "maxMembers": "اعظمي غړي",
+  "memberLeft": "غړی ووت",
+  "mergeUploadedEntriesOrReplaceCloud": "پورته شوي ریکارډونه یوځای کړئ یا کلاوډ معلومات بدل کړئ",
+  "mergeWithCloud": "له کلاوډ سره یوځای کړئ",
+  "milliseconds": "ملی ثانیې",
+  "missingTypeQueryParameterUseType": "د \"type\" پوښتنې پیرامیټر نشته. type=player وکاروئ.",
+  "missingUrlQueryParameterForThe": "د تیم JSON لپاره د \"url\" پوښتنې پیرامیټر نشته.",
+  "moreIterationsStrongerDebanding": "ډیرې تکرارونه = پیاوړی debanding",
+  "movies": "فلمونه",
+  "moviesList": "د فلمونو لیست",
+  "navigateByNumber": "د شمېرې له مخې لاړ شئ",
+  "navigation": "نیویګیشن",
+  "newMember": "نوی غړی",
+  "nextChapter": "راتلونکی فصل",
+  "nextParagraph": "راتلونکی پراګراف",
+  "noAudio": "غږ نشته",
+  "noOneCanSendMessagesIn": "په چټ کې هېڅوک پیغامونه نشي لیږلی",
+  "noStreamUrlAvailable": "د سټریم URL شتون نلري",
+  "noSubtitle": "سب ټایټل نشته",
+  "noVideo": "ویډیو نشته",
+  "notVeryCompatibleAtAll": "اصلاً ډیر مطابق نه دي.",
+  "numberedList": "شمېرل شوې لیست",
+  "onScreenOverlays": "په سکرین کې پراته پوښونه",
+  "onlyHostAndCoHostsCan": "یوازې کوربه او مرستیال کوربان کولی شي پیغامونه ولیږي",
+  "opacity": "شفافیت",
+  "openInBrowser2": "په براوزر کې خلاصول",
+  "openYourAnymexSyncGistOn": "خپل AnymeX همغږۍ gist په GitHub کې خلاص کړئ",
+  "openingInExternalPlayer": "په بهرني پلیر کې خلاصېږي...",
+  "orTypeCustomTag": "یا دودیز ټګ ولیکئ...",
+  "otherUpper": "نور",
+  "overlayPosition": "د پوښ ځای",
+  "overrideSystemScreenBrightness": "د سیستم د سکرین رڼا کچه ځای پر ځای کړئ",
+  "ownerAndCreatorOfTheCommentum": "د Commentum ټولنیز پلیټفارم مالک او جوړونکی.",
+  "padding": "فاصله",
+  "pagesAheadOfTimeForFaster": "د ګړندي بارولو لپاره مخکې مخونه",
+  "partySettings": "د ګوند تنظیمات",
+  "passwordIfRequired": "پټنوم (که اړین وي)",
+  "pasteDirectGifOrImageUrl": "مستقیم GIF یا انځور URL پیست کړئ...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • کارتونه او PayPal بیلانس",
+  "permanentlyRemoveAnymexSyncData": "د AnymeX همغږۍ معلومات په دایمي ډول لرې کړئ",
+  "pictureShaders": "انځور او شیډرونه",
+  "pitch": "زیر و بم",
+  "playbackIsLockedToTheHost": "پخلی د کوربه لخوا قفل شوی دی",
+  "playbackSpeed2": "د پخلي سرعت",
+  "playerSettings2": "د پلیر تنظیمات",
+  "pleaseLogInFirstThenTry": "مهرباني وکړئ لومړی ننوځئ، بیا لینک بیا وازمویئ.",
+  "pointsBreakdown": "د امتیازونو تفصیل",
+  "practicallyMadeForEachOther": "په عمل کې یو د بل لپاره جوړ شوي.",
+  "preloadPage": "مخ مخکې بار کړئ",
+  "preloadPages": "مخونه مخکې بار کړئ",
+  "preloadPagesAheadOfTimeFor": "د ګړندي بارولو لپاره مخونه مخکې بار کړئ (ډیر شبکه او RAM مصرفوي)",
+  "preventScreenFromSleepingWhileReading": "د لوستلو پر وخت سکرین له خوب څخه مخنیوی وکړئ",
+  "previousChapter": "تیر فصل",
+  "previousParagraph": "تیر پراګراف",
+  "privateRoom": "خصوصي خونه",
+  "profileUpdated": "پروفایل تازه شو",
+  "proportionOfTotalTimeWatched": "د ټول کتل شوي وخت برخه",
+  "provideAReasonForThisAction": "د دې عمل دلیل ولیکئ...",
+  "qualitySettings": "د کیفیت تنظیمات",
+  "quote": "نقل",
+  "range75DarkestTo100": "حد: -75 (ترټولو تیاره) تر 100",
+  "rateLimited": "د غوښتنو محدودیت",
+  "reactionOverlay": "د غبرګون پوښ",
+  "readStats": "د لوستلو احصایې",
+  "readTextAloud": "متن په غږ ولولئ",
+  "red": "سور",
+  "reduceColorBandingInGradients": "په ګرېډینټونو کې د رنګ بانډینګ کمول",
+  "reduceHaloingWhileUpscaling": "د لوړولو پر وخت هیلو اغېز کم کړئ",
+  "refresh": "تازه کول",
+  "removeCurrentCloudEntriesAndReplace": "اوسني کلاوډ ریکارډونه لرې کړئ او د پورته شوې دوتنې سره یې بدل کړئ.",
+  "removeWhiteBlackBordersToMaximize": "د منځپانګې د اعظمي کولو لپاره سپین/تور حاشیې لرې کړئ",
+  "removesFinishedMediaFromCloudGist": "بشپړ شوې رسنۍ له کلاوډ gist څخه لرې کوي",
+  "replaceCloudGist": "کلاوډ gist بدل کړئ",
+  "report": "راپور",
+  "resetReLogin": "بیا تنظیم کړئ او بیا ننوځئ",
+  "resetTo1": "1× ته بیرته راوړل",
+  "restore": "بیا راګرځول",
+  "roomAccess": "د خونې لاسرسی",
+  "roomCode": "د خونې کوډ",
+  "roomCodeCopiedToClipboard": "د خونې کوډ کلپ بورډ ته کاپي شو",
+  "roomDuration": "د خونې موده",
+  "roomNotFoundOrExpired": "خونه ونه موندل شوه یا موده یې پای ته رسېدلې ده",
+  "roomPassword": "د خونې پټنوم",
+  "roomPassword2": "د خونې پټنوم",
+  "roomSettings": "د خونې تنظیمات",
+  "saveYourCurrentCloudProgressTo": "خپل اوسنی کلاوډ پرمختګ په یوه دوتنه کې وساتئ",
+  "scrollMultiplier": "د سکرول ضرب",
+  "scrollSpeed": "د سکرول سرعت",
+  "searchAnimeEpisode": "انمي / قسط لټون کړئ...",
+  "searchAnimeGifsReactions": "د انمي GIFs او غبرګونونو لټون...",
+  "searchChapters": "فصلونه لټون کړئ...",
+  "searchFiles": "دوتنې لټون کړئ...",
+  "secondsPerPageScreen": "د مخ / سکرین لپاره ثانیې",
+  "seekAndControlPlaybackFreely": "پخلی ته په آزادۍ سره وروګرځئ او کنټرول یې کړئ",
+  "selectedFileMustContainAJson": "ټاکل شوې دوتنه باید JSON شی ولري.",
+  "selectedJsonHasNoValidSync": "ټاکل شوي JSON کې معتبر همغږي ریکارډونه نشته.",
+  "seriesList": "د لړیو لیست",
+  "setAPasswordForYourRoom": "د خپلې خونې لپاره پټنوم وټاکئ",
+  "share": "شریک کړئ",
+  "showANotificationWhenSomeoneJoins": "کله چې څوک ګوند ته ننوځي، خبرتیا ښکاره کړئ",
+  "showANotificationWhenSomeoneLeaves": "کله چې څوک ګوند پرېږدي، خبرتیا ښکاره کړئ",
+  "showAllStreams": "ټول سټریمونه ښکاره کړئ",
+  "showChatMessagesOnThePlayer": "چټ پیغامونه لکه څنګه چې راځي، په پلیر کې ښکاره کړئ",
+  "showEmojiReactionsFloatingOnThe": "د ایموجي غبرګونونه په پلیر کې ښکاره کړئ",
+  "showSyncResultWhenPlayerOr": "کله چې پلیر یا لوستونکی وتړل شي، د همغږۍ پایله ښکاره کړئ",
+  "showTransitionPageEvenWhenChapters": "د لیږدېدو مخ هم ښکاره کړئ حتی کله چې فصلونه سره نږدې وي",
+  "shows": "ټلویزیوني لړۍ",
+  "sigmoidUpscaling": "د سیګمویډ لوړول",
+  "smootherGradientsWithSlightTemporalNoise": "د یو څه وختي شور سره نرم ګرېډینټونه",
+  "spacing": "فاصله",
+  "speechSpeed": "د خبرو سرعت",
+  "spoilers": "سپویلرونه",
+  "stretchImagesToFitScreenWidthOn": "پراخو سکرینونو کې انځورونه د سکرین پلنوالي سره برابر کړئ",
+  "subtitleSettings": "د سب ټایټل تنظیمات",
+  "superAdministratorWithSystemWideManagement": "سوپر اډمین چې د ټول سیستم د مدیریت واک لري.",
+  "swapUpDownActions2": "پورته/ښکته عملیات بدل کړئ",
+  "syncMode": "د همغږۍ حالت",
+  "syncPreferences": "د همغږۍ غوره توبونه",
+  "tapScrollAmount": "د ټک سکرول اندازه",
+  "tapToOpen": "د خلاصولو لپاره ټک وکړئ",
+  "tapToOpenInBrowser": "په براوزر کې د خلاصولو لپاره ټک وکړئ",
+  "tapToOpenInSpotify": "په Spotify کې د خلاصولو لپاره ټک وکړئ",
+  "tapToViewInBrowser": "په براوزر کې د کتلو لپاره ټک وکړئ",
+  "tapTopBottomToScroll": "د سکرولولو لپاره پورته/ښکته ټک وکړئ",
+  "targetPeak": "هدف لوړ ټکی",
+  "temporalDither": "وختي ډیتر",
+  "textToSpeech": "متن څخه خبرو ته",
+  "theCreatorOfThisCommentDiscussion": "د دې تبصرې بحث تار جوړونکی.",
+  "theresASmallSparkOfAgreement": "یو کوچنی د موافقې ښکلا شتون لري.",
+  "thisPermanentlyDeletesYourAnymexCloud": "دا ستاسو د AnymeX کلاوډ پرمختګ gist په دایمي ډول د GitHub څخه ړنګوي او بېرته نشي اخیستل کېدای.",
+  "toPrevNextChapter": "تیر/راتلونکي فصل ته",
+  "topL": "پورته-چپ",
+  "topR": "پورته-ښي",
+  "totals": "مجموعې",
+  "trendingMovies": "ترینډ فلمونه",
+  "trendingSeries": "ترینډ لړۍ",
+  "tts": "TTS",
+  "ukMovies": "انګلیسي فلمونه",
+  "ukShows": "انګلیسي لړۍ",
+  "unableToReadSelectedJsonFile": "ټاکل شوې JSON دوتنه لوستل ممکن نه دي.",
+  "unsupportedExtension": "نه ملاتړ شوې توسیع",
+  "usMovies": "امریکایي فلمونه",
+  "usShows": "امریکایي لړۍ",
+  "useVolumeButtonsToScroll": "د غږ تڼۍ د سکرولولو لپاره وکاروئ",
+  "userHistory": "د کارن تاریخچه",
+  "userInfo": "د کارن معلومات",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "تصدیق شوی ناظم چې تبصرې درنښت لرونکي او خوندي ساتي.",
+  "verticalPadding": "عمودي فاصله",
+  "viewCloudGist": "کلاوډ gist وګورئ",
+  "viewUserHistory": "د کارن تاریخچه وګورئ",
+  "viewUserInfo": "د کارن معلومات وګورئ",
+  "voice": "غږ",
+  "watchParty": "د ګډ کتلو ګوند",
+  "watchStats": "د کتلو احصایې",
+  "watchingNow": "اوس کتل کېږي",
+  "webmVideo": "WebM ویډیو",
+  "whereLiveCommentsAppearOnScreen": "ژوندي تبصرې په سکرین کې چېرته ښکاره شي",
+  "whileWatchingEpisodesOrReadingChapters": "د قسطونو کتلو یا فصلونو لوستلو پر وخت",
+  "writeAReply": "ځواب ولیکئ...",
+  "youAreBasicallyTheSamePerson": "تاسو په اصل کې ورته کس یاست.",
+  "youBothHaveVerySimilarTaste": "تاسو دواړو خوند ډیر ورته دی.",
+  "all2": "← ټول",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "ډیزاین",
+  "upscale": "لوړول",
+  "appearanceStyle": "بڼه او سټایل",
+  "colorsLightDarkOledLogoAnimations": "رنګونه، رڼا/تیاره، OLED او د لوګو متحرکات",
+  "fontsTypography": "فونټونه او ټایپوګرافي",
+  "chooseTypographyCustomFontsGlobalText": "ټایپوګرافي، دودیز فونټونه او ټول متن پیمانه وټاکئ",
+  "globalFontScaling": "د ټول فونټ پیمانه",
+  "scaling": "پیمانه کول",
+  "typefaces": "د توري ډولونه",
+  "interfaceLayout": "انټرفیس او ترتیب",
+  "navBarCardStylesDetailsBlur": "د نیویګیشن بار، د کارت سټایلونه، د جزیاتو تیاروالی او ترتیب",
+  "navigationHomeLayout": "د نیویګیشن او کور ترتیب",
+  "playbackEngineSubtitlesGesturesDecoders": "د پخلي انجن، سب ټایټلونه، اشارې او ډیکوډرونه",
+  "mangaNovelReader": "د مانګا او ناول لوستونکی",
+  "readingModesDirectionColorsTapZones": "د لوستلو حالتونه، لوری، رنګونه او د ټک زونونه",
+  "dataNetworkSystem": "معلومات، شبکه او سیستم",
+  "downloadDirectoryConcurrencyHlsSegments": "د ډاونلوډ ډایرکټوري، همزمانه کول او HLS برخې",
+  "accountsSocial": "حسابونه او ټولنه",
+  "trackingAccounts": "د تعقیب حسابونه",
+  "manageYourAnilistMyanimelistSimklAccounts": "د خپلو AniList، MyAnimeList او Simkl حسابونو اداره",
+  "trackingBehavior": "د تعقیب چلند",
+  "communityComments": "ټولنه او تبصرې",
+  "commentumProfileBadgesMarkdownPrivacy": "Commentum پروفایل، نښې، Markdown او محرمیت",
+  "contentPreferences": "منځپانګه او غوراوې",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFW فلتر، یوځای کتابتون، سپارښتني او لیستونه",
+  "exportAndRestoreYourLibraryAnd": "د خپل کتابتون او تنظیماتو صادرول او بیرته راګرځول",
+  "manageAnimeMangaNovelSourcesAnd": "د انیمي، مانګا او ناول سرچینو او ریپوګانو اداره",
+  "installAndUpdateCommunityAddOns": "د ټولنې اضافي برنامو نصب او تازه کول",
+  "storageCache": "ذخیره او کیش",
+  "manageCachedImagesThresholdsResetData": "کیش شوي انځورونه، حدونه او د معلوماتو بیا تنظیمول اداره کړئ",
+  "networkProxy": "شبکه او پراکسي",
+  "logsDiagnostics": "لاګونه او تشخیص",
+  "inspectExportAndShareApplicationLogs": "د اپلیکیشن لاګونه وګورئ، صادر کړئ او شریک کړئ",
+  "aboutSupport": "په اړه او ملاتړ",
+  "supportDevelopmentViaKoFiPaypal": "د Ko-fi، PayPal او UPI له لارې د پرمختیا ملاتړ وکړئ",
+  "versionUpdatesSocialLinksLegalPolicies": "نسخه، تازه کاري، ټولنیز لینکونه او قانوني پالیسۍ",
+  "cacheAndCookiesClearedFor": "د {name} کیش او کوکیز پاک شول",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "د {name} کوکیز پاک شول",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "د {name} کیش پاک شو",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "نه ملاتړ کیدونکی ډول {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "د {name} تنظیمات",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "محلي دوتنه په دې ځای کې نه ده موندل شوې: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "همغږي ناکامه شوه: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "محلي APK په دې ځای کې نه دی موندل شوی: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "تېروتنه: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "د پلګ ان نصب ناکام شو: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "د \"{query}\" لپاره پایله ونه موندل شوه",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "فصل {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "قسمت {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "د {title} خبرونه",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "ټولنه",
+  "logInWithAnilist": "د AniList سره ننوتل",
+  "episode2": "قسمت {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "ډاونلوډ بشپړ شو",
+  "downloadFailedHasNoUrl": "ډاونلوډ ناکام شو: {chapterDisplay} URL نلري",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "ډاونلوډ ناکام شو: د {chapterDisplay} لپاره پاڼې ونه موندل شوې",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "ډاونلوډ ناکام شو: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "قسمت {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} فصل",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} قسمت",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "سرچینه \"{extensionName}\" ونه موندل شوه.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "ټورینټ چمتو کول ناکام شول: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} به ستاسو له ډاونلوډونو دایمي لرې شي.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "لټون ناکام شو: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "په \"{title}\" کې {label} ولټوئ…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} د تاریخ توکي ړنگ شول",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "\"{itemName}\" له خپل {_historyLabel} څخه لرې کړو؟",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" لرې شو",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "پورته ترتیب",
+  "descending": "ښکته ترتیب",
+  "defaultTabOrder": "د ټبونو معیاري ترتیب",
+  "reverseTabs": "ټبونه معکوس کړئ",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "ډول: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "توکي: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "لومړی {sourceName} نصب کړئ، بیا کلیک وکړئ",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "پاڼه {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "لټون {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "بشپړ ({length} ټاکل شوي)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "لوستل فعال",
+  "streamingOn": "سټریم فعال",
+  "freedom": "آزادي",
+  "shaderAdded": "شیډر اضافه شو: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "شیډر وارد کولو کې تېروتنه: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "سکین کوونکي",
+  "chapterRange": "د فصل حد",
+  "downloadFailed2": "ډاونلوډ ناکام شو: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "فصل {formattedNumber} ډاونلوډ شوی دی",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "ډاونلوډیږي ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} فصلونه",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "پاڼه {pageNumber}{progressText} بار کیږي...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "پاڼه په Pictures/AnymeX کې وساتل شوه",
+  "pageSavedToAnymex": "پاڼه په {path}/AnymeX کې وساتل شوه",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "پاڼه ژغورل ناکام شول: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "پاڼه شریکول ناکام شول: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "د پاڼې URL کلیپ بورډ ته کاپي شو",
+  "failedToCopy": "کاپي کول ناکام شول: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "پاڼې بار کیږي...",
+  "goBack": "شاته ستنېدل",
+  "loadingPage2": "پاڼه {value}{progressText} بار کیږي...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "د فلش رنګ",
+  "black": "تور",
+  "white": "سپین",
+  "readerBackground": "د لوستونکي شا منظره",
+  "gray": "خاکستري",
+  "automatic": "اتوماتیک",
+  "noneNearestNeighbor": "هیڅ (نږدې ګاونډی)",
+  "lowBilinear": "ټیټ (Bilinear)",
+  "mediumDefault": "منځنی (معیاري)",
+  "highBicubic": "لوړ (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos مخکښ پیمانه (غوره کیفیت، ورو)",
+  "fullscreenPreview": "د بشپړ سکرین مخکتنه",
+  "enhancementPreset": "د ښه کولو مخکینۍ ترتیب",
+  "fineTuning": "نازک تنظیم",
+  "enhancementStrength": "د ښه کولو ځواک",
+  "strength": "{value}% ځواک",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "د آرټیفکټ کمول",
+  "cleanJpegCompressionRingingAroundLinework": "د linework شاوخوا د JPEG فشار غږ پاکول",
+  "cache": "کیش",
+  "cacheSize": "د کیش اندازه",
+  "mbStoredOnDisk": "{mb} MB په ډیسک کې ذخیره شوي",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "سوپر ریزولوشن",
+  "loadingChapter": "فصل بار کیږي...",
+  "noContentAvailable": "منځپانګه شتون نلري",
+  "recommendations": "{reasonCount} سپارښتني",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "سپارښتني",
+  "all3": "ټول ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "پیغام لیږل ناکام شو: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "ټول ننوتې: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "خونې ته ننوتل شو {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "فعالې خونې",
+  "joinWithCode": "د کوډ سره ګډون",
+  "leftRoom": "خونه پریښودل شوه",
+  "leaveReset": "پریښودل / بیا تنظیمول",
+  "inRoom": "په خونه کې: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - قسمت {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} وشړل شو",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} غړي",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "خونه پریښودل شوه",
+  "leave": "پریښودل",
+  "noActiveRooms": "هیڅ فعاله خونه نشته",
+  "roomsWillAppearHereWhenSomeone": "کله چې څوک خونه جوړه کړي، خونې به دلته ښکاره شي",
+  "created2": "جوړ شوی · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "ننوتل →",
+  "full": "ډکه",
+  "savedToPicturesAnymex": "په Pictures/AnymeX/{fileName} کې وساتل شو",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "په Downloads/AnymeX/{fileName} کې وساتل شو",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "په {path}/AnymeX کې وساتل شو",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (د پروفایل پرانستلو لپاره ټک وکړئ)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "فصل ",
+  "episode5": "قسمت ",
+  "noData": "{title} (معلومات نشته)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "د {title} غزیدونه ولټوئ...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "غزیدونه وګورئ",
+  "goToHome": "کورپاڼې ته لاړ شئ",
+  "fetching": "د {title} راوړل کیږي...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "پالیسي راوړلو کې تېروتنه: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" په بریالیتوب سره اضافه شو!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" په بریالیتوب سره تازه شو!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "ایا ډاډه یاست چې \"{name}\" ړنگ کړئ؟",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" ړنگ شو",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "ستاسو تاریخ خالي دی",
+  "episode6": "قسمت {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "لږ ښکاره کړئ",
+  "readMore": "نور ولولئ",
+  "unpin": "پن لرې کړئ",
+  "pinActivity": "فعالیت پن کړئ",
+  "n1Recommendation": "۱ سپارښته",
+  "recommendations2": "{count} سپارښتني",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "لیږل کیږي…",
+  "addRecommendation": "سپارښته اضافه کړئ",
+  "submitRecommendation": "سپارښته وسپارئ",
+  "currentProvider": "اوسنی چمتو کوونکی",
+  "profileStatsUserActivities": "د پروفایل احصایې او د کاروونکي فعالیتونه",
+  "manageSourcesPlugins": "سرچینې او پلګ انونه اداره کړئ",
+  "savedOfflineEpisodesChapters": "آفلاین وساتل شوي قسمتونه او فصلونه",
+  "watchVideoFilesFromDeviceStorage": "د وسیلې ذخیرې څخه ویډیو دوتنې وګورئ",
+  "syncWatchPartyWithFriends": "د ملګرو سره د لیدلو ګوند همغږي کړئ",
+  "pauseWatchHistoryAndSync": "د لیدلو تاریخ او همغږي مکث کړئ",
+  "appearancePlayerNetwork": "بڼه، پلیر او شبکه",
+  "joining": "ننوتل کیږي...",
+  "joinRoom": "خونې ته ننوځئ",
+  "shareTheCodeOrInviteLink": "کوډ یا بلنې لینک له ملګرو سره شریک کړئ.",
+  "roomCreated": "خونه جوړه شوه!",
+  "shareThisCodeWithFriends": "دا کوډ له ملګرو سره شریک کړئ:",
+  "copyCode": "کوډ کاپي کړئ",
+  "copyLink": "لینک کاپي کړئ",
+  "leaveWatchTogether": "د ګډ لیدلو څخه ووځم؟",
+  "removeMember": "غړی لرې کړئ",
+  "transferHost": "کوربه لیږدول",
+  "transferHost2": "کوربه لیږدول",
+  "transfer": "لیږدول",
+  "removeMember2": "غړی لرې کړئ",
+  "removeFromThisWatchParty": "{username} د دې لیدلو ګوند څخه لرې کړو؟",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} غړي",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} کاپي شو",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "د دې خونې لپاره سرورونه شتون نلري",
+  "selectStreamingServerQualityToWatch": "د لیدلو لپاره د سټریمینګ سرور کیفیت وټاکئ",
+  "thisServerHasNoPlayableUrl": "دې سرور کې لوبیدونکی URL نشته",
+  "episode7": "قسمت {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "د فصل {start} څخه تر {end} پورې تطبیق شوی",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} د {releaseDate} په اټکل شوی",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "ق {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "قسمت {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "د MAL لیست په دې ځای کې صادر شو:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "د AniList XML په دې ځای کې صادر شو:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "صادرول ناکام شول: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "ستاسو د {value} لیست صادرېږي...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "{value} XML صادر کړئ",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "لوبیدونکی رسنۍ شتون نلري",
+  "noThemesFound": "هیڅ تیم ونه موندل شو",
+  "playAll": "ټول لوبول",
+  "theDawnOfHumanity": "د انسانیت سحر",
+  "orientationUnlocked": "سمت خلاص شو",
+  "orientationLocked": "سمت تړل شو",
+  "skippedOpening": "پرانیستونکی پریښودل شو",
+  "skippedEnding": "پای پریښودل شو",
+  "skippedRecap": "لنډیز پریښودل شو",
+  "ifYouSeeBlackScreenUse": "که تور سکرین وینئ، د لیدلو لپاره بهرنی پلیر وکاروئ",
+  "failedToStartTorrentStream": "د ټورینټ سټریم پیلول ناکام شول: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "سټریم خلاص نشو. مهرباني وکړئ بل سرور وازمویئ",
+  "noServersFoundForThisEpisode": "د دې قسمت لپاره سرورونه ونه موندل شول.",
+  "failedToLoadEpisodeCheckYour": "قسمت بار نشو. خپل اتصال وګورئ.",
+  "playing": "لوبیږي {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "د ټورینټ دوتنه بدلول ناکام شول: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "سب ټایټل بار شو: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "د سب ټایټل بارولو کې تېروتنه: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "خرابه سب ټایټل!",
+  "preTranslatingSubtitles": "سب ټایټلونه مخکې ژباړل کیږي...",
+  "preTranslationFailedUsingRealTime": "مخکنۍ ژباړه ناکامه شوه، د ریښتیني وخت بدیل کارول کیږي",
+  "preTranslationErrorUsingRealTime": "د مخکنۍ ژباړې تېروتنه، د ریښتیني وخت بدیل کارول کیږي",
+  "corruptedQuality": "خرابه کیفیت!",
+  "colorProfilesOnlyAvailableWithMediakit": "د رنګ پروفایلونه یوازې د MediaKit پلیر سره شتون لري",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "ویډیو سټریمونه په تلواله توګه په بهرني پلیر کې خلاص کړئ",
+  "quickDefaults": "چټک معیارونه",
+  "orientationSpeedResizeModeExternalPlayer": "سمت، سرعت، د کچې بدلون حالت او بهرنی پلیر",
+  "controlsGestures": "کنټرولونه او اشارې",
+  "subtitlesTranslation": "سب ټایټلونه او ژباړه",
+  "languagesFontsStylingLibassTranslation": "ژبې، فونټونه، سټایلینګ، libass او ژباړه",
+  "anime4kShaders": "Anime4K او شیډرونه",
+  "upscalingShadersPresetsProfiles": "د لوړولو شیډرونه، مخکینۍ ترتیبونه او پروفایلونه",
+  "engineAdvanced": "انجن او پرمختللی",
+  "addSpeed": "سرعت اضافه کړئ",
+  "speedPresets": "د سرعت مخکینۍ ترتیبونه",
+  "rememberAsDefaultSpeed": "د معیاري سرعت په توګه یې وساتئ",
+  "loadedSubtitle": "سب ټایټل بار شو: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "سب ټایټل ډاونلوډ ناکام شو: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "د خونې کوډ",
+  "episodeReleasesIn": "قسمت {value} خپریږي په",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "د تبصرې لپاره باید ننوتلی وي",
+  "readFullRules": "بشپړ مقررات ولولئ",
+  "acceptPost": "ومنئ او خپور کړئ",
+  "youNeedToBeLoggedIn2": "د ځواب لپاره باید ننوتلی وي",
+  "commentCopiedToClipboard": "تبصره کلیپ بورډ ته کاپي شوه",
+  "spam": "سپم",
+  "offensive": "توهین آمیز",
+  "harassment": "ځورونه",
+  "offTopic": "له موضوع بهر",
+  "failedToLoadUserInfo": "د کاروونکي معلومات بار نشول.",
+  "noUserDataFound": "د کاروونکي هیڅ معلومات ونه موندل شول.",
+  "viewHistory": "تاریخ وګورئ",
+  "failedToLoadComments": "تبصرې بار نشول.",
+  "noCommentsFound": "هیڅ تبصره ونه موندل شوه.",
+  "deleted2": "ړنگ شوی",
+  "comment": "تبصره"
 }

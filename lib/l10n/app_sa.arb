@@ -176,5 +176,3831 @@
   "incognitoDisabled": "गुप्तविधा अक्षम",
   "episodeCount": "{count} प्रकरणम्",
   "chapterCount": "{count} अध्यायाः",
-  "itemCount": "{count} द्रव्यम्"
+  "itemCount": "{count} द्रव्यम्",
+  "whatAreWeDoingToday": ", किं अद्य कुर्मः?",
+  "aLogoWithThisNameAlready": "एतेन नाम्ना लोगो पूर्वमेव अस्ति।",
+  "about": "विषये",
+  "aboutCommentumV2": "Commentum v2 विषये",
+  "aboutTheApp": "अनुप्रयोगस्य विषये",
+  "accessModerationToolsAndReports": "नियन्त्रण-साधनानि प्रतिवेदनानि च प्रविशतु",
+  "accountTokensAnilistMalSimkl": "खाता-टोकनानि (AniList, MAL, Simkl)",
+  "accounts": "खातानि",
+  "accountsSync": "खाताः व समन्वयः",
+  "actionAppliedSuccessfully": "क्रिया सफलतया प्रयुक्ता",
+  "activeDownloads": "सक्रियाणि अवतरणानि",
+  "activity": "क्रियाकलापः",
+  "activityDeleted": "क्रियाकलापः विलोपितः",
+  "activityHeatmap": "क्रियाकलाप-उष्णता-मानचित्रम्",
+  "activityMergeTime": "क्रियाकलाप-विलयन-कालः",
+  "activityPhrasing": "क्रियाकलाप-पाठशैली",
+  "activityRefreshed": "क्रियाकलापः नवीकृतः",
+  "adFreeApp": "विज्ञापनरहित अनुप्रयोगः",
+  "addCustomLogo": "स्वनिर्मितं लोगो योजयतु",
+  "addCustomLogoGifWebp": "स्वनिर्मितं लोगो योजयतु (.gif, .webp)",
+  "addRepo": "भाण्डागारं योजयतु",
+  "addRepository": "भाण्डागारं योजयतु",
+  "addYourRecommendation": "स्वीयां संस्तुतिं योजयतु",
+  "addOnExtensions": "परिशिष्ट-विस्तारणानि",
+  "addOns": "परिशिष्टानि",
+  "addOnsPowerBackgroundServicesSuch": "परिशिष्टानि पृष्ठभूमि-सेवाः शक्तियन्ति, यथा प्रत्यक्ष-मैग्नेट-लिङ्क-प्रसारणाय TorrServer टॉरेंट-स्ट्रीमिंग-इञ्जिनम्।",
+  "addedToDownloads": "अवतरणेषु योजितम्",
+  "addingKotatsuRepositoryThisWillTake": "Kotatsu भाण्डागारं योजयते। एतत् कमपि 1-2 निमेषान् स्यात्, कृपया प्रतीक्षस्व...",
+  "addingRepositoryFetchingExtensions": "भाण्डागारं योजयते व विस्तारणानि आनयते...",
+  "adjustBottomBarMarginMediaDetails": "अधःपट्टिकायाः पार्श्वमानं समायोजयतु (केवलं माध्यम-विवरण-पृष्ठे)",
+  "adjustCardAnimationSpeed": "पत्रक-चित्रवेगं समायोजयतु",
+  "adjustCornerRadiusOfElements": "घटकानां कोण-त्रिज्यां समायोजयतु",
+  "adjustDoubleTapToSeekDuration": "द्विवारस्पर्श-अन्वेषण-कालं समायोजयतु",
+  "adjustElementGlowIntensity": "घटक-प्रभा-तीव्रतां समायोजयतु",
+  "adjustFrostedBlurIntensity": "हिम-धूसरता-तीव्रतां समायोजयतु",
+  "adjustGlowBlurIntensity": "प्रभा-धूसरता-तीव्रतां समायोजयतु",
+  "adjustHorizontalMarginOfBottomNavigation": "अधःनावपट्टिकायाः क्षैतिज-पार्श्वमानं समायोजयतु",
+  "adjustItemsPerRow": "प्रतिपङ्क्ति-वस्तूनि समायोजयतु",
+  "adjustMediaBackdropExposure": "माध्यम-पृष्ठभूमि-प्रकाशं समायोजयतु",
+  "adjustMegaskipDuration": "MegaSkip-कालं समायोजयतु",
+  "adjustRoundnessOfAllMediaCards": "सर्वेषां माध्यम-पत्रकाणां वर्तुलतां समायोजयतु",
+  "adjustSubSize": "उपशीर्षक-आकारं समायोजयतु",
+  "adjustSubtitleOutlineWidth": "उपशीर्षक-रूपरेखा-विस्तारं समायोजयतु",
+  "adjustTextVisibility": "पाठ-दृश्यतां समायोजयतु",
+  "admin": "प्रशासकः",
+  "adult": "प्रौढ",
+  "aiPicks": "AI-चयनानि",
+  "airingAnimeNotifications": "प्रसारित-अनिमे-सूचनाः",
+  "all": "सर्वाणि",
+  "allClearNoReportsToReview": "सर्वं शुद्धम्! परीक्षणार्थं प्रतिवेदनानि नास्ति।",
+  "allSources": "सर्वे स्रोताः",
+  "allowAnymexToAutomaticallyOpenAnime": "AnymeX-अनुप्रयोगाय अनिमे व मङ्गा-जालसंधानानि स्वयं उद्घाटयितुम् अनुमन्यताम्",
+  "allowInstallingUpdatesForExtensionsAnd": "विस्तारणानां तथा अनुप्रयोगस्य अद्यतनानि संस्थापयितुम् अनुमन्यताम्",
+  "allowOnlyUsersIFollowTo": "मम अनुसरणं कुर्वन्तः उपयोक्तारः एव मां सन्देशं प्रेषयितुं शक्नुवन्ति।",
+  "allowStorageAccessAndSelectDownload": "संचयन-प्रवेशम् अनुमन्यताम् अवतरण-मञ्जूषां च चिनोतु",
+  "allowStorageAccessToDownloadApp": "अनुप्रयोग तथा विस्तारण-अद्यतनानाम् अवतरणाय संचयन-प्रवेशम् अनुमन्यताम्",
+  "alreadyRecommended": "पूर्वमेव संस्तुतम्",
+  "alternativeTitles": "वैकल्पिक-शीर्षकाणि",
+  "alwaysShowChapterTransition": "सर्वदा अध्याय-संक्रमणं दर्शयतु",
+  "alwaysShowPageIndicator": "सर्वदा पृष्ठ-सूचकं दर्शयतु",
+  "amountOfFilmGrainApplied": "प्रयुक्त-चलचित्र-कणानां परिमाणम्",
+  "anifyKitsuArtwork": "Anify / Kitsu कलाकृतिः",
+  "anilistSettings": "AniList सेटिङ्ग्स्",
+  "anilistSettings2": "Anilist सेटिङ्ग्स्",
+  "animatchCompatibility": "AniMatch सङ्गतिः",
+  "animatchLinkCopiedToClipboard": "AniMatch लिङ्क् क्लिपबोर्डे प्रतिलिपितम्!",
+  "animateControlOverlay": "नियन्त्रण-आच्छादनं सजीवं कुरु",
+  "anime": "अनिमे",
+  "animeUpper": "अनिमे",
+  "animeManga": "अनिमे व मङ्गा",
+  "anime4kEnhancement": "Anime 4K उन्नयनम्",
+  "animeAdaptation": "अनिमे-रूपान्तरम्",
+  "animeCustomLists": "अनिमे स्वनिर्मित-सूच्यः",
+  "animeDetailsPhrasing": "अनिमे-विवरण-पाठशैली",
+  "animeLibrary": "अनिमे-ग्रन्थालयः",
+  "animeList": "अनिमे-सूचिः",
+  "animeScore": "अनिमे-अङ्कः",
+  "animeSectionOrder": "अनिमे-खण्ड-क्रमः",
+  "announcement": "घोषणा",
+  "announcementUnavailable": "घोषणा अनुपलब्धा",
+  "announcements": "घोषणाः",
+  "anymexForkOptimisedForTv": "दूरदर्शनार्थं अनुकूलितः AnymeX-शाखा",
+  "anymexIs100FreeOpenSource": "AnymeX शतप्रतिशतं निःशुल्कं, मुक्तस्रोतम् विज्ञापनरहितं च अस्ति। भवतः समर्थनं सर्वर-व्ययाय सक्रिय-विशेषता-विकासाय च साहाय्यं करोति!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX शतप्रतिशतं निःशुल्कं, मुक्तस्रोतम् विज्ञापनरहितं च अस्ति। भवतः समर्थनं मां अनुप्रयोगस्य निरन्तरं परिपालने उन्नयने च प्रेरयति!",
+  "appCacheExceededThresholdAndWas": "अनुप्रयोग-संचयः सीमां अतिक्रम्य विलोपितः",
+  "appDataHasBeenCompletelyReset": "अनुप्रयोग-दत्तांशः सम्पूर्णतया पुनः स्थापितः",
+  "appFonts": "अनुप्रयोग-लिपयः",
+  "appSettingsSessions": "अनुप्रयोग-सेटिङ्ग्स् व सत्राणि",
+  "appearance": "रूपम्",
+  "appearanceInterface": "रूपं व अन्तरापृष्ठम्",
+  "appearanceTheme": "रूपं व विषयः",
+  "appliesAnimeMangaPosterColorOn": "विवरण-पृष्ठे अनिमे/मङ्गा-पोस्टरस्य वर्णं प्रयुनक्ति",
+  "apply": "प्रयुङ्क्ष्व",
+  "applyASubtleFilmGrainTexture": "अन्तरापृष्ठे सूक्ष्मं चलचित्र-कणावरणं प्रयुङ्क्ष्व",
+  "applyFilters": "फिल्टर्स् प्रयुङ्क्ष्व",
+  "applyOptionsFromYourMpvConf": "प्रसारणारम्भे mpv.conf इत्यस्मात् विकल्पान् प्रयुङ्क्ष्व",
+  "areYouSureYouWantTo": "सर्वाणि संचितानि कुकीज् विलोपयितुम् इच्छसि वा?",
+  "areYouSureYouWantToDelete": "एतत् टिप्पणीं विलोपयितुम् इच्छसि वा? एतत् स्थायित्वेन निष्कासयिष्यते तथा प्रतिवेदनं समाधास्यते।",
+  "areYouSureYouWantToDeleteThis": "एतत् विस्तारणं विलोपयितुम् इच्छसि वा?",
+  "areYouSureYouWantToDeleteThisReply": "एतत् प्रत्युत्तरं विलोपयितुम् इच्छसि वा?",
+  "askForTrackingPermission": "अनुसरणानुमतिं याचस्व",
+  "atLeast2TabsMustRemain": "न्यूनातिन्यूनं 2 टैब् दृश्याः स्थातव्याः!",
+  "audioEngine": "ध्वनि-इञ्जिनम्",
+  "audioPitchCorrection": "ध्वनि-स्वर-संशोधनम्",
+  "authenticationOptional": "प्रमाणीकरणम् (ऐच्छिकम्)",
+  "auto": "स्वचालितम्",
+  "autoPlay": "स्वतः-प्रचलनम्",
+  "autoScroll": "स्वतः-सरणम्",
+  "autoScrollSpeed": "स्वतः-सरण-वेगः",
+  "autoSkipEd": "ED स्वतः-त्यजतु",
+  "autoSkipFiller": "फिलर स्वतः-त्यजतु",
+  "autoSkipOnceOnly": "एकवारम् एव स्वतः-त्यजतु",
+  "autoSkipOnlyOncePerWatch": "प्रतिदर्शनम् एकवारम् एव स्वतः-त्यजतु",
+  "autoSkipOp": "OP स्वतः-त्यजतु",
+  "autoSkipRecap": "पूर्वसारांश स्वतः-त्यजतु",
+  "autoSkipTheEndingSong": "अन्तिमगीतं स्वतः-त्यजतु",
+  "autoSkipTheOpeningSong": "आरम्भगीतं स्वतः-त्यजतु",
+  "autoSkipTheRecapSection": "पूर्वसारांश-खण्डं स्वतः-त्यजतु",
+  "autoSwitchToVerticalMode": "ऊर्ध्वाधर-विधौ स्वतः परिवर्तयतु",
+  "autoTranslateSubtitles": "उपशीर्षकाणि स्वतः अनूदयतु",
+  "autoWebtoonMode": "स्वतः Webtoon-विधिः",
+  "autoClearThreshold": "स्वतः-शोधन-सीमा",
+  "autoSelectDefault": "स्वतः-चयनम् (पूर्वनिर्धारितम्)",
+  "autoSelectThisServerQualityFor": "एतस्य अनिमे-कृते एतस्य सर्वर-गुणवत्ता स्वतः चिनोतु",
+  "automaticallyMoveToNextTextSegment": "स्वतः अग्रिम-पाठखण्डं गच्छतु",
+  "automaticallyScrollContent": "विषयं स्वतः सारयतु",
+  "automaticallyScrollPages": "पृष्ठानि स्वतः सारयतु",
+  "automaticallySkipFillerEpisodesWhenGoing": "अग्रिम-प्रसङ्गं गच्छन् फिलर-प्रसङ्गान् स्वतः त्यजतु",
+  "automaticallyUpdateEntriesWhenImportingThe": "XML आयातकाले प्रविष्टीः स्वतः नवीकरोतु",
+  "availableAddOns": "उपलब्धानि परिशिष्टानि",
+  "availableKeybindings": "उपलब्धानि कुञ्जीबन्धानि:",
+  "avatarDecorations": "अवतार-अलङ्कारणानि",
+  "avatarDecorationsNameplatesBannersProfileEffects": "अवतार-अलङ्कारणानि, नामपट्टिकाः, पताकाः च प्रोफाइल-प्रभावाः",
+  "avgChapters": "औसत अध्यायाः",
+  "avgEpisodes": "औसत प्रसङ्गाः",
+  "back": "पश्चात्",
+  "backdropScope": "पृष्ठभूमि व परिधिः",
+  "backdropBrightness": "पृष्ठभूमि-प्रकाशः",
+  "backdropSource": "पृष्ठभूमि-स्रोतः",
+  "backgroundOpacity": "पृष्ठभूमि-अपारदर्शिता",
+  "backup": "बैकअप",
+  "backupRestore": "बैकअप व पुनःस्थापना",
+  "backupAndRestoreYourLibrary": "स्वीयं ग्रन्थालयं बैकअप कृत्वा पुनःस्थापयतु",
+  "backupArchive": "बैकअप-सञ्चिका",
+  "backupOwner": "बैकअप-स्वामी",
+  "backupRestoredSuccessfully": "बैकअप सफलतया पुनःस्थापितम्!",
+  "backupSavedSuccessfully": "बैकअप सफलतया संरक्षितम्!",
+  "badge": "चिह्नम्",
+  "banUser": "उपयोक्तारं निषेधय",
+  "baseUrlNotAvailableForThis": "एतस्य स्रोतस्य आधार-URL अनुपलब्धम्",
+  "basedOnYourFavouriteCharacters": "भवतः प्रियपात्रेभ्यः आधारितम्।",
+  "basedOnYourFavouriteStaff": "भवतः प्रियकर्मचारिभ्यः आधारितम्।",
+  "basedOnYourTop10Tags": "भवतः शीर्ष 10 टैगेभ्यः आधारितम्।",
+  "basedOnYourTop3Studios": "भवतः शीर्ष 3 स्टूडियोभ्यः आधारितम्।",
+  "basedOnYourTop5Genres": "भवतः शीर्ष 5 शैलीभ्यः आधारितम्।",
+  "basedOnYourTop6Voice": "भवतः शीर्ष 6 स्वरकलाकारेभ्यः आधारितम्।",
+  "batchDownload": "समूह-अवतरणम्",
+  "beTheFirstToRecommendThis": "एतस्य शीर्षकस्य प्रथमः संस्तोता भवतु!",
+  "betterSubtitleRenderingUsingLibassLibrary": "libass ग्रन्थालयेन उत्तमः उपशीर्षक-प्रदर्शनम्",
+  "blockquote": "उद्धरणम्",
+  "blurBackdropTuning": "धूसरता व पृष्ठभूमि-समायोजनम्",
+  "blurAmount": "धूसरता-परिमाणम्",
+  "blurColorTint": "धूसरता-वर्ण-छाया",
+  "blurMechanism": "धूसरता-यन्त्रणा",
+  "blurMultiplier": "धूसरता-गुणकः",
+  "blurStyle": "धूसरता-शैली",
+  "bold": "गाढम्",
+  "boldItalic": "गाढम् + तिर्यक्",
+  "botUrlNotConfigured": "Bot URL विन्यस्तं नास्ति",
+  "bottomControls": "अधःनियन्त्रणानि",
+  "bottomMargin": "अधःपार्श्वमानम्",
+  "bottomNavBarMargin": "अधःनावपट्टी-पार्श्वमानम्",
+  "broadcastYourActivityToDiscord": "स्वीयं क्रियाकलापं Discord प्रति प्रसारयतु",
+  "browsingIdle": "अवलोकनम् / निष्क्रियम्",
+  "browsingPhrasing": "अवलोकन-पाठशैली",
+  "bufferSize": "बफर-आकारः",
+  "builtInStyles": "अन्तर्निहित-शैल्यः",
+  "byDisablingThisYouCanAvoid": "एतत् निष्क्रियं कृत्वा उपशीर्षकयोः संक्रमणं त्यक्तुं शक्नोषि।",
+  "byIndex": "सूचक्रमेण",
+  "byUserId": "उपयोक्तृ-ID द्वारा",
+  "byUsername": "उपयोक्तृनाम्ना",
+  "bypassCloudflare": "Cloudflare अतिक्रम्य",
+  "cacheStorage": "संचयः व संचयनम्",
+  "cacheMinutes": "संचय-निमेषाः",
+  "cacheOverview": "संचय-सारांशः",
+  "cachedImages": "संचित-चित्राणि",
+  "calculateCompatibility": "सङ्गतिं गणय",
+  "calculatedBasedOnWhichReleaseDecades": "यस्मिन् प्रकाशन-दशकेषु अधिकं दृष्टं सर्वोच्चाङ्कं च प्राप्तम्, तदाधारेण गणितम्।",
+  "calendar": "पञ्चाङ्गम्",
+  "cancel": "रद्दं कुरु",
+  "cannotCompareAUserWithThemselves": "उपयोक्तारं स्वयमेव सह तुलयितुं न शक्यते! कृपया भिन्नौ उपयोक्तृनामौ प्रविशतु।",
+  "cannotCompareYourProfileWithYourself": "स्वीयं प्रोफाइलं स्वयमेव सह तुलयितुं न शक्यते! कृपया भिन्नं उपयोक्तृनाम प्रविशतु।",
+  "cantPlaySinceUserClosedThe": "उपयोक्त्रा अनुप्रयोगः अकस्मात् पिहितः इति प्रसारणं न शक्यते",
+  "cantReadSinceUserClosedThe": "उपयोक्त्रा अनुप्रयोगः अकस्मात् पिहितः इति पठनं न शक्यते",
+  "cardAnimationDuration": "पत्रक-चित्रकालः",
+  "cardRoundness": "पत्रक-वर्तुलता",
+  "cardStyle": "पत्रक-शैली",
+  "carouselStyle": "कैरोसेल-शैली",
+  "changeFile": "सञ्चिकां परिवर्तय",
+  "changeRole": "भूमिकां परिवर्तय",
+  "changeService": "सेवां परिवर्तय",
+  "changeSubtitleBackgroundColor": "उपशीर्षक-पृष्ठभूमि-वर्णं परिवर्तय",
+  "changeSubtitleColors": "उपशीर्षक-वर्णान् परिवर्तय",
+  "changeSubtitleOutlineColor": "उपशीर्षक-रूपरेखा-वर्णं परिवर्तय",
+  "changelog": "परिवर्तन-सूची",
+  "chapterListSettings": "अध्याय-सूची सेटिङ्ग्स्",
+  "chapterNumber": "अध्याय-सङ्ख्या",
+  "chapterTileStyle": "अध्याय-टाइल-शैली",
+  "chapters": "अध्यायाः",
+  "chaptersUpper": "अध्यायाः",
+  "chaptersVolumes": "अध्यायाः व खण्डाः",
+  "chaptersRead": "पठिताः अध्यायाः",
+  "characters": "पात्राणि",
+  "checkCompatibility": "सङ्गतिं परीक्ष",
+  "checkForAddOnUpdates": "परिशिष्ट-अद्यतनानि परीक्ष",
+  "checkForUpdates": "अद्यतनानि परीक्ष",
+  "checkUpdatesFromBetaChannel": "बीटा-मार्गात् अद्यतनानि परीक्ष",
+  "checkingForUpdates": "अद्यतनानि परीक्ष्यन्ते!",
+  "chooseABackupFileAnymex": "बैकअप-सञ्चिकां चिनोतु (.anymex)",
+  "chooseACustomBackgroundForLiquid": "द्रव-विधौ स्वनिर्मितां पृष्ठभूमिं चिनोतु।",
+  "chooseADirectoryToBrowseYour": "स्वीयाः माध्यम-सञ्चिकाः अवलोकितुं निर्देशिकां चिनोतु",
+  "chooseDifferentImage": "भिन्नं चित्रं चिनोतु",
+  "chooseDownloadFolder": "अवतरण-मञ्जूषां चिनोतु",
+  "chooseImage": "चित्रं चिनोतु",
+  "chooseProvider": "प्रदातारं चिनोतु",
+  "chooseQuality": "गुणवत्तां चिनोतु",
+  "chooseServer": "सर्वरं चिनोतु",
+  "chooseServiceTracker": "सेवां / अनुसारकं चिनोतु",
+  "chooseShaderProfile": "शेडर-प्रोफाइलं चिनोतु",
+  "chooseUpiApp": "UPI अनुप्रयोगं चिनोतु",
+  "chooseWhichListToShowOn": "मुखपृष्ठे कां सूचिं दर्शयितुम् इच्छसि तत् चिनोतु",
+  "chooseYourFavouriteColor": "स्वीयं प्रियवर्णं चिनोतु!",
+  "chooseYourFavouritePalette": "स्वीयं प्रियवर्णपट्टं चिनोतु!",
+  "chromaScaler": "क्रोमा-मापकम्",
+  "classicCarouselCardLayoutFeaturingVertical": "ऊर्ध्वाधर-पोस्टर-पत्रकैः युक्तः पारम्परिकः कैरोसेल-पत्रक-विन्यासः।",
+  "clear": "शोधय",
+  "clearAll": "सर्वं शोधय",
+  "clearAllHistory": "सर्वम् इतिहासं शोधय",
+  "clearAppCache": "अनुप्रयोग-संचयं शोधय",
+  "clearAppCacheNow": "अधुना अनुप्रयोग-संचयं शोधय",
+  "clearCache": "संचयं शोधय",
+  "clearCacheCookies": "संचयं व कुकीज् शोधय",
+  "clearCookies": "कुकीज् शोधय",
+  "clearCookies2": "कुकीज् शोधय",
+  "clearHistory": "इतिहासं शोधय",
+  "clearImageCacheNow": "अधुना चित्र-संचयं शोधय",
+  "clearProxy": "प्रॉक्सी शोधय",
+  "clearSelected": "चयनितं शोधय",
+  "clientAll": "ग्राहकः: सर्वे",
+  "close": "पिधेहि",
+  "failedToLoadUserHistory": "उपयोक्तृ-इतिहासः भारयितुं विफलः।",
+  "noHistoryFound": "इतिहासः न लब्धः।",
+  "youNeedToBeLoggedIn3": "टिप्पणीः सम्पादयितुं प्रविष्टः भवतु",
+  "commentCannotBeEmpty": "टिप्पणी रिक्ता न भवितुम् अर्हति",
+  "failedToLoadCommentsPleaseTry": "टिप्पण्यः भारयितुं विफलाः। कृपया पुनः प्रयतस्व।",
+  "commentsLoaded": "{value} टिप्पण्यः भारिताः",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "टिप्पण्यः पुनः आनेतुं विफलाः। कृपया पुनः प्रयतस्व।",
+  "invalidParentCommentId": "अमान्यः मातृ-टिप्पणी-अभिज्ञानम्",
+  "replyPostedSuccessfully": "प्रत्युत्तरं सफलतया प्रेषितम्",
+  "failedToPostReply": "प्रत्युत्तरं प्रेषयितुं विफलम्",
+  "failedToPostReplyPleaseTry": "प्रत्युत्तरं प्रेषयितुं विफलम्। कृपया पुनः प्रयतस्व।",
+  "commentPostedSuccessfully": "टिप्पणी सफलतया प्रेषिता",
+  "failedToAddCommentPleaseTry": "टिप्पणीं योजयितुं विफलम्। कृपया पुनः प्रयतस्व।",
+  "failedToUpdateVotePleaseTry": "मतम् अद्यतनं कर्तुं विफलम्। कृपया पुनः प्रयतस्व।",
+  "invalidCommentId": "अमान्यः टिप्पणी-अभिज्ञानम्",
+  "commentEditedSuccessfully": "टिप्पणी सफलतया सम्पादिता",
+  "failedToEditComment": "टिप्पणीं सम्पादयितुं विफलम्",
+  "commentDeletedSuccessfully": "टिप्पणी सफलतया लुप्ता",
+  "failedToDeleteComment": "टिप्पणीं लोपयितुं विफलम्",
+  "failedToReportComment": "टिप्पणीं निवेदयितुं विफलम्",
+  "failedToModerateComment": "टिप्पणीं नियन्त्रयितुं विफलम्",
+  "failedToManageUser": "उपयोक्तारं प्रबन्धयितुं विफलम्",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ बिन्दवः)। क्रमः वास्तविक-क्रियाकलापे आधारितः अस्ति ({realPoints} बिन्दवः)।",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} अर्जिताः बिन्दवः + {text} भूमिका-बोनसः ({label})। क्रमः वास्तविक-क्रियाकलापे आधारितः अस्ति।",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "भाग-परिधिः",
+  "episodeIsDownloaded": "भागः {number} अवतारितः अस्ति",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} भागाः",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "भागः {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling सीजन २ – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "पत्र-सज्जकः",
+  "presetStyle": "पूर्वनिर्धारित-शैली",
+  "chooseFrom5AuthenticBuiltIn": "५ अन्तर्निर्मितेषु प्रामाणिक-आकृतिषु एकं चिनुत",
+  "sizingGeometry": "आकारः तथा ज्यामितिः",
+  "cardSize": "पत्र-आकारः",
+  "scaleCardsProportionallyWithoutDistortion": "विकृतिं विना पत्राणि अनुपातेन मापय",
+  "landscapeCards": "भू-दृश्य-पत्राणि",
+  "formatCardsIn169Widescreen": "पत्राणि १६:९ विस्तृत-पट्टे विन्यस्य",
+  "selectPosterImageAspectRatio": "पोस्टर-चित्रस्य आकार-अनुपातं चिनुत",
+  "titleLines": "शीर्षक-पङ्क्तयः",
+  "maximumNumberOfTitleLinesDisplayed": "प्रदर्शितानां शीर्षक-पङ्क्तीनाम् अधिकतम-संख्या",
+  "gestureAreas": "संकेत-क्षेत्राणि",
+  "resetDefault": "पुनः पूर्वनिर्धारितम्",
+  "overlay": "अध्यारोपः",
+  "volume": "ध्वनि-तीव्रता",
+  "brightnessArea": "दीप्ति-क्षेत्रम्",
+  "overlayAreaTap": "अध्यारोप-क्षेत्रम् (स्पर्शः)",
+  "volumeArea": "ध्वनि-क्षेत्रम्",
+  "resetToDefaultLayout": "पूर्वनिर्धारित-विन्यासं प्रति पुनःस्थापय",
+  "moveToSlot": "स्थानं प्रति चालय",
+  "topBar": "शीर्ष-पट्टी",
+  "bottomLeft": "अधः-वाम",
+  "bottomRight": "अधः-दक्षिण",
+  "themesOverlay": "थीम् तथा अध्यारोपः",
+  "gesturesSeeking": "संकेताः तथा अन्वेषणम्",
+  "horizontalSwipeAcrossTheScreenTo": "पटलस्य पार्श्वतः स्वाइप् कृत्वा अन्वेषणम्",
+  "autoSkipCompletion": "स्वयं-उल्लङ्घनं तथा समाप्तिः",
+  "percentageWatchedBeforeMarkingCompleted": "समाप्तत्वेन चिह्नयितुं पूर्वं दृष्टस्य शतांशः",
+  "playerControls": "प्लेयर-नियन्त्रणानि",
+  "mpvConfSavedSuccessfully": "mpv.conf सफलतया रक्षितम्",
+  "hardwareDrivers": "यन्त्रांशः तथा चालकाः",
+  "systemIntegrations": "तन्त्रम् तथा समाकलनानि",
+  "experimentalMpvTuning": "प्रायोगिक MPV-समायोजनम्",
+  "editMpvConf": "mpv.conf सम्पादय",
+  "modeA": "प्रकारः A",
+  "modeB": "प्रकारः B",
+  "modeC": "प्रकारः C",
+  "modeAA": "प्रकारः A+A",
+  "modeBB": "प्रकारः B+B",
+  "modeCA": "प्रकारः C+A",
+  "natural": "स्वाभाविकम्",
+  "vivid": "उज्ज्वलम्",
+  "cinema": "चलचित्रम्",
+  "soft": "मृदु",
+  "warm": "उष्णम्",
+  "cool": "शीतलम्",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinema HDR",
+  "vividPop": "उज्ज्वल Pop",
+  "dark": "अन्धकारः",
+  "anime4kEngine": "Anime4K इञ्जिनम्",
+  "anime4kShaders2": "Anime4K शेडर्सः",
+  "devicePerformanceTier": "यन्त्र-कार्यक्षमता-स्तरः",
+  "midRange": "मध्यम-परिधिः",
+  "highEnd": "उच्च-स्तरीयम्",
+  "shaderMode": "शेडर-प्रकारः",
+  "colorPreset": "वर्ण-पूर्वनिर्धारणम्",
+  "desktopPlaybackKeybindings": "डेस्कटॉप-प्लेबैक-कुञ्जीबन्धाः",
+  "customSubtitleFonts": "स्वेच्छा-उपशीर्षक-फॉन्ट्सः",
+  "importedFont": "आनीतः फॉन्ट् \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "किं भवान् \"{font}\" लोपयितुम् इच्छति?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "भाषा तथा अनुवादः",
+  "renderingBehavior": "निरूपणं तथा आचरणम्",
+  "disableToAvoidFadeTransitionsBetween": "उपशीर्षकानां मध्ये फेड् परिवर्तनं परिहर्तुं निष्क्रियं कुरु",
+  "typographyOutline": "लेखन-विन्यासः तथा रूपरेखा",
+  "adjustSubtitleFontSize": "उपशीर्षक-फॉन्ट्-आकारं समायोजय",
+  "adjustSubtitleOutlineThickness": "उपशीर्षक-रूपरेखायाः स्थूलतां समायोजय",
+  "colorsPosition": "वर्णाः तथा स्थानम्",
+  "changeSubtitleTextColor": "उपशीर्षक-पाठ्यवर्णं परिवर्तय",
+  "mangaReader": "मङ्गा-पाठकः",
+  "layoutDirection": "विन्यासः तथा दिशा",
+  "autoSwitchToVerticalModeFor": "वेबटूनार्थं स्वयं ऊर्ध्वाधर-प्रकारं प्रति परिवर्तय",
+  "imageDisplay": "चित्रं तथा प्रदर्शनम्",
+  "interfaceSession": "अन्तरापृष्ठं तथा सत्रम्",
+  "mangaControlsGestures": "मङ्गा-नियन्त्रणानि तथा संकेताः",
+  "overscrollToPreviousNextChapter": "पूर्व/अग्रिम-अध्यायं प्रति अतिस्क्रोल",
+  "automaticallyScrollMangaPages": "मङ्गा-पृष्ठानि स्वयं स्क्रोलय",
+  "swapVolumeUpDownActions": "ध्वनि-वर्धन/न्यूनीकरण-क्रियाः विनिमय",
+  "novelReader": "उपन्यास-पाठकः",
+  "themeDisplay": "थीम् तथा प्रदर्शनम्",
+  "displayChapterPercentageWhileReading": "पठनकाले अध्याय-शतांशं प्रदर्शय",
+  "displayStatusInfoInTheNovel": "उपन्यास-पाठके स्थिति-सूचनां प्रदर्शय",
+  "typographySpacing": "लेखन-विन्यासः तथा अन्तरम्",
+  "novelControlsGestures": "उपन्यास-नियन्त्रणानि तथा संकेताः",
+  "tapScreenEdgesToScrollNovel": "उपन्यास-पृष्ठानि स्क्रोलितुं पटलस्य प्रान्तान् स्पृश",
+  "swipeGestures": "स्वाइप्-संकेताः",
+  "volumeKeyScrolling": "ध्वनि-कुञ्जिका-स्क्रोलनम्",
+  "useHardwareVolumeButtonsToScroll": "उपन्यासान् स्क्रोलितुं यन्त्रांश-ध्वनिबटनानि उपयुङ्क्ष्व",
+  "automaticallyScrollNovelContent": "उपन्यास-विषयं स्वयं स्क्रोलय",
+  "textToSpeechTts": "पाठ्यात् वाक् (TTS)",
+  "readNovelChaptersAloud": "उपन्यास-अध्यायान् उच्चैः पठ",
+  "speechRate": "वाक्-वेगः",
+  "voicePitch": "स्वर-उच्चता",
+  "areYouSureYouWantTo4": "किं भवान् {title} तः निर्गन्तुम् इच्छति?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "अद्यतनानां परीक्षणं विफलम्: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} सफलतया स्थापितम्",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} स्थापयितुं विफलम्: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} सफलतया अद्यतितम्",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} अद्यतीकर्तुं विफलम्: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "{name} अपस्थापय",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} अपस्थापितम्",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} अपस्थापयितुं विफलम्: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} खण्ड-क्रमः",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "सूचनाः तथा समकालीकरणम्",
+  "enableNotifications": "सूचनाः सक्षमीकुरु",
+  "syncAnilistNotificationsWithDeviceNotifications": "AniList-सूचनाः यन्त्र-सूचनाभिः सह समकालीकुरु",
+  "airingAlerts": "प्रसारण-सूचनाः",
+  "socialAlerts": "सामाजिक-सूचनाः",
+  "notifyOnNewFollowers": "नवीन-अनुयायिनः विषये सूचय",
+  "activityAlerts": "क्रियाकलाप-सूचनाः",
+  "syncInterval": "समकालीकरण-अन्तरालः",
+  "regionTimezone": "प्रदेशः तथा समयक्षेत्रम्",
+  "profileBio": "प्रोफाइल-परिचयः",
+  "backupFailed": "बैकअप् विफलः: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "सञ्चिका-चयने त्रुटिः: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "बैकअप् भारयितुं विफलम्: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "पुनःस्थापनं विफलम्: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} शीर्षकाणि तथा इतिहासः",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} शीर्षकाणि तथा अध्यायाः",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} शीर्षकाणि तथा पठन-स्थितिः",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "माध्यमेषु {totalLists} स्वेच्छा-सूचयः",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} पञ्जीकृताः विस्तार-प्रविष्टयः",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} विस्तार-zip-सञ्चयाः",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "साहाय्यं तथा सूचना",
+  "libraryContentSafety": "ग्रन्थालयः तथा विषय-सुरक्षा",
+  "homePageLists": "गृहपृष्ठ-सूचयः",
+  "chooseWhichListsToShowOn": "गृहपृष्ठे कान् सूचीः दर्शयितुम् इच्छसि चिनुत",
+  "homePageCards": "गृहपृष्ठ-पत्राणि ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "$anime पश्यति",
+  "viewingAnime": "$anime अवलोकयति",
+  "readingManga2": "$manga पठति",
+  "viewingManga": "$manga अवलोकयति",
+  "readingNovel2": "$novel पठति",
+  "viewingNovel": "$novel अवलोकयति",
+  "browsingStatus": "$status अन्विष्यति",
+  "upiIdCopied": "UPI ID प्रतिलिखितम्: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "UPI ID प्रतिलिख ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • GPay, PhonePe, Paytm इत्यादीन् आरभितुं स्पृश",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "अवतरण-सूचनाः",
+  "reDownloadFailed": "पुनःअवतरणं विफलम्: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "प्रत्यावर्तनं विफलम्: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "भाण्डारं योजयितुं विफलम्: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "फॉन्ट् \"{fontName}\" प्रयुक्तम्",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "\"{fontName}\" अवतारयितुं विफलम्",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" आनीतं प्रयुक्तं च",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "फॉन्ट्-सञ्चिका-आनयनं विफलम्",
+  "deleted3": "\"{fontName}\" लुप्तम्",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "फॉन्ट्-ग्रन्थालयः",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "AnymeX कृते रचितः पूर्वनिर्धारित ज्यामितीय-वर्तुल-फॉन्ट्",
+  "systemFont": "तन्त्र-फॉन्ट्",
+  "useYourDeviceOsDefaultSystem": "यन्त्रस्य OS-पूर्वनिर्धारित तन्त्र-लिपिं उपयुङ्क्ष्व",
+  "loadYourOwnTtfOrOtf": "स्वकीयानि .ttf अथवा .otf लेखन-सञ्चिकाः भारय",
+  "pendingReports": "{length} लम्बमानानि निवेदनानि",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "कुकीज् तथा संग्रहणम्",
+  "monitoring": "निरीक्षणम्",
+  "fpsMeter": "FPS-मापकम्",
+  "showDraggableRealTimeFpsOverlay": "चालनीयं वास्तविककालिक FPS-अध्यारोपं दर्शय",
+  "detectedModesDisplay": "ज्ञाताः प्रकाराः तथा प्रदर्शनम्",
+  "currentDisplayMode": "वर्तमान-प्रदर्शन-प्रकारः",
+  "modes": "{length} प्रकाराः",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "सज्जय",
+  "stylingLibass": "{subLang} • {subFont} • शैली तथा libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "क्षैतिज",
+  "vert": "ऊर्ध्वाधर",
+  "controlsTapZones": "नियन्त्रणानि तथा स्पर्श-क्षेत्राणि",
+  "customizeTapZones": "स्पर्श-क्षेत्राणि सज्जय",
+  "configurePagedAndWebtoonTapRegions": "पृष्ठ-आधारितस्य तथा वेबटून-स्पर्शक्षेत्राणि विन्यस्य",
+  "fitBordersSpacing": "{value} • समायोजनम्, सीमाः तथा अन्तरम्",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "अध्याय-शैली, पृष्ठ-सूचकः तथा पटल-तालनम्",
+  "overscrollActionsAutoScrollVolume": "अतिस्क्रोल, क्रियाः, स्वयं-स्क्रोलनं तथा ध्वनिः",
+  "themeTypography": "थीम् तथा लेखन-विन्यासः",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "पठन-प्रकारः तथा प्रदर्शनम्",
+  "pageModeProgressBatteryIndicator": "पृष्ठ-प्रकारः, प्रगतिः तथा बैटरी-सूचकः",
+  "readPageByPageInsteadOf": "स्क्रोलनस्य स्थाने पृष्ठशः पठ",
+  "displayPercentageInReadingBar": "पठनपट्टिकायां शतांशं प्रदर्शय",
+  "displayBatteryAndTimeInReader": "पाठक-पट्टिकायां बैटरी तथा समयं प्रदर्शय",
+  "gesturesNavigation": "संकेताः तथा मार्गदर्शनम्",
+  "tapToScrollSwipeAutoScroll": "स्क्रोलार्थं स्पृश, स्वाइप् करोतु, स्वयं-स्क्रोल तथा ध्वनिः",
+  "tapEdgesOfScreenToScroll": "ऊर्ध्व/अधः-स्क्रोलार्थं पटलस्य प्रान्तान् स्पृश",
+  "swipeHorizontallyToChangeChapters": "अध्यायान् परिवर्तयितुं क्षैतिजं स्वाइप् कुरु",
+  "useVolumeKeysToScroll": "स्क्रोलार्थं ध्वनि-कुञ्जिकाः उपयुङ्क्ष्व",
+  "textToSpeechTts2": "पाठ्यात् वाक् (TTS)",
+  "textToSpeechReadingSupport": "पाठ्यात् वाक् पठन-साहाय्यम्",
+  "speechRate2": "वाक्-वेगः",
+  "voicePitch2": "स्वर-उच्चता",
+  "appPostersIconsAvatarsSize": "एप्-पोस्टराः, चिह्नानि, अवताराः। आकारः: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "तात्कालिक-वीडियो-खण्डाः। आकारः: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "अवतारित-वेब-उपन्यास-पृष्ठानि। आकारः: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "लेखाः, तात्कालिक-अवतरणानि। आकारः: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "संग्रहं शोधयितुं विफलम्: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "कारखाना-पुनःस्थापनं विफलम्: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 अथवा 3F51B5",
+  "motionDisplay": "गतिः तथा प्रदर्शनम्",
+  "visualEffectsTuning": "दृश्य-प्रभावाः तथा समायोजनम्",
+  "historyCard": "इतिहास-पत्रम्",
+  "carousel": "चक्रपट्टी",
+  "navBar": "नौ-पट्टी",
+  "themeDarkModeLayoutStyling": "थीम्, अन्धकार-प्रकारः तथा विन्यास-शैली",
+  "gesturesSubtitlesVideoSettings": "संकेताः, उपशीर्षकाणि तथा वीडियो-सेटिंग्स्",
+  "settingsTiles": "सेटिंग्स्-टाइल्स्",
+  "oledMode2": "OLED-प्रकारः",
+  "primaryAccount": "मुख्य-खाता ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "{title} सह संयोजितम्",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "{title} सह संयोजय",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} शीर्षकाणि",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "\"{id}\" लोपयः? इदं पुनः कर्तुं न शक्यते।",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "आनयति…",
+  "addJsonFiles": "JSON-सञ्चिकाः योजय",
+  "previousStyle": "पूर्व-शैली",
+  "nextStyle": "अग्रिम-शैली",
+  "currentStyle": "वर्तमान-शैली",
+  "useThisStyle": "एतां शैलीं उपयुङ्क्ष्व",
+  "pleaseLogInToGetRecommendations": "संस्तुतीः प्राप्तुं कृपया प्रविशतु",
+  "chapter1": "अध्यायः १",
+  "deletedSuccessfully": "{value} सफलतया लुप्तम्",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl-प्रवेशः सफलः!",
+  "yepFailed": "अरे, विफलम्",
+  "userInfoFetchingFailed": "उपयोक्तृसूचना-आनयनं विफलम्!",
+  "githubLoginFailed": "GitHub-प्रवेशः विफलः: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "समकालीकरणं पूर्वमेव प्रचलति।",
+  "anotherSyncActionIsAlreadyIn": "अन्या समकालीकरण-क्रिया पूर्वमेव प्रचलति।",
+  "noAnymexSyncGistFoundTo": "लोप्तुं AnymeX-समकालीकरण-गिस्ट् न लब्धम्।",
+  "noAnymexSyncGistFoundInitialize": "AnymeX-समकालीकरण-गिस्ट् न लब्धम्। प्रथमं आरभत।",
+  "githubGistSync": "GitHub Gist समकालीकरणम्",
+  "manage": "प्रबन्धय",
+  "manageGithubGistSync": "GitHub Gist समकालीकरणं प्रबन्धय",
+  "joinedTheParty": "{username} सभायां प्रविष्टः",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} सभातः निर्गतः",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "आयोजकः {title} इत्यस्य भागं {episodeNumber} प्रति परिवर्तितवान्",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "टिप्पणीनाम् आनयने त्रुटिः",
+  "errorAddingComment": "टिप्पणी-योजने त्रुटिः",
+  "errorUpdatingVote": "मत-अद्यतने त्रुटिः",
+  "errorEditingComment": "टिप्पणी-सम्पादने त्रुटिः",
+  "errorDeletingComment": "टिप्पणी-लोपने त्रुटिः",
+  "commentReportedSuccessfully": "टिप्पणी सफलतया निवेदिता",
+  "errorReportingComment": "टिप्पणी-निवेदने त्रुटिः",
+  "errorFetchingReportsQueue": "निवेदन-सूच्याः आनयने त्रुटिः",
+  "reportResolvedSuccessfully": "निवेदनं सफलतया निराकृतम्",
+  "failedToResolveReport": "निवेदनस्य निराकरणं विफलम्",
+  "errorResolvingReport": "निवेदन-निराकरणे त्रुटिः",
+  "errorFetchingUserInfo": "उपयोक्तृसूचना-आनयने त्रुटिः",
+  "errorFetchingUserHistory": "उपयोक्तृ-इतिहासस्य आनयने त्रुटिः",
+  "errorFetchingUserStats": "उपयोक्तृ-सांख्यिकीनाम् आनयने त्रुटिः",
+  "errorListingUsers": "उपयोक्तृणां सूचीकरणे त्रुटिः",
+  "errorSearchingUsers": "उपयोक्तृणाम् अन्वेषणे त्रुटिः",
+  "errorFetchingModerationQueue": "नियन्त्रण-सूच्याः आनयने त्रुटिः",
+  "commentModeratedSuccessfully": "टिप्पणी सफलतया नियन्त्रिता",
+  "errorModeratingComment": "टिप्पणी-नियन्त्रणे त्रुटिः",
+  "userManagedSuccessfully": "उपयोक्ता सफलतया प्रबन्धितः",
+  "errorManagingUser": "उपयोक्तृ-प्रबन्धने त्रुटिः",
+  "errorGettingInitialDeepLink": "प्रारम्भिक-गभीर-सम्पर्कस्य प्राप्तौ त्रुटिः: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "सम्पर्कस्य उद्घाटने त्रुटिः: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "त्रुटि-विवरणं प्रतिलिख",
+  "whatSNew": "किं नवीनम्",
+  "updatedToV": "v{current} प्रति अद्यतितम्",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "विज्ञापन-सम्पर्कः उद्घाटयितुं न शक्यः",
+  "newAnilistUpdates": "{length} नवीन AniList-अद्यतनानि",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} अधिकम्",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "उपकरणानि पुनःयोजय",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "भाण्डारं योजयति... कृपया प्रतीक्षत।",
+  "unsupportedThemeTypeSupportedPlayer": "असमर्थितः थीम-प्रकारः \"{type}\"। समर्थितः: player।",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "सम्पर्कात् प्लेयर-थीमम् आनयति...",
+  "themeIsInvalid": "थीमः अमान्या अस्ति: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "थीम-JSON मान्यम्। {imported} {label} आनीतम्।",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "कक्षं {code} प्रविशति...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "कक्षे प्रवेशः विफलः: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "{user1} तथा {user2} कृते AniMatch-सङ्गतिं गणयति...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "स्वचयित-अनुसरणसेवायै साझां कुरु",
+  "shareAnymexLink": "AnymeX-सम्पर्कं साझां कुरु",
+  "opensDirectlyInAnymex": "AnymeX-मध्ये साक्षात् उद्घटति",
+  "newCommentsRepliesAndEdits": "नवीन-टिप्पण्यः, प्रत्युत्तराणि च सम्पादनानि च",
+  "upvotesAndDownvotesOnYourComments": "स्वटिप्पणीषु उपरि-मताः अधो-मताश्च",
+  "warningsMutesBansAndModerationActions": "चेतावनयः, मौनीकरणानि, प्रतिबन्धाः, नियन्त्रण-क्रियाश्च",
+  "reportFiledResolvedDismissed": "निवेदितम्, निराकृतम्, निरस्तं च",
+  "officialAnnouncements": "आधिकारिक-घोषणाः",
+  "whenSomeoneMentionsYouInA": "यदा कश्चन टिप्पण्यां @mention कुरुते",
+  "notificationsForNewAnimeEpisodeReleases": "नवीन-एनिमे-भागानां प्रकाशनस्य सूचनाः",
+  "notificationsForFollowsMentionsAndLikes": "अनुसरण, उल्लेख, रोचनानां च सूचनाः",
+  "notificationsForCompletedEpisodeAndChapter": "सम्पूर्ण-भाग-अध्यायानाम् अवतरणस्य सूचनाः",
+  "signIn": "प्रविश",
+  "failedToCheckForUpdates3": "अद्यतनानां परीक्षणं विफलम्",
+  "noUpdatesAvailable": "कानिचन अद्यतनानि न सन्ति",
+  "errorCheckingForUpdates": "अद्यतन-परीक्षणे त्रुटिः",
+  "installPermissionRequired": "स्थापन-अनुमतिः आवश्यकी",
+  "downloadFailed3": "अवतरणं विफलम्",
+  "newVersionAvailable": "नवीन-संस्करणं लभ्यम्",
+  "closetCommunity": "कोष्ठ व समुदायः",
+  "cloudflareChallengeSolved": "Cloudflare आव्हानं समाहितम्!",
+  "collectionName": "संग्रहनाम",
+  "collections": "संग्रहाः",
+  "combineBackupDataWithExistingData": "बैकअप-दत्तांशं अस्मिन् उपकरणे वर्तमानदत्तांशेन सह संयोजयतु",
+  "commentDeleted": "टिप्पणी विलोपिता",
+  "commentPolicy": "टिप्पणीनीतिः",
+  "commentReplies": "टिप्पण्युत्तराणि",
+  "commentRules": "टिप्पणीनियमाः",
+  "commentSystem": "टिप्पणीव्यवस्था",
+  "comments": "टिप्पण्यः",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 एका उन्नता टिप्पणीव्यवस्था अस्ति, या निम्नलिखितानि प्रदास्यति:",
+  "commentumV2SettingsModerationPreferences": "Commentum v2 सेटिङ्ग्सः, नियन्त्रणं प्राथमिकताश्च",
+  "common": "सामान्यम्",
+  "commonCharacters": "सामान्यपात्राणि",
+  "commonFavouriteStaff": "सामान्यप्रियकर्मिणः",
+  "commonGenres": "सामान्यविधाः",
+  "commonSettings": "सामान्यविन्यासाः",
+  "commonStudios": "सामान्यचलचित्रसंस्थाः",
+  "commonTags": "सामान्यटैगाः",
+  "commonVoiceActors": "सामान्यस्वरकलाकाराः",
+  "communityDriven": "समुदायचालितम्",
+  "communityForksOfAnymex": "AnymeX इत्यस्य समुदाय-शाखाः",
+  "communityLeaderboard": "समुदायस्थितिसूची",
+  "communityRecommendations": "समुदायसंस्तुतयः",
+  "compact": "संक्षिप्तम्",
+  "compactCardWithEpisodeThumbnailAnd": "प्रसङ्गलघुचित्रेण शीर्षकेन च संक्षिप्तपत्रम्",
+  "compactGridOfChapterNumbers": "अध्यायसङ्ख्यानां संक्षिप्तजालकम्",
+  "compatibility": "अनुकूलता",
+  "compatibilityRanks": "अनुकूलतास्थानानि",
+  "compatibleWithGooglePayPhonepePaytm": "Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay तथा सर्वैः UPI बैङ्किङ्ग-अनुप्रयोगैः सह अनुकूलम्।",
+  "completeAnyCloudflareChallengeThenTap": "कस्यापि Cloudflare आव्हानं पूरयतु, ततः \"कुकीज् समकालीनीकुरु\" इति स्पृशतु येन सत्रं विस्तारेभ्यः प्रेषितं भवेत्।",
+  "compose": "रचयतु",
+  "concurrencyLimits": "समवर्तिता तथा सीमाः",
+  "configurationsRepos": "विन्यासाः तथा भाण्डागाराः",
+  "configureExport": "विन्यस्य निर्यातय",
+  "configureDiscordRichPresenceActivityStatus": "Discord Rich Presence तथा क्रियास्थितिः विन्यस्य",
+  "configureDnsOverHttpsProxyTls": "DNS-over-HTTPS, प्रॉक्सी तथा TLS सेटिङ्ग्सः विन्यस्य",
+  "configureMangaAndNovelReaderDefaults": "मङ्गा तथा उपन्यासपाठकस्य पूर्वनिर्धारितविन्यासाः विन्यस्य",
+  "configureParallelDownloadsAndDirectory": "समानान्तरावतरणानि निर्देशिका च विन्यस्य",
+  "configurePosterBlurScopeTintBackdrop": "पोस्टर-धुन्धता, व्याप्तिः, वर्णच्छटा तथा पृष्ठभूमि-स्रोतं विन्यस्य",
+  "confirm": "पुष्टीकुरु",
+  "confirmRestore": "पुष्टीकृत्य पुनःस्थापय",
+  "confirmBackupPassword": "बैकअप-सङ्केतशब्दं पुष्टीकुरु",
+  "conflictHandling": "विरोधनिर्वहणम्",
+  "connect": "संयोजय",
+  "continueReading": "पठनं निरन्तरं कुरु",
+  "continueWatching": "दर्शनं निरन्तरं कुरु",
+  "continuousModeOnly": "केवलं निरन्तरमोडः",
+  "contributors": "योगदातारः",
+  "controlTheme": "नियन्त्रणविषयः",
+  "controlsSubtitlesAndPlaybackPreferences": "नियन्त्रणानि, उपशीर्षकाणि तथा प्लेबैक-प्राथमिकताः",
+  "cookiesUserAgentSynced": "Cookies तथा User-Agent समकालीकृतौ!",
+  "copy": "प्रतिलिख",
+  "copyPath": "पथं प्रतिलिख",
+  "copyUpiId": "UPI ID प्रतिलिख",
+  "copyUserId": "User ID प्रतिलिख",
+  "coreTeam": "मूलदलम्",
+  "couldNotCalculateCompatibility": "अनुकूलता गणयितुं न शक्तम्।",
+  "couldNotFetchChaptersForThis": "अस्य शीर्षकस्य अध्यायाः आनेतुं न शक्ताः",
+  "couldNotFetchEpisodesForThis": "अस्य शीर्षकस्य प्रसङ्गाः आनेतुं न शक्ताः",
+  "couldNotOpenDonationLink": "दानसंयोजनं उद्घाटयितुं न शक्तम्",
+  "couldNotOpenLink": "संयोजनं उद्घाटयितुं न शक्तम्",
+  "couldNotOpenReleasesPage": "विमोचनपृष्ठं उद्घाटयितुं न शक्तम्",
+  "couldntOpenAppSettingsOpenIt": "अनुप्रयोगसेटिङ्ग्सः उद्घाटयितुं न शक्ताः। स्वयं उद्घाटयतु।",
+  "count": "गणना",
+  "countryDistribution": "देशवितरणम्",
+  "countryOfOrigin": "उत्पत्तिदेशः",
+  "create": "सृजतु",
+  "createAFullAnymexArchiveOf": "भवतः मीडिया-ग्रन्थालय, सेटिङ्ग्सः, विस्तारकाः तथा होस्ट-रनटाइमस्य पूर्णं .anymex आर्काइव् सृजतु",
+  "createActivity": "क्रिया सृजतु",
+  "createBackup": "बैकअप सृजतु",
+  "createNewList": "नवसूची सृजतु",
+  "createStatus": "स्थितिः सृजतु",
+  "cropBorders": "सीमाः कर्तय",
+  "current": "वर्तमानम् • ",
+  "custom": "स्वनिर्मितम्",
+  "customBanners": "स्वनिर्मिताः बैनराः",
+  "customColorPicker": "स्वरङ्गचयनकम्",
+  "customDohUrl": "स्वनिर्मितं DOH URL",
+  "customFonts": "स्वनिर्मिताः फॉण्ट्सः",
+  "customLists": "स्वनिर्मिताः सूच्यः",
+  "customLogos": "स्वनिर्मिताः लोगोः",
+  "customPlayerFlagsParameters": "स्वनिर्मिताः प्लेयर-ध्वजाः तथा प्राचलाः",
+  "customScale": "स्वनिर्मितं मापम्",
+  "customTheme": "स्वनिर्मितः विषयः",
+  "customUserAgent": "स्वनिर्मितं User-Agent",
+  "customValue": "स्वनिर्मितं मूल्यम्",
+  "customEllipsis": "स्वनिर्मितम्...",
+  "customizeCardHistoryCardCarouselNav": "पत्रक-, इतिहासपत्रक-, कैरोसेल् तथा नेविगेशन-पट्टिका-शैल्यः स्वेच्छया परिवर्तयतु",
+  "customizeTheInterfaceToYourLiking": "स्वेच्छया अन्तरफलकं परिवर्तयतु",
+  "customizeYourLogoAnimationStyle": "स्वकीयं लोगो-एनिमेशनशैलीं परिवर्तयतु",
+  "dailyActivitiesWatchAndReadMetrics": "दैनिककार्यकलापाः, दर्शन-पठनमापकानि च",
+  "dailyActivityAndWatchReadProgress": "दैनिककार्यकलापः तथा दर्शन/पठनप्रगतेः अनुसरणम्",
+  "dataCache": "दत्तांशः तथा कैशः",
+  "dataToRestore": "पुनःस्थापनीयः दत्तांशः",
+  "days": "दिनानि",
+  "days2": "दिनानि",
+  "daysActive": "सक्रियदिनानि",
+  "debanding": "डिबैन्डिङ्ग्",
+  "debugStuffs": "डीबग-विषयाः",
+  "decoder": "डिकोडरः",
+  "decoderHwdec": "डिकोडरः (HWDec)",
+  "decoderThreads": "डिकोडर-थ्रेड्सः",
+  "decorationCloset": "अलङ्करण-कोष्ठः",
+  "defaultLabel": "पूर्वनिर्धारितम्",
+  "defaultAndroidAudiotrackApi": "पूर्वनिर्धारितं Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "पूर्वनिर्धारितं Apple CoreAudio API",
+  "defaultListOrder": "पूर्वनिर्धारितसूचीक्रमः",
+  "defaultOrientation": "पूर्वनिर्धारितदिशा",
+  "defaultPortrait": "पूर्वनिर्धारित-पोर्ट्रेट्",
+  "defaultPulseaudioApi": "पूर्वनिर्धारितं PulseAudio API",
+  "defaultSize200px": "पूर्वनिर्धारित-आकारः (200px)",
+  "defaultSystemAudioDriver": "पूर्वनिर्धारितः तन्त्रध्वनिचालकः",
+  "defaultTheme": "पूर्वनिर्धारितविषयः",
+  "defaultWindowsAudioDriver": "पूर्वनिर्धारितः Windows ध्वनिचालकः",
+  "delete": "विलोपय",
+  "deleteActivity": "क्रिया विलोपय",
+  "deleteAll": "सर्वं विलोपय",
+  "deleteAllCachedImagesTorrentStream": "सर्वाणि कैशित-चित्राणि, टोरेण्ट-स्ट्रीम-खण्डाः तथा अस्थायि-सञ्चिकाः विलोपय।",
+  "deleteAllStoredHttpCookiesAcross": "सर्वेषु डोमेनेषु सञ्चिताः सर्वे HTTP कुकीज् विलोपय।",
+  "deleteChapter": "अध्यायं विलोपय",
+  "deleteChapterQuestion": "अध्यायः विलोप्यताम्?",
+  "deleteComment": "टिप्पणीं विलोपय",
+  "deleteCustomLogo": "स्वनिर्मितं लोगो विलोपय",
+  "deleteEpisode": "प्रसङ्गं विलोपय",
+  "deleteEpisodeQuestion": "प्रसङ्गः विलोप्यताम्?",
+  "deleteEverythingStoredOfAnymexPermanently": "AnymeX इत्यस्य सर्वं सञ्चितं स्थायित्वेन विलोपय।",
+  "deleteExtension": "विस्तारकं विलोपय",
+  "deleteFont": "फॉण्टं विलोपय",
+  "deleteHistoryItem": "इतिहासवस्तु विलोपय",
+  "deleteList": "सूचीं विलोपय",
+  "deleteLogo": "लोगो विलोपय",
+  "deleteReason": "कारणं विलोप्यताम्?",
+  "deleteRecommendation": "संस्तुतिः विलोप्यताम्?",
+  "deleteReply": "उत्तरं विलोपय",
+  "deleteReportedComment": "अभियुक्तां टिप्पणीं विलोपय",
+  "deleteSavedCookiesAndCloudflareTokens": "सञ्चिताः कुकीज् तथा Cloudflare टोकन्स् विलोपय",
+  "deleteSavedCookiesCloudflareTokensAnd": "सञ्चिताः कुकीज्, Cloudflare टोकन्स् तथा अस्थायि-कैशं विलोपय",
+  "deleteSelected": "चयनितं विलोपय",
+  "deleteTemporaryNetworkAndImageCache": "अस्थायि-नेटवर्क तथा चित्र-कैशं विलोपय",
+  "deletionRequestSentToAdminsFor": "विलोपनानुरोधः समीक्षार्थं प्रशासकेभ्यः प्रेषितः।",
+  "demuxerMaxBuffer": "डीमक्सर-अधिकतम-बफर",
+  "demuxerReadahead": "डीमक्सर-पूर्वपठनम्",
+  "description": "विवरणम्",
+  "detailedClassic": "विस्तृतम् (क्लासिक)",
+  "detailedInsights": "विस्तृतविश्लेषणानि",
+  "detailsPage": "विवरणपृष्ठम्",
+  "developer": "विकासकः",
+  "development": "विकासः",
+  "direct": "प्रत्यक्षम्",
+  "directSurfaceRenderingAndroidOnly": "प्रत्यक्ष-पृष्ठरेखाङ्कनम् (केवलं Android)",
+  "direction": "दिशा",
+  "disableToShowAndHidePlayer": "नियन्त्रणानि तत्क्षणं दर्शयितुं गोपयितुं च प्लेयरस्य निष्क्रियं कुरु",
+  "disablingMayBypassCaptivePortalsOr": "निष्क्रियीकरणेन कैप्टिव् पोर्टल्स् अथवा SSL निरीक्षणं अतिक्रम्यते, किन्तु सुरक्षा न्यूनीभवति।",
+  "discard": "त्यज",
+  "discardMessage": "सन्देशं त्यजेत्?",
+  "discardReply": "उत्तरं त्यजेत्?",
+  "discardStatus": "स्थितिं त्यजेत्?",
+  "disconnect": "वियोजय",
+  "disconnectDiscord": "Discord वियोजयेत्?",
+  "discordTakenDown": "Discord अपसारितम्",
+  "dismiss": "अपाकुरु",
+  "display": "प्रदर्शनम्",
+  "displayAnimeMangaMoviesAndShows": "समुदायेन संस्तुताः एनिमे, मङ्गा, चलचित्राणि तथा धारावाहिकाः गृहपृष्ठे दर्शय।",
+  "displayMode": "प्रदर्शनमोडः",
+  "displayModeTuningIsNotApplicable": "डेस्कटॉप-मञ्चेषु प्रदर्शनमोड-समायोजनं न लागू।",
+  "displayPlaybackOrReadingProgressTimestamps": "प्लेबैक अथवा पठनप्रगतेः कालचिह्नानि दर्शय",
+  "displayRefreshRateResolutionAndFrame": "प्रदर्शन-ताजगीदरं, विभेदनं तथा फ्रेम-समायोजनं विन्यस्य",
+  "distanceBetweenLines": "पङ्क्तीनां मध्यदूरी",
+  "distanceFromBottomOfScreen": "पर्दायाः अधः दूरी",
+  "ditherDepth": "डिदर-गभीरता",
+  "dnsProxy": "DNS तथा प्रॉक्सी",
+  "dontShowAgain": "पुनः मा दर्शय",
+  "donate": "दानं कुरु",
+  "donateSupport": "दानं तथा समर्थनम्",
+  "donateViaPaypal": "PayPal द्वारा दानं कुरु",
+  "donateViaUpiOrPaypalTo": "विकासस्य समर्थनार्थं UPI अथवा PayPal द्वारा दानं कुरु",
+  "donateViaUpiPaypalSupportDevelopment": "UPI, PayPal द्वारा दानं कुरु तथा विकासं समर्थय",
+  "done": "सम्पन्नम्",
+  "done2": "सम्पन्नम्",
+  "doubletapToSeek": "द्विस्पर्शेन स्थानान्तरणम्",
+  "downgradeOrSwitchToASpecific": "अधोनयनं वा विशिष्ट-प्लगिन-संस्करणं प्रति परिवर्तनं कुरु",
+  "download": "अवतारय",
+  "download4kShaders": "4K शेडर्सः अवतारय",
+  "downloadAllChapters": "सर्वान् अध्यायान् अवतारय",
+  "downloadAllEpisodes": "सर्वान् प्रसङ्गान् अवतारय",
+  "downloadChapter": "अध्यायम् अवतारय",
+  "downloadChunks": "खण्डान् अवतारय",
+  "downloadCurrentSection": "वर्तमानविभागम् अवतारय",
+  "downloadEpisode": "प्रसङ्गम् अवतारय",
+  "downloadFailedTapToRetry": "अवतरणं विफलम्। पुनः प्रयासार्थं स्पृशतु।",
+  "downloadPath": "अवतरणपथः",
+  "downloadPathsAndQualitySettings": "अवतरणपथाः तथा गुणवत्ता-विन्यासाः",
+  "downloadPathsAndStorageSettings": "अवतरणपथाः तथा संग्रहण-विन्यासाः",
+  "downloadPermissions": "अवतरण-अनुमतयः",
+  "downloadQualityStoragePaths": "अवतरण-गुणवत्ता, संग्रहणपथाः",
+  "downloadSettings": "अवतरण-विन्यासाः",
+  "downloadSize4mb": "अवतरण-आकारः: ~4MB",
+  "downloadStarted": "अवतरणम् आरब्धम्",
+  "downloadUnreadChapters": "अपठितान् अध्यायान् अवतारय",
+  "downloadUnwatchedEpisodes": "अदृष्टान् प्रसङ्गान् अवतारय",
+  "downloaded": "अवतारितम्",
+  "downloaded2": "अवतारितम्",
+  "downloadedMedia": "अवतारितमाध्यमानि",
+  "downloadingImage": "चित्रम् अवतार्यते...",
+  "downloadingPackage": "पैकेज् अवतार्यते...",
+  "downloads": "अवतरणानि",
+  "downloadsStorage": "अवतरणानि तथा संग्रहणम्",
+  "downloadsPage": "अवतरणपृष्ठम्",
+  "downscalingAlgorithm": "अधःमापन-अल्गोरिदम्",
+  "dragAndDropToReorderNavigation": "नेविगेशन-पट्टिकायाः टैब्-क्रमं पुनर्विन्यस्तुं खींचय तथा छोडय",
+  "dragToReorderStatusSections": "स्थिति-विभागानां क्रमं पुनर्विन्यस्तुं खींचय",
+  "dualPageMode": "द्विपृष्ठमोडः",
+  "dynamicVariablesWillBeReplacedAutomatically": "गतिशील-चराः स्वयं प्रतिस्थापिताः भविष्यन्ति। स्थिरवाक्यमपि प्रयोक्तुं शक्यते।",
+  "edit": "सम्पादय",
+  "editActivity": "क्रिया सम्पादय",
+  "editCustomMpvFlagsPropertiesAnd": "स्वनिर्मित mpv ध्वजान्, गुणधर्मान् तथा विन्यासनसञ्चिकां सम्पादय",
+  "editLogoSettings": "लोगो-विन्यासान् सम्पादय",
+  "editMediaEntry": "मीडिया-प्रविष्टिं सम्पादय",
+  "editReason": "कारणं सम्पादय",
+  "editRecommendationReasonMin30Chars": "संस्तुति-कारणं सम्पादय (न्यूनतम 30 अक्षराणि)",
+  "edited": "सम्पादितम्",
+  "enableAnimation": "एनिमेशनं सक्षमं कुरु",
+  "enableAnimationOnCarouselsForSmooth": "सुगमगतये कैरोसेल्षु एनिमेशनं सक्षमं कुरु",
+  "enableBackgroundMediaControlsForBluetooth": "ब्लूटूथ-हेडसेट्-कृते तन्त्र-मीडिया-सूचनाकृते च पृष्ठभूमि-मीडिया-नियन्त्रणानि सक्षमं कुरु। सूचना: एतत् सक्षमीकरणेन बैटरी-उपयोगः वर्धते।",
+  "enableBetaUpdates": "बीटा-अद्यतनानि सक्षमं कुरु",
+  "enableClassicSimpleHeaderStyleOn": "गृहपर्दासु क्लासिक-सरल-शीर्षक-शैलीं सक्षमं कुरु",
+  "enableDiscordRpc": "Discord RPC सक्षमं कुरु",
+  "enableExperimentalSettings": "प्रायोगिक-विन्यासान् सक्षमं कुरु",
+  "enableHoldingOnPlayerScreenTo": "वीडियो-प्लेबैकस्य वेगं क्षणिकं वर्धयितुं प्लेयर-पर्द्यां दीर्घस्पर्शं सक्षमं कुरु",
+  "enableHorizontalSwipingOnPlayerScreen": "वीडियो अन्वेष्टुं प्लेयर-पर्द्यां क्षैतिज-स्वाइपिङ्गं सक्षमं कुरु",
+  "enableKenBurns": "Ken Burns सक्षमं कुरु",
+  "enableLongPressQuickActions": "दीर्घदाब-त्वरितक्रियाः सक्षमं कुरु",
+  "enableNotificationsForUpcomingAiringEpisodes": "आगामि-प्रसारितप्रसङ्गेभ्यः सूचनाः सक्षमं कुरु।",
+  "enableNsfwAdultEntriesInAnilist": "AniList सामग्रीषु NSFW/प्रौढप्रविष्टीः सक्षमं कुरु।",
+  "enableShaders": "शेडर्सः सक्षमं कुरु",
+  "enableSwipeControls": "स्वाइप-नियन्त्रणानि सक्षमं कुरु",
+  "enableTapZones": "स्पर्शक्षेत्राणि सक्षमं कुरु",
+  "enableThisIfYouWantTo": "भवतः वालपेपरस्य मूलवर्णं धारयितुमिच्छसि चेत् एतत् सक्षमं कुरु",
+  "enableTranslucentNavigationBar": "पारदर्शक-नेविगेशन-पट्टिकां सक्षमं कुरु",
+  "enableTts": "TTS सक्षमं कुरु",
+  "enableVerticalSwipingOnTheLeft": "प्लेयर-पर्द्याः वाम/दक्षिणपार्श्वे ऊर्ध्वाधरस्वाइपिङ्गं सक्षमं कुरु येन दीप्तिः ध्वनिः च समायोज्येते",
+  "enablesASoftGlowingGradientEffect": "मृदु-दीप्तिमान्-प्रवणता-प्रभावं सक्षमं करोति।",
+  "encryptWithAes256RecommendedFor": "AES-256 द्वारा सङ्केतीकरणम् (प्रमाणीकरण-टोकन्स् कृते संस्तुतम्)",
+  "encrypted": "सङ्केतीकृतम् • ",
+  "endChapter": "अध्यायान्तः",
+  "enterAmount": "राशिं प्रविशतु...",
+  "enterAnilistUsername": "AniList उपयोक्तृनाम प्रविशतु",
+  "enterAtLeast2Characters": "कमपक्षे 2 अक्षराणि प्रविशतु",
+  "enterBackupPassword": "बैकअप-गुप्तशब्दं प्रविशतु",
+  "enterFirstAnilistUsername": "प्रथम AniList-उपयोक्तृनाम प्रविशतु",
+  "enterGithubRepositoryUrl": "GitHub-भाण्डागार-URL प्रविशतु",
+  "enterListName": "सूच्याः नाम प्रविशतु",
+  "enterPassword": "गुप्तशब्दं प्रविशतु",
+  "enterReasonOrDetailsForThis": "अस्य क्रियायाः कारणं विवरणं वा प्रविशतु...",
+  "enterSearchQuery": "अन्वेषणप्रश्नं प्रविशतु",
+  "enterUsername": "उपयोक्तृनाम प्रविशतु",
+  "enterValue": "मानं प्रविशतु",
+  "entryDeleted": "प्रविष्टिः अपाकृता।",
+  "episode1": "भागः १",
+  "episodeListSettings": "भागसूची-सेटिंग्सः",
+  "episodes": "भागाः",
+  "episodesDuration": "भागाः व कालावधिः",
+  "episodesWatched": "दृष्टाः भागाः",
+  "errorOccured": "त्रुटिः अभवत्",
+  "errorOccurred": "त्रुटिः अभवत्",
+  "errorSavingImage": "चित्रं रक्षितुं त्रुटिः",
+  "errorSharingImage": "चित्रं साझीकर्तुं त्रुटिः",
+  "errorMissingRequiredDataItSeems": "त्रुटिः: आवश्यकाः दत्तांशाः न सन्ति। प्रतीयते यत् अध्यायं पठित्वा भवान् अनुप्रयोगं सीधं पिहितवान्!",
+  "errorMissingRequiredMediaItSeems": "त्रुटिः: आवश्यकं माध्यमं न सन्ति। प्रतीयते यत् अध्यायं पठित्वा भवान् अनुप्रयोगं सीधं पिहितवान्!",
+  "errorMissingRequiredMediaItSeemsYou": "त्रुटिः: आवश्यकं माध्यमं न सन्ति। प्रतीयते यत् भागं द्रष्टुं पश्चात् भवान् अनुप्रयोगं सीधं पिहितवान्!",
+  "everyScoreIsMappedToA": "प्रत्येकः अङ्कः एकस्मिन् श्रेण्यां मीलितः अस्ति। अधः सारणी प्रत्येकं परिधिं, तस्य बैजं, परिसरं च दर्शयति।",
+  "experimental": "प्रायोगिकम्",
+  "experimentalHighPerformanceRenderer": "प्रायोगिकः उच्चकार्यक्षमः रेंडरर्",
+  "explore": "अन्वेषणम्",
+  "exploreTheProjectAndContribute": "परियोजनाम् अन्वेषयतु योगदानं च करोतु",
+  "exportLabel": "निर्यातः",
+  "exportBackup": "बैकअप निर्यातयतु",
+  "exportCancelled": "निर्यातः निरस्तः।",
+  "exportDeviceBackup": "उपकरण-बैकअप निर्यातयतु",
+  "exportSettings": "सेटिंग्सः निर्यातयतु",
+  "exportYourAnimeList": "भवतः Anime-सूचीं निर्यातयतु",
+  "exportYourMangaList": "भवतः Manga-सूचीं निर्यातयतु",
+  "extensionConfigurations": "विस्तार-विन्यासाः",
+  "extensionConfigurationsRepos": "विस्तार-विन्यासाः व भाण्डागाराः",
+  "extensionManager": "विस्तार-प्रबन्धकः",
+  "extensionPackages": "विस्तार-पैकेजाः",
+  "extensionPreferences": "विस्तार-प्राथमिकताः",
+  "extensionSettings": "विस्तार-सेटिंग्सः",
+  "extensionSettingsAndSourceConfigurations": "विस्तार-सेटिंग्सः व स्रोत-विन्यासाः",
+  "extensionTesting": "विस्तार-परीक्षणम्",
+  "extensionType": "विस्तार-प्रकारः",
+  "extensions": "विस्तारः",
+  "extensionsDiagnostics": "विस्तारः व निदानम्",
+  "extensionsRepositories": "विस्तारः व भाण्डागाराः",
+  "extensionsSources": "विस्तारः व स्रोतांसि",
+  "extensionsTailoredToYourNeeds": "भवतः आवश्यकतानुसारं विस्तारः",
+  "externalStreamingLinks": "बाह्य व स्ट्रीमिंग-सम्बन्धाः",
+  "externalBackupsRestoreMetadataAndConfigurations": "बाह्य-बैकअपाः मेटाडेटां विन्यासांश्च सुरक्षितरूपेण पुनःस्थापयन्ति।",
+  "externalBrowser": "बाह्य ब्राउज़र्",
+  "extras": "अतिरिक्तानि",
+  "factoryReset": "फैक्टरी रीसेट्",
+  "factoryReset2": "फैक्टरी रीसेट्",
+  "failedToCheckForUpdates": "अद्यतनानि परीक्षितुं विफलम्।",
+  "failedToCheckPluginUpdates": "प्लगिन-अद्यतनानि परीक्षितुं विफलम्।",
+  "failedToDeleteChapter": "अध्यायः अपाकर्तुं विफलः",
+  "failedToDeleteEpisode": "भागः अपाकर्तुं विफलः",
+  "failedToDeleteListEntry": "सूचीप्रविष्टिः अपाकर्तुं विफलः",
+  "failedToDeleteMedia": "माध्यमम् अपाकर्तुं विफलम्",
+  "failedToDownloadImage": "चित्रम् अवतारयितुं विफलम्",
+  "failedToFetchChapters": "अध्यायाः आनेतुं विफलाः",
+  "failedToFetchDetails": "विवरणानि आनेतुं विफलम्",
+  "failedToFetchImageForSharing": "साझीकरणाय चित्रम् आनेतुं विफलम्",
+  "failedToFetchPluginReleaseDetails": "प्लगिन-विमोचनविवरणानि आनेतुं विफलम्।",
+  "failedToFetchPolicy": "नीतिम् आनेतुं विफलम्।",
+  "failedToFetchReleaseDetails": "विमोचनविवरणानि आनेतुं विफलम्।",
+  "failedToFetchServers": "सर्व्हराः आनेतुं विफलाः",
+  "failedToLoadDetails": "विवरणानि लोडयितुं विफलम्",
+  "failedToLoadFontFile": "फॉन्ट्-सञ्चिका लोडयितुं विफला",
+  "failedToLoadProfileAccountMay": "प्रोफाइल लोडयितुं विफलम् — खातं निजी अथवा अप्राप्तं भवेत्",
+  "failedToLoadTorrentMetadata": "टॉरेण्ट-मेटाडेटा लोडयितुं विफलम्",
+  "failedToPerformAction": "क्रियां कर्तुं विफलम्",
+  "failedToRemoveRepo": "भाण्डागारम् अपाकर्तुं विफलम्",
+  "failedToStartExtensionRuntime": "विस्तार-रनटाइम् आरम्भयितुं विफलम्",
+  "failedToUpdateAnilist": "AniList अद्यतनं कर्तुं विफलम्",
+  "failedToUpdateListEntry": "सूचीप्रविष्टिम् अद्यतनं कर्तुं विफलम्",
+  "failedToUpdatePreference": "प्राथमिकतां अद्यतनं कर्तुं विफलम्",
+  "failedToUpdateRole": "भूमिकाम् अद्यतनं कर्तुं विफलम्",
+  "favoriteTitle": "प्रियशीर्षकम्",
+  "favouriteAnime": "प्रियः Anime",
+  "favouriteCharacters": "प्रियपात्राणि",
+  "favouriteManga": "प्रियः Manga",
+  "favouriteStaff": "प्रियकर्मचारिणः",
+  "favouriteStudios": "प्रियस्टूडियोसः",
+  "featuresIssues": "विशेषताः/समस्याः",
+  "fetchingAvailableServers": "उपलब्धसर्व्हराः आनीयन्ते...",
+  "fetchingLatestReleaseDetails": "नवीनतमविमोचनविवरणानि आनीयन्ते...",
+  "fetchingTorrentFileList": "टॉरेण्ट-सञ्चिकासूची आनीयते...",
+  "filler": "पूरकम्",
+  "filter": "छाननी",
+  "filterActivities": "क्रियाकलापान् छानयतु",
+  "filterActivity": "क्रियाकलापं छानयतु",
+  "filterByChapterCount": "अध्यायसङ्ख्यया छानयतु",
+  "filterByDurationMin": "कालावधिना छानयतु (निमेषाः)",
+  "filterByEpisodeCount": "भागसङ्ख्यया छानयतु",
+  "filterByGenre": "शैल्या छानयतु",
+  "filterByVolumeCount": "खण्डसङ्ख्यया छानयतु",
+  "filterGenres": "शैलीः छानयतु",
+  "filterOutAdultNsfwEntriesFrom": "समुदायसंस्तुतिभ्यः प्रौढ/NSFW-प्रविष्टीः अपास्यतु।",
+  "filterOutEntriesAlreadyInYour": "भवतः सूच्यां पूर्वमेव स्थिताः प्रविष्टीः अपास्यतु",
+  "filterOutEntriesAlreadyInYourList": "वीक्षण/पठन-स्थित्यनुसारं भवतः सूच्यां पूर्वमेव स्थिताः प्रविष्टीः अपास्यतु।",
+  "filterSettings": "छानन-सेटिंग्सः",
+  "filters": "छानन्यः",
+  "findAndManageSpecificUsers": "विशिष्टान् उपयोक्तॄन् अन्विष्य प्रबन्धयतु",
+  "findAnimeSauceByScreenshots": "स्क्रीनशॉट्-द्वारा Anime-स्रोतः अन्वेषयतु",
+  "findSource": "स्रोतः अन्वेषयतु",
+  "findYourFavouriteAnimeOrManga": "भवतः प्रियं Anime अथवा Manga, Manhwa अथवा यत्किमपि रोचते तत् अन्वेषयतु!",
+  "findYourFavouriteAnimeMangaManhwa": "भवतः प्रियं Anime, Manga, Manhwa अथवा यत्किमपि रोचते तत् अन्वेषयतु!",
+  "finishDate": "समाप्तिदिनाङ्कः",
+  "firstChapter": "प्रथमोऽध्यायः",
+  "firstUser": "प्रथमः उपयोक्ता",
+  "fitToScreenWidth": "पर्दाविस्तारे समायोजयतु",
+  "fontFamily": "फॉन्ट्-कुलम्",
+  "fontSize": "फॉन्ट्-आकारः",
+  "forceReDownload": "बलात् पुनः अवतारयतु",
+  "forceSyncFromSdCard": "SD कार्डतः बलात् समकालीकरणम्",
+  "forks": "फोर्क्स्",
+  "format": "प्रारूपम्",
+  "formatDistribution": "प्रारूपवितरणम्",
+  "frameInterpolation": "फ्रेम-अन्तर्वेशनम्",
+  "freeSupport": "निःशुल्क सहायता",
+  "frequentlyRevisited": "बारं बारं दृष्टम्",
+  "fromUrl": "URL-तः",
+  "fullWidthDetailedCardWithLarge": "बृहत्-लघुचित्र-भाग-मेटाडेटा सहितं पूर्णविस्तारस्य विस्तृतं कार्डम्",
+  "fullWidthDetailedCardsWithProgress": "प्रगति-पठन-बटनसहितानि पूर्णविस्तारस्य विस्तृतानि कार्डानि",
+  "fullWidthHeroBannerWithCompact": "संक्षिप्तविवरण-सारांशसहितः पूर्णविस्तारः नायक-बैनरः।",
+  "general": "सामान्यम्",
+  "generalPrivacy": "सामान्यं व गोपनीयता",
+  "generalSync": "सामान्यं व समकालीकरणम्",
+  "generalAppPreferencesAndSyncServices": "सामान्य-अनुप्रयोग-प्राथमिकताः समकालीकरण-सेवाश्च",
+  "generalAppSettingsAndSyncServices": "सामान्य-अनुप्रयोग-सेटिंग्सः समकालीकरण-सेवाश्च",
+  "generalPreferences": "सामान्य-प्राथमिकताः",
+  "genres": "शैल्यः",
+  "genresUpper": "शैल्यः",
+  "gestureForBrightnessVolume": "दीप्ति व ध्वनि-हेतोः सङ्केतः",
+  "getHelpWithTheCommentSystem": "टिप्पणी-प्रणाल्याः सहायतां प्राप्नुत",
+  "getStarted": "आरभताम्",
+  "globalConcurrencyLimit": "वैश्विक समवर्ती-सीमा",
+  "glowMultiplier": "दीप्ति-गुणकः",
+  "goSuperDarkMode": "अतिगाढ-रात्रि-मोडं गच्छत!",
+  "goToDownloads": "अवतरणेषु गच्छतु",
+  "goToExtensionsToGetStarted": "आरम्भार्थं विस्तारेषु गच्छतु",
+  "goToPluginDownloader": "प्लगिन-अवतारकं गच्छतु",
+  "goToRuntimeManager": "रनटाइम्-प्रबन्धकं गच्छतु",
+  "goodAfternoon": "शुभमध्याह्नम्",
+  "goodEvening": "शुभसायंकालः",
+  "goodMorning": "सुप्रभातम्",
+  "goodnight": "शुभरात्रिः",
+  "gotIt": "अवगतम्",
+  "grainIntensity": "कणतीव्रता",
+  "grainTextureOverlay": "कण-बनावट-आवरणम्",
+  "grantPermission": "अनुमतिं ददातु",
+  "grantPermissions": "अनुमतीः ददातु",
+  "grid": "जालकम्",
+  "gridSize": "जालक-आकारः",
+  "gridView": "जालक-दृश्यम्",
+  "guest": "अतिथिः",
+  "happySnacking": "सुखदं लघुभोजनम्",
+  "hardwareDisplayModeSwitchingIsNot": "भवतः उपकरणेन हार्डवेयर-प्रदर्शनमोड-परिवर्तनं न समर्थितम्।",
+  "helpSupport": "सहायता व समर्थनम्",
+  "hexColorCode": "हेक्स-वर्णसङ्केतः",
+  "hey": "नमस्ते ",
+  "hidden": "गुप्तम्",
+  "hiddenFromYourPublicProfile": "भवतः सार्वजनिक-प्रोफाइलतः गुप्तम्",
+  "hiddenTabs": "गुप्त-टैब्स्",
+  "hideAdultContent": "प्रौढ-सामग्री गोपयतु",
+  "hideButton": "बटनं गोपयतु",
+  "hideByListStatus": "सूचीस्थित्या गोपयतु",
+  "hideCompleted": "सम्पूर्णं गोपयतु",
+  "hideDropped": "त्यक्तं गोपयतु",
+  "hideEntriesThatAreInYour": "भवतः योजनासूच्यां स्थिताः प्रविष्टीः गोपयतु।",
+  "hideEntriesThatAreMarkedAs": "भवतः सूच्यां सम्पूर्णत्वेन चिह्निताः प्रविष्टीः गोपयतु।",
+  "hideEntriesThatYouAreCurrently": "भवान् साम्प्रतं यां प्रविष्टिं वीक्षते अथवा पठति ताः गोपयतु।",
+  "hideEntriesThatYouAreRewatching": "भवान् यां प्रविष्टिं पुनः वीक्षते ताः गोपयतु।",
+  "hideEntriesThatYouHaveDropped": "भवता त्यक्ताः प्रविष्टीः गोपयतु।",
+  "hideEntriesThatYouHavePut": "भवता स्थगिताः प्रविष्टीः गोपयतु।",
+  "hideNsfw": "NSFW गोपयतु",
+  "hideNsfw18Content": "NSFW / 18+ सामग्री गोपयतु",
+  "hideNsfwContent": "NSFW सामग्री गोपयतु",
+  "hideNsfwRecommendations": "NSFW संस्तुतयः गोपयतु",
+  "hideOnHoldPaused": "स्थगित / विरामित गोपयतु",
+  "hidePlanning": "योजना गोपयतु",
+  "hideRewatching": "पुनर्वीक्षणं गोपयतु",
+  "hideSystemStatusAndNavigationBars": "प्रणाली-स्थिति-पट्टिका तथा नेविगेशन-पट्टिका गोपयतु",
+  "hideWatchingReading": "वीक्षण / पठनं गोपयतु",
+  "history": "इतिहासः",
+  "historyStatistics": "इतिहासः व सांख्यिकी",
+  "historyCardStyle": "इतिहास-कार्ड-शैली",
+  "historyItemDeleted": "इतिहास-वस्तु अपाकृता",
+  "hlsParallelSegments": "HLS समान्तर-खण्डाः",
+  "holdAndDragAnyItemTo": "पुनःक्रमणाय कमपि वस्तु धृत्वा कर्षयतु",
+  "holdToAccessHistoryEditor": "इतिहास-सम्पादकं प्राप्तुं धारयतु",
+  "holdToDelete": "अपाकर्तुं धारयतु",
+  "holdToSpeedUp": "वेगवर्धनाय धारयतु",
+  "home": "गृहम्",
+  "horizontal": "क्षैतिज",
+  "hostEG12700": "होस्ट् (यथा 127.0.0.1)",
+  "hours": "घण्टाः",
+  "howItWorksCompatibilityRanks": "कथं कार्यं करोति व संगतिश्रेणयः",
+  "howMuchInPercentageToMark": "भागं दृष्टरूपेण चिह्नयितुं शतांशे कियत्",
+  "howToUseTheCommentSystem": "टिप्पणी-प्रणाल्याः उपयोगः कथम्:",
+  "hue": "वर्णच्छाया",
+  "ifEnabledAContinueWatchingBar": "सक्षमे सति गृहपृष्ठे अधः नेविगेशन-पट्ट्याः उपरि 'वीक्षणं निरन्तरं कुरु' पट्टिका दर्शिता भविष्यति।",
+  "ifEnabledAllLibraryItemsWill": "सक्षमे सति सर्वाः ग्रन्थालय-वस्तूनि सर्वासु अनुसरणसेवासु साझीकृताः भविष्यन्ति।",
+  "ifEnabledAnymexWillAskFor": "सक्षमे सति Anymex अनुसरणानुमतिं याचिष्यते; अन्यथा पूर्वनिर्धारितरूपेण अनुसरिष्यति।",
+  "ifEnabledYouWillNotGet": "सक्षमे सति Anilist/MyAnimeList-मध्ये प्रौढ-सामग्री सक्षमीकर्तुं सूचना न प्राप्स्यते।",
+  "ifTemporaryAppCacheReachesThis": "अस्थायी अनुप्रयोग-कैशे एतत् आकारं प्राप्नोति चेत् स्वयं अपाकरिष्यते।",
+  "ifYouAreUsingAJson": "JSON-विषयवस्तु उपयुज्यते चेत् अत्र परिवर्तनानि प्लेयर-नियन्त्रणेषु न प्रभावयिष्यन्ति। एतानि सेटिंग्सः प्रयोक्तुं अन्तर्निर्मितां विषयवस्तुं चिनुत।",
+  "ifYouCantDonateWatchThis": "यदि दानं कर्तुं न शक्नोषि, समर्थनार्थं एतं विज्ञापनं पश्यतु",
+  "image": "चित्रम्",
+  "imageShowsThumbnail": "चित्रम् (लघुचित्रं दर्शयति)",
+  "imageFilterQuality": "चित्र-छानन-गुणवत्ता",
+  "imageSharedFromAnymex": "AnymeX-तः साझीकृतं चित्रम्",
+  "imagesWillBeDownloadedInFull": "चित्राणि पूर्णगुणवत्तया अवतारिष्यन्ते। प्रत्येकः अध्यायः स्वस्य पृथक् फोल्डरे रक्षितः भवति।",
+  "immersiveMode": "तल्लीन-मोडः",
+  "importLabel": "आयातः",
+  "importLabel2": "आयातयतु",
+  "importManageCustomJsonThemes": "स्वकीयान् JSON-विषयवस्तून् आयातयतु व प्रबन्धयतु",
+  "importBackup": "बैकअप आयातयतु",
+  "importCustomFont": "स्वकीयं फॉन्ट् आयातयतु",
+  "importFromUrl": "URL-तः आयातयतु",
+  "includeAdultNsfwSuggestions": "प्रौढ व NSFW सूचनाः समाविशतु",
+  "incognito": "गुप्तविधा",
+  "incognitoActive": "गुप्तविधा (सक्रिया)",
+  "incognitoMode2": "गुप्त-मोडः",
+  "indiaUpi": "भारतम् (UPI)",
+  "info": "सूचना",
+  "inlineCode": "अन्तर्वर्ती कोड",
+  "insert": "सम्मिलयतु",
+  "installPermission": "स्थापन-अनुमतिः",
+  "installPermissionIsRequiredToUpdate": "अनुप्रयोगस्य अद्यतनार्थं स्थापन-अनुमतिः आवश्यकी अस्ति",
+  "installedPackages": "स्थापितानि पैकेजानि",
+  "installedThemes": "स्थापिताः विषयवस्तवः",
+  "interfaceStyling": "अन्तरापृष्ठ-शैलीकरणम्",
+  "internalBrowser": "आन्तरिक ब्राउज़र्",
+  "international": "अन्तर्राष्ट्रीय",
+  "invalidBackupFileOrIncorrectPassword": "अमान्या बैकअप-सञ्चिका अथवा असत्यं गुप्तशब्दम्",
+  "invertVolumeKeys": "ध्वनि-कुञ्चिकाः विपर्ययतु",
+  "italic": "तिर्यक्",
+  "joinDiscordCommunity": "Discord-समुदायं सम्मिलतु",
+  "joinNewDiscord": "नूतनं Discord सम्मिलतु",
+  "joinTelegramChannel": "Telegram-चैनलं सम्मिलतु",
+  "joinUsForDroppingFeedbackOr": "प्रतिक्रियाः वा विशेषतानुरोधाः प्रेषयितुं अस्मान् सम्मिलतु",
+  "jsonThemeManager": "JSON-विषयवस्तु-प्रबन्धकः",
+  "judgment": "निर्णयः",
+  "keepEditing": "सम्पादनं निरन्तरं कुरु",
+  "keepItChill": "शान्तं तिष्ठतु",
+  "keepScreenOn": "पर्दां सक्रियं धारयतु",
+  "keepVoicePitchStableAtHigher": "उच्चवेगेषु स्वरस्य तारता स्थिरं धारयतु",
+  "koFiSupport": "Ko-fi समर्थनम्",
+  "languageVariant": "भाषा-भेदः",
+  "lastAdded": "अन्तिमं योजितम्",
+  "lastChapter": "अन्तिमः अध्यायः",
+  "later": "पश्चात्",
+  "latest": "नवीनतम्",
+  "latestManga": "नवीनतम् मङ्गा",
+  "layout": "विन्यासः",
+  "layoutStyle": "विन्यास-शैली",
+  "leaderboard": "स्थानसूची",
+  "learnHowToFormatYourComments": "स्वटिप्पण्यः कथं विन्यस्यन्ते इति जानीत",
+  "leftSide": "वामपार्श्वम्",
+  "letterSpacing": "अक्षरान्तरम्",
+  "levelProgress": "स्तरप्रगतिः",
+  "libraryLabel": "ग्रन्थालयः",
+  "librarySettings": "ग्रन्थालय-विन्यासाः",
+  "libraryStatistics": "ग्रन्थालय-सांख्यिकी",
+  "lightness": "प्रकाशता",
+  "likedBy": "इष्टं द्वारा",
+  "lineHeight": "पङ्क्ति-उच्चता",
+  "linkAutoDetected": "सम्बन्धः (स्वयं-ज्ञातः)",
+  "linkCopiedToClipboard": "सम्बन्धः क्लिप्बोर्डे प्रतिलिपितः!",
+  "linkHasExpiredAndEpisodeUrl": "सम्बन्धस्य अवधिः समाप्ता, भागस्य URL अनुपलब्धम्।",
+  "linkHasExpiredAndNoAlternative": "सम्बन्धस्य अवधिः समाप्ता, वैकल्पिकः प्रवाहः न लब्धः।",
+  "linotteDefault": "Linotte (मूलभूतम्)",
+  "liquidBackground": "द्रव-पृष्ठभूमिः",
+  "liquidMode": "द्रव-विधिः",
+  "listEntryUpdatedSuccessfully": "सूची-प्रविष्टिः सफलतया नवीकृता!",
+  "listExporter": "सूची-निर्यातकः",
+  "listNameAlreadyExists": "सूचिनाम पूर्वमेव अस्ति",
+  "listOptions": "सूची-विकल्पाः",
+  "liveBlurIsUnavailableWhenUsing": "Fluid Mesh प्रयोगे जीवन्त-धुन्धता अनुपलब्धा।",
+  "livePreview": "जीवन्त-पूर्वावलोकः",
+  "livePreview2": "जीवन्त-पूर्वावलोकः",
+  "loadTemplate": "आदर्शम् आरोपयतु",
+  "loadingMediaFiles": "माध्यम-सञ्चिकाः आरोप्यन्ते...",
+  "loadingMedia": "माध्यमम् आरोप्यते...",
+  "local": "स्थानीयम्",
+  "localLibrary": "स्थानीय-ग्रन्थालयः",
+  "localMedia": "स्थानीय-माध्यमम्",
+  "location": "स्थानम्",
+  "logCapture": "लॉग-ग्रहणम्",
+  "logDirectory": "लॉग-निर्देशिका",
+  "logIn": "प्रविशतु",
+  "logInRequired": "प्रवेशः आवश्यकः",
+  "logInToCustomizeYourPush": "पुश-सूचनानां रुचयः परिवर्तयितुं प्रविशतु।",
+  "logInToJoinTheConversation": "संवादे योक्तुं टिप्पणीं कर्तुं च प्रविशतु।",
+  "logOut": "निर्गच्छतु",
+  "loggedInTrackingServices": "प्रविष्ट-अनुसरण-सेवाः",
+  "login": "प्रवेशः",
+  "loginAuthTokens": "प्रवेश व प्रमाण-टोकनाः",
+  "loginInsideTheAppRecommended": "अनुप्रयोगात् अन्तः प्रविशतु (अनुशंसितम्)",
+  "loginSessions": "प्रवेश-सत्राणि",
+  "loginUsingYourDefaultBrowser": "स्वमूलब्राउज़रेण प्रविशतु",
+  "loginWithToken": "टोकनेन प्रविशतु",
+  "logoAnimation": "लोगो-चलचित्रम्",
+  "logoName": "लोगो-नाम:",
+  "logs": "लॉगाः",
+  "longPressPageActions": "दीर्घ-स्पर्श पृष्ठ-क्रियाः",
+  "makeEverythingGlassyLiquidy": "सर्वं काचवत् द्रववत् कुरु...",
+  "manageAnilistLists": "Anilist-सूचीः प्रबन्धय",
+  "manageCachedImagesThresholdsAndReset": "संगृहीत-चित्राणि, सीमाः प्रबन्धय, अनुप्रयोग-दत्तांशं च पुनःस्थापय",
+  "manageDeviceStorageAndNotificationsTo": "माध्यमानि अपसंयोजने प्रबन्धयितुं यन्त्र-संग्रहणं सूचनाश्च प्रबन्धय।",
+  "manageLogCaptureAndShareSaved": "लॉग-ग्रहणं प्रबन्धय, संगृहीत-लॉगान् च साझीकुरु",
+  "manageMyanimelistLists": "MyAnimeList-सूचीः प्रबन्धय",
+  "managePluginsSources": "प्लगिन-स्रोतांश्च प्रबन्धय",
+  "manageSimklLists": "Simkl-सूचीः प्रबन्धय",
+  "manageSourcesAndRepositoriesToUse": "अनुप्रयोगस्य पूर्णसामर्थ्यं प्रयोक्तुं स्रोतान् भाण्डागारांश्च प्रबन्धय",
+  "manageYourMyanimelistAnilistSimklAccounts": "स्वकीयानि MyAnimeList, Anilist, Simkl खातानि प्रबन्धय!",
+  "management": "प्रबन्धनम्",
+  "manga": "मङ्गा",
+  "mangaNovelReaderSettingsTapZones": "मङ्गा व उपन्यास-पाठक-विन्यासाः, स्पर्श-क्षेत्राणि",
+  "mangaNovelViewerSettingsTapZones": "मङ्गा व उपन्यास-दर्शक-विन्यासाः, स्पर्श-क्षेत्राणि",
+  "mangaAndNovelReaderStylesAnd": "मङ्गा च उपन्यास-पाठक-शैल्यः च स्पर्श-क्षेत्राणि",
+  "mangaCustomLists": "मङ्गा-रुचिसूचयः",
+  "mangaDetailsPhrasing": "मङ्गा-विवरण-पदविन्यासः",
+  "mangaLibrary": "मङ्गा-ग्रन्थालयः",
+  "mangaList": "मङ्गा-सूची",
+  "mangaScore": "मङ्गा-अङ्कः",
+  "mangaSectionOrder": "मङ्गा-खण्ड-क्रमः",
+  "manuallyPasteOauthAccessToken": "OAuth प्रवेश-टोकनं स्वयं अन्तः योजय",
+  "markAllRead": "सर्वं पठितम् इति चिह्नय",
+  "markAsWatched": "दृष्टम् इति चिह्नय",
+  "markdownGuide": "Markdown मार्गदर्शिका",
+  "maximumDemuxerBufferMb": "अधिकतम demuxer बफर (MB)",
+  "maybeLater": "सम्भवतः पश्चात्",
+  "mean": "MEAN",
+  "meanScore": "माध्य-अङ्कः",
+  "mediaPlayback": "माध्यम व प्लेबैक",
+  "mediaLibrary": "माध्यम-ग्रन्थालयः",
+  "mediaSessionBluetoothSupport": "माध्यम-सत्रम् (ब्लूटूथ-समर्थनम्)",
+  "mediaTypeBreakdown": "माध्यम-प्रकार-विभागः",
+  "mediaYouDownloadWillAppearHere": "भवान् यद् माध्यमम् अवतारयति तद् अत्र दृश्येत।",
+  "megaskipDuration": "MegaSkip अवधिः",
+  "mention": "उल्लेखः",
+  "mentions": "उल्लेखाः",
+  "merge": "संयोजय",
+  "messageFriend": "मित्राय सन्देशं प्रेषय",
+  "minutesWatched": "दृष्ट-निमेषाः",
+  "miscellaneous": "विविधम्",
+  "missingRuntimeHost": "रनटाइम-होस्ट अनुपस्थितः",
+  "moderation": "नियन्त्रणम्",
+  "moderationActions": "नियन्त्रण-क्रियाः",
+  "moderationPanel": "नियन्त्रण-फलकम्",
+  "moderator": "नियन्त्रकः",
+  "moreOptions": "अधिक विकल्पाः",
+  "morePopularManga": "अधिक लोकप्रिय मङ्गा",
+  "moveToLeft": "वामं चालय",
+  "moveToRight": "दक्षिणं चालय",
+  "movie": "चलचित्रम्",
+  "mpvConfiguration": "MPV विन्यासः",
+  "muteUser": "उपयोक्तारं नि:शब्दं कुरु",
+  "mutualConnections": "परस्पर-सम्बन्धाः",
+  "mutualFriends": "परस्पर-मित्राणि",
+  "nameplates": "नामफलकानि",
+  "navBarLayout": "नेव-बार विन्यासः",
+  "navBarStyle": "नेव-बार शैली",
+  "navigationLayout": "मार्गदर्शन-विन्यासः",
+  "needHelp": "साहाय्यम् आवश्यकम्?",
+  "network": "जालम्",
+  "newLabel": "नवीनम्",
+  "newCollection": "नवीन-सङ्ग्रहः",
+  "newCustomListName": "नवीन रुचिसूचि-नाम",
+  "newDownload": "नवीन अवतारणम्",
+  "newList": "नवीन सूची",
+  "newestFirst": "नवीनतमं प्रथमम्",
+  "nextRelease": "अग्रिम प्रकाशनम्",
+  "nextReleasePrediction": "अग्रिम-प्रकाशन-पूर्वानुमानम्",
+  "noActiveDownloads": "सक्रियाः अवतारणाः नास्ति",
+  "noActiveSourceOrMediaFound": "सक्रियः स्रोतः वा माध्यमं वा न लब्धम्",
+  "noActiveSourceSelected": "सक्रियः स्रोतः न चितः",
+  "noActivity": "कार्यकलापः नास्ति",
+  "noAnimeFound": "कोऽपि Anime न लब्धः",
+  "noAudioTracksAvailable": "ध्वनि-मार्गाः अनुपलब्धाः",
+  "noChaptersFound": "कोऽपि अध्यायः न लब्धः",
+  "noChaptersFound2": "अध्यायाः न लब्धाः",
+  "noCommonGenres": "सामान्य-शैल्यः नास्ति",
+  "noCommonTags": "सामान्य-टैगाः नास्ति",
+  "noContributorsFound": "योगदानकर्तारः न लब्धाः।",
+  "noCustomListsAvailable": "रुचिसूचयः अनुपलब्धाः।",
+  "noCustomListsYet": "अद्यापि रुचिसूचयः नास्ति",
+  "noCustomListsYet2": "अद्यापि रुचिसूचयः नास्ति।",
+  "noDataAvailableForThisSection": "अस्य खण्डस्य कोऽपि दत्तांशः नास्ति",
+  "noDataAvailable": "दत्तांशः नास्ति।",
+  "noDecadeBreakdownAvailable": "दशक-विभागः अनुपलब्धः",
+  "noDescriptionAvailable": "विवरणं नास्ति",
+  "noDownloadedChaptersFoundForThis": "अस्य मङ्गायाः अवतारित-अध्यायाः न लब्धाः",
+  "noDownloadedEpisodesFoundForThis": "अस्य Anime-इत्यस्य अवतारित-भागाः न लब्धाः",
+  "noEntriesFound": "प्रविष्टयः न लब्धाः",
+  "noEpisodesFound": "भागाः न लब्धाः",
+  "noExtensionManagersFound": "विस्तार-प्रबन्धकाः न लब्धाः।",
+  "noExtensionsFound": "विस्ताराः न लब्धाः",
+  "noExtensionsInstalled": "विस्ताराः न स्थापिताः",
+  "noGenresAvailableAnilistApiMay": "शैल्यः अनुपलब्धाः। AniList API अस्थायिरूपेण न चलति स्यात्।",
+  "noHiddenTabs": "गुप्त-टैबाः नास्ति",
+  "noInsightsAvailableYetAddItems": "अद्यापि अन्तर्दृष्टयः अनुपलब्धाः। स्वग्रन्थालये वस्तूनि योजयतु!",
+  "noItemsInThisLibrary": "अस्मिन् ग्रन्थालये वस्तूनि नास्ति।",
+  "noLoggedStatsYetStartWatching": "अद्यापि लॉग-सांख्यिकी नास्ति। दर्शनं/पठनम् आरभतु!",
+  "noMediaFilesFound": "माध्यम-सञ्चिकाः न लब्धाः",
+  "noMediaFoundForThisStudio": "अस्य स्टूडियोस्य माध्यमं न लब्धम्",
+  "noMediaInThisList": "अस्यां सूच्यां माध्यमं नास्ति।",
+  "noMoreActivities": "अधिक कार्यकलापाः नास्ति",
+  "noMoreRecommendations": "अधिक शिफारसाः नास्ति",
+  "noMoreUsers": "अधिक उपयोक्तारः नास्ति",
+  "noNotificationsYet": "अद्यापि सूचनाः नास्ति",
+  "noNovelExtensionsInstalledToRead": "अस्य उपन्यासस्य पठनाय उपन्यास-विस्ताराः न स्थापिताः।",
+  "noPendingReports": "लम्बमानाः प्रतिवेदनाः नास्ति",
+  "noPlayableStreamAvailableForThis": "अस्य भागस्य चलनीयः प्रवाहः नास्ति।",
+  "noPlayableStreamWasReturnedBy": "अस्य स्रोतेन चलनीयः प्रवाहः न प्रत्यावर्तितः।",
+  "noRecentActivityFoundForSelected": "चितानां फिल्टरानां कृते हालीना कार्यकलापः न लब्धः",
+  "noRecommendationsFound": "शिफारसाः न लब्धाः",
+  "noRecommendationsYet": "अद्यापि शिफारसाः नास्ति",
+  "noReleasesFound": "प्रकाशनानि न लब्धानि।",
+  "noRepliesYetBeTheFirst": "अद्यापि उत्तराणि नास्ति। प्रथमः भवतु!",
+  "noRepositoriesYet": "अद्यापि भाण्डागाराः नास्ति",
+  "noResult": "परिणामः नास्ति",
+  "noResultsFound": "परिणामाः न लब्धाः।",
+  "noResultsYet": "अद्यापि परिणामाः नास्ति",
+  "noResultsTrySearchingByTitle": "परिणामाः नास्ति। शीर्षकेन अन्वेषणं कुरु।",
+  "noSearchResults": "अन्वेषण-परिणामाः नास्ति",
+  "noServersAvailable": "सेवकाः अनुपलब्धाः",
+  "noServersFound": "सेवकाः न लब्धाः।",
+  "noServicesAvailable": "सेवाः अनुपलब्धाः",
+  "noSourceInstalled": "स्रोतः न स्थापितः",
+  "noSourceSelected": "स्रोतः न चितः",
+  "noSourcesFound": "स्रोतांसि न लब्धानि",
+  "noStatsAvailable": "सांख्यिकी नास्ति",
+  "noSubtitleTracksAvailable": "उपशीर्षक-मार्गाः अनुपलब्धाः",
+  "noTestsRunning": "परीक्षाः न चलन्ति",
+  "noThemesYet": "अद्यापि विषयाः नास्ति",
+  "noTrackingServiceConnected": "अनुसरण-सेवा न संयोजिता",
+  "noUsersFound": "उपयोक्तारः न लब्धाः",
+  "noVisibleTabs": "दृश्य-टैबाः नास्ति",
+  "noVisualsFoundForThisAnime": "अस्य Anime-इत्यस्य दृश्यानि न लब्धानि (╥﹏╥)",
+  "noWatchOrderFound": "दर्शन-क्रमः न लब्धः।",
+  "notNow": "अधुना नहि",
+  "notSupported": "समर्थितं नास्ति",
+  "notTracked": "अनुसृतं नास्ति",
+  "noteAddingKotatsuRepositoryWillTake": "टिप्पणी: Kotatsu भाण्डागारं योजयितुं प्रथमारोपणे विस्तार-प्लगिन् अवतार्य परिवर्तयितुं कमपि 1-2 निमेषान् स्यात्।",
+  "nothingDownloadedYet": "अद्यापि किमपि नावतारितम्",
+  "nothingToPreview": "पूर्वावलोकनाय किमपि नास्ति",
+  "nothingToPreviewYet": "पूर्वावलोकनाय अद्यापि किमपि नास्ति।",
+  "notificationPreferences": "सूचना-रुचयः",
+  "notifications": "सूचनाः",
+  "notifyForOfficialAnnouncementsAndApp": "आधिकारिक घोषणाः अनुप्रयोग-अद्यतनानि च सूचयतु",
+  "notifyIfYourCommentIsRemoved": "नियन्त्रकेन टिप्पणी निष्कासिता चेत् सूचयतु",
+  "notifyOnNewCommentsForMedia": "चर्चितेषु माध्यमेषु नवीन-टिप्पणीषु सूचयतु",
+  "notifyOnUpvotesAndDownvotes": "उर्ध्व-मतेषु अधो-मतेषु च सूचयतु",
+  "notifyOnWarningsPinnedCommentsOr": "चेतावनीषु, पिन्-टिप्पणीषु, वा संवाद-तालेषु सूचयतु",
+  "notifyWhenSomeoneMentionsYourUsername": "कश्चित् भवतः @mentions उपयोक्तृनाम उल्लिखति चेत् सूचयतु",
+  "notifyWhenSomeoneRepliesToYour": "कश्चित् भवतः टिप्पण्यां उत्तरं ददाति चेत् सूचयतु",
+  "novel": "उपन्यासः",
+  "novelCustomLists": "उपन्यास-रुचिसूचयः",
+  "novelDetailsPhrasing": "उपन्यास-विवरण-पदविन्यासः",
+  "novelFontFamily": "उपन्यास-लिपि-कुलम्",
+  "novelLibrary": "उपन्यास-ग्रन्थालयः",
+  "novelSnapshots": "उपन्यास-चित्रच्छायाः",
+  "novelTheme": "उपन्यास-विषयः",
+  "novels": "उपन्यासाः",
+  "numberOfActiveDownloadTasks": "सक्रिय-अवतारण-कार्याणां संख्या",
+  "numberOfParallelChunksPerDownload": "प्रति-अवतारणं समान्तर-खण्डानां संख्या",
+  "okay": "ठीकम्",
+  "oldestFirst": "प्राचीनतमं प्रथमम्",
+  "oledMode": "OLED विधिः",
+  "onMyList": "मम सूच्यां",
+  "oneOptionPerLineLikeHwdec": "प्रतिपङ्क्ति एकः विकल्पः, यथा hwdec=auto वा scale=ewa_lanczossharp। # इत्यनेन आरभमाणाः पङ्क्तयः टिप्पण्यः। [कोष्ठकेषु] प्रोफाइलाः उपेक्ष्यन्ते।",
+  "online": "ऑनलाइन",
+  "openCloset": "कपाटम् उद्घाटय",
+  "openInBrowser": "ब्राउज़रे उद्घाटय",
+  "openSettings": "विन्यासाः उद्घाटय",
+  "openSource": "मुक्तस्रोतः",
+  "openSupportedLinks": "समर्थित-सम्बन्धान् उद्घाटय",
+  "openTheDownloadsScreenFromThe": "मेनुतः अवतारण-पटलम् उद्घाटय",
+  "openVideoStreamInExternalPlayer": "मूलतः बाह्य-प्लेयरे वीडियो-प्रवाहम् उद्घाटय",
+  "openWebview": "Webview उद्घाटय",
+  "openingsEndings": "आरम्भाः च समापनानि",
+  "openslEsNativeAudioEngine": "OpenSL ES मूल-ध्वनि-इञ्जिनम्",
+  "options": "विकल्पाः",
+  "order": "क्रमः",
+  "originalSize": "मूल-आकारः",
+  "otakuRankLevel": "Otaku-श्रेणी-स्तरः",
+  "other": "अन्यत्",
+  "otherFeatures": "अन्ये विशेषाः",
+  "otherRecommendations": "अन्याः शिफारसाः",
+  "otherStuffs": "अन्यानि वस्तूनि",
+  "otherTemporaryFiles": "अन्ये अस्थायिनः सञ्चिकाः",
+  "otherWaysToSupport": "समर्थनाय अन्ये मार्गाः",
+  "others": "अन्ये",
+  "outlineType": "रूपरेखा-प्रकारः",
+  "overscroll": "अतिस्क्रोल्",
+  "overscrollToPrevNextChapter": "पूर्व/परवर्ती अध्यायं प्रति अतिस्क्रोलः",
+  "overview": "सारांशः",
+  "overwrite": "अधिलिख",
+  "pageAnimationDemo": "पृष्ठ-आनिमेशन-प्रदर्शनम्",
+  "pageReaderMode": "पृष्ठ-पाठक-विधिः",
+  "paged": "पृष्ठबद्धम्",
+  "palette": "वर्णपट्टिका",
+  "palettes": "वर्णपट्टिकाः",
+  "paragraphSpacing": "अनुच्छेद-अन्तरम्",
+  "parallelSegmentsForVideoDownloader": "वीडियो-अवतारक-समानान्तर-खण्डाः",
+  "password": "गुप्तशब्दः",
+  "passwordProtectBackup": "बैकअप-गुप्तशब्देन रक्षय",
+  "passwordRequired": "गुप्तशब्दः आवश्यकः",
+  "passwordsDontMatch": "गुप्तशब्दाः न मेलन्ति!",
+  "pasteCustomImageUrl": "स्वनिर्मित-चित्र-URL अत्र योजय...",
+  "pasteUrlHere": "URL अत्र योजय...",
+  "pathCopiedToClipboard": "मार्गः क्लिपबोर्डे प्रतिलिखितः",
+  "payViaAnyUpiApp": "किमपि UPI-अनुप्रयोगेन दद",
+  "paypalDonation": "PayPal-दानम्",
+  "paypalRecipientNotice": "PayPal-ग्राहक-सूचना",
+  "penaltyDuration": "दण्ड-कालः",
+  "performance": "कार्यक्षमता",
+  "permissionsRequired": "अनुमतयः आवश्यकाः",
+  "persistentPageIndicator": "स्थायी-पृष्ठ-सूचकः",
+  "personalizeTheLookAndMakeIt": "रूपं वैयक्तिकं कुरु, स्वकीयं कुरु",
+  "personalizedRecommendations": "वैयक्तिक-संस्तुतयः",
+  "platform": "मञ्चः",
+  "playAroundWithAppTheme": "अनुप्रयोग-विषयेन क्रीडा कुरु",
+  "playAroundWithTheVideoPlayer": "वीडियो-चालकेन क्रीडा कुरु",
+  "playback": "पुनरुत्पादनम्",
+  "playbackSpeed": "पुनरुत्पादन-वेगः",
+  "playbackSpeeds": "पुनरुत्पादन-वेगाः",
+  "player": "चालकः",
+  "playerControlsSubtitlesAndPlaybackPreferences": "चालक-नियन्त्रणं, उपशीर्षकं, पुनरुत्पादन-प्राधान्यानि",
+  "playerSettings": "चालक-विन्यासः",
+  "playerTheme": "चालक-विषयः",
+  "playerThemes": "चालक-विषयाः",
+  "pleaseChooseALogoFile": "कृपया लोगो-सञ्चिकां चिनुत।",
+  "pleaseEnterAPasswordOrDisable": "कृपया गुप्तशब्दं प्रविशत अथवा गुप्तशब्द-रक्षणं निष्क्रियं कुरुत।",
+  "pleaseEnterASearchTerm": "कृपया अन्वेषणपदं प्रविशत",
+  "pleaseEnterAUsernameToCompare": "कृपया तुलनार्थं उपयोक्तृनाम प्रविशत।",
+  "pleaseGrantStoragePermissionToBrowse": "कृपया स्वमाध्यमसञ्चिकाः अवलोकितुं संग्रहण-अनुमतिं दत्त",
+  "pleaseLoginFirst": "कृपया प्रथमं प्रविशत",
+  "pleaseLoginFirstToExportYour": "कृपया सूचीं निर्यातुं प्रथमं प्रविशत।",
+  "pleaseLoginToFavorite": "कृपया प्रियम् कर्तुं प्रविशत!",
+  "pleaseLoginToUseThisFilter": "कृपया एतत् फिल्टरम् उपयोक्तुं प्रविशत!",
+  "pleaseProvideAReasonForThis": "कृपया अस्य क्रियायाः कारणं दत्त",
+  "pleaseSelectABackupFileFirst": "कृपया प्रथमं बैकअप-सञ्चिकां चिनुत",
+  "pleaseSelectAValidApkFile": "कृपया मान्यां APK-सञ्चिकां चिनुत।",
+  "pleaseSelectAValidJarFile": "कृपया मान्यां JAR-सञ्चिकां चिनुत।",
+  "pleaseSelectAtLeastOneItem": "बैकअपार्थं कमपि एकं वस्तु चिनुत।",
+  "pleaseSelectAtLeastOneItemTo": "पुनःस्थापनार्थं कमपि एकं वस्तु चिनुत।",
+  "pleaseWriteAtLeast30Characters": "कृपया न्यूनतमं ३० अक्षराणि लिखत",
+  "pluginInstallationSync": "प्लगिन-स्थापनं व समकालीकरणम्",
+  "pluginIsAlreadyUpToDate": "प्लगिन पूर्वमेव अद्यतनम् अस्ति।",
+  "pluginJarCopiedPleaseRestartThe": "प्लगिन-JAR प्रतिलिखितम्। कृपया अनुप्रयोगं पुनरारभत।",
+  "pluginNotInstalled": "प्लगिन न स्थापितम्",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "प्लगिन सफलतया पुनः अवतारितम्। प्रयोक्तुं कृपया पुनरारभत।",
+  "pluginReDownloadedPleaseRestartThe": "प्लगिन पुनः अवतारितम्। प्रयोक्तुं कृपया अनुप्रयोगं पुनरारभत।",
+  "pluginSyncedFromLocalApk": "स्थानीय APK-तः प्लगिनं समकालीकृतम्।",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (अधिकतम २० MB)",
+  "popular": "लोकप्रियम्",
+  "popularAnime": "लोकप्रिय-एनिमे",
+  "popularAnimes": "लोकप्रिय-एनिमेः",
+  "popularManga": "लोकप्रिय-मङ्गा",
+  "posterBlurMode": "पोस्टर-धूसरण-विधिः",
+  "posterBlurScope": "पोस्टर-धूसरण-परिधिः",
+  "poweredByAnimatch16PointCompatibility": "AnymeX-मध्ये AniMatch १६-बिन्दु-सङ्गतिविश्लेषणेन चालितम्",
+  "poweredByCommentumV2AdvancedComment": "Commentum v2 द्वारा चालितम् - नियन्त्रणसहितं उन्नत-टिप्पणी-तन्त्रम्",
+  "preferences": "प्राधान्यानि",
+  "preferencesSystem": "प्राधान्यानि व तन्त्रम्",
+  "preferredSubtitleLanguage": "प्रियोपशीर्षक-भाषा",
+  "preparingImageToShare": "साझाकरणार्थं चित्रं सज्जीक्रियते...",
+  "preparingStream": "प्रवाहः सज्जीक्रियते",
+  "presetProviders": "पूर्वनिश्चित-प्रदातारः",
+  "preventScreenFromSleeping": "स्क्रीनं निद्रातः निवारय",
+  "preview": "पूर्वावलोकनम्",
+  "previewUpper": "पूर्वावलोकनम्",
+  "privacySafety": "गोपनीयता व सुरक्षा",
+  "privacySettingsAndSafetyFeatures": "गोपनीयता-विन्यासाः व सुरक्षा-लक्षणानि",
+  "private": "निजी",
+  "privateEntry": "निजी-प्रविष्टिः",
+  "profileEffects": "प्रोफाइल-प्रभावाः",
+  "profileIcon": "प्रोफाइल-चिह्नम्",
+  "progress": "प्रगतिः",
+  "progressHistory": "प्रगतिः व इतिहासः",
+  "proposeNewFeaturesReportBugsAnd": "नवीनलक्षणानि प्रस्तावय, दोषान् सूचय, अन्यसदस्यैः सह वार्तालापं कुरु",
+  "protocol": "प्रोटोकॉलः",
+  "proxy": "प्रॉक्सी",
+  "proxyConfiguration": "प्रॉक्सी-विन्यासः",
+  "pulseaudioSoundServer": "PulseAudio ध्वनि-सेवकः",
+  "queryRemoteRepositoryForAddOn": "ऐड-ऑन-अद्यतनार्थं दूरस्थ-भाण्डागारं पृच्छ",
+  "queuedForDownload": "अवतारणार्थं पङ्क्तौ स्थितम्",
+  "quickSelectFollowing": "शीघ्र-चयनम् (अनुसरणीयाः)",
+  "radiusMultiplier": "त्रिज्या-गुणकः",
+  "random": "यादृच्छिकम्",
+  "range": "परिधिः",
+  "rank": "श्रेणी",
+  "rating": "मूल्याङ्कनम्",
+  "reDownloadAndReinstallThePlugin": "प्लगिनम् आरभ्य पुनः अवतार्य पुनः स्थापय",
+  "read": "पठितम्",
+  "readArticle": "लेखं पठ",
+  "readLatestUpdatesAboutThisAnime": "एतस्य एनिमेस्य नवीनतमाः अद्यतनानि पठ",
+  "readLatestUpdatesAboutThisManga": "एतस्य मङ्गायाः नवीनतमाः अद्यतनानि पठ",
+  "readOnePageAtATime": "एकदा एकं पृष्ठं पठ",
+  "readAheadDurationInMinutes": "अग्रपठन-कालः (निमेषेषु)",
+  "readaheadSeconds": "अग्रपठन-सेकण्डाः",
+  "reader": "पाठकः",
+  "readerBackgroundOpacity": "पाठक-पृष्ठभूमि-अपारदर्शिता",
+  "readerControlTheme": "पाठक-नियन्त्रण-विषयः",
+  "readerPreferences": "पाठक-प्राधान्यानि",
+  "readerSettings": "पाठक-विन्यासः",
+  "readingDirection": "पठन-दिशा",
+  "readingLayout": "पठन-विन्यासः",
+  "readingManga": "मङ्गा पठ्यते",
+  "readingMangaPhrasing": "मङ्गा-पठनस्य शब्दप्रयोगः",
+  "readingNovel": "उपन्यासः पठ्यते",
+  "readingNovelPhrasing": "उपन्यास-पठनस्य शब्दप्रयोगः",
+  "realTime4kUpscalingForAnime": "एनिमे-सामग्र्यर्थं वास्तविककालीन 4K उन्नयनम्",
+  "reason": "कारणम्",
+  "reasonDeleted": "कारणं विलोपितम्।",
+  "reasonUpdated": "कारणम् अद्यतनीकृतम्!",
+  "recentActivity": "अधुनातनी क्रिया",
+  "recentMediaComments": "अधुनातन-माध्यम-टिप्पण्यः",
+  "recentNews": "अधुनातन-वार्ताः",
+  "recentSearches": "अधुनातन-अन्वेषणानि",
+  "recentlyCompleted": "अधुना सम्पूर्णम्",
+  "recentlyUpdated": "अधुना अद्यतनीकृतम्",
+  "recommend": "संस्तुहि",
+  "recommendationSubmitted": "संस्तुतिः प्रेषिता! 🎉",
+  "recommended": "संस्तुतम्",
+  "recommendedAnime": "संस्तुत-एनिमे",
+  "recommendedBy": "द्वारा संस्तुतम्",
+  "recommendedManga": "संस्तुत-मङ्गा",
+  "recommendedNovels": "संस्तुत-उपन्यासाः",
+  "reduceColorBandingArtifacts": "वर्णपट्टीकरण-दोषान् न्यूनीकुरु",
+  "refreshComments": "टिप्पण्यः नवीकुरु",
+  "refreshRate": "नवीकरण-दरः",
+  "relations": "सम्बन्धाः",
+  "releaseDate": "प्रकाशन-तिथिः",
+  "releaseYear": "प्रकाशन-वर्षम्",
+  "releaseYearStats": "प्रकाशन-वर्ष-आङ्कडाः",
+  "rememberMyChoice": "मम चयनं स्मर",
+  "rememberServer": "सेवकं स्मर",
+  "removalRequestSentToAdminsFor": "निष्कासन-अभिप्रायः परीक्षणार्थं प्रशासकेभ्यः प्रेषितः।",
+  "remove": "निष्कासय",
+  "removeBanner": "बैनरं निष्कासय",
+  "removeDecoration": "अलङ्करणं निष्कासय",
+  "removeEffect": "प्रभावं निष्कासय",
+  "removeFromHistory": "इतिहासात् निष्कासय",
+  "removeItems": "वस्तूनि निष्कासय",
+  "removeNameplate": "नामफलकं निष्कासय",
+  "removeTheme": "विषयं निष्कासय",
+  "removeWhiteBlackBorders": "श्वेत/कृष्ण-सीमाः निष्कासय",
+  "removeYourReason": "तव कारणं निष्कासयसि?",
+  "rename": "पुनर्नामय",
+  "renameList": "सूचीं पुनर्नामय",
+  "reorderNavigationTabs": "नेविगेशन-पट्टिकाः पुनर्विन्यस्य",
+  "replaceExistingDataOnThisDevice": "अस्मिन् उपकरणे विद्यमानं दत्तांशं बैकअप-दत्तांशेन प्रतिस्थापय",
+  "replay": "पुनरावर्तय",
+  "reportsQueue": "प्रतिवेदन-पङ्क्तिः",
+  "repositories": "भाण्डागाराः",
+  "repositoryUrl": "भाण्डागार-URL",
+  "repositoryUrlUpper": "भाण्डागार-URL",
+  "requests": "अभ्यर्थनाः",
+  "requiredForCoreAndVisualTuning": "मूल व दृश्य-समायोजनार्थम् आवश्यकम्। न्यून-स्तरीय-उपकरणेषु निष्क्रियं रक्षत।",
+  "reset": "पुनःस्थापय",
+  "resetUpper": "पुनःस्थापय",
+  "resetDownloadPath": "अवतारण-मार्गं पुनःस्थापय",
+  "resetNovelReaderSettings": "उपन्यास-पाठक-विन्यासान् पुनःस्थापय",
+  "resetToDefault": "पूर्वनिश्चितं पुनःस्थापय",
+  "resetToDefault2": "पूर्वनिश्चितं पुनःस्थापय",
+  "resetToDefaultPicture": "पूर्वनिश्चित-चित्रं पुनःस्थापय",
+  "resetToDefaultWallpaper": "पूर्वनिश्चित-भित्तिचित्रं पुनःस्थापितम्!",
+  "resizeMode": "आकार-परिवर्तन-विधिः",
+  "resizeModes": "आकार-परिवर्तन-विधयः",
+  "resolution": "विभेदनम्",
+  "resolve": "समाधाय",
+  "restoreAllNovelReaderDefaults": "सर्वान् उपन्यास-पाठक-पूर्वनिश्चितान् पुनःस्थापय",
+  "restoreData": "दत्तांशं पुनःस्थापय",
+  "restorePreview": "पुनःस्थापन-पूर्वावलोकनम्",
+  "restoreToDefaultInternalStorage": "आन्तरिक-संग्रहणे पूर्वनिश्चितं पुनःस्थापय",
+  "restoringWillOverwriteYourSelectedLocal": "पुनःस्थापनेन चयनित-स्थानीय-पुस्तकालय-वस्तूनि विन्यासाश्च अस्य बैकअपस्य सामग्र्या अधिलिखिताः भविष्यन्ति।",
+  "restrictMessagesToFollowing": "सन्देशान् अनुसरणीयेषु सीमय",
+  "results": "परिणामाः",
+  "resultsWillAppearGroupedByExtension": "परिणामाः विस्तारानुसारं गुच्छीकृत्य दृश्येरन्",
+  "retainOriginalColor": "मूलवर्णं धारय",
+  "retry": "पुनः प्रयत्नय",
+  "rightSide": "दक्षिणपार्श्वम्",
+  "riseAndShine": "उत्तिष्ठ, प्रकाशस्व",
+  "roleUpdatedSuccessfully": "भूमिका सफलतया अद्यतनीकृता",
+  "roleAll": "भूमिका: सर्वे",
+  "rollbackVersion": "पूर्वसंस्करणं पुनःस्थापय",
+  "romajiTitle": "रोमाजी-शीर्षकम्",
+  "roundUpScores": "अङ्कान् पूर्णीकुरु",
+  "runtimeHost": "चालन-आतिथेयः",
+  "runtimeHostReleases": "चालन-आतिथेय-प्रकाशनानि",
+  "runtimeHostRequired": "चालन-आतिथेय आवश्यकः",
+  "safetyFeatures": "सुरक्षा-लक्षणानि:",
+  "saturation": "सन्तृप्तिः",
+  "sauceSearcher": "स्रोत-अन्वेषकः",
+  "save": "रक्षय",
+  "saveEquip": "रक्षय व सज्जीकुरु",
+  "saveChanges": "परिवर्तनानि रक्षय",
+  "saveChanges2": "परिवर्तनानि रक्षय",
+  "saveLastFrame": "अन्तिमं फ्रेमं रक्षय",
+  "saveLogo": "लोगो रक्षय",
+  "savedAnimeEntriesAndProgress": "रक्षिताः एनिमे-प्रविष्टयः प्रगतिः च",
+  "savedLightNovelsAndReadingState": "रक्षिताः लघु-उपन्यासाः पठनस्थितिः च",
+  "savedMangaEntriesAndChapters": "रक्षिताः मङ्गा-प्रविष्टयः अध्यायाः च",
+  "savedStreamLinkHasExpiredFetching": "रक्षितः प्रवाह-सम्बन्धः कालातीतः अभवत्। नूतनं सम्बन्धम् आनयति...",
+  "savesAScreenshotOfTheLast": "अन्तिमस्य दृष्टस्य फ्रेमस्य स्क्रीनशॉट् रक्षति। अस्य निष्क्रियीकरणेन संग्रहण-उपयोगः बहुधा न्यूनीभवति",
+  "scaleFactor": "मापनगुणकः",
+  "scalingAlgorithm": "मापन-अल्गोरिदम्",
+  "scanningForMoreServers": "अधिकसेवकानां अन्वेषणम्...",
+  "scanningForVideoStreams": "वीडियो-प्रवाहानाम् अन्वेषणम्...",
+  "score": "अङ्कः",
+  "scoreDistribution": "अङ्कवितरणम्",
+  "scoringSystem": "अङ्कन-पद्धतिः",
+  "search": "अन्वेषणम्",
+  "searchUpper": "अन्वेषणम्",
+  "searchAcrossExtensions": "विस्तारेषु अन्वेषय...",
+  "searchAnimeMovies": "एनिमे, चलच्चित्राणि अन्वेषय...",
+  "searchAnime": "एनिमे अन्वेषय...",
+  "searchExtensions": "विस्तारान् अन्वेषय",
+  "searchExtensionsEllipsis": "विस्तारान् अन्वेषय...",
+  "searchFailed": "अन्वेषणं विफलम्",
+  "searchForAnime": "एनिमे-अन्वेषणम्",
+  "searchInHistory": "इतिहासे अन्वेषय...",
+  "searchInLibrary": "पुस्तकालये अन्वेषय...",
+  "searchItemsInList": "सूच्यां वस्तूनि अन्वेषय...",
+  "searchManga": "मङ्गा अन्वेषय...",
+  "searchQuery": "अन्वेषण-पृच्छा",
+  "searchSources": "स्रोतान् अन्वेषय...",
+  "searchTags": "चिह्नानि अन्वेषय...",
+  "searchUser": "उपयोक्तारम् अन्वेषय",
+  "searchingDatabase": "दत्तांशकोशम् अन्विष्यते...",
+  "searching": "अन्विष्यते...",
+  "season": "सत्रम्",
+  "seasons": "सत्राणि",
+  "secondsPerScreenLowerIsFaster": "प्रति-स्क्रीन सेकण्डाः (न्यूनं शीघ्रतरम्)",
+  "secondsPerScreenPageLowerIs": "प्रति-स्क्रीन/पृष्ठं सेकण्डाः (न्यूनं शीघ्रतरम्)",
+  "securityEncryption": "सुरक्षा व सङ्केतलेखनम्",
+  "seePeopleWhoContributedToAnymex": "AnymeX-मध्ये योगदानं कृतवन्तः जनान् पश्य",
+  "selectAFolderWhereAnymexWill": "एकं फोल्डरं चिनुत यत्र AnymeX अवतारितान् एनिमे-एपिसोड्स् व मङ्गा-अध्यायान् रक्षिष्यति।",
+  "selectAnAnimeScreenshotToFind": "तस्य स्रोतं ज्ञातुम् एकं एनिमे-स्क्रीनशॉट् चिनुत",
+  "selectAnilistMyanimelistSimklOrExtensions": "AniList, MyAnimeList, Simkl, अथवा विस्तार-विधिं चिनुत",
+  "selectDirectory": "निर्देशिकां चिनोतु",
+  "selectExtensions": "प्रत्ययान् चिनोतु",
+  "selectFolder": "सञ्चिका-कोशं चिनोतु",
+  "selectLanguage": "भाषां चिनोतु",
+  "selectMediaDirectory": "माध्यम-निर्देशिकां चिनोतु",
+  "selectNovelSource": "उपन्यास-स्रोतं चिनोतु",
+  "selectProfile": "परिचयं चिनोतु",
+  "selectRange": "परिसरं चिनोतु",
+  "selectServer": "सर्वरं चिनोतु",
+  "selectStatus": "स्थितिं चिनोतु",
+  "selectSubtitleFont": "उपशीर्षक-अक्षररूपं चिनोतु",
+  "selectTags": "टैग्स् चिनोतु",
+  "selectTimezone": "समयक्षेत्रं चिनोतु",
+  "selectVersionToRollback": "प्रत्यावर्तनाय संस्करणं चिनोतु",
+  "selectVideoFile": "दृश्य-सञ्चिकां चिनोतु",
+  "selectYourPreferredContentSource": "भवतः इष्टं विषय-स्रोतं चिनोतु",
+  "selectedCacheCleared": "चयनितं संग्रहणं (cache) शोधितम्",
+  "selectedItemsRemoved": "चयनिताः वस्तूनि अपाकृतानि",
+  "sensitiveLoginTokensForMalSimkl": "MAL, Simkl तथा AniList इत्येतेषां संवेदनशीलाः प्रवेश-टोकनाः",
+  "sensitiveSessionTokensForMalSimkl": "MAL, Simkl तथा AniList इत्येतेषां संवेदनशीलाः सत्र-टोकनाः",
+  "separateCompletedAnimeListIntoSections": "सम्पूर्णानां एनिमे-सूचीं स्वरूपानुसारं विभागेषु विभजतु।",
+  "separateCompletedMangaListIntoSections": "सम्पूर्णानां मङ्गा-सूचीं स्वरूपानुसारं विभागेषु विभजतु।",
+  "serverDetails": "सर्वर-विवरणानि",
+  "serverChanIsTakingANap": "Server-chan विश्रामे अस्ति!",
+  "setUpYourPreferencesForThe": "सर्वोत्तम-अनुभवाय भवतः रुचयः विन्यस्यन्ताम्",
+  "settings": "विन्यासाः",
+  "settingsAccount": "विन्यासाः तथा खाता",
+  "settingsAuthentication": "विन्यासाः तथा प्रमाणीकरणम्",
+  "settingsSavedSuccessfully": "विन्यासाः सफलतया संरक्षिताः।",
+  "shaderProfilesInitialized": "Shader-परिचयाः आरब्धाः",
+  "shadowBanUser": "उपयोक्तारं छाया-प्रतिबन्धय",
+  "shareLogs": "लेखाः (logs) साझां कुरु",
+  "shareMatchCard": "मेल-पत्रं साझां कुरु",
+  "shareProfile": "परिचयं साझां कुरु",
+  "shareTheSavedLogFileOr": "संरक्षितां लेख-सञ्चिकां साझां कुरु, अथवा तस्याः अन्तर्वस्तु प्रतिलिपय।",
+  "sharedFromAnymex": "AnymeX तः साझीकृतम्",
+  "showAnimatedEffectOverlaysOnProfile": "परिचय-पट्टिकासु सजीव-प्रभावाच्छादनानि दर्शय",
+  "showAnimatedFramesAroundUserAvatars": "उपयोक्तृ-अवतारानां परितः सजीव-फ्रेमाः दर्शय",
+  "showBatteryTime": "बैटरी तथा समयं दर्शय",
+  "showChapterTransitionEvenWithoutGaps": "अन्तरालं विना अपि अध्याय-संक्रमणं दर्शय",
+  "showCommunityRecommendations": "समुदाय-शिफारसीः दर्शय",
+  "showContinueWatchingCard": "अग्रे-द्रष्टव्य-पत्रं दर्शय",
+  "showContinueWatchingOnHome": "गृहे 'अग्रे द्रक्ष्यामि' दर्शय",
+  "showCustomProfileBannersFallsBack": "स्वनिर्मित परिचय-बैनराः दर्शय (निष्क्रिये AniList आवरणं उपयुज्यते)",
+  "showNameplateBackgroundsOnCommentCards": "टिप्पणी-पत्रेषु तथा क्रम-पट्टिकायां नामपट्ट-पृष्ठभूमयः दर्शय",
+  "showOnLeft": "वामे दर्शय",
+  "showOnRight": "दक्षिणे दर्शय",
+  "showReadingProgress": "पठन-प्रगतिं दर्शय",
+  "showTimestamps": "समयचिह्नानि दर्शय",
+  "simpleCompactListView": "सरल-संक्षिप्त-सूचीदृश्यम्",
+  "simpleDirectmediaLayerAudioOutput": "सरल DirectMedia Layer ध्वनि-निर्गमः",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "सरल विन्यासः, यः प्रकरण-संख्यां, शीर्षकं, प्रगतिं च चित्रं विना दर्शयति",
+  "sizeMode": "आकार-प्रकारः:",
+  "smartMangaSuggestions": "बुद्धिमान् मङ्गा-सूचनाः",
+  "smootherMotionCanIncreaseGpuUsage": "सुगमतरा गतिः, GPU-उपयोगं वर्धयितुं शक्नोति",
+  "social": "सामाजिक",
+  "somethingWentWrong": "किञ्चित् दोषः अभवत्",
+  "sort": "क्रमः",
+  "sort2": "क्रमयतु",
+  "sortBy": "इत्यनुसारं क्रमः",
+  "sortBy2": "इत्यनुसारं क्रमयतु",
+  "sortComments": "टिप्पणीः क्रमयतु",
+  "source": "स्रोतः",
+  "sourceAndPluginConfigurations": "स्रोत-तथा-प्लगिन्-विन्यासाः",
+  "sourcePreferences": "स्रोत-रुचयः",
+  "spaceBetweenLetters": "अक्षराणां मध्ये अवकाशः",
+  "spaceBetweenParagraphs": "अनुच्छेदानां मध्ये अवकाशः",
+  "spaceBetweenWords": "पदानां मध्ये अवकाशः",
+  "spacedPages": "अन्तरित-पृष्ठानि",
+  "splitCompletedAnimeList": "सम्पूर्ण-एनिमे-सूचीं विभजतु",
+  "splitCompletedMangaList": "सम्पूर्ण-मङ्गा-सूचीं विभजतु",
+  "spoiler": "रहस्यभङ्गः",
+  "spoilerTapToReveal": "रहस्यभङ्गः (प्रकटयितुं स्पृशतु)",
+  "staff": "कर्मचारिणः",
+  "staffCharacterNameLanguage": "कर्मचारी तथा पात्र-नाम-भाषा",
+  "standardGpuRendering": "मानक GPU-प्रतिपादनम्",
+  "starOnGithub": "GitHub इत्यत्र तारकां ददातु",
+  "startANewDownloadFromThe": "\"नूतन अवतरणम्\" पट्टिकातः नूतनम् अवतरणम् आरभतु",
+  "startChapter": "प्रारम्भ-अध्यायः",
+  "startDate": "प्रारम्भ-तिथिः",
+  "startMangaDownload": "मङ्गा-अवतरणम् आरभतु",
+  "startTest": "परीक्षणम् आरभतु",
+  "startingExtensionRuntime": "विस्तार-रनटाइम् आरभ्यते...",
+  "statistics": "सांख्यिकी",
+  "stats": "सांख्यिकाः",
+  "status": "स्थितिः",
+  "statusDistribution": "स्थिति-वितरणम्",
+  "statusPostedSuccessfully": "स्थितिः सफलतया प्रकाशिता!",
+  "stayUpdatedWithTheLatestReleases": "नवीनतम-प्रकाशन, घोषणाः तथा चर्चाभिः अद्यतनाः तिष्ठतु",
+  "storagePath": "सञ्चयः तथा मार्गः",
+  "storageManager": "सञ्चय-प्रबन्धकः",
+  "storageOptions": "सञ्चय-विकल्पाः",
+  "storagePermission": "सञ्चय-अनुमतिः",
+  "storagePermissionIsRequiredToDownload": "अद्यतनानि अवतरितुं सञ्चय-अनुमतिः आवश्यकी अस्ति",
+  "storagePermissionRequired": "सञ्चय-अनुमतिः आवश्यकी",
+  "streakCurLong": "परम्परा (वर्तमाना/दीर्घतमा)",
+  "stretchImagesToFitScreenWidth": "पर्दा-विस्तारानुसारं चित्राणि विस्तारय",
+  "strikethrough": "आरेखितम्",
+  "studios": "निर्माणसंस्थाः",
+  "style": "शैली",
+  "subtitleBackgroundColor": "उपशीर्षक-पृष्ठभूमि-वर्णः",
+  "subtitleColor": "उपशीर्षक-वर्णः",
+  "subtitleFont": "उपशीर्षक-अक्षररूपम्",
+  "subtitleOutlineColor": "उपशीर्षक-रेखा-वर्णः",
+  "subtitleOutlineWidth": "उपशीर्षक-रेखा-विस्तारः",
+  "subtitlePreview": "उपशीर्षक-पूर्वावलोकनम्",
+  "subtitlePreviewText": "उपशीर्षक-पूर्वावलोकन-पाठः",
+  "subtitleSize": "उपशीर्षक-आकारः",
+  "subtitleTransparency": "उपशीर्षक-पारदर्शिता",
+  "subtitles": "उपशीर्षकाणि",
+  "summary": "सारांशः",
+  "superAdmin": "महा-प्रशासकः",
+  "supportTtfAndOtfFiles": ".ttf तथा .otf सञ्चिकाः समर्थयति",
+  "supportAnymex": "AnymeX समर्थय",
+  "supportedModes": "समर्थिताः विधाः",
+  "supportedUpiApps": "समर्थिताः UPI अनुप्रयोगाः",
+  "suppressActivityWhenWatchingOrReading": "NSFW विषयाणां दर्शने वा पठने क्रियाकलापं निरुन्धि",
+  "swapUpDownActions": "ऊर्ध्व/अधः क्रियाः विनिमय",
+  "swipeBetweenChapters": "अध्यायानां मध्ये स्वाइप् कुरु",
+  "swipeIndicatorTheme": "स्वाइप्-सूचक-विषयः",
+  "swipeToSeek": "स्वाइप् कृत्वा अग्रे/पश्चात् गच्छ",
+  "switchBetweenDefaultTitleAndRomaji": "पुस्तकालये तथा पत्रकेषु मूल-शीर्षकं रोमाजि/वैकल्पिक-शीर्षकं च परिवर्तय",
+  "switchToOnline": "ऑनलाइन-प्रति परिवर्तय",
+  "syncCompletedButThePluginIs": "समकालीकरणं सम्पन्नम्, किन्तु प्लगिन् अद्यापि सज्जं नास्ति।",
+  "syncDetails": "समकालीकरण-विवरणानि",
+  "syncFailed": "समकालीकरणं विफलम्",
+  "synonyms": "पर्यायाः",
+  "synopsis": "सारांशः",
+  "tags": "टैग्स्",
+  "tags2": "टैग्स्",
+  "takeColorFromYourWallpaperA12": "भवतः पृष्ठचित्रात् वर्णं गृहाण (A12+)",
+  "tapToAddARepositoryUrl": "भाण्डागार-URL योजयितुं + स्पृशतु",
+  "tapAZoneToChangeIts": "तस्य क्रियां परिवर्तयितुं क्षेत्रं स्पृशतु",
+  "tapAction": "स्पर्श-क्रिया",
+  "tapToChooseASource": "स्रोतं चिनोतुं स्पृशतु",
+  "tapToLogin": "प्रवेशाय स्पृशतु",
+  "tapToLogout": "निर्गमाय स्पृशतु",
+  "tapToScroll": "स्क्रोल कर्तुं स्पृशतु",
+  "tapYourProfileIconInThe": "शीर्ष-अनुप्रयोग-पट्ट्यां भवतः परिचय-चिह्नं स्पृशतु",
+  "tapZones": "स्पर्श-क्षेत्राणि",
+  "tellTheCommunityWhyThisDeserves": "अस्य अधिकं ध्यानं किमर्थम् अर्हति इति समुदायाय वदतु।",
+  "temporaryAppCache": "अस्थायी अनुप्रयोग-संग्रहणम् (cache)",
+  "termsOfServicePrivacyPolicy": "सेवा-शर्ताः / गोपनीयता-नीतिः",
+  "test": "परीक्षा",
+  "testExtensions": "विस्तारान् परीक्षस्व",
+  "testResults": "परीक्षाफलानि",
+  "testType": "परीक्षा-प्रकारः",
+  "textSize": "पाठ-आकारः",
+  "theme": "विषयः",
+  "themeLayoutAndColors": "विषयः, विन्यासः तथा वर्णाः",
+  "themes": "विषयाः",
+  "thisBackupIsEncryptedPleaseEnter": "एषः बैकअप् गुप्तीकृतः अस्ति। अग्रे गन्तुं कृपया गुप्तशब्दं प्रविशतु।",
+  "thisDirectoryContainsNoSupportedMedia": "अस्यां निर्देशिकायां समर्थिताः माध्यम-सञ्चिकाः न सन्ति",
+  "thisMayTakeAFewSeconds": "एतत् कतिपयानि सेकण्ड्-कालं गृह्णीयात्",
+  "thisMayTakeUpTo30": "एतत् 30 सेकण्ड्-पर्यन्तं गृह्णीयात्",
+  "thisMightTakeAFewSeconds": "एतत् कतिपयानि सेकण्ड्-कालं गृह्णीयात्",
+  "thisReasonWillBeDeletedImmediately": "एतत् कारणं तत्क्षणमेव अपाकरिष्यते।",
+  "thisWillPermanentlyDeleteAllData": "एतत् AnymeX इत्यस्य सर्वान् सञ्चितान् दत्तांशान् स्थायिरूपेण अपाकरिष्यति। एतत् अपरिवर्तनीयम्।",
+  "tipYouCanCombineTheseE": "सूचना: एतानि संयोजयितुं शक्नोषि! यथा **bold और *italic* सह**",
+  "title": "शीर्षकम्",
+  "titleCopied": "शीर्षकं प्रतिलिपितम्",
+  "titleLanguage": "शीर्षक-भाषा",
+  "toDownloadForTheFirstTime": "प्रथमवारं अवतरितुं प्रथमं अवतरण-पृष्ठे अनुमतयः दत्ताः भवन्तु:",
+  "toggleBetweenGridAndDetailedList": "जालक-दृश्य तथा विस्तृत-सूची-दृश्ययोः मध्ये परिवर्तय",
+  "toneMapping": "स्वर-मानचित्रणम्",
+  "topAnime": "शीर्ष एनिमे",
+  "topComments": "शीर्ष-टिप्पण्यः",
+  "topGenres": "शीर्ष-शैल्यः",
+  "topManga": "शीर्ष मङ्गा",
+  "topManhua": "शीर्ष मानहुआ",
+  "topManhwa": "शीर्ष मानह्वा",
+  "topStudios": "शीर्ष निर्माणसंस्थाः",
+  "torrentServer": "टोरेन्ट-सर्वरः",
+  "torrentStreamCache": "टोरेन्ट-स्ट्रीम-संग्रहणम्",
+  "torrserverStreamingAddOns": "TorrServer तथा स्ट्रीमिङ्ग-अतिरिक्ताः",
+  "totalChapters": "कुल-अध्यायाः",
+  "totalCost": "कुल-मूल्यम्:",
+  "totalItems": "कुल-वस्तूनि",
+  "track": "अनुसरतु",
+  "trackAiringSchedules": "प्रसारण-सूचीम् अनुसरतु",
+  "trackYourProgress": "भवतः प्रगतिम् अनुसरसि?",
+  "trackingServices": "अनुसरण-सेवाः",
+  "transitionSubtitle": "संक्रमण-उपशीर्षकम्",
+  "translateTo": "अनुवादय",
+  "translationLanguage": "अनुवाद-भाषा",
+  "translucentNav": "अर्धपारदर्शी नेविगेशन",
+  "trendingAnime": "प्रवृत्ताः एनिमे",
+  "trendingAnimes": "प्रवृत्ताः एनिमे",
+  "trendingManga": "प्रवृत्ता मङ्गा",
+  "tryADifferentKeyword": "भिन्नं कुञ्जीशब्दं प्रयतस्व",
+  "tryAdjustingYourFilters": "भवतः फिल्टर्-समायोजनं प्रयतस्व",
+  "tryAgain": "पुनः प्रयतस्व",
+  "tryDifferentAnimationStylesForPage": "पृष्ठ-प्रवेशाय भिन्नाः चलनशैलीः प्रयतस्व",
+  "ttsAutoAdvance": "TTS स्वयं-अग्रसरणम्",
+  "ttsPitch": "TTS स्वरोच्चता",
+  "ttsSpeed": "TTS वेगः",
+  "tweakGeneralAppSettings": "सामान्य-अनुप्रयोग-विन्यासान् सूक्ष्मतया परिवर्तय",
+  "typeLabel": "प्रकारः",
+  "typeAtLeast2CharactersTo": "अन्वेषणाय कमपि 2 अक्षरं लिखतु",
+  "ui": "UI",
+  "uiComponents": "UI घटकाः",
+  "uiLayoutColorsAndThemes": "UI विन्यासः, वर्णाः तथा विषयाः",
+  "uiLayoutColorsAndVisualStyles": "UI विन्यासः, वर्णाः तथा दृश्य-शैल्यः",
+  "uiSettings": "UI विन्यासाः",
+  "unableToPreparePlaybackRightNow": "अधुना प्लेबैक् सज्जीकर्तुं न शक्यते। कृपया पुनः प्रयतस्व।",
+  "unbanUser": "उपयोक्तृ-प्रतिबन्धं हर",
+  "unbind": "बन्धनं मोचय",
+  "unifiedLibrary": "एकीकृत-पुस्तकालयः",
+  "uninstall": "अपस्थापय",
+  "universal": "सार्वत्रिक",
+  "unlock": "उद्घाटय",
+  "unlockCustomizations": "वैयक्तिकीकरणम् उद्घाटय",
+  "unmuteUser": "उपयोक्तारं मूक-मुक्तं कुरु",
+  "unreadOnly": "केवलम् अपठितानि",
+  "upcomingAnime": "आगामी एनिमे",
+  "update": "अद्यतनय",
+  "updateAll": "सर्वाणि अद्यतनय",
+  "updateCheckComplete": "अद्यतन-परीक्षा सम्पूर्णा",
+  "updateOnImport": "आयाते अद्यतनय",
+  "updateToLatestVersion": "नवीनतम-संस्करणे अद्यतनय",
+  "updateYourActivity": "भवतः क्रियाकलापम् अद्यतनय...",
+  "updatesPending": "अद्यतनानि प्रतीक्षन्ते",
+  "upiDonation": "UPI दानम्",
+  "uploadAnImageToGetStarted": "आरभितुं चित्रम् अपलोड् कुरु",
+  "uploadImage": "चित्रम् अपलोड् कुरु",
+  "urlCopiedToClipboard": "URL क्लिपबोर्डे प्रतिलिपितम्",
+  "usage": "उपयोगः:",
+  "useAiToTranslateSoftSubtitles": "सजीवं मृदु-उपशीर्षकानि अनुवादयितुं AI उपयुज्यताम्",
+  "useAlternateTitle": "वैकल्पिक-शीर्षकम् उपयुज्यताम्",
+  "useBuffering": "बफरिङ्ग् उपयुज्यताम्",
+  "useCustomGesturesForReaderNavigation": "पाठक-नेविगेशनाय स्वनिर्मित-संकेतान् उपयोजय",
+  "useEnhancedEpisodeMetadataAndCovers": "उन्नत-प्रकरण-मेटाडेटा तथा आवरणानि उपयुज्यन्ताम्",
+  "useExternalPlayer": "बाह्य-प्लेयरः उपयुज्यताम्",
+  "useKeyboardShortcutsDuringPlaybackTo": "प्लेबैक्-काले प्रोफाइल परिवर्तयितुं कीबोर्ड्-लघुमार्गान् उपयोजय",
+  "useLegacyHeader": "पुरातनं शीर्षकम् उपयुज्यताम्",
+  "useLibassForSubtitles": "उपशीर्षकार्थं Libass उपयुज्यताम्",
+  "useLibmpvForPlayback": "प्लेबैक्-अर्थं LibMpv उपयुज्यताम्",
+  "useMpvConf": "mpv.conf उपयुज्यताम्",
+  "usePosterColor": "पोस्टर-वर्णः उपयुज्यताम्",
+  "useVolumeKeysToChangePages": "पृष्ठ-परिवर्तनाय ध्वनि-कुञ्चिकाः उपयोजय",
+  "useYearRange": "वर्ष-परिसरः उपयुज्यताम्",
+  "user": "उपयोक्ता",
+  "userIdCopiedToClipboard": "उपयोक्तृ-ID क्लिपबोर्डे प्रतिलिपितम्",
+  "userList": "उपयोक्तृ-सूची",
+  "userManagement": "उपयोक्तृ-प्रबन्धनम्",
+  "userCreatedCustomMediaCollections": "उपयोक्तृ-निर्मिताः स्वनिर्मिताः माध्यम-सङ्ग्रहाः",
+  "username": "उपयोक्तृनाम",
+  "verifyTlsCertificates": "TLS प्रमाणपत्राणि सत्यापय",
+  "versionCopied": "संस्करणं प्रतिलिपितम्",
+  "vertical": "ऊर्ध्वाधरम्",
+  "videoPlayer": "चलचित्र-वादकः",
+  "videoRenderer": "चलचित्र-निरूपकः",
+  "videoSync": "चलचित्र-समन्वयः",
+  "viewAndFilterAllUsers": "सर्वान् उपयोक्तॄन् पश्यतु च छानयतु",
+  "viewOnAnilist": "AniList इत्यत्र पश्यतु",
+  "viewOpeningAndEndingThemes": "आरम्भ-समाप्ति-गीतानि पश्यतु",
+  "viewProfile": "परिचयं पश्यतु",
+  "viewSourceCodeOnGithub": "GitHub इत्यत्र स्रोतसंकेतं पश्यतु.",
+  "viewTheChronologicalWatchOrderOf": "अस्य अनिमे-चित्रस्य कालक्रमिकं दर्शनक्रमं पश्यतु",
+  "viewUser": "उपयोक्तारं पश्यतु",
+  "viewUserRankingsTopContributorsReputation": "उपयोक्तृ-क्रमाङ्कनानि, प्रमुख-योगदातारः च ख्यातिं पश्यतु",
+  "viewingAnimeDetails": "अनिमे-विवरणानि पश्यन्",
+  "viewingMangaDetails": "मङ्गा-विवरणानि पश्यन्",
+  "viewingNovelDetails": "उपन्यास-विवरणानि पश्यन्",
+  "visibleTabs": "दृश्य-पट्टिकाः",
+  "visitGithubReleasesPageForChangelogs": "परिवर्तन-सूची तथा हस्तचालित-अवतरणार्थं GitHub विमोचन-पृष्ठं गच्छतु",
+  "visualFromAnymex": "AnymeX इत्यस्मात् दृश्यम्",
+  "voiceActors": "स्वर-अभिनेतारः",
+  "voicedCharacters": "स्वरदत्त-पात्राणि",
+  "volumeButtonScrolling": "ध्वनि-बटन-सञ्चलनम्",
+  "volumeKeysNavigation": "ध्वनि-कुञ्चिका-मार्गदर्शनम्",
+  "volumes": "खण्डाः",
+  "volumesRead": "पठित-खण्डाः",
+  "votes": "मतानि",
+  "wWhatAreYouDoingStep": "अरे, किं करोषि? प्रथमं प्रवेशं कुरु (●´⌓`●)",
+  "wallpaper": "भित्तिचित्रम्",
+  "warnUser": "उपयोक्तारं सावधानं कुरु",
+  "warning": "चेतावनी",
+  "wasThisHelpful": "किम् एतत् उपयोगि आसीत्?",
+  "watchAd": "विज्ञापनं पश्यतु",
+  "watchAnAdToSupport": "समर्थनार्थं विज्ञापनं पश्यतु",
+  "watchAnime": "अनिमे पश्यतु",
+  "watchOrder": "दर्शनक्रमः",
+  "watchTogether": "सह पश्यतु",
+  "watchTogetherPolicy": "सह-दर्शन-नीतिः",
+  "watchingAnime": "अनिमे पश्यन्",
+  "watchingAnimePhrasing": "अनिमे-दर्शन-शब्दरचना",
+  "welcomeToAnymex": "AnymeX इत्यत्र स्वागतम्",
+  "whatsOnYourMind": "किं चिन्तयसि?",
+  "whenEnabledAnymexSavesLogsLocally": "सक्षमीकृते सति, निष्क्रियीकरणपर्यन्तं AnymeX लेखाः स्थानीयरूपेण रक्षति।",
+  "whyAreYouRecommendingThisMin": "एतत् किमर्थं संस्तौषि? (न्यूनतमं ३० अक्षराणि)",
+  "whyIsThisUnderratedMin30": "एतत् किमर्थम् अल्पमूल्याङ्कितम्? (न्यूनतमं ३० अक्षराणि)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "शब्दान्तरम्",
+  "writeAMessage": "सन्देशं लिखतु...",
+  "writeLogToAFile": "लेखं सञ्चिकायां लिखतु",
+  "writeYourAnilistBio": "स्वकीयं AniList परिचयं लिखतु...",
+  "wrongTitle": "शीर्षकं दोषपूर्णम्?",
+  "year": "वर्षम्",
+  "yearUpper": "वर्षम्",
+  "you": "त्वम्",
+  "youCanUseDiscordStyleMarkdown": "टिप्पण्यः सज्जीकर्तुं Discord-शैल्या markdown प्रयोक्तुं शक्नोषि:",
+  "youHaveUnsentTextClosingNow": "भवतः अप्रेषितः पाठः अस्ति। अधुना बन्दने सन्देशः नष्टो भविष्यति।",
+  "youHaveUnsentTextClosingNowWill": "भवतः अप्रेषितः पाठः अस्ति। अधुना बन्दने प्रत्युत्तरं नष्टं भविष्यति।",
+  "youHaveUnsentTextClosingNowWillLose": "भवतः अप्रेषितः पाठः अस्ति। अधुना बन्दने स्थितिः नष्टा भविष्यति।",
+  "youNeedModeratorPermissionsToAccess": "अस्य फलकस्य प्रवेशाय परिचालक-अनुमतिः आवश्यकी।",
+  "youreUpLate": "त्वं विलम्बेन जागरूकः असि",
+  "yourBalance": "भवतः शेषम्:",
+  "yourPrivacyIsImportant": "भवतः गोपनीयता महत्त्वपूर्णा अस्ति:",
+  "yourReasonHasBeenRemoved": "भवतः कारणं निष्कासितम्।",
+  "yourRecommendation": "भवतः संस्तुतिः",
+  "yourRichPresenceActivityWillStop": "भवतः रिच प्रेजेन्स-क्रिया अद्यतनीकरणं स्थगयिष्यति।",
+  "yourRole": "भवतः भूमिका",
+  "yourWatchReadHistory": "भवतः दर्शन-पठन-इतिहासः",
+  "yourWatchReadStatistics": "भवतः दर्शन-पठन-सांख्यिकी",
+  "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "भवतः सर्वं स्थानीयम् सामानम्",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "किं भवान् निश्चितः?",
+  "aspectRatio": "आकारानुपातः",
+  "attackOnTitan": "Attack on Titan",
+  "audio": "ध्वनिः",
+  "audioSubtitles": "ध्वनिः च उपशीर्षकाणि",
+  "audioTrack": "ध्वनि-मार्गः",
+  "audioTracks": "ध्वनि-मार्गाः",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "स्वयम् (AudioTrack)",
+  "autoCoreaudio": "स्वयम् (CoreAudio)",
+  "autoGpu": "स्वयम् (GPU)",
+  "autoPulseaudio": "स्वयम् (PulseAudio)",
+  "autoWasapi": "स्वयम् (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "पुष्पम्",
+  "castToDevice": "उपकरणे प्रक्षेपयतु",
+  "colorFilter": "वर्ण-छन्नकः",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "बाह्य-वादकः",
+  "files": "सञ्चिकाः",
+  "forward": "अग्रे",
+  "forward30s": "३० सेकण्ड् अग्रे",
+  "fullscreen": "पूर्णपट्टिका",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "नियन्त्रणानि बध्नातु",
+  "lockOrientation": "दिशां बध्नातु",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Necessary Murder",
+  "nextEp": "अग्रिम भा.",
+  "nextEpisode": "अग्रिमः भागः",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "चित्रे चित्रम्",
+  "playlist": "वादन-सूची",
+  "previousEpisode": "पूर्वभागः",
+  "pulseaudio": "PulseAudio",
+  "quality": "गुणवत्ता",
+  "qualitySetting": "गुणवत्ता-विन्यासः",
+  "readingMode": "पठन-विधिः",
+  "reddit": "Reddit",
+  "replay30s": "३० सेकण्ड् पुनः",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito and Makomo",
+  "sdl": "SDL",
+  "server": "सर्वरः",
+  "servers": "सर्वराः",
+  "shadersColorProfiles": "Shaders व वर्ण-प्रोफाइलाः",
+  "shadersColors": "Shaders व वर्णाः",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "वेगः",
+  "sw": "SW",
+  "syncSubs": "उपशीर्षक-समन्वयः",
+  "syncSubtitles": "उपशीर्षकान् समन्वय",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "क्षिप्रः श्वेतः शृगालः आलसिकं श्वानं लङ्घते",
+  "themeMode": "विषय-विधिः",
+  "thisIsFrustrating": "एतत् खेदजनकम् अस्ति",
+  "toYouSomeday": "भवते, कदाचित्",
+  "torrentFiles": "टोरेण्ट-सञ्चिकाः",
+  "tracks": "मार्गाः",
+  "unlockOrientation": "दिशां मोचयतु",
+  "userAgent": "User-Agent",
+  "videoQuality": "चलचित्र-गुणवत्ता",
+  "videoServers": "चलचित्र-सर्वराः",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "सह पश्यतु (कक्षे)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "० इत्यस्य अर्थः स्वयं-सूत्र-सङ्ख्या",
+  "n18Content": "१८+ विषयवस्तु",
+  "aboveAverageSimilarity": "औसतात् अधिकं साम्यम्।",
+  "account": "खाता",
+  "activityStats": "क्रियाकलापाः तथा सांख्यिकी",
+  "add": "योजय",
+  "additionalNotesOptional": "अतिरिक्त-टिप्पण्यः (ऐच्छिकाः)",
+  "adjustKeyVolumeScrollingSpeed": "कुञ्चिका व ध्वनि-सञ्चलन-वेगं समायोजय",
+  "alpha": "अल्फा",
+  "alwaysChecksCurrentChapterNumberAnd": "सदा वर्तमान-अध्याय-सङ्ख्यां परीक्षते, तां अग्रिम/पूर्व-अध्यायेन सह तुलयति, सङ्ख्या भिन्ना चेदेव नयति। 'अध्यायेन नयतु' केवलं सूच्यां अग्रिमं वस्तु गच्छति, पुनरावृत्तिः यदि स्यात् अपि।",
+  "animeCompleted": "अनिमे सम्पूर्णम्",
+  "announcementMode": "घोषणा-विधिः",
+  "appIsStillLoadingTryAgain": "अनुप्रयोगः अद्यापि लोड्यते, क्षणानन्तरं पुनः प्रयतस्व।",
+  "applyAColorTintOverPages": "पृष्ठेषु वर्ण-छाया प्रयोजय",
+  "audioDelay": "ध्वनि-विलम्बः",
+  "audioSettings": "ध्वनि-विन्यासाः",
+  "audioTrack2": "ध्वनि-मार्गः",
+  "autoAdvance": "स्वयम् अग्रे गच्छतु",
+  "autoDeleteCompletedEntries": "सम्पूर्णाः प्रविष्टीः स्वयं मार्जय",
+  "autoSyncProgress": "प्रगतिः स्वयं समन्वय",
+  "automaticallyMoveToNextText": "स्वयम् अग्रिमं पाठं गच्छतु",
+  "automaticallyScrollAdvancePages": "पृष्ठानि स्वयं सञ्चालय/अग्रे नय",
+  "automaticallySwitchToContinuousModeFor": "दीर्घ-पट्टी-मङ्गायै स्वयं निरन्तर-विधिं परिवर्तय",
+  "averageOverlap": "औसत-अतिव्याप्तिः।",
+  "background": "पृष्ठभूमिः",
+  "basedOnYourFavouriteAnime": "भवतः प्रिय-अनिमे आधारीकृत्य।",
+  "basedOnYourFavouriteManga": "भवतः प्रिय-मङ्गा आधारीकृत्य।",
+  "basedOnYourTop10Manga": "भवतः शीर्ष १० मङ्गा-टैग्स् आधारीकृत्य।",
+  "basedOnYourTop5Manga": "भवतः शीर्ष ५ मङ्गा-प्रकारान् आधारीकृत्य।",
+  "blue": "नीलः",
+  "botL": "अधः-वामः",
+  "botR": "अधः-दक्षिणः",
+  "bridgeUpdateAvailable": "सेतु-अद्यतनं उपलब्धम्",
+  "brightness": "प्रकाशता",
+  "bulletList": "बुलेट-सूची",
+  "calendarUpper": "पञ्जिका",
+  "canadianMovies": "कनाडा-देशीय-चलचित्राणि",
+  "canadianShows": "कनाडा-देशीय-कार्यक्रमाः",
+  "cannotCompareTheSameProfileWith": "समानं परिचयं स्वेन सह तुलयितुं न शक्यते।",
+  "castToDevice2": "उपकरणे प्रक्षेपयतु",
+  "chatModeration": "वार्ता-परिचालनम्",
+  "chooseASubtitleFileFromYour": "उपकरणात् उपशीर्षक-सञ्चिकां चिनोतु (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "चयनितां JSON-सञ्चिकां भवतः AnymeX मेघ gist मध्ये कथं प्रयोज्या इति चिनोतु।",
+  "chromaUpscaler": "क्रोमा अपस्केलर",
+  "cloudTools": "मेघ-साधनानि",
+  "code": "सङ्केतः",
+  "commonFavouriteAnime": "सामान्य-प्रिय-अनिमे",
+  "commonFavouriteCharacters": "सामान्य-प्रिय-पात्राणि",
+  "commonFavouriteManga": "सामान्य-प्रिय-मङ्गा",
+  "commonPerfectAnime": "सामान्य-पूर्ण-अनिमे",
+  "commonPerfectManga": "सामान्य-पूर्ण-मङ्गा",
+  "communityAdministratorOverseeingModerationAndPolicies": "समुदाय-प्रशासकः, यः परिचालनं नीतयश्च निरीक्षते।",
+  "connectGithubFirstBeforeDeletingSync": "समन्वय-दत्तांशं मार्जयितुं पूर्वं GitHub सम्बध्नातु।",
+  "connectGithubFirstToExportSync": "समन्वय-दत्तांशं निर्यातयितुं प्रथमं GitHub सम्बध्नातु।",
+  "connectGithubFirstToImportSync": "समन्वय-दत्तांशम् आयातयितुं प्रथमं GitHub सम्बध्नातु।",
+  "connectGithubFirstToSyncProgress": "प्रगतिं समन्वयितुं प्रथमं GitHub सम्बध्नातु।",
+  "connectGithubFirstToViewSync": "समन्वय-gist दर्शयितुं प्रथमं GitHub सम्बध्नातु।",
+  "continuousModeOnly2": "केवलं निरन्तर-विधिः",
+  "controls": "नियन्त्रणानि",
+  "cookiesClearedSuccessfully": "कुकीज् सफलतया मार्जिताः",
+  "copied": "प्रतिलिपितम्",
+  "copyUrl": "URL प्रतिलिपय",
+  "correctDownscaling": "सम्यक् अवस्केलिङ्",
+  "couldNotLoadStreamingServicesFrom": "AniList API तः स्ट्रीमिंग-सेवाः लोड् कर्तुं न शक्यते।\nसेवा अस्थायीरूपेण अनुपलब्धा वा दर-सीमिता वा भवेत्।",
+  "couldNotOpenGistInBrowser": "ब्राउज़रे gist उद्घाटयितुं न शक्यते।",
+  "created": "निर्मितम्",
+  "creatorAndDeveloperOfAnymex": "AnymeX इत्यस्य निर्माता तथा विकासकः।",
+  "customBrightness": "स्वनिर्धारित प्रकाशता",
+  "customizeGestures": "सङ्केतान् वैयक्तिकीकुरु",
+  "deband": "डीबैण्ड्",
+  "debandIterations": "डीबैण्ड् पुनरावृत्तयः",
+  "debandThreshold": "डीबैण्ड् सीमा",
+  "decreaseAutoScrollSpeed": "स्वयं-सञ्चलन-वेगं न्यूनीकुरु",
+  "decreaseFontSize": "अक्षर-आकारं न्यूनीकुरु",
+  "deleteAnymexSyncGist": "AnymeX समन्वय gist मार्जयतु?",
+  "deleteCloudGist": "मेघ gist मार्जय",
+  "deleteCommentMod": "टिप्पणीं मार्जय (परिचालक)",
+  "details": "विवरणानि",
+  "dictionary": "शब्दकोशः",
+  "differenceFromOwnMeanScore": "स्वीय-माध्य-स्कोरतः भेदः",
+  "disableChat": "वार्ता निष्क्रियीकुरु",
+  "disconnectThisGithubAccountFromAnymex": "AnymeX तः एतत् GitHub खातं विच्छिनत्तु",
+  "displayPagesInBlackWhite": "पृष्ठानि कृष्ण-श्वेतरूपेण दर्शय",
+  "downloading": "अवतार्यते…",
+  "downscaler": "अवस्केलकः",
+  "dynamicWidget": "गतिशील विजेट",
+  "eInkDisplayRefresh": "ई-इङ्क् प्रदर्शन-पुनःताजीकरणम्",
+  "eGAbc123": "उदा. ABC123",
+  "eGMyAnimeLogo": "उदा. My Anime Logo",
+  "editYourComment": "स्वकीयां टिप्पणीं सम्पादय...",
+  "embeddedContent": "अन्तर्निहितः विषयः",
+  "enterTheRoomPassword": "कक्ष-पारपदं प्रविश",
+  "enterTokenHere": "अत्र टोकनं प्रविश",
+  "error": "त्रुटिः",
+  "exitSyncNotifications": "समकालीकरण-सूचनाः निर्गमय",
+  "exportGistJson": "Gist JSON निर्यातय",
+  "exportedGistJson": "Gist JSON निर्यातितम्।",
+  "failedToExportGistJson": "Gist JSON निर्यातयितुं विफलम्।",
+  "failedToFetchDataFromSources": "स्रोतेभ्यः दत्तांशम् आनेतुं विफलम्।",
+  "failedToGetCloudGistLink": "क्लाउड्-Gist-सम्पर्कं प्राप्तुं विफलम्।",
+  "failedToImportGistJson": "Gist JSON आनेतुं विफलम्।",
+  "failedToLaunchExternalPlayer": "बाह्य-प्लेयरम् आरम्भयितुं विफलम्",
+  "failedToOpenGistInBrowser": "ब्राउज़रे Gist उद्घाटयितुं विफलम्।",
+  "flashDuration": "फ्लैश-कालावधिः",
+  "flashEveryNPages": "प्रत्येक N पृष्ठे फ्लैश",
+  "flashFrequency": "फ्लैश-आवृत्तिः",
+  "flashScreenOnPageTurnTo": "प्रेत-छाया (ghosting) अपनेतुं पृष्ठ-परिवर्तने पटलं फ्लैश् कुरु",
+  "followHost": "आयोजकम् अनुसर",
+  "fontSettings": "फॉन्ट्-सेटिंग्स्",
+  "freedomSeek": "स्वतन्त्र-अन्वेषणम्",
+  "friendsNeedAPasswordToJoin": "मित्रैः प्रवेशार्थं पारपदम् आवश्यकम्",
+  "githubClientIdNotConfigured": "GitHub क्लाइंट् ID विन्यस्तः नास्ति।",
+  "githubLoginFailedMissingAuthorizationCode": "GitHub-प्रवेशः विफलः: प्राधिकार-सङ्केतः नास्ति।",
+  "githubLoginWasCancelledOrFailed": "GitHub-प्रवेशः रद्दः अथवा विफलः अभवत्।",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • स्वकीयं प्रेम दर्शय",
+  "goodChemistryAndSharedTaste": "उत्तमा रसायनिकता तथा समानाः रुचयः।",
+  "grayscale": "धूसर-श्वेतकृष्णम्",
+  "green": "हरितम्",
+  "hdrToneMappingTargetPeak": "HDR वर्ण-मानचित्रण-लक्ष्य-शिखरम्",
+  "higherValueIncreasesDebandingStrength": "अधिकं मूल्यं debanding-बलं वर्धयति",
+  "horizontalPadding": "क्षैतिज-पैडिङ्ग्",
+  "hoursWatched": "दृष्ट-घण्टाः",
+  "howManyFriendsCanJoin": "कति मित्राणि प्रविशेयुः",
+  "ifYouHaveAnIssueOr": "यदि समस्या अथवा सूचनं भवति चेत् github-मध्ये निवेदनं कुरु।",
+  "imageWidth": "चित्र-विस्तारः",
+  "importGistJson": "Gist JSON आनय",
+  "importLocalSubtitle": "स्थानीय उपशीर्षकम् आनय",
+  "improveQualityWhenScalingDownVideo": "वीडियो लघुकरणे गुणवत्तां वर्धय",
+  "increaseAutoScrollSpeed": "स्वयं-स्क्रोल-वेगं वर्धय",
+  "increaseFontSize": "फॉन्ट्-आकारं वर्धय",
+  "invalidCompatibilityLinkMissingUsernames": "अमान्यः सङ्गति-सम्पर्कः: उपयोक्तृनामानि नास्ति।",
+  "invalidGistUrl": "अमान्यः Gist URL।",
+  "invalidRoomCodeInLink": "सम्पर्के अमान्यः कक्ष-सङ्केतः",
+  "invalidWatchTogetherLink": "अमान्यः सह-दर्शन-सम्पर्कः",
+  "invertAllPageColors": "सर्वेषां पृष्ठ-वर्णानां विपरीतं कुरु",
+  "invertColors": "वर्णान् विपरीतान् कुरु",
+  "inviteLink": "आमन्त्रण-सम्पर्कः",
+  "inviteLinkCopied": "आमन्त्रण-सम्पर्कः प्रतिलिखितः!",
+  "jDramas": "J-नाटकानि",
+  "joinNotifications": "प्रवेश-सूचनाः",
+  "kDramas": "K-नाटकानि",
+  "keepBothUploadedAndCloudEntries": "अपलोड्-प्रविष्टयः क्लाउड्-प्रविष्टयश्च उभयमपि स्थापय। समाना प्रविष्टिः उभयत्र यदि स्यात् तर्हि नवीनतरा स्थाप्यते। (संस्तुतम्)",
+  "keyVolumeScrollingSpeed": "कुञ्जिका तथा ध्वनि-स्क्रोलन-वेगः",
+  "koreanMovies": "कोरियाई-चलचित्राणि",
+  "leaveNotifications": "निर्गमन-सूचनाः",
+  "liveComments": "प्रत्यक्ष-टिप्पण्यः",
+  "lockScreen": "पटल-तालनम्",
+  "loginToAnilist": "AniList-मध्ये प्रविश",
+  "loginToMyanimelist": "MyAnimeList-मध्ये प्रविश",
+  "loginToSimkl": "Simkl-मध्ये प्रविश",
+  "longPressForPageActions": "पृष्ठ-क्रियार्थं दीर्घस्पर्शः",
+  "longPressAPageToSave": "पृष्ठं रक्षितुं, साझां कर्तुं वा प्रतिलिखितुं दीर्घं स्पृश",
+  "lumaUpscaler": "Luma उन्नयकः",
+  "mangaCompleted": "मङ्गा सम्पूर्णा",
+  "mangaPage": "मङ्गा-पृष्ठम्",
+  "maxMembers": "अधिकतम-सदस्याः",
+  "memberLeft": "सदस्यः निर्गतः",
+  "mergeUploadedEntriesOrReplaceCloud": "अपलोड्-प्रविष्टयः विलीनय अथवा क्लाउड्-दत्तांशं प्रतिस्थापय",
+  "mergeWithCloud": "क्लाउडेन सह विलीनय",
+  "milliseconds": "मिलिसेकण्ड्",
+  "missingTypeQueryParameterUseType": "\"type\" क्वेरी-पैरामीटर् नास्ति। type=player उपयुङ्क्ष्व।",
+  "missingUrlQueryParameterForThe": "थीम-JSON कृते \"url\" क्वेरी-पैरामीटर् नास्ति।",
+  "moreIterationsStrongerDebanding": "अधिक-पुनरावृत्तयः = प्रबलतरं debanding",
+  "movies": "चलचित्राणि",
+  "moviesList": "चलचित्र-सूची",
+  "navigateByNumber": "सङ्ख्यया मार्गदर्शनम्",
+  "navigation": "मार्गदर्शनम्",
+  "newMember": "नवीनः सदस्यः",
+  "nextChapter": "अग्रिम-अध्यायः",
+  "nextParagraph": "अग्रिम-अनुच्छेदः",
+  "noAudio": "ध्वनिः नास्ति",
+  "noOneCanSendMessagesIn": "चर्चायां कोऽपि सन्देशं प्रेषयितुं न शक्नोति",
+  "noStreamUrlAvailable": "स्ट्रीम् URL न लभ्यते",
+  "noSubtitle": "उपशीर्षकं नास्ति",
+  "noVideo": "वीडियो नास्ति",
+  "notVeryCompatibleAtAll": "अतीव न सङ्गतम्।",
+  "numberedList": "सङ्ख्यायुक्ता सूची",
+  "onScreenOverlays": "पटलस्थ-अध्यारोपाः",
+  "onlyHostAndCoHostsCan": "केवलम् आयोजकः सह-आयोजकाश्च सन्देशान् प्रेषयितुं शक्नुवन्ति",
+  "opacity": "पारदर्शिता",
+  "openInBrowser2": "ब्राउज़रे उद्घाटय",
+  "openYourAnymexSyncGistOn": "स्वकीयं AnymeX-समकालीकरण-Gist GitHub-मध्ये उद्घाटय",
+  "openingInExternalPlayer": "बाह्य-प्लेयरे उद्घाटयति...",
+  "orTypeCustomTag": "अथवा स्वेच्छा-टैग् लिख...",
+  "otherUpper": "अन्यत्",
+  "overlayPosition": "अध्यारोप-स्थानम्",
+  "overrideSystemScreenBrightness": "तन्त्र-पटल-दीप्तिम् अभिभूय",
+  "ownerAndCreatorOfTheCommentum": "Commentum समुदाय-मञ्चस्य स्वामी तथा निर्माता।",
+  "padding": "पैडिङ्ग्",
+  "pagesAheadOfTimeForFaster": "त्वरित-भारणार्थं पूर्वभारिताः पृष्ठाः",
+  "partySettings": "सभा-सेटिंग्स्",
+  "passwordIfRequired": "पारपदम् (यदि आवश्यकम्)",
+  "pasteDirectGifOrImageUrl": "प्रत्यक्ष GIF अथवा चित्र-URL अत्र निवेशय...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • कार्डाः तथा PayPal-शेषम्",
+  "permanentlyRemoveAnymexSyncData": "AnymeX-समकालीकरण-दत्तांशं स्थायिरूपेण लोपय",
+  "pictureShaders": "चित्रं तथा शेडर्सः",
+  "pitch": "स्वर-उच्चता",
+  "playbackIsLockedToTheHost": "प्लेबैक् आयोजके बद्धः अस्ति",
+  "playbackSpeed2": "प्लेबैक् वेगः",
+  "playerSettings2": "प्लेयर्-सेटिंग्स्",
+  "pleaseLogInFirstThenTry": "कृपया प्रथमं प्रविशतु, ततः सम्पर्कं पुनः प्रयतस्व।",
+  "pointsBreakdown": "बिन्दु-विभाजनम्",
+  "practicallyMadeForEachOther": "व्यावहारिकतया परस्परार्थं निर्मिताः।",
+  "preloadPage": "पृष्ठं पूर्वभारय",
+  "preloadPages": "पृष्ठानि पूर्वभारय",
+  "preloadPagesAheadOfTimeFor": "त्वरित-भारणार्थं पृष्ठानि पूर्वभारय (अधिकं जालं तथा RAM उपभुङ्क्ते)",
+  "preventScreenFromSleepingWhileReading": "पठनकाले पटलं निद्रां न प्राप्नुयात्",
+  "previousChapter": "पूर्व-अध्यायः",
+  "previousParagraph": "पूर्व-अनुच्छेदः",
+  "privateRoom": "निजी-कक्षः",
+  "profileUpdated": "प्रोफाइल् अद्यतितः",
+  "proportionOfTotalTimeWatched": "कुल-दृष्टकालस्य अनुपातः",
+  "provideAReasonForThisAction": "एतस्याः क्रियायाः कारणं ददातु...",
+  "qualitySettings": "गुणवत्ता-सेटिंग्स्",
+  "quote": "उद्धरणम्",
+  "range75DarkestTo100": "परिधिः: -75 (गाढतमम्) तः 100",
+  "rateLimited": "दर-सीमित",
+  "reactionOverlay": "प्रतिक्रिया-अध्यारोपः",
+  "readStats": "पठन-सांख्यिकी",
+  "readTextAloud": "पाठम् उच्चैः पठ",
+  "red": "रक्तम्",
+  "reduceColorBandingInGradients": "प्रवणतासु (gradients) वर्ण-पट्टीकरणं न्यूनीकुरु",
+  "reduceHaloingWhileUpscaling": "उन्नयने प्रभामण्डल-प्रभावं न्यूनीकुरु",
+  "refresh": "ताजीकुरु",
+  "removeCurrentCloudEntriesAndReplace": "वर्तमानाः क्लाउड्-प्रविष्टयः लोपय तथा तासां स्थाने अपलोड्-सञ्चिकां स्थापय।",
+  "removeWhiteBlackBordersToMaximize": "विषयं विस्तारयितुं श्वेत/कृष्ण-सीमाः अपनय",
+  "removesFinishedMediaFromCloudGist": "क्लाउड् Gist-तः सम्पूर्णं माध्यमं लोपयति",
+  "replaceCloudGist": "क्लाउड् Gist प्रतिस्थापय",
+  "report": "निवेदय",
+  "resetReLogin": "पुनःस्थापय तथा पुनः प्रविश",
+  "resetTo1": "१× प्रति पुनःस्थापय",
+  "restore": "पुनःस्थापय",
+  "roomAccess": "कक्ष-प्रवेशः",
+  "roomCode": "कक्ष-सङ्केतः",
+  "roomCodeCopiedToClipboard": "कक्ष-सङ्केतः क्लिपबोर्डे प्रतिलिखितः",
+  "roomDuration": "कक्ष-कालावधिः",
+  "roomNotFoundOrExpired": "कक्षः न लब्धः अथवा कालातीतः",
+  "roomPassword": "कक्ष-पारपदम्",
+  "roomPassword2": "कक्ष-पारपदम्",
+  "roomSettings": "कक्ष-सेटिंग्स्",
+  "saveYourCurrentCloudProgressTo": "स्वकीयां वर्तमान-क्लाउड्-प्रगतिं सञ्चिकायां रक्षय",
+  "scrollMultiplier": "स्क्रोल-गुणकः",
+  "scrollSpeed": "स्क्रोल-वेगः",
+  "searchAnimeEpisode": "एनिमे / भागम् अन्विष्य...",
+  "searchAnimeGifsReactions": "एनिमे GIF, प्रतिक्रियाः अन्विष्य...",
+  "searchChapters": "अध्यायान् अन्विष्य...",
+  "searchFiles": "सञ्चिकाः अन्विष्य...",
+  "secondsPerPageScreen": "प्रति पृष्ठ / पटलं सेकण्ड्",
+  "seekAndControlPlaybackFreely": "प्लेबैक् स्वेच्छया अन्विष्य नियन्त्रय",
+  "selectedFileMustContainAJson": "चयनितायां सञ्चिकायां JSON-वस्तु अवश्यं स्यात्।",
+  "selectedJsonHasNoValidSync": "चयनितस्य JSON-मध्ये मान्याः समकालीकरण-प्रविष्टयः नास्ति।",
+  "seriesList": "श्रृङ्खला-सूची",
+  "setAPasswordForYourRoom": "स्वकीय-कक्षाय पारपदं विन्यस्य",
+  "share": "साझां कुरु",
+  "showANotificationWhenSomeoneJoins": "कश्चन सभायां प्रविशति चेत् सूचनां दर्शय",
+  "showANotificationWhenSomeoneLeaves": "कश्चन सभातः निर्गच्छति चेत् सूचनां दर्शय",
+  "showAllStreams": "सर्वान् स्ट्रीम्स् दर्शय",
+  "showChatMessagesOnThePlayer": "आगच्छन्तः चर्चा-सन्देशाः प्लेयरे दर्शय",
+  "showEmojiReactionsFloatingOnThe": "प्लेयरे इमोजी-प्रतिक्रियाः प्लवमानाः दर्शय",
+  "showSyncResultWhenPlayerOr": "प्लेयर अथवा पाठकः निवृत्तः चेत् समकालीकरण-फलं दर्शय",
+  "showTransitionPageEvenWhenChapters": "अध्यायाः सन्निहिताः चेदपि सङ्क्रमण-पृष्ठं दर्शय",
+  "shows": "धारावाहिकाः",
+  "sigmoidUpscaling": "Sigmoid उन्नयनम्",
+  "smootherGradientsWithSlightTemporalNoise": "किञ्चित् कालिक-नॉइज् सह सुकोमलतरा प्रवणताः",
+  "spacing": "अन्तरम्",
+  "speechSpeed": "वाक्-वेगः",
+  "spoilers": "स्पॉयलर्सः",
+  "stretchImagesToFitScreenWidthOn": "विशाल-पटलेषु चित्राणि पटल-विस्तारे प्रसारय",
+  "subtitleSettings": "उपशीर्षक-सेटिंग्स्",
+  "superAdministratorWithSystemWideManagement": "तन्त्र-व्यापी-प्रबन्धनाधिकारेण सह महाप्रशासकः।",
+  "swapUpDownActions2": "ऊर्ध्व/अधः क्रियाः विनिमय",
+  "syncMode": "समकालीकरण-प्रकारः",
+  "syncPreferences": "समकालीकरण-रुचयः",
+  "tapScrollAmount": "स्पर्श-स्क्रोल-परिमाणम्",
+  "tapToOpen": "उद्घाटयितुं स्पृश",
+  "tapToOpenInBrowser": "ब्राउज़रे उद्घाटयितुं स्पृश",
+  "tapToOpenInSpotify": "Spotify-मध्ये उद्घाटयितुं स्पृश",
+  "tapToViewInBrowser": "ब्राउज़रे दर्शनार्थं स्पृश",
+  "tapTopBottomToScroll": "स्क्रोलार्थम् ऊर्ध्वं/अधः स्पृश",
+  "targetPeak": "लक्ष्य-शिखरम्",
+  "temporalDither": "कालिक Dither",
+  "textToSpeech": "पाठ्यात् वाक्",
+  "theCreatorOfThisCommentDiscussion": "अस्य टिप्पणी-चर्चा-सूत्रस्य निर्माता।",
+  "theresASmallSparkOfAgreement": "सम्मतेः किञ्चित् स्फुलिङ्गः अस्ति।",
+  "thisPermanentlyDeletesYourAnymexCloud": "एतेन GitHub-तः स्वकीयं AnymeX-क्लाउड्-प्रगति-Gist स्थायिरूपेण लुप्यते, यत् पुनः कर्तुं न शक्यते।",
+  "toPrevNextChapter": "पूर्व/अग्रिम-अध्यायं प्रति",
+  "topL": "ऊर्ध्व-वाम",
+  "topR": "ऊर्ध्व-दक्षिण",
+  "totals": "कुलानि",
+  "trendingMovies": "प्रवृत्त-चलचित्राणि",
+  "trendingSeries": "प्रवृत्त-श्रृङ्खलाः",
+  "tts": "TTS",
+  "ukMovies": "UK-चलचित्राणि",
+  "ukShows": "UK-धारावाहिकाः",
+  "unableToReadSelectedJsonFile": "चयनितां JSON-सञ्चिकां पठितुं न शक्यते।",
+  "unsupportedExtension": "असमर्थितः विस्तारः",
+  "usMovies": "US-चलचित्राणि",
+  "usShows": "US-धारावाहिकाः",
+  "useVolumeButtonsToScroll": "स्क्रोलार्थं ध्वनि-बटनानि उपयुङ्क्ष्व",
+  "userHistory": "उपयोक्तृ-इतिहासः",
+  "userInfo": "उपयोक्तृ-सूचना",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "टिप्पण्यः आदरयुक्ताः सुरक्षिताश्च रक्षन्ती सत्यापित-नियन्त्रिका।",
+  "verticalPadding": "ऊर्ध्वाधर-पैडिङ्ग्",
+  "viewCloudGist": "क्लाउड् Gist पश्य",
+  "viewUserHistory": "उपयोक्तृ-इतिहासं पश्य",
+  "viewUserInfo": "उपयोक्तृ-सूचनां पश्य",
+  "voice": "स्वरः",
+  "watchParty": "सह-दर्शन-सभा",
+  "watchStats": "दर्शन-सांख्यिकी",
+  "watchingNow": "अधुना पश्यन्ति",
+  "webmVideo": "WebM वीडियो",
+  "whereLiveCommentsAppearOnScreen": "प्रत्यक्ष-टिप्पण्यः पटले कुत्र दृश्यन्ते",
+  "whileWatchingEpisodesOrReadingChapters": "भागान् पश्यन् अथवा अध्यायान् पठन्",
+  "writeAReply": "प्रत्युत्तरं लिख...",
+  "youAreBasicallyTheSamePerson": "भवान् मूलतः समानः व्यक्तिः अस्ति।",
+  "youBothHaveVerySimilarTaste": "युवयोः रुचयः अतीव समानाः सन्ति।",
+  "all2": "← सर्वाणि",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "शैली",
+  "upscale": "उन्नयनम्",
+  "appearanceStyle": "रूपं तथा शैली",
+  "colorsLightDarkOledLogoAnimations": "वर्णाः, प्रकाश/अन्धकारः, OLED तथा लोगो-एनिमेशन्स्",
+  "fontsTypography": "फॉन्ट्सः तथा लेखन-विन्यासः",
+  "chooseTypographyCustomFontsGlobalText": "लेखन-विन्यासं, स्वेच्छा-फॉन्ट्सः तथा सार्वत्रिक-पाठ्य-मापं चिनुत",
+  "globalFontScaling": "सार्वत्रिक-फॉन्ट्-मापनम्",
+  "scaling": "मापनम्",
+  "typefaces": "लिपि-रूपाणि",
+  "interfaceLayout": "अन्तरापृष्ठं तथा विन्यासः",
+  "navBarCardStylesDetailsBlur": "नौ-पट्टी, पत्र-शैल्यः, विवरण-धुंधलता तथा विन्यासः",
+  "navigationHomeLayout": "मार्गदर्शनं तथा गृह-विन्यासः",
+  "playbackEngineSubtitlesGesturesDecoders": "प्लेबैक्-इञ्जिनम्, उपशीर्षकाणि, संकेताः तथा डिकोडर्सः",
+  "mangaNovelReader": "मङ्गा तथा उपन्यास-पाठकः",
+  "readingModesDirectionColorsTapZones": "पठन-प्रकाराः, दिशा, वर्णाः तथा स्पर्श-क्षेत्राणि",
+  "dataNetworkSystem": "दत्तांशः, जालं तथा तन्त्रम्",
+  "downloadDirectoryConcurrencyHlsSegments": "अवतरण-निर्देशिका, समकालिकता तथा HLS-खण्डाः",
+  "accountsSocial": "खाताः तथा सामाजिकम्",
+  "trackingAccounts": "अनुसरण-खाताः",
+  "manageYourAnilistMyanimelistSimklAccounts": "स्वकीयान् AniList, MyAnimeList तथा Simkl-खातान् प्रबन्धय",
+  "trackingBehavior": "अनुसरण-आचरणम्",
+  "communityComments": "समुदायः तथा टिप्पण्यः",
+  "commentumProfileBadgesMarkdownPrivacy": "Commentum-प्रोफाइलः, चिह्नानि, markdown तथा गोपनीयता",
+  "contentPreferences": "विषयः तथा रुचयः",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFW-छलनी, एकीकृत-ग्रन्थालयः, संस्तुतयः तथा सूचयः",
+  "exportAndRestoreYourLibraryAnd": "स्वकीयं ग्रन्थालयं सेटिंग्स् च निर्यातय तथा पुनःस्थापय",
+  "manageAnimeMangaNovelSourcesAnd": "Anime, Manga तथा उपन्यास-स्रोतान् भाण्डारांश्च प्रबन्धय",
+  "installAndUpdateCommunityAddOns": "समुदाय-एड-ऑन्स् स्थापय तथा अद्यतय",
+  "storageCache": "संग्रहणं तथा संग्रहः",
+  "manageCachedImagesThresholdsResetData": "संगृहीत-चित्राणि, सीमाः तथा दत्तांशं पुनःस्थापय",
+  "networkProxy": "जालं तथा प्रॉक्सी",
+  "logsDiagnostics": "लेखाः तथा निदानम्",
+  "inspectExportAndShareApplicationLogs": "अनुप्रयोग-लेखान् परीक्ष, निर्यातय, साझां कुरु",
+  "aboutSupport": "विषये तथा साहाय्यम्",
+  "supportDevelopmentViaKoFiPaypal": "Ko-fi, PayPal तथा UPI द्वारा विकासं समर्थय",
+  "versionUpdatesSocialLinksLegalPolicies": "संस्करणम्, अद्यतनानि, सामाजिक-सम्पर्काः तथा वैधानिक-नीतयः",
+  "cacheAndCookiesClearedFor": "{name} कृते संग्रहः तथा कुकीज् शोधिताः",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "{name} कृते कुकीज् शोधिताः",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "{name} कृते संग्रहः शोधितः",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "असमर्थितः प्रकारः {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "{name} सेटिंग्स्",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "स्थानीय-सञ्चिका न लब्धा: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "समकालीकरणं विफलम्: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "स्थानीय APK न लब्धम्: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "त्रुटिः: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "प्लगिन्-स्थापनं विफलम्: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "\"{query}\" कृते फलानि न लब्धानि",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "सीजन {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "भागः {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title} समाचाराः",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "समुदायः",
+  "logInWithAnilist": "AniList-द्वारा प्रविश",
+  "episode2": "भागः {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "अवतरणं सम्पूर्णम्",
+  "downloadFailedHasNoUrl": "अवतरणं विफलम्: {chapterDisplay} कृते URL नास्ति",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "अवतरणं विफलम्: {chapterDisplay} कृते पृष्ठानि न लब्धानि",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "अवतरणं विफलम्: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "भागः {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} अध्यायाः",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} भागाः",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "स्रोतः \"{extensionName}\" न लब्धः।",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "टोरेंट् सज्जीकर्तुं विफलम्: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} स्वकीयेभ्यः अवतारेभ्यः स्थायिरूपेण लोप्स्यते।",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "अन्वेषणं विफलम्: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "\"{title}\" कृते {label} अन्वेषय…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} इतिहास-वस्तूनि लुप्तानि",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "स्वकीयात् {_historyLabel} तः \"{itemName}\" लोपयः?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" लुप्तम्",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "आरोही",
+  "descending": "अवरोही",
+  "defaultTabOrder": "पूर्वनिर्धारित-पट्टिका-क्रमः",
+  "reverseTabs": "पट्टिकाः विपरीतं कुरु",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "प्रकारः: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "वस्तूनि: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "{sourceName} प्रथमं स्थापय, ततः नुद",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "पृष्ठम् {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "{value} अन्वेषय...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "सम्पन्नम् ({length} चिह्निताः)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "पठनीयम् चालितम्",
+  "streamingOn": "स्ट्रीमिंग् चालितम्",
+  "freedom": "स्वातन्त्र्यम्",
+  "shaderAdded": "शेडर् योजितः: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "शेडर्-आनयने त्रुटिः: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "स्कैनलेटर्सः",
+  "chapterRange": "अध्याय-परिधिः",
+  "downloadFailed2": "अवतरणं विफलम्: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "अध्यायः {formattedNumber} अवतारितः अस्ति",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "अवतार्यते ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} अध्यायाः",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "पृष्ठं {pageNumber}{progressText} भारयति...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "पृष्ठं Pictures/AnymeX मध्ये रक्षितम्",
+  "pageSavedToAnymex": "पृष्ठं {path}/AnymeX मध्ये रक्षितम्",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "पृष्ठं रक्षितुं विफलम्: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "पृष्ठं साझां कर्तुं विफलम्: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "पृष्ठ-URL क्लिपबोर्डे प्रतिलिखितम्",
+  "failedToCopy": "प्रतिलिखितुं विफलम्: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "पृष्ठानि भारयन्ति...",
+  "goBack": "पृष्ठं प्रति गच्छ",
+  "loadingPage2": "पृष्ठं {value}{progressText} भारयति...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "फ्लैश-वर्णः",
+  "black": "कृष्णम्",
+  "white": "श्वेतम्",
+  "readerBackground": "पाठक-पृष्ठभूमिः",
+  "gray": "धूसरम्",
+  "automatic": "स्वयंचालितम्",
+  "noneNearestNeighbor": "किमपि नहि (Nearest-neighbor)",
+  "lowBilinear": "न्यूनम् (Bilinear)",
+  "mediumDefault": "मध्यमम् (पूर्वनिर्धारितम्)",
+  "highBicubic": "उच्चम् (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos पूर्व-मापनम् (उत्तम-गुणवत्ता, मन्दतरम्)",
+  "fullscreenPreview": "पूर्णपट-पूर्वावलोकनम्",
+  "enhancementPreset": "उन्नयन-पूर्वनिर्धारणम्",
+  "fineTuning": "सूक्ष्म-समायोजनम्",
+  "enhancementStrength": "उन्नयन-बलम्",
+  "strength": "{value}% बलम्",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "कलाकृति-दमनम्",
+  "cleanJpegCompressionRingingAroundLinework": "रेखा-कर्मणां परितः JPEG-संपीडन-घण्टारवं शोधय",
+  "cache": "संग्रहः",
+  "cacheSize": "संग्रह-आकारः",
+  "mbStoredOnDisk": "{mb} MB डिस्कें संगृहीतम्",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "अतिविभेदनम्",
+  "loadingChapter": "अध्यायं भारयति...",
+  "noContentAvailable": "विषयः न लभ्यते",
+  "recommendations": "{reasonCount} संस्तुतयः",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "-संस्तुतयः",
+  "all3": "सर्वाणि ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "सन्देशः प्रेषयितुं विफलः: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "कुल-प्रविष्टयः: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "कक्षं {code} प्रविष्टम्!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "सक्रिय-कक्षाः",
+  "joinWithCode": "सङ्केतेन प्रविश",
+  "leftRoom": "कक्षं निर्गतम्",
+  "leaveReset": "निर्गच्छ / पुनःस्थापय",
+  "inRoom": "कक्षे: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - भागः {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} निष्कासितः",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} सदस्याः",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "कक्षं निर्गतम्",
+  "leave": "निर्गच्छ",
+  "noActiveRooms": "कानिचन सक्रिय-कक्षाः न सन्ति",
+  "roomsWillAppearHereWhenSomeone": "कश्चन कक्षं रचयति चेत् कक्षाः अत्र दृश्येरन्",
+  "created2": "रचितम् · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "प्रविश →",
+  "full": "पूर्णम्",
+  "savedToPicturesAnymex": "Pictures/AnymeX/{fileName} मध्ये रक्षितम्",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Downloads/AnymeX/{fileName} मध्ये रक्षितम्",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "{path}/AnymeX मध्ये रक्षितम्",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (प्रोफाइल उद्घाटयितुं स्पृश)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "अध्यायः ",
+  "episode5": "भागः ",
+  "noData": "{title} (दत्तांशः नास्ति)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "{title} विस्तारान् अन्वेषय...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "विस्तारान् अन्विष्य",
+  "goToHome": "गृहं प्रति गच्छ",
+  "fetching": "{title} आनयति...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "नीतेः आनयने त्रुटिः: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" सफलतया योजितम्!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" सफलतया अद्यतितम्!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "किं भवान् \"{name}\" लोपयितुम् इच्छति?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" लुप्तम्",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "स्वकीयः इतिहासः रिक्तः अस्ति",
+  "episode6": "भागः {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "न्यूनं दर्शय",
+  "readMore": "अधिकं पठ",
+  "unpin": "पिन् अपनय",
+  "pinActivity": "क्रियाकलापं पिन् कुरु",
+  "n1Recommendation": "१ संस्तुतिः",
+  "recommendations2": "{count} संस्तुतयः",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "प्रेषयति…",
+  "addRecommendation": "संस्तुतिं योजय",
+  "submitRecommendation": "संस्तुतिं प्रेषय",
+  "currentProvider": "वर्तमान-प्रदाता",
+  "profileStatsUserActivities": "प्रोफाइल-सांख्यिकी तथा उपयोक्तृ-क्रियाकलापाः",
+  "manageSourcesPlugins": "स्रोतान् तथा प्लगिन्-आदीन् प्रबन्धय",
+  "savedOfflineEpisodesChapters": "रक्षिताः ऑफलाइन-भागाः तथा अध्यायाः",
+  "watchVideoFilesFromDeviceStorage": "यन्त्र-संग्रहात् वीडियो-सञ्चिकाः पश्य",
+  "syncWatchPartyWithFriends": "मित्रैः सह दर्शन-सभां समकालीकुरु",
+  "pauseWatchHistoryAndSync": "दर्शन-इतिहासं समकालीकरणं च स्थगय",
+  "appearancePlayerNetwork": "रूपं, प्लेयरः तथा जालम्",
+  "joining": "प्रविशति...",
+  "joinRoom": "कक्षे प्रविश",
+  "shareTheCodeOrInviteLink": "सङ्केतं अथवा आमन्त्रण-सम्पर्कं मित्रैः सह साझां कुरु।",
+  "roomCreated": "कक्षः रचितः!",
+  "shareThisCodeWithFriends": "इमं सङ्केतं मित्रैः सह साझां कुरु:",
+  "copyCode": "सङ्केतं प्रतिलिख",
+  "copyLink": "सम्पर्कं प्रतिलिख",
+  "leaveWatchTogether": "सह-दर्शनात् निर्गच्छामः?",
+  "removeMember": "सदस्यं लोपय",
+  "transferHost": "आयोजकत्वं स्थानान्तरय",
+  "transferHost2": "आयोजकत्वं स्थानान्तरय",
+  "transfer": "स्थानान्तरम्",
+  "removeMember2": "सदस्यं लोपय",
+  "removeFromThisWatchParty": "{username} एतस्याः दर्शन-सभायाः लोपयः?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} सदस्याः",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} प्रतिलिखितम्",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "एतस्मै कक्षाय सर्वराः न लभ्यन्ते",
+  "selectStreamingServerQualityToWatch": "दर्शनार्थं स्ट्रीमिंग्-सर्वर-गुणवत्तां चिनुत",
+  "thisServerHasNoPlayableUrl": "एतस्य सर्वरस्य चालनीयः URL नास्ति",
+  "episode7": "भागः {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "अध्याय {start} तः {end} पर्यन्तम् अनुकूलितम्",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{releaseDate} दिने {nextCh} पूर्वानुमितम्",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "भागः {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "भागः {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MAL-सूची निर्यातिता:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML निर्यातितम्:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "निर्यातनं विफलम्: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "स्वकीयां {value} सूचीं निर्यातयति...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "{value} XML निर्यातय",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "चालनीयः माध्यमः न लभ्यते",
+  "noThemesFound": "थीम् न लब्धाः",
+  "playAll": "सर्वाणि चालय",
+  "theDawnOfHumanity": "मानवतायाः उषः",
+  "orientationUnlocked": "अभिमुखता मुक्ता",
+  "orientationLocked": "अभिमुखता बद्धा",
+  "skippedOpening": "उद्घाटनं उल्लङ्घितम्",
+  "skippedEnding": "समापनं उल्लङ्घितम्",
+  "skippedRecap": "पूर्वावलोकनं उल्लङ्घितम्",
+  "ifYouSeeBlackScreenUse": "कृष्ण-पटलं दृश्यते चेत् दर्शनार्थं बाह्य-प्लेयरम् उपयुङ्क्ष्व",
+  "failedToStartTorrentStream": "टोरेंट्-स्ट्रीम् आरम्भयितुं विफलम्: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "स्ट्रीम् उद्घाटयितुं विफलम्। कृपया अन्यं सर्वरं प्रयतस्व",
+  "noServersFoundForThisEpisode": "एतस्य भागस्य कृते सर्वराः न लब्धाः।",
+  "failedToLoadEpisodeCheckYour": "भागं भारयितुं विफलम्। स्वकीयं संयोजनं परीक्षस्व।",
+  "playing": "{value} चाल्यते",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "टोरेंट्-सञ्चिका परिवर्तयितुं विफलम्: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "उपशीर्षकं भारितम्: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "उपशीर्षक-भारणे त्रुटिः: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "दूषितः उपशीर्षकः!",
+  "preTranslatingSubtitles": "उपशीर्षकानां पूर्वानुवादः...",
+  "preTranslationFailedUsingRealTime": "पूर्वानुवादः विफलः, वास्तविककालिक-विकल्पः प्रयुज्यते",
+  "preTranslationErrorUsingRealTime": "पूर्वानुवाद-त्रुटिः, वास्तविककालिक-विकल्पः प्रयुज्यते",
+  "corruptedQuality": "दूषित-गुणवत्ता!",
+  "colorProfilesOnlyAvailableWithMediakit": "वर्ण-प्रोफाइल्स् केवलं MediaKit प्लेयरेण लभ्यन्ते",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "वीडियो-स्ट्रीम्स् पूर्वनिर्धारितरूपेण बाह्य-प्लेयरे उद्घाटय",
+  "quickDefaults": "त्वरित-पूर्वनिर्धारणानि",
+  "orientationSpeedResizeModeExternalPlayer": "अभिमुखता, वेगः, आकार-परिवर्तन-प्रकारः तथा बाह्य-प्लेयरः",
+  "controlsGestures": "नियन्त्रणानि तथा संकेताः",
+  "subtitlesTranslation": "उपशीर्षकाणि तथा अनुवादः",
+  "languagesFontsStylingLibassTranslation": "भाषाः, फॉन्ट्सः, शैली, libass तथा अनुवादः",
+  "anime4kShaders": "Anime4K तथा शेडर्सः",
+  "upscalingShadersPresetsProfiles": "उन्नयन-शेडर्सः, पूर्वनिर्धारणानि तथा प्रोफाइल्सः",
+  "engineAdvanced": "इञ्जिनम् तथा उन्नतम्",
+  "addSpeed": "वेगं योजय",
+  "speedPresets": "वेग-पूर्वनिर्धारणानि",
+  "rememberAsDefaultSpeed": "पूर्वनिर्धारित-वेगरूपेण स्मर",
+  "loadedSubtitle": "भारितः उपशीर्षकः: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "उपशीर्षकम् अवतारयितुं विफलम्: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "कक्ष-सङ्केतः",
+  "episodeReleasesIn": "भागः {value} प्रकाशते यावत्",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "टिप्पणीं कर्तुं प्रविष्टः भवतु",
+  "readFullRules": "सम्पूर्णानि नियमानि पठ",
+  "acceptPost": "स्वीकुरु तथा प्रेषय",
+  "youNeedToBeLoggedIn2": "प्रत्युत्तरं दातुं प्रविष्टः भवतु",
+  "commentCopiedToClipboard": "टिप्पणी क्लिपबोर्डे प्रतिलिखिता",
+  "spam": "स्पैम्",
+  "offensive": "आक्षेपार्हम्",
+  "harassment": "उत्पीडनम्",
+  "offTopic": "विषयाद् बहिः",
+  "failedToLoadUserInfo": "उपयोक्तृ-सूचना भारयितुं विफलम्।",
+  "noUserDataFound": "उपयोक्तृ-दत्तांशः न लब्धः।",
+  "viewHistory": "इतिहासं पश्य",
+  "failedToLoadComments": "टिप्पण्यः भारयितुं विफलाः।",
+  "noCommentsFound": "टिप्पण्यः न लब्धाः।",
+  "deleted2": "लुप्तम्",
+  "comment": "टिप्पणी"
 }
