@@ -2832,5 +2832,8 @@
   "watched": "已观看",
   "watchedEpisode": "已看第 {episode} 集",
   "whatsOnYourMindAniList": "你在想什么？（将作为文本动态发布到 AniList）",
-  "yourStory": "你的快拍"
+  "yourStory": "你的快拍",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

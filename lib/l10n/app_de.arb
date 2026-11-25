@@ -4090,5 +4090,8 @@
   "motionDithering": "Bewegung & Dithering",
   "smoothMotionBetweenVideoFrames": "Flüssige Bewegung zwischen Video-Frames",
   "reducesColorBandingWithSubtle": "Reduziert Farbbanding mit subtilem Rauschen",
-  "unknown": "Unbekannt"
+  "unknown": "Unbekannt",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

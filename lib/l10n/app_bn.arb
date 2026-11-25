@@ -4090,5 +4090,8 @@
   "watched": "দেখা হয়েছে",
   "watchedEpisode": "পর্ব {episode} দেখা হয়েছে",
   "whatsOnYourMindAniList": "আপনার মনে কি চলছে? (AniList-এ টেক্সট অ্যাক্টিভিটি হিসেবে পোস্ট হবে)",
-  "yourStory": "আপনার স্টোরি"
+  "yourStory": "আপনার স্টোরি",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

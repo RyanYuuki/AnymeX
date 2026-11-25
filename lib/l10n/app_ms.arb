@@ -2832,5 +2832,8 @@
   "whatsOnYourMindAniList": "Apa yang anda fikirkan? (Disiarkan sebagai aktiviti teks di AniList)",
   "yourStory": "Cerita anda",
   "exportingYourList": "Mengeksport senarai {value} anda...",
-  "nMore": "{summaryText}\n+{value} lagi"
+  "nMore": "{summaryText}\n+{value} lagi",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

@@ -4090,5 +4090,8 @@
   "yourStory": "भवतः कथा",
   "pleaseRestartTheAppToApply": "परिवर्तनानि प्रयोक्तुं कृपया अनुप्रयोगं पुनः आरभत।",
   "restartTheAppToApplyThe": "नवीनीकरणं प्रयोक्तुं अनुप्रयोगं पुनः आरभत।",
-  "selectDataToIncludeInThis": "अस्मिन् पश्चात्-संरक्षणे समावेशयितुं दत्तांशं चिनुत"
+  "selectDataToIncludeInThis": "अस्मिन् पश्चात्-संरक्षणे समावेशयितुं दत्तांशं चिनुत",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

@@ -2832,5 +2832,8 @@
   "watched": "تمت المشاهدة",
   "watchedEpisode": "تمت مشاهدة الحلقة {episode}",
   "whatsOnYourMindAniList": "ما الذي يدور في ذهنك؟ (يُنشر كنشاط نصي على AniList)",
-  "yourStory": "قصتك"
+  "yourStory": "قصتك",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

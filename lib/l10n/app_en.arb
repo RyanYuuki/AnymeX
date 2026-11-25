@@ -4198,5 +4198,8 @@
   "unknown": "Unknown",
   "@unknown": {
     "description": "Fallback text for unknown character or entity"
-  }
+  },
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

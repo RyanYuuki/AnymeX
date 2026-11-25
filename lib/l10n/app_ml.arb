@@ -2832,5 +2832,8 @@
   "yourStory": "നിങ്ങളുടെ സ്റ്റോറി",
   "anilistXmlExportedToN": "AniList XML ഇതിലേക്ക് കയറ്റുമതി ചെയ്തു:\n{savedPath}",
   "malListExportedToN": "MAL ലിസ്റ്റ് ഇതിലേക്ക് കയറ്റുമതി ചെയ്തു:\n{savedPath}",
-  "pendingReports": "{length} തീർപ്പുകൽപ്പിക്കാത്ത റിപ്പോർട്ടുകൾ"
+  "pendingReports": "{length} തീർപ്പുകൽപ്പിക്കാത്ത റിപ്പോർട്ടുകൾ",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

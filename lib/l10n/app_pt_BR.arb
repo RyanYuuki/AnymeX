@@ -2832,5 +2832,8 @@
   "motionDithering": "Movimento e pontilhamento",
   "smoothMotionBetweenVideoFrames": "Movimento suave entre quadros de vídeo",
   "reducesColorBandingWithSubtle": "Reduz o banding de cor com ruído sutil",
-  "unknown": "Desconhecido"
+  "unknown": "Desconhecido",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

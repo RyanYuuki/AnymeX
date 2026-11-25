@@ -2832,5 +2832,8 @@
   "whatsOnYourMindAniList": "तुमच्या मनात काय आहे? (AniList वर मजकूर क्रियाकलाप म्हणून पोस्ट केले जाईल)",
   "yourStory": "तुमची स्टोरी",
   "malListExportedToN": "MAL सूची येथे निर्यात केली:\n{savedPath}",
-  "updatedToV": "v{current} वर अद्यतनित केले"
+  "updatedToV": "v{current} वर अद्यतनित केले",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

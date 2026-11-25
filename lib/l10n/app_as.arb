@@ -4076,5 +4076,8 @@
   "whatsOnYourMindAniList": "আপোনাৰ মনত কি চলি আছে? (AniList ত পাঠ্য কাৰ্যকলাপ হিচাপে প'ষ্ট কৰা হ'ব)",
   "yourStory": "আপোনাৰ কাহিনী",
   "ep": "EP {value}",
-  "ep2": "EP {formatted}"
+  "ep2": "EP {formatted}",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

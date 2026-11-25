@@ -2832,5 +2832,8 @@
   "watched": "නරඹන ලදී",
   "watchedEpisode": "{episode} කථාංගය නරඹන ලදී",
   "whatsOnYourMindAniList": "ඔබගේ සිතේ ඇති දේ කුමක්ද? (AniList හි පෙළ ක්‍රියාකාරකමක් ලෙස පළ වේ)",
-  "yourStory": "ඔබේ කතාව"
+  "yourStory": "ඔබේ කතාව",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

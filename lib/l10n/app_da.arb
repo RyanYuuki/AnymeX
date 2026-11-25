@@ -4090,5 +4090,8 @@
   "watched": "Set",
   "watchedEpisode": "Set afsnit {episode}",
   "whatsOnYourMindAniList": "Hvad tænker du på? (Slås op som tekstaktivitet på AniList)",
-  "yourStory": "Din historie"
+  "yourStory": "Din historie",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

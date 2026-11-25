@@ -69,7 +69,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                         }),
                         AnymeXTile(
                           icon: Icons.subtitles_outlined,
-                          title: 'Episode Metadata',
+                          title: context.l10n.episodeMetadata,
                           badge: AnymeXBadge.newBadge(context),
                           subtitle:
                               'Configure AniZip, Kitsu, Simkl, AniList, Tenrai & fallback order',

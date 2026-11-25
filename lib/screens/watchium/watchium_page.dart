@@ -883,7 +883,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       color: theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: AnymeXText('HOST',
+                    child: AnymeXText(context.l10n.hostBadge,
                       size: 10,
                       color: theme.colorScheme.onPrimary,
                     ),
@@ -930,7 +930,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: AnymeXText('HOST',
+                          child: AnymeXText(context.l10n.hostBadge,
                               style: TextStyle(
                                   fontSize: 9,
                                   color: theme.colorScheme.onPrimary,

@@ -2832,5 +2832,8 @@
   "watched": "Bekeken",
   "watchedEpisode": "Afl. {episode} bekeken",
   "whatsOnYourMindAniList": "Wat ben je aan het doen? (Wordt geplaatst als tekstactiviteit op AniList)",
-  "yourStory": "Jouw verhaal"
+  "yourStory": "Jouw verhaal",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

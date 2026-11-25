@@ -240,7 +240,7 @@ class Matchmaker {
       HeuristicDetail(
         key: 'perfectAnime',
         title: Get.context!.l10n.commonPerfectAnime,
-        description: 'Based on anime you\'ve scored as 10/10.',
+        description: Get.context!.l10n.basedOnAnimeScoredTen,
         score: perfectScore,
         weight: _perfectAnimeWeight,
         mediaItems: commonPerfectAnime,
@@ -422,7 +422,7 @@ class Matchmaker {
       HeuristicDetail(
         key: 'perfectManga',
         title: Get.context!.l10n.commonPerfectManga,
-        description: 'Based on manga you\'ve scored as 10/10.',
+        description: Get.context!.l10n.basedOnMangaScoredTen,
         score: perfectScore,
         weight: _perfectMangaWeight,
         mediaItems: commonPerfectManga,

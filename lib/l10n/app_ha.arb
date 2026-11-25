@@ -4091,6 +4091,7 @@
   "watchedEpisode": "An kalli Kashi {episode}",
   "whatsOnYourMindAniList": "Me ke zuciyarka? (Yana bugawa azaman rubutu akan AniList)",
   "yourStory": "Labarinku",
-  "verticalNovelPagePadding": "Bada Sarari a Shafi na Tsaye",
-  "offlineMode": "Yanayin Ba Tare Da Intanet Ba"
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

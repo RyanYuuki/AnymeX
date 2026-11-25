@@ -4090,5 +4090,8 @@
   "watched": "Παρακολουθήθηκε",
   "watchedEpisode": "Παρακολουθήθηκε το επεισόδιο {episode}",
   "whatsOnYourMindAniList": "Τι σκέφτεστε; (Δημοσιεύεται ως δραστηριότητα κειμένου στο AniList)",
-  "yourStory": "Η ιστορία σας"
+  "yourStory": "Η ιστορία σας",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

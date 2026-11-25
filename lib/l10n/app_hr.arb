@@ -4090,5 +4090,8 @@
   "watched": "Gledano",
   "watchedEpisode": "Pogledana ep. {episode}",
   "whatsOnYourMindAniList": "Što vam je na umu? (Objavljuje se kao tekstualna aktivnost na AniListu)",
-  "yourStory": "Vaša priča"
+  "yourStory": "Vaša priča",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

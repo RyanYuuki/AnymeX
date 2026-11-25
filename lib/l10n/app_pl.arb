@@ -2832,5 +2832,8 @@
   "watched": "Obejrzane",
   "watchedEpisode": "Obejrzano odc. {episode}",
   "whatsOnYourMindAniList": "O czym myślisz? (Zostanie opublikowane jako wpis na AniList)",
-  "yourStory": "Twoja relacja"
+  "yourStory": "Twoja relacja",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

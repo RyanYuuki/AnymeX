@@ -4090,5 +4090,8 @@
   "watched": "ଦେଖାଯାଇଛି",
   "watchedEpisode": "ଏପିସୋଡ୍ {episode} ଦେଖାଯାଇଛି",
   "whatsOnYourMindAniList": "ଆପଣଙ୍କ ମନରେ କ’ଣ ଅଛି? (AniList ରେ ଟେକ୍ସଟ୍ କାର୍ଯ୍ୟକଳାପ ଭାବରେ ପୋଷ୍ଟ ହେବ)",
-  "yourStory": "ଆପଣଙ୍କ ଷ୍ଟୋରୀ"
+  "yourStory": "ଆପଣଙ୍କ ଷ୍ଟୋରୀ",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

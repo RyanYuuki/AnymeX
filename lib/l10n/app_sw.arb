@@ -2832,5 +2832,8 @@
   "watched": "Imetazamwa",
   "watchedEpisode": "Kipindi {episode} kimetazamwa",
   "whatsOnYourMindAniList": "Unafikiria nini? (Inachapishwa kama shughuli ya maandishi kwenye AniList)",
-  "yourStory": "Hadithi Yako"
+  "yourStory": "Hadithi Yako",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

@@ -2832,5 +2832,8 @@
   "watched": "Đã xem",
   "watchedEpisode": "Đã xem tập {episode}",
   "whatsOnYourMindAniList": "Bạn đang nghĩ gì? (Đăng dưới dạng hoạt động văn bản trên AniList)",
-  "yourStory": "Tin của bạn"
+  "yourStory": "Tin của bạn",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

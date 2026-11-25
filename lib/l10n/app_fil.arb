@@ -4090,5 +4090,8 @@
   "watched": "Napanood",
   "watchedEpisode": "Napanood ang Ep. {episode}",
   "whatsOnYourMindAniList": "Ano ang nasa isip mo? (Ipo-post bilang text activity sa AniList)",
-  "yourStory": "Iyong Kwento"
+  "yourStory": "Iyong Kwento",
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }
