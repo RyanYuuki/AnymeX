@@ -90,12 +90,26 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
               AnymeXSectionBuilder(
                 title: context.l10n.dnsProxy,
                 children: [
-                  AnymeXTile(
+                  AnymeXTile.toggle(
                     icon: Icons.dns_rounded,
                     title: context.l10n.dnsOverHttps,
-                    subtitle: _currentDnsLabel,
-                    onTap: () => _openDnsSheet(context),
+                    subtitle: _network.enableDoh
+                        ? 'Using encrypted DNS ($_currentDnsLabel)'
+                        : 'System DNS (Default)',
+                    value: _network.enableDoh,
+                    onChanged: (val) {
+                      NetworkKeys.enableDoh.set(val);
+                      _network.reinitialize();
+                      setState(() {});
+                    },
                   ),
+                  if (_network.enableDoh)
+                    AnymeXTile(
+                      icon: Icons.swap_horiz_rounded,
+                      title: 'DNS Provider',
+                      subtitle: _currentDnsLabel,
+                      onTap: () => _openDnsSheet(context),
+                    ),
                   AnymeXTile(
                     icon: HugeIcons.strokeRoundedShield01,
                     title: context.l10n.proxy,

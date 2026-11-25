@@ -54,6 +54,8 @@ class NetworkManager extends GetxController {
     return fetched.isNotEmpty ? fetched : _buildUserAgent();
   }
 
+  bool get enableDoh => NetworkKeys.enableDoh.get<bool>(false);
+
   String get dnsUrl {
     final custom = NetworkKeys.customDnsUrl.get<String>('');
     return custom.isNotEmpty ? custom : DohProvider.cloudflare.url;
@@ -123,28 +125,31 @@ class NetworkManager extends GetxController {
           connectTimeout: Duration(seconds: 15),
           timeout: Duration(seconds: 30),
         ),
-        dnsSettings: DnsSettings.dynamic(
-          resolver: (host) async {
-            try {
-              return await DnsManager.resolveWithDoh(
-                host,
-                dns,
-                bootstrapIps: DohProvider.forUrl(dns)?.bootstrapIps ?? const [],
-              );
-            } catch (e) {
-              debugPrint('DoH failed for $host → fallback');
+        dnsSettings: enableDoh
+            ? DnsSettings.dynamic(
+                resolver: (host) async {
+                  try {
+                    return await DnsManager.resolveWithDoh(
+                      host,
+                      dns,
+                      bootstrapIps:
+                          DohProvider.forUrl(dns)?.bootstrapIps ?? const [],
+                    );
+                  } catch (e) {
+                    debugPrint('DoH failed for $host → fallback');
 
-              try {
-                final res = await InternetAddress.lookup(host);
+                    try {
+                      final res = await InternetAddress.lookup(host);
 
-                return res.map((e) => e.address).toList();
-              } catch (e) {
-                debugPrint('Fallback DNS failed for $host');
-                return [];
-              }
-            }
-          },
-        ),
+                      return res.map((e) => e.address).toList();
+                    } catch (e) {
+                      debugPrint('Fallback DNS failed for $host');
+                      return [];
+                    }
+                  }
+                },
+              )
+            : null,
         proxySettings: currentProxy == null ? null : _buildProxySettings(currentProxy),
       );
 
