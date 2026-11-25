@@ -413,7 +413,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 ),
               ),
               AnymeXText(
-                "$listCount lists",
+                context.l10n.lists(listCount),
                 style: TextStyle(
                   fontSize: 11,
                   color: theme.colorScheme.onSurfaceVariant,
@@ -1253,7 +1253,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                         icon: Icons.settings_input_component_rounded,
                         title: context.l10n.extensionConfigurationsRepos,
                         subtitle:
-                            "$_extensionsDataCount registered repositories and source settings",
+                            context.l10n.repositoriesAndSourceSettings(_extensionsDataCount),
                         value: _options.extensionsData,
                         onChanged: (v) =>
                             setState(() => _options.extensionsData = v),

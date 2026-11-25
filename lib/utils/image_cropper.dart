@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
@@ -171,14 +173,13 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
               ),
             ),
             const SizedBox(height: 12),
-            const AnymeXText(
-              'Failed to load page',
+            AnymeXText(Get.context!.l10n.failedToLoadPage,
               variant: TextVariant.bold,
               size: 14,
             ),
             const SizedBox(height: 6),
             AnymeXText(
-              'Tap retry to attempt loading again',
+              Get.context!.l10n.tapRetryToAttemptLoading,
               size: 12,
               color: colors.onSurfaceVariant,
             ),
@@ -205,7 +206,7 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
                     ),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Retry',
+                      Get.context!.l10n.actionRetry,
                       variant: TextVariant.bold,
                       size: 13,
                       color: colors.onPrimary,

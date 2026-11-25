@@ -301,7 +301,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                     color: Color(0xFFFFD700)),
                                                 const SizedBox(width: 4),
                                                 AnymeXText(
-                                                  '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
+                                                  context.l10n.pts4(widget.userPoints!.tier.toUpperCase(), widget.userPoints!.displayPoints),
                                                   style: const TextStyle(
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
@@ -343,7 +343,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                   color: Colors.white70),
                                               const SizedBox(width: 4),
                                               AnymeXText(
-                                                'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
+                                                context.l10n.joined(DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year),
                                                 style: const TextStyle(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w600,

@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -44,7 +46,7 @@ class LogInterceptor extends Interceptor {
 
     if (cloudflare) {
       snackBar(
-        '⚠️ Detected Cloudflare protection (Tap to solve)',
+        Get.context!.l10n.detectedCloudflareProtectionTapTo,
         title: 'Cloudflare',
         icon: Icons.warning_amber_rounded,
         iconColor: const Color(0xFFFFB74D),

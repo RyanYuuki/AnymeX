@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/seek_preview_card.dart';
 import 'package:anymex/screens/anime/watch/chapters/models/playback_chapter.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -173,7 +174,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
                         thumbLength: 30,
                         amplitude: 1,
                         enabled: true,
-                        semanticLabel: 'Playback',
+                        semanticLabel: context.l10n.playback,
                         focusNode: _focusNode,
                         onChanged: (double value) {
                           controller.onScrubbingUpdate(

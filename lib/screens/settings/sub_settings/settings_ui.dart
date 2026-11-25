@@ -72,7 +72,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: HugeIcons.strokeRoundedShapes,
                             title: context.l10n.uiComponents,
                             subtitle:
-                                'Customize history card, carousel & nav bar styles',
+                                context.l10n.customizeHistoryCardCarouselNav,
                             onTap: () =>
                                 navigate(() => const SettingsUiComponents()),
                           ),
@@ -80,7 +80,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: Icons.tune_rounded,
                             title: context.l10n.cardCustomizer,
                             subtitle:
-                                'Customize carousel card styles, geometry, and layout',
+                                context.l10n.customizeCarouselCardStylesGeometry,
                             onTap: () =>
                                 navigate(() => const CardCustomizerPage()),
                           ),
@@ -115,7 +115,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: Icons.reorder_rounded,
                             title: context.l10n.reorderNavigationTabs,
                             subtitle:
-                                'Drag and drop to reorder navigation bar tabs',
+                                context.l10n.dragAndDropToReorderNavigation,
                             onTap: () => _showReorderTabsDialog(context),
                           ),
                           AnymeXTile.toggle(
@@ -132,7 +132,7 @@ class _SettingsUiState extends State<SettingsUi> {
                               icon: Icons.margin_rounded,
                               title: context.l10n.bottomNavBarMargin,
                               subtitle:
-                                  'Adjust horizontal margin of bottom navigation bar',
+                                  context.l10n.adjustHorizontalMarginOfBottomNavigation,
                               value: settings.bottomNavBarMargin,
                               min: 0,
                               max: 100,
@@ -144,7 +144,7 @@ class _SettingsUiState extends State<SettingsUi> {
                               icon: Icons.margin_rounded,
                               title: context.l10n.bottomNavBarMargin,
                               subtitle:
-                                  'Adjust bottom bar margin (media details page only)',
+                                  context.l10n.adjustBottomBarMarginMediaDetails,
                               value: settings.bottomNavBarMargin,
                               min: 0,
                               max: 100,
@@ -167,7 +167,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: Icons.play_circle_outline_rounded,
                             title: context.l10n.showContinueWatchingOnHome,
                             subtitle:
-                                'Display a continue watching bar above the bottom navigation bar on home',
+                                context.l10n.displayAContinueWatchingBar,
                             value: settings.showHomeContinueWatching.value,
                             onChanged: (e) {
                               settings.saveShowHomeContinueWatching(e);
@@ -182,7 +182,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: HugeIcons.strokeRoundedBounceRight,
                             title: context.l10n.enableAnimation,
                             subtitle:
-                                "Enable animation on carousels for smooth motion",
+                                context.l10n.enableAnimationOnCarouselsForSmooth,
                             value: settings.enableAnimation,
                             onChanged: (val) {
                               settings.enableAnimation = val;

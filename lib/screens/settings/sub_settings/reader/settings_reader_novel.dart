@@ -186,14 +186,13 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
         children: [
           Row(
             children: [
-              const AnymeXText(
-                'Live Novel Preview',
+              AnymeXText(context.l10n.liveNovelPreview,
                 variant: TextVariant.bold,
                 size: 14,
               ),
               const Spacer(),
               AnymeXText(
-                '$_novelFontFamily • ${_novelFontSize.toInt()}pt',
+                context.l10n.ptDetails(_novelFontFamily, (_novelFontSize.toInt()).toString()),
                 size: 11,
                 color: colors.onSurfaceVariant,
               ),
@@ -433,7 +432,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     icon: Icons.swipe_rounded,
                     title: context.l10n.swipeGestures,
                     subtitle:
-                        'Enable horizontal swipe navigation in novel reader',
+                        context.l10n.enableHorizontalSwipeNavigationIn,
                     value: _novelSwipeGestures,
                     onChanged: (value) => _setNovelBool(
                       NovelReaderKeys.swipeGestures,

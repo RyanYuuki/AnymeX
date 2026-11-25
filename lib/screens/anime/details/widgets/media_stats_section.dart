@@ -749,7 +749,7 @@ Widget buildStatsGrid(BuildContext context, Media media,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    'SCORE',
+                    context.l10n.detailsScore,
                     size: 9.5,
                     variant: TextVariant.bold,
                     color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -792,7 +792,7 @@ Widget buildStatsGrid(BuildContext context, Media media,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'STATUS',
+                context.l10n.detailsStatus,
                 size: 9.5,
                 variant: TextVariant.bold,
                 color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -1272,7 +1272,7 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
                 SizedBox(
                   width: 76,
                   child: AnymeXText(
-                    'Synonyms',
+                    context.l10n.synonyms,
                     size: 11.5,
                     color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
                   ),
@@ -1455,7 +1455,7 @@ Widget buildThemesSection(
         Padding(
           padding: const EdgeInsets.only(bottom: 4, top: 2),
           child: AnymeXText(
-            'Openings',
+            context.l10n.openings,
             size: 12.5,
             variant: TextVariant.bold,
             color: colors.primary,
@@ -1474,7 +1474,7 @@ Widget buildThemesSection(
         Padding(
           padding: const EdgeInsets.only(bottom: 4, top: 4),
           child: AnymeXText(
-            'Endings',
+            context.l10n.endings,
             size: 12.5,
             variant: TextVariant.bold,
             color: colors.secondary,

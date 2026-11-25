@@ -259,8 +259,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
         children: [
           Row(
             children: [
-              const AnymeXText(
-                'Live Subtitle Preview',
+              AnymeXText(context.l10n.liveSubtitlePreview,
                 variant: TextVariant.bold,
                 size: 14,
               ),

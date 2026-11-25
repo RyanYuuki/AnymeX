@@ -129,7 +129,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Blend Mode',
+                          context.l10n.blendMode,
                           size: 13,
                           variant: TextVariant.semiBold,
                           color: context.colors.onSurfaceVariant,

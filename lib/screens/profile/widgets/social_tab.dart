@@ -188,7 +188,7 @@ class SocialTabState extends State<SocialTab> {
                     ButtonSegment(
                       value: 0,
                       label: AnymeXText(
-                        'Following ($_followingTotal)',
+                        context.l10n.following(_followingTotal),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -201,7 +201,7 @@ class SocialTabState extends State<SocialTab> {
                     ButtonSegment(
                       value: 1,
                       label: AnymeXText(
-                        'Followers ($_followersTotal)',
+                        context.l10n.followers(_followersTotal),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,

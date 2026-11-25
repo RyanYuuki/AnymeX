@@ -376,7 +376,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                       ),
                       const SizedBox(height: 8),
                       AnymeXText(
-                        'Wrap your Scaffold or main page widget:\n\nSmoothPageEntrance(\n  style: PageEntranceStyle.slideUpGentle,\n  child: YourPageContent(),\n)',
+                        context.l10n.wrapYourScaffoldOrMain,
                         style: TextStyle(
                           fontFamily: 'monospace',
                           color: Colors.grey[600],

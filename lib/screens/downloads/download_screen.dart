@@ -1003,7 +1003,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           size: 14, color: theme.primary),
                       const SizedBox(width: 6),
                       AnymeXText(
-                        '${filteredList.length} episodes available',
+                        context.l10n.episodesCount(filteredList.length),
                         size: 12,
                         color: theme.primary,
                       ),
@@ -1525,7 +1525,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     size: 20,
                   ),
                   AnymeXText(
-                    '${allSources.length} available',
+                    context.l10n.available(allSources.length),
                     size: 13,
                     color: theme.onSurface.opaque(0.6),
                   ),

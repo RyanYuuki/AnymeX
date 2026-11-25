@@ -129,7 +129,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Failed to load chapter',
+              context.l10n.failedToLoadChapter,
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),

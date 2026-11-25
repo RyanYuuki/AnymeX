@@ -472,7 +472,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         AnymeXText(
-                          '${(group.averageProgress * 100).toStringAsFixed(0)}% · ${group.completedCount}/${group.tasks.length} completed',
+                          context.l10n.completed(((group.averageProgress * 100).toStringAsFixed(0)).toString(), (group.completedCount).toString(), (group.tasks.length).toString()),
                           size: 11,
                           color: theme.onSurface.opaque(0.55),
                         ),

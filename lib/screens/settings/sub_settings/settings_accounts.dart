@@ -261,7 +261,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                   icon: Icons.touch_app_rounded,
                   title: context.l10n.askForTrackingPermission,
                   subtitle:
-                      'If enabled, AnymeX will ask before updating your tracking progress; otherwise it tracks automatically.',
+                      context.l10n.ifEnabledAnymexWillAsk,
                   value: shouldAskForPermission,
                   onChanged: (e) {
                     setState(() {

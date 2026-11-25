@@ -75,7 +75,7 @@ class Deeplink {
     bool isRepoAdded = false;
     if (uri.scheme.toLowerCase() == 'kotatsu') {
       snackBar(
-          "Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+          Get.context!.l10n.addingKotatsuRepositoryThisWillTake);
     } else {
       snackBar(Get.context!.l10n.addingRepoPleaseWait);
     }

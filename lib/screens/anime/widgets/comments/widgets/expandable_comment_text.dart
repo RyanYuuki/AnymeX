@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -64,7 +65,7 @@ class _ExpandableCommentTextState extends State<ExpandableCommentText> {
               ),
               const SizedBox(width: 8),
               AnymeXText(
-                'Spoiler — tap to reveal',
+                context.l10n.spoilerDashTapToReveal,
                 color: colors.onSurfaceVariant,
                 size: 12.5,
                 variant: TextVariant.semiBold,

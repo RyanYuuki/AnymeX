@@ -748,7 +748,7 @@ class _LoaderContentState extends State<_LoaderContent> {
           ? Column(
               children: [
                 AnymeXText(
-                  'Taking longer than expected...',
+                  context.l10n.takingLongerThanExpected,
                   style: Get.theme.textTheme.bodyMedium?.copyWith(
                     color: Get.theme.colorScheme.onSurfaceVariant,
                   ),

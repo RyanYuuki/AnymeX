@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -68,7 +69,7 @@ class WatchiumSyncBanner extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 AnymeXText(
-                  'Out of sync with host',
+                  context.l10n.outOfSyncWithHost,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 13,
@@ -84,7 +85,7 @@ class WatchiumSyncBanner extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: AnymeXText(
-                    'Sync',
+                    context.l10n.sync,
                     style: TextStyle(
                       color: Colors.orange.shade300,
                       fontSize: 12,

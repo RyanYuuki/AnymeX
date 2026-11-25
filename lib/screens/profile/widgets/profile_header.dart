@@ -363,7 +363,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             ),
                                             const SizedBox(width: 4),
                                             AnymeXText(
-                                              'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
+                                              context.l10n.joined(DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year),
                                               style: const TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w600,
@@ -1014,7 +1014,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 4),
                                       AnymeXText(
-                                        'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
+                                        context.l10n.joined(DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year),
                                         style: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w600,

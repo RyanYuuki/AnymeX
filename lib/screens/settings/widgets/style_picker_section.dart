@@ -149,7 +149,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                 ),
               ),
               AnymeXText(
-                '${_index + 1} of ${widget.itemCount}',
+                context.l10n.itemOfTotal((_index + 1).toString(), (widget.itemCount).toString()),
                 size: 11.5,
                 color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
               ),
@@ -199,7 +199,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: AnymeXText(
-                      'Current',
+                      context.l10n.currentLabel,
                       size: 10.5,
                       variant: TextVariant.semiBold,
                       color: colors.primary,

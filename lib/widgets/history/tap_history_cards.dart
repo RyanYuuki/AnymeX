@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -210,7 +211,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 2),
                                   AnymeXText(
-                                    'EP $latest',
+                                    context.l10n.epNumber(latest.toString()),
                                     size: 10,
                                     variant: TextVariant.bold,
                                     color: colorScheme.primary,
@@ -235,7 +236,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 3),
                                   AnymeXText(
-                                    '$behind behind',
+                                    context.l10n.behind(behind.toString()),
                                     size: 10,
                                     variant: TextVariant.bold,
                                     color: colorScheme.error,
@@ -249,7 +250,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AnymeXText(
-                              'Watched $watched of $latest',
+                              context.l10n.watchedOf(watched, latest),
                               size: 10.5,
                               variant: TextVariant.regular,
                               color: colorScheme.onSurfaceVariant,

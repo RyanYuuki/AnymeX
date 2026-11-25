@@ -649,7 +649,7 @@ class _GistSyncCard extends StatelessWidget {
       String? outputPath;
       if (Platform.isAndroid || Platform.isIOS) {
         outputPath = await FilePicker.platform.saveFile(
-          dialogTitle: 'Export GitHub Gist JSON',
+          dialogTitle: context.l10n.exportGithubGistJson,
           fileName: fileName,
           bytes: utf8.encode(formattedJson),
           type: FileType.custom,
@@ -657,7 +657,7 @@ class _GistSyncCard extends StatelessWidget {
         );
       } else {
         outputPath = await FilePicker.platform.saveFile(
-          dialogTitle: 'Export GitHub Gist JSON',
+          dialogTitle: context.l10n.exportGithubGistJson,
           fileName: fileName,
           type: FileType.custom,
           allowedExtensions: ['json'],

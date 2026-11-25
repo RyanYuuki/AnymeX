@@ -119,7 +119,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Interactive Preview',
+                context.l10n.interactivePreview,
                 size: 14,
                 variant: TextVariant.bold,
                 color: colors.onSurface,
@@ -154,7 +154,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: AnymeXText(
-                        'Page ${_previewPageIndex + 1} / ${pages.length}',
+                        context.l10n.page2((_previewPageIndex + 1).toString(), (pages.length).toString()),
                         size: 11,
                         variant: TextVariant.semiBold,
                         color: colors.onSurfaceVariant,
@@ -330,8 +330,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
                             color: Colors.black.withOpacity(0.65),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const AnymeXText(
-                            'Original',
+                          child: AnymeXText(context.l10n.original,
                             size: 10,
                             variant: TextVariant.bold,
                             color: Colors.white,
@@ -358,7 +357,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
                               orElse: () => superResolutionPresets.first,
                             );
                             return AnymeXText(
-                              'Super Res • ${preset.title}',
+                              context.l10n.superRes(preset.title),
                               size: 10,
                               variant: TextVariant.bold,
                               color: colors.onPrimary,
@@ -502,7 +501,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
                   icon: Icons.auto_awesome_rounded,
                   title: context.l10n.superResolution,
                   subtitle:
-                      'High-definition edge sharpening & detail enhancement',
+                      context.l10n.highDefinitionEdgeSharpeningDetail,
                   value: isEnabled,
                   onChanged: (_) {
                     widget.controller.toggleUpscaling();

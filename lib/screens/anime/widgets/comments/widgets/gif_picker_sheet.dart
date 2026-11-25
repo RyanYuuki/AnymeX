@@ -295,7 +295,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
               child: Row(
                 children: [
                   AnymeXText(
-                    'GIF Search',
+                    context.l10n.gifSearch,
                     size: 16,
                     variant: TextVariant.bold,
                     color: colorScheme.onSurface,
@@ -467,7 +467,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                       : _gifs.isEmpty
                           ? Center(
                               child: AnymeXText(
-                                'No GIFs found',
+                                context.l10n.noGifsFound,
                                 size: 13,
                                 color: colorScheme.onSurfaceVariant,
                                 maxLines: null,

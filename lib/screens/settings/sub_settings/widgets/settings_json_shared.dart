@@ -506,7 +506,7 @@ class _EmptyState extends StatelessWidget {
               style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           AnymeXText(
-            'Add JSON files or paste a URL\nto install custom themes.',
+            context.l10n.addJsonFilesOrPaste,
             textAlign: TextAlign.center,
             style:
                 tt.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
