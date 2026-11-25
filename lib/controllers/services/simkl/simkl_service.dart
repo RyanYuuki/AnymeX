@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
@@ -928,25 +927,15 @@ class SimklService extends GetxController
 
   @override
   Future<void> login(BuildContext context) async {
-    final isDesktop =
-        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+    final selectedMethod = await showLoginMethodSheet(
+      context: context,
+      title: context.l10n.loginToSimkl,
+      serviceName: 'Simkl',
+      showTokenOption: false,
+    );
 
-    bool forceWebAuth = false;
-    if (!isDesktop) {
-      final selectedMethod = await AnymeXSheet.custom<String>(
-        loginSheetHelper(
-          context: context,
-          title: context.l10n.loginToSimkl,
-          serviceName: 'Simkl',
-          showTokenOption: false,
-        ),
-        context,
-        showDragHandle: true,
-      );
-
-      if (selectedMethod == null || !context.mounted) return;
-      forceWebAuth = selectedMethod == 'browser_external';
-    }
+    if (selectedMethod == null || !context.mounted) return;
+    final forceWebAuth = selectedMethod == 'browser_external';
 
     final clientId = dotenv.env['SIMKL_CLIENT_ID'];
 

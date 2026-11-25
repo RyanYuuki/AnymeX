@@ -1,7 +1,7 @@
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_border.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 
@@ -384,195 +384,80 @@ class AnymeXSheet extends StatelessWidget {
   }
 }
 
-Widget loginSheetHelper({
+Future<String?> showLoginMethodSheet({
   required BuildContext context,
   required String title,
   required String serviceName,
   bool showTokenOption = false,
 }) {
   final colors = context.colors;
+  final options = [
+    (
+      id: 'browser_internal',
+      icon: Icons.open_in_new_rounded,
+      title: context.l10n.internalBrowser,
+      subtitle: context.l10n.loginInsideTheAppRecommended,
+    ),
+    (
+      id: 'browser_external',
+      icon: Icons.explore_outlined,
+      title: context.l10n.externalBrowser,
+      subtitle: context.l10n.loginUsingYourDefaultBrowser,
+    ),
+    if (showTokenOption)
+      (
+        id: 'token',
+        icon: Icons.vpn_key_rounded,
+        title: context.l10n.loginWithToken,
+        subtitle: context.l10n.manuallyPasteOauthAccessToken,
+      ),
+  ];
 
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Row(
-          children: [
-            Icon(
-              Icons.login_rounded,
-              color: colors.primary,
-              size: 24,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AnymeXText(
-                title,
-                style: const TextStyle(
-                  fontFamily: 'Linotte',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.close_rounded),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-          ],
+  return AnymeXSheet(
+    showDragHandle: true,
+    headerIcon: Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Icon(
+          Icons.login_rounded,
+          size: 20,
+          color: colors.primary,
         ),
       ),
-      const Divider(height: 20, thickness: 1),
-      const SizedBox(height: 8),
-      AnymexOnTap(
-        onTap: () => Navigator.pop(context, 'browser_internal'),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: AnymeXBorder.decoration(
-            context,
-            color: colors.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-            radius: 16,
+    ),
+    heroTitle: title,
+    heroSubtitle: 'Select how you want to sign in to $serviceName',
+    customWidget: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: options.asMap().entries.map((entry) {
+        final index = entry.key;
+        final option = entry.value;
+        final isFirst = index == 0;
+        final isLast = index == options.length - 1;
+        final radius = BorderRadius.vertical(
+          top: Radius.circular(isFirst ? 16 : 4),
+          bottom: Radius.circular(isLast ? 16 : 4),
+        );
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: isLast ? 0 : 2),
+          child: AnymeXTile(
+            style: TileStyle.modern,
+            borderRadius: radius,
+            backgroundColor:
+                colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+            icon: option.icon,
+            title: option.title,
+            subtitle: option.subtitle,
+            onTap: () => Navigator.pop(context, option.id),
           ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.open_in_new_rounded,
-                color: colors.primary,
-                size: 22,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText(
-                      context.l10n.internalBrowser,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    AnymeXText(
-                      context.l10n.loginInsideTheAppRecommended,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-              ),
-            ],
-          ),
-        ),
-      ),
-      const SizedBox(height: 12),
-      AnymexOnTap(
-        onTap: () => Navigator.pop(context, 'browser_external'),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: AnymeXBorder.decoration(
-            context,
-            color: colors.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-            radius: 16,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.explore_outlined,
-                color: colors.primary,
-                size: 22,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText(
-                      context.l10n.externalBrowser,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    AnymeXText(
-                      context.l10n.loginUsingYourDefaultBrowser,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-              ),
-            ],
-          ),
-        ),
-      ),
-      if (showTokenOption) ...[
-        const SizedBox(height: 12),
-        AnymexOnTap(
-          onTap: () => Navigator.pop(context, 'token'),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: AnymeXBorder.decoration(
-              context,
-              color: colors.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-              radius: 16,
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.vpn_key_rounded,
-                  color: colors.primary,
-                  size: 22,
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnymeXText(
-                        context.l10n.loginWithToken,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      AnymeXText(
-                        context.l10n.manuallyPasteOauthAccessToken,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-      const SizedBox(height: 8),
-    ],
-  );
+        );
+      }).toList(),
+    ),
+  ).show<String>(context);
 }

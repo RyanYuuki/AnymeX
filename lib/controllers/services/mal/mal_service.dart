@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'dart:math' show Random;
 import 'package:anymex/utils/oauth_helper.dart';
@@ -682,24 +681,12 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
-    final isDesktop =
-        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
-
-    String? selectedMethod;
-    if (isDesktop) {
-      selectedMethod = 'browser_internal';
-    } else {
-      selectedMethod = await AnymeXSheet.custom<String>(
-        loginSheetHelper(
-          context: context,
-          title: context.l10n.loginToMyanimelist,
-          serviceName: 'MyAnimeList',
-          showTokenOption: false,
-        ),
-        context,
-        showDragHandle: true,
-      );
-    }
+    final selectedMethod = await showLoginMethodSheet(
+      context: context,
+      title: context.l10n.loginToMyanimelist,
+      serviceName: 'MyAnimeList',
+      showTokenOption: false,
+    );
 
     if (selectedMethod == null || !context.mounted) return;
 
