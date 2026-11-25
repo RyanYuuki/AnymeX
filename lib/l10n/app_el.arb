@@ -4091,7 +4091,7 @@
   "watchedEpisode": "Παρακολουθήθηκε το επεισόδιο {episode}",
   "whatsOnYourMindAniList": "Τι σκέφτεστε; (Δημοσιεύεται ως δραστηριότητα κειμένου στο AniList)",
   "yourStory": "Η ιστορία σας",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ΟΙΚΟΔΕΣΠΟΤΗΣ",
+  "basedOnAnimeScoredTen": "Με βάση τα anime που βαθμολόγησες με 10/10.",
+  "basedOnMangaScoredTen": "Με βάση τα manga που βαθμολόγησες με 10/10."
 }

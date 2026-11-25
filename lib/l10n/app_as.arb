@@ -4077,7 +4077,7 @@
   "yourStory": "আপোনাৰ কাহিনী",
   "ep": "EP {value}",
   "ep2": "EP {formatted}",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "হোষ্ট",
+  "basedOnAnimeScoredTen": "আপুনি ১০/১০ ৰেটিং দিয়া এনিমেৰ ভিত্তিত।",
+  "basedOnMangaScoredTen": "আপুনি ১০/১০ ৰেটিং দিয়া মাঙ্গাৰ ভিত্তিত।"
 }

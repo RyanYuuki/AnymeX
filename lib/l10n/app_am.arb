@@ -4091,7 +4091,7 @@
   "watchedEpisode": "ክፍል {episode} ታይቷል",
   "whatsOnYourMindAniList": "ምን እያሰቡ ነው? (በ AniList ላይ እንደ ጽሑፍ እንቅስቃሴ ይለጠፋል)",
   "yourStory": "የእርስዎ ታሪክ",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "አስተናጋጅ",
+  "basedOnAnimeScoredTen": "10/10 ደረጃ በሰጠሃቸው አኒሜዎች ላይ የተመሠረተ።",
+  "basedOnMangaScoredTen": "10/10 ደረጃ በሰጠሃቸው ማንጋዎች ላይ የተመሠረተ።"
 }

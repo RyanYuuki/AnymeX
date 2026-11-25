@@ -2833,7 +2833,7 @@
   "watchedEpisode": "Просмотрена {episode} серия",
   "whatsOnYourMindAniList": "О чем вы думаете? (Опубликуется как запись в AniList)",
   "yourStory": "Ваша история",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ХОСТ",
+  "basedOnAnimeScoredTen": "На основе аниме, которым вы поставили 10/10.",
+  "basedOnMangaScoredTen": "На основе манги, которой вы поставили 10/10."
 }

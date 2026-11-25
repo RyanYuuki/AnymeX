@@ -2833,7 +2833,7 @@
   "watchedEpisode": "{episode}화 시청함",
   "whatsOnYourMindAniList": "무슨 생각을 하고 계신가요? (AniList에 텍스트 활동으로 게시됨)",
   "yourStory": "내 스토리",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "호스트",
+  "basedOnAnimeScoredTen": "10/10점을 준 애니메이션을 기반으로 합니다.",
+  "basedOnMangaScoredTen": "10/10점을 준 만화를 기반으로 합니다."
 }

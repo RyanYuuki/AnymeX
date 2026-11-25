@@ -2833,7 +2833,7 @@
   "anilistXmlExportedToN": "AniList XML ഇതിലേക്ക് കയറ്റുമതി ചെയ്തു:\n{savedPath}",
   "malListExportedToN": "MAL ലിസ്റ്റ് ഇതിലേക്ക് കയറ്റുമതി ചെയ്തു:\n{savedPath}",
   "pendingReports": "{length} തീർപ്പുകൽപ്പിക്കാത്ത റിപ്പോർട്ടുകൾ",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ഹോസ്റ്റ്",
+  "basedOnAnimeScoredTen": "നിങ്ങൾ 10/10 റേറ്റ് ചെയ്ത ആനിമേകളെ അടിസ്ഥാനമാക്കി.",
+  "basedOnMangaScoredTen": "നിങ്ങൾ 10/10 റേറ്റ് ചെയ്ത മാംഗകളെ അടിസ്ഥാനമാക്കി."
 }

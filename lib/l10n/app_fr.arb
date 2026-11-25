@@ -4091,7 +4091,7 @@
   "watchedEpisode": "Épisode {episode} vu",
   "whatsOnYourMindAniList": "À quoi pensez-vous ? (Publié comme activité texte sur AniList)",
   "yourStory": "Votre story",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "HÔTE",
+  "basedOnAnimeScoredTen": "Basé sur les animes que vous avez notés 10/10.",
+  "basedOnMangaScoredTen": "Basé sur les mangas que vous avez notés 10/10."
 }

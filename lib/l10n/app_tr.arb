@@ -2833,7 +2833,7 @@
   "watchedEpisode": "{episode}. Bölüm İzlendi",
   "whatsOnYourMindAniList": "Aklında ne var? (AniList'te metin aktivitesi olarak paylaşılır)",
   "yourStory": "Senin Hikayen",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "SUNUCU",
+  "basedOnAnimeScoredTen": "10/10 puan verdiğin animelere göre.",
+  "basedOnMangaScoredTen": "10/10 puan verdiğin mangalara göre."
 }

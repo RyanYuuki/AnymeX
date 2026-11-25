@@ -2833,7 +2833,7 @@
   "smoothMotionBetweenVideoFrames": "Movimiento fluido entre fotogramas de vídeo",
   "reducesColorBandingWithSubtle": "Reduce el bandeado de color con un ruido sutil",
   "unknown": "Desconocido",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ANFITRIÓN",
+  "basedOnAnimeScoredTen": "Basado en el anime que has puntuado con 10/10.",
+  "basedOnMangaScoredTen": "Basado en el manga que has puntuado con 10/10."
 }

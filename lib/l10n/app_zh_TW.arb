@@ -2833,7 +2833,7 @@
   "smoothMotionBetweenVideoFrames": "視訊影格之間的流暢動作",
   "reducesColorBandingWithSubtle": "透過細微雜訊減少色彩斷層",
   "unknown": "未知",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "主持人",
+  "basedOnAnimeScoredTen": "根據你評為 10/10 的動畫。",
+  "basedOnMangaScoredTen": "根據你評為 10/10 的漫畫。"
 }

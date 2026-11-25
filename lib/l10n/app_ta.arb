@@ -2833,7 +2833,7 @@
   "watchedEpisode": "அத்தியாயம் {episode} பார்க்கப்பட்டது",
   "whatsOnYourMindAniList": "நீங்கள் என்ன நினைக்கிறீர்கள்? (AniList இல் உரைச் செயல்பாடாகப் பதிவிடப்படும்)",
   "yourStory": "உங்கள் கதை",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ஹோஸ்ட்",
+  "basedOnAnimeScoredTen": "நீங்கள் 10/10 மதிப்பிட்ட அனிமேக்களின் அடிப்படையில்.",
+  "basedOnMangaScoredTen": "நீங்கள் 10/10 மதிப்பிட்ட மங்காக்களின் அடிப்படையில்."
 }

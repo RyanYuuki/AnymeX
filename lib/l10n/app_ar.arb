@@ -2833,7 +2833,7 @@
   "watchedEpisode": "تمت مشاهدة الحلقة {episode}",
   "whatsOnYourMindAniList": "ما الذي يدور في ذهنك؟ (يُنشر كنشاط نصي على AniList)",
   "yourStory": "قصتك",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "المضيف",
+  "basedOnAnimeScoredTen": "بناءً على الأنمي الذي قيّمته 10/10.",
+  "basedOnMangaScoredTen": "بناءً على المانغا التي قيّمتها 10/10."
 }

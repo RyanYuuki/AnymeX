@@ -2833,7 +2833,7 @@
   "yourStory": "तुमची स्टोरी",
   "malListExportedToN": "MAL सूची येथे निर्यात केली:\n{savedPath}",
   "updatedToV": "v{current} वर अद्यतनित केले",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "होस्ट",
+  "basedOnAnimeScoredTen": "तुम्ही 10/10 रेटिंग दिलेल्या अ‍ॅनिमेवर आधारित.",
+  "basedOnMangaScoredTen": "तुम्ही 10/10 रेटिंग दिलेल्या मांगावर आधारित."
 }

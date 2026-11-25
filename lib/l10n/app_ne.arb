@@ -4091,7 +4091,7 @@
   "watchedEpisode": "एपिसोड {episode} हेरियो",
   "whatsOnYourMindAniList": "तपाईंको मनमा के छ? (AniList मा पाठ गतिविधिको रूपमा पोस्ट हुन्छ)",
   "yourStory": "तपाईंको स्टोरी",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "होस्ट",
+  "basedOnAnimeScoredTen": "तपाईंले १०/१० रेटिङ दिनुभएका एनिमेमा आधारित।",
+  "basedOnMangaScoredTen": "तपाईंले १०/१० रेटिङ दिनुभएका मंगामा आधारित।"
 }

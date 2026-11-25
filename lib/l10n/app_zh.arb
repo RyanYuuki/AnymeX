@@ -2833,7 +2833,7 @@
   "watchedEpisode": "已看第 {episode} 集",
   "whatsOnYourMindAniList": "你在想什么？（将作为文本动态发布到 AniList）",
   "yourStory": "你的快拍",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "主持人",
+  "basedOnAnimeScoredTen": "基于你评为 10/10 的动漫。",
+  "basedOnMangaScoredTen": "基于你评为 10/10 的漫画。"
 }

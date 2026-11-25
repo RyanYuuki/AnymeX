@@ -2833,7 +2833,7 @@
   "watchedEpisode": "Episódio {episode} visto",
   "whatsOnYourMindAniList": "Em que estás a pensar? (Publicado como atividade de texto no AniList)",
   "yourStory": "A sua história",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ANFITRIÃO",
+  "basedOnAnimeScoredTen": "Com base nos animes a que deu 10/10.",
+  "basedOnMangaScoredTen": "Com base nos mangás a que deu 10/10."
 }

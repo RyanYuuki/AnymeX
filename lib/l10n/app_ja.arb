@@ -4091,7 +4091,7 @@
   "watchedEpisode": "第{episode}話を視聴しました",
   "whatsOnYourMindAniList": "今何を考えていますか？（AniListにテキストアクティビティとして投稿されます）",
   "yourStory": "あなたのストーリー",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "ホスト",
+  "basedOnAnimeScoredTen": "10/10 と評価したアニメに基づいています。",
+  "basedOnMangaScoredTen": "10/10 と評価した漫画に基づいています。"
 }

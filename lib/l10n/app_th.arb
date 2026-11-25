@@ -2833,7 +2833,7 @@
   "whatsOnYourMindAniList": "คุณกำลังคิดอะไรอยู่? (โพสต์เป็นกิจกรรมข้อความบน AniList)",
   "yourStory": "สตอรี่ของคุณ",
   "anilistXmlExportedToN": "ส่งออก XML ของ AniList ไปยัง:\n{savedPath}",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "โฮสต์",
+  "basedOnAnimeScoredTen": "จากอนิเมะที่คุณให้คะแนน 10/10",
+  "basedOnMangaScoredTen": "จากมังงะที่คุณให้คะแนน 10/10"
 }

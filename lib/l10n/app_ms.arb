@@ -2833,7 +2833,7 @@
   "yourStory": "Cerita anda",
   "exportingYourList": "Mengeksport senarai {value} anda...",
   "nMore": "{summaryText}\n+{value} lagi",
-  "hostBadge": "HOST",
-  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "hostBadge": "TUAN RUMAH",
+  "basedOnAnimeScoredTen": "Berdasarkan anime yang anda beri 10/10.",
+  "basedOnMangaScoredTen": "Berdasarkan manga yang anda beri 10/10."
 }
