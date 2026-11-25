@@ -34,7 +34,8 @@ class Settings extends GetxController {
 
   final canShowUpdate = true.obs;
   final playerControlThemeRx = 'default'.obs;
-  final progressSliderStyleRx = 'wavy'.obs;
+  final progressSliderStyleRx = 'defaultm3'.obs;
+  final overrideSliderThemeRx = false.obs;
   final mediaIndicatorThemeRx = 'default'.obs;
   final readerControlThemeRx = 'default'.obs;
   final chapterStyleRx = 'compact'.obs;
@@ -120,7 +121,9 @@ class Settings extends GetxController {
         ReaderKeys.readerControlTheme.get<String>('default');
     chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
     progressSliderStyleRx.value =
-        PlayerUiKeys.progressSliderStyle.get<String>('wavy');
+        PlayerUiKeys.progressSliderStyle.get<String>('defaultm3');
+    overrideSliderThemeRx.value =
+        PlayerUiKeys.overrideSliderTheme.get<bool>(false);
 
     final savedCardStyleJson =
         UISettingsKeys.customCardStyleJson.get<String>('');
@@ -838,6 +841,12 @@ class Settings extends GetxController {
     PlayerUiKeys.progressSliderStyle.set(value);
   }
 
+  bool get overrideSliderTheme => overrideSliderThemeRx.value;
+  set overrideSliderTheme(bool value) {
+    overrideSliderThemeRx.value = value;
+    PlayerUiKeys.overrideSliderTheme.set(value);
+  }
+
   String get mediaIndicatorTheme => mediaIndicatorThemeRx.value;
   set mediaIndicatorTheme(String value) {
     mediaIndicatorThemeRx.value = value;
@@ -891,6 +900,12 @@ class Settings extends GetxController {
   set autoSkipFiller(bool value) {
     playerSettings.update((s) => s?.autoSkipFiller = value);
     PlayerSettingsKeys.autoSkipFiller.set(value);
+  }
+
+  bool get enableAniSkip => _getPlayerSetting((s) => s.enableAniSkip);
+  set enableAniSkip(bool value) {
+    playerSettings.update((s) => s?.enableAniSkip = value);
+    PlayerSettingsKeys.enableAniSkip.set(value);
   }
 
   bool get enableScreenshot => _getPlayerSetting((s) => s.enableScreenshot);

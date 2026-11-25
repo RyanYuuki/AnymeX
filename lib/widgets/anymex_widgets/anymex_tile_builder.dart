@@ -194,6 +194,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
             return AnymeXTile.radio(
               title: getTitle(item),
               subtitle: getSubtitle?.call(item),
+              subtitleWidget: getSubtitleWidget?.call(item),
               icon: getIcon?.call(item),
               leading: getLeading?.call(item),
               selected: checked,
@@ -272,6 +273,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
         return AnymeXTile.radio(
           title: getTitle(item),
           subtitle: getSubtitle?.call(item),
+          subtitleWidget: getSubtitleWidget?.call(item),
           icon: getIcon?.call(item),
           leading: getLeading?.call(item),
           selected: checked,

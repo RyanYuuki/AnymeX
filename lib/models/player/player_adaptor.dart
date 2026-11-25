@@ -21,6 +21,7 @@ class PlayerSettings {
   bool autoSkipED;
   bool autoSkipOnce;
   bool autoSkipRecap;
+  bool enableAniSkip;
   bool enableSwipeControls;
   int markAsCompleted;
   bool transitionSubtitle;
@@ -61,6 +62,7 @@ class PlayerSettings {
     this.autoSkipOP = false,
     this.autoSkipOnce = false,
     this.autoSkipRecap = false,
+    this.enableAniSkip = true,
     this.enableSwipeControls = true,
     this.markAsCompleted = 90,
     this.autoTranslate = false,
@@ -146,6 +148,8 @@ class PlayerSettings {
           .get<String>(defaults.subtitleOutlineType),
       autoSkipFiller:
           PlayerSettingsKeys.autoSkipFiller.get<bool>(defaults.autoSkipFiller),
+      enableAniSkip:
+          PlayerSettingsKeys.enableAniSkip.get<bool>(defaults.enableAniSkip),
       enableScreenshot: PlayerSettingsKeys.enableScreenshot
           .get<bool>(defaults.enableScreenshot),
       playerMenuAnimation: PlayerSettingsKeys.playerMenuAnimation

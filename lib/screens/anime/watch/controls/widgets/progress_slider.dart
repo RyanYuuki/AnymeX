@@ -99,8 +99,9 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final skipTimes = controller.skipTimes;
       final totalDuration = controller.episodeDuration.value;
 
-      final effectiveStyle =
-          widget.style ?? parseSliderStyle(settings.progressSliderStyle);
+      final effectiveStyle = settings.overrideSliderTheme
+          ? parseSliderStyle(settings.progressSliderStyle)
+          : (widget.style ?? parseSliderStyle(settings.progressSliderStyle));
       final isDefaultStyle = effectiveStyle == SliderStyle.defaultM3;
       final isWavyStyle = effectiveStyle == SliderStyle.wavy;
       final containerHeight = isWavyStyle ? 44.0 : 27.0;
@@ -390,7 +391,7 @@ class SkipTimelinePainter extends CustomPainter {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(clampedStart, yOffset, width, markerHeight),
-          const Radius.circular(2),
+          Radius.circular(markerHeight / 2),
         ),
         paint,
       );
@@ -746,5 +747,109 @@ class IOSSliderTrackShape extends SliderTrackShape with BaseSliderTrackShape {
     );
 
     canvas.drawRRect(RRect.fromRectAndRadius(activeRect, radius), activePaint);
+  }
+}
+
+class ProgressSliderPreview extends StatelessWidget {
+  final SliderStyle style;
+
+  const ProgressSliderPreview({super.key, required this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colors;
+    final isWavy = style == SliderStyle.wavy;
+    final isDefault = style == SliderStyle.defaultM3;
+
+    if (isWavy) {
+      return SizedBox(
+        height: 32,
+        child: M3ETheme(
+          data: M3ETheme.of(context).copyWith(
+            colorScheme: M3ETheme.of(context).colorScheme.copyWith(
+                  primary: colorScheme.primary,
+                  secondaryContainer:
+                      colorScheme.surfaceContainerHighest.opaque(0.5, iReallyMeanIt: true),
+                ),
+          ),
+          child: M3ESlider.wavy(
+            value: 0.45,
+            min: 0,
+            max: 1,
+            size: M3ESliderSize.xs,
+            wavelength: 32,
+            trackThickness: 6,
+            thumbLength: 22,
+            amplitude: 1,
+            enabled: true,
+            semanticLabel: 'Preview',
+            onChanged: (_) {},
+          ),
+        ),
+      );
+    }
+
+    if (isDefault) {
+      return SizedBox(
+        height: 26,
+        child: AnymeXSliderM3(
+          theme: const AnymeXSliderM3Theme(
+            trackHeight: 12,
+            thumbHeight: 18,
+          ),
+          showValueIndicator: false,
+          min: 0,
+          value: 0.45,
+          max: 1,
+          secondaryTrackValue: 0.72,
+          onChanged: (_) {},
+        ),
+      );
+    }
+
+    final sliderTheme = style == SliderStyle.ios
+        ? SliderThemeData(
+            trackHeight: 5,
+            thumbShape: SliderComponentShape.noThumb,
+            trackShape: const IOSSliderTrackShape(),
+            activeTrackColor: colorScheme.primary,
+            inactiveTrackColor:
+                colorScheme.onSurface.opaque(0.2, iReallyMeanIt: true),
+            secondaryActiveTrackColor:
+                colorScheme.onSurface.opaque(0.35, iReallyMeanIt: true),
+            overlayColor: Colors.transparent,
+            showValueIndicator: ShowValueIndicator.never,
+          )
+        : SliderThemeData(
+            trackHeight: 7,
+            thumbShape: const CapsuleThumb(
+              width: 5,
+              height: 20,
+              pressedHeight: 22,
+            ),
+            trackShape: CapsuleSliderTrack(),
+            activeTrackColor: colorScheme.primary,
+            inactiveTrackColor: colorScheme.surfaceContainerHighest
+                .opaque(0.5, iReallyMeanIt: true),
+            secondaryActiveTrackColor:
+                colorScheme.onSurface.opaque(0.3, iReallyMeanIt: true),
+            thumbColor: colorScheme.onPrimary,
+            overlayColor: Colors.transparent,
+            showValueIndicator: ShowValueIndicator.never,
+          );
+
+    return SizedBox(
+      height: 26,
+      child: SliderTheme(
+        data: sliderTheme,
+        child: Slider(
+          min: 0,
+          max: 1,
+          value: 0.45,
+          secondaryTrackValue: 0.72,
+          onChanged: (_) {},
+        ),
+      ),
+    );
   }
 }
