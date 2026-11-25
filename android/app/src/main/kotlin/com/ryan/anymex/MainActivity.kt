@@ -88,6 +88,31 @@ class MainActivity : FlutterFragmentActivity() {
             }
         }
 
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.ryan.anymex/crash_detector").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "markBridgeLoadStart" -> {
+                    CrashDetector.markBridgeLoadStart(applicationContext)
+                    result.success(true)
+                }
+                "markBridgeLoadComplete" -> {
+                    CrashDetector.markBridgeLoadComplete(applicationContext)
+                    result.success(true)
+                }
+                "isBridgeBlocked" -> {
+                    result.success(CrashDetector.isBridgeBlocked(applicationContext))
+                }
+                "setBridgeBlocked" -> {
+                    val blocked = call.argument<Boolean>("blocked") ?: false
+                    CrashDetector.setBridgeBlocked(applicationContext, blocked)
+                    result.success(true)
+                }
+                "consumeCrashReport" -> {
+                    result.success(CrashDetector.consumeCrashReport(applicationContext))
+                }
+                else -> result.notImplemented()
+            }
+        }
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "enable" -> { volumeKeysEnabled = true; result.success(null) }
@@ -245,6 +270,7 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         androidx.appcompat.app.AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
+        CrashDetector.installUncaughtExceptionHandler(applicationContext)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(pipReceiver, IntentFilter().apply {
                 addAction(ACTION_PLAY)

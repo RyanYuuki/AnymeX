@@ -59,7 +59,7 @@ class Settings extends GetxController {
   RxBool useAlternateTitle = false.obs;
   RxBool isIncognito = false.obs;
   RxBool enableBetaUpdates = false.obs;
-  RxBool writeLogToFile = false.obs;
+  RxBool writeLogToFile = true.obs;
   RxBool showHomeContinueWatching = true.obs;
   Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
   Rxn<DisplayMode> activeDisplayMode = Rxn<DisplayMode>();
@@ -136,7 +136,7 @@ class Settings extends GetxController {
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     isIncognito.value = General.incognitoMode.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
-    writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    writeLogToFile.value = General.writeLogToFile.get<bool>(true);
     showHomeContinueWatching.value =
         General.showHomeContinueWatching.get<bool>(true);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
