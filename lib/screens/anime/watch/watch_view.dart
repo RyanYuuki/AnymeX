@@ -8,6 +8,7 @@ import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/chapters_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
@@ -272,6 +273,13 @@ class _WatchScreenState extends State<WatchScreen> {
                       bottom: 0,
                       left: 0,
                       child: EpisodesPane(controller: controller),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      left: 0,
+                      child: ChaptersPane(controller: controller),
                     ),
                     Positioned(
                       right: 0,
