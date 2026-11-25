@@ -328,31 +328,35 @@ class BottomControls extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? theme.colorScheme.surfaceVariant.opaque(0.3)
-                        : theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isDark
-                          ? theme.colorScheme.outline.opaque(0.2)
-                          : theme.colorScheme.outline.opaque(0.4),
-                      width: 0.5,
-                    ),
-                  ),
-                  child: Obx(() => AnymeXText(
-                        controller.formattedCurrentPosition,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          fontFeatures: const [FontFeature.tabularFigures()],
+                Obx(() => GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: controller.toggleTimestampMode,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? theme.colorScheme.surfaceVariant.opaque(0.3)
+                              : theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isDark
+                                ? theme.colorScheme.outline.opaque(0.2)
+                                : theme.colorScheme.outline.opaque(0.4),
+                            width: 0.5,
+                          ),
                         ),
-                      )),
-                ),
+                        child: AnymeXText(
+                          controller.formattedPlaybackTime,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ),
+                    )),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -421,31 +425,35 @@ class BottomControls extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? theme.colorScheme.surfaceVariant.opaque(0.3)
-                          : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isDark
-                            ? theme.colorScheme.outline.opaque(0.2)
-                            : theme.colorScheme.outline.opaque(0.4),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: Obx(() => AnymeXText(
-                          controller.formattedCurrentPosition,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                            fontFeatures: const [FontFeature.tabularFigures()],
+                  Obx(() => GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: controller.toggleTimestampMode,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? theme.colorScheme.surfaceVariant.opaque(0.3)
+                                : theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isDark
+                                  ? theme.colorScheme.outline.opaque(0.2)
+                                  : theme.colorScheme.outline.opaque(0.4),
+                              width: 0.5,
+                            ),
                           ),
-                        )),
-                  ),
+                          child: AnymeXText(
+                            controller.formattedPlaybackTime,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                        ),
+                      )),
                   if (leftButtons.isNotEmpty) const SizedBox(width: 16),
                   ...leftButtons,
                 ],

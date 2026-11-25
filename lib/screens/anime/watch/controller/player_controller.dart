@@ -215,6 +215,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   String get formattedCurrentPosition =>
       PlayerUtils.formatDuration(currentPosition.value);
 
+  final RxBool showRemainingTime = false.obs;
+
+  String get formattedRemainingTime {
+    final remaining = episodeDuration.value - currentPosition.value;
+    final clamped = remaining.isNegative ? Duration.zero : remaining;
+    return '-${PlayerUtils.formatDuration(clamped)}';
+  }
+
+  String get formattedPlaybackTime =>
+      showRemainingTime.value ? formattedRemainingTime : formattedCurrentPosition;
+
+  void toggleTimestampMode() =>
+      showRemainingTime.value = !showRemainingTime.value;
+
   final Rx<Duration> episodeDuration = Rx<Duration>(Duration.zero);
   String get formattedEpisodeDuration =>
       PlayerUtils.formatDuration(episodeDuration.value);
@@ -259,7 +273,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxList<model.Track> localSubtitles = <model.Track>[].obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
-  final Rx<bool> isChaptersPaneOpened = false.obs;
   final Rx<bool> isSpeedPaneOpened = false.obs;
   final Rx<bool> isWatchTogetherPaneOpened = false.obs;
   final RxBool isTorrentFilesPaneOpened = false.obs;
@@ -414,6 +427,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       DeviceOrientation.portraitUp.obs;
   final RxBool isOrientationLocked = false.obs;
   StreamSubscription? _accelerometerSub;
+  Worker? _controlsLockWorker;
+  List<DeviceOrientation> _preferredOrientations = const [
+    DeviceOrientation.landscapeLeft,
+  ];
+  List<DeviceOrientation>? _controlsLockOrientationSnapshot;
+  DeviceOrientation? _controlsLockPreviousOrientation;
+  bool _controlsLockPreviousLockState = false;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
@@ -443,10 +463,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
+    _initializeControlsLockOrientation();
     selectedAudioChannelLayout.value =
         PlayerKeys.audioChannelLayout.get<String>('auto');
     _activeUseLibass = PlayerKeys.useLibass.get<bool>(false);
     _initializePlayer();
+    _updateRpc();
     if (!isOffline.value) {
       _initializeAniSkip();
     }
@@ -463,7 +485,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
     ever(selectedVideo, (_) => _autoSelectAudioTrack());
     _autoSelectAudioTrack();
-    _applyDebugDummyChapters();
     if (PlayerKeys.useLibass.get(false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         snackBar(
@@ -592,7 +613,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _updateRpc() async {
-    if (!Get.isRegistered<DiscordRPCController>()) return;
     if (isOffline.value) {
       await DiscordRPCController.instance.updateBrowsingPresence(
         activity: 'Watching Offline Video',
@@ -802,6 +822,62 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  void _initializeControlsLockOrientation() {
+    _controlsLockWorker?.dispose();
+    _controlsLockWorker = ever(isLocked, _handleControlsLockChanged);
+  }
+
+  void _handleControlsLockChanged(bool locked) {
+    if (isPreview) return;
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    if (locked) {
+      _lockOrientationForControls();
+    } else {
+      _restoreOrientationAfterControlsLock();
+    }
+  }
+
+  DeviceOrientation _resolveCurrentScreenOrientation() {
+    final context = Get.context;
+    if (context != null && MediaQuery.maybeOf(context) != null) {
+      final size = MediaQuery.sizeOf(context);
+      if (size.height > size.width) {
+        return DeviceOrientation.portraitUp;
+      }
+    }
+    return currentOrientation.value;
+  }
+
+  void _lockOrientationForControls() {
+    if (_controlsLockOrientationSnapshot != null) return;
+    _controlsLockOrientationSnapshot =
+        List<DeviceOrientation>.from(_preferredOrientations);
+    _controlsLockPreviousOrientation = currentOrientation.value;
+    _controlsLockPreviousLockState = isOrientationLocked.value;
+    isOrientationLocked.value = true;
+    _applyOrientation(_resolveCurrentScreenOrientation());
+  }
+
+  void _restoreOrientationAfterControlsLock() {
+    final snapshot = _controlsLockOrientationSnapshot;
+    if (snapshot == null) return;
+    final previousOrientation = _controlsLockPreviousOrientation;
+    final wasLocked = _controlsLockPreviousLockState;
+    _clearControlsLockOrientationSnapshot();
+    isOrientationLocked.value = wasLocked;
+    if (wasLocked) {
+      _applyOrientation(previousOrientation ?? snapshot.first);
+    } else {
+      _applyOrientation(physicalOrientation.value);
+    }
+  }
+
+  void _clearControlsLockOrientationSnapshot() {
+    _controlsLockOrientationSnapshot = null;
+    _controlsLockPreviousOrientation = null;
+    _controlsLockPreviousLockState = false;
+  }
+
   void _initPhysicalOrientationListener() {
     if (!Platform.isAndroid && !Platform.isIOS) return;
     try {
@@ -877,6 +953,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _applyOrientation(DeviceOrientation orientation) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setPreferredOrientations([orientation]);
+    _preferredOrientations = [orientation];
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -944,26 +1021,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void _applyDebugDummyChapters() {
-    if (!kDebugMode || chapters.isNotEmpty) return;
-    chapters.assignAll(const [
-      PlaybackChapter(title: 'Prologue', startSeconds: 0),
-      PlaybackChapter(title: 'Opening', startSeconds: 45),
-      PlaybackChapter(title: 'Part A', startSeconds: 135),
-      PlaybackChapter(title: 'Part B', startSeconds: 660),
-      PlaybackChapter(title: 'Ending', startSeconds: 1290),
-      PlaybackChapter(title: 'Next Episode Preview', startSeconds: 1380),
-    ]);
-  }
-
   void _updateSkipUiState() {
-    if (!playerSettings.enableAniSkip || skipTimes == null) {
-      if (currentSkipInterval.value != null) {
-        currentSkipInterval.value = null;
-      }
-      _cancelAutoSkipTimer();
-      return;
-    }
+    if (skipTimes == null) return;
 
     final currentSec = currentPosition.value.inSeconds;
     aniskip.SkipIntervals? foundInterval;
@@ -1214,11 +1273,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     currentSkipInterval.value = null;
     _cancelAutoSkipTimer();
     _autoSkipCancelledForCurrentSegment = false;
-    if (!playerSettings.enableAniSkip) {
-      skipTimes = null;
-      skipSegments.clear();
-      return;
-    }
     String malId = anilistData.idMal;
     final serviceType = anilistData.serviceType;
 
@@ -1458,7 +1512,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         }
       }
       if (isOffline.value) return;
-      if (!Get.isRegistered<DiscordRPCController>()) return;
       if (!e) {
         DiscordRPCController.instance.updateAnimePresencePaused(
             anime: anilistData,
@@ -1512,12 +1565,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.chaptersStream.listen((chaps) {
       if (_isReloadingPlayer.value) return;
-      final list = chaps.cast<PlaybackChapter>();
-      if (list.isEmpty) {
-        _applyDebugDummyChapters();
-      } else {
-        chapters.assignAll(list);
-      }
+      chapters.assignAll(chaps.cast<PlaybackChapter>());
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1753,7 +1801,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             !isAudioPaneOpened.value &&
             !isSyncSubsPaneOpened.value &&
             !isEpisodePaneOpened.value &&
-            !isChaptersPaneOpened.value &&
             !isTorrentFilesPaneOpened.value &&
             !isWatchTogetherPaneOpened.value &&
             !isSpeedPaneOpened.value &&
@@ -1837,7 +1884,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
       resetListeners();
       isEpisodePaneOpened.value = false;
-      isChaptersPaneOpened.value = false;
       isSourcePaneOpened.value = false;
       isTracksPaneOpened.value = false;
       isAudioPaneOpened.value = false;
@@ -2222,6 +2268,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await _deactivateMediaSession();
     await _basePlayer.pause();
     _subSyncWorker?.dispose();
+    _controlsLockWorker?.dispose();
+    _controlsLockWorker = null;
+    _clearControlsLockOrientationSnapshot();
     _seekDebounce?.cancel();
     _rpcSeekDebounceTimer?.cancel();
     _brightnessTimer?.cancel();
@@ -2242,7 +2291,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     _revertOrientations();
-    if (!isOffline.value && Get.isRegistered<DiscordRPCController>()) {
+    if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
     }
 
@@ -2345,7 +2394,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _rpcSeekDebounceTimer?.cancel();
     _rpcSeekDebounceTimer = Timer(const Duration(seconds: 10), () {
       if (isClosed || isOffline.value) return;
-      if (!Get.isRegistered<DiscordRPCController>()) return;
       currentEpisode.value.timeStampInMilliseconds =
           currentPosition.value.inMilliseconds;
       if (isPlaying.value) {
@@ -3010,7 +3058,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.pause();
     unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
-    isChaptersPaneOpened.value = false;
     isSourcePaneOpened.value = false;
     isTracksPaneOpened.value = false;
     isAudioPaneOpened.value = false;
@@ -3030,11 +3077,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     currentPosition.value = Duration.zero;
     episodeDuration.value = Duration.zero;
     bufferred.value = Duration.zero;
+    showRemainingTime.value = false;
   }
 
   void closePanes() {
     isEpisodePaneOpened.value = false;
-    isChaptersPaneOpened.value = false;
     isSourcePaneOpened.value = false;
     isTracksPaneOpened.value = false;
     isAudioPaneOpened.value = false;
