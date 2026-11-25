@@ -131,6 +131,7 @@ class NotificationController extends GetxController {
   }
 
   DateTime? _lastNotificationFetchTime;
+  DateTime? get lastAnilistFetchTime => _lastNotificationFetchTime;
 
   Future<void> loadAnilistNotifications({bool force = false}) async {
     final auth = Get.find<AnilistAuth>();
