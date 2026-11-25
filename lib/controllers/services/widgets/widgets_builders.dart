@@ -21,6 +21,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -171,7 +172,7 @@ class _UnderratedCarousel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AnymeXText(
-                  title,
+                  uiLabel(context.l10n, title),
                   style: TextStyle(
                     fontFamily: 'Linotte',
                     fontSize: 17,
