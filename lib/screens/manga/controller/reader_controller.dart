@@ -468,22 +468,21 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _performSave(reason: 'Page opened');
     _startStatsTimer();
 
-    _rpcWorker = ever(currentChapter, (_) {
-      final totalPages = pageList.isNotEmpty
-          ? pageList.length
-          : (currentChapter.value?.totalPages ?? 1);
+    _rpcWorker = ever(currentChapter, (chapter) {
+      if (chapter == null || !Get.isRegistered<DiscordRPCController>()) return;
       DiscordRPCController.instance.updateMangaPresence(
           manga: media,
-          chapter: currentChapter.value!,
+          chapter: chapter,
           totalChapters: chapterList.length.toString(),
-          currentPage: currentPageIndex.value + 1,
-          totalPages: totalPages);
+          currentPage: 1,
+          totalPages: chapter.totalPages ?? 1);
     });
 
     _pageRpcWorker = ever(currentPageIndex, (index) {
       _rpcPageDebounceTimer?.cancel();
       _rpcPageDebounceTimer = Timer(const Duration(seconds: 10), () {
         if (isClosed || currentChapter.value == null) return;
+        if (!Get.isRegistered<DiscordRPCController>()) return;
         final totalPages = pageList.isNotEmpty
             ? pageList.length
             : (currentChapter.value!.totalPages ?? 1);
@@ -635,9 +634,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     _performFinalSave();
 
-    DiscordRPCController.instance.updateMediaPresence(
-      media: media,
-    );
+    if (Get.isRegistered<DiscordRPCController>()) {
+      DiscordRPCController.instance.updateMediaPresence(
+        media: media,
+      );
+    }
 
     _rpcPageDebounceTimer?.cancel();
     _pageRpcWorker.dispose();
@@ -1480,12 +1481,14 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       final totalPages = pageList.isNotEmpty
           ? pageList.length
           : (activeChapter.totalPages ?? 1);
-      DiscordRPCController.instance.updateMangaPresence(
-          manga: media,
-          chapter: activeChapter,
-          totalChapters: chapterList.length.toString(),
-          currentPage: currentPageIndex.value + 1,
-          totalPages: totalPages);
+      if (Get.isRegistered<DiscordRPCController>()) {
+        DiscordRPCController.instance.updateMangaPresence(
+            manga: media,
+            chapter: activeChapter,
+            totalChapters: chapterList.length.toString(),
+            currentPage: currentPageIndex.value + 1,
+            totalPages: totalPages);
+      }
     }
 
     if (activePages.isNotEmpty &&
@@ -1572,12 +1575,14 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final totalPages = pageList.isNotEmpty
         ? pageList.length
         : (currentChapter.value?.totalPages ?? 1);
-    DiscordRPCController.instance.updateMangaPresence(
-        manga: media,
-        chapter: currentChapter.value!,
-        totalChapters: chapterList.length.toString(),
-        currentPage: currentPageIndex.value + 1,
-        totalPages: totalPages);
+    if (Get.isRegistered<DiscordRPCController>()) {
+      DiscordRPCController.instance.updateMangaPresence(
+          manga: media,
+          chapter: currentChapter.value!,
+          totalChapters: chapterList.length.toString(),
+          currentPage: currentPageIndex.value + 1,
+          totalPages: totalPages);
+    }
 
     final hasLocal = curCh.localPath != null &&
         Directory(curCh.localPath!).existsSync();

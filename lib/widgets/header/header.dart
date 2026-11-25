@@ -670,8 +670,16 @@ class HeaderHomeTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
     return Obx(() {
-      final name = serviceHandler.isLoggedIn.value &&
-              (serviceHandler.profileData.value.name?.isNotEmpty ?? false)
+      final isAnilistLoggedIn =
+          serviceHandler.serviceType.value == ServicesType.anilist &&
+              serviceHandler.isLoggedIn.value;
+      if (!isAnilistLoggedIn) {
+        return HeaderTitle(
+          title: context.l10n.anymex,
+          color: color ?? Theme.of(context).colorScheme.primary,
+        );
+      }
+      final name = (serviceHandler.profileData.value.name?.isNotEmpty ?? false)
           ? serviceHandler.profileData.value.name!
           : context.l10n.guest;
       final greeting = context.l10n.hey.trim();
@@ -710,11 +718,20 @@ class HeaderHomeSubtitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatted = _formatSubtitle(context.l10n.whatAreWeDoingToday);
-    return HeaderSubtitle(
-      subtitle: formatted,
-      color: color,
-    );
+    final serviceHandler = Get.find<ServiceHandler>();
+    return Obx(() {
+      final isAnilistLoggedIn =
+          serviceHandler.serviceType.value == ServicesType.anilist &&
+              serviceHandler.isLoggedIn.value;
+      if (!isAnilistLoggedIn) {
+        return const HeaderGreetingSubtitle();
+      }
+      final formatted = _formatSubtitle(context.l10n.whatAreWeDoingToday);
+      return HeaderSubtitle(
+        subtitle: formatted,
+        color: color,
+      );
+    });
   }
 }
 

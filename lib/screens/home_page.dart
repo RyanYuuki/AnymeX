@@ -11,7 +11,9 @@ import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/dialogs/donation_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/header/header.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -111,28 +113,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnymeXText(
-                    context.l10n.newEpisodes,
-                    variant: TextVariant.bold,
-                    size: 18,
-                    color: context.colors.primary,
-                  ),
-                  const SizedBox(height: 2),
-                  AnymeXText(
-                    context.l10n.outNowFromShowsYouAreWatching,
-                    size: 12,
-                    variant: TextVariant.semiBold,
-                    color: context.colors.onSurfaceVariant,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
             SizedBox(
               height: 110,
               child: RepaintBoundary(
@@ -244,6 +224,13 @@ class _HomePageState extends State<HomePage> {
     const appBarHeight = kToolbarHeight + 20;
     final double bottomNavBarHeight =
         isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
+    final bool isMobile =
+        getResponsiveValue(context, desktopValue: false, mobileValue: true);
+    final TextAlign textAlignment =
+        isMobile ? TextAlign.center : TextAlign.left;
+    final bool showLegacyHero =
+        serviceHandler.serviceType.value != ServicesType.anilist ||
+            !serviceHandler.isLoggedIn.value;
 
     final List<dynamic> novelData = [];
 
@@ -269,6 +256,67 @@ class _HomePageState extends State<HomePage> {
                       height: statusBarHeight + appBarHeight + 10,
                     ),
                   ),
+                  if (showLegacyHero) ...[
+                    SliverToBoxAdapter(
+                      child: Obx(
+                        () => Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isDesktop ? 24.0 : 20.0,
+                          ),
+                          child: AnymeXTextSpans(
+                            fontSize: 27,
+                            spans: [
+                              AnymeXTextSpan(
+                                  text: context.l10n.hey,
+                                  size: 30,
+                                  variant: TextVariant.bold),
+                              AnymeXTextSpan(
+                                  text: (serviceHandler.isLoggedIn.value &&
+                                          (serviceHandler
+                                                  .profileData.value.name?.isNotEmpty ??
+                                              false))
+                                      ? serviceHandler.profileData.value.name!
+                                      : context.l10n.guest,
+                                  size: 30,
+                                  color: context.colors.primary,
+                                  variant: TextVariant.bold),
+                              AnymeXTextSpan(
+                                  text: context.l10n.whatAreWeDoingToday,
+                                  size: 30,
+                                  variant: TextVariant.bold),
+                            ],
+                            textAlign: textAlignment,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: isMobile
+                            ? CrossAxisAlignment.center
+                            : CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isDesktop ? 24.0 : 20.0,
+                            ),
+                            child: AnymeXText(
+                              context.l10n.findYourFavouriteAnimeOrManga,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface
+                                    .withOpacity(0.8),
+                              ),
+                              textAlign: textAlignment,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                    ),
+                  ],
                   () {
                     final homeWidgets = _buildHomeWidgets(
                       context: context,

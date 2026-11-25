@@ -49,7 +49,7 @@ class DiscordProfile {
       return 'https://cdn.discordapp.com/avatars/$id/$avatar.png?size=256';
     }
     final defaultAvatarNum = discriminator == '0'
-        ? (int.parse(id) >> 22) % 6
+        ? (BigInt.parse(id) >> 22).toInt() % 6
         : int.parse(discriminator) % 5;
     return 'https://cdn.discordapp.com/embed/avatars/$defaultAvatarNum.png';
   }
@@ -245,7 +245,9 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
       } else if (response.statusCode == 401) {
         print('Invalid token, logging out');
         await logout();
-        snackBar(Get.context!.l10n.sessionExpiredPleaseLoginAgain);
+        if (Get.context != null) {
+          snackBar(Get.context!.l10n.sessionExpiredPleaseLoginAgain);
+        }
       } else {
         print('Failed to fetch profile: ${response.statusCode}');
       }
@@ -260,8 +262,10 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     await _saveToken(token);
     await fetchUserProfile();
     await connect();
-    snackBar(Get.context!.l10n
-        .successfullyLoggedInAs(profile.value?.displayName ?? "User"));
+    if (Get.context != null) {
+      snackBar(Get.context!.l10n
+          .successfullyLoggedInAs(profile.value?.displayName ?? "User"));
+    }
   }
 
   Future<void> connect() async {
@@ -332,7 +336,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
 
   bool _canUseDesktopRpc(String action) {
     if (isMobile) {
-      return true;
+      final socketReady = _gatewaySocket != null && _isConnected.value;
+      if (!socketReady) {
+        print('Skipping $action: Discord gateway not connected (Mobile)');
+      }
+      return socketReady;
     }
     final connected = _discordRPC != null && _isConnected.value;
     if (!connected) {
@@ -1218,7 +1226,9 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     _token.value = '';
     profile.value = null;
 
-    snackBar(Get.context!.l10n.loggedOutFromDiscord);
+    if (Get.context != null) {
+      snackBar(Get.context!.l10n.loggedOutFromDiscord);
+    }
   }
 
   @override

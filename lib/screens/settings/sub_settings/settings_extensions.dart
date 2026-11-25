@@ -199,6 +199,16 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     if (mounted) setState(() {});
   }
 
+  void _confirmRemoveRepo(Repo repo, ItemType type) {
+    AnymeXDialog(
+      title: 'Remove Repository',
+      message: 'Are you sure you want to remove "${_path(repo.url)}"?',
+      confirmText: context.l10n.remove,
+      cancelText: context.l10n.cancel,
+      onConfirm: () => _removeRepo(repo, type),
+    ).show(context);
+  }
+
   Future<void> _removeRepo(Repo repo, ItemType type) async {
     final key = '${repo.url}_${type.name}';
     setState(() => _deleting[key] = true);
@@ -918,7 +928,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               )
             else
               _iconBtn(Icons.delete_outline_rounded, colors.error, 'Remove',
-                  () => _removeRepo(repo, _tab)),
+                  () => _confirmRemoveRepo(repo, _tab)),
           ],
         ),
       ),

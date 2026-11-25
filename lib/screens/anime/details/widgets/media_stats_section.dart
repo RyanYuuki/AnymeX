@@ -1538,7 +1538,6 @@ Widget? buildSeasonsSection(BuildContext context, Media mediaData) {
         relation.cover.isNotEmpty ? relation.cover : relation.poster;
     final fallbackUrl =
         relation.poster.isNotEmpty ? relation.poster : relation.cover;
-    print('imageUrl=$imageUrl');
     final rawLabel = relation.relationType.toString();
     final label = rawLabel.isEmpty
         ? rawLabel
@@ -1881,7 +1880,8 @@ Widget buildExtrasSection(
                   return AnymeXTile(
                     icon: Icons.tv_rounded,
                     title: context.l10n.animeAdaptation,
-                    subtitle: context.l10n.adaptedFromChapterTo(start.toString(), end.toString()),
+                    subtitle: context.l10n
+                        .adaptedFromChapterTo(start.toString(), end.toString()),
                     onTap: () {},
                     showChevron: false,
                   );
@@ -1905,7 +1905,8 @@ Widget buildExtrasSection(
                   return AnymeXTile(
                     icon: Icons.calendar_month_rounded,
                     title: context.l10n.nextReleasePrediction,
-                    subtitle: context.l10n.predictedOn(nextCh.toString(), releaseDate.toString()),
+                    subtitle: context.l10n
+                        .predictedOn(nextCh.toString(), releaseDate.toString()),
                     onTap: () {},
                     showChevron: false,
                   );
