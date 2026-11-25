@@ -1,8 +1,6 @@
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,9 +36,11 @@ class ColorFilterSettingsPage extends StatelessWidget {
       final colorFilter = controller.colorFilterEnabled.value;
       final colorValue = controller.colorFilterValue.value;
       final blendMode = controller.colorFilterMode.value;
+      final enhanceColors = controller.enhanceColorsEnabled.value;
+      final enhanceProfile = controller.enhanceColorsProfile.value;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,6 +65,28 @@ class ColorFilterSettingsPage extends StatelessWidget {
                     divisions: 175,
                     onChanged: (v) =>
                         controller.customBrightnessValue.value = v.toInt(),
+                  ),
+              ],
+            ),
+            AnymeXSectionBuilder(
+              margin: const EdgeInsets.only(bottom: 12),
+              children: [
+                AnymeXTile.toggle(
+                  icon: Icons.auto_awesome_rounded,
+                  title: 'Enhance Colors',
+                  subtitle: 'Apply vivid color and contrast enhancement',
+                  value: enhanceColors,
+                  onChanged: (_) => controller.toggleEnhanceColors(),
+                ),
+                if (enhanceColors)
+                  AnymeXTile.pills<String>(
+                    icon: Icons.palette_rounded,
+                    title: 'Enhancement Profile',
+                    value: enhanceProfile,
+                    options: const ['manga', 'manhwa'],
+                    optionLabelTransformer: (p) =>
+                        p == 'manga' ? 'Manga' : 'Manhwa / Colored',
+                    onChanged: (p) => controller.setEnhanceColorsProfile(p),
                   ),
               ],
             ),
@@ -123,35 +145,18 @@ class ColorFilterSettingsPage extends StatelessWidget {
                     onChanged: (v) =>
                         controller.setColorFilterChannel('a', v.toInt()),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AnymeXText(
-                          'Blend Mode',
-                          size: 13,
-                          variant: TextVariant.semiBold,
-                          color: context.colors.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: List.generate(
-                            _blendModeLabels.length,
-                            (i) => ChoiceChip(
-                              label: AnymeXText(_blendModeLabels[i]),
-                              selected: blendMode == i,
-                              onSelected: (_) {
-                                controller.colorFilterMode.value = i;
-                                controller.savePreferences();
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  AnymeXTile.pills<int>(
+                    icon: Icons.layers_rounded,
+                    title: 'Blend Mode',
+                    value: blendMode,
+                    options: List.generate(_blendModeLabels.length, (i) => i),
+                    optionLabelTransformer: (i) => _blendModeLabels[i],
+                    wrap: true,
+                    expand: false,
+                    onChanged: (i) {
+                      controller.colorFilterMode.value = i;
+                      controller.savePreferences();
+                    },
                   ),
                 ],
               ],

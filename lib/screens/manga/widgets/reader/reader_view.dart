@@ -204,6 +204,28 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         );
       }
 
+      if (widget.controller.enhanceColorsEnabled.value) {
+        final isManga = widget.controller.enhanceColorsProfile.value == 'manga';
+        readerContent = ColorFiltered(
+          colorFilter: ColorFilter.matrix(
+            isManga
+                ? const [
+                    1.18, 0.0, 0.0, 0.0, -23.0,
+                    0.0, 1.18, 0.0, 0.0, -23.0,
+                    0.0, 0.0, 1.18, 0.0, -23.0,
+                    0.0, 0.0, 0.0, 1.0, 0.0,
+                  ]
+                : const [
+                    1.403, -0.294, -0.030, 0.0, -10.2,
+                    -0.087, 1.197, -0.030, 0.0, -10.2,
+                    -0.087, -0.294, 1.461, 0.0, -10.2,
+                    0.0, 0.0, 0.0, 1.0, 0.0,
+                  ],
+          ),
+          child: readerContent,
+        );
+      }
+
       if (widget.controller.colorFilterEnabled.value) {
         final colorValue = widget.controller.colorFilterValue.value;
         final blendModeIndex = widget.controller.colorFilterMode.value;

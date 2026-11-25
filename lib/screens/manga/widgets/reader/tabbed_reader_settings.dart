@@ -8,10 +8,11 @@ import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_
 import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_segmented_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -106,24 +107,31 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AnymeXText(context.l10n.readerSettings,
+          AnymeXText(
+            context.l10n.readerSettings,
             size: 18,
             variant: TextVariant.bold,
           ),
           const SizedBox(height: 10),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-            child: AnymeXTabBar(
-              minTabWidth: 105,
-              selectTabs: [
-                context.l10n.readingMode,
-                context.l10n.general,
-                context.l10n.colorFilter,
-                'Upscale'
+            padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
+            child: AnymeXSegmentedButtonGroup<int>(
+              selected: _selectedIndex,
+              height: 44,
+              scrollable: true,
+              items: [
+                (value: 0, title: context.l10n.readingMode, icon: null),
+                (value: 1, title: context.l10n.general, icon: null),
+                (value: 2, title: context.l10n.colorFilter, icon: null),
+                (value: 3, title: context.l10n.upscale, icon: null),
               ],
-              selectedIndex: _selectedIndex,
-              onTabSelected: (index) {
+              badgeBuilder: (context, index, isSelected) {
+                if (index == 2 || index == 3) {
+                  return AnymeXBadge.newBadge(context, inverted: isSelected);
+                }
+                return null;
+              },
+              onSelected: (index) {
                 setState(() {
                   _selectedIndex = index;
                   _tabController.animateTo(index);
@@ -138,8 +146,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
               alignment: Alignment.topCenter,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
-                transitionBuilder:
-                    (Widget child, Animation<double> animation) {
+                transitionBuilder: (Widget child, Animation<double> animation) {
                   return FadeTransition(
                     opacity: animation,
                     child: child,
@@ -152,10 +159,8 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
                     1 => _GeneralPage(
                         controller: widget.controller,
                         settings: widget.settings),
-                    2 =>
-                      ColorFilterSettingsPage(controller: widget.controller),
-                    _ =>
-                      UpscaleSettingsPage(controller: widget.controller),
+                    2 => ColorFilterSettingsPage(controller: widget.controller),
+                    _ => UpscaleSettingsPage(controller: widget.controller),
                   },
                 ),
               ),
@@ -179,7 +184,7 @@ class _ReadingModePage extends StatelessWidget {
       final currentDual = controller.dualPageMode.value;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         child: Column(
           children: [
             AnymeXSectionBuilder(
@@ -272,11 +277,13 @@ class _ReadingModePage extends StatelessWidget {
                             ),
                             child: Icon(
                               switch (dir) {
-                                MangaPageViewDirection.down => Iconsax.arrow_down,
+                                MangaPageViewDirection.down =>
+                                  Iconsax.arrow_down,
                                 MangaPageViewDirection.right =>
                                   Iconsax.arrow_right_1,
                                 MangaPageViewDirection.up => Iconsax.arrow_up_3,
-                                MangaPageViewDirection.left => Iconsax.arrow_left,
+                                MangaPageViewDirection.left =>
+                                  Iconsax.arrow_left,
                               },
                               size: 18,
                               color: isSelected
@@ -409,7 +416,7 @@ class _GeneralPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         child: Column(
           children: [
             AnymeXSectionBuilder(
@@ -478,7 +485,8 @@ class _GeneralPage extends StatelessWidget {
                   subtitle:
                       'Show transition page even when chapters are adjacent',
                   value: controller.alwaysShowChapterTransition.value,
-                  onChanged: (_) => controller.toggleAlwaysShowChapterTransition(),
+                  onChanged: (_) =>
+                      controller.toggleAlwaysShowChapterTransition(),
                 ),
                 AnymeXTile.toggle(
                   icon: Icons.touch_app_rounded,
@@ -504,8 +512,7 @@ class _GeneralPage extends StatelessWidget {
                     title: context.l10n.flashDuration,
                     icon: Icons.timer_rounded,
                     subtitle: context.l10n.milliseconds,
-                    value:
-                        controller.displayRefreshDurationMs.value.toDouble(),
+                    value: controller.displayRefreshDurationMs.value.toDouble(),
                     min: 50,
                     max: 500,
                     divisions: 18,
@@ -516,8 +523,7 @@ class _GeneralPage extends StatelessWidget {
                     title: context.l10n.flashEveryNPages,
                     icon: Icons.refresh_rounded,
                     subtitle: context.l10n.flashFrequency,
-                    value:
-                        controller.displayRefreshInterval.value.toDouble(),
+                    value: controller.displayRefreshInterval.value.toDouble(),
                     min: 1,
                     max: 10,
                     divisions: 9,
@@ -526,7 +532,7 @@ class _GeneralPage extends StatelessWidget {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
                     child: Row(
                       children: [
                         const Icon(Icons.palette_rounded, size: 20),
@@ -535,7 +541,8 @@ class _GeneralPage extends StatelessWidget {
                         const Spacer(),
                         ChoiceChip(
                           label: AnymeXText(context.l10n.black),
-                          selected: controller.displayRefreshColor.value == 'black',
+                          selected:
+                              controller.displayRefreshColor.value == 'black',
                           onSelected: (_) {
                             controller.displayRefreshColor.value = 'black';
                             controller.savePreferences();
@@ -544,7 +551,8 @@ class _GeneralPage extends StatelessWidget {
                         const SizedBox(width: 8),
                         ChoiceChip(
                           label: AnymeXText(context.l10n.white),
-                          selected: controller.displayRefreshColor.value == 'white',
+                          selected:
+                              controller.displayRefreshColor.value == 'white',
                           onSelected: (_) {
                             controller.displayRefreshColor.value = 'white';
                             controller.savePreferences();
@@ -573,7 +581,8 @@ class _GeneralPage extends StatelessWidget {
                     },
                   ),
                 ],
-                if (controller.readingLayout.value == MangaPageViewMode.continuous) ...[
+                if (controller.readingLayout.value ==
+                    MangaPageViewMode.continuous) ...[
                   AnymeXTile.toggle(
                     icon: Icons.play_arrow_rounded,
                     title: context.l10n.autoScroll,
@@ -627,7 +636,8 @@ class _GeneralPage extends StatelessWidget {
                     min: 1.0,
                     max: 5.0,
                     divisions: 9,
-                    onChanged: (v) => controller.scrollSpeedMultiplier.value = v,
+                    onChanged: (v) =>
+                        controller.scrollSpeedMultiplier.value = v,
                   ),
                 ],
               ],
@@ -733,8 +743,8 @@ class _GeneralPage extends StatelessWidget {
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
                 RadioListTile<int>(
-                    title:
-                        AnymeXText(context.l10n.lanczosPreScaleBestQualitySlower),
+                    title: AnymeXText(
+                        context.l10n.lanczosPreScaleBestQualitySlower),
                     value: 4,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
