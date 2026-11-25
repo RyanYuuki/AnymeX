@@ -2351,7 +2351,7 @@
       }
     }
   },
-  "ch": "{count} chap.",
+  "ch": "{count} chap",
   "@ch": {
     "placeholders": {
       "count": {
@@ -2359,7 +2359,7 @@
       }
     }
   },
-  "eps": "{count} ép.",
+  "eps": "{count} ép",
   "@eps": {
     "placeholders": {
       "count": {
@@ -2657,7 +2657,7 @@
       }
     }
   },
-  "sRecs": " Recommandations",
+  "sRecs": "Recommandations",
   "all3": "Tout ({length})",
   "@all3": {
     "placeholders": {

@@ -3161,7 +3161,7 @@
   "failedToAddCommentPleaseTry": "Det lykkedes ikke at tilføje en kommentar. Prøv venligst igen.",
   "failedToUpdateVotePleaseTry": "Det lykkedes ikke at opdatere afstemningen. Prøv venligst igen.",
   "invalidCommentId": "Ugyldigt kommentar-ID",
-  "commentEditedSuccessfully": "Kommentaren er redigeret.",
+  "commentEditedSuccessfully": "Kommentaren er redigeret",
   "failedToEditComment": "Det lykkedes ikke at redigere kommentaren",
   "commentDeletedSuccessfully": "Kommentaren er blevet slettet",
   "failedToDeleteComment": "Det lykkedes ikke at slette kommentaren",

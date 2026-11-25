@@ -502,7 +502,7 @@
   "createNewList": "צור רשימה חדשה",
   "createStatus": "צור סטטוס",
   "cropBorders": "גבולות יבול",
-  "current": "נוכחי •",
+  "current": "נוכחי • ",
   "custom": "מותאם אישית",
   "customBanners": "באנרים מותאמים אישית",
   "customColorPicker": "בוחר צבעים מותאם אישית",
@@ -672,7 +672,7 @@
   "enableVerticalSwipingOnTheLeft": "אפשר החלקה אנכית בצד שמאל/ימין של מסך הנגן כדי לכוונן את הבהירות והווליום",
   "enablesASoftGlowingGradientEffect": "מאפשר אפקט שיפוע רך וזוהר.",
   "encryptWithAes256RecommendedFor": "הצפנה באמצעות AES-256 (מומלץ עבור אסימוני אישור)",
-  "encrypted": "מוצפן •",
+  "encrypted": "מוצפן • ",
   "endChapter": "פרק סיום",
   "enterAmount": "הזן סכום...",
   "enterAnilistUsername": "הזן את שם המשתמש AniList",
@@ -839,7 +839,7 @@
   "hardwareDisplayModeSwitchingIsNot": "החלפת מצב תצוגת חומרה אינה נתמכת על ידי המכשיר שלך.",
   "helpSupport": "עזרה ותמיכה",
   "hexColorCode": "קוד צבע משושה",
-  "hey": "היי",
+  "hey": "היי ",
   "hidden": "מוסתר",
   "hiddenFromYourPublicProfile": "מוסתר מהפרופיל הציבורי שלך",
   "hiddenTabs": "כרטיסיות נסתרות",
@@ -1504,7 +1504,7 @@
   "staffCharacterNameLanguage": "שפת שם צוות ודמות",
   "standardGpuRendering": "עיבוד GPU סטנדרטי",
   "starOnGithub": "כוכב על GitHub",
-  "startANewDownloadFromThe": "התחל הורדה חדשה מהכרטיסייה \"הורדה חדשה\".",
+  "startANewDownloadFromThe": "התחל הורדה חדשה מהכרטיסייה \"הורדה חדשה\"",
   "startChapter": "התחל פרק",
   "startDate": "תאריך התחלה",
   "startMangaDownload": "התחל הורדת מנגה",
@@ -2626,7 +2626,7 @@
   "enhancementPreset": "שיפור מוגדר מראש",
   "fineTuning": "כוונון עדין",
   "enhancementStrength": "חוזק שיפור",
-  "strength": "חוזק {value}%.",
+  "strength": "חוזק {value}%",
   "@strength": {
     "placeholders": {
       "value": {
@@ -2781,8 +2781,8 @@
       }
     }
   },
-  "chapter": "פרק",
-  "episode5": "פרק",
+  "chapter": "פרק ",
+  "episode5": "פרק ",
   "noData": "{title} (ללא נתונים)",
   "@noData": {
     "placeholders": {

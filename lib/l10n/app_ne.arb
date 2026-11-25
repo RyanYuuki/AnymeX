@@ -2351,7 +2351,7 @@
       }
     }
   },
-  "ch": "{count} अ.",
+  "ch": "{count} अ",
   "@ch": {
     "placeholders": {
       "count": {
@@ -2359,7 +2359,7 @@
       }
     }
   },
-  "eps": "{count} एप.",
+  "eps": "{count} एप",
   "@eps": {
     "placeholders": {
       "count": {

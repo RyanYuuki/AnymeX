@@ -2285,7 +2285,7 @@
   "loadingChapter": "Memuat bab...",
   "noContentAvailable": "Tidak ada konten tersedia",
   "recommendations": "{reasonCount} rekomendasi",
-  "sRecs": " · Rekomendasi",
+  "sRecs": "· Rekomendasi",
   "all3": "Semua ({length})",
   "failedToPostMessage": "Gagal mengirim pesan: {e}",
   "totalEntries": "Total entri: {total}",

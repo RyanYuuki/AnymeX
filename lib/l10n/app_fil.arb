@@ -502,7 +502,7 @@
   "createNewList": "Gumawa ng Bagong Listahan",
   "createStatus": "Lumikha ng Katayuan",
   "cropBorders": "I-crop ang mga Border",
-  "current": "Kasalukuyan",
+  "current": "Kasalukuyan ",
   "custom": "Custom",
   "customBanners": "Mga Custom na Banner",
   "customColorPicker": "Custom na Tagapili ng Kulay",
@@ -672,7 +672,7 @@
   "enableVerticalSwipingOnTheLeft": "I-enable ang vertical swiping sa kaliwa/kanang gilid ng screen ng player para isaayos ang liwanag at volume",
   "enablesASoftGlowingGradientEffect": "Pinapagana ang malambot, kumikinang na gradient effect.",
   "encryptWithAes256RecommendedFor": "I-encrypt gamit ang AES-256 (inirerekomenda para sa mga auth token)",
-  "encrypted": "Naka-encrypt •",
+  "encrypted": "Naka-encrypt • ",
   "endChapter": "Tapusin ang Kabanata",
   "enterAmount": "Maglagay ng halaga...",
   "enterAnilistUsername": "Ipasok ang AniList username",
@@ -839,7 +839,7 @@
   "hardwareDisplayModeSwitchingIsNot": "Ang paglipat ng hardware display mode ay hindi sinusuportahan ng iyong device.",
   "helpSupport": "Tulong at Suporta",
   "hexColorCode": "Code ng Kulay ng Hex",
-  "hey": "Hey",
+  "hey": "Hey ",
   "hidden": "Nakatago",
   "hiddenFromYourPublicProfile": "Nakatago mula sa iyong pampublikong profile",
   "hiddenTabs": "Mga Nakatagong Tab",
@@ -2781,8 +2781,8 @@
       }
     }
   },
-  "chapter": "Kabanata",
-  "episode5": "Episode",
+  "chapter": "Kabanata ",
+  "episode5": "Episode ",
   "noData": "{title} (Walang Data)",
   "@noData": {
     "placeholders": {

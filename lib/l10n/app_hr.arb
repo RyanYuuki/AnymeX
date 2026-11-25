@@ -502,7 +502,7 @@
   "createNewList": "Stvori novi popis",
   "createStatus": "Kreiraj status",
   "cropBorders": "Granice usjeva",
-  "current": "Trenutno •",
+  "current": "Trenutno • ",
   "custom": "Custom",
   "customBanners": "Prilagođeni banneri",
   "customColorPicker": "Prilagođeni birač boja",
@@ -672,7 +672,7 @@
   "enableVerticalSwipingOnTheLeft": "Omogućite okomito povlačenje s lijeve/desne strane zaslona playera za podešavanje svjetline i glasnoće",
   "enablesASoftGlowingGradientEffect": "Omogućuje mekani, sjajni efekt gradijenta.",
   "encryptWithAes256RecommendedFor": "Šifriranje s AES-256 (preporučeno za autentifikacije)",
-  "encrypted": "Šifrirano •",
+  "encrypted": "Šifrirano • ",
   "endChapter": "Završetak poglavlja",
   "enterAmount": "Unesite iznos...",
   "enterAnilistUsername": "Unesite AniList korisničko ime",
@@ -839,7 +839,7 @@
   "hardwareDisplayModeSwitchingIsNot": "Vaš uređaj ne podržava hardversku promjenu načina prikaza.",
   "helpSupport": "Pomoć i podrška",
   "hexColorCode": "Hex kod boje",
-  "hey": "hej",
+  "hey": "hej ",
   "hidden": "Skriveno",
   "hiddenFromYourPublicProfile": "Skriveno s vašeg javnog profila",
   "hiddenTabs": "Skrivene kartice",
@@ -1504,7 +1504,7 @@
   "staffCharacterNameLanguage": "Jezik imena osoblja i likova",
   "standardGpuRendering": "Standardno GPU renderiranje",
   "starOnGithub": "Zvijezda na GitHub",
-  "startANewDownloadFromThe": "Započnite novo preuzimanje s kartice \"Novo preuzimanje\".",
+  "startANewDownloadFromThe": "Započnite novo preuzimanje s kartice \"Novo preuzimanje\"",
   "startChapter": "Početak poglavlja",
   "startDate": "Datum početka",
   "startMangaDownload": "Pokrenite preuzimanje mange",
@@ -2781,8 +2781,8 @@
       }
     }
   },
-  "chapter": "poglavlje",
-  "episode5": "epizoda",
+  "chapter": "poglavlje ",
+  "episode5": "epizoda ",
   "noData": "{title} (Nema podataka)",
   "@noData": {
     "placeholders": {

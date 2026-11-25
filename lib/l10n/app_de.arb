@@ -2276,7 +2276,7 @@
       }
     }
   },
-  "noResultsFoundFor": "Es wurden keine Ergebnisse für „{query}“ gefunden.",
+  "noResultsFoundFor": "Es wurden keine Ergebnisse für „{query}“ gefunden",
   "@noResultsFoundFor": {
     "placeholders": {
       "query": {
@@ -2924,7 +2924,7 @@
   },
   "noServersAvailableForThisRoom": "Für diesen Raum sind keine Server verfügbar",
   "selectStreamingServerQualityToWatch": "Wählen Sie die Qualität des Streaming-Servers aus, um das Video anzusehen",
-  "thisServerHasNoPlayableUrl": "Dieser Server hat keine abrufbare URL.",
+  "thisServerHasNoPlayableUrl": "Dieser Server hat keine abrufbare URL",
   "episode7": "Folge {episodeNumber}",
   "@episode7": {
     "placeholders": {
@@ -3011,7 +3011,7 @@
       }
     }
   },
-  "noPlayableMediaAvailable": "Es sind keine abspielbaren Medien verfügbar.",
+  "noPlayableMediaAvailable": "Es sind keine abspielbaren Medien verfügbar",
   "noThemesFound": "Es wurden keine Themen gefunden",
   "playAll": "Alle abspielen",
   "theDawnOfHumanity": "Die Anfänge der Menschheit",
@@ -3020,7 +3020,7 @@
   "skippedOpening": "Übersprungene Eröffnung",
   "skippedEnding": "Ausgelassenes Ende",
   "skippedRecap": "Übersprungene Zusammenfassung",
-  "ifYouSeeBlackScreenUse": "Sollte ein schwarzer Bildschirm erscheinen, verwenden Sie zum Ansehen einen externen Player.",
+  "ifYouSeeBlackScreenUse": "Sollte ein schwarzer Bildschirm erscheinen, verwenden Sie zum Ansehen einen externen Player",
   "failedToStartTorrentStream": "Torrent-Stream konnte nicht gestartet werden: {e}",
   "@failedToStartTorrentStream": {
     "placeholders": {
@@ -3029,7 +3029,7 @@
       }
     }
   },
-  "failedToOpenStreamPleaseTry": "Der Stream konnte nicht geöffnet werden. Bitte versuche es mit einem anderen Server.",
+  "failedToOpenStreamPleaseTry": "Der Stream konnte nicht geöffnet werden. Bitte versuche es mit einem anderen Server",
   "noServersFoundForThisEpisode": "Für diese Folge wurden keine Server gefunden.",
   "failedToLoadEpisodeCheckYour": "Die Folge konnte nicht geladen werden. Bitte überprüfen Sie Ihre Internetverbindung.",
   "playing": "{value} spielen",
@@ -3123,7 +3123,7 @@
       }
     }
   },
-  "youNeedToBeLoggedIn": "Sie müssen angemeldet sein, um einen Kommentar abzugeben.",
+  "youNeedToBeLoggedIn": "Sie müssen angemeldet sein, um einen Kommentar abzugeben",
   "readFullRules": "Vollständige Teilnahmebedingungen lesen",
   "acceptPost": "Akzeptieren & Veröffentlichen",
   "youNeedToBeLoggedIn2": "Sie müssen angemeldet sein, um antworten zu können",
@@ -3141,8 +3141,8 @@
   "comment": "KOMMENTAR",
   "failedToLoadUserHistory": "Der Benutzerverlauf konnte nicht geladen werden.",
   "noHistoryFound": "Es wurde kein Verlauf gefunden.",
-  "youNeedToBeLoggedIn3": "Sie müssen angemeldet sein, um Kommentare bearbeiten zu können.",
-  "commentCannotBeEmpty": "Der Kommentar darf nicht leer sein.",
+  "youNeedToBeLoggedIn3": "Sie müssen angemeldet sein, um Kommentare bearbeiten zu können",
+  "commentCannotBeEmpty": "Der Kommentar darf nicht leer sein",
   "failedToLoadCommentsPleaseTry": "Die Kommentare konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
   "commentsLoaded": "{value} Kommentare geladen",
   "@commentsLoaded": {
@@ -3589,7 +3589,7 @@
       }
     }
   },
-  "failedToDownload": "Das Herunterladen von „{fontName}“ ist fehlgeschlagen.",
+  "failedToDownload": "Das Herunterladen von „{fontName}“ ist fehlgeschlagen",
   "@failedToDownload": {
     "placeholders": {
       "fontName": {
@@ -3848,7 +3848,7 @@
       }
     }
   },
-  "hostSwitchedToEpisodeOf": "Der Moderator hat zu Folge {episodeNumber} von {title} gewechselt.",
+  "hostSwitchedToEpisodeOf": "Der Moderator hat zu Folge {episodeNumber} von {title} gewechselt",
   "@hostSwitchedToEpisodeOf": {
     "placeholders": {
       "episodeNumber": {

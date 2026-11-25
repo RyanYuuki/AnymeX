@@ -2124,7 +2124,7 @@
   "temporalDither": "টেম্পৰেল ডিথাৰ",
   "textToSpeech": "টেক্সট-টু-স্পীচ",
   "theCreatorOfThisCommentDiscussion": "এই মন্তব্য আলোচনাৰ থ্ৰেডটোৰ সৃষ্টিকৰ্তা।",
-  "theresASmallSparkOfAgreement": "চুক্তিৰ সৰু স্ফুলিংগ এটা৷",
+  "theresASmallSparkOfAgreement": "চুক্তিৰ সৰু স্ফুলিংগ এটা৷।",
   "thisPermanentlyDeletesYourAnymexCloud": "ই আপোনাৰ AnymeX ক্লাউড প্ৰগ্ৰেছৰ মূল কথা GitHub ৰ পৰা স্থায়ীভাৱে মচি পেলায় আৰু ইয়াক বাতিল কৰিব নোৱাৰি।",
   "toPrevNextChapter": "পূৰ্বৰ/পৰৱৰ্তী অধ্যায়লৈ",
   "topL": "শীৰ্ষ-এল",
@@ -2276,7 +2276,7 @@
       }
     }
   },
-  "noResultsFoundFor": "\"{query}\"ৰ বাবে কোনো ফলাফল পোৱা নগ'ল।",
+  "noResultsFoundFor": "\"{query}\"ৰ বাবে কোনো ফলাফল পোৱা নগ'ল",
   "@noResultsFoundFor": {
     "placeholders": {
       "query": {
@@ -2781,8 +2781,8 @@
       }
     }
   },
-  "chapter": "অধ্যায়",
-  "episode5": "খণ্ড",
+  "chapter": "অধ্যায় ",
+  "episode5": "খণ্ড ",
   "noData": "{title} (কোনো তথ্য নাই)",
   "@noData": {
     "placeholders": {
@@ -2841,7 +2841,7 @@
       }
     }
   },
-  "deleted": "\"{name}\" মচি পেলোৱা হৈছে।",
+  "deleted": "\"{name}\" মচি পেলোৱা হৈছে",
   "@deleted": {
     "placeholders": {
       "name": {
@@ -3573,7 +3573,7 @@
       }
     }
   },
-  "failedToDownload": "\"{fontName}\" ডাউনলোড কৰাত ব্যৰ্থ।",
+  "failedToDownload": "\"{fontName}\" ডাউনলোড কৰাত ব্যৰ্থ",
   "@failedToDownload": {
     "placeholders": {
       "fontName": {
@@ -3590,7 +3590,7 @@
     }
   },
   "failedToImportFontFile": "ফন্ট ফাইল আমদানি কৰাত ব্যৰ্থ",
-  "deleted3": "\"{fontName}\" মচি পেলোৱা হৈছে।",
+  "deleted3": "\"{fontName}\" মচি পেলোৱা হৈছে",
   "@deleted3": {
     "placeholders": {
       "fontName": {

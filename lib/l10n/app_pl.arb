@@ -2380,7 +2380,7 @@
   "skippedRecap": "Pominięte podsumowanie",
   "ifYouSeeBlackScreenUse": "Jeśli pojawi się czarny ekran, do oglądania użyj zewnętrznego odtwarzacza",
   "failedToStartTorrentStream": "Nie udało się uruchomić strumienia torrentowego: {e}",
-  "failedToOpenStreamPleaseTry": "Nie udało się otworzyć strumienia. Spróbuj połączyć się z innym serwerem.",
+  "failedToOpenStreamPleaseTry": "Nie udało się otworzyć strumienia. Spróbuj połączyć się z innym serwerem",
   "noServersFoundForThisEpisode": "Nie znaleziono serwerów dla tego odcinka.",
   "failedToLoadEpisodeCheckYour": "Nie udało się załadować odcinka. Sprawdź połączenie.",
   "playing": "Odtwarzanie {value}",

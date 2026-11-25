@@ -2285,7 +2285,7 @@
   "loadingChapter": "جارٍ تحميل الفصل...",
   "noContentAvailable": "لا يوجد محتوى متاح",
   "recommendations": "{reasonCount} توصيات",
-  "sRecs": " · التوصيات",
+  "sRecs": "· التوصيات",
   "all3": "الكل ({length})",
   "failedToPostMessage": "فشل نشر الرسالة: {e}",
   "totalEntries": "إجمالي العناصر: {total}",

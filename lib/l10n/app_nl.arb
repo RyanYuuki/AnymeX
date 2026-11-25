@@ -2380,7 +2380,7 @@
   "skippedRecap": "Overgeslagen samenvatting",
   "ifYouSeeBlackScreenUse": "Als je een zwart scherm ziet, gebruik dan een externe speler om te kijken",
   "failedToStartTorrentStream": "Het starten van de torrent-stream is mislukt: {e}",
-  "failedToOpenStreamPleaseTry": "Het openen van de stream is mislukt. Probeer een andere server.",
+  "failedToOpenStreamPleaseTry": "Het openen van de stream is mislukt. Probeer een andere server",
   "noServersFoundForThisEpisode": "Er zijn geen servers gevonden voor deze aflevering.",
   "failedToLoadEpisodeCheckYour": "De aflevering kan niet worden geladen. Controleer je internetverbinding.",
   "playing": "{value} spelen",

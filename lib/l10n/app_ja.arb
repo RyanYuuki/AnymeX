@@ -1390,7 +1390,7 @@
   "savedLightNovelsAndReadingState": "保存したライトノベルと読み進め状況",
   "savedMangaEntriesAndChapters": "保存済みの漫画作品と巻・話",
   "savedStreamLinkHasExpiredFetching": "保存されたストリームリンクの有効期限が切れました。新しいリンクを取得しています...",
-  "savesAScreenshotOfTheLast": "最後に視聴したフレームのスクリーンショットを保存します。この機能を無効にすると、ストレージの使用量が大幅に削減されます。",
+  "savesAScreenshotOfTheLast": "最後に視聴したフレームのスクリーンショットを保存します。この機能を無効にすると、ストレージの使用量が大幅に削減されます",
   "scaleFactor": "スケール係数",
   "scalingAlgorithm": "スケーリングアルゴリズム",
   "scanningForMoreServers": "さらにサーバーを検索中...",
@@ -1692,7 +1692,7 @@
   "viewingMangaDetails": "漫画の詳細を表示",
   "viewingNovelDetails": "小説の詳細を表示",
   "visibleTabs": "表示されているタブ",
-  "visitGithubReleasesPageForChangelogs": "変更履歴や手動ダウンロードについては、GitHubのリリースページをご覧ください。",
+  "visitGithubReleasesPageForChangelogs": "変更履歴や手動ダウンロードについては、GitHubのリリースページをご覧ください",
   "visualFromAnymex": "AnymeXのビジュアル",
   "voiceActors": "声優",
   "voicedCharacters": "声の出演",
@@ -3029,7 +3029,7 @@
       }
     }
   },
-  "failedToOpenStreamPleaseTry": "ストリームを開くことができませんでした。別のサーバーをお試しください。",
+  "failedToOpenStreamPleaseTry": "ストリームを開くことができませんでした。別のサーバーをお試しください",
   "noServersFoundForThisEpisode": "このエピソードに対応するサーバーが見つかりませんでした。",
   "failedToLoadEpisodeCheckYour": "エピソードの読み込みに失敗しました。インターネット接続を確認してください。",
   "playing": "{value}を再生中",
