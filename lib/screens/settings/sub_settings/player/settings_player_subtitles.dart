@@ -310,7 +310,11 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: colorOptions[settings.subtitleBackgroundColor],
+                            color: subtitleBackgroundColor(
+                              settings.subtitleBackgroundColor,
+                              settings.playerSettings.value
+                                  .subtitleBackgroundOpacity,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: buildStyledSubtitleText(
@@ -519,6 +523,21 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                     colorOptions,
                   );
                 },
+              ),
+              AnymeXTile.slider(
+                value: settings.playerSettings.value.subtitleBackgroundOpacity,
+                min: 0.0,
+                max: 1.0,
+                divisions: 10,
+                onChanged: (val) {
+                  final current = settings.playerSettings.value;
+                  current.subtitleBackgroundOpacity = val;
+                  PlayerSettingsKeys.subtitleBackgroundOpacity.set(val);
+                  settings.playerSettings.refresh();
+                },
+                title: context.l10n.subtitleBackgroundTransparency,
+                subtitle: context.l10n.adjustSubtitleBackgroundVisibility,
+                icon: Icons.opacity,
               ),
               AnymeXTile.slider(
                 value: settings.playerSettings.value.subtitleOpacity,
