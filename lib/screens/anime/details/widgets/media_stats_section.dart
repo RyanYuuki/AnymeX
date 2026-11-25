@@ -1881,7 +1881,7 @@ Widget buildExtrasSection(
                   return AnymeXTile(
                     icon: Icons.tv_rounded,
                     title: context.l10n.animeAdaptation,
-                    subtitle: "Adapted from Chapter $start to $end",
+                    subtitle: context.l10n.adaptedFromChapterTo(start.toString(), end.toString()),
                     onTap: () {},
                     showChevron: false,
                   );
@@ -1905,7 +1905,7 @@ Widget buildExtrasSection(
                   return AnymeXTile(
                     icon: Icons.calendar_month_rounded,
                     title: context.l10n.nextReleasePrediction,
-                    subtitle: "$nextCh predicted on $releaseDate",
+                    subtitle: context.l10n.predictedOn(nextCh.toString(), releaseDate.toString()),
                     onTap: () {},
                     showChevron: false,
                   );

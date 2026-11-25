@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 const _syncDriftThreshold = 5.0;
 
@@ -213,7 +214,7 @@ class WatchiumSyncController extends GetxController {
   void _showHostEpisodeSnackbar(WatchiumAnimeContent content) {
     final title =
         content.animeTitle.isNotEmpty ? content.animeTitle : 'the anime';
-    snackBar('Host switched to Episode ${content.episodeNumber} of $title');
+    snackBar(Get.context!.l10n.hostSwitchedToEpisodeOf(content.episodeNumber.toString(), title.toString()));
     isOutOfSync.value = true;
   }
 

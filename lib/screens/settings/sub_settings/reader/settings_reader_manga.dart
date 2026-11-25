@@ -9,6 +9,7 @@ import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class SettingsReaderManga extends StatefulWidget {
   const SettingsReaderManga({super.key});
@@ -49,7 +50,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
 
   void _showMangaLayoutDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Layout',
+      title: context.l10n.readingLayout,
       items: const [0, 1],
       selectedItem: _mangaLayout.obs,
       getTitle: (value) => value == 0 ? 'Continuous' : 'Paged',
@@ -65,7 +66,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
 
   void _showMangaDirectionDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Direction',
+      title: context.l10n.readingDirection,
       items: const [0, 1, 2, 3],
       selectedItem: _mangaDirection.obs,
       getTitle: (value) => switch (value) {
@@ -86,7 +87,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
 
   void _showMangaDualPageDialog() {
     showSelectionDialog<int>(
-      title: 'Dual Page Mode',
+      title: context.l10n.dualPageMode,
       items: const [0, 1, 2],
       selectedItem: _mangaDualPageMode.obs,
       getTitle: (value) => switch (value) {
@@ -106,7 +107,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
 
   void _showMangaFilterQualityDialog() {
     showSelectionDialog<int>(
-      title: 'Image Filter Quality',
+      title: context.l10n.imageFilterQuality,
       items: const [0, 1, 2, 3, 4],
       selectedItem: _mangaFilterQuality.obs,
       getTitle: (value) => switch (value) {
@@ -128,7 +129,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
 
   void _showChapterStyleDialog() {
     showSelectionDialog<String>(
-      title: 'Chapter Tile Style',
+      title: context.l10n.chapterTileStyle,
       items: const ['compact', 'detailed'],
       selectedItem: settings.chapterStyleRx,
       getTitle: (value) =>
@@ -146,7 +147,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Manga Reader',
+      headerTitle: context.l10n.mangaReader,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -158,17 +159,17 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
           child: Column(
             children: [
               AnymeXSectionBuilder(
-                title: 'Layout & Direction',
+                title: context.l10n.layoutDirection,
                 children: [
                   AnymeXTile(
                     icon: Iconsax.card,
-                    title: 'Layout',
+                    title: context.l10n.layout,
                     subtitle: _mangaLayout == 0 ? 'Continuous' : 'Paged',
                     onTap: _showMangaLayoutDialog,
                   ),
                   AnymeXTile(
                     icon: Iconsax.direct_right,
-                    title: 'Direction',
+                    title: context.l10n.direction,
                     subtitle: switch (_mangaDirection) {
                       0 => 'Bottom-Up',
                       1 => 'Top-Down',
@@ -179,7 +180,7 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile(
                     icon: Iconsax.book_1,
-                    title: 'Dual Page Mode',
+                    title: context.l10n.dualPageMode,
                     subtitle: switch (_mangaDualPageMode) {
                       1 => 'Auto (Laptop/Tab)',
                       2 => 'Force (Dual)',
@@ -189,8 +190,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.swap_vert_rounded,
-                    title: 'Auto Webtoon Mode',
-                    subtitle: 'Auto switch to vertical mode for webtoons',
+                    title: context.l10n.autoWebtoonMode,
+                    subtitle: context.l10n.autoSwitchToVerticalModeFor,
                     value: _mangaAutoWebtoon,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.autoWebtoonMode,
@@ -201,11 +202,11 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Image & Display',
+                title: context.l10n.imageDisplay,
                 children: [
                   AnymeXTile(
                     icon: Icons.image_search_rounded,
-                    title: 'Image Filter Quality',
+                    title: context.l10n.imageFilterQuality,
                     subtitle: switch (_mangaFilterQuality) {
                       0 => 'None (Nearest)',
                       1 => 'Low (Bilinear)',
@@ -217,8 +218,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.fullscreen_rounded,
-                    title: 'Fit to Screen Width',
-                    subtitle: 'Stretch images to fit screen width',
+                    title: context.l10n.fitToScreenWidth,
+                    subtitle: context.l10n.stretchImagesToFitScreenWidth,
                     value: _mangaFitToScreen,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.fitToScreen,
@@ -228,8 +229,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.crop_rounded,
-                    title: 'Crop Borders',
-                    subtitle: 'Remove white/black borders',
+                    title: context.l10n.cropBorders,
+                    subtitle: context.l10n.removeWhiteBlackBorders,
                     value: _mangaCropBorders,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.cropImages,
@@ -239,8 +240,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Iconsax.pharagraphspacing,
-                    title: 'Spaced Pages',
-                    subtitle: 'Continuous mode only',
+                    title: context.l10n.spacedPages,
+                    subtitle: context.l10n.continuousModeOnly,
                     value: _mangaSpacedPages,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.spacedPages,
@@ -251,12 +252,12 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Interface & Session',
+                title: context.l10n.interfaceSession,
                 children: [
                   Obx(
                     () => AnymeXTile(
                       icon: Icons.list_alt_rounded,
-                      title: 'Chapter Tile Style',
+                      title: context.l10n.chapterTileStyle,
                       subtitle: settings.chapterStyle == 'compact'
                           ? 'Compact'
                           : 'Detailed (Classic)',
@@ -265,8 +266,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Iconsax.eye,
-                    title: 'Persistent Page Indicator',
-                    subtitle: 'Always show page indicator',
+                    title: context.l10n.persistentPageIndicator,
+                    subtitle: context.l10n.alwaysShowPageIndicator,
                     value: _mangaPageIndicator,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.showPageIndicator,
@@ -276,8 +277,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.swap_horiz_rounded,
-                    title: 'Always Show Chapter Transition',
-                    subtitle: 'Show chapter transition even without gaps',
+                    title: context.l10n.alwaysShowChapterTransition,
+                    subtitle: context.l10n.showChapterTransitionEvenWithoutGaps,
                     value: _mangaChapterTransition,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.alwaysShowChapterTransition,
@@ -287,8 +288,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.lock_clock_rounded,
-                    title: 'Keep Screen On',
-                    subtitle: 'Prevent screen from sleeping while reading',
+                    title: context.l10n.keepScreenOn,
+                    subtitle: context.l10n.preventScreenFromSleepingWhileReading,
                     value: _mangaKeepScreenOn,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.keepScreenOn,
@@ -299,12 +300,12 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                 ],
               ),
               AnymeXSectionBuilder(
-                title: 'Manga Controls & Gestures',
+                title: context.l10n.mangaControlsGestures,
                 children: [
                   AnymeXTile.toggle(
                     icon: Iconsax.arrow,
-                    title: 'Overscroll',
-                    subtitle: 'Overscroll to previous/next chapter',
+                    title: context.l10n.overscroll,
+                    subtitle: context.l10n.overscrollToPreviousNextChapter,
                     value: _mangaOverscroll,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.overscrollToChapter,
@@ -314,8 +315,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.touch_app_rounded,
-                    title: 'Long Press Page Actions',
-                    subtitle: 'Enable long press quick actions',
+                    title: context.l10n.longPressPageActions,
+                    subtitle: context.l10n.enableLongPressQuickActions,
                     value: _mangaLongPressActions,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.longPressPageActionsEnabled,
@@ -325,8 +326,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.play_arrow_rounded,
-                    title: 'Auto Scroll',
-                    subtitle: 'Automatically scroll manga pages',
+                    title: context.l10n.autoScroll,
+                    subtitle: context.l10n.automaticallyScrollMangaPages,
                     value: _mangaAutoScroll,
                     onChanged: (value) => _setReaderBool(
                       ReaderKeys.autoScrollEnabled,
@@ -337,8 +338,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   if (_mangaAutoScroll)
                     AnymeXTile.slider(
                       icon: Icons.speed_rounded,
-                      title: 'Auto Scroll Speed',
-                      subtitle: 'Seconds per screen/page (lower is faster)',
+                      title: context.l10n.autoScrollSpeed,
+                      subtitle: context.l10n.secondsPerScreenPageLowerIs,
                       value: _mangaAutoScrollSpeed,
                       min: 1.0,
                       max: 10.0,
@@ -351,8 +352,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   if (Platform.isAndroid)
                     AnymeXTile.toggle(
                       icon: Iconsax.volume_high,
-                      title: 'Volume Keys Navigation',
-                      subtitle: 'Use volume keys to change pages',
+                      title: context.l10n.volumeKeysNavigation,
+                      subtitle: context.l10n.useVolumeKeysToChangePages,
                       value: _mangaVolumeKeys,
                       onChanged: (value) => _setReaderBool(
                         ReaderKeys.volumeKeysEnabled,
@@ -363,8 +364,8 @@ class _SettingsReaderMangaState extends State<SettingsReaderManga> {
                   if (Platform.isAndroid)
                     AnymeXTile.toggle(
                       icon: Iconsax.arrow_swap_horizontal,
-                      title: 'Invert Volume Keys',
-                      subtitle: 'Swap volume up/down actions',
+                      title: context.l10n.invertVolumeKeys,
+                      subtitle: context.l10n.swapVolumeUpDownActions,
                       value: _mangaInvertVolumeKeys,
                       onChanged: (value) => _setReaderBool(
                         ReaderKeys.invertVolumeKeys,

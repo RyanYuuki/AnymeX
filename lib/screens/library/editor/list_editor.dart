@@ -779,7 +779,7 @@ class __ListMediaEditorBottomSheetState
     });
     widget.onListChanged();
     HapticFeedback.lightImpact();
-    snackBar('Removed "$itemName"');
+    snackBar(context.l10n.removed(itemName.toString()));
   }
 
   void _deleteSelectedItems() {

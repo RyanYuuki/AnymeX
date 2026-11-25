@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 const Map<String, List<String>> _subtitleFontGroups = {
   'Default': ['Default'],
@@ -72,7 +73,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
       title: title,
       onConfirm: () {},
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: context.l10n.actionClose,
       contentWidget: AnymeXTileBuilder<String>(
         getTitle: (t) => t,
         onItemPressed: (s) {
@@ -92,7 +93,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
 
   void _showTranslationLanguageDialog() {
     showSelectionDialog<String>(
-      title: 'Translation Language',
+      title: context.l10n.translationLanguage,
       items: SubtitleTranslator.languages.keys.toList(),
       selectedItem: settings.playerSettings.value.translateTo.obs,
       getTitle: (code) => SubtitleTranslator.languages[code]!,
@@ -106,10 +107,10 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
 
   void _showFontSelectionDialog() {
     AnymeXDialog(
-      title: 'Select Subtitle Font',
+      title: context.l10n.selectSubtitleFont,
       onConfirm: () {},
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: context.l10n.actionClose,
       contentWidget: StatefulBuilder(
         builder: (dialogContext, setDialogState) {
           final currentFont = settings.playerSettings.value.subtitleFont;
@@ -117,12 +118,12 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
             mainAxisSize: MainAxisSize.min,
             children: [
               AnymeXSectionBuilder(
-                title: 'Custom Subtitle Fonts',
+                title: context.l10n.customSubtitleFonts,
                 children: [
                   AnymeXTile(
                     icon: Icons.add_rounded,
-                    title: 'Import Custom Font',
-                    subtitle: 'Support .ttf and .otf files',
+                    title: context.l10n.importCustomFont,
+                    subtitle: context.l10n.supportTtfAndOtfFiles,
                     onTap: () async {
                       final result = await FilePicker.platform.pickFiles(
                         type: FileType.custom,
@@ -146,9 +147,9 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                             });
                           }
                           setDialogState(() {});
-                          snackBar('Imported font "$fontName"');
+                          snackBar(Get.context!.l10n.importedFont(fontName.toString()));
                         } else {
-                          snackBar('Failed to load font file');
+                          snackBar(Get.context!.l10n.failedToLoadFontFile);
                         }
                       }
                     },
@@ -158,11 +159,11 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                       selected: currentFont == font,
                       title: font,
                       titleStyle: TextStyle(fontFamily: font),
-                      subtitle: 'Hold to delete',
+                      subtitle: context.l10n.holdToDelete,
                       onLongPress: () {
                         AnymeXDialog(
-                          title: 'Delete Font',
-                          message: 'Are you sure you want to delete "$font"?',
+                          title: context.l10n.deleteFont,
+                          message: context.l10n.areYouSureYouWantTo3(font.toString()),
                           onConfirm: () async {
                             await ExternalFontLoader.deleteCustomFont(font);
                             if (settings.playerSettings.value.subtitleFont ==
@@ -232,7 +233,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
     }
 
     showSelectionDialog<String>(
-      title: 'Outline Type',
+      title: context.l10n.outlineType,
       items: subtitleOutlineTypes,
       selectedItem: currentType.obs,
       getTitle: (v) => v,
@@ -313,7 +314,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: buildStyledSubtitleText(
-                            text: 'Freedom',
+                            text: context.l10n.freedom,
                             textColor: fontColorOptions[settings.subtitleColor] ??
                                 fontColorOptions['Default']!,
                             fontSize: settings.subtitleSize
@@ -350,16 +351,16 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
         children: [
           _buildSubtitlePreviewCard(),
           AnymeXSectionBuilder(
-            title: 'Language & Translation',
+            title: context.l10n.languageTranslation,
             children: [
               AnymeXTile(
                 icon: Icons.closed_caption_rounded,
-                title: 'Preferred Subtitle Language',
+                title: context.l10n.preferredSubtitleLanguage,
                 subtitle: SubtitleTranslator
                         .languages[settings.preferredSubtitleLanguage] ??
                     'None (Disabled)',
                 onTap: () => showSelectionDialog<String>(
-                  title: 'Preferred Subtitle Language',
+                  title: context.l10n.preferredSubtitleLanguage,
                   items: ['none', ...SubtitleTranslator.languages.keys],
                   selectedItem: settings
                       .playerSettings.value.preferredSubtitleLanguage.obs,
@@ -374,8 +375,8 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
               ),
               AnymeXTile.toggle(
                 icon: HugeIcons.strokeRoundedTranslate,
-                title: 'Auto Translate Subtitles',
-                subtitle: 'Use AI to translate soft-subtitles live',
+                title: context.l10n.autoTranslateSubtitles,
+                subtitle: context.l10n.useAiToTranslateSoftSubtitles,
                 value: settings.playerSettings.value.autoTranslate,
                 onChanged: (val) {
                   settings.playerSettings.update((s) => s?.autoTranslate = val);
@@ -387,7 +388,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                   settings.playerSettings.value.autoTranslate)
                 AnymeXTile(
                   icon: Icons.language,
-                  title: 'Translate To',
+                  title: context.l10n.translateTo,
                   subtitle: SubtitleTranslator.languages[
                           settings.playerSettings.value.translateTo] ??
                       'Select Language',
@@ -396,12 +397,12 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
             ],
           ),
           AnymeXSectionBuilder(
-            title: 'Rendering & Behavior',
+            title: context.l10n.renderingBehavior,
             children: [
               AnymeXTile.toggle(
                 icon: Icons.subtitles,
-                title: 'Use Libass for Subtitles',
-                subtitle: 'Better subtitle rendering using libass library',
+                title: context.l10n.useLibassForSubtitles,
+                subtitle: context.l10n.betterSubtitleRenderingUsingLibassLibrary,
                 value: _useLibass,
                 onChanged: (val) async {
                   setState(() {
@@ -418,8 +419,8 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
               ),
               AnymeXTile.toggle(
                 icon: Icons.lightbulb,
-                title: 'Transition Subtitle',
-                subtitle: 'Disable to avoid fade transitions between subtitles',
+                title: context.l10n.transitionSubtitle,
+                subtitle: context.l10n.disableToAvoidFadeTransitionsBetween,
                 value: settings.transitionSubtitle,
                 onChanged: (e) {
                   settings.transitionSubtitle = e;
@@ -428,11 +429,11 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
             ],
           ),
           AnymeXSectionBuilder(
-            title: 'Typography & Outline',
+            title: context.l10n.typographyOutline,
             children: [
               AnymeXTile(
                 icon: Icons.font_download_rounded,
-                title: 'Subtitle Font',
+                title: context.l10n.subtitleFont,
                 subtitle: settings.playerSettings.value.subtitleFont,
                 onTap: _showFontSelectionDialog,
               ),
@@ -443,13 +444,13 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 onChanged: (double value) {
                   settings.subtitleSize = value.toInt();
                 },
-                title: 'Subtitle Size',
-                subtitle: 'Adjust subtitle font size',
+                title: context.l10n.subtitleSize,
+                subtitle: context.l10n.adjustSubtitleFontSize,
                 icon: Iconsax.subtitle5,
               ),
               AnymeXTile(
                 icon: Icons.format_paint_rounded,
-                title: 'Outline Type',
+                title: context.l10n.outlineType,
                 subtitle: normalizeSubtitleOutlineType(
                     settings.playerSettings.value.subtitleOutlineType),
                 onTap: _showOutlineTypeDialog,
@@ -462,19 +463,19 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 onChanged: (double value) {
                   settings.subtitleOutlineWidth = value.toInt();
                 },
-                title: 'Subtitle Outline Width',
-                subtitle: 'Adjust subtitle outline thickness',
+                title: context.l10n.subtitleOutlineWidth,
+                subtitle: context.l10n.adjustSubtitleOutlineThickness,
                 icon: Iconsax.subtitle5,
               ),
             ],
           ),
           AnymeXSectionBuilder(
-            title: 'Colors & Position',
+            title: context.l10n.colorsPosition,
             children: [
               AnymeXTile(
-                subtitle: 'Change subtitle text color',
+                subtitle: context.l10n.changeSubtitleTextColor,
                 icon: Icons.palette,
-                title: 'Subtitle Color',
+                title: context.l10n.subtitleColor,
                 onTap: () {
                   _showColorSelectionDialog(
                     'Select Subtitle Color',
@@ -489,8 +490,8 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
               ),
               AnymeXTile(
                 icon: Icons.palette,
-                title: 'Subtitle Outline Color',
-                subtitle: 'Change subtitle outline color',
+                title: context.l10n.subtitleOutlineColor,
+                subtitle: context.l10n.changeSubtitleOutlineColor,
                 onTap: () {
                   _showColorSelectionDialog(
                     'Select Subtitle Outline Color',
@@ -504,9 +505,9 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 },
               ),
               AnymeXTile(
-                subtitle: 'Change subtitle background color',
+                subtitle: context.l10n.changeSubtitleBackgroundColor,
                 icon: Icons.palette,
-                title: 'Subtitle Background Color',
+                title: context.l10n.subtitleBackgroundColor,
                 onTap: () {
                   _showColorSelectionDialog(
                     'Select Subtitle Background Color',
@@ -530,8 +531,8 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                   PlayerSettingsKeys.subtitleOpacity.set(val);
                   settings.playerSettings.refresh();
                 },
-                title: 'Subtitle Transparency',
-                subtitle: 'Adjust text visibility',
+                title: context.l10n.subtitleTransparency,
+                subtitle: context.l10n.adjustTextVisibility,
                 icon: Icons.opacity,
               ),
               AnymeXTile.slider(
@@ -545,8 +546,8 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                   PlayerSettingsKeys.subtitleBottomMargin.set(val);
                   settings.playerSettings.refresh();
                 },
-                title: 'Bottom Margin',
-                subtitle: 'Distance from bottom of screen',
+                title: context.l10n.bottomMargin,
+                subtitle: context.l10n.distanceFromBottomOfScreen,
                 icon: Icons.vertical_align_bottom,
               ),
             ],
@@ -561,7 +562,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
 
     return AnymeXScaffold(
       showHeader: !widget.isModal,
-      headerTitle: 'Subtitles & Translation',
+      headerTitle: context.l10n.subtitlesTranslation,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(

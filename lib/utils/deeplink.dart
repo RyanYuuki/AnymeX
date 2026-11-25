@@ -77,7 +77,7 @@ class Deeplink {
       snackBar(
           "Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
     } else {
-      snackBar("Adding repo... please wait.");
+      snackBar(Get.context!.l10n.addingRepoPleaseWait);
     }
     final manager = extensionManager.managers;
     for (final handler in manager) {
@@ -178,7 +178,7 @@ class Deeplink {
       return;
     }
     if (type != 'player') {
-      errorSnackBar('Unsupported theme type "$type". Supported: player.');
+      errorSnackBar(Get.context!.l10n.unsupportedThemeTypeSupportedPlayer(type.toString()));
       return;
     }
 
@@ -188,14 +188,14 @@ class Deeplink {
       return;
     }
 
-    snackBar('Importing player theme from link...');
+    snackBar(Get.context!.l10n.importingPlayerThemeFromLink);
     final result = await PlayerControlThemeRegistry.importFromUrl(rawUrl);
 
     if (result.hasErrors) {
       final extra = result.errors.length > 1
           ? ' (+${result.errors.length - 1} more issue(s))'
           : '';
-      errorSnackBar('Theme is invalid: ${result.errors.first}$extra');
+      errorSnackBar(Get.context!.l10n.themeIsInvalid(result.errors.first.toString(), extra.toString()));
       return;
     }
 
@@ -208,7 +208,7 @@ class Deeplink {
       warningSnackBar(
           'Theme imported with warning: ${result.warnings.first}$more');
     } else {
-      successSnackBar('Theme JSON is valid. Imported $imported $label.');
+      successSnackBar(Get.context!.l10n.themeJsonIsValidImported(imported.toString(), label.toString()));
     }
   }
 
@@ -547,7 +547,7 @@ class Deeplink {
     }
 
     final watchium = Get.find<WatchiumService>();
-    successSnackBar('Joining room $code...');
+    successSnackBar(Get.context!.l10n.joiningRoom(code.toString()));
 
     // First get room info to navigate to the anime
     final roomInfo = await watchium.getRoomInfo(code);
@@ -567,10 +567,10 @@ class Deeplink {
     if (!ok) {
       final err = watchium.error.value;
       Logger.w('Watchium deep link: join failed: $err', 'DEEPLINK');
-      errorSnackBar('Failed to join room: $err');
+      errorSnackBar(Get.context!.l10n.failedToJoinRoom(err.toString()));
     } else {
       Logger.i('Watchium deep link: joined room $code successfully', 'DEEPLINK');
-      successSnackBar('Joined room $code!');
+      successSnackBar(Get.context!.l10n.joinedRoom(code.toString()));
       // Wait for room state to populate from socket
       await Future.delayed(const Duration(milliseconds: 1500));
       final rs = watchium.roomState.value;
@@ -642,7 +642,7 @@ class Deeplink {
       return;
     }
 
-    snackBar('Calculating AniMatch compatibility for $user1 & $user2...');
+    snackBar(Get.context!.l10n.calculatingAnimatchCompatibilityFor(user1.toString(), user2.toString()));
 
     final controller = Get.isRegistered<CompatibilityController>()
         ? Get.find<CompatibilityController>()

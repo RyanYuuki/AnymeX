@@ -176,5 +176,3922 @@
   "incognitoDisabled": "Mode navigation privée désactivé",
   "episodeCount": "{count} épisodes",
   "chapterCount": "{count} chapitres",
-  "itemCount": "{count} articles"
+  "itemCount": "{count} articles",
+  "whatAreWeDoingToday": ", que fait-on aujourd'hui ?",
+  "aLogoWithThisNameAlready": "Un logo avec ce nom existe déjà.",
+  "about": "À propos",
+  "aboutCommentumV2": "À propos de Commentum v2",
+  "aboutTheApp": "À propos de l'application",
+  "accessModerationToolsAndReports": "Accéder aux outils de modération et aux rapports",
+  "accountTokensAnilistMalSimkl": "Jetons de compte (AniList, MAL, Simkl)",
+  "accounts": "Comptes",
+  "accountsSync": "Comptes et synchronisation",
+  "actionAppliedSuccessfully": "Action appliquée avec succès",
+  "activeDownloads": "Téléchargements actifs",
+  "activity": "Activité",
+  "activityDeleted": "Activité supprimée",
+  "activityHeatmap": "Carte thermique d'activité",
+  "activityMergeTime": "Délai de fusion des activités",
+  "activityPhrasing": "Formulation des activités",
+  "activityRefreshed": "Activité actualisée",
+  "adFreeApp": "Application sans publicité",
+  "addCustomLogo": "Ajouter un logo personnalisé",
+  "addCustomLogoGifWebp": "Ajouter un logo personnalisé (.gif, .webp)",
+  "addRepo": "Ajouter un dépôt",
+  "addRepository": "Ajouter un dépôt",
+  "addYourRecommendation": "Ajouter votre recommandation",
+  "addOnExtensions": "Extensions additionnelles",
+  "addOns": "Modules",
+  "addOnsPowerBackgroundServicesSuch": "Les modules alimentent les services en arrière-plan tels que le moteur de streaming torrent TorrServer pour la lecture directe de liens magnet.",
+  "addedToDownloads": "Ajouté aux téléchargements",
+  "addingKotatsuRepositoryThisWillTake": "Ajout du dépôt Kotatsu. Cela prendra au moins 1 à 2 minutes, veuillez patienter...",
+  "addingRepositoryFetchingExtensions": "Ajout du dépôt et récupération des extensions...",
+  "adjustBottomBarMarginMediaDetails": "Ajuster la marge de la barre du bas (page de détails des médias uniquement)",
+  "adjustCardAnimationSpeed": "Ajuster la vitesse d'animation des cartes",
+  "adjustCornerRadiusOfElements": "Ajuster le rayon des coins des éléments",
+  "adjustDoubleTapToSeekDuration": "Ajuster la durée du double-tap pour avancer/reculer",
+  "adjustElementGlowIntensity": "Ajuster l'intensité de la lueur des éléments",
+  "adjustFrostedBlurIntensity": "Ajuster l'intensité du flou givré",
+  "adjustGlowBlurIntensity": "Ajuster l'intensité du flou lumineux",
+  "adjustHorizontalMarginOfBottomNavigation": "Ajuster la marge horizontale de la barre de navigation",
+  "adjustItemsPerRow": "Ajuster les éléments par ligne",
+  "adjustMediaBackdropExposure": "Ajuster l'exposition de l'arrière-plan du média",
+  "adjustMegaskipDuration": "Ajuster la durée du MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "Ajuster l'arrondi de toutes les cartes de médias",
+  "adjustSubSize": "Ajuster la taille des sous-titres",
+  "adjustSubtitleOutlineWidth": "Ajuster l'épaisseur du contour des sous-titres",
+  "adjustTextVisibility": "Ajuster la visibilité du texte",
+  "admin": "Admin",
+  "adult": "Adulte",
+  "aiPicks": "Sélections IA",
+  "airingAnimeNotifications": "Notifications d'animes en cours de diffusion",
+  "all": "Tout",
+  "allClearNoReportsToReview": "Tout est en ordre ! Aucun signalement à examiner.",
+  "allSources": "Toutes les sources",
+  "allowAnymexToAutomaticallyOpenAnime": "Autoriser AnymeX à ouvrir automatiquement les liens web d'animes et mangas",
+  "allowInstallingUpdatesForExtensionsAnd": "Autoriser l'installation des mises à jour pour les extensions et l'application",
+  "allowOnlyUsersIFollowTo": "N'autoriser que les utilisateurs que je suis à m'envoyer des messages.",
+  "allowStorageAccessAndSelectDownload": "Autoriser l'accès au stockage et sélectionner le dossier de téléchargement",
+  "allowStorageAccessToDownloadApp": "Autoriser l'accès au stockage pour télécharger les mises à jour de l'application et des extensions",
+  "alreadyRecommended": "Déjà recommandé",
+  "alternativeTitles": "Titres alternatifs",
+  "alwaysShowChapterTransition": "Toujours afficher la transition de chapitre",
+  "alwaysShowPageIndicator": "Toujours afficher l'indicateur de page",
+  "amountOfFilmGrainApplied": "Quantité de grain de film appliqué",
+  "anifyKitsuArtwork": "Illustrations Anify / Kitsu",
+  "anilistSettings": "Paramètres AniList",
+  "anilistSettings2": "Paramètres Anilist",
+  "animatchCompatibility": "Compatibilité AniMatch",
+  "animatchLinkCopiedToClipboard": "Lien AniMatch copié dans le presse-papier !",
+  "animateControlOverlay": "Animer la superposition des contrôles",
+  "anime": "Anime",
+  "animeUpper": "ANIMÉ",
+  "animeManga": "Anime & Manga",
+  "anime4kEnhancement": "Amélioration Anime 4K",
+  "animeAdaptation": "Adaptation en anime",
+  "animeCustomLists": "Listes d'animes personnalisées",
+  "animeDetailsPhrasing": "Libellé des détails de l'anime",
+  "animeLibrary": "Bibliothèque d'animes",
+  "animeList": "LISTE D'ANIMES",
+  "animeScore": "Note de l'anime",
+  "animeSectionOrder": "Ordre des sections d'anime",
+  "announcement": "Annonce",
+  "announcementUnavailable": "Annonce indisponible",
+  "announcements": "Annonces",
+  "anymexForkOptimisedForTv": "Fork d'AnymeX optimisé pour TV",
+  "anymexIs100FreeOpenSource": "AnymeX est 100 % gratuit, open-source et sans publicité. Votre soutien contribue directement aux frais de serveur et au développement de nouvelles fonctionnalités !",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX est 100 % gratuit, open-source et sans publicité. Votre soutien m'aide à rester motivé pour maintenir et améliorer continuellement l'application !",
+  "appCacheExceededThresholdAndWas": "Le cache de l'application a dépassé le seuil et a été vidé",
+  "appDataHasBeenCompletelyReset": "Les données de l'application ont été entièrement réinitialisées",
+  "appFonts": "Polices de l'application",
+  "appSettingsSessions": "Paramètres et sessions de l'application",
+  "appearance": "Apparence",
+  "appearanceInterface": "Apparence & Interface",
+  "appearanceTheme": "Apparence et thème",
+  "appliesAnimeMangaPosterColorOn": "Appliquer la couleur de l'affiche sur la page de détails",
+  "apply": "Appliquer",
+  "applyASubtleFilmGrainTexture": "Appliquer un léger effet de grain de film sur l'interface",
+  "applyFilters": "Appliquer les filtres",
+  "applyOptionsFromYourMpvConf": "Appliquer les options du fichier mpv.conf au lancement",
+  "areYouSureYouWantTo": "Voulez-vous vraiment supprimer tous les cookies enregistrés ?",
+  "areYouSureYouWantToDelete": "Voulez-vous vraiment supprimer ce commentaire ? Il sera définitivement supprimé et le signalement sera résolu.",
+  "areYouSureYouWantToDeleteThis": "Voulez-vous vraiment supprimer cette extension ?",
+  "areYouSureYouWantToDeleteThisReply": "Voulez-vous vraiment supprimer cette réponse ?",
+  "askForTrackingPermission": "Demander l'autorisation de suivi",
+  "atLeast2TabsMustRemain": "Au moins 2 onglets doivent rester visibles !",
+  "audioEngine": "Moteur audio",
+  "audioPitchCorrection": "Correction de la hauteur audio",
+  "authenticationOptional": "AUTHENTIFICATION (OPTIONNEL)",
+  "auto": "Auto",
+  "autoPlay": "Lecture automatique",
+  "autoScroll": "Défilement auto",
+  "autoScrollSpeed": "Vitesse de défilement auto",
+  "autoSkipEd": "Passer l'ED auto",
+  "autoSkipFiller": "Passer les fillers auto",
+  "autoSkipOnceOnly": "Passer une seule fois",
+  "autoSkipOnlyOncePerWatch": "Passer une seule fois par visionnage",
+  "autoSkipOp": "Passer l'OP auto",
+  "autoSkipRecap": "Passer le récap auto",
+  "autoSkipTheEndingSong": "Passer automatiquement la chanson de fin",
+  "autoSkipTheOpeningSong": "Passer automatiquement la chanson de début",
+  "autoSkipTheRecapSection": "Passer automatiquement la section récapitulative",
+  "autoSwitchToVerticalMode": "Basculer automatiquement en mode vertical",
+  "autoTranslateSubtitles": "Traduire automatiquement les sous-titres",
+  "autoWebtoonMode": "Mode Webtoon auto",
+  "autoClearThreshold": "Seuil de nettoyage auto",
+  "autoSelectDefault": "Sélection auto (par défaut)",
+  "autoSelectThisServerQualityFor": "Sélectionner auto cette qualité pour cet anime",
+  "automaticallyMoveToNextTextSegment": "Passer automatiquement au segment de texte suivant",
+  "automaticallyScrollContent": "Faire défiler le contenu automatiquement",
+  "automaticallyScrollPages": "Faire défiler les pages automatiquement",
+  "automaticallySkipFillerEpisodesWhenGoing": "Ignorer automatiquement les épisodes filler lors du passage à l'épisode suivant",
+  "automaticallyUpdateEntriesWhenImportingThe": "Mettre à jour automatiquement les entrées lors de l'importation du XML",
+  "availableAddOns": "Modules disponibles",
+  "availableKeybindings": "Raccourcis clavier disponibles :",
+  "avatarDecorations": "Décorations d'avatar",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Décorations d'avatar, plaques, bannières et effets de profil",
+  "avgChapters": "Moy. chapitres",
+  "avgEpisodes": "Moy. épisodes",
+  "back": "Retour",
+  "backdropScope": "Arrière-plan et portée",
+  "backdropBrightness": "Luminosité de l'arrière-plan",
+  "backdropSource": "Source de l'arrière-plan",
+  "backgroundOpacity": "Opacité de l'arrière-plan",
+  "backup": "Sauvegarde",
+  "backupRestore": "Sauvegarde et restauration",
+  "backupAndRestoreYourLibrary": "Sauvegarder et restaurer votre bibliothèque",
+  "backupArchive": "Archive de sauvegarde",
+  "backupOwner": "Propriétaire de la sauvegarde",
+  "backupRestoredSuccessfully": "Sauvegarde restaurée avec succès !",
+  "backupSavedSuccessfully": "Sauvegarde enregistrée avec succès !",
+  "badge": "Badge",
+  "banUser": "Bannir l'utilisateur",
+  "baseUrlNotAvailableForThis": "URL de base non disponible pour cette source",
+  "basedOnYourFavouriteCharacters": "Basé sur vos personnages favoris.",
+  "basedOnYourFavouriteStaff": "Basé sur votre personnel favori.",
+  "basedOnYourTop10Tags": "Basé sur vos 10 tags principaux.",
+  "basedOnYourTop3Studios": "Basé sur vos 3 studios principaux.",
+  "basedOnYourTop5Genres": "Basé sur vos 5 genres principaux.",
+  "basedOnYourTop6Voice": "Basé sur vos 6 doubleurs principaux.",
+  "batchDownload": "Téléchargement groupé",
+  "beTheFirstToRecommendThis": "Soyez le premier à recommander ce titre !",
+  "betterSubtitleRenderingUsingLibassLibrary": "Meilleur rendu des sous-titres via la bibliothèque libass",
+  "blockquote": "Citation",
+  "blurBackdropTuning": "Réglage du flou et de l'arrière-plan",
+  "blurAmount": "Niveau de flou",
+  "blurColorTint": "Teinte du flou",
+  "blurMechanism": "Mécanisme de flou",
+  "blurMultiplier": "Multiplicateur de flou",
+  "blurStyle": "Style de flou",
+  "bold": "Gras",
+  "boldItalic": "Gras + Italique",
+  "botUrlNotConfigured": "URL du bot non configurée",
+  "bottomControls": "Contrôles inférieurs",
+  "bottomMargin": "Marge inférieure",
+  "bottomNavBarMargin": "Marge de la barre de navigation",
+  "broadcastYourActivityToDiscord": "Diffuser votre activité sur Discord",
+  "browsingIdle": "Navigation / Inactif",
+  "browsingPhrasing": "Formulation de navigation",
+  "bufferSize": "Taille du tampon",
+  "builtInStyles": "Styles intégrés",
+  "byDisablingThisYouCanAvoid": "Désactiver ceci permet d'éviter les transitions entre les sous-titres.",
+  "byIndex": "Par index",
+  "byUserId": "Par ID d'utilisateur",
+  "byUsername": "Par nom d'utilisateur",
+  "bypassCloudflare": "Contourner Cloudflare",
+  "cacheStorage": "Cache et stockage",
+  "cacheMinutes": "Minutes de cache",
+  "cacheOverview": "Aperçu du cache",
+  "cachedImages": "Images en cache",
+  "calculateCompatibility": "Calculer la compatibilité",
+  "calculatedBasedOnWhichReleaseDecades": "Calculé selon les décennies de sortie que vous avez le plus regardées et le mieux notées.",
+  "calendar": "Calendrier",
+  "cancel": "Annuler",
+  "cannotCompareAUserWithThemselves": "Impossible de comparer un utilisateur avec lui-même ! Veuillez entrer deux noms d'utilisateur différents.",
+  "cannotCompareYourProfileWithYourself": "Impossible de comparer votre profil avec vous-même ! Veuillez entrer un nom d'utilisateur différent.",
+  "cantPlaySinceUserClosedThe": "Lecture impossible car l'utilisateur a fermé l'application brusquement",
+  "cantReadSinceUserClosedThe": "Lecture impossible car l'utilisateur a fermé l'application brusquement",
+  "cardAnimationDuration": "Durée de l'animation des cartes",
+  "cardRoundness": "Arrondi des cartes",
+  "cardStyle": "Style des cartes",
+  "carouselStyle": "Style du carrousel",
+  "changeFile": "Modifier le fichier",
+  "changeRole": "Changer de rôle",
+  "changeService": "Changer de service",
+  "changeSubtitleBackgroundColor": "Modifier la couleur d'arrière-plan des sous-titres",
+  "changeSubtitleColors": "Modifier les couleurs des sous-titres",
+  "changeSubtitleOutlineColor": "Modifier la couleur du contour des sous-titres",
+  "changelog": "JOURNAL DES MODIFICATIONS",
+  "chapterListSettings": "Paramètres de la liste des chapitres",
+  "chapterNumber": "Numéro du chapitre",
+  "chapterTileStyle": "Style des tuiles de chapitre",
+  "chapters": "Chapitres",
+  "chaptersUpper": "CHAPITRES",
+  "chaptersVolumes": "CHAPITRES ET VOLUMES",
+  "chaptersRead": "Chapitres lus",
+  "characters": "Personnages",
+  "checkCompatibility": "Vérifier la compatibilité",
+  "checkForAddOnUpdates": "Rechercher des mises à jour des add-ons",
+  "checkForUpdates": "Rechercher des mises à jour",
+  "checkUpdatesFromBetaChannel": "Rechercher les mises à jour du canal bêta",
+  "checkingForUpdates": "Recherche de mises à jour en cours !",
+  "chooseABackupFileAnymex": "Choisir un fichier de sauvegarde (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Choisir un arrière-plan personnalisé pour le mode liquide.",
+  "chooseADirectoryToBrowseYour": "Choisir un dossier pour parcourir vos fichiers multimédias",
+  "chooseDifferentImage": "Choisir une autre image",
+  "chooseDownloadFolder": "Choisir le dossier de téléchargement",
+  "chooseImage": "Choisir une image",
+  "chooseProvider": "Choisir le fournisseur",
+  "chooseQuality": "Choisir la qualité",
+  "chooseServer": "Choisir le serveur",
+  "chooseServiceTracker": "Choisir le service / traqueur",
+  "chooseShaderProfile": "Choisir le profil de shader",
+  "chooseUpiApp": "Choisir l'application UPI",
+  "chooseWhichListToShowOn": "Choisir quelle liste afficher sur la page d'accueil",
+  "chooseYourFavouriteColor": "Choisissez votre couleur préférée !",
+  "chooseYourFavouritePalette": "Choisissez votre palette préférée !",
+  "chromaScaler": "Redimensionneur chromatique",
+  "classicCarouselCardLayoutFeaturingVertical": "Disposition classique en carrousel avec des cartes de posters verticales.",
+  "clear": "Effacer",
+  "clearAll": "Tout effacer",
+  "clearAllHistory": "Effacer tout l'historique",
+  "clearAppCache": "Vider le cache de l'application",
+  "clearAppCacheNow": "Vider le cache de l'application maintenant",
+  "clearCache": "Vider le cache",
+  "clearCacheCookies": "Vider le cache et les cookies",
+  "clearCookies": "Vider les cookies",
+  "clearCookies2": "Vider les cookies",
+  "clearHistory": "Effacer l'historique",
+  "clearImageCacheNow": "Vider le cache d'images maintenant",
+  "clearProxy": "Effacer le proxy",
+  "clearSelected": "Effacer la sélection",
+  "clientAll": "Client : Tous",
+  "close": "Fermer",
+  "closetCommunity": "Vestiaire et communauté",
+  "cloudflareChallengeSolved": "Défi Cloudflare résolu !",
+  "collectionName": "Nom de la collection",
+  "collections": "Collections",
+  "combineBackupDataWithExistingData": "Combiner les données de sauvegarde avec les données existantes sur cet appareil",
+  "commentDeleted": "Commentaire supprimé",
+  "commentPolicy": "Règles des commentaires",
+  "commentReplies": "Réponses aux commentaires",
+  "commentRules": "Règles des commentaires",
+  "commentSystem": "Système de commentaires",
+  "comments": "Commentaires",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 est un système de commentaires avancé qui propose :",
+  "commentumV2SettingsModerationPreferences": "Paramètres, modération et préférences de Commentum v2",
+  "common": "Général",
+  "commonCharacters": "Personnages communs",
+  "commonFavouriteStaff": "Personnel favori en commun",
+  "commonGenres": "Genres communs",
+  "commonSettings": "Paramètres généraux",
+  "commonStudios": "Studios courants",
+  "commonTags": "Tags communs",
+  "commonVoiceActors": "Doubleurs communs",
+  "communityDriven": "Piloté par la communauté",
+  "communityForksOfAnymex": "Forks communautaires d'AnymeX",
+  "communityLeaderboard": "Classement de la communauté",
+  "communityRecommendations": "Recommandations de la communauté",
+  "compact": "Compact",
+  "compactCardWithEpisodeThumbnailAnd": "Carte compacte avec miniature d'épisode et titre",
+  "compactGridOfChapterNumbers": "Grille compacte des numéros de chapitres",
+  "compatibility": "Compatibilité",
+  "compatibilityRanks": "Rangs de compatibilité",
+  "compatibleWithGooglePayPhonepePaytm": "Compatible avec Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay et toutes les applications bancaires UPI.",
+  "completeAnyCloudflareChallengeThenTap": "Résolvez le défi Cloudflare, puis appuyez sur \"Synchroniser les cookies\" pour transmettre la session aux extensions.",
+  "compose": "Rédiger",
+  "concurrencyLimits": "Concurrence et limites",
+  "configurationsRepos": "Configurations et dépôts",
+  "configureExport": "Configurer et exporter",
+  "configureDiscordRichPresenceActivityStatus": "Configurer Discord Rich Presence et le statut d'activité",
+  "configureDnsOverHttpsProxyTls": "Configurer le DNS sur HTTPS, le proxy et les paramètres TLS",
+  "configureMangaAndNovelReaderDefaults": "Configurer les paramètres par défaut du lecteur de manga et de roman",
+  "configureParallelDownloadsAndDirectory": "Configurer les téléchargements parallèles et le dossier",
+  "configurePosterBlurScopeTintBackdrop": "Configurer le flou, la portée, la teinte et l'arrière-plan de l'affiche",
+  "confirm": "Confirmer",
+  "confirmRestore": "CONFIRMER ET RESTAURER",
+  "confirmBackupPassword": "Confirmer le mot de passe de la sauvegarde",
+  "conflictHandling": "Gestion des conflits",
+  "connect": "Se connecter",
+  "continueReading": "Continuer la lecture",
+  "continueWatching": "Continuer le visionnage",
+  "continuousModeOnly": "Mode continu uniquement",
+  "contributors": "Contributeurs",
+  "controlTheme": "Thème des contrôles",
+  "controlsSubtitlesAndPlaybackPreferences": "Contrôles, sous-titres et préférences de lecture",
+  "cookiesUserAgentSynced": "Cookies et User-Agent synchronisés !",
+  "copy": "Copier",
+  "copyPath": "Copier le chemin",
+  "copyUpiId": "Copier l'ID UPI",
+  "copyUserId": "Copier l'ID utilisateur",
+  "coreTeam": "Équipe principale",
+  "couldNotCalculateCompatibility": "Impossible de calculer la compatibilité.",
+  "couldNotFetchChaptersForThis": "Impossible de récupérer les chapitres pour ce titre",
+  "couldNotFetchEpisodesForThis": "Impossible de récupérer les épisodes pour ce titre",
+  "couldNotOpenDonationLink": "Impossible d'ouvrir le lien de don",
+  "couldNotOpenLink": "Impossible d'ouvrir le lien",
+  "couldNotOpenReleasesPage": "Impossible d'ouvrir la page des versions",
+  "couldntOpenAppSettingsOpenIt": "Impossible d'ouvrir les paramètres de l'application. Ouvrez-les manuellement.",
+  "count": "Nombre",
+  "countryDistribution": "Répartition par pays",
+  "countryOfOrigin": "Pays d'origine",
+  "create": "Créer",
+  "createAFullAnymexArchiveOf": "Créer une archive .anymex complète de votre médiathèque, de vos paramètres, de vos extensions et de l'environnement d'exécution de l'hôte",
+  "createActivity": "Créer une activité",
+  "createBackup": "Créer une sauvegarde",
+  "createNewList": "Créer une nouvelle liste",
+  "createStatus": "Créer un statut",
+  "cropBorders": "Rogner les bordures",
+  "current": "Actuel • ",
+  "custom": "Personnalisé",
+  "customBanners": "Bannières personnalisées",
+  "customColorPicker": "Sélecteur de couleur personnalisé",
+  "customDohUrl": "URL DOH PERSONNALISÉE",
+  "customFonts": "Polices personnalisées",
+  "customLists": "Listes personnalisées",
+  "customLogos": "Logos personnalisés",
+  "customPlayerFlagsParameters": "Indicateurs et paramètres du lecteur personnalisés",
+  "customScale": "Échelle personnalisée",
+  "customTheme": "Thème personnalisé",
+  "customUserAgent": "User-Agent personnalisé",
+  "customValue": "Valeur personnalisée",
+  "customEllipsis": "Personnalisé...",
+  "customizeCardHistoryCardCarouselNav": "Personnaliser les styles de carte, d'historique, de carrousel et de barre de navigation",
+  "customizeTheInterfaceToYourLiking": "Personnalisez l'interface à votre goût",
+  "customizeYourLogoAnimationStyle": "Personnaliser le style d'animation du logo",
+  "dailyActivitiesWatchAndReadMetrics": "Activités quotidiennes, métriques de visionnage et de lecture",
+  "dailyActivityAndWatchReadProgress": "Suivi de l'activité quotidienne et de la progression visionnage/lecture",
+  "dataCache": "Données et cache",
+  "dataToRestore": "DONNÉES À RESTAURER",
+  "days": "JOURS",
+  "days2": "Jours",
+  "daysActive": "JOURS ACTIFS",
+  "debanding": "Dégradé lissé (Debanding)",
+  "debugStuffs": "Éléments de débogage",
+  "decoder": "Décodeur",
+  "decoderHwdec": "Décodeur (HWDec)",
+  "decoderThreads": "Threads du décodeur",
+  "decorationCloset": "Armoire à décorations",
+  "defaultLabel": "Par défaut",
+  "defaultAndroidAudiotrackApi": "API AudioTrack Android par défaut",
+  "defaultAppleCoreaudioApi": "API CoreAudio Apple par défaut",
+  "defaultListOrder": "Ordre de liste par défaut",
+  "defaultOrientation": "Orientation par défaut",
+  "defaultPortrait": "Portrait par défaut",
+  "defaultPulseaudioApi": "API PulseAudio par défaut",
+  "defaultSize200px": "Taille par défaut (200px)",
+  "defaultSystemAudioDriver": "Pilote audio système par défaut",
+  "defaultTheme": "Thème par défaut",
+  "defaultWindowsAudioDriver": "Pilote audio Windows par défaut",
+  "delete": "Supprimer",
+  "deleteActivity": "Supprimer l'activité",
+  "deleteAll": "Tout supprimer",
+  "deleteAllCachedImagesTorrentStream": "Supprimer toutes les images en cache, les morceaux de flux torrent et les fichiers temporaires.",
+  "deleteAllStoredHttpCookiesAcross": "Supprimer tous les cookies HTTP stockés sur tous les domaines.",
+  "deleteChapter": "Supprimer le chapitre",
+  "deleteChapterQuestion": "Supprimer le chapitre ?",
+  "deleteComment": "Supprimer le commentaire",
+  "deleteCustomLogo": "Supprimer le logo personnalisé",
+  "deleteEpisode": "Supprimer l'épisode",
+  "deleteEpisodeQuestion": "Supprimer l'épisode ?",
+  "deleteEverythingStoredOfAnymexPermanently": "Supprimer définitivement toutes les données stockées par AnymeX.",
+  "deleteExtension": "Supprimer l'extension",
+  "deleteFont": "Supprimer la police",
+  "deleteHistoryItem": "Supprimer l'élément de l'historique",
+  "deleteList": "Supprimer la liste",
+  "deleteLogo": "Supprimer le logo",
+  "deleteReason": "Supprimer le motif ?",
+  "deleteRecommendation": "Supprimer la recommandation ?",
+  "deleteReply": "Supprimer la réponse",
+  "deleteReportedComment": "Supprimer le commentaire signalé",
+  "deleteSavedCookiesAndCloudflareTokens": "Supprimer les cookies enregistrés et les jetons Cloudflare",
+  "deleteSavedCookiesCloudflareTokensAnd": "Supprimer les cookies enregistrés, les jetons Cloudflare et le cache temporaire",
+  "deleteSelected": "Supprimer la sélection",
+  "deleteTemporaryNetworkAndImageCache": "Supprimer le cache temporaire réseau et images",
+  "deletionRequestSentToAdminsFor": "Demande de suppression envoyée aux administrateurs pour examen.",
+  "demuxerMaxBuffer": "Mémoire tampon max. du démultiplexeur",
+  "demuxerReadahead": "Lecture anticipée du démultiplexeur",
+  "description": "Description",
+  "detailedClassic": "Détaillé (Classique)",
+  "detailedInsights": "Statistiques détaillées",
+  "detailsPage": "Page de détails",
+  "developer": "Développeur",
+  "development": "Développement",
+  "direct": "Direct",
+  "directSurfaceRenderingAndroidOnly": "Rendu de surface direct (Android uniquement)",
+  "direction": "Direction",
+  "disableToShowAndHidePlayer": "Désactiver pour afficher et masquer instantanément les commandes du lecteur",
+  "disablingMayBypassCaptivePortalsOr": "La désactivation peut contourner les portails captifs ou l'inspection SSL, mais réduit la sécurité.",
+  "discard": "Ignorer",
+  "discardMessage": "Ignorer le message ?",
+  "discardReply": "Ignorer la réponse ?",
+  "discardStatus": "Ignorer le statut ?",
+  "disconnect": "Déconnecter",
+  "disconnectDiscord": "Déconnecter Discord ?",
+  "discordTakenDown": "Discord supprimé",
+  "dismiss": "Ignorer",
+  "display": "Affichage",
+  "displayAnimeMangaMoviesAndShows": "Afficher les animés, mangas, films et séries recommandés par la communauté sur la page d'accueil.",
+  "displayMode": "Mode d'affichage",
+  "displayModeTuningIsNotApplicable": "Le réglage du mode d'affichage n'est pas applicable sur les plateformes de bureau.",
+  "displayPlaybackOrReadingProgressTimestamps": "Afficher les repères de progression de lecture ou de visionnage",
+  "displayRefreshRateResolutionAndFrame": "Réglage de la fréquence d'actualisation, de la résolution et des images",
+  "distanceBetweenLines": "Distance entre les lignes",
+  "distanceFromBottomOfScreen": "Distance du bas de l'écran",
+  "ditherDepth": "Profondeur de tramage",
+  "dnsProxy": "DNS et Proxy",
+  "dontShowAgain": "Ne plus afficher",
+  "donate": "Faire un don",
+  "donateSupport": "Don et support",
+  "donateViaPaypal": "Faire un don via PayPal",
+  "donateViaUpiOrPaypalTo": "Faire un don via UPI ou PayPal pour soutenir le développement",
+  "donateViaUpiPaypalSupportDevelopment": "Faire un don via UPI, PayPal et soutenir le développement",
+  "done": "TERMINÉ",
+  "done2": "Terminé",
+  "doubletapToSeek": "Appuyer deux fois pour avancer/reculer",
+  "downgradeOrSwitchToASpecific": "rétrograder ou basculer vers une version de plugin spécifique",
+  "download": "Télécharger",
+  "download4kShaders": "Télécharger les shaders 4K",
+  "downloadAllChapters": "Télécharger tous les chapitres",
+  "downloadAllEpisodes": "Télécharger tous les épisodes",
+  "downloadChapter": "Télécharger le chapitre",
+  "downloadChunks": "Télécharger par morceaux",
+  "downloadCurrentSection": "Télécharger la section actuelle",
+  "downloadEpisode": "Télécharger l'épisode",
+  "downloadFailedTapToRetry": "Échec du téléchargement. Appuyez pour réessayer.",
+  "downloadPath": "Chemin de téléchargement",
+  "downloadPathsAndQualitySettings": "Chemins de téléchargement et paramètres de qualité",
+  "downloadPathsAndStorageSettings": "Chemins de téléchargement et paramètres de stockage",
+  "downloadPermissions": "Autorisations de téléchargement",
+  "downloadQualityStoragePaths": "Qualité de téléchargement, chemins de stockage",
+  "downloadSettings": "Paramètres de téléchargement",
+  "downloadSize4mb": "Taille du téléchargement : ~4 Mo",
+  "downloadStarted": "Téléchargement démarré",
+  "downloadUnreadChapters": "Télécharger les chapitres non lus",
+  "downloadUnwatchedEpisodes": "Télécharger les épisodes non vus",
+  "downloaded": "TÉLÉCHARGÉ",
+  "downloaded2": "Téléchargé",
+  "downloadedMedia": "Médias téléchargés",
+  "downloadingImage": "Téléchargement de l'image...",
+  "downloadingPackage": "Téléchargement du paquet...",
+  "downloads": "Téléchargements",
+  "downloadsStorage": "Téléchargements et stockage",
+  "downloadsPage": "Page des téléchargements",
+  "downscalingAlgorithm": "Algorithme de réduction d'échelle",
+  "dragAndDropToReorderNavigation": "Glisser-déposer pour réordonner les onglets de la barre de navigation",
+  "dragToReorderStatusSections": "Glisser pour réordonner les sections de statut",
+  "dualPageMode": "Mode double page",
+  "dynamicVariablesWillBeReplacedAutomatically": "Les variables dynamiques seront remplacées automatiquement. Vous pouvez aussi utiliser une phrase statique.",
+  "edit": "Modifier",
+  "editActivity": "Modifier l'activité",
+  "editCustomMpvFlagsPropertiesAnd": "Modifier les indicateurs, propriétés et fichiers de configuration mpv personnalisés",
+  "editLogoSettings": "Modifier les paramètres du logo",
+  "editMediaEntry": "Modifier l'entrée du média",
+  "editReason": "Modifier la raison",
+  "editRecommendationReasonMin30Chars": "Modifier la raison de la recommandation (min. 30 caractères)",
+  "edited": "Modifié",
+  "enableAnimation": "Activer l'animation",
+  "enableAnimationOnCarouselsForSmooth": "Activer l'animation sur les carrousels pour un mouvement fluide",
+  "enableBackgroundMediaControlsForBluetooth": "Activer les contrôles multimédias en arrière-plan pour les casques Bluetooth et les notifications du système. Remarque : cela augmentera la consommation de batterie.",
+  "enableBetaUpdates": "Activer les mises à jour bêta",
+  "enableClassicSimpleHeaderStyleOn": "Activer le style d'en-tête simple classique sur les écrans d'accueil",
+  "enableDiscordRpc": "Activer Discord RPC",
+  "enableExperimentalSettings": "Activer les paramètres expérimentaux",
+  "enableHoldingOnPlayerScreenTo": "Activer le maintien sur l'écran du lecteur pour accélérer temporairement la lecture vidéo",
+  "enableHorizontalSwipingOnPlayerScreen": "Activer le glissement horizontal sur l'écran du lecteur pour naviguer dans la vidéo",
+  "enableKenBurns": "Activer Ken Burns",
+  "enableLongPressQuickActions": "Activer les actions rapides par appui long",
+  "enableNotificationsForUpcomingAiringEpisodes": "Activer les notifications pour les prochains épisodes.",
+  "enableNsfwAdultEntriesInAnilist": "Activer les entrées NSFW/adultes dans le contenu AniList.",
+  "enableShaders": "Activer les shaders",
+  "enableSwipeControls": "Activer les commandes par glissement",
+  "enableTapZones": "Activer les zones tactiles",
+  "enableThisIfYouWantTo": "Activez ceci si vous souhaitez conserver la couleur d'origine de votre fond d'écran",
+  "enableTranslucentNavigationBar": "Activer la barre de navigation translucide",
+  "enableTts": "Activer la TTS",
+  "enableVerticalSwipingOnTheLeft": "Activer le glissement vertical sur les côtés gauche/droit du lecteur pour régler la luminosité et le volume",
+  "enablesASoftGlowingGradientEffect": "Active un effet de dégradé lumineux et doux.",
+  "encryptWithAes256RecommendedFor": "Chiffrer avec AES-256 (recommandé pour les jetons d'authentification)",
+  "encrypted": "Chiffré • ",
+  "endChapter": "Fin du chapitre",
+  "enterAmount": "Entrer le montant...",
+  "enterAnilistUsername": "Entrer le nom d'utilisateur AniList",
+  "enterAtLeast2Characters": "Entrer au moins 2 caractères",
+  "enterBackupPassword": "Entrer le mot de passe de sauvegarde",
+  "enterFirstAnilistUsername": "Entrer le premier nom d'utilisateur AniList",
+  "enterGithubRepositoryUrl": "Entrer l'URL du dépôt GitHub",
+  "enterListName": "Entrer le nom de la liste",
+  "enterPassword": "Entrer le mot de passe",
+  "enterReasonOrDetailsForThis": "Entrer la raison ou les détails de cette action...",
+  "enterSearchQuery": "Entrer la requête de recherche",
+  "enterUsername": "Entrer le nom d'utilisateur",
+  "enterValue": "Entrer la valeur",
+  "entryDeleted": "Entrée supprimée.",
+  "episode1": "Épisode 1",
+  "episodeListSettings": "Paramètres de la liste des épisodes",
+  "episodes": "Épisodes",
+  "episodesDuration": "ÉPISODES ET DURÉE",
+  "episodesWatched": "Épisodes visionnés",
+  "errorOccured": "Une erreur est survenue",
+  "errorOccurred": "Une erreur est survenue",
+  "errorSavingImage": "Erreur lors de l'enregistrement de l'image",
+  "errorSharingImage": "Erreur lors du partage de l'image",
+  "errorMissingRequiredDataItSeems": "Erreur : Données requises manquantes. Il semble que vous ayez fermé l'application juste après avoir lu le chapitre !",
+  "errorMissingRequiredMediaItSeems": "Erreur : Média requis manquant. Il semble que vous ayez fermé l'application juste après avoir lu le chapitre !",
+  "errorMissingRequiredMediaItSeemsYou": "Erreur : Média requis manquant. Il semble que vous ayez fermé l'application juste après avoir visionné l'épisode !",
+  "everyScoreIsMappedToA": "Chaque score est associé à un rang. Le tableau ci-dessous indique chaque tranche, son badge et la plage correspondante.",
+  "experimental": "Expérimental",
+  "experimentalHighPerformanceRenderer": "Rendu haute performance expérimental",
+  "explore": "Explorer",
+  "exploreTheProjectAndContribute": "Explorer le projet et contribuer",
+  "exportLabel": "EXPORTER",
+  "exportBackup": "Exporter la sauvegarde",
+  "exportCancelled": "Exportation annulée.",
+  "exportDeviceBackup": "Exporter la sauvegarde de l'appareil",
+  "exportSettings": "Exporter les paramètres",
+  "exportYourAnimeList": "Exporter votre liste d'animes",
+  "exportYourMangaList": "Exporter votre liste de mangas",
+  "extensionConfigurations": "Configurations des extensions",
+  "extensionConfigurationsRepos": "Configurations et dépôts d'extensions",
+  "extensionManager": "Gestionnaire d'extensions",
+  "extensionPackages": "Paquets d'extensions",
+  "extensionPreferences": "Préférences des extensions",
+  "extensionSettings": "Paramètres des extensions",
+  "extensionSettingsAndSourceConfigurations": "Paramètres des extensions et configurations des sources",
+  "extensionTesting": "Test des extensions",
+  "extensionType": "Type d'extension",
+  "extensions": "Extensions",
+  "extensionsDiagnostics": "Extensions et diagnostics",
+  "extensionsRepositories": "Extensions et dépôts",
+  "extensionsSources": "Extensions et sources",
+  "extensionsTailoredToYourNeeds": "Extensions adaptées à vos besoins",
+  "externalStreamingLinks": "Liens externes et de streaming",
+  "externalBackupsRestoreMetadataAndConfigurations": "Les sauvegardes externes restaurent les métadonnées et les configurations en toute sécurité.",
+  "externalBrowser": "Navigateur externe",
+  "extras": "Extras",
+  "factoryReset": "Réinitialisation d'usine",
+  "factoryReset2": "Réinitialiser aux paramètres d'usine",
+  "failedToCheckForUpdates": "Échec de la vérification des mises à jour.",
+  "failedToCheckPluginUpdates": "Échec de la vérification des mises à jour des plugins.",
+  "failedToDeleteChapter": "Échec de la suppression du chapitre",
+  "failedToDeleteEpisode": "Échec de la suppression de l'épisode",
+  "failedToDeleteListEntry": "Échec de la suppression de l'entrée de liste",
+  "failedToDeleteMedia": "Échec de la suppression du média",
+  "failedToDownloadImage": "Échec du téléchargement de l'image",
+  "failedToFetchChapters": "Échec de la récupération des chapitres",
+  "failedToFetchDetails": "Échec de la récupération des détails",
+  "failedToFetchImageForSharing": "Échec de la récupération de l'image pour le partage",
+  "failedToFetchPluginReleaseDetails": "Échec de la récupération des détails de la version du plugin.",
+  "failedToFetchPolicy": "Échec de la récupération de la politique.",
+  "failedToFetchReleaseDetails": "Échec de la récupération des détails de la version.",
+  "failedToFetchServers": "Échec de la récupération des serveurs",
+  "failedToLoadDetails": "Échec du chargement des détails",
+  "failedToLoadFontFile": "Échec du chargement du fichier de police",
+  "failedToLoadProfileAccountMay": "Échec du chargement du profil — le compte est peut-être privé ou introuvable",
+  "failedToLoadTorrentMetadata": "Échec du chargement des métadonnées du torrent",
+  "failedToPerformAction": "Échec de l'action",
+  "failedToRemoveRepo": "Échec de la suppression du dépôt",
+  "failedToStartExtensionRuntime": "Échec du démarrage de l'environnement d'extension",
+  "failedToUpdateAnilist": "Échec de la mise à jour d'AniList",
+  "failedToUpdateListEntry": "Échec de la mise à jour de l'entrée de la liste",
+  "failedToUpdatePreference": "Échec de la mise à jour de la préférence",
+  "failedToUpdateRole": "Échec de la mise à jour du rôle",
+  "favoriteTitle": "Titre favori",
+  "favouriteAnime": "Anime favoris",
+  "favouriteCharacters": "Personnages favoris",
+  "favouriteManga": "Manga favoris",
+  "favouriteStaff": "Staff favori",
+  "favouriteStudios": "Studios favoris",
+  "featuresIssues": "Fonctionnalités/Problèmes",
+  "fetchingAvailableServers": "Récupération des serveurs disponibles...",
+  "fetchingLatestReleaseDetails": "Récupération des derniers détails de sortie...",
+  "fetchingTorrentFileList": "Récupération de la liste des fichiers torrent...",
+  "filler": "HROCH",
+  "filter": "Filtrer",
+  "filterActivities": "Filtrer les activités",
+  "filterActivity": "Filtrer l'activité",
+  "filterByChapterCount": "Filtrer par nombre de chapitres",
+  "filterByDurationMin": "Filtrer par durée (min)",
+  "filterByEpisodeCount": "Filtrer par nombre d'épisodes",
+  "filterByGenre": "Filtrer par genre",
+  "filterByVolumeCount": "Filtrer par nombre de volumes",
+  "filterGenres": "Filtrer les genres",
+  "filterOutAdultNsfwEntriesFrom": "Masquer les entrées pour adultes/NSFW des recommandations de la communauté.",
+  "filterOutEntriesAlreadyInYour": "Masquer les entrées déjà dans votre liste",
+  "filterOutEntriesAlreadyInYourList": "Masquer les entrées déjà présentes dans votre liste selon le statut en cours.",
+  "filterSettings": "Paramètres des filtres",
+  "filters": "FILTRES",
+  "findAndManageSpecificUsers": "Rechercher et gérer des utilisateurs",
+  "findAnimeSauceByScreenshots": "Trouver la source d'un anime via une capture",
+  "findSource": "Trouver la source",
+  "findYourFavouriteAnimeOrManga": "Trouvez vos animes, mangas, manhwas ou autres favoris !",
+  "findYourFavouriteAnimeMangaManhwa": "Trouvez vos animes, mangas, manhwas ou autres favoris !",
+  "finishDate": "Date de fin",
+  "firstChapter": "Premier chapitre",
+  "firstUser": "Premier utilisateur",
+  "fitToScreenWidth": "Ajuster à la largeur de l'écran",
+  "fontFamily": "Police",
+  "fontSize": "Taille de police",
+  "forceReDownload": "Forcer le re-téléchargement",
+  "forceSyncFromSdCard": "Forcer la synchro depuis la carte SD",
+  "forks": "Forks",
+  "format": "Format",
+  "formatDistribution": "Répartition des formats",
+  "frameInterpolation": "Interpolation d'images",
+  "freeSupport": "Support gratuit",
+  "frequentlyRevisited": "Consultés fréquemment",
+  "fromUrl": "Depuis l'URL",
+  "fullWidthDetailedCardWithLarge": "Carte détaillée pleine largeur avec grande vignette et métadonnées",
+  "fullWidthDetailedCardsWithProgress": "Cartes détaillées pleine largeur avec progression et bouton de lecture",
+  "fullWidthHeroBannerWithCompact": "Bannière héroïque pleine largeur avec détails compacts et synopsis rapide.",
+  "general": "Général",
+  "generalPrivacy": "Général et confidentialité",
+  "generalSync": "Général et synchronisation",
+  "generalAppPreferencesAndSyncServices": "Préférences générales et services de synchronisation",
+  "generalAppSettingsAndSyncServices": "Paramètres généraux et services de synchronisation",
+  "generalPreferences": "Préférences générales",
+  "genres": "Genres",
+  "genresUpper": "GENRES",
+  "gestureForBrightnessVolume": "Geste pour la luminosité et le volume",
+  "getHelpWithTheCommentSystem": "Obtenir de l'aide sur le système de commentaires",
+  "getStarted": "Commencer",
+  "globalConcurrencyLimit": "Limite de concurrence globale",
+  "glowMultiplier": "Multiplicateur de lueur",
+  "goSuperDarkMode": "Activer le mode super sombre !",
+  "goToDownloads": "Aller aux téléchargements",
+  "goToExtensionsToGetStarted": "Aller aux extensions pour commencer",
+  "goToPluginDownloader": "Aller au téléchargeur de plugins",
+  "goToRuntimeManager": "Aller au gestionnaire d'exécution",
+  "goodAfternoon": "Bon après-midi",
+  "goodEvening": "Bonsoir",
+  "goodMorning": "Bonjour",
+  "goodnight": "Bonne nuit",
+  "gotIt": "Compris",
+  "grainIntensity": "Intensité du grain",
+  "grainTextureOverlay": "Superposition de texture de grain",
+  "grantPermission": "Autoriser",
+  "grantPermissions": "Autoriser les permissions",
+  "grid": "Grille",
+  "gridSize": "Taille de la grille",
+  "gridView": "Vue en grille",
+  "guest": "Invité",
+  "happySnacking": "Bon visionnage",
+  "hardwareDisplayModeSwitchingIsNot": "Le changement de mode d'affichage matériel n'est pas pris en charge par votre appareil.",
+  "helpSupport": "Aide et support",
+  "hexColorCode": "Code couleur hexadécimal",
+  "hey": "Salut ",
+  "hidden": "Masqué",
+  "hiddenFromYourPublicProfile": "Masqué de votre profil public",
+  "hiddenTabs": "Onglets masqués",
+  "hideAdultContent": "Masquer le contenu pour adultes",
+  "hideButton": "Masquer le bouton",
+  "hideByListStatus": "Masquer par statut de liste",
+  "hideCompleted": "Masquer les terminés",
+  "hideDropped": "Masquer les abandonnés",
+  "hideEntriesThatAreInYour": "Masquer les éléments de votre liste à voir/lire.",
+  "hideEntriesThatAreMarkedAs": "Masquer les éléments marqués comme terminés dans votre liste.",
+  "hideEntriesThatYouAreCurrently": "Masquer les éléments que vous visionnez ou lisez actuellement.",
+  "hideEntriesThatYouAreRewatching": "Masquer les éléments que vous revisionnez.",
+  "hideEntriesThatYouHaveDropped": "Masquer les éléments que vous avez abandonnés.",
+  "hideEntriesThatYouHavePut": "Masquer les éléments que vous avez mis en pause.",
+  "hideNsfw": "Masquer le NSFW",
+  "hideNsfw18Content": "Masquer le contenu NSFW / 18+",
+  "hideNsfwContent": "Masquer le contenu NSFW",
+  "hideNsfwRecommendations": "Masquer les recommandations NSFW",
+  "hideOnHoldPaused": "Masquer en pause",
+  "hidePlanning": "Masquer la planification",
+  "hideRewatching": "Masquer le revisionnage",
+  "hideSystemStatusAndNavigationBars": "Masquer les barres d'état du système et de navigation",
+  "hideWatchingReading": "Masquer en cours",
+  "history": "Historique",
+  "historyStatistics": "Historique et statistiques",
+  "historyCardStyle": "Style de carte d'historique",
+  "historyItemDeleted": "Élément d'historique supprimé",
+  "hlsParallelSegments": "Segments parallèles HLS",
+  "holdAndDragAnyItemTo": "Maintenez et faites glisser un élément pour réordonner",
+  "holdToAccessHistoryEditor": "Maintenez pour accéder à l'éditeur d'historique",
+  "holdToDelete": "Maintenez pour supprimer",
+  "holdToSpeedUp": "Maintenez pour accélérer",
+  "home": "Accueil",
+  "horizontal": "Horizontal",
+  "hostEG12700": "Hôte (ex. 127.0.0.1)",
+  "hours": "Heures",
+  "howItWorksCompatibilityRanks": "Fonctionnement et rangs de compatibilité",
+  "howMuchInPercentageToMark": "Pourcentage requis pour marquer l'épisode comme vu",
+  "howToUseTheCommentSystem": "Comment utiliser le système de commentaires :",
+  "hue": "Teinte",
+  "ifEnabledAContinueWatchingBar": "Si activé, une barre de lecture s'affichera au-dessus de la navigation en bas sur la page d'accueil.",
+  "ifEnabledAllLibraryItemsWill": "Si activé, tous les éléments de la bibliothèque seront partagés entre tous les services de suivi.",
+  "ifEnabledAnymexWillAskFor": "Si activé, AnymeX demandera l'autorisation de suivi, sinon le suivi sera activé par défaut.",
+  "ifEnabledYouWillNotGet": "Si activé, vous ne recevrez pas d'invite pour activer le contenu pour adultes sur AniList/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "Si le cache temporaire de l'application atteint cette taille, il sera effacé automatiquement.",
+  "ifYouAreUsingAJson": "Si vous utilisez un thème JSON, les modifications ici n'affecteront pas les commandes du lecteur. Passez à un thème intégré pour appliquer ces paramètres.",
+  "ifYouCantDonateWatchThis": "Si vous ne pouvez pas faire de don, regardez cette publicité pour soutenir",
+  "image": "Image",
+  "imageShowsThumbnail": "Image (affiche la miniature)",
+  "imageFilterQuality": "Qualité du filtre d'image",
+  "imageSharedFromAnymex": "Image partagée depuis AnymeX",
+  "imagesWillBeDownloadedInFull": "Les images seront téléchargées en pleine qualité. Chaque chapitre est stocké dans son propre dossier.",
+  "immersiveMode": "Mode immersif",
+  "importLabel": "IMPORTER",
+  "importLabel2": "Importer",
+  "importManageCustomJsonThemes": "Importer et gérer les thèmes JSON personnalisés",
+  "importBackup": "Importer la sauvegarde",
+  "importCustomFont": "Importer une police personnalisée",
+  "importFromUrl": "Importer depuis une URL",
+  "includeAdultNsfwSuggestions": "Inclure les suggestions pour adultes et NSFW",
+  "incognito": "Incognito",
+  "incognitoActive": "Incognito (Actif)",
+  "incognitoMode2": "Mode incognito",
+  "indiaUpi": "Inde (UPI)",
+  "info": "Informations",
+  "inlineCode": "Code en ligne",
+  "insert": "Insérer",
+  "installPermission": "Autorisation d'installation",
+  "installPermissionIsRequiredToUpdate": "L'autorisation d'installation est requise pour mettre à jour l'application",
+  "installedPackages": "Paquets installés",
+  "installedThemes": "Thèmes installés",
+  "interfaceStyling": "Style de l'interface",
+  "internalBrowser": "Navigateur interne",
+  "international": "International",
+  "invalidBackupFileOrIncorrectPassword": "Fichier de sauvegarde invalide ou mot de passe incorrect",
+  "invertVolumeKeys": "Inverser les touches de volume",
+  "italic": "Italique",
+  "joinDiscordCommunity": "Rejoindre la communauté Discord",
+  "joinNewDiscord": "Rejoindre le nouveau Discord",
+  "joinTelegramChannel": "Rejoindre le canal Telegram",
+  "joinUsForDroppingFeedbackOr": "Rejoignez-nous pour laisser vos avis ou demandes de fonctionnalités",
+  "jsonThemeManager": "Gestionnaire de thèmes JSON",
+  "judgment": "Jugement",
+  "keepEditing": "Continuer la modification",
+  "keepItChill": "Restez détendu",
+  "keepScreenOn": "Garder l'écran allumé",
+  "keepVoicePitchStableAtHigher": "Maintenir la hauteur de voix stable à vitesse élevée",
+  "koFiSupport": "Support Ko-fi",
+  "languageVariant": "Variante de langue",
+  "lastAdded": "Derniers ajouts",
+  "lastChapter": "Dernier chapitre",
+  "later": "Plus tard",
+  "latest": "Le plus récent",
+  "latestManga": "Derniers mangas",
+  "layout": "Mise en page",
+  "layoutStyle": "Style de mise en page",
+  "leaderboard": "Classement",
+  "learnHowToFormatYourComments": "Apprendre à formater vos commentaires",
+  "leftSide": "Côté gauche",
+  "letterSpacing": "Espacement des lettres",
+  "levelProgress": "Progression du niveau",
+  "libraryLabel": "Bibliothèque",
+  "librarySettings": "Paramètres de la bibliothèque",
+  "libraryStatistics": "Statistiques de la bibliothèque",
+  "lightness": "Luminosité",
+  "likedBy": "Aimé par",
+  "lineHeight": "Hauteur de ligne",
+  "linkAutoDetected": "Lien (détecté automatiquement)",
+  "linkCopiedToClipboard": "Lien copié dans le presse-papier !",
+  "linkHasExpiredAndEpisodeUrl": "Le lien a expiré et l'URL de l'épisode est indisponible.",
+  "linkHasExpiredAndNoAlternative": "Le lien a expiré et aucun flux alternatif n'a été trouvé.",
+  "linotteDefault": "Linotte (Par défaut)",
+  "liquidBackground": "Arrière-plan liquide",
+  "liquidMode": "Mode liquide",
+  "listEntryUpdatedSuccessfully": "Entrée de liste mise à jour avec succès !",
+  "listExporter": "Exportateur de listes",
+  "listNameAlreadyExists": "Ce nom de liste existe déjà",
+  "listOptions": "Options de liste",
+  "liveBlurIsUnavailableWhenUsing": "Le flou en temps réel n'est pas disponible avec Fluid Mesh.",
+  "livePreview": "APERÇU EN DIRECT",
+  "livePreview2": "Aperçu en direct",
+  "loadTemplate": "Charger le modèle",
+  "loadingMediaFiles": "Chargement des fichiers multimédias...",
+  "loadingMedia": "Chargement des médias...",
+  "local": "Local",
+  "localLibrary": "Bibliothèque locale",
+  "localMedia": "Médias locaux",
+  "location": "Emplacement",
+  "logCapture": "Capture de logs",
+  "logDirectory": "Répertoire des logs",
+  "logIn": "Se connecter",
+  "logInRequired": "Connexion requise",
+  "logInToCustomizeYourPush": "Connectez-vous pour personnaliser vos préférences de notifications push.",
+  "logInToJoinTheConversation": "Connectez-vous pour participer à la conversation et commenter.",
+  "logOut": "Se déconnecter",
+  "loggedInTrackingServices": "Services de suivi connectés",
+  "login": "Connexion",
+  "loginAuthTokens": "Connexion et jetons d'authentification",
+  "loginInsideTheAppRecommended": "Connexion dans l'application (Recommandé)",
+  "loginSessions": "Sessions de connexion",
+  "loginUsingYourDefaultBrowser": "Connexion via votre navigateur par défaut",
+  "loginWithToken": "Connexion avec un jeton",
+  "logoAnimation": "Animation du logo",
+  "logoName": "Nom du logo :",
+  "logs": "Logs",
+  "longPressPageActions": "Actions par appui long",
+  "makeEverythingGlassyLiquidy": "Rendre tout vitreux et liquide...",
+  "manageAnilistLists": "Gérer les listes AniList",
+  "manageCachedImagesThresholdsAndReset": "Gérer le cache d'images, les seuils et réinitialiser l'application",
+  "manageDeviceStorageAndNotificationsTo": "Gérer le stockage et les notifications pour télécharger et gérer vos médias hors ligne.",
+  "manageLogCaptureAndShareSaved": "Gérer la capture des journaux et partager les rapports enregistrés",
+  "manageMyanimelistLists": "Gérer les listes MyAnimeList",
+  "managePluginsSources": "Gérer les extensions et sources",
+  "manageSimklLists": "Gérer les listes Simkl",
+  "manageSourcesAndRepositoriesToUse": "Gérer les sources et dépôts pour exploiter tout le potentiel de l'application",
+  "manageYourMyanimelistAnilistSimklAccounts": "Gérez vos comptes MyAnimeList, AniList et Simkl !",
+  "management": "Gestion",
+  "manga": "Manga",
+  "mangaNovelReaderSettingsTapZones": "Paramètres de lecture manga et roman, zones tactiles",
+  "mangaNovelViewerSettingsTapZones": "Paramètres d'affichage manga et roman, zones tactiles",
+  "mangaAndNovelReaderStylesAnd": "Styles et zones tactiles des lecteurs de mangas et de romans",
+  "mangaCustomLists": "Listes personnalisées de mangas",
+  "mangaDetailsPhrasing": "Libellés des détails du manga",
+  "mangaLibrary": "Bibliothèque de mangas",
+  "mangaList": "LISTE DE MANGAS",
+  "mangaScore": "Note du manga",
+  "mangaSectionOrder": "Ordre des sections manga",
+  "manuallyPasteOauthAccessToken": "Coller manuellement le jeton d'accès OAuth",
+  "markAllRead": "Tout marquer comme lu",
+  "markAsWatched": "Marquer comme vu",
+  "markdownGuide": "Guide Markdown",
+  "maximumDemuxerBufferMb": "Tampon du démultiplexeur max (Mo)",
+  "maybeLater": "Peut-être plus tard",
+  "mean": "MOYENNE",
+  "meanScore": "Score moyen",
+  "mediaPlayback": "Médias et lecture",
+  "mediaLibrary": "Bibliothèque multimédia",
+  "mediaSessionBluetoothSupport": "Session Média (Support Bluetooth)",
+  "mediaTypeBreakdown": "Répartition par type de média",
+  "mediaYouDownloadWillAppearHere": "Les médias que vous téléchargez apparaîtront ici.",
+  "megaskipDuration": "Durée du MegaSkip",
+  "mention": "Mention",
+  "mentions": "Mentions",
+  "merge": "Fusionner",
+  "messageFriend": "Envoyer un message à l'ami",
+  "minutesWatched": "Minutes visionnées",
+  "miscellaneous": "Divers",
+  "missingRuntimeHost": "Hôte d'exécution manquant",
+  "moderation": "Modération",
+  "moderationActions": "Actions de modération",
+  "moderationPanel": "Panneau de modération",
+  "moderator": "Modérateur",
+  "moreOptions": "Plus d'options",
+  "morePopularManga": "Mangas plus populaires",
+  "moveToLeft": "Déplacer vers la gauche",
+  "moveToRight": "Déplacer vers la droite",
+  "movie": "Film",
+  "mpvConfiguration": "Configuration MPV",
+  "muteUser": "Mettre l'utilisateur en sourdine",
+  "mutualConnections": "Connexions mutuelles",
+  "mutualFriends": "Amis mutuels",
+  "nameplates": "Plaques nominatives",
+  "navBarLayout": "Disposition de la barre de navigation",
+  "navBarStyle": "Style de la barre de navigation",
+  "navigationLayout": "Disposition de la navigation",
+  "needHelp": "Besoin d'aide ?",
+  "network": "Réseau",
+  "newLabel": "NOUVEAU",
+  "newCollection": "Nouvelle collection",
+  "newCustomListName": "Nom de la nouvelle liste personnalisée",
+  "newDownload": "Nouveau téléchargement",
+  "newList": "Nouvelle liste",
+  "newestFirst": "Plus récents en premier",
+  "nextRelease": "Prochaine sortie",
+  "nextReleasePrediction": "Prévision de la prochaine sortie",
+  "noActiveDownloads": "Aucun téléchargement en cours",
+  "noActiveSourceOrMediaFound": "Aucune source ou média actif trouvé",
+  "noActiveSourceSelected": "Aucune source active sélectionnée",
+  "noActivity": "Aucune activité",
+  "noAnimeFound": "Aucun anime trouvé",
+  "noAudioTracksAvailable": "Aucune piste audio disponible",
+  "noChaptersFound": "Aucun chapitre trouvé",
+  "noChaptersFound2": "Aucun chapitre trouvé",
+  "noCommonGenres": "Aucun genre en commun",
+  "noCommonTags": "Aucun tag en commun",
+  "noContributorsFound": "Aucun contributeur trouvé.",
+  "noCustomListsAvailable": "Aucune liste personnalisée disponible.",
+  "noCustomListsYet": "Aucune liste personnalisée pour le moment",
+  "noCustomListsYet2": "Aucune liste personnalisée pour le moment.",
+  "noDataAvailableForThisSection": "Aucune donnée disponible pour cette section",
+  "noDataAvailable": "Aucune donnée disponible.",
+  "noDecadeBreakdownAvailable": "Aucune répartition par décennie disponible",
+  "noDescriptionAvailable": "Aucune description disponible",
+  "noDownloadedChaptersFoundForThis": "Aucun chapitre téléchargé trouvé pour ce manga",
+  "noDownloadedEpisodesFoundForThis": "Aucun épisode téléchargé trouvé pour cet anime",
+  "noEntriesFound": "Aucune entrée trouvée",
+  "noEpisodesFound": "Aucun épisode trouvé",
+  "noExtensionManagersFound": "Aucun gestionnaire d'extensions trouvé.",
+  "noExtensionsFound": "Aucune extension trouvée",
+  "noExtensionsInstalled": "Aucune extension installée",
+  "noGenresAvailableAnilistApiMay": "Aucun genre disponible. L'API d'AniList est peut-être temporairement indisponible.",
+  "noHiddenTabs": "Aucun onglet masqué",
+  "noInsightsAvailableYetAddItems": "Aucune statistique disponible. Ajoutez des éléments à votre bibliothèque !",
+  "noItemsInThisLibrary": "Aucun élément dans cette bibliothèque.",
+  "noLoggedStatsYetStartWatching": "Aucune stat enregistrée. Commencez à regarder/lire !",
+  "noMediaFilesFound": "Aucun fichier multimédia trouvé",
+  "noMediaFoundForThisStudio": "Aucun média trouvé pour ce studio",
+  "noMediaInThisList": "Aucun média dans cette liste.",
+  "noMoreActivities": "Plus aucune activité",
+  "noMoreRecommendations": "Plus aucune recommandation",
+  "noMoreUsers": "Plus aucun utilisateur",
+  "noNotificationsYet": "Aucune notification pour le moment",
+  "noNovelExtensionsInstalledToRead": "Aucune extension de roman installée pour lire celui-ci.",
+  "noPendingReports": "Aucun signalement en attente",
+  "noPlayableStreamAvailableForThis": "Aucun flux lisible disponible pour cet épisode.",
+  "noPlayableStreamWasReturnedBy": "Aucun flux lisible n'a été renvoyé par cette source.",
+  "noRecentActivityFoundForSelected": "Aucune activité récente trouvée pour les filtres sélectionnés",
+  "noRecommendationsFound": "Aucune recommandation trouvée",
+  "noRecommendationsYet": "Aucune recommandation pour le moment",
+  "noReleasesFound": "Aucune sortie trouvée.",
+  "noRepliesYetBeTheFirst": "Aucune réponse. Soyez le premier !",
+  "noRepositoriesYet": "Aucun dépôt pour le moment",
+  "noResult": "Aucun résultat",
+  "noResultsFound": "Aucun résultat trouvé.",
+  "noResultsYet": "Aucun résultat pour le moment",
+  "noResultsTrySearchingByTitle": "Aucun résultat. Essayez de rechercher par titre.",
+  "noSearchResults": "Aucun résultat de recherche",
+  "noServersAvailable": "Aucun serveur disponible",
+  "noServersFound": "Aucun serveur trouvé.",
+  "noServicesAvailable": "Aucun service disponible",
+  "noSourceInstalled": "Aucune source installée",
+  "noSourceSelected": "Aucune source sélectionnée",
+  "noSourcesFound": "Aucune source trouvée",
+  "noStatsAvailable": "Aucune statistique disponible",
+  "noSubtitleTracksAvailable": "Aucune piste de sous-titres disponible",
+  "noTestsRunning": "Aucun test en cours",
+  "noThemesYet": "Aucun thème pour le moment",
+  "noTrackingServiceConnected": "Aucun service de suivi connecté",
+  "noUsersFound": "Aucun utilisateur trouvé",
+  "noVisibleTabs": "Aucun onglet visible",
+  "noVisualsFoundForThisAnime": "Aucun visuel trouvé pour cet anime (╥﹏╥)",
+  "noWatchOrderFound": "Aucun ordre de visionnage trouvé.",
+  "notNow": "Pas maintenant",
+  "notSupported": "Non pris en charge",
+  "notTracked": "Non suivi",
+  "noteAddingKotatsuRepositoryWillTake": "Remarque : L'ajout du dépôt Kotatsu prendra au moins 1 à 2 minutes car il doit télécharger et convertir le plugin d'extension lors du premier chargement.",
+  "nothingDownloadedYet": "Rien téléchargé pour le moment",
+  "nothingToPreview": "Rien à prévisualiser",
+  "nothingToPreviewYet": "Rien à prévisualiser pour le moment.",
+  "notificationPreferences": "Préférences de notification",
+  "notifications": "Notifications",
+  "notifyForOfficialAnnouncementsAndApp": "Notifier pour les annonces officielles et les mises à jour de l'application",
+  "notifyIfYourCommentIsRemoved": "Notifier si votre commentaire est supprimé par un modérateur",
+  "notifyOnNewCommentsForMedia": "Notifier lors de nouveaux commentaires sur les médias dont vous avez discuté",
+  "notifyOnUpvotesAndDownvotes": "Notifier en cas de votes positifs et négatifs",
+  "notifyOnWarningsPinnedCommentsOr": "Notifier en cas d'avertissements, de commentaires épinglés ou de verrouillage de fil",
+  "notifyWhenSomeoneMentionsYourUsername": "Notifier lorsqu' quelqu'un mentionne votre nom d'utilisateur avec @",
+  "notifyWhenSomeoneRepliesToYour": "Notifier en cas de réponse à votre commentaire",
+  "novel": "Roman",
+  "novelCustomLists": "Listes personnalisées de romans",
+  "novelDetailsPhrasing": "Formulation des détails du roman",
+  "novelFontFamily": "Police du roman",
+  "novelLibrary": "Bibliothèque de romans",
+  "novelSnapshots": "Captures de romans",
+  "novelTheme": "Thème du roman",
+  "novels": "Romans",
+  "numberOfActiveDownloadTasks": "Nombre de tâches de téléchargement actives",
+  "numberOfParallelChunksPerDownload": "Nombre de blocs parallèles par téléchargement",
+  "okay": "OK",
+  "oldestFirst": "Les plus anciens d'abord",
+  "oledMode": "Mode OLED",
+  "onMyList": "Dans ma liste",
+  "oneOptionPerLineLikeHwdec": "Une option par ligne, ex. hwdec=auto ou scale=ewa_lanczossharp. Les lignes commençant par # sont des commentaires. Les profils entre [crochets] sont ignorés.",
+  "online": "En ligne",
+  "openCloset": "Ouvrir la garde-robe",
+  "openInBrowser": "Ouvrir dans le navigateur",
+  "openSettings": "Ouvrir les paramètres",
+  "openSource": "Open Source",
+  "openSupportedLinks": "Ouvrir les liens pris en charge",
+  "openTheDownloadsScreenFromThe": "Ouvrir l'écran des téléchargements depuis le menu",
+  "openVideoStreamInExternalPlayer": "Ouvrir le flux vidéo dans le lecteur externe par défaut",
+  "openWebview": "Ouvrir la WebView",
+  "openingsEndings": "Openings et Endings",
+  "openslEsNativeAudioEngine": "Moteur audio natif OpenSL ES",
+  "options": "OPTIONS",
+  "order": "TRI",
+  "originalSize": "Taille d'origine",
+  "otakuRankLevel": "Niveau de rang Otaku",
+  "other": "Autre",
+  "otherFeatures": "Autres fonctionnalités",
+  "otherRecommendations": "Autres recommandations",
+  "otherStuffs": "Autres éléments",
+  "otherTemporaryFiles": "Autres fichiers temporaires",
+  "otherWaysToSupport": "Autres façons de soutenir",
+  "others": "Autres",
+  "outlineType": "Type de contour",
+  "overscroll": "Défilement élastique",
+  "overscrollToPrevNextChapter": "Défiler vers le chapitre précédent/suivant",
+  "overview": "Aperçu",
+  "overwrite": "Remplacer",
+  "pageAnimationDemo": "Démo d'animation de page",
+  "pageReaderMode": "Mode de lecture par page",
+  "paged": "Par page",
+  "palette": "Palette",
+  "palettes": "Palettes",
+  "paragraphSpacing": "Espacement des paragraphes",
+  "parallelSegmentsForVideoDownloader": "Segments parallèles pour le téléchargeur de vidéo",
+  "password": "Mot de passe",
+  "passwordProtectBackup": "Protéger la sauvegarde par mot de passe",
+  "passwordRequired": "Mot de passe requis",
+  "passwordsDontMatch": "Les mots de passe ne correspondent pas !",
+  "pasteCustomImageUrl": "Coller l'URL d'image personnalisée...",
+  "pasteUrlHere": "Coller l'URL ici...",
+  "pathCopiedToClipboard": "Chemin copié dans le presse-papiers",
+  "payViaAnyUpiApp": "Payer via n'importe quelle application UPI",
+  "paypalDonation": "Don PayPal",
+  "paypalRecipientNotice": "Avis au destinataire PayPal",
+  "penaltyDuration": "Durée de la pénalité",
+  "performance": "Performance",
+  "permissionsRequired": "Autorisations requises",
+  "persistentPageIndicator": "Indicateur de page persistant",
+  "personalizeTheLookAndMakeIt": "Personnalisez l'apparence à votre goût",
+  "personalizedRecommendations": "Recommandations personnalisées",
+  "platform": "Plateforme",
+  "playAroundWithAppTheme": "Personnalisez le thème de l'application",
+  "playAroundWithTheVideoPlayer": "Explorez les paramètres du lecteur vidéo",
+  "playback": "Lecture",
+  "playbackSpeed": "Vitesse de lecture",
+  "playbackSpeeds": "Vitesses de lecture",
+  "player": "Lecteur",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Commandes du lecteur, sous-titres et préférences de lecture",
+  "playerSettings": "Paramètres du lecteur",
+  "playerTheme": "Thème du lecteur",
+  "playerThemes": "Thèmes du lecteur",
+  "pleaseChooseALogoFile": "Veuillez choisir un fichier de logo.",
+  "pleaseEnterAPasswordOrDisable": "Veuillez entrer un mot de passe ou désactiver la protection par mot de passe.",
+  "pleaseEnterASearchTerm": "Veuillez entrer un terme de recherche",
+  "pleaseEnterAUsernameToCompare": "Veuillez entrer un nom d'utilisateur à comparer.",
+  "pleaseGrantStoragePermissionToBrowse": "Veuillez accorder l'autorisation de stockage pour parcourir vos fichiers multimédias",
+  "pleaseLoginFirst": "Veuillez d'abord vous connecter",
+  "pleaseLoginFirstToExportYour": "Veuillez d'abord vous connecter pour exporter votre liste.",
+  "pleaseLoginToFavorite": "Veuillez vous connecter pour ajouter aux favoris !",
+  "pleaseLoginToUseThisFilter": "Veuillez vous connecter pour utiliser ce filtre !",
+  "pleaseProvideAReasonForThis": "Veuillez fournir une raison pour cette action",
+  "pleaseRestartTheAppToApply": "Veuillez redémarrer l'application pour appliquer les modifications.",
+  "pleaseSelectABackupFileFirst": "Veuillez d'abord sélectionner un fichier de sauvegarde",
+  "pleaseSelectAValidApkFile": "Veuillez sélectionner un fichier APK valide.",
+  "pleaseSelectAValidJarFile": "Veuillez sélectionner un fichier JAR valide.",
+  "pleaseSelectAtLeastOneItem": "Veuillez sélectionner au moins un élément à sauvegarder.",
+  "pleaseSelectAtLeastOneItemTo": "Veuillez sélectionner au moins un élément à restaurer.",
+  "pleaseWriteAtLeast30Characters": "Veuillez écrire au moins 30 caractères",
+  "pluginInstallationSync": "Installation et synchronisation des extensions",
+  "pluginIsAlreadyUpToDate": "L'extension est déjà à jour.",
+  "pluginJarCopiedPleaseRestartThe": "Fichier JAR de l'extension copié. Veuillez redémarrer l'application.",
+  "pluginNotInstalled": "Extension non installée",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "Extension retéléchargée avec succès. Veuillez redémarrer pour appliquer.",
+  "pluginReDownloadedPleaseRestartThe": "Extension retéléchargée. Veuillez redémarrer l'application pour appliquer.",
+  "pluginSyncedFromLocalApk": "Extension synchronisée depuis l'APK local.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (Max 20 Mo)",
+  "popular": "Populaire",
+  "popularAnime": "Anime populaire",
+  "popularAnimes": "Animes populaires",
+  "popularManga": "Manga populaire",
+  "posterBlurMode": "Mode de flou des affiches",
+  "posterBlurScope": "Portée du flou des affiches",
+  "poweredByAnimatch16PointCompatibility": "Propulsé par l'analyse de compatibilité en 16 points d'AniMatch dans AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Propulsé par Commentum v2 - Système de commentaires avancé avec modération",
+  "preferences": "Préférences",
+  "preferencesSystem": "Préférences et système",
+  "preferredSubtitleLanguage": "Langue des sous-titres préférée",
+  "preparingImageToShare": "Préparation de l'image à partager...",
+  "preparingStream": "Préparation du flux",
+  "presetProviders": "FOURNISSEURS PRÉCONFIGURÉS",
+  "preventScreenFromSleeping": "Empêcher la mise en veille de l'écran",
+  "preview": "Aperçu",
+  "previewUpper": "APERÇU",
+  "privacySafety": "Confidentialité et sécurité",
+  "privacySettingsAndSafetyFeatures": "Paramètres de confidentialité et sécurité",
+  "private": "Privé",
+  "privateEntry": "Entrée privée",
+  "profileEffects": "Effets de profil",
+  "profileIcon": "Icône de profil",
+  "progress": "Progression",
+  "progressHistory": "Progression et historique",
+  "proposeNewFeaturesReportBugsAnd": "Proposer de nouvelles fonctionnalités, signaler des bugs et discuter avec d'autres membres",
+  "protocol": "PROTOCOLE",
+  "proxy": "Proxy",
+  "proxyConfiguration": "Configuration du proxy",
+  "pulseaudioSoundServer": "Serveur audio PulseAudio",
+  "queryRemoteRepositoryForAddOn": "Interroger le dépôt distant pour les mises à jour des extensions",
+  "queuedForDownload": "Mis en file d'attente pour le téléchargement",
+  "quickSelectFollowing": "Sélection rapide (abonnements)",
+  "radiusMultiplier": "Multiplicateur de rayon",
+  "random": "Aléatoire",
+  "range": "Plage",
+  "rank": "Rang",
+  "rating": "Évaluation",
+  "reDownloadAndReinstallThePlugin": "Retélécharger et réinstaller l'extension à zéro",
+  "read": "Lire",
+  "readArticle": "Lire l'article",
+  "readLatestUpdatesAboutThisAnime": "Lire les dernières actualités sur cet anime",
+  "readLatestUpdatesAboutThisManga": "Lire les dernières actualités sur ce manga",
+  "readOnePageAtATime": "Lire une page à la fois",
+  "readAheadDurationInMinutes": "Durée de prélecture en minutes",
+  "readaheadSeconds": "Secondes de prélecture",
+  "reader": "Lecteur",
+  "readerBackgroundOpacity": "Opacité de l'arrière-plan du lecteur",
+  "readerControlTheme": "Thème des contrôles de lecture",
+  "readerPreferences": "Préférences de lecture",
+  "readerSettings": "Paramètres de lecture",
+  "readingDirection": "Sens de lecture",
+  "readingLayout": "Mise en page de lecture",
+  "readingManga": "Lecture de manga",
+  "readingMangaPhrasing": "Formulation de lecture de manga",
+  "readingNovel": "Lecture de roman",
+  "readingNovelPhrasing": "Formulation de lecture de roman",
+  "realTime4kUpscalingForAnime": "Mise à l'échelle 4K en temps réel pour l'anime",
+  "reason": "Raison",
+  "reasonDeleted": "Raison supprimée.",
+  "reasonUpdated": "Raison mise à jour !",
+  "recentActivity": "Activité récente",
+  "recentMediaComments": "Commentaires récents sur les médias",
+  "recentNews": "Actualités récentes",
+  "recentSearches": "Recherches récentes",
+  "recentlyCompleted": "Récemment terminé",
+  "recentlyUpdated": "Récemment mis à jour",
+  "recommend": "Recommander",
+  "recommendationSubmitted": "Recommandation envoyée ! 🎉",
+  "recommended": "Recommandé",
+  "recommendedAnime": "Animes recommandés",
+  "recommendedBy": "Recommandé par",
+  "recommendedManga": "Mangas recommandés",
+  "recommendedNovels": "Romans recommandés",
+  "reduceColorBandingArtifacts": "Réduire les artefacts de dégradé",
+  "refreshComments": "Actualiser les commentaires",
+  "refreshRate": "Fréquence de rafraîchissement",
+  "relations": "Relations",
+  "releaseDate": "Date de sortie",
+  "releaseYear": "Année de sortie",
+  "releaseYearStats": "Statistiques par année de sortie",
+  "rememberMyChoice": "Se souvenir de mon choix",
+  "rememberServer": "Mémoriser le serveur",
+  "removalRequestSentToAdminsFor": "Demande de suppression envoyée aux administrateurs pour examen.",
+  "remove": "Supprimer",
+  "removeBanner": "Supprimer la bannière",
+  "removeDecoration": "Supprimer la décoration",
+  "removeEffect": "Supprimer l'effet",
+  "removeFromHistory": "Retirer de l'historique",
+  "removeItems": "Supprimer les éléments",
+  "removeNameplate": "Supprimer la plaque nominative",
+  "removeTheme": "Supprimer le thème",
+  "removeWhiteBlackBorders": "Supprimer les bordures blanches/noires",
+  "removeYourReason": "Supprimer votre motif ?",
+  "rename": "Renommer",
+  "renameList": "Renommer la liste",
+  "reorderNavigationTabs": "Réorganiser les onglets de navigation",
+  "replaceExistingDataOnThisDevice": "Remplacer les données existantes sur cet appareil par la sauvegarde",
+  "replay": "Rejouer",
+  "reportsQueue": "File d'attente des signalements",
+  "repositories": "Dépôts",
+  "repositoryUrl": "URL du dépôt",
+  "repositoryUrlUpper": "URL DU DÉPÔT",
+  "requests": "Requêtes",
+  "requiredForCoreAndVisualTuning": "Requis pour les réglages du noyau et visuels. À désactiver sur les appareils d'entrée de gamme.",
+  "reset": "Réinitialiser",
+  "resetUpper": "RÉINITIALISER",
+  "resetDownloadPath": "Réinitialiser le chemin de téléchargement",
+  "resetNovelReaderSettings": "Réinitialiser les paramètres du lecteur de roman",
+  "resetToDefault": "Réinitialiser par défaut",
+  "resetToDefault2": "Réinitialiser par défaut",
+  "resetToDefaultPicture": "Réinitialiser l'image par défaut",
+  "resetToDefaultWallpaper": "Réinitialiser le fond d'écran par défaut !",
+  "resizeMode": "Mode de redimensionnement",
+  "resizeModes": "Modes de redimensionnement",
+  "resolution": "Résolution",
+  "resolve": "Résoudre",
+  "restartTheAppToApplyThe": "Red insérez l'application pour appliquer la mise à jour.",
+  "restoreAllNovelReaderDefaults": "Rétablir tous les paramètres par défaut du lecteur",
+  "restoreData": "Restaurer les données",
+  "restorePreview": "Restaurer l'aperçu",
+  "restoreToDefaultInternalStorage": "Restaurer le stockage interne par défaut",
+  "restoringWillOverwriteYourSelectedLocal": "La restauration écrasera les éléments de votre bibliothèque locale et vos paramètres sélectionnés avec le contenu de cette sauvegarde.",
+  "restrictMessagesToFollowing": "Restreindre les messages aux suivants",
+  "results": "Résultats",
+  "resultsWillAppearGroupedByExtension": "Les résultats apparaîtront groupés par extension",
+  "retainOriginalColor": "Conserver la couleur d'origine",
+  "retry": "Réessayer",
+  "rightSide": "Côté droit",
+  "riseAndShine": "Debout et prêt",
+  "roleUpdatedSuccessfully": "Rôle mis à jour avec succès",
+  "roleAll": "Rôle : Tous",
+  "rollbackVersion": "Rétrograder la version",
+  "romajiTitle": "Titre en rōmaji",
+  "roundUpScores": "Arrondir les notes à l'entier supérieur",
+  "runtimeHost": "Hôte d'exécution",
+  "runtimeHostReleases": "Versions de l'hôte d'exécution",
+  "runtimeHostRequired": "Hôte d'exécution requis",
+  "safetyFeatures": "Fonctions de sécurité :",
+  "saturation": "Saturation",
+  "sauceSearcher": "Recherche de source",
+  "save": "Enregistrer",
+  "saveEquip": "Enregistrer et équiper",
+  "saveChanges": "Enregistrer les modifications",
+  "saveChanges2": "Enregistrer les modifications",
+  "saveLastFrame": "Enregistrer la dernière image",
+  "saveLogo": "Enregistrer le logo",
+  "savedAnimeEntriesAndProgress": "Entrées d'anime et progression enregistrées",
+  "savedLightNovelsAndReadingState": "Light novels et état de lecture enregistrés",
+  "savedMangaEntriesAndChapters": "Entrées de manga et chapitres enregistrés",
+  "savedStreamLinkHasExpiredFetching": "Le lien de diffusion a expiré. Récupération d'un nouveau lien...",
+  "savesAScreenshotOfTheLast": "Enregistre une capture d'écran de la dernière image regardée. Désactiver cette option réduit considérablement l'espace de stockage utilisé",
+  "scaleFactor": "Facteur d'échelle",
+  "scalingAlgorithm": "Algorithme de mise à l'échelle",
+  "scanningForMoreServers": "Recherche d'autres serveurs...",
+  "scanningForVideoStreams": "Recherche de flux vidéo...",
+  "score": "Note",
+  "scoreDistribution": "Distribution des notes",
+  "scoringSystem": "Système de notation",
+  "search": "Rechercher",
+  "searchUpper": "RECHERCHER",
+  "searchAcrossExtensions": "Rechercher dans les extensions...",
+  "searchAnimeMovies": "Rechercher animés, films...",
+  "searchAnime": "Rechercher des animés...",
+  "searchExtensions": "Rechercher des extensions",
+  "searchExtensionsEllipsis": "Rechercher des extensions...",
+  "searchFailed": "Échec de la recherche",
+  "searchForAnime": "Rechercher un animé",
+  "searchInHistory": "Rechercher dans l'historique...",
+  "searchInLibrary": "Rechercher dans la bibliothèque...",
+  "searchItemsInList": "Rechercher des éléments dans la liste...",
+  "searchManga": "Rechercher un manga...",
+  "searchQuery": "Requête de recherche",
+  "searchSources": "Rechercher des sources...",
+  "searchTags": "Rechercher des tags...",
+  "searchUser": "Rechercher un utilisateur",
+  "searchingDatabase": "Recherche dans la base de données...",
+  "searching": "Recherche...",
+  "season": "Saison",
+  "seasons": "Saisons",
+  "secondsPerScreenLowerIsFaster": "Secondes par écran (plus bas = plus rapide)",
+  "secondsPerScreenPageLowerIs": "Secondes par écran/page (plus bas = plus rapide)",
+  "securityEncryption": "Sécurité et chiffrement",
+  "seePeopleWhoContributedToAnymex": "Voir les contributeurs d'AnymeX",
+  "selectAFolderWhereAnymexWill": "Sélectionnez un dossier où AnymeX enregistrera vos épisodes d'anime et chapitres de manga téléchargés.",
+  "selectAnAnimeScreenshotToFind": "Sélectionnez une capture d'écran d'anime pour trouver sa source",
+  "selectAnilistMyanimelistSimklOrExtensions": "Sélectionnez le mode AniList, MyAnimeList, Simkl ou Extensions",
+  "selectDataToIncludeInThis": "Sélectionnez les données à inclure dans cette sauvegarde",
+  "selectDirectory": "Sélectionner le répertoire",
+  "selectExtensions": "Sélectionner les extensions",
+  "selectFolder": "Sélectionner le dossier",
+  "selectLanguage": "Sélectionner la langue",
+  "selectMediaDirectory": "Sélectionner le répertoire multimédia",
+  "selectNovelSource": "Sélectionner la source de roman",
+  "selectProfile": "SÉLECTIONNER UN PROFIL",
+  "selectRange": "Sélectionner la plage",
+  "selectServer": "Sélectionner le serveur",
+  "selectStatus": "Sélectionner le statut",
+  "selectSubtitleFont": "Sélectionner la police des sous-titres",
+  "selectTags": "SÉLECTIONNER LES TAGS",
+  "selectTimezone": "Sélectionner le fuseau horaire",
+  "selectVersionToRollback": "Sélectionner la version à rétablir",
+  "selectVideoFile": "Sélectionner le fichier vidéo",
+  "selectYourPreferredContentSource": "Sélectionnez votre source de contenu préférée",
+  "selectedCacheCleared": "Cache sélectionné vidé",
+  "selectedItemsRemoved": "Éléments sélectionnés supprimés",
+  "sensitiveLoginTokensForMalSimkl": "Jetons de connexion sensibles pour MAL, Simkl et AniList",
+  "sensitiveSessionTokensForMalSimkl": "Jetons de session sensibles pour MAL, Simkl et AniList",
+  "separateCompletedAnimeListIntoSections": "Séparer la liste d'animes terminés en sections par format.",
+  "separateCompletedMangaListIntoSections": "Séparer la liste de mangas terminés en sections par format.",
+  "serverDetails": "DÉTAILS DU SERVEUR",
+  "serverChanIsTakingANap": "Server-chan fait une sieste !",
+  "setUpYourPreferencesForThe": "Configurez vos préférences pour une meilleure expérience",
+  "settings": "Paramètres",
+  "settingsAccount": "Paramètres et compte",
+  "settingsAuthentication": "Paramètres et authentification",
+  "settingsSavedSuccessfully": "Paramètres enregistrés avec succès.",
+  "shaderProfilesInitialized": "Profils de shader initialisés",
+  "shadowBanUser": "Bannir furtivement l'utilisateur",
+  "shareLogs": "Partager les journaux",
+  "shareMatchCard": "Partager la carte de correspondance",
+  "shareProfile": "Partager le profil",
+  "shareTheSavedLogFileOr": "Partagez le fichier journal enregistré ou copiez son contenu.",
+  "sharedFromAnymex": "Partagé depuis AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Afficher des superpositions d'effets animés sur les bannières de profil",
+  "showAnimatedFramesAroundUserAvatars": "Afficher des cadres animés autour des avatars utilisateur",
+  "showBatteryTime": "Afficher la batterie et l'heure",
+  "showChapterTransitionEvenWithoutGaps": "Afficher la transition de chapitre même sans interruption",
+  "showCommunityRecommendations": "Afficher les recommandations de la communauté",
+  "showContinueWatchingCard": "Afficher la carte Continuer à regarder",
+  "showContinueWatchingOnHome": "Afficher Continuer à regarder à l'accueil",
+  "showCustomProfileBannersFallsBack": "Afficher les bannières de profil personnalisées (utilise la couverture AniList si désactivé)",
+  "showNameplateBackgroundsOnCommentCards": "Afficher les arrière-plans de plaques sur les cartes de commentaires et le classement",
+  "showOnLeft": "Afficher à gauche",
+  "showOnRight": "Afficher à droite",
+  "showReadingProgress": "Afficher la progression de lecture",
+  "showTimestamps": "Afficher les horodatages",
+  "simpleCompactListView": "Vue liste compacte simple",
+  "simpleDirectmediaLayerAudioOutput": "Sortie audio Simple DirectMedia Layer",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Mise en page simple affichant le numéro, le titre et la progression de l'épisode sans vignette",
+  "sizeMode": "Mode de taille :",
+  "smartMangaSuggestions": "Suggestions de mangas intelligentes",
+  "smootherMotionCanIncreaseGpuUsage": "Mouvement plus fluide, peut augmenter l'utilisation du GPU",
+  "social": "Social",
+  "somethingWentWrong": "Un problème est survenu",
+  "sort": "TRIER",
+  "sort2": "Trier",
+  "sortBy": "TRIER PAR",
+  "sortBy2": "Trier par",
+  "sortComments": "Trier les commentaires",
+  "source": "Source",
+  "sourceAndPluginConfigurations": "Configurations des sources et des plugins",
+  "sourcePreferences": "Préférences des sources",
+  "spaceBetweenLetters": "Espacement des lettres",
+  "spaceBetweenParagraphs": "Espacement des paragraphes",
+  "spaceBetweenWords": "Espacement des mots",
+  "spacedPages": "Pages espacées",
+  "splitCompletedAnimeList": "Séparer la liste des animes terminés",
+  "splitCompletedMangaList": "Séparer la liste des mangas terminés",
+  "spoiler": "Divulgâcheur",
+  "spoilerTapToReveal": "Divulgâcheur (appuyer pour afficher)",
+  "staff": "Équipe",
+  "staffCharacterNameLanguage": "Langue des noms de l'équipe et des personnages",
+  "standardGpuRendering": "Rendu GPU standard",
+  "starOnGithub": "Mettre une étoile sur GitHub",
+  "startANewDownloadFromThe": "Commencer un nouveau téléchargement depuis l'onglet \"Nouveau téléchargement\"",
+  "startChapter": "Chapitre de début",
+  "startDate": "Date de début",
+  "startMangaDownload": "Lancer le téléchargement du manga",
+  "startTest": "Lancer le test",
+  "startingExtensionRuntime": "Démarrage du moteur d'extension...",
+  "statistics": "Statistiques",
+  "stats": "Stats",
+  "status": "Statut",
+  "statusDistribution": "Distribution des statuts",
+  "statusPostedSuccessfully": "Statut publié avec succès !",
+  "stayUpdatedWithTheLatestReleases": "Restez informé des dernières sorties, annonces et discussions",
+  "storagePath": "Stockage et chemin",
+  "storageManager": "Gestionnaire de stockage",
+  "storageOptions": "Options de stockage",
+  "storagePermission": "Autorisation de stockage",
+  "storagePermissionIsRequiredToDownload": "L'autorisation de stockage est requise pour télécharger les mises à jour",
+  "storagePermissionRequired": "Autorisation de stockage requise",
+  "streakCurLong": "Série (Actuelle/Max)",
+  "stretchImagesToFitScreenWidth": "Étirer les images pour ajuster la largeur de l'écran",
+  "strikethrough": "Barré",
+  "studios": "Studios",
+  "style": "STYLE",
+  "subtitleBackgroundColor": "Couleur d'arrière-plan des sous-titres",
+  "subtitleColor": "Couleur des sous-titres",
+  "subtitleFont": "Police des sous-titres",
+  "subtitleOutlineColor": "Couleur de contour des sous-titres",
+  "subtitleOutlineWidth": "Épaisseur du contour des sous-titres",
+  "subtitlePreview": "Aperçu des sous-titres",
+  "subtitlePreviewText": "Texte d'aperçu des sous-titres",
+  "subtitleSize": "Taille des sous-titres",
+  "subtitleTransparency": "Transparence des sous-titres",
+  "subtitles": "Sous-titres",
+  "summary": "Résumé",
+  "superAdmin": "Super Admin",
+  "supportTtfAndOtfFiles": "Prend en charge les fichiers .ttf et .otf",
+  "supportAnymex": "Soutenir AnymeX",
+  "supportedModes": "Modes pris en charge",
+  "supportedUpiApps": "Applications UPI prises en charge",
+  "suppressActivityWhenWatchingOrReading": "Masquer l'activité lors du visionnage ou de la lecture de contenu NSFW",
+  "swapUpDownActions": "Inverser les actions haut/bas",
+  "swipeBetweenChapters": "Glisser entre les chapitres",
+  "swipeIndicatorTheme": "Thème de l'indicateur de balayage",
+  "swipeToSeek": "Balayer pour avancer/reculer",
+  "switchBetweenDefaultTitleAndRomaji": "Basculer entre le titre par défaut et le romaji/titre alternatif dans la bibliothèque et les cartes",
+  "switchToOnline": "Passer en ligne",
+  "syncCompletedButThePluginIs": "Synchronisation terminée, mais le plugin n'est pas encore prêt.",
+  "syncDetails": "Détails de la synchronisation",
+  "syncFailed": "Échec de la synchronisation",
+  "synonyms": "Synonymes",
+  "synopsis": "Synopsis",
+  "tags": "TAGS",
+  "tags2": "Tags",
+  "takeColorFromYourWallpaperA12": "Extraire les couleurs du fond d'écran (A12+)",
+  "tapToAddARepositoryUrl": "Appuyez sur + pour ajouter une URL de dépôt",
+  "tapAZoneToChangeIts": "Appuyez sur une zone pour modifier son action",
+  "tapAction": "Action au toucher",
+  "tapToChooseASource": "Appuyez pour choisir une source",
+  "tapToLogin": "Appuyez pour vous connecter",
+  "tapToLogout": "Appuyez pour vous déconnecter",
+  "tapToScroll": "Appuyez pour faire défiler",
+  "tapYourProfileIconInThe": "Appuyez sur l'icône de votre profil dans la barre supérieure",
+  "tapZones": "Zones tactiles",
+  "tellTheCommunityWhyThisDeserves": "Dites à la communauté pourquoi cela mérite plus d'attention.",
+  "temporaryAppCache": "Cache temporaire de l'application",
+  "termsOfServicePrivacyPolicy": "Conditions d'utilisation / Politique de confidentialité",
+  "test": "Tester",
+  "testExtensions": "Tester les extensions",
+  "testResults": "Résultats des tests",
+  "testType": "Type de test",
+  "textSize": "Taille du texte",
+  "theme": "Thème",
+  "themeLayoutAndColors": "Thème, disposition et couleurs",
+  "themes": "Thèmes",
+  "thisBackupIsEncryptedPleaseEnter": "Cette sauvegarde est chiffrée. Veuillez entrer le mot de passe pour continuer.",
+  "thisDirectoryContainsNoSupportedMedia": "Ce répertoire ne contient aucun fichier média pris en charge",
+  "thisMayTakeAFewSeconds": "Cela peut prendre quelques secondes",
+  "thisMayTakeUpTo30": "Cela peut prendre jusqu'à 30 secondes",
+  "thisMightTakeAFewSeconds": "Cela peut prendre quelques secondes",
+  "thisReasonWillBeDeletedImmediately": "Cette raison sera supprimée immédiatement.",
+  "thisWillPermanentlyDeleteAllData": "Cela supprimera définitivement toutes les données stockées par AnymeX. Cette action est irréversible.",
+  "tipYouCanCombineTheseE": "Astuce : Vous pouvez les combiner ! Ex : **gras et *italique* ensemble**",
+  "title": "Titre",
+  "titleCopied": "Titre copié",
+  "titleLanguage": "Langue du titre",
+  "toDownloadForTheFirstTime": "Pour télécharger pour la première fois, accordez d'abord les autorisations en visitant la page des Téléchargements :",
+  "toggleBetweenGridAndDetailedList": "Basculer entre la grille et la liste détaillée",
+  "toneMapping": "Mappage des tons",
+  "topAnime": "Top Anime",
+  "topComments": "Meilleurs commentaires",
+  "topGenres": "Principaux genres",
+  "topManga": "Top Manga",
+  "topManhua": "Top Manhua",
+  "topManhwa": "Top Manhwa",
+  "topStudios": "Principaux studios",
+  "torrentServer": "Serveur Torrent",
+  "torrentStreamCache": "Cache de flux Torrent",
+  "torrserverStreamingAddOns": "TorrServer & extensions de streaming",
+  "totalChapters": "Total des chapitres",
+  "totalCost": "Coût total :",
+  "totalItems": "Total des éléments",
+  "track": "Suivre",
+  "trackAiringSchedules": "Suivre les plannings de diffusion",
+  "trackYourProgress": "Suivre votre progression ?",
+  "trackingServices": "Services de suivi",
+  "transitionSubtitle": "Sous-titre de transition",
+  "translateTo": "Traduire en",
+  "translationLanguage": "Langue de traduction",
+  "translucentNav": "Navigation translucide",
+  "trendingAnime": "Anime tendance",
+  "trendingAnimes": "Animes tendance",
+  "trendingManga": "Manga tendance",
+  "tryADifferentKeyword": "Essayez un autre mot-clé",
+  "tryAdjustingYourFilters": "Essayez d'ajuster vos filtres",
+  "tryAgain": "Réessayer",
+  "tryDifferentAnimationStylesForPage": "Essayer d'autres styles d'animation pour les pages",
+  "ttsAutoAdvance": "Avance automatique TTS",
+  "ttsPitch": "Hauteur TTS",
+  "ttsSpeed": "Vitesse TTS",
+  "tweakGeneralAppSettings": "Modifier les paramètres généraux de l'application",
+  "typeLabel": "Type",
+  "typeAtLeast2CharactersTo": "Tapez au moins 2 caractères pour rechercher",
+  "ui": "UI",
+  "uiComponents": "Composants UI",
+  "uiLayoutColorsAndThemes": "Mise en page, couleurs et thèmes de l'UI",
+  "uiLayoutColorsAndVisualStyles": "Mise en page, couleurs et styles visuels de l'UI",
+  "uiSettings": "Paramètres de l'UI",
+  "unableToPreparePlaybackRightNow": "Impossible de préparer la lecture pour le moment. Veuillez réessayer.",
+  "unbanUser": "Débannir l'utilisateur",
+  "unbind": "Dissocier",
+  "unifiedLibrary": "Bibliothèque unifiée",
+  "uninstall": "Désinstaller",
+  "universal": "Universel",
+  "unlock": "Déverrouiller",
+  "unlockCustomizations": "Déverrouiller les personnalisations",
+  "unmuteUser": "Rétablir le son de l'utilisateur",
+  "unreadOnly": "Non lus uniquement",
+  "upcomingAnime": "Anime à venir",
+  "update": "Mettre à jour",
+  "updateAll": "Tout mettre à jour",
+  "updateCheckComplete": "Vérification des mises à jour terminée",
+  "updateOnImport": "Mettre à jour à l'importation",
+  "updateToLatestVersion": "Mettre à jour vers la dernière version",
+  "updateYourActivity": "Mettre à jour votre activité...",
+  "updatesPending": "Mises à jour en attente",
+  "upiDonation": "Don UPI",
+  "uploadAnImageToGetStarted": "Téléchargez une image pour commencer",
+  "uploadImage": "Télécharger l'image",
+  "urlCopiedToClipboard": "URL copiée dans le presse-papiers",
+  "usage": "Utilisation :",
+  "useAiToTranslateSoftSubtitles": "Utiliser l'IA pour traduire les sous-titres logiciels en direct",
+  "useAlternateTitle": "Utiliser le titre alternatif",
+  "useBuffering": "Utiliser la mise en mémoire tampon",
+  "useCustomGesturesForReaderNavigation": "Utiliser des gestes personnalisés pour la navigation",
+  "useEnhancedEpisodeMetadataAndCovers": "Utiliser des métadonnées et des couvertures d'épisodes améliorées",
+  "useExternalPlayer": "Utiliser un lecteur externe",
+  "useKeyboardShortcutsDuringPlaybackTo": "Utiliser les raccourcis clavier pendant la lecture pour changer de profil",
+  "useLegacyHeader": "Utiliser l'en-tête classique",
+  "useLibassForSubtitles": "Utiliser Libass pour les sous-titres",
+  "useLibmpvForPlayback": "Utiliser LibMpv pour la lecture",
+  "useMpvConf": "Utiliser mpv.conf",
+  "usePosterColor": "Utiliser la couleur de l'affiche",
+  "useVolumeKeysToChangePages": "Utiliser les touches de volume pour changer de page",
+  "useYearRange": "Utiliser la plage d'années",
+  "user": "Utilisateur",
+  "userIdCopiedToClipboard": "ID utilisateur copié dans le presse-papiers",
+  "userList": "Liste des utilisateurs",
+  "userManagement": "Gestion des utilisateurs",
+  "userCreatedCustomMediaCollections": "Collections de médias personnalisées créées par l'utilisateur",
+  "username": "Nom d'utilisateur",
+  "verifyTlsCertificates": "Vérifier les certificats TLS",
+  "versionCopied": "Version copiée",
+  "vertical": "Vertical",
+  "videoPlayer": "Lecteur vidéo",
+  "videoRenderer": "Rendu vidéo",
+  "videoSync": "Synchro vidéo",
+  "viewAndFilterAllUsers": "Afficher et filtrer tous les utilisateurs",
+  "viewOnAnilist": "Voir sur AniList",
+  "viewOpeningAndEndingThemes": "Voir les thèmes d'ouverture et de fin",
+  "viewProfile": "Voir le profil",
+  "viewSourceCodeOnGithub": "Voir le code source sur GitHub.",
+  "viewTheChronologicalWatchOrderOf": "Voir l'ordre de visionnage chronologique de cet anime",
+  "viewUser": "Voir l'utilisateur",
+  "viewUserRankingsTopContributorsReputation": "Voir le classement, les contributeurs & la réputation",
+  "viewingAnimeDetails": "Affichage des détails de l'anime",
+  "viewingMangaDetails": "Affichage des détails du manga",
+  "viewingNovelDetails": "Affichage des détails du roman",
+  "visibleTabs": "Onglets visibles",
+  "visitGithubReleasesPageForChangelogs": "Visitez la page des versions GitHub pour le journal des modifications",
+  "visualFromAnymex": "Visuel d'AnymeX",
+  "voiceActors": "Acteurs vocaux",
+  "voicedCharacters": "Personnages doublés",
+  "volumeButtonScrolling": "Défilement par boutons de volume",
+  "volumeKeysNavigation": "Navigation par touches de volume",
+  "volumes": "VOLUMES",
+  "volumesRead": "Volumes lus",
+  "votes": "Votes",
+  "wWhatAreYouDoingStep": "Qu'est-ce que tu fais frérot, connecte-toi avant de faire ça (●´⌓`●)",
+  "wallpaper": "Fond d'écran",
+  "warnUser": "Avertir l'utilisateur",
+  "warning": "Avertissement",
+  "wasThisHelpful": "Cela a-t-il été utile ?",
+  "watchAd": "Regarder une publicité",
+  "watchAnAdToSupport": "Regarder une pub pour soutenir",
+  "watchAnime": "Regarder l'animé",
+  "watchOrder": "Ordre de visionnage",
+  "watchTogether": "Regarder ensemble",
+  "watchTogetherPolicy": "Politique de Regarder ensemble",
+  "watchingAnime": "Animés en cours",
+  "watchingAnimePhrasing": "Formulation pour les animés en cours",
+  "welcomeToAnymex": "Bienvenue sur AnymeX",
+  "whatsOnYourMind": "À quoi pensez-vous ?",
+  "whenEnabledAnymexSavesLogsLocally": "Lorsqu'activé, AnymeX enregistre les journaux localement jusqu'à désactivation.",
+  "whyAreYouRecommendingThisMin": "Pourquoi recommandez-vous ceci ? (min. 30 caractères)",
+  "whyIsThisUnderratedMin30": "Pourquoi c'est sous-estimé ? (min. 30 caractères)",
+  "windowsAudioSessionApi": "API de session audio Windows",
+  "wordSpacing": "Espacement des mots",
+  "writeAMessage": "Écrire un message...",
+  "writeLogToAFile": "Écrire le journal dans un fichier",
+  "writeYourAnilistBio": "Écrivez votre bio AniList...",
+  "wrongTitle": "Mauvais titre ?",
+  "year": "Année",
+  "yearUpper": "ANNÉE",
+  "you": "Vous",
+  "youCanUseDiscordStyleMarkdown": "Vous pouvez utiliser le markdown style Discord pour formater vos commentaires :",
+  "youHaveUnsentTextClosingNow": "Vous avez du texte non envoyé. Fermer maintenant effacera votre message.",
+  "youHaveUnsentTextClosingNowWill": "Vous avez du texte non envoyé. Fermer maintenant effacera votre réponse.",
+  "youHaveUnsentTextClosingNowWillLose": "Vous avez du texte non envoyé. Fermer maintenant effacera votre statut.",
+  "youNeedModeratorPermissionsToAccess": "Vous avez besoin de permissions de modérateur pour accéder à ce panneau",
+  "youreUpLate": "Vous veillez tard",
+  "yourBalance": "Votre solde :",
+  "yourPrivacyIsImportant": "Votre vie privée est importante :",
+  "yourReasonHasBeenRemoved": "Votre motif a été supprimé.",
+  "yourRecommendation": "Votre recommandation",
+  "yourRichPresenceActivityWillStop": "Votre activité Rich Presence va s'arrêter.",
+  "yourRole": "Votre rôle",
+  "yourWatchReadHistory": "Votre historique de visionnage et de lecture",
+  "yourWatchReadStatistics": "Vos statistiques de visionnage et de lecture",
+  "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "Tout votre contenu local",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "API AudioTrack Android",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "API CoreAudio Apple",
+  "areYouSure": "Êtes-vous sûr ?",
+  "aspectRatio": "Format d'image",
+  "attackOnTitan": "L'Attaque des Titans",
+  "audio": "Audio",
+  "audioSubtitles": "Audio et sous-titres",
+  "audioTrack": "Piste audio",
+  "audioTracks": "Pistes audio",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Auto (AudioTrack)",
+  "autoCoreaudio": "Auto (CoreAudio)",
+  "autoGpu": "Auto (GPU)",
+  "autoPulseaudio": "Auto (PulseAudio)",
+  "autoWasapi": "Auto (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Bloom",
+  "castToDevice": "Diffuser sur l'appareil",
+  "colorFilter": "Filtre de couleur",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS sur HTTPS",
+  "externalPlayer": "Lecteur externe",
+  "files": "Fichiers",
+  "forward": "Avancer",
+  "forward30s": "Avancer de 30 s",
+  "fullscreen": "Plein écran",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "Matériel",
+  "hwUpper": "Matériel+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Verrouiller les commandes",
+  "lockOrientation": "Verrouiller l'orientation",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodec Intégré",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Meurtre nécessaire",
+  "nextEp": "Ép. suivant",
+  "nextEpisode": "Épisode suivant",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Picture-in-Picture",
+  "playlist": "Liste de lecture",
+  "previousEpisode": "Épisode précédent",
+  "pulseaudio": "PulseAudio",
+  "quality": "Qualité",
+  "qualitySetting": "Paramètre de qualité",
+  "readingMode": "Mode lecture",
+  "reddit": "Reddit",
+  "replay30s": "Rejouer 30s",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito et Makomo",
+  "sdl": "SDL",
+  "server": "Serveur",
+  "servers": "Serveurs",
+  "shadersColorProfiles": "Shaders et profils de couleur",
+  "shadersColors": "Shaders et couleurs",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "Vitesse",
+  "sw": "SW",
+  "syncSubs": "Synchro sous-titres",
+  "syncSubtitles": "Synchroniser les sous-titres",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Le renard brun rapide saute par-dessus le chien paresseux",
+  "themeMode": "Mode du thème",
+  "thisIsFrustrating": "C'est frustrant",
+  "toYouSomeday": "Pour toi, un jour",
+  "torrentFiles": "Fichiers torrent",
+  "tracks": "Pistes",
+  "unlockOrientation": "Déverrouiller l'orientation",
+  "userAgent": "Agent utilisateur",
+  "videoQuality": "Qualité vidéo",
+  "videoServers": "Serveurs vidéo",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Regarder ensemble (dans un salon)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "0 signifie un nombre de threads automatique",
+  "n18Content": "Contenu 18+",
+  "aboveAverageSimilarity": "Similarité supérieure à la moyenne.",
+  "account": "Compte",
+  "activityStats": "Activité et stats",
+  "add": "Ajouter",
+  "additionalNotesOptional": "Notes additionnelles (optionnel)",
+  "adjustKeyVolumeScrollingSpeed": "Ajuster la vitesse de défilement des touches et du volume",
+  "alpha": "Alpha",
+  "alwaysChecksCurrentChapterNumberAnd": "Vérifie toujours le numéro du chapitre actuel et le compare avec le chapitre suivant/précédent, en naviguant uniquement lorsque le numéro est différent. Naviguer par chapitre se contentera de passer à l'élément suivant de la liste même s'il y a des doublons.",
+  "animeCompleted": "Animes terminés",
+  "announcementMode": "Mode annonce",
+  "appIsStillLoadingTryAgain": "L'application est en cours de chargement, réessayez dans uninstant.",
+  "applyAColorTintOverPages": "Appliquer une teinte de couleur sur les pages",
+  "audioDelay": "Retard audio",
+  "audioSettings": "Paramètres audio",
+  "audioTrack2": "Piste audio",
+  "autoAdvance": "Avancée auto",
+  "autoDeleteCompletedEntries": "Supprimer automatiquement les entrées terminées",
+  "autoSyncProgress": "Synchroniser auto la progression",
+  "automaticallyMoveToNextText": "Passer automatiquement au texte suivant",
+  "automaticallyScrollAdvancePages": "Faire défiler/avancer les pages automatiquement",
+  "automaticallySwitchToContinuousModeFor": "Passer automatiquement en mode continu pour les mangas en bande verticale",
+  "averageOverlap": "Chevauchement moyen.",
+  "background": "Arrière-plan",
+  "basedOnYourFavouriteAnime": "Basé sur vos animés favoris.",
+  "basedOnYourFavouriteManga": "Basé sur vos mangas favoris.",
+  "basedOnYourTop10Manga": "Basé sur vos 10 tags de manga principaux.",
+  "basedOnYourTop5Manga": "Basé sur vos 5 genres de manga principaux.",
+  "blue": "Bleu",
+  "botL": "Bas-G",
+  "botR": "Bas-D",
+  "bridgeUpdateAvailable": "Mise à jour du Bridge disponible",
+  "brightness": "Luminosité",
+  "bulletList": "Liste à puces",
+  "calendarUpper": "CALENDRIER",
+  "canadianMovies": "Films canadiens",
+  "canadianShows": "Émissions canadiennes",
+  "cannotCompareTheSameProfileWith": "Impossible de comparer le profil avec lui-même.",
+  "castToDevice2": "Diffuser sur l'appareil",
+  "chatModeration": "Modération du chat",
+  "chooseASubtitleFileFromYour": "Choisissez un fichier de sous-titres sur votre appareil (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Choisissez comment appliquer le fichier JSON sélectionné à votre gist cloud AnymeX.",
+  "chromaUpscaler": "Upscaler Chroma",
+  "cloudTools": "Outils Cloud",
+  "code": "Code",
+  "commonFavouriteAnime": "Anime favoris en commun",
+  "commonFavouriteCharacters": "Personnages favoris en commun",
+  "commonFavouriteManga": "Mangas favoris en commun",
+  "commonPerfectAnime": "Anime parfaits en commun",
+  "commonPerfectManga": "Mangas parfaits en commun",
+  "communityAdministratorOverseeingModerationAndPolicies": "Administrateur de la communauté supervisant la modération et les règles.",
+  "connectGithubFirstBeforeDeletingSync": "Connectez d'abord GitHub avant de supprimer les données de synchronisation.",
+  "connectGithubFirstToExportSync": "Connectez d'abord GitHub pour exporter la synchronisation.",
+  "connectGithubFirstToImportSync": "Connectez d'abord GitHub pour importer la synchronisation.",
+  "connectGithubFirstToSyncProgress": "Connectez d'abord GitHub pour synchroniser la progression.",
+  "connectGithubFirstToViewSync": "Connectez d'abord GitHub pour afficher le Gist de synchronisation.",
+  "continuousModeOnly2": "Mode continu uniquement",
+  "controls": "Commandes",
+  "cookiesClearedSuccessfully": "Cookies effacés avec succès",
+  "copied": "Copié",
+  "copyUrl": "Copier l'URL",
+  "correctDownscaling": "Correction de la mise à l'échelle",
+  "couldNotLoadStreamingServicesFrom": "Impossible de charger les services de streaming depuis l'API AniList.\nLe service est peut-être temporairement indisponible ou limité.",
+  "couldNotOpenGistInBrowser": "Impossible d'ouvrir le Gist dans le navigateur.",
+  "created": "Créé",
+  "creatorAndDeveloperOfAnymex": "Créateur et développeur d'AnymeX.",
+  "customBrightness": "Luminosité personnalisée",
+  "customizeGestures": "Personnaliser les gestes",
+  "deband": "Débande",
+  "debandIterations": "Itérations de débande",
+  "debandThreshold": "Seuil de débande",
+  "decreaseAutoScrollSpeed": "Diminuer la vitesse de défilement auto",
+  "decreaseFontSize": "Réduire la taille de la police",
+  "deleteAnymexSyncGist": "Supprimer le Gist de synchronisation AnymeX ?",
+  "deleteCloudGist": "Supprimer le Gist cloud",
+  "deleteCommentMod": "Supprimer le commentaire (Modo)",
+  "details": "Détails",
+  "dictionary": "Dictionnaire",
+  "differenceFromOwnMeanScore": "Écart avec la note moyenne",
+  "disableChat": "Désactiver le chat",
+  "disconnectThisGithubAccountFromAnymex": "Déconnecter ce compte GitHub d'AnymeX",
+  "displayPagesInBlackWhite": "Afficher les pages en noir et blanc",
+  "downloading": "Téléchargement…",
+  "downscaler": "Réducteur d'échelle",
+  "dynamicWidget": "Widget dynamique",
+  "eInkDisplayRefresh": "Rafraîchissement écran e-ink",
+  "eGAbc123": "ex. ABC123",
+  "eGMyAnimeLogo": "ex. Mon logo d'anime",
+  "editYourComment": "Modifier votre commentaire...",
+  "embeddedContent": "Contenu intégré",
+  "enterTheRoomPassword": "Entrer le mot de passe du salon",
+  "enterTokenHere": "Entrer le jeton ici",
+  "error": "Erreur",
+  "exitSyncNotifications": "Quitter les notifications de sync",
+  "exportGistJson": "Exporter le JSON du Gist",
+  "exportedGistJson": "JSON du Gist exporté.",
+  "failedToExportGistJson": "Échec de l'exportation du JSON du Gist.",
+  "failedToFetchDataFromSources": "Échec de la récupération des données.",
+  "failedToGetCloudGistLink": "Échec de l'obtention du lien Gist cloud.",
+  "failedToImportGistJson": "Échec de l'importation du JSON du Gist.",
+  "failedToLaunchExternalPlayer": "Échec du lancement du lecteur externe",
+  "failedToOpenGistInBrowser": "Échec de l'ouverture du Gist dans le navigateur.",
+  "flashDuration": "Durée du flash",
+  "flashEveryNPages": "Flasher toutes les N pages",
+  "flashFrequency": "Fréquence du flash",
+  "flashScreenOnPageTurnTo": "Clignoter l'écran au changement de page pour effacer l'effet fantôme",
+  "followHost": "Suivre l'hôte",
+  "fontSettings": "Paramètres de police",
+  "freedomSeek": "Recherche libre",
+  "friendsNeedAPasswordToJoin": "Un mot de passe est requis pour rejoindre",
+  "githubClientIdNotConfigured": "ID client GitHub non configuré.",
+  "githubLoginFailedMissingAuthorizationCode": "Échec de la connexion GitHub : code d'autorisation manquant.",
+  "githubLoginWasCancelledOrFailed": "La connexion GitHub a été annulée ou a échoué.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Montrez votre soutien",
+  "goodChemistryAndSharedTaste": "Bonne alchimie et goûts partagés.",
+  "grayscale": "Niveaux de gris",
+  "green": "Vert",
+  "hdrToneMappingTargetPeak": "Pic cible du mappage de tonalité HDR",
+  "higherValueIncreasesDebandingStrength": "Une valeur plus élevée augmente la force du dégradé",
+  "horizontalPadding": "Marge horizontale",
+  "hoursWatched": "Heures visionnées",
+  "howManyFriendsCanJoin": "Nombre d'amis pouvant rejoindre",
+  "ifYouHaveAnIssueOr": "si vous rencontrez un problème ou avez une suggestion, veuillez créer une issue sur GitHub.",
+  "imageWidth": "Largeur de l'image",
+  "importGistJson": "Importer le JSON Gist",
+  "importLocalSubtitle": "Importer des sous-titres locaux",
+  "improveQualityWhenScalingDownVideo": "Améliorer la qualité lors de la réduction de la vidéo",
+  "increaseAutoScrollSpeed": "Augmenter la vitesse de défilement auto",
+  "increaseFontSize": "Augmenter la taille de la police",
+  "invalidCompatibilityLinkMissingUsernames": "Lien de compatibilité invalide : noms d'utilisateur manquants.",
+  "invalidGistUrl": "URL Gist invalide.",
+  "invalidRoomCodeInLink": "Code de salon invalide dans le lien",
+  "invalidWatchTogetherLink": "Lien Watch Together invalide",
+  "invertAllPageColors": "Inverser toutes les couleurs de la page",
+  "invertColors": "Inverser les couleurs",
+  "inviteLink": "Lien d'invitation",
+  "inviteLinkCopied": "Lien d'invitation copié !",
+  "jDramas": "Dramas japonais",
+  "joinNotifications": "Notifications de rejoint",
+  "kDramas": "Dramas coréens",
+  "keepBothUploadedAndCloudEntries": "Conserver les entrées importées et cloud. Si la même entrée existe aux deux endroits, la plus récente est conservée. (Recommandé)",
+  "keyVolumeScrollingSpeed": "Vitesse de défilement (touches et volume)",
+  "koreanMovies": "Films coréens",
+  "leaveNotifications": "Notifications de départ",
+  "liveComments": "Commentaires en direct",
+  "lockScreen": "Écran de verrouillage",
+  "loginToAnilist": "Se connecter à AniList",
+  "loginToMyanimelist": "Se connecter à MyAnimeList",
+  "loginToSimkl": "Se connecter à Simkl",
+  "longPressForPageActions": "Appui long pour les actions de page",
+  "longPressAPageToSave": "Faire un appui long sur une page pour l'enregistrer, la partager ou la copier",
+  "lumaUpscaler": "Mise à l'échelle Luma",
+  "mangaCompleted": "Manga terminé",
+  "mangaPage": "Page de manga",
+  "maxMembers": "Membres max",
+  "memberLeft": "Membre parti",
+  "mergeUploadedEntriesOrReplaceCloud": "Fusionner les entrées importées ou remplacer les données du cloud",
+  "mergeWithCloud": "Fusionner avec le cloud",
+  "milliseconds": "Millisecondes",
+  "missingTypeQueryParameterUseType": "Paramètre de requête \"type\" manquant. Utilisez type=player.",
+  "missingUrlQueryParameterForThe": "Paramètre de requête \"url\" manquant pour le JSON du thème.",
+  "moreIterationsStrongerDebanding": "Plus d'itérations = lissage plus fort",
+  "movies": "Films",
+  "moviesList": "LISTE DE FILMS",
+  "navigateByNumber": "Naviguer par numéro",
+  "navigation": "Navigation",
+  "newMember": "Nouveau membre",
+  "nextChapter": "Chapitre suivant",
+  "nextParagraph": "Paragraphe suivant",
+  "noAudio": "Aucun audio",
+  "noOneCanSendMessagesIn": "Personne ne peut envoyer de messages dans le chat",
+  "noStreamUrlAvailable": "Aucune URL de flux disponible",
+  "noSubtitle": "Aucun sous-titre",
+  "noVideo": "Aucune vidéo",
+  "notVeryCompatibleAtAll": "Pas très compatible du tout.",
+  "numberedList": "Liste numérotée",
+  "onScreenOverlays": "Superpositions d'écran",
+  "onlyHostAndCoHostsCan": "Seuls l'hôte et les co-hôtes peuvent envoyer des messages",
+  "opacity": "Opacité",
+  "openInBrowser2": "Ouvrir dans le navigateur",
+  "openYourAnymexSyncGistOn": "Ouvrez votre Gist de synchronisation AnymeX sur GitHub",
+  "openingInExternalPlayer": "Ouverture dans le lecteur externe...",
+  "orTypeCustomTag": "Ou tapez un tag personnalisé...",
+  "otherUpper": "AUTRE",
+  "overlayPosition": "Position de la superposition",
+  "overrideSystemScreenBrightness": "Remplacer la luminosité système",
+  "ownerAndCreatorOfTheCommentum": "Propriétaire et créateur de la plateforme communautaire Commentum.",
+  "padding": "Marge interne",
+  "pagesAheadOfTimeForFaster": "Pages en avance pour un chargement plus rapide",
+  "partySettings": "Paramètres du groupe",
+  "passwordIfRequired": "Mot de passe (si requis)",
+  "pasteDirectGifOrImageUrl": "Coller l'URL directe du GIF ou de l'image...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Cartes et solde PayPal",
+  "permanentlyRemoveAnymexSyncData": "Supprimer définitivement les données de synchronisation AnymeX",
+  "pictureShaders": "Image et shaders",
+  "pitch": "Présentation",
+  "playbackIsLockedToTheHost": "La lecture est verrouillée par l'hôte",
+  "playbackSpeed2": "Vitesse de lecture",
+  "playerSettings2": "Paramètres du lecteur",
+  "pleaseLogInFirstThenTry": "Veuillez d'abord vous connecter, puis réessayez le lien.",
+  "pointsBreakdown": "Détail des points",
+  "practicallyMadeForEachOther": "Pratiquement faits l'un pour l'autre.",
+  "preloadPage": "Précharger la page",
+  "preloadPages": "Précharger les pages",
+  "preloadPagesAheadOfTimeFor": "Précharger les pages à l'avance pour un chargement plus rapide (consomme plus de réseau et de RAM)",
+  "preventScreenFromSleepingWhileReading": "Empêcher l'écran de se mettre en veille pendant la lecture",
+  "previousChapter": "Chapitre précédent",
+  "previousParagraph": "Paragraphe précédent",
+  "privateRoom": "Salon privé",
+  "profileUpdated": "Profil mis à jour",
+  "proportionOfTotalTimeWatched": "Proportion du temps total visionné",
+  "provideAReasonForThisAction": "Fournissez une raison pour cette action...",
+  "qualitySettings": "Paramètres de qualité",
+  "quote": "Citation",
+  "range75DarkestTo100": "Plage : -75 (plus sombre) à 100",
+  "rateLimited": "Limite de taux dépassée",
+  "reactionOverlay": "Superposition de réactions",
+  "readStats": "Stats de lecture",
+  "readTextAloud": "Lire le texte à voix haute",
+  "red": "Rouge",
+  "reduceColorBandingInGradients": "Réduire la postériodisation dans les dégradés",
+  "reduceHaloingWhileUpscaling": "Réduire les halos lors de la mise à l'échelle",
+  "refresh": "Actualiser",
+  "removeCurrentCloudEntriesAndReplace": "Supprimer les entrées cloud actuelles et les remplacer par le fichier importé.",
+  "removeWhiteBlackBordersToMaximize": "Supprimer les bordures blanches/noires pour maximiser le contenu",
+  "removesFinishedMediaFromCloudGist": "Supprime les médias terminés du cloud Gist",
+  "replaceCloudGist": "Remplacer le cloud Gist",
+  "report": "Signaler",
+  "resetReLogin": "Réinitialiser et se reconnecter",
+  "resetTo1": "Réinitialiser à 1×",
+  "restore": "Restaurer",
+  "roomAccess": "Accès au salon",
+  "roomCode": "Code du salon",
+  "roomCodeCopiedToClipboard": "Code du salon copié dans le presse-papiers",
+  "roomDuration": "Durée du salon",
+  "roomNotFoundOrExpired": "Salon introuvable ou expiré",
+  "roomPassword": "Mot de passe du salon",
+  "roomPassword2": "Mot de passe du salon",
+  "roomSettings": "Paramètres du salon",
+  "saveYourCurrentCloudProgressTo": "Enregistrer votre progression cloud actuelle dans un fichier",
+  "scrollMultiplier": "Multiplicateur de défilement",
+  "scrollSpeed": "Vitesse de défilement",
+  "searchAnimeEpisode": "Rechercher un animé / épisode...",
+  "searchAnimeGifsReactions": "Rechercher des GIFs, réactions d'animés...",
+  "searchChapters": "Rechercher des chapitres...",
+  "searchFiles": "Rechercher des fichiers...",
+  "secondsPerPageScreen": "Secondes par page / écran",
+  "seekAndControlPlaybackFreely": "Naviguer et contrôler la lecture librement",
+  "selectedFileMustContainAJson": "Le fichier sélectionné doit contenir un objet JSON.",
+  "selectedJsonHasNoValidSync": "Le JSON sélectionné ne contient aucune entrée de synchronisation valide.",
+  "seriesList": "LISTE DE SÉRIES",
+  "setAPasswordForYourRoom": "Définir un mot de passe pour votre salon",
+  "share": "Partager",
+  "showANotificationWhenSomeoneJoins": "Afficher une notification lorsqu'une personne rejoint le groupe",
+  "showANotificationWhenSomeoneLeaves": "Afficher une notification lorsqu'une personne quitte le groupe",
+  "showAllStreams": "Afficher tous les flux",
+  "showChatMessagesOnThePlayer": "Afficher les messages du chat sur le lecteur en temps réel",
+  "showEmojiReactionsFloatingOnThe": "Afficher les réactions emoji flottantes sur le lecteur",
+  "showSyncResultWhenPlayerOr": "Afficher le résultat de la synchronisation à la fermeture du lecteur ou du lecteur",
+  "showTransitionPageEvenWhenChapters": "Afficher la page de transition même si les chapitres sont adjacents",
+  "shows": "Séries",
+  "sigmoidUpscaling": "Mise à l'échelle sigmoïde",
+  "smootherGradientsWithSlightTemporalNoise": "Dégradés plus lisses avec un léger bruit temporel",
+  "spacing": "Espacement",
+  "speechSpeed": "Vitesse de lecture",
+  "spoilers": "Spoilers",
+  "stretchImagesToFitScreenWidthOn": "Étirer les images pour s'adapter à la largeur de l'écran sur les grands écrans",
+  "subtitleSettings": "Paramètres des sous-titres",
+  "superAdministratorWithSystemWideManagement": "Super-administrateur avec des droits de gestion à l'échelle du système.",
+  "swapUpDownActions2": "Inverser les actions Haut/Bas",
+  "syncMode": "Mode de synchronisation",
+  "syncPreferences": "Préférences de synchronisation",
+  "tapScrollAmount": "Quantité de défilement par appui",
+  "tapToOpen": "Appuyer pour ouvrir",
+  "tapToOpenInBrowser": "Appuyer pour ouvrir dans le navigateur",
+  "tapToOpenInSpotify": "Appuyer pour ouvrir dans Spotify",
+  "tapToViewInBrowser": "Appuyer pour afficher dans le navigateur",
+  "tapTopBottomToScroll": "Appuyer en haut/bas pour faire défiler",
+  "targetPeak": "Pic cible",
+  "temporalDither": "Trame temporelle",
+  "textToSpeech": "Synthèse vocale",
+  "theCreatorOfThisCommentDiscussion": "Le créateur de ce fil de discussion.",
+  "theresASmallSparkOfAgreement": "Il y a une petite lueur d'accord.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Cela supprime définitivement votre Gist de progression cloud AnymeX de GitHub et cette action est irréversible.",
+  "toPrevNextChapter": "Au chapitre Précédent/Suivant",
+  "topL": "Haut-G",
+  "topR": "Haut-D",
+  "totals": "Totaux",
+  "trendingMovies": "Films tendances",
+  "trendingSeries": "Séries tendances",
+  "tts": "Synthèse vocale",
+  "ukMovies": "Films (UK)",
+  "ukShows": "Séries (UK)",
+  "unableToReadSelectedJsonFile": "Impossible de lire le fichier JSON sélectionné.",
+  "unsupportedExtension": "Extension non prise en charge",
+  "usMovies": "Films (US)",
+  "usShows": "Séries (US)",
+  "useVolumeButtonsToScroll": "Utiliser les boutons de volume pour faire défiler",
+  "userHistory": "Historique utilisateur",
+  "userInfo": "Infos utilisateur",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "Modérateur vérifié veillant au respect et à la sécurité des commentaires.",
+  "verticalPadding": "Remplissage vertical",
+  "viewCloudGist": "Voir le Gist Cloud",
+  "viewUserHistory": "Voir l'historique",
+  "viewUserInfo": "Voir les infos",
+  "voice": "Voix",
+  "watchParty": "Watch Party",
+  "watchStats": "Stats de visionnage",
+  "watchingNow": "En cours de visionnage",
+  "webmVideo": "Vidéo WebM",
+  "whereLiveCommentsAppearOnScreen": "Où les commentaires en direct apparaissent à l'écran",
+  "whileWatchingEpisodesOrReadingChapters": "Pendant le visionnage des épisodes ou la lecture des chapitres",
+  "writeAReply": "Écrire une réponse...",
+  "youAreBasicallyTheSamePerson": "Vous êtes pratiquement la même personne.",
+  "youBothHaveVerySimilarTaste": "Vous avez tous les deux des goûts très similaires.",
+  "all2": "← Tout",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "Style",
+  "upscale": "Mise à l'échelle",
+  "appearanceStyle": "Apparence et style",
+  "colorsLightDarkOledLogoAnimations": "Couleurs, Clair/Sombre, OLED et animations du logo",
+  "fontsTypography": "Polices et typographie",
+  "chooseTypographyCustomFontsGlobalText": "Choisir la typographie, les polices personnalisées et l'échelle du texte",
+  "globalFontScaling": "Échelle globale des polices",
+  "scaling": "Mise à l'échelle",
+  "typefaces": "Polices de caractères",
+  "interfaceLayout": "Interface et disposition",
+  "navBarCardStylesDetailsBlur": "Barre de navigation, style des cartes, flou des détails et disposition",
+  "navigationHomeLayout": "Navigation et disposition de l'accueil",
+  "playbackEngineSubtitlesGesturesDecoders": "Moteur de lecture, sous-titres, gestes et décodeurs",
+  "mangaNovelReader": "Lecteur de manga et roman",
+  "readingModesDirectionColorsTapZones": "Modes de lecture, direction, couleurs et zones tactiles",
+  "dataNetworkSystem": "Données, réseau et système",
+  "downloadDirectoryConcurrencyHlsSegments": "Répertoire de téléchargement, concurrence et segments HLS",
+  "accountsSocial": "Comptes et social",
+  "trackingAccounts": "Comptes de suivi",
+  "manageYourAnilistMyanimelistSimklAccounts": "Gérer vos comptes AniList, MyAnimeList et Simkl",
+  "trackingBehavior": "Comportement de suivi",
+  "communityComments": "Communauté et commentaires",
+  "commentumProfileBadgesMarkdownPrivacy": "Profil Commentum, badges, markdown et confidentialité",
+  "contentPreferences": "Contenu et préférences",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "Filtre NSFW, bibliothèque unifiée, recommandations et listes",
+  "exportAndRestoreYourLibraryAnd": "Exporter et restaurer votre bibliothèque et vos paramètres",
+  "manageAnimeMangaNovelSourcesAnd": "Gérer les sources et dépôts d'anime, manga et roman",
+  "installAndUpdateCommunityAddOns": "Installer et mettre à jour les add-ons communautaires",
+  "storageCache": "Stockage et cache",
+  "manageCachedImagesThresholdsResetData": "Gérer les images en cache, les seuils et réinitialiser les données",
+  "networkProxy": "Réseau et proxy",
+  "logsDiagnostics": "Journaux et diagnostics",
+  "inspectExportAndShareApplicationLogs": "Consulter, exporter et partager les journaux de l'application",
+  "aboutSupport": "À propos et support",
+  "supportDevelopmentViaKoFiPaypal": "Soutenir le développement via Ko-fi, PayPal et UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Version, mises à jour, réseaux et mentions légales",
+  "cacheAndCookiesClearedFor": "Cache et cookies effacés pour {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Cookies effacés pour {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Cache effacé pour {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Type non pris en charge : {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Paramètres de {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Fichier local introuvable à : {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Échec de la synchronisation : {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "APK local introuvable à : {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Erreur : {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Échec de l'installation du plugin : {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Aucun résultat trouvé pour « {query} »",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Saison {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Épisode {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "Actualités de {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Communauté",
+  "logInWithAnilist": "Se connecter avec AniList",
+  "episode2": "Épisode {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Téléchargement terminé",
+  "downloadFailedHasNoUrl": "Échec du téléchargement : {chapterDisplay} n'a pas d'URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Échec du téléchargement : aucune page trouvée pour {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Échec du téléchargement : {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Épisode {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} chap",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} ép",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Source \"{extensionName}\" introuvable.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Échec de la préparation du torrent : {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} sera définitivement supprimé de vos téléchargements.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Échec de la recherche : {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Rechercher {label} pour \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} éléments d'historique supprimés",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Supprimer \"{itemName}\" de vos {_historyLabel} ?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" supprimé",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Croissant",
+  "descending": "Décroissant",
+  "defaultTabOrder": "Ordre des onglets par défaut",
+  "reverseTabs": "Inverser les onglets",
+  "id": "ID : {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Type : {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Éléments : {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Installez {sourceName} d'abord, puis cliquez",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "Page {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Rechercher {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "TERMINÉ ({length} sélectionnés)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "LISIBLE SUR",
+  "streamingOn": "EN STREAMING SUR",
+  "freedom": "Liberté",
+  "shaderAdded": "Shader ajouté : {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Erreur lors de l'importation du shader : {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Scanlateurs",
+  "chapterRange": "Plage de chapitres",
+  "downloadFailed2": "Échec du téléchargement : {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Le chapitre {formattedNumber} est téléchargé",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Téléchargement ({value} %)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} chapitres",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Chargement de la page {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Page enregistrée dans Pictures/AnymeX",
+  "pageSavedToAnymex": "Page enregistrée dans {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Échec de l'enregistrement de la page : {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Échec du partage de la page : {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "URL de la page copiée dans le presse-papiers",
+  "failedToCopy": "Échec de la copie : {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Chargement des pages...",
+  "goBack": "Retour",
+  "loadingPage2": "Chargement de la page {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Couleur du flash",
+  "black": "Noir",
+  "white": "Blanc",
+  "readerBackground": "Arrière-plan du lecteur",
+  "gray": "Gris",
+  "automatic": "Automatique",
+  "noneNearestNeighbor": "Aucun (Plus proche voisin)",
+  "lowBilinear": "Bas (Bilinéaire)",
+  "mediumDefault": "Moyen (Par défaut)",
+  "highBicubic": "Haut (Bicubique)",
+  "lanczosPreScaleBestQualitySlower": "Pré-mise à l'échelle Lanczos (Meilleure qualité, plus lent)",
+  "fullscreenPreview": "Aperçu en plein écran",
+  "enhancementPreset": "Préréglage d'amélioration",
+  "fineTuning": "Réglage fin",
+  "enhancementStrength": "Intensité de l'amélioration",
+  "strength": "Intensité à {value} %",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Suppression des artefacts",
+  "cleanJpegCompressionRingingAroundLinework": "Nettoyer les artéfacts de compression JPEG autour des lignes",
+  "cache": "Cache",
+  "cacheSize": "Taille du cache",
+  "mbStoredOnDisk": "{mb} Mo stockés sur le disque",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Super Résolution",
+  "loadingChapter": "Chargement du chapitre...",
+  "noContentAvailable": "Aucun contenu disponible",
+  "recommendations": "{reasonCount} recommandations",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "Recommandations",
+  "all3": "Tout ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Échec de l'envoi du message : {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Total des entrées : {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Salon {code} rejoint !",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Salons actifs",
+  "joinWithCode": "Rejoindre avec un code",
+  "leftRoom": "Salon quitté",
+  "leaveReset": "Quitter / Réinitialiser",
+  "inRoom": "Dans le salon : {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Épisode {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Exclusion de {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} membres",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "A quitté le salon",
+  "leave": "Quitter",
+  "noActiveRooms": "Aucun salon actif",
+  "roomsWillAppearHereWhenSomeone": "Les salons apparaîtront ici lorsqu'un utilisateur en créera un",
+  "created2": "Créé · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Rejoindre →",
+  "full": "Plein",
+  "savedToPicturesAnymex": "Enregistré dans Pictures/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Enregistré dans Downloads/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Enregistré dans {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label} : @{username} (Appuyez pour ouvrir le profil)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Chapitre ",
+  "episode5": "Épisode ",
+  "noData": "{title} (Aucune donnée)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Rechercher des extensions {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Parcourir les extensions",
+  "goToHome": "Aller à l'accueil",
+  "fetching": "Récupération de {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Erreur lors de la récupération de la politique : {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" ajouté avec succès !",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" mis à jour avec succès !",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Voulez-vous vraiment supprimer \"{name}\" ?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" supprimé",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Votre historique est vide",
+  "episode6": "Épisode {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Voir moins",
+  "readMore": "Lire la suite",
+  "unpin": "Détacher",
+  "pinActivity": "Épingler l'activité",
+  "n1Recommendation": "1 recommandation",
+  "recommendations2": "{count} recommandations",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Envoi en cours...",
+  "addRecommendation": "Ajouter une recommandation",
+  "submitRecommendation": "Soumettre la recommandation",
+  "currentProvider": "FOURNISSEUR ACTUEL",
+  "profileStatsUserActivities": "Statistiques du profil et activités utilisateur",
+  "manageSourcesPlugins": "Gérer les sources et plugins",
+  "savedOfflineEpisodesChapters": "Épisodes et chapitres enregistrés hors ligne",
+  "watchVideoFilesFromDeviceStorage": "Regarder des fichiers vidéo du stockage de l'appareil",
+  "syncWatchPartyWithFriends": "Synchroniser la watch party avec des amis",
+  "pauseWatchHistoryAndSync": "Mettre en pause l'historique et la synchronisation",
+  "appearancePlayerNetwork": "Apparence, lecteur et réseau",
+  "joining": "Connexion...",
+  "joinRoom": "Rejoindre le salon",
+  "shareTheCodeOrInviteLink": "Partagez le code ou le lien d'invitation avec des amis.",
+  "roomCreated": "Salon créé !",
+  "shareThisCodeWithFriends": "Partagez ce code avec des amis :",
+  "copyCode": "Copier le code",
+  "copyLink": "Copier le lien",
+  "leaveWatchTogether": "Quitter le visionnage en groupe ?",
+  "removeMember": "Retirer le membre",
+  "transferHost": "Transférer l'hôte",
+  "transferHost2": "Transférer l'hôte",
+  "transfer": "Transférer",
+  "removeMember2": "Retirer le membre",
+  "removeFromThisWatchParty": "Retirer {username} de cette watch party ?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} membres",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} copié",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Aucun serveur disponible pour ce salon",
+  "selectStreamingServerQualityToWatch": "Sélectionnez la qualité du serveur de streaming",
+  "thisServerHasNoPlayableUrl": "Ce serveur n'a pas d'URL lisible",
+  "episode7": "Épisode {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Adapté du chapitre {start} à {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} prévu le {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "ÉPISODE {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "Liste MAL exportée vers :\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "XML AniList exporté vers :\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Échec de l'exportation : {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Export de votre liste {value}...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Exporter le XML {value}",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Aucun média lisible disponible",
+  "noThemesFound": "Aucun thème trouvé",
+  "playAll": "Tout lire",
+  "theDawnOfHumanity": "L'Aube de l'humanité",
+  "orientationUnlocked": "Orientation déverrouillée",
+  "orientationLocked": "Orientation verouillée",
+  "skippedOpening": "Opening ignoré",
+  "skippedEnding": "Ending ignoré",
+  "skippedRecap": "Résumé ignoré",
+  "ifYouSeeBlackScreenUse": "Si l'écran est noir, utilisez un lecteur externe pour visionner",
+  "failedToStartTorrentStream": "Échec du démarrage du flux torrent : {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Échec de l'ouverture du flux. Essayez un autre serveur",
+  "noServersFoundForThisEpisode": "Aucun serveur trouvé pour cet épisode.",
+  "failedToLoadEpisodeCheckYour": "Échec du chargement de l'épisode. Vérifiez votre connexion.",
+  "playing": "Lecture de {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Échec du changement de fichier torrent : {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Sous-titre chargé : {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Erreur lors du chargement du sous-titre : {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Sous-titre corrompu !",
+  "preTranslatingSubtitles": "Pré-traduction des sous-titres...",
+  "preTranslationFailedUsingRealTime": "Échec de la pré-traduction, utilisation du mode en direct",
+  "preTranslationErrorUsingRealTime": "Erreur de pré-traduction, utilisation du mode en direct",
+  "corruptedQuality": "Qualité corrompue !",
+  "colorProfilesOnlyAvailableWithMediakit": "Profils de couleur disponibles uniquement avec le lecteur MediaKit",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Ouvrir les flux vidéo dans un lecteur externe par défaut",
+  "quickDefaults": "Préréglages rapides",
+  "orientationSpeedResizeModeExternalPlayer": "Orientation, vitesse, mode redimensionnement et lecteur externe",
+  "controlsGestures": "Commandes et gestes",
+  "subtitlesTranslation": "Sous-titres et traduction",
+  "languagesFontsStylingLibassTranslation": "Langues, polices, style, libass et traduction",
+  "anime4kShaders": "Anime4K et shaders",
+  "upscalingShadersPresetsProfiles": "Shaders de mise à l'échelle, préréglages et profils",
+  "engineAdvanced": "Moteur et avancé",
+  "addSpeed": "Ajouter une vitesse",
+  "speedPresets": "Préréglages de vitesse",
+  "rememberAsDefaultSpeed": "Définir comme vitesse par défaut",
+  "loadedSubtitle": "Sous-titre chargé : {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Échec du téléchargement du sous-titre : {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "CODE DU SALON",
+  "episodeReleasesIn": "SORTIE DE L'ÉPISODE {value} DANS",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "Incertain ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Vous devez être connecté pour commenter",
+  "readFullRules": "Lire le règlement complet",
+  "acceptPost": "Accepter et publier",
+  "youNeedToBeLoggedIn2": "Vous devez être connecté pour répondre",
+  "commentCopiedToClipboard": "Commentaire copié dans le presse-papiers",
+  "spam": "Spam",
+  "offensive": "Offensant",
+  "harassment": "Harcèlement",
+  "offTopic": "Hors sujet",
+  "failedToLoadUserInfo": "Échec du chargement des infos utilisateur.",
+  "noUserDataFound": "Aucune donnée utilisateur trouvée.",
+  "viewHistory": "Voir l'historique",
+  "failedToLoadComments": "Échec du chargement des commentaires.",
+  "noCommentsFound": "Aucun commentaire trouvé.",
+  "deleted2": "SUPPRIMÉ",
+  "comment": "COMMENTAIRE",
+  "failedToLoadUserHistory": "Échec du chargement de l'historique utilisateur.",
+  "noHistoryFound": "Aucun historique trouvé.",
+  "youNeedToBeLoggedIn3": "Vous devez être connecté pour modifier les commentaires",
+  "commentCannotBeEmpty": "Le commentaire ne peut pas être vide",
+  "failedToLoadCommentsPleaseTry": "Échec du chargement des commentaires. Veuillez réessayer.",
+  "commentsLoaded": "{value} commentaires chargés",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Échec du rafraîchissement des commentaires. Veuillez réessayer.",
+  "invalidParentCommentId": "ID du commentaire parent invalide",
+  "replyPostedSuccessfully": "Réponse publiée avec succès",
+  "failedToPostReply": "Échec de la publication de la réponse",
+  "failedToPostReplyPleaseTry": "Échec de la publication de la réponse. Veuillez réessayer.",
+  "commentPostedSuccessfully": "Commentaire publié avec succès",
+  "failedToAddCommentPleaseTry": "Échec de l'ajout du commentaire. Veuillez réessayer.",
+  "failedToUpdateVotePleaseTry": "Échec de la mise à jour du vote. Veuillez réessayer.",
+  "invalidCommentId": "ID de commentaire invalide",
+  "commentEditedSuccessfully": "Commentaire modifié avec succès",
+  "failedToEditComment": "Échec de la modification du commentaire",
+  "commentDeletedSuccessfully": "Commentaire supprimé avec succès",
+  "failedToDeleteComment": "Échec de la suppression du commentaire",
+  "failedToReportComment": "Échec du signalement du commentaire",
+  "failedToModerateComment": "Échec de la modération du commentaire",
+  "failedToManageUser": "Échec de la gestion de l'utilisateur",
+  "pointsRankingIsBasedOnReal": "{username} : {label} (∞ points). Le classement est basé sur l'activité réelle ({realPoints} pts).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username} : {realPoints} pts gagnés + {text} bonus de rôle ({label}). Le classement est basé sur l'activité réelle.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Plage d'épisodes",
+  "episodeIsDownloaded": "L'épisode {number} est téléchargé",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} épisodes",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Saison 2 – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren : Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "Personnalisateur de carte",
+  "presetStyle": "Style prédéfini",
+  "chooseFrom5AuthenticBuiltIn": "Choisissez parmi 5 designs authentiques intégrés",
+  "sizingGeometry": "Taille et géométrie",
+  "cardSize": "Taille de la carte",
+  "scaleCardsProportionallyWithoutDistortion": "Mettre à l'échelle les cartes proportionnellement sans distorsion",
+  "landscapeCards": "Cartes en paysage",
+  "formatCardsIn169Widescreen": "Formater les cartes au format 16:9",
+  "selectPosterImageAspectRatio": "Sélectionner le format d'image de l'affiche",
+  "titleLines": "Lignes du titre",
+  "maximumNumberOfTitleLinesDisplayed": "Nombre maximal de lignes de titre affichées",
+  "gestureAreas": "Zones de gestes",
+  "resetDefault": "Réinitialiser par défaut",
+  "overlay": "Superposition",
+  "volume": "Volume",
+  "brightnessArea": "Zone de luminosité",
+  "overlayAreaTap": "Zone de superposition (Appuyer)",
+  "volumeArea": "Zone de volume",
+  "resetToDefaultLayout": "Réinitialiser la disposition par défaut",
+  "moveToSlot": "Déplacer vers l'emplacement",
+  "topBar": "Barre supérieure",
+  "bottomLeft": "Bas gauche",
+  "bottomRight": "Bas droit",
+  "themesOverlay": "Thèmes et superposition",
+  "gesturesSeeking": "Gestes et recherche",
+  "horizontalSwipeAcrossTheScreenTo": "Balayage horizontal sur l'écran pour chercher",
+  "autoSkipCompletion": "Passage auto et fin",
+  "percentageWatchedBeforeMarkingCompleted": "Pourcentage visionné avant de marquer comme terminé",
+  "playerControls": "Contrôles du lecteur",
+  "mpvConfSavedSuccessfully": "mpv.conf enregistré avec succès",
+  "hardwareDrivers": "Matériel et pilotes",
+  "systemIntegrations": "Intégrations système",
+  "experimentalMpvTuning": "Optimisation MPV expérimentale",
+  "editMpvConf": "Modifier mpv.conf",
+  "modeA": "Mode A",
+  "modeB": "Mode B",
+  "modeC": "Mode C",
+  "modeAA": "Mode A+A",
+  "modeBB": "Mode B+B",
+  "modeCA": "Mode C+A",
+  "natural": "Naturel",
+  "vivid": "Vif",
+  "cinema": "Cinéma",
+  "soft": "Doux",
+  "warm": "Chaud",
+  "cool": "Froid",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinéma HDR",
+  "vividPop": "Pop Vif",
+  "dark": "Sombre",
+  "anime4kEngine": "Moteur Anime4K",
+  "anime4kShaders2": "Shaders Anime4K",
+  "devicePerformanceTier": "Niveau de performance de l'appareil",
+  "midRange": "Milieu de gamme",
+  "highEnd": "Haut de gamme",
+  "shaderMode": "Mode shader",
+  "colorPreset": "Préréglage de couleur",
+  "desktopPlaybackKeybindings": "Raccourcis de lecture bureau",
+  "customSubtitleFonts": "Polices de sous-titres personnalisées",
+  "importedFont": "Police importée \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Voulez-vous vraiment supprimer \"{font}\" ?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Langue et traduction",
+  "renderingBehavior": "Rendu et comportement",
+  "disableToAvoidFadeTransitionsBetween": "Désactiver pour éviter les transitions en fondu entre les sous-titres",
+  "typographyOutline": "Typographie et contour",
+  "adjustSubtitleFontSize": "Ajuster la taille de la police des sous-titres",
+  "adjustSubtitleOutlineThickness": "Ajuster l'épaisseur du contour des sous-titres",
+  "colorsPosition": "Couleurs et position",
+  "changeSubtitleTextColor": "Modifier la couleur du texte des sous-titres",
+  "mangaReader": "Lecteur de manga",
+  "layoutDirection": "Mise en page et direction",
+  "autoSwitchToVerticalModeFor": "Passer automatiquement en mode vertical pour les webtoons",
+  "imageDisplay": "Image et affichage",
+  "interfaceSession": "Interface et session",
+  "mangaControlsGestures": "Commandes et gestes du manga",
+  "overscrollToPreviousNextChapter": "Dépasser pour aller au chapitre précédent/suivant",
+  "automaticallyScrollMangaPages": "Faire défiler automatiquement les pages du manga",
+  "swapVolumeUpDownActions": "Inverser les actions du volume haut/bas",
+  "novelReader": "Lecteur de roman",
+  "themeDisplay": "Thème et affichage",
+  "displayChapterPercentageWhileReading": "Afficher le pourcentage du chapitre pendant la lecture",
+  "displayStatusInfoInTheNovel": "Afficher les infos d'état dans le lecteur de roman",
+  "typographySpacing": "Typographie et espacement",
+  "novelControlsGestures": "Commandes et gestes du roman",
+  "tapScreenEdgesToScrollNovel": "Appuyer sur les bords de l'écran pour faire défiler le roman",
+  "swipeGestures": "Gestes de balayage",
+  "volumeKeyScrolling": "Défilement par touches de volume",
+  "useHardwareVolumeButtonsToScroll": "Utiliser les boutons de volume physiques pour faire défiler les romans",
+  "automaticallyScrollNovelContent": "Faire défiler automatiquement le contenu du roman",
+  "textToSpeechTts": "Synthèse vocale (TTS)",
+  "readNovelChaptersAloud": "Lire les chapitres du roman à voix haute",
+  "speechRate": "Vitesse de lecture",
+  "voicePitch": "Hauteur de la voix",
+  "areYouSureYouWantTo4": "Êtes-vous sûr de vouloir vous déconnecter de {title} ?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Échec de la recherche de mises à jour : {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} installé avec succès",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Échec de l'installation de {name} : {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} mis à jour avec succès",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Échec de la mise à jour de {name} : {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Désinstaller {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} désinstallé",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Échec de la désinstallation de {name} : {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "Ordre de la section {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Notifications et synchronisation",
+  "enableNotifications": "Activer les notifications",
+  "syncAnilistNotificationsWithDeviceNotifications": "Synchroniser les notifications AniList avec celles de l'appareil",
+  "airingAlerts": "Alertes de diffusion",
+  "socialAlerts": "Alertes sociales",
+  "notifyOnNewFollowers": "Notifier lors de nouveaux abonnés",
+  "activityAlerts": "Alertes d'activité",
+  "syncInterval": "Intervalle de synchronisation",
+  "regionTimezone": "Région et fuseau horaire",
+  "profileBio": "Bio du profil",
+  "backupFailed": "Échec de la sauvegarde : {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Erreur lors de la sélection du fichier : {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Échec du chargement de la sauvegarde : {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Échec de la restauration : {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} titres et historique",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} titres et chapitres",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} titres et état de lecture",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} listes personnalisées par média",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} entrées d'extension enregistrées",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} archives zip d'extensions",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Aide et informations",
+  "libraryContentSafety": "Sécurité de la bibliothèque et du contenu",
+  "homePageLists": "Listes de la page d'accueil",
+  "chooseWhichListsToShowOn": "Choisir les listes à afficher sur la page d'accueil",
+  "homePageCards": "Cartes de la page d'accueil ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "En train de regarder $anime",
+  "viewingAnime": "Affichage de $anime",
+  "readingManga2": "En train de lire $manga",
+  "viewingManga": "Affichage de $manga",
+  "readingNovel2": "En train de lire $novel",
+  "viewingNovel": "Affichage de $novel",
+  "browsingStatus": "Navigation dans $status",
+  "upiIdCopied": "ID UPI copié : {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Copier l'ID UPI ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Appuyez pour lancer GPay, PhonePe, Paytm, etc.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Notifications de téléchargement",
+  "reDownloadFailed": "Échec du re-téléchargement : {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Échec du retour en arrière : {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Échec de l'ajout du dépôt : {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Police \"{fontName}\" appliquée",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Échec du téléchargement de \"{fontName}\"",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" importé et appliqué",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Échec de l'importation du fichier de police",
+  "deleted3": "\"{fontName}\" supprimé",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Bibliothèque de polices",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Police géométrique arrondie par défaut conçue pour AnymeX",
+  "systemFont": "Police du système",
+  "useYourDeviceOsDefaultSystem": "Utiliser la police système par défaut de votre appareil",
+  "loadYourOwnTtfOrOtf": "Charger vos propres fichiers de police .ttf ou .otf",
+  "pendingReports": "{length} rapports en attente",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies et stockage",
+  "monitoring": "Surveillance",
+  "fpsMeter": "Compteur de FPS",
+  "showDraggableRealTimeFpsOverlay": "Afficher le compteur de FPS déplaçable en temps réel",
+  "detectedModesDisplay": "Modes détectés et affichage",
+  "currentDisplayMode": "Mode d'affichage actuel",
+  "modes": "{length} modes",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Personnaliser",
+  "stylingLibass": "{subLang} • {subFont} • Style et libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Commandes et zones tactiles",
+  "customizeTapZones": "Personnaliser les zones tactiles",
+  "configurePagedAndWebtoonTapRegions": "Configurer les zones tactiles pour les pages et le format webtoon",
+  "fitBordersSpacing": "{value} • Ajustement, marges et espacement",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Style de chapitre, indicateur de page et verrouillage d'écran",
+  "overscrollActionsAutoScrollVolume": "Défilement excessif, actions, défilement auto et volume",
+  "themeTypography": "Thème et typographie",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Mode de lecture et affichage",
+  "pageModeProgressBatteryIndicator": "Mode page, indicateur de progression et de batterie",
+  "readPageByPageInsteadOf": "Lire page par page au lieu de faire défiler",
+  "displayPercentageInReadingBar": "Afficher le pourcentage dans la barre de lecture",
+  "displayBatteryAndTimeInReader": "Afficher la batterie et l'heure dans la barre du lecteur",
+  "gesturesNavigation": "Gestes et navigation",
+  "tapToScrollSwipeAutoScroll": "Appuyer pour défiler, balayer, défilement auto et volume",
+  "tapEdgesOfScreenToScroll": "Appuyer sur les bords de l'écran pour défiler",
+  "swipeHorizontallyToChangeChapters": "Balayer horizontalement pour changer de chapitre",
+  "useVolumeKeysToScroll": "Utiliser les touches de volume pour défiler",
+  "textToSpeechTts2": "Synthèse vocale (TTS)",
+  "textToSpeechReadingSupport": "Aide à la lecture par synthèse vocale",
+  "speechRate2": "Vitesse de parole",
+  "voicePitch2": "Hauteur de la voix",
+  "appPostersIconsAvatarsSize": "Affiches, icônes, avatars de l'application. Taille : {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Morceaux de vidéo temporaires. Taille : {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Pages de web novel téléchargées. Taille : {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Journaux, téléchargements temporaires. Taille : {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Échec du vidage du cache : {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Échec de la réinitialisation d'usine : {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 ou 3F51B5",
+  "motionDisplay": "Mouvement et affichage",
+  "visualEffectsTuning": "Effets visuels et réglages",
+  "historyCard": "Carte d'historique",
+  "carousel": "Carrousel",
+  "navBar": "Barre de navigation",
+  "themeDarkModeLayoutStyling": "Thème, mode sombre et style de mise en page",
+  "gesturesSubtitlesVideoSettings": "Gestes, sous-titres et paramètres vidéo",
+  "settingsTiles": "Tuiles des paramètres",
+  "oledMode2": "Mode OLED",
+  "primaryAccount": "Compte principal ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Connecté à {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Se connecter à {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} titres",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Supprimer \"{id}\" ? Cette action est irréversible.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Importation…",
+  "addJsonFiles": "Ajouter des fichiers JSON",
+  "previousStyle": "Style précédent",
+  "nextStyle": "Style suivant",
+  "currentStyle": "Style actuel",
+  "useThisStyle": "Utiliser ce style",
+  "pleaseLogInToGetRecommendations": "Veuillez vous connecter pour obtenir des recommandations",
+  "chapter1": "Chapitre 1",
+  "deletedSuccessfully": "{value} supprimé avec succès",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Connexion à Simkl réussie !",
+  "yepFailed": "Échec",
+  "userInfoFetchingFailed": "Échec de la récupération des infos utilisateur !",
+  "githubLoginFailed": "Échec de la connexion GitHub : {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Synchronisation déjà en cours.",
+  "anotherSyncActionIsAlreadyIn": "Une autre action de synchronisation est déjà en cours.",
+  "noAnymexSyncGistFoundTo": "Aucun Gist de synchronisation AnymeX trouvé à supprimer.",
+  "noAnymexSyncGistFoundInitialize": "Aucun Gist de synchronisation AnymeX trouvé. Initialisez d'abord.",
+  "githubGistSync": "Synchronisation Gist GitHub",
+  "manage": "Gérer",
+  "manageGithubGistSync": "Gérer la synchronisation Gist GitHub",
+  "joinedTheParty": "{username} a rejoint le groupe",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} a quitté le groupe",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "L'hôte est passé à l'épisode {episodeNumber} de {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Erreur lors du chargement des commentaires",
+  "errorAddingComment": "Erreur lors de l'ajout du commentaire",
+  "errorUpdatingVote": "Erreur lors de la mise à jour du vote",
+  "errorEditingComment": "Erreur lors de la modification du commentaire",
+  "errorDeletingComment": "Erreur lors de la suppression du commentaire",
+  "commentReportedSuccessfully": "Commentaire signalé avec succès",
+  "errorReportingComment": "Erreur lors du signalement du commentaire",
+  "errorFetchingReportsQueue": "Erreur lors de la récupération de la file d'attente des signalements",
+  "reportResolvedSuccessfully": "Signalement résolu avec succès",
+  "failedToResolveReport": "Échec de la résolution du signalement",
+  "errorResolvingReport": "Erreur lors de la résolution du signalement",
+  "errorFetchingUserInfo": "Erreur lors de la récupération des infos utilisateur",
+  "errorFetchingUserHistory": "Erreur lors de la récupération de l'historique utilisateur",
+  "errorFetchingUserStats": "Erreur lors de la récupération des stats utilisateur",
+  "errorListingUsers": "Erreur lors de l'affichage des utilisateurs",
+  "errorSearchingUsers": "Erreur lors de la recherche d'utilisateurs",
+  "errorFetchingModerationQueue": "Erreur lors de la récupération de la file de modération",
+  "commentModeratedSuccessfully": "Commentaire modéré avec succès",
+  "errorModeratingComment": "Erreur lors de la modération du commentaire",
+  "userManagedSuccessfully": "Utilisateur géré avec succès",
+  "errorManagingUser": "Erreur lors de la gestion de l'utilisateur",
+  "errorGettingInitialDeepLink": "Erreur lors de l'obtention du lien profond initial : {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Erreur lors de l'ouverture du lien : {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Copier les détails de l'erreur",
+  "whatSNew": "Nouveautés",
+  "updatedToV": "Mis à jour vers la v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Impossible d'ouvrir le lien publicitaire",
+  "newAnilistUpdates": "{length} nouvelles mises à jour AniList",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} de plus",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Actualiser les appareils",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Ajout du dépôt... veuillez patienter.",
+  "unsupportedThemeTypeSupportedPlayer": "Type de thème non pris en charge \"{type}\". Pris en charge : player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Importation du thème du lecteur depuis le lien...",
+  "themeIsInvalid": "Le thème est invalide : {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Le JSON du thème est valide. {imported} {label} importé.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Rejoignage de la salle {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Échec de la connexion au salon : {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Calcul de la compatibilité AniMatch pour {user1} et {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Partager avec votre service de suivi sélectionné",
+  "shareAnymexLink": "Partager le lien AnymeX",
+  "opensDirectlyInAnymex": "S'ouvre directement dans AnymeX",
+  "newCommentsRepliesAndEdits": "Nouveaux commentaires, réponses et modifications",
+  "upvotesAndDownvotesOnYourComments": "Votes positifs et négatifs sur vos commentaires",
+  "warningsMutesBansAndModerationActions": "Avertissements, mises en sourdine, bannissements et actions de modération",
+  "reportFiledResolvedDismissed": "Signalement déposé, résolu, rejeté",
+  "officialAnnouncements": "Annonces officielles",
+  "whenSomeoneMentionsYouInA": "Quelqu'un vous a mentionné (@) dans un commentaire",
+  "notificationsForNewAnimeEpisodeReleases": "Notifications pour les sorties de nouveaux épisodes d'anime",
+  "notificationsForFollowsMentionsAndLikes": "Notifications pour les abonnements, mentions et j'aime",
+  "notificationsForCompletedEpisodeAndChapter": "Notifications pour les téléchargements d'épisodes et de chapitres terminés",
+  "signIn": "Se connecter",
+  "failedToCheckForUpdates3": "Échec de la vérification des mises à jour",
+  "noUpdatesAvailable": "Aucune mise à jour disponible",
+  "errorCheckingForUpdates": "Erreur lors de la vérification des mises à jour",
+  "installPermissionRequired": "Autorisation d'installation requise",
+  "downloadFailed3": "Échec du téléchargement",
+  "newVersionAvailable": "Nouvelle version disponible",
+  "episodeMetadata": "Métadonnées des épisodes",
+  "sessionExpiredPleaseLoginAgain": "Session expirée. Veuillez vous reconnecter.",
+  "successfullyLoggedInAs": "Connecté avec succès en tant que {username}",
+  "loggedOutFromDiscord": "Déconnecté de Discord",
+  "clearStoredLogFiles": "Effacer les fichiers journaux enregistrés",
+  "resetInMemoryAndDiskLogFiles": "Réinitialiser les journaux en mémoire et sur disque",
+  "errorCopiedToClipboard": "Erreur copiée dans le presse-papiers",
+  "autoScrollOn": "Défilement automatique activé",
+  "autoScrollOff": "Défilement automatique désactivé",
+  "copyLogs": "Copier les journaux",
+  "clearLogs": "Effacer les journaux",
+  "metadataFallbackStrategy": "Stratégie de repli des métadonnées",
+  "activeSourceMode": "Mode de source active",
+  "chooseWhetherToMergeProviders": "Choisissez de fusionner les fournisseurs ou de forcer un service spécifique",
+  "autoMerged": "Automatique (fusionné)",
+  "providerPriorityToggles": "Priorité des fournisseurs et bascules",
+  "dragHandlesToChangeFetchPriority": "Faites glisser les poignées pour changer la priorité. Les sources du haut ont la priorité pour les titres, vignettes et descriptions.",
+  "maintenance": "Maintenance",
+  "clearMetadataCache": "Vider le cache des métadonnées",
+  "flushesInMemoryEpisodeThumbnails": "Vide le cache en mémoire des vignettes et des titres d'épisodes",
+  "metadataCacheCleared": "Cache des métadonnées vidé",
+  "resetToDefaultOrder": "Rétablir l'ordre par défaut",
+  "restoreFactoryPriorityOrder": "Restaurer l'ordre de priorité d'usine et activer tous les fournisseurs",
+  "resetEpisodeMetadataToDefaults": "Métadonnées des épisodes réinitialisées aux valeurs par défaut",
+  "configureProvidersAndOrder": "Configurer les fournisseurs et l'ordre",
+  "reorderSourcesToggleIndividual": "Réorganiser les sources, basculer les fournisseurs individuels",
+  "autoMergedPriority": "Automatique (priorité fusionnée)",
+  "mergesHighestPriorityAvailable": "Fusionne les données disponibles de la plus haute priorité",
+  "useRawProviderEpisodeTitlesOnly": "Utiliser uniquement les titres d'épisodes bruts du fournisseur",
+  "progressSliderStyle": "Style de la barre de progression",
+  "seekPreview": "Aperçu de navigation",
+  "showThumbnailScrubbingPreviewWhileSeeking": "Afficher l'aperçu de la miniature pendant la recherche",
+  "linearWavy": "Ondulé linéaire",
+  "defaultM3": "Par défaut M3",
+  "capsule": "Capsule",
+  "noLogsToCopy": "Aucun journal à copier",
+  "logsCopiedToClipboard": "Journaux copiés dans le presse-papiers",
+  "noLogsAvailableToShare": "Aucun journal disponible à partager",
+  "decadeFormat": "Années {decade}",
+  "mediaWithId": "Média #{id}",
+  "tileIconShapes": "Formes des icônes de tuiles",
+  "tilePrefixIconShape": "Forme de l'icône de préfixe de tuile",
+  "tileIconShapesLower": "Formes des icônes de tuiles",
+  "opening": "Opening",
+  "ending": "Ending",
+  "recap": "Récapitulatif",
+  "ifSubtitleNotShowingDisableLibass": "Si les sous-titres ne s'affichent pas, désactivez libass dans les paramètres et redémarrez",
+  "subtitlesTranslatedEntries": "Sous-titres traduits ! ({count} entrées)",
+  "skippedFillerEpisodesCount": "{count, plural, =1{1 épisode de remplissage ignoré} other{{count} épisodes de remplissage ignorés}}",
+  "unsubscribe": "Se désabonner",
+  "subscribeToThread": "S'abonner au fil",
+  "downloadChaptersCount": "{count, plural, =1{Télécharger 1 chapitre} other{Télécharger {count} chapitres}}",
+  "downloadingChaptersCount": "{count, plural, =1{Téléchargement d'un chapitre...} other{Téléchargement de {count} chapitres...}}",
+  "moreRecommendationsCount": "{count, plural, =1{+ 1 autre recommandation} other{+ {count} autres recommandations}}",
+  "charactersAndVoiceActors": "Personnages et comédiens de doublage",
+  "unknownVa": "Comédien de doublage inconnu",
+  "chaptersTimestamps": "Chapitres et horodatages",
+  "contentSource": "Source de contenu",
+  "selectPreferredTrackingAndMediaProvider": "Sélectionnez votre fournisseur de suivi et de médias préféré",
+  "reducesColorRingingArtifacts": "Réduit les artefacts de sonnerie de couleur",
+  "downscalesInLinearLightSpace": "Réduit l'échelle dans l'espace lumineux linéaire",
+  "motionDithering": "Mouvement et tramage",
+  "smoothMotionBetweenVideoFrames": "Mouvement fluide entre les images vidéo",
+  "reducesColorBandingWithSubtle": "Réduit les bandes de couleur avec un bruit subtil",
+  "unknown": "Inconnu",
+  "anilistActivity": "Activité AniList",
+  "failedToPostStory": "Échec de la publication de la story",
+  "likesCount": "{count} j'aime",
+  "newEpisodes": "Nouveaux épisodes",
+  "outNowFromShowsYouAreWatching": "Disponible maintenant pour les séries que vous regardez",
+  "planning": "Prévu",
+  "postStory": "Publier la story",
+  "postToStory": "Ajouter à la story",
+  "readChapter": "Lire le ch. {chapter}",
+  "repliesCount": "{count} réponses",
+  "rewatching": "Revisionnage",
+  "sendAReaction": "Envoyer une réaction",
+  "statusUpdate": "Mise à jour du statut",
+  "storyPostedToAnilist": "Story publiée sur AniList !",
+  "viewDiscussion": "Voir la discussion",
+  "viewInAnymex": "Voir dans AnymeX",
+  "watched": "Vu",
+  "watchedEpisode": "Épisode {episode} vu",
+  "whatsOnYourMindAniList": "À quoi pensez-vous ? (Publié comme activité texte sur AniList)",
+  "yourStory": "Votre story",
+  "hostBadge": "HÔTE",
+  "basedOnAnimeScoredTen": "Basé sur les animes que vous avez notés 10/10.",
+  "basedOnMangaScoredTen": "Basé sur les mangas que vous avez notés 10/10."
 }

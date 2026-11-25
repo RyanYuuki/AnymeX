@@ -865,7 +865,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             GestureDetector(
               onTap: () =>
                   setState(() => _synopsisExpanded = !_synopsisExpanded),
-              child: AnymeXText(_synopsisExpanded ? 'Show Less' : 'Read More',
+              child: AnymeXText(_synopsisExpanded ? context.l10n.showLess : context.l10n.readMore,
                 size: 12,
                 color: colors.primary,
                 variant: TextVariant.semiBold,
@@ -1064,7 +1064,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           ],
           if (widget.reasons != null && widget.reasons!.length > 1) ...[
             const SizedBox(height: 6),
-            AnymeXText('+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
+            AnymeXText(context.l10n.moreRecommendationsCount(widget.reasons!.length - 1),
               size: 11,
               color: colors.onSurfaceVariant,
               variant: TextVariant.regular,

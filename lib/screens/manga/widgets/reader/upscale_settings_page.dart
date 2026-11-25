@@ -13,6 +13,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class _RightSplitClipper extends CustomClipper<Rect> {
   final double splitRatio;
@@ -183,7 +184,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
                         minWidth: 28,
                         minHeight: 28,
                       ),
-                      tooltip: 'Fullscreen Preview',
+                      tooltip: context.l10n.fullscreenPreview,
                       onPressed: () => _openFullscreenPreview(context),
                     ),
                   ],
@@ -392,7 +393,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
       final currentShader = widget.controller.selectedUpscalerShader.value;
 
       return AnymeXSectionBuilder(
-        title: 'Enhancement Preset',
+        title: context.l10n.enhancementPreset,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         children: superResolutionPresets.map((preset) {
           final isSelected = currentShader == preset.id;
@@ -423,13 +424,13 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
       final denoise = widget.controller.upscalerDenoise.value;
 
       return AnymeXSectionBuilder(
-        title: 'Fine Tuning',
+        title: context.l10n.fineTuning,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         children: [
           AnymeXTile.slider(
             icon: Icons.tune_rounded,
-            title: 'Enhancement Strength',
-            subtitle: '${(sharpness * 100).toInt()}% strength',
+            title: context.l10n.enhancementStrength,
+            subtitle: context.l10n.strength(((sharpness * 100).toInt()).toString()),
             value: sharpness,
             min: 0.5,
             max: 2.0,
@@ -441,8 +442,8 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
           ),
           AnymeXTile.toggle(
             icon: Icons.cleaning_services_rounded,
-            title: 'Artifact Suppression',
-            subtitle: 'Clean JPEG compression ringing around linework',
+            title: context.l10n.artifactSuppression,
+            subtitle: context.l10n.cleanJpegCompressionRingingAroundLinework,
             value: denoise,
             onChanged: (_) {
               widget.controller.toggleUpscalerDenoise();
@@ -456,7 +457,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
 
   Widget _buildCacheSection(BuildContext context) {
     return AnymeXSectionBuilder(
-      title: 'Cache',
+      title: context.l10n.cache,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       children: [
         FutureBuilder<int>(
@@ -466,8 +467,8 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
             final mb = (bytes / (1024 * 1024)).toStringAsFixed(1);
             return AnymeXTile(
               icon: Iconsax.folder,
-              title: 'Cache Size',
-              subtitle: '$mb MB stored on disk',
+              title: context.l10n.cacheSize,
+              subtitle: context.l10n.mbStoredOnDisk(mb.toString()),
               trailing: IconButton(
                 icon: const Icon(Iconsax.trash, size: 20),
                 onPressed: () async {
@@ -499,7 +500,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.auto_awesome_rounded,
-                  title: 'Super Resolution',
+                  title: context.l10n.superResolution,
                   subtitle:
                       'High-definition edge sharpening & detail enhancement',
                   value: isEnabled,

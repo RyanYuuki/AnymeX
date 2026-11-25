@@ -1,4 +1,5 @@
 import 'package:anymex/core/metadata/episode_metadata_service.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -25,7 +26,7 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Episode Metadata',
+      headerTitle: context.l10n.episodeMetadata,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding:
@@ -46,19 +47,19 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AnymeXSectionBuilder(
-                  title: 'Metadata Fallback Strategy',
+                  title: context.l10n.metadataFallbackStrategy,
                   children: [
                     AnymeXTile.pills<String>(
-                      title: 'Active Source Mode',
+                      title: context.l10n.activeSourceMode,
                       expand: false,
                       wrap: false,
                       subtitle:
-                          'Choose whether to merge providers or force a specific service',
+                          context.l10n.chooseWhetherToMergeProviders,
                       options: pillOptions,
                       value: service.selectedSource.value,
                       optionLabelTransformer: (id) {
-                        if (id == 'auto') return 'Auto (Merged)';
-                        if (id == 'none') return 'Off';
+                        if (id == 'auto') return context.l10n.autoMerged;
+                        if (id == 'none') return context.l10n.labelOff;
                         return providersMap[id]?.name ?? id;
                       },
                       onChanged: (val) {
@@ -68,13 +69,13 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
                   ],
                 ),
                 AnymeXSectionBuilder(
-                  title: 'Provider Priority & Toggles',
+                  title: context.l10n.providerPriorityToggles,
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
                       child: AnymeXText(
-                        'Drag handles to change fetch priority. Top sources take precedence when resolving episode titles, thumbnails, and descriptions.',
+                        context.l10n.dragHandlesToChangeFetchPriority,
                         variant: TextVariant.regular,
                         size: 13,
                         color: cs.onSurfaceVariant,
@@ -142,26 +143,26 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
                   ],
                 ),
                 AnymeXSectionBuilder(
-                  title: 'Maintenance',
+                  title: context.l10n.maintenance,
                   children: [
                     AnymeXTile(
                       icon: Icons.cleaning_services_rounded,
-                      title: 'Clear Metadata Cache',
+                      title: context.l10n.clearMetadataCache,
                       subtitle:
-                          'Flushes in-memory episode thumbnails and titles cache',
+                          context.l10n.flushesInMemoryEpisodeThumbnails,
                       onTap: () {
                         service.clearCache();
-                        snackBar('Metadata cache cleared', duration: 1500);
+                        snackBar(context.l10n.metadataCacheCleared, duration: 1500);
                       },
                     ),
                     AnymeXTile(
                       icon: Icons.restore_rounded,
-                      title: 'Reset to Default Order',
+                      title: context.l10n.resetToDefaultOrder,
                       subtitle:
-                          'Restore factory priority order and enable all providers',
+                          context.l10n.restoreFactoryPriorityOrder,
                       onTap: () {
                         service.resetDefaults();
-                        snackBar('Reset episode metadata to defaults',
+                        snackBar(context.l10n.resetEpisodeMetadataToDefaults,
                             duration: 1500);
                       },
                     ),

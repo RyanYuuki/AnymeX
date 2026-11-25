@@ -10,7 +10,7 @@
   "navManga": "Manga",
   "navNovel": "Novel",
   "navExtensions": "Kordhinta",
-  "navProfile": "Profile",
+  "navProfile": "Muuqaal Guud",
   "navMovies": "Filimada",
   "navSeries": "Taxane",
   "actionOk": "OK",
@@ -84,7 +84,7 @@
   "settingsBackupDesc": "Soo rar oo soo rar xogtaada",
   "settingsDownloads": "Soo dejinta",
   "settingsDownloadsDesc": "Soo deji waddooyinka & dejimaha isla socda",
-  "settingsLogs": "Logs",
+  "settingsLogs": "Diiwaanka Qoraalka",
   "settingsLogsDesc": "Arag oo dhoofi qoraalada abka",
   "settingsStorage": "Maareeyaha Kaydinta",
   "settingsStorageDesc": "Maamul xogta la kaydiyay & isticmaalka kaydinta",
@@ -94,7 +94,7 @@
   "settingsAboutDesc": "Macluumaadka App-ka, ka qaybqaatayaasha & shatiyada",
   "settingsComments": "Faallo",
   "settingsCommentsDesc": "Dejinta nidaamka faallooyinka",
-  "settingsAddons": "Addons",
+  "settingsAddons": "Ku-kordhinta",
   "settingsAddonsDesc": "Maamul fiidiyoowga & addons-ka akhristaha",
   "settingsSearchHint": "Dejinta raadinta...",
   "mediaAnime": "Anime",
@@ -112,7 +112,7 @@
   "detailsStatus": "Xaalada",
   "detailsType": "Nooca",
   "detailsGenres": "Noocyada",
-  "detailsStudios": "Studios",
+  "detailsStudios": "Istudiyowyada",
   "detailsAiring": "Hawo-qaadis",
   "detailsCompleted": "Dhammaystiran",
   "detailsOngoing": "Soconaya",
@@ -141,10 +141,10 @@
   "searchPopular": "caanka ah",
   "searchRecent": "Dhawaan",
   "errorGeneric": "Wax baa khaldamay",
-  "errorNetwork": "Cilada shabakada Fadlan hubi xidhiidhkaaga",
+  "errorNetwork": "Cilada shabakada Fadlan hubi xidhiidhkaaga.",
   "errorNotFound": "Lama helin",
-  "errorTimeout": "Codsiga waa dhacay Fadlan isku day mar kale",
-  "errorServerError": "Cilad server Fadlan isku day mar kale hadhow",
+  "errorTimeout": "Codsiga waa dhacay Fadlan isku day mar kale.",
+  "errorServerError": "Cilad server Fadlan isku day mar kale hadhow.",
   "errorNoInternet": "Ma jiro xiriir internet",
   "errorUnknown": "Khalad aan la garanayn ayaa dhacay",
   "homeContinueWatching": "Sii wad Daawashada",
@@ -176,5 +176,3922 @@
   "incognitoDisabled": "Habka qarsoodiga waa naafo",
   "episodeCount": "{count} Dhacdooyin",
   "chapterCount": "{count} cutubyada",
-  "itemCount": "{count} Walxaha"
+  "itemCount": "{count} Walxaha",
+  "whatAreWeDoingToday": ", maxaan maanta samaynaa?",
+  "aLogoWithThisNameAlready": "Logo leh magacan horey ayuu u jiraa.",
+  "about": "Ku saabsan",
+  "aboutCommentumV2": "Ku saabsan Commentum v2",
+  "aboutTheApp": "Ku saabsan Appka",
+  "accessModerationToolsAndReports": "Ku gal qalabka maamulka iyo warbixinnada",
+  "accountTokensAnilistMalSimkl": "Tokenada akoonka (AniList, MAL, Simkl)",
+  "accounts": "Akoonada",
+  "accountsSync": "Akoonada & Isku-xidhka",
+  "actionAppliedSuccessfully": "Ficilka si guul leh ayaa loo fuliyay",
+  "activeDownloads": "Soo dejinta socota",
+  "activity": "Waxqabad",
+  "activityDeleted": "Waxqabadka waa la tirtiray",
+  "activityHeatmap": "Khariidadda Waxqabadka",
+  "activityMergeTime": "Waqtiga Isku-darka Waxqabadka",
+  "activityPhrasing": "Qoraalka Waxqabadka",
+  "activityRefreshed": "Waxqabadka waa la cusbooneysiiyay",
+  "adFreeApp": "App aan xayaysiis lahayn",
+  "addCustomLogo": "Ku dar Logo Gaar ah",
+  "addCustomLogoGifWebp": "Ku dar Logo Gaar ah (.gif, .webp)",
+  "addRepo": "Ku dar Repo",
+  "addRepository": "Ku dar Kaydka",
+  "addYourRecommendation": "Ku dar taladaada",
+  "addOnExtensions": "Kordhinta Add-on-ka",
+  "addOns": "Waxyaabaha Lagu Kordhiyo",
+  "addOnsPowerBackgroundServicesSuch": "Add-ons-ku waxay awood u siiyaan adeegyada asalka ah, sida matoorka soo-gudbinta torrent-ka ee TorrServer, si loo ciyaaro xiriiriyaha magnet-ka toos ah.",
+  "addedToDownloads": "Waa lagu daray soo dejinta",
+  "addingKotatsuRepositoryThisWillTake": "Kaydka Kotatsu waa la darayaa. Tani waxay qaadan doontaa ugu yaraan 1-2 daqiiqo, fadlan sug...",
+  "addingRepositoryFetchingExtensions": "Kaydka waa la darayaa & kordhinta waa la soo qaadayaa...",
+  "adjustBottomBarMarginMediaDetails": "Hagaaji margin-ka bar-ka hoose (bogga faahfaahinta warbaahinta kaliya)",
+  "adjustCardAnimationSpeed": "Hagaaji xawaaraha animation-ka kaarka",
+  "adjustCornerRadiusOfElements": "Hagaaji go'da geesaha curiyayaasha",
+  "adjustDoubleTapToSeekDuration": "Hagaaji Muddada Double Tap To Seek",
+  "adjustElementGlowIntensity": "Hagaaji xoogga iftiinka curiyaha",
+  "adjustFrostedBlurIntensity": "Hagaaji xoogga blur-ka barafka",
+  "adjustGlowBlurIntensity": "Hagaaji xoogga blur-ka iftiinka",
+  "adjustHorizontalMarginOfBottomNavigation": "Hagaaji margin-ka toosan ee bar-ka navigation-ka hoose",
+  "adjustItemsPerRow": "Hagaaji shayada safka kasta",
+  "adjustMediaBackdropExposure": "Hagaaji iftiinka asalka warbaahinta",
+  "adjustMegaskipDuration": "Hagaaji Muddada MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "Hagaaji wareegga dhammaan kaararka warbaahinta",
+  "adjustSubSize": "Hagaaji Cabbirka Subtitle-ka",
+  "adjustSubtitleOutlineWidth": "Hagaaji Ballaca Geesta Subtitle-ka",
+  "adjustTextVisibility": "Hagaaji muuqaalka qoraalka",
+  "admin": "Maamule",
+  "adult": "Qof weyn",
+  "aiPicks": "Doorashooyinka AI",
+  "airingAnimeNotifications": "Ogeysiisyada Anime-ka la baahinayo",
+  "all": "Dhammaan",
+  "allClearNoReportsToReview": "Waa wanaagsan! Ma jiraan warbixino la eegayo.",
+  "allSources": "Dhammaan Ilaha",
+  "allowAnymexToAutomaticallyOpenAnime": "U oggolow AnymeX inuu si toos ah u furo xiriiriyayaasha web-ka ee anime & manga",
+  "allowInstallingUpdatesForExtensionsAnd": "U oggolow rakibidda cusboonaysiinta kordhinta iyo appka",
+  "allowOnlyUsersIFollowTo": "Kaliya isticmaalayaasha aan raacayo ayaa i fariin kara.",
+  "allowStorageAccessAndSelectDownload": "U oggolow gelitaanka kaydinta oo dooro fooldarka soo dejinta",
+  "allowStorageAccessToDownloadApp": "U oggolow gelitaanka kaydinta si loo soo dejiyo cusboonaysiinta appka & kordhinta",
+  "alreadyRecommended": "Horey ayaa loo talinayay",
+  "alternativeTitles": "Cinwaanada Kale",
+  "alwaysShowChapterTransition": "Had iyo jeer tus isbeddelka cutubka",
+  "alwaysShowPageIndicator": "Had iyo jeer tus calaamadda bogga",
+  "amountOfFilmGrainApplied": "Tirada xabbadaha filimka ee la isticmaalo",
+  "anifyKitsuArtwork": "Farshaxanka Anify / Kitsu",
+  "anilistSettings": "Dejinta AniList",
+  "anilistSettings2": "Dejinta Anilist",
+  "animatchCompatibility": "Isku-habboonaanta AniMatch",
+  "animatchLinkCopiedToClipboard": "Xiriirka AniMatch waa la koobiyeeyay!",
+  "animateControlOverlay": "Animeji Overlay-ga Xakamaynta",
+  "anime": "Anime",
+  "animeUpper": "ANIME",
+  "animeManga": "Anime iyo Manga",
+  "anime4kEnhancement": "Hagaajinta Anime 4K",
+  "animeAdaptation": "Lagu Qaabeeyay Anime",
+  "animeCustomLists": "Liisaska Anime-ka ee Gaarka ah",
+  "animeDetailsPhrasing": "Qoraalka Faahfaahinta Anime-ka",
+  "animeLibrary": "Maktabadda Anime-ka",
+  "animeList": "LIISTADA ANIME",
+  "animeScore": "Dhibcaha Anime-ka",
+  "animeSectionOrder": "Kala-horreynta Qaybta Anime-ka",
+  "announcement": "Ogeysiis",
+  "announcementUnavailable": "Ogeysiiska lama heli karo",
+  "announcements": "Ogeysiisyo",
+  "anymexForkOptimisedForTv": "AnymeX fork oo loo hagaajiyay TV",
+  "anymexIs100FreeOpenSource": "AnymeX 100% bilaash, isha furan, oo aan xayaysiis lahayn. Taageeradaadu si toos ah ayay u caawisaa kharashka server-ka iyo horumarinta hawlaha firfircoon!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX 100% bilaash, isha furan, oo aan xayaysiis lahayn. taageeradaadu waxay i dhiirigelinaysaa inaan sii ilaaliyo oo aan horumariyo appka si joogto ah!",
+  "appCacheExceededThresholdAndWas": "Kaydka appka ayaa ka badnaa xadka, waana la nadiifiyay",
+  "appDataHasBeenCompletelyReset": "Xogta appka si buuxda ayaa dib loo dejiyay",
+  "appFonts": "Font-yada Appka",
+  "appSettingsSessions": "Dejinta Appka & Fadhiyada",
+  "appearance": "Muuqaalka",
+  "appearanceInterface": "Muuqaalka & Interface-ka",
+  "appearanceTheme": "Muuqaalka & Mawduuca",
+  "appliesAnimeMangaPosterColorOn": "Wuxuu codsanayaa midabka poster-ka anime/manga ee bogga faahfaahinta",
+  "apply": "Codso",
+  "applyASubtleFilmGrainTexture": "Codso teksaska xabbadaha filimka ee fudud interface-ka dusheeda",
+  "applyFilters": "Codso Shaandheeyayaasha",
+  "applyOptionsFromYourMpvConf": "Codso ikhtiyaarada mpv.conf-kaaga markii ciyaarta la bilaabo",
+  "areYouSureYouWantTo": "Ma hubtaa inaad tirtirto dhammaan cookies-ka la kaydiyay?",
+  "areYouSureYouWantToDelete": "Ma hubtaa inaad tirtirto faalladan? Si joogto ah ayaa looga saari doonaa, warbixinteana waa la xallin doonaa.",
+  "areYouSureYouWantToDeleteThis": "Ma hubtaa inaad tirtirto kordhintan?",
+  "areYouSureYouWantToDeleteThisReply": "Ma hubtaa inaad tirtirto jawaabtan?",
+  "askForTrackingPermission": "Ogolaansho weydii raadinta",
+  "atLeast2TabsMustRemain": "Waa in ugu yaraan 2 tab ay muuqdaan!",
+  "audioEngine": "Matoorka Codka",
+  "audioPitchCorrection": "Saxitaanka Pitch-ka Codka",
+  "authenticationOptional": "XAQIJINTA (IKHTIYAARI)",
+  "auto": "Otomaatig",
+  "autoPlay": "Ciyaar Otomaatig ah",
+  "autoScroll": "Scroll-ka Otomaatiga ah",
+  "autoScrollSpeed": "Xawaaraha Scroll-ka Otomaatiga ah",
+  "autoSkipEd": "Si toos ah u dhaaf ED",
+  "autoSkipFiller": "Si toos ah u dhaaf Filler",
+  "autoSkipOnceOnly": "Mar keliya si toos ah u dhaaf",
+  "autoSkipOnlyOncePerWatch": "Si toos ah u dhaaf mar keliya daawasho kasta",
+  "autoSkipOp": "Si toos ah u dhaaf OP",
+  "autoSkipRecap": "Si toos ah u dhaaf Recap",
+  "autoSkipTheEndingSong": "Si toos ah u dhaaf heesta ugu dambaysa",
+  "autoSkipTheOpeningSong": "Si toos ah u dhaaf heesta furitaanka",
+  "autoSkipTheRecapSection": "Si toos ah u dhaaf qaybta recap-ka",
+  "autoSwitchToVerticalMode": "Si toos ah u beddel habka toosan",
+  "autoTranslateSubtitles": "Si toos ah u turjun subtitles-ka",
+  "autoWebtoonMode": "Habka Webtoon ee Otomaatiga ah",
+  "autoClearThreshold": "Xadka nadiifinta otomaatiga ah",
+  "autoSelectDefault": "Si toos ah u dooro (caadi)",
+  "autoSelectThisServerQualityFor": "Si toos ah u dooro tayada server-kan anime-kan",
+  "automaticallyMoveToNextTextSegment": "Si toos ah u gudub qaybta qoraalka xigta",
+  "automaticallyScrollContent": "Si toos ah u scroll-garee nuxurka",
+  "automaticallyScrollPages": "Si toos ah u scroll-garee bogagga",
+  "automaticallySkipFillerEpisodesWhenGoing": "Si toos ah u dhaaf qaybaha filler marka la gaadhayo qaybta xigta",
+  "automaticallyUpdateEntriesWhenImportingThe": "Si toos ah u cusboonaysii galinta marka XML-ka la soo dejinayo",
+  "availableAddOns": "Add-ons-ka Diyaarka ah",
+  "availableKeybindings": "Furayaasha Diyaarka ah:",
+  "avatarDecorations": "Qurxinta Avatar-ka",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Qurxinta avatar-ka, nameplates, bannerada & saamaynta profile-ka",
+  "avgChapters": "Celceliska Cutubyada",
+  "avgEpisodes": "Celceliska Qaybaha",
+  "back": "Dib u noqo",
+  "backdropScope": "Asalka & Baaxadda",
+  "backdropBrightness": "Iftiinka Asalka",
+  "backdropSource": "Isha Asalka",
+  "backgroundOpacity": "Hufnaanta Asalka",
+  "backup": "Kaydin",
+  "backupRestore": "Kaydin & Soo celin",
+  "backupAndRestoreYourLibrary": "Kaydi oo soo celi maktabaddaada",
+  "backupArchive": "Kaydinta Archive-ka",
+  "backupOwner": "Milkiilaha Kaydinta",
+  "backupRestoredSuccessfully": "Kaydinta si guul leh ayaa loo soo celiyay!",
+  "backupSavedSuccessfully": "Kaydinta si guul leh ayaa loo kaydiyay!",
+  "badge": "Calaamad",
+  "banUser": "Mamnuuc isticmaalaha",
+  "baseUrlNotAvailableForThis": "Base URL-ka lama heli karo ilahan",
+  "basedOnYourFavouriteCharacters": "Waxaa lagu salaysan jilayaasha aad jeceshahay.",
+  "basedOnYourFavouriteStaff": "Waxaa lagu salaysan shaqaalaha aad jeceshahay.",
+  "basedOnYourTop10Tags": "Waxaa lagu salaysan 10-ka tag ee ugu sareeya.",
+  "basedOnYourTop3Studios": "Waxaa lagu salaysan 3-ta studio ee ugu sareeya.",
+  "basedOnYourTop5Genres": "Waxaa lagu salaysan 5-ta nooc ee ugu sareeya.",
+  "basedOnYourTop6Voice": "Waxaa lagu salaysan 6-ta codka jilayaasha ee ugu sareeya.",
+  "batchDownload": "Soo dejin kooxeed",
+  "beTheFirstToRecommendThis": "Noqo qofka ugu horreeya ee talinaya magacan!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Subtitle-ka oo si wanaagsan loo muujiyo adigoo isticmaalaya maktabadda libass",
+  "blockquote": "Blockquote",
+  "blurBackdropTuning": "Hagaaska Blur & Asalka",
+  "blurAmount": "Tirada Blur-ka",
+  "blurColorTint": "Midabka Blur-ka",
+  "blurMechanism": "Habka Blur-ka",
+  "blurMultiplier": "Badiyaha Blur-ka",
+  "blurStyle": "Qaabka Blur-ka",
+  "bold": "Qaro",
+  "boldItalic": "Qaro + Janjeer",
+  "botUrlNotConfigured": "Bot URL-ka lama habayn",
+  "bottomControls": "Xakamaynta Hoose",
+  "bottomMargin": "Margin-ka Hoose",
+  "bottomNavBarMargin": "Margin-ka Bar-ka Navigation-ka Hoose",
+  "broadcastYourActivityToDiscord": "Ku faafi waxqabadkaaga Discord-ka",
+  "browsingIdle": "Baadhista / Aan shaqayn",
+  "browsingPhrasing": "Qoraalka Baadhista",
+  "bufferSize": "Cabbirka Buffer-ka",
+  "builtInStyles": "Qaababka la dhex dhisay",
+  "byDisablingThisYouCanAvoid": "Haddii aad tan damiso waxaad ka fogaan kartaa isbeddelka u dhexeeya subtitles-ka.",
+  "byIndex": "Index-ka",
+  "byUserId": "User ID-ka",
+  "byUsername": "Magaca isticmaalaha",
+  "bypassCloudflare": "Ka gudub Cloudflare",
+  "cacheStorage": "Kaydka & Kaydinta",
+  "cacheMinutes": "Daqiiqadaha Kaydka",
+  "cacheOverview": "Guudmar Kaydka",
+  "cachedImages": "Sawirrada la kaydiyay",
+  "calculateCompatibility": "Xisaabi Isku-habboonaanta",
+  "calculatedBasedOnWhichReleaseDecades": "Waxaa lagu xisaabiyay tobannaankii sano ee aad ugu daawatay oo aad ugu dhibcaha badnaa.",
+  "calendar": "Kalandar",
+  "cancel": "Jooji",
+  "cannotCompareAUserWithThemselves": "Isticmaale naftiisa ma barbardhigi karto! Fadlan geli laba magac oo kala duwan.",
+  "cannotCompareYourProfileWithYourself": "Profile-kaaga naftaada ma barbardhigi kartid! Fadlan geli magac kale.",
+  "cantPlaySinceUserClosedThe": "Ma ciyaari karo sababtoo ah isticmaaluhu appka si degdeg ah ayuu u xidhay",
+  "cantReadSinceUserClosedThe": "Ma akhriyi karo sababtoo ah isticmaaluhu appka si degdeg ah ayuu u xidhay",
+  "cardAnimationDuration": "Muddada Animation-ka Kaarka",
+  "cardRoundness": "Wareegga Kaarka",
+  "cardStyle": "Qaabka Kaarka",
+  "carouselStyle": "Qaabka Carousel-ka",
+  "changeFile": "Beddel Faylka",
+  "changeRole": "Beddel Doorka",
+  "changeService": "Beddel Adeegga",
+  "changeSubtitleBackgroundColor": "Beddel midabka asalka subtitle-ka",
+  "changeSubtitleColors": "Beddel midabyada subtitle-ka",
+  "changeSubtitleOutlineColor": "Beddel midabka geesta subtitle-ka",
+  "changelog": "Diiwaanka Isbeddelada",
+  "chapterListSettings": "Dejinta Liiska Cutubyada",
+  "chapterNumber": "Lambarka Cutubka",
+  "chapterTileStyle": "Qaabka Tile-ka Cutubka",
+  "chapters": "Cutubyo",
+  "chaptersUpper": "CUTUBYO",
+  "chaptersVolumes": "CUTUBYO & MUGGA",
+  "chaptersRead": "Cutubyada la akhriyay",
+  "characters": "Jilayaasha",
+  "checkCompatibility": "Hubi Isku-habboonaanta",
+  "checkForAddOnUpdates": "Hubi cusboonaysiinta Add-on-ka",
+  "checkForUpdates": "Hubi cusboonaysiinta",
+  "checkUpdatesFromBetaChannel": "Hubi cusboonaysiinta kanaalka beta-ka",
+  "checkingForUpdates": "Cusboonaysiinta waa la hubinayaa!",
+  "chooseABackupFileAnymex": "Dooro fayl kaydin (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Dooro asal gaar ah habka liquid-ka.",
+  "chooseADirectoryToBrowseYour": "Dooro fooldar si aad u baadho faylasha warbaahintaada",
+  "chooseDifferentImage": "Dooro Sawir Kale",
+  "chooseDownloadFolder": "Dooro Fooldarka Soo dejinta",
+  "chooseImage": "Dooro Sawir",
+  "chooseProvider": "Dooro Bixiyaha",
+  "chooseQuality": "Dooro Tayada",
+  "chooseServer": "Dooro Server",
+  "chooseServiceTracker": "Dooro Adeeg / Tracker",
+  "chooseShaderProfile": "Dooro Profile-ka Shader-ka",
+  "chooseUpiApp": "Dooro appka UPI",
+  "chooseWhichListToShowOn": "Dooro liiska lagu tusayo bogga hore",
+  "chooseYourFavouriteColor": "Dooro midabka aad jeceshahay!",
+  "chooseYourFavouritePalette": "Dooro palette-ka aad jeceshahay!",
+  "chromaScaler": "Cabbiraha Chroma",
+  "classicCarouselCardLayoutFeaturingVertical": "Qaabka kaarka carousel-ka caadiga ah oo leh kaararka poster-ka toosan.",
+  "clear": "Nadiifi",
+  "clearAll": "Nadiifi Dhammaan",
+  "clearAllHistory": "Nadiifi Taariikhda oo Dhan",
+  "clearAppCache": "Nadiifi Kaydka Appka",
+  "clearAppCacheNow": "Hadda nadiifi kaydka appka",
+  "clearCache": "Nadiifi Kaydka",
+  "clearCacheCookies": "Nadiifi Kaydka & Cookies-ka",
+  "clearCookies": "Nadiifi cookies-ka",
+  "clearCookies2": "Nadiifi Cookies-ka",
+  "clearHistory": "Nadiifi Taariikhda",
+  "clearImageCacheNow": "Hadda nadiifi kaydka sawirada",
+  "clearProxy": "Nadiifi Proxy",
+  "clearSelected": "Nadiifi kuwa la doortay",
+  "clientAll": "Macmiil: Dhammaan",
+  "close": "Xir",
+  "failedToLoadUserHistory": "Taariikhda isticmaalaha lama soo rari karo.",
+  "noHistoryFound": "Taariikh lama helin.",
+  "youNeedToBeLoggedIn3": "Waa inaad galtaa si aad faallooyinka u wax ka beddesho",
+  "commentCannotBeEmpty": "Faallada ma noqon karto mid madhan",
+  "failedToLoadCommentsPleaseTry": "Faallooyinka lama soo rari karo. Fadlan mar kale isku day.",
+  "commentsLoaded": "{value} faallo ayaa la soo rariyay",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Faallooyinka dib looma cusboonaysiin karo. Fadlan mar kale isku day.",
+  "invalidParentCommentId": "Aqoonsiga faallada waalidka ah ma saxna",
+  "replyPostedSuccessfully": "Jawaabta si guul leh ayaa loo dhigay",
+  "failedToPostReply": "Jawaabta lama dhigi karo",
+  "failedToPostReplyPleaseTry": "Jawaabta lama dhigi karo. Fadlan mar kale isku day.",
+  "commentPostedSuccessfully": "Faallada si guul leh ayaa loo dhigay",
+  "failedToAddCommentPleaseTry": "Faallada lama dari karo. Fadlan mar kale isku day.",
+  "failedToUpdateVotePleaseTry": "Codka lama cusboonaysiin karo. Fadlan mar kale isku day.",
+  "invalidCommentId": "Aqoonsiga faallada ma saxna",
+  "commentEditedSuccessfully": "Faallada si guul leh ayaa loo tafatiray",
+  "failedToEditComment": "Faallada lama tafatiri karo",
+  "commentDeletedSuccessfully": "Faallada si guul leh ayaa loo tirtiray",
+  "failedToDeleteComment": "Faallada lama tirtiri karo",
+  "failedToReportComment": "Faallada cabashada lama gudbin karo",
+  "failedToModerateComment": "Faallada lama maamuli karo",
+  "failedToManageUser": "Isticmaalaha lama maamuli karo",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ dhibcood). Darajadu waxay ku salaysan tahay waxqabadka dhabta ah ({realPoints} dhibcood).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} dhibcood oo la helay + {text} abaalmarin door ({label}). Darajadu waxay ku salaysan tahay waxqabadka dhabta ah.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Kala duwanaanshaha Qaybta",
+  "episodeIsDownloaded": "Qaybta {number} waa la soo dejiyay",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} qaybood",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "Habaynta Kaarka",
+  "presetStyle": "Qaabka Diyaarsan",
+  "chooseFrom5AuthenticBuiltIn": "Ka dooro 5 naqshadood oo dhab ah oo dhex ku jira",
+  "sizingGeometry": "Cabbirka & Qaabka",
+  "cardSize": "Cabbirka Kaarka",
+  "scaleCardsProportionallyWithoutDistortion": "Kaararka u kala beddel si isku mid ah, iyadoon la gaabsanin",
+  "landscapeCards": "Kaararka Balaadhka",
+  "formatCardsIn169Widescreen": "Kaararka ku habayn jihada shaashadda ballaadhka ah ee 16:9",
+  "selectPosterImageAspectRatio": "Dooro saamiga sawirka xayaysiinta",
+  "titleLines": "Sadarrada Magaca",
+  "maximumNumberOfTitleLinesDisplayed": "Tirada ugu badan ee sadarrada magaca la muujiyo",
+  "gestureAreas": "Meelaha Gacan-ku-taabashada",
+  "resetDefault": "Dib u deji caadi ah",
+  "overlay": "Dahaadh",
+  "volume": "Dhawaaqa",
+  "brightnessArea": "Meelaha Iftiinka",
+  "overlayAreaTap": "Meelaha Dahaadhka (Taabo)",
+  "volumeArea": "Meelaha Dhawaaqa",
+  "resetToDefaultLayout": "Dib u deji qaabeynta caadiga ah",
+  "moveToSlot": "U wareeg meel",
+  "topBar": "Xagga Sare",
+  "bottomLeft": "Hoose Bidix",
+  "bottomRight": "Hoose Midig",
+  "themesOverlay": "Mawduucyada & Dahaadhka",
+  "gesturesSeeking": "Gacan-ku-taabashada & Raadinta",
+  "horizontalSwipeAcrossTheScreenTo": "Shaashadda oo dhan ku jiid dhinac u raadi",
+  "autoSkipCompletion": "Si otomaatig ah u dhaaf & Dhammaystirka",
+  "percentageWatchedBeforeMarkingCompleted": "Boqolkiiba la daawaday ka hor intaan loo calaamadin in la dhammeeyay",
+  "playerControls": "Xakameynta Ciyaaryahanka",
+  "mpvConfSavedSuccessfully": "mpv.conf si guul leh ayaa loo kaydiyay",
+  "hardwareDrivers": "Qalabka & Darawallada",
+  "systemIntegrations": "Nidaamka & Isku-xirka",
+  "experimentalMpvTuning": "Habaynta Tijaabada ee MPV",
+  "editMpvConf": "Tafatir mpv.conf",
+  "modeA": "Qaab A",
+  "modeB": "Qaab B",
+  "modeC": "Qaab C",
+  "modeAA": "Qaab A+A",
+  "modeBB": "Qaab B+B",
+  "modeCA": "Qaab C+A",
+  "natural": "Dabiici",
+  "vivid": "Iftiin badan",
+  "cinema": "Filim",
+  "soft": "Jilicsan",
+  "warm": "Kulul",
+  "cool": "Qabow",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Filimka HDR",
+  "vividPop": "Pop Iftiin badan",
+  "dark": "Madow",
+  "anime4kEngine": "Matoorka Anime4K",
+  "anime4kShaders2": "Shaders-ka Anime4K",
+  "devicePerformanceTier": "Heerka Waxqabadka Qalabka",
+  "midRange": "Dhexdhexaad",
+  "highEnd": "Sare",
+  "shaderMode": "Qaabka Shader",
+  "colorPreset": "Midabka Diyaarsan",
+  "desktopPlaybackKeybindings": "Furayaasha Ciyaarta ee Desktop-ka",
+  "customSubtitleFonts": "Hab-xarfeedka Qoraalka Gaarka ah",
+  "importedFont": "Hab-xarfeedka la soo dejiyay \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Ma hubtaa inaad tirtirto \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Luuqadda & Turjumaadda",
+  "renderingBehavior": "Bixinta & Habdhaqanka",
+  "disableToAvoidFadeTransitionsBetween": "Dami si aad uga fogaato isbeddelka ifka ah ee u dhexeeya qoraallada hoose",
+  "typographyOutline": "Qoraalka & Xuduudka",
+  "adjustSubtitleFontSize": "Hagaaji cabbirka xarfaha qoraalka hoose",
+  "adjustSubtitleOutlineThickness": "Hagaaji qaroojinta xuduudka qoraalka hoose",
+  "colorsPosition": "Midabbada & Booska",
+  "changeSubtitleTextColor": "Beddel midabka qoraalka hoose",
+  "mangaReader": "Akhriyaha Manga",
+  "layoutDirection": "Qaabeynta & Jihada",
+  "autoSwitchToVerticalModeFor": "Si otomaatig ah ugu beddel qaabka toosan webtoons",
+  "imageDisplay": "Sawirka & Muujinta",
+  "interfaceSession": "Interface-ka & Fadhiga",
+  "mangaControlsGestures": "Xakameynta & Gacan-ku-taabashada Manga",
+  "overscrollToPreviousNextChapter": "Ka gudub si aad u gaarto cutubka hore/xiga",
+  "automaticallyScrollMangaPages": "Si otomaatig ah u jiid bogagga manga",
+  "swapVolumeUpDownActions": "Isku beddel falalka dhawaaqa kor/hoos",
+  "novelReader": "Akhriyaha Sheekada",
+  "themeDisplay": "Mawduuca & Muujinta",
+  "displayChapterPercentageWhileReading": "Muuji boqolkiiba cutubka intii aad akhrinayso",
+  "displayStatusInfoInTheNovel": "Muuji macluumaadka xaaladda akhriyaha sheekada",
+  "typographySpacing": "Qoraalka & Masaafada",
+  "novelControlsGestures": "Xakameynta & Gacan-ku-taabashada Sheekada",
+  "tapScreenEdgesToScrollNovel": "Taabo geesaha shaashadda si aad bogagga sheekada u jiido",
+  "swipeGestures": "Gacan-ku-taabashada Jiidista",
+  "volumeKeyScrolling": "Jiidista Furayaasha Dhawaaqa",
+  "useHardwareVolumeButtonsToScroll": "Isticmaal badhamada dhawaaqa ee qalabka si aad sheekooyinka u jiido",
+  "automaticallyScrollNovelContent": "Si otomaatig ah u jiid waxyaalaha ku jira sheekada",
+  "textToSpeechTts": "Qoraalka u beddel Hadal (TTS)",
+  "readNovelChaptersAloud": "Akhri cutubyada sheekada si cod ah",
+  "speechRate": "Xawaaraha hadalka",
+  "voicePitch": "Heerka codka",
+  "areYouSureYouWantTo4": "Ma hubtaa inaad ka baxayso {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Cusboonaysiinta lama hubin karo: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} si guul leh ayaa loo rakibay",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} lama rakibi karo: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} si guul leh ayaa loo cusboonaysiiyay",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} lama cusboonaysiin karo: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Ka saar {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} waa la saaray",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} lama saari karo: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "Dalbashada Qaybta {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Ogeysiisyada & Isku-xidhka",
+  "enableNotifications": "Oggolow Ogeysiisyada",
+  "syncAnilistNotificationsWithDeviceNotifications": "Isku xidh ogeysiisyada AniList ogeysiisyada qalabka",
+  "airingAlerts": "Digniinaha Baahinta",
+  "socialAlerts": "Digniinaha Bulshada",
+  "notifyOnNewFollowers": "Ogeysii marka raacayaal cusub yimaadaan",
+  "activityAlerts": "Digniinaha Waxqabadka",
+  "syncInterval": "Waqtiga Isku-xidhka",
+  "regionTimezone": "Gobolka & Waqtiga",
+  "profileBio": "Xogta Profile-ka",
+  "backupFailed": "Kaydinta waa fashilantay: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Khalad ayaa dhacay markii faylka la dooranayay: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Kaydinta lama soo rari karo: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Soo celinta waa fashilantay: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} cinwaan iyo taariikh",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} cinwaan iyo cutubyo",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} cinwaan iyo xaaladda akhriska",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} liis gaar ah oo warbaahinta oo dhan",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} galka kordhinta ee diiwaangashan",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} xirmo zip oo kordhin ah",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Caawimaad & Macluumaad",
+  "libraryContentSafety": "Maktabadda & Amniga Waxyaalaha ku Jira",
+  "homePageLists": "Liisaska Bogga Hore",
+  "chooseWhichListsToShowOn": "Dooro liisaska la muujinayo bogga hore",
+  "homePageCards": "Kaararka Bogga Hore ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Daawanaya $anime",
+  "viewingAnime": "Eegaya $anime",
+  "readingManga2": "Akhrinaya $manga",
+  "viewingManga": "Eegaya $manga",
+  "readingNovel2": "Akhrinaya $novel",
+  "viewingNovel": "Eegaya $novel",
+  "browsingStatus": "Baaraya $status",
+  "upiIdCopied": "UPI ID waa la koobiyeeyay: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Koobi UPI ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Taabo si aad u furto GPay, PhonePe, Paytm, iwm.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Ogeysiisyada Soo Dejinta",
+  "reDownloadFailed": "Dib u soo dejinta waa fashilantay: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Soo celinta hore waa fashilantay: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Kaydka lama dari karo: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Hab-xarfeedka \"{fontName}\" waa la dabaqay",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "\"{fontName}\" lama soo dejin karo",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" waa la soo dejiyay oo la dabaqay",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Faylka hab-xarfeedka lama soo dejin karo",
+  "deleted3": "\"{fontName}\" waa la tirtiray",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Maktabadda Xarfaha",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Hab-xarfeedka caadiga ah ee qaabka wareegsan oo loogu talagalay AnymeX",
+  "systemFont": "Hab-xarfeedka Nidaamka",
+  "useYourDeviceOsDefaultSystem": "Isticmaal hab-xarfeedka caadiga ah ee nidaamka qalabkaaga",
+  "loadYourOwnTtfOrOtf": "Soo geli faylalka qoraalka .ttf ama .otf ee gaarka ah",
+  "pendingReports": "{length} warbixin oo sugaya",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies & Kaydinta",
+  "monitoring": "Kormeerka",
+  "fpsMeter": "Qiyaasaha FPS",
+  "showDraggableRealTimeFpsOverlay": "Muuji dahaadhka FPS ee wakhtiga dhabta ah ee la jiidi karo",
+  "detectedModesDisplay": "Qaababka la ogaaday & Muujinta",
+  "currentDisplayMode": "Qaabka Muujinta ee Hadda",
+  "modes": "{length} qaab",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Hagaaji",
+  "stylingLibass": "{subLang} • {subFont} • Qaabeynta & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Toos",
+  "vert": "Toosan",
+  "controlsTapZones": "Xakameynta & Meelaha Taabashada",
+  "customizeTapZones": "Hagaaji Meelaha Taabashada",
+  "configurePagedAndWebtoonTapRegions": "Habee meelaha taabashada ee bogagga iyo webtoon-ka",
+  "fitBordersSpacing": "{value} • Ku habso, xuduudaha & masaafada",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Qaabka cutubka, tilmaamaha bogga & qufulka shaashadda",
+  "overscrollActionsAutoScrollVolume": "Ka gudubka, falalka, jiidista otomaatiga ah & dhawaaqa",
+  "themeTypography": "Mawduuca & Qoraalka",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Qaabka Akhriska & Muujinta",
+  "pageModeProgressBatteryIndicator": "Qaabka bogga, horumarka & tilmaamaha batteriga",
+  "readPageByPageInsteadOf": "Akhri bog-bog halkii laga jiidi lahaa",
+  "displayPercentageInReadingBar": "Muuji boqolkiiba bar-ka akhriska",
+  "displayBatteryAndTimeInReader": "Muuji batteriga iyo waqtiga bar-ka akhriyaha",
+  "gesturesNavigation": "Gacan-ku-taabashada & Socodka",
+  "tapToScrollSwipeAutoScroll": "Taabo si aad u jiido, jiid, jiidista otomaatiga ah & dhawaaqa",
+  "tapEdgesOfScreenToScroll": "Taabo geesaha shaashadda si aad kor/hoos ugu jiido",
+  "swipeHorizontallyToChangeChapters": "Toos u jiid si aad cutubyada u beddesho",
+  "useVolumeKeysToScroll": "Isticmaal furayaasha dhawaaqa si aad u jiido",
+  "textToSpeechTts2": "Qoraalka u beddel Hadal (TTS)",
+  "textToSpeechReadingSupport": "Taageerada akhriska qoraalka-u-beddel-hadal",
+  "speechRate2": "Xawaaraha Hadalka",
+  "voicePitch2": "Heerka Codka",
+  "appPostersIconsAvatarsSize": "Xayaysiinta app-ka, astaamaha, avatars. Cabbirka: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Qaybaha fiidiyowga ee ku meel gaarka ah. Cabbirka: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Bogagga sheekada webka ee la soo dejiyay. Cabbirka: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Logs, soo dejinta ku meel gaarka ah. Cabbirka: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Kaydka ku meel gaarka ah lama nadiifin karo: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Dib u dejinta warshadda waa fashilantay: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 ama 3F51B5",
+  "motionDisplay": "Dhaqdhaqaaqa & Muujinta",
+  "visualEffectsTuning": "Saamaynta Muuqaalka & Habaynta",
+  "historyCard": "Kaarka taariikhda",
+  "carousel": "Wareegto",
+  "navBar": "Bar-ka Navigation-ka",
+  "themeDarkModeLayoutStyling": "Qaabka mawduuca, qaabka madow & qaabeynta qaabaynta",
+  "gesturesSubtitlesVideoSettings": "Gacan-ku-taabashada, qoraallada hoose & habaynta fiidiyowga",
+  "settingsTiles": "Dhalooyinka habaynta",
+  "oledMode2": "Qaabka OLED",
+  "primaryAccount": "Akoonka Aasaasiga ah ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Lagu xiray {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Ku xidh {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} cinwaan",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Ka saar \"{id}\"? Tan lama soo celin karo.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Waa la soo dejinayaa…",
+  "addJsonFiles": "Ku dar faylalka JSON",
+  "previousStyle": "Qaabka hore",
+  "nextStyle": "Qaabka xiga",
+  "currentStyle": "Qaabka hadda",
+  "useThisStyle": "Isticmaal qaabkan",
+  "pleaseLogInToGetRecommendations": "Fadlan soo gal si aad talooyin u hesho",
+  "chapter1": "Cutubka 1",
+  "deletedSuccessfully": "{value} si guul leh ayaa loo tirtiray",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl si guul leh ayaa loo soo galay!",
+  "yepFailed": "Haa, Guuldaraystay",
+  "userInfoFetchingFailed": "Soo Qaadista Macluumaadka Isticmaalaha Way Fashilantay!",
+  "githubLoginFailed": "Galitaanka GitHub wuu fashilmay: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Isku-xidhka horay ayuu u socdaa.",
+  "anotherSyncActionIsAlreadyIn": "Falka kale ee isku-xidhka ayaa horay u socda.",
+  "noAnymexSyncGistFoundTo": "Ma jiro gist isku-xidhka AnymeX oo la tirtiro.",
+  "noAnymexSyncGistFoundInitialize": "Ma jiro gist isku-xidhka AnymeX. Marka hore bilow.",
+  "githubGistSync": "Isku-xidhka GitHub Gist",
+  "manage": "Maamul",
+  "manageGithubGistSync": "Maamul Isku-xidhka GitHub Gist",
+  "joinedTheParty": "{username} wuu ku biiray kulanka",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} wuu ka baxay kulanka",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Martigeliyuhu wuxuu u beddelay Cutubka {episodeNumber} ee {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Khalad ayaa ka dhacay soo qaadista faallooyinka",
+  "errorAddingComment": "Khalad ayaa ka dhacay ku darista faallada",
+  "errorUpdatingVote": "Khalad ayaa ka dhacay cusboonaysiinta codka",
+  "errorEditingComment": "Khalad ayaa ka dhacay wax ka beddelka faallada",
+  "errorDeletingComment": "Khalad ayaa ka dhacay tirtirida faallada",
+  "commentReportedSuccessfully": "Faallada si guul leh ayaa loo soo sheegay",
+  "errorReportingComment": "Khalad ayaa ka dhacay soo sheegista faallada",
+  "errorFetchingReportsQueue": "Khalad ayaa ka dhacay soo qaadista liiska warbixinnada",
+  "reportResolvedSuccessfully": "Warbixinta si guul leh ayaa loo xaliyay",
+  "failedToResolveReport": "Warbixinta lama xallin karo",
+  "errorResolvingReport": "Khalad ayaa ka dhacay xallinta warbixinta",
+  "errorFetchingUserInfo": "Khalad ayaa ka dhacay soo qaadista macluumaadka isticmaalaha",
+  "errorFetchingUserHistory": "Khalad ayaa ka dhacay soo qaadista taariikhda isticmaalaha",
+  "errorFetchingUserStats": "Khalad ayaa ka dhacay soo qaadista tirakoobka isticmaalaha",
+  "errorListingUsers": "Khalad ayaa ka dhacay liistigga isticmaalayaasha",
+  "errorSearchingUsers": "Khalad ayaa ka dhacay raadinta isticmaalayaasha",
+  "errorFetchingModerationQueue": "Khalad ayaa ka dhacay soo qaadista liiska maamulka",
+  "commentModeratedSuccessfully": "Faallada si guul leh ayaa loo maamuulay",
+  "errorModeratingComment": "Khalad ayaa ka dhacay maamulida faallada",
+  "userManagedSuccessfully": "Isticmaalaha si guul leh ayaa loo maamuulay",
+  "errorManagingUser": "Khalad ayaa ka dhacay maamulida isticmaalaha",
+  "errorGettingInitialDeepLink": "Khalad ayaa ka dhacay helitaanka isku-xirka bilowga ah: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Khalad ayaa ka dhacay furidda isku-xirka: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Koobi faahfaahinta khaladka",
+  "whatSNew": "Waxa Cusub",
+  "updatedToV": "Waxaa loo cusboonaysiiyay v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Isku-xirka xayaysiinta lama furi karo",
+  "newAnilistUpdates": "{length} cusboonaysiin cusub oo AniList ah",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} kale",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Cusboonaysii qalabka",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Kaydka ayaa lagu darayaa... fadlan sug.",
+  "unsupportedThemeTypeSupportedPlayer": "Nooca midabka aan la taageerin \"{type}\". La taageero: player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Midabka ciyaaryahanka ayaa laga soo dejinayaa isku-xirka...",
+  "themeIsInvalid": "Midabku waa khalad: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "JSON-ka midabku waa sax. {imported} {label} ayaa la soo dejiyay.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Qolka {code} ayaa lagu biirayaa...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Qolka lagu biirin waayay: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Isku-habboonaanta AniMatch ee {user1} & {user2} ayaa la xisaabinayaa...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "La wadaag adeegga raadinta ee aad dooratay",
+  "shareAnymexLink": "La wadaag isku-xirka AnymeX",
+  "opensDirectlyInAnymex": "Si toos ah ayuu ugu furmaa AnymeX",
+  "newCommentsRepliesAndEdits": "Faallooyin, jawaabo iyo wax ka beddelid cusub",
+  "upvotesAndDownvotesOnYourComments": "Codad taageero iyo codad diidmo oo ku saabsan faallooyinkaaga",
+  "warningsMutesBansAndModerationActions": "Digniino, aamusin, mamnuucid iyo falal maamul",
+  "reportFiledResolvedDismissed": "Warbixin la gudbiyay, la xaliyay, la diiday",
+  "officialAnnouncements": "Ogeysiisyada rasmiga ah",
+  "whenSomeoneMentionsYouInA": "Marka qof kuu xuso faallo @mention",
+  "notificationsForNewAnimeEpisodeReleases": "Ogeysiisyo ku saabsan cutubyada anime-ka cusub ee la sii daayo",
+  "notificationsForFollowsMentionsAndLikes": "Ogeysiisyo ku saabsan raacidda, xusidda iyo jeclaanshaha",
+  "notificationsForCompletedEpisodeAndChapter": "Ogeysiisyo ku saabsan soo dejinta cutubyada iyo baabiyada la dhammeeyay",
+  "signIn": "Gali",
+  "failedToCheckForUpdates3": "Hubinta cusboonaysiinta waay fashilantay",
+  "noUpdatesAvailable": "Cusboonaysiin ma jirto",
+  "errorCheckingForUpdates": "Khalad ayaa ka dhacay hubinta cusboonaysiinta",
+  "installPermissionRequired": "Ogolaansho rakib ayaa loo baahan yahay",
+  "downloadFailed3": "Soo dejinta way fashilantay",
+  "newVersionAvailable": "Nooc cusub ayaa diyaar ah",
+  "closetCommunity": "Kaydka & Bulshada",
+  "cloudflareChallengeSolved": "Caqabadda Cloudflare waa la xalliyay!",
+  "collectionName": "Magaca ururinta",
+  "collections": "Ururinno",
+  "combineBackupDataWithExistingData": "Ku daji xogta backup-ka xogta hore ee qalabkan",
+  "commentDeleted": "Faallada waa la tirtiray",
+  "commentPolicy": "Siyaasadda faallooyinka",
+  "commentReplies": "Jawaabaha faallooyinka",
+  "commentRules": "Xeerarka faallooyinka",
+  "commentSystem": "Nidaamka faallooyinka",
+  "comments": "Faallooyinka",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 waa nidaam faallo horumarsan oo bixiya:",
+  "commentumV2SettingsModerationPreferences": "Dejinta Commentum v2, maamulka & doorashooyinka",
+  "common": "Guud",
+  "commonCharacters": "Jilayaasha caadiga ah",
+  "commonFavouriteStaff": "Shaqaalaha ugu caansan",
+  "commonGenres": "Noocyada caadiga ah",
+  "commonSettings": "Dejinta guud",
+  "commonStudios": "Istuudiyaha caadiga ah",
+  "commonTags": "Calaamadaha caadiga ah",
+  "commonVoiceActors": "Codka-bixiyeyaasha caadiga ah",
+  "communityDriven": "Bulshada ayaa hogaamisa",
+  "communityForksOfAnymex": "Laamaha bulshada ee AnymeX",
+  "communityLeaderboard": "Liiska bulshada",
+  "communityRecommendations": "Talooyinka bulshada",
+  "compact": "Yar",
+  "compactCardWithEpisodeThumbnailAnd": "Kaarka yar oo leh sawirka qaybta iyo cinwaanka",
+  "compactGridOfChapterNumbers": "Shabakad yar oo lambarada cutubyada ah",
+  "compatibility": "Isku-habboonaanta",
+  "compatibilityRanks": "Darajooyinka isku-habboonaanta",
+  "compatibleWithGooglePayPhonepePaytm": "Waxay la shaqeysaa Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay, iyo dhammaan appsyada bangiga UPI.",
+  "completeAnyCloudflareChallengeThenTap": "Dhammee caqabadda Cloudflare, kadibna taabo \"Sync Cookies\" si aad fadhiga ugu gudbiso kordhinta.",
+  "compose": "Qor",
+  "concurrencyLimits": "Isku-socodka & Xaddidaadda",
+  "configurationsRepos": "Habaynta & Kaydadka",
+  "configureExport": "Habee & Dhoofi",
+  "configureDiscordRichPresenceActivityStatus": "Habee Discord Rich Presence & xaaladda shaqada",
+  "configureDnsOverHttpsProxyTls": "Habee dejinta DNS-over-HTTPS, proxy & TLS",
+  "configureMangaAndNovelReaderDefaults": "Habee doorashooyinka asalka ah ee akhrinta manga iyo sheekooyinka",
+  "configureParallelDownloadsAndDirectory": "Habee soo-dejinta isku-mar iyo galka",
+  "configurePosterBlurScopeTintBackdrop": "Habee xoogga blur-ka posterka, baaxadda, midabka & isha background-ka",
+  "confirm": "Xaqiiji",
+  "confirmRestore": "XAQIIJI & SOO CELI",
+  "confirmBackupPassword": "Xaqiiji furaha backup-ka",
+  "conflictHandling": "Maaraynta isku-dhacyada",
+  "connect": "Xidh",
+  "continueReading": "Sii akhri",
+  "continueWatching": "Sii daawo",
+  "continuousModeOnly": "Kaliya habka joogtada ah",
+  "contributors": "Kaaliyayaasha",
+  "controlTheme": "Mawduuca xakameynta",
+  "controlsSubtitlesAndPlaybackPreferences": "Xakameynta, turjumaadda & doorashooyinka ciyaarta",
+  "cookiesUserAgentSynced": "Cookies & User-Agent waa la isku waafajiyay!",
+  "copy": "Koobi",
+  "copyPath": "Koobi jidka",
+  "copyUpiId": "Koobi UPI ID",
+  "copyUserId": "Koobi User ID",
+  "coreTeam": "Kooxda asaasiga ah",
+  "couldNotCalculateCompatibility": "Isku-habboonaanta lama xisaabin karo.",
+  "couldNotFetchChaptersForThis": "Cutubyada cinwaankan lama soo qaadi karo",
+  "couldNotFetchEpisodesForThis": "Qaybaha cinwaankan lama soo qaadi karo",
+  "couldNotOpenDonationLink": "Xiriirka deeqda lama furi karo",
+  "couldNotOpenLink": "Xiriirka lama furi karo",
+  "couldNotOpenReleasesPage": "Bogga siidaynta lama furi karo",
+  "couldntOpenAppSettingsOpenIt": "Dejinta appka lama furi karo. Gacanta ku fur.",
+  "count": "Tirada",
+  "countryDistribution": "Qaybinta dalalka",
+  "countryOfOrigin": "Dalka asalka",
+  "create": "Abuur",
+  "createAFullAnymexArchiveOf": "Abuur .anymex archive buuxa oo ah maktabadaada warbaahinta, dejinta, kordhinta iyo host runtime",
+  "createActivity": "Abuur Falliga",
+  "createBackup": "Abuur Backup",
+  "createNewList": "Abuur liis cusub",
+  "createStatus": "Abuur Xaalad",
+  "cropBorders": "Jarii Xuduudaha",
+  "current": "Hadda • ",
+  "custom": "Gaar ah",
+  "customBanners": "Bannerada gaarka ah",
+  "customColorPicker": "Doorasho midabka gaarka ah",
+  "customDohUrl": "URL-KA DOH EE GAARKA AH",
+  "customFonts": "Foontiyada gaarka ah",
+  "customLists": "Liisaska gaarka ah",
+  "customLogos": "Logoyada gaarka ah",
+  "customPlayerFlagsParameters": "Calaamadaha & cabbirrada ciyaaraha ee gaarka ah",
+  "customScale": "Miisaan gaar ah",
+  "customTheme": "Mawduuc gaar ah",
+  "customUserAgent": "User-Agent gaar ah",
+  "customValue": "Qiime gaar ah",
+  "customEllipsis": "Gaar ah...",
+  "customizeCardHistoryCardCarouselNav": "Habee qaabka kaarka, kaarka taariikhda, carousel-ka & bar-ka navigation-ka",
+  "customizeTheInterfaceToYourLiking": "Habee interface-ka sida aad jeceshahay",
+  "customizeYourLogoAnimationStyle": "Habee qaabka animation-ka logo-gaaga",
+  "dailyActivitiesWatchAndReadMetrics": "Falliyada maalinlaha ah, cabbiraadaha daawashada & akhriska",
+  "dailyActivityAndWatchReadProgress": "Raadinta falliyada maalinlaha ah iyo horumarka daawashada/akhriska",
+  "dataCache": "Xogta & Cache-ka",
+  "dataToRestore": "XOGTA LOO SOO CELINAYO",
+  "days": "MAALMO",
+  "days2": "Maalmo",
+  "daysActive": "MAALMO FIICAN",
+  "debanding": "Debanding",
+  "debugStuffs": "Waxyaabaha debug-ka",
+  "decoder": "Furaha Codka/Muuqaalka",
+  "decoderHwdec": "Decoder (HWDec)",
+  "decoderThreads": "Khadadka Furaha Muuqaalka",
+  "decorationCloset": "Kaydka qurxinta",
+  "defaultLabel": "Caadi",
+  "defaultAndroidAudiotrackApi": "API-ga caadiga ah ee Android AudioTrack",
+  "defaultAppleCoreaudioApi": "API-ga caadiga ah ee Apple CoreAudio",
+  "defaultListOrder": "Dalbashada liiska caadiga ah",
+  "defaultOrientation": "Jihada caadiga ah",
+  "defaultPortrait": "Caadi ahaan toosan",
+  "defaultPulseaudioApi": "API-ga caadiga ah ee PulseAudio",
+  "defaultSize200px": "Cabirka caadiga ah (200px)",
+  "defaultSystemAudioDriver": "Darawalka codka ee nidaamka caadiga ah",
+  "defaultTheme": "Mawduuca caadiga ah",
+  "defaultWindowsAudioDriver": "Darawalka codka Windows ee caadiga ah",
+  "delete": "Tirtir",
+  "deleteActivity": "Tirtir Falliga",
+  "deleteAll": "Tirtir Dhammaan",
+  "deleteAllCachedImagesTorrentStream": "Tirtir dhammaan sawirrada cache-ka ah, qaybaha torrent stream-ka iyo faylalka ku meel gaarka ah.",
+  "deleteAllStoredHttpCookiesAcross": "Tirtir dhammaan HTTP cookies-ka la kaydiyay dhammaan domain-ada.",
+  "deleteChapter": "Tirtir Cutubka",
+  "deleteChapterQuestion": "Cutubka la tirtiraa?",
+  "deleteComment": "Tirtir Faallada",
+  "deleteCustomLogo": "Tirtir Logo-ga Gaarka ah",
+  "deleteEpisode": "Tirtir Qaybta",
+  "deleteEpisodeQuestion": "Qaybta la tirtiraa?",
+  "deleteEverythingStoredOfAnymexPermanently": "Si joogto ah u tirtir wax kasta oo AnymeX ku kaydsan.",
+  "deleteExtension": "Tirtir Kordhinta",
+  "deleteFont": "Tirtir Foontiga",
+  "deleteHistoryItem": "Tirtir Shayga Taariikhda",
+  "deleteList": "Tirtir Liiska",
+  "deleteLogo": "Tirtir Logo",
+  "deleteReason": "Tirtir Sababta?",
+  "deleteRecommendation": "Tirtir Talada?",
+  "deleteReply": "Tirtir Jawaabta",
+  "deleteReportedComment": "Tirtir Faallada la salka saaray",
+  "deleteSavedCookiesAndCloudflareTokens": "Tirtir cookies-ka la kaydiyay iyo tokens-ka Cloudflare",
+  "deleteSavedCookiesCloudflareTokensAnd": "Tirtir cookies-ka la kaydiyay, tokens-ka Cloudflare, iyo cache-ka ku meel gaarka ah",
+  "deleteSelected": "Tirtir Kuwa La Doortay",
+  "deleteTemporaryNetworkAndImageCache": "Tirtir cache-ka shabakadda ku meel gaarka ah iyo sawirrada",
+  "deletionRequestSentToAdminsFor": "Codsiga tirtirista waxaa loo diray maamulayaasha si loo eego.",
+  "demuxerMaxBuffer": "Kaydka Ugu Badan ee Demuxer-ka",
+  "demuxerReadahead": "Horey u Akhrinta Demuxer-ka",
+  "description": "Sharaxaad",
+  "detailedClassic": "Faahfaahsan (Caadi)",
+  "detailedInsights": "Faahfaahinta gaarka ah",
+  "detailsPage": "Bogga faahfaahinta",
+  "developer": "Horumariye",
+  "development": "Horumarinta",
+  "direct": "Tooshka",
+  "directSurfaceRenderingAndroidOnly": "Direct surface rendering (Android kaliya)",
+  "direction": "Jihada",
+  "disableToShowAndHidePlayer": "Demi si aad degdeg ugu muujiso oo ugu qariso xakameynta ciyaaraha",
+  "disablingMayBypassCaptivePortalsOr": "Damin waxay dhaafsiin kartaa captive portals ama SSL inspect, laakiin waxay yareynaysaa amniga.",
+  "discard": "Iska tuur",
+  "discardMessage": "Fariinta la iska tuuro?",
+  "discardReply": "Jawaabta la iska tuuro?",
+  "discardStatus": "Xaaladda la iska tuuro?",
+  "disconnect": "Jooji xiriirka",
+  "disconnectDiscord": "Discord laga jaraa?",
+  "discordTakenDown": "Discord waa la xiray",
+  "dismiss": "Iska indhatir",
+  "display": "Muuqaal",
+  "displayAnimeMangaMoviesAndShows": "Ku muuji anime, manga, filimada iyo taxanaha ay bulshadu talisay bogga hore.",
+  "displayMode": "Habka muujinta",
+  "displayModeTuningIsNotApplicable": "Habaynta habka muujinta uma ansixinto desktop-ka.",
+  "displayPlaybackOrReadingProgressTimestamps": "Muuji waqtiyada horumarka ciyaarta ama akhriska",
+  "displayRefreshRateResolutionAndFrame": "Habee xawaaraha cusboonaysiinta, go'aaminta iyo habaynta frame-ka",
+  "distanceBetweenLines": "Masaafada u dhaxeysa sadarrada",
+  "distanceFromBottomOfScreen": "Masaafada ka soo hoosaysa shaashadda",
+  "ditherDepth": "Qoto-dheeraanta Dither",
+  "dnsProxy": "DNS & Wakiil",
+  "dontShowAgain": "Ha muujin mar kale",
+  "donate": "Deel",
+  "donateSupport": "Deeq & Taageero",
+  "donateViaPaypal": "Deeq ku dir PayPal",
+  "donateViaUpiOrPaypalTo": "Deeq ku dir UPI ama PayPal si aad horumarinta u taageerto",
+  "donateViaUpiPaypalSupportDevelopment": "Deeq ku dir UPI, PayPal & taageer horumarinta",
+  "done": "DHAMMEYSTAY",
+  "done2": "Dhammaystay",
+  "doubletapToSeek": "Laba-jeex si aad u raadiso",
+  "downgradeOrSwitchToASpecific": "Hoos u dhig ama u beddel nooc gaar ah oo plugin ah",
+  "download": "Soo-deji",
+  "download4kShaders": "Soo-deji 4K Shaders",
+  "downloadAllChapters": "Soo-deji dhammaan cutubyada",
+  "downloadAllEpisodes": "Soo-deji dhammaan qaybaha",
+  "downloadChapter": "Soo-deji cutubka",
+  "downloadChunks": "Soo-deji qaybaha",
+  "downloadCurrentSection": "Soo-deji qaybta hadda",
+  "downloadEpisode": "Soo-deji qaybta",
+  "downloadFailedTapToRetry": "Soo-dejintu way fashilantay. Taabo si aad dib ugu daashid.",
+  "downloadPath": "Jidka soo-dejinta",
+  "downloadPathsAndQualitySettings": "Jidadka soo-dejinta iyo dejinta tayada",
+  "downloadPathsAndStorageSettings": "Jidadka soo-dejinta iyo dejinta kaydinta",
+  "downloadPermissions": "Oggolaanshaha soo-dejinta",
+  "downloadQualityStoragePaths": "Tayada soo-dejinta, jidadka kaydinta",
+  "downloadSettings": "Dejinta soo-dejinta",
+  "downloadSize4mb": "Cabirka soo-dejinta: ~4MB",
+  "downloadStarted": "Soo-dejintu way bilaabantay",
+  "downloadUnreadChapters": "Soo-deji cutubyada aan la akhrin",
+  "downloadUnwatchedEpisodes": "Soo-deji qaybaha aan la daawan",
+  "downloaded": "LA SOO DEJIYAY",
+  "downloaded2": "La soo dejiyay",
+  "downloadedMedia": "Warbaahinta la soo dejiyay",
+  "downloadingImage": "Sawirka la soo dejinayo...",
+  "downloadingPackage": "Xirmada la soo dejinayo...",
+  "downloads": "Soo-dejinta",
+  "downloadsStorage": "Soo-dejinta & Kaydinta",
+  "downloadsPage": "Bogga soo-dejinta",
+  "downscalingAlgorithm": "Algorithm-ka hoos-u-dhigista",
+  "dragAndDropToReorderNavigation": "Jiid oo dhig si aad u dalbato tabs-ka bar-ka navigation-ka",
+  "dragToReorderStatusSections": "Jiid si aad u dalbato qaybaha xaaladda",
+  "dualPageMode": "Habka laba bog",
+  "dynamicVariablesWillBeReplacedAutomatically": "Doorsoomayaasha firfircoon si toos ah ayaa loo beddeli doonaa. Waxaad sidoo kale isticmaali kartaa weedh joogto ah.",
+  "edit": "Wax ka beddel",
+  "editActivity": "Wax ka beddel Falliga",
+  "editCustomMpvFlagsPropertiesAnd": "Wax ka beddel calaamadaha mpv ee gaarka ah, sifooyinka, iyo faylka habaynta",
+  "editLogoSettings": "Wax ka beddel dejinta logo-ga",
+  "editMediaEntry": "Wax ka beddel galka warbaahinta",
+  "editReason": "Wax ka beddel sababta",
+  "editRecommendationReasonMin30Chars": "Wax ka beddel sababta talada (ugu yaraan 30 xaraf)",
+  "edited": "La beddelay",
+  "enableAnimation": "Shid Animation",
+  "enableAnimationOnCarouselsForSmooth": "Shid animation-ka carousel-ka si dhaqdhaqaaq siman u yeelato",
+  "enableBackgroundMediaControlsForBluetooth": "Shid xakameynta warbaahinta ee background-ka ee Bluetooth headset-ka iyo ogeysiisyada warbaahinta nidaamka. Ogow: Haddii aad shido tan, batteriga ayaa badan lagu isticmaali doonaa.",
+  "enableBetaUpdates": "Shid cusboonaysiinta Beta",
+  "enableClassicSimpleHeaderStyleOn": "Shid qaabka madax fudud ee caadiga ah bogagga hore",
+  "enableDiscordRpc": "Shid Discord RPC",
+  "enableExperimentalSettings": "Shid dejinta tijaabada",
+  "enableHoldingOnPlayerScreenTo": "Shid qabsashada shaashadda ciyaaraha si aad si ku meel gaar ah u dedejiso ciyaarta fiidiyowga",
+  "enableHorizontalSwipingOnPlayerScreen": "Shid fadhiga toosan shaashadda ciyaaraha si aad fiidiyowga ugu raadiso",
+  "enableKenBurns": "Shid Ken Burns",
+  "enableLongPressQuickActions": "Shid falalka degdega ah ee riix-dheer",
+  "enableNotificationsForUpcomingAiringEpisodes": "Shid ogeysiisyada qaybaha soo socda ee la sii daayo.",
+  "enableNsfwAdultEntriesInAnilist": "Shid galalka NSFW/da' weyn ee nuxurka AniList.",
+  "enableShaders": "Shid Shaders",
+  "enableSwipeControls": "Shid xakameynta fadhiga",
+  "enableTapZones": "Shid aagagga taabashada",
+  "enableThisIfYouWantTo": "Shid tan haddii aad rabto inaad ilaaliso midabka asalka ah ee wallpaper-kaaga",
+  "enableTranslucentNavigationBar": "Shid bar-ka navigation-ka ee hufan",
+  "enableTts": "Shid TTS",
+  "enableVerticalSwipingOnTheLeft": "Shid fadhiga toosan ee dhinaca bidix/midig ee shaashadda ciyaaraha si aad u habayso iftiinka iyo codka",
+  "enablesASoftGlowingGradientEffect": "Wuxuu shidayaa saameyn gradient ah oo jilicsan oo iftiimaya.",
+  "encryptWithAes256RecommendedFor": "Ku qari AES-256 (waa lagula talinayaa tokens-ka xaqiijinta)",
+  "encrypted": "Waa la qariyay • ",
+  "endChapter": "Dhammee cutubka",
+  "enterAmount": "Geli qadarka...",
+  "enterAnilistUsername": "Geli magaca isticmaalaha AniList",
+  "enterAtLeast2Characters": "Geli ugu yaraan 2 xaraf",
+  "enterBackupPassword": "Geli furaha sirta ah ee backup-ka",
+  "enterFirstAnilistUsername": "Geli magaca isticmaalaha AniList ee ugu horreeya",
+  "enterGithubRepositoryUrl": "Geli URL-ka kaydka GitHub",
+  "enterListName": "Geli magaca liiska",
+  "enterPassword": "Geli furaha sirta ah",
+  "enterReasonOrDetailsForThis": "Geli sababta ama faahfaahinta ficilkan...",
+  "enterSearchQuery": "Geli eray raadinta",
+  "enterUsername": "Geli magaca isticmaalaha",
+  "enterValue": "Geli qiime",
+  "entryDeleted": "Galka waa la tirtiray.",
+  "episode1": "Qaybta 1",
+  "episodeListSettings": "Dejinta liiska qaybaha",
+  "episodes": "Qaybaha",
+  "episodesDuration": "QAYBAHA & MUDDADA",
+  "episodesWatched": "Qaybaha la daawaday",
+  "errorOccured": "Khalad ayaa dhacay",
+  "errorOccurred": "Khalad ayaa dhacay",
+  "errorSavingImage": "Khalad ayaa dhacay markii sawirka la keydinayay",
+  "errorSharingImage": "Khalad ayaa dhacay markii sawirka la wadaagayay",
+  "errorMissingRequiredDataItSeems": "Khalad: Xog lagama maarmaan ah ayaa maqan. Waa u muuqdaa inaad app-ka si toos ah u xirtay markaad cutubka akhrinayay!",
+  "errorMissingRequiredMediaItSeems": "Khalad: Warbaahin lagama maarmaan ah ayaa maqan. Waa u muuqdaa inaad app-ka si toos ah u xirtay markaad cutubka akhrinayay!",
+  "errorMissingRequiredMediaItSeemsYou": "Khalad: Warbaahin lagama maarmaan ah ayaa maqan. Waa u muuqdaa inaad app-ka si toos ah u xirtay markaad qaybta daawaneysay!",
+  "everyScoreIsMappedToA": "Dhibic kasta waxaa loo habeeyay heer. Miiska hoose wuxuu muujinayaa heer kasta, calaamaddeeda, iyo waxa kala duwanaanshaha uu matalayo.",
+  "experimental": "Tijaabo",
+  "experimentalHighPerformanceRenderer": "Render-ka tayada sare ee tijaabada ah",
+  "explore": "Baadh",
+  "exploreTheProjectAndContribute": "Baadh mashruuca oo ka qayb qaado",
+  "exportLabel": "DHOOF",
+  "exportBackup": "Dhoofi backup-ka",
+  "exportCancelled": "Dhoofinta waa la joojiyay.",
+  "exportDeviceBackup": "Dhoofi backup-ka aaladda",
+  "exportSettings": "Dhoofi dejinta",
+  "exportYourAnimeList": "Dhoofi liiska Anime-kaaga",
+  "exportYourMangaList": "Dhoofi liiska Manga-gaaga",
+  "extensionConfigurations": "Habaynta kordhinta",
+  "extensionConfigurationsRepos": "Habaynta kordhinta & kaydka",
+  "extensionManager": "Maareeyaha kordhinta",
+  "extensionPackages": "Xirmooyinka kordhinta",
+  "extensionPreferences": "Doorbidyada kordhinta",
+  "extensionSettings": "Dejinta kordhinta",
+  "extensionSettingsAndSourceConfigurations": "Dejinta kordhinta iyo habaynta isha",
+  "extensionTesting": "Tijaabinta kordhinta",
+  "extensionType": "Nooca kordhinta",
+  "extensions": "Kordhinno",
+  "extensionsDiagnostics": "Kordhinno & baaritaan",
+  "extensionsRepositories": "Kordhinno & kaydka",
+  "extensionsSources": "Kordhinno & ilo",
+  "extensionsTailoredToYourNeeds": "Kordhinno loo habeeyay baahiyahaaga",
+  "externalStreamingLinks": "Xiriirrada dibadda & qulqulka",
+  "externalBackupsRestoreMetadataAndConfigurations": "Backup-yada dibadda ayaa soo celinaya metadata-ta iyo habaynta si ammaan ah.",
+  "externalBrowser": "Browser-ka dibadda",
+  "extras": "Kuwa dheeraad ah",
+  "factoryReset": "Dib u dejinta warshadda",
+  "factoryReset2": "Dib u dejinta warshadda",
+  "failedToCheckForUpdates": "Waa lagu guuldaroystay in cusboonaysiinta la hubiyo.",
+  "failedToCheckPluginUpdates": "Waa lagu guuldaroystay in cusboonaysiinta plugin-ka la hubiyo.",
+  "failedToDeleteChapter": "Waa lagu guuldaroystay in cutubka la tirtiro",
+  "failedToDeleteEpisode": "Waa lagu guuldaroystay in qaybta la tirtiro",
+  "failedToDeleteListEntry": "Waa lagu guuldaroystay in galka liiska la tirtiro",
+  "failedToDeleteMedia": "Waa lagu guuldaroystay in warbaahinta la tirtiro",
+  "failedToDownloadImage": "Waa lagu guuldaroystay in sawirka la soo dejiyo",
+  "failedToFetchChapters": "Waa lagu guuldaroystay in cutubyada la soo qaado",
+  "failedToFetchDetails": "Waa lagu guuldaroystay in faahfaahinta la soo qaado",
+  "failedToFetchImageForSharing": "Waa lagu guuldaroystay in sawirka wadaagista loo soo qaado",
+  "failedToFetchPluginReleaseDetails": "Waa lagu guuldaroystay in faahfaahinta nashqadda plugin-ka la soo qaado.",
+  "failedToFetchPolicy": "Waa lagu guuldaroystay in siyaasadda la soo qaado.",
+  "failedToFetchReleaseDetails": "Waa lagu guuldaroystay in faahfaahinta nashqadda la soo qaado.",
+  "failedToFetchServers": "Waa lagu guuldaroystay in server-yada la soo qaado",
+  "failedToLoadDetails": "Waa lagu guuldaroystay in faahfaahinta la soo rido",
+  "failedToLoadFontFile": "Waa lagu guuldaroystay in faylka xarfaha la soo rido",
+  "failedToLoadProfileAccountMay": "Waa lagu guuldaroystay in profile-ka la soo rido — akoonka waa laga yaabaa inuu gaar yahay ama aan la helin",
+  "failedToLoadTorrentMetadata": "Waa lagu guuldaroystay in metadata-ta torrent-ka la soo rido",
+  "failedToPerformAction": "Waa lagu guuldaroystay in ficilka la fuliyo",
+  "failedToRemoveRepo": "Waa lagu guuldaroystay in kaydka la saaro",
+  "failedToStartExtensionRuntime": "Waa lagu guuldaroystay in runtime-ka kordhinta la bilaabo",
+  "failedToUpdateAnilist": "Waa lagu guuldaroystay in AniList la cusboonaysiiyo",
+  "failedToUpdateListEntry": "Waa lagu guuldaroystay in galka liiska la cusboonaysiiyo",
+  "failedToUpdatePreference": "Waa lagu guuldaroystay in doorbidda la cusboonaysiiyo",
+  "failedToUpdateRole": "Waa lagu guuldaroystay in doorka la cusboonaysiiyo",
+  "favoriteTitle": "Cinwaanka aad jeceshahay",
+  "favouriteAnime": "Anime-ka aad jeceshahay",
+  "favouriteCharacters": "Dabeecadaha aad jeceshahay",
+  "favouriteManga": "Manga-ga aad jeceshahay",
+  "favouriteStaff": "Shaqaalaha aad jeceshahay",
+  "favouriteStudios": "Istuudiyada aad jeceshahay",
+  "featuresIssues": "Astaamaha/Dhibaatooyinka",
+  "fetchingAvailableServers": "Server-yada diyaarka ah ayaa la soo qaadayaa...",
+  "fetchingLatestReleaseDetails": "Faahfaahinta nashqadda ugu dambeysa ayaa la soo qaadayaa...",
+  "fetchingTorrentFileList": "Liiska faylalka torrent-ka ayaa la soo qaadayaa...",
+  "filler": "Buuxiye",
+  "filter": "Shaandh",
+  "filterActivities": "Shaandhee dhaqdhaqaaqyada",
+  "filterActivity": "Shaandhee dhaqdhaqaaqa",
+  "filterByChapterCount": "Shaandhee tirada cutubyada",
+  "filterByDurationMin": "Shaandhee muddada (daqiiqo)",
+  "filterByEpisodeCount": "Shaandhee tirada qaybaha",
+  "filterByGenre": "Shaandhee nooca",
+  "filterByVolumeCount": "Shaandhee tirada mugga",
+  "filterGenres": "Shaandhee noocyada",
+  "filterOutAdultNsfwEntriesFrom": "Ka saar galalka da' weyn/NSFW ee talooyinka bulshada.",
+  "filterOutEntriesAlreadyInYour": "Ka saar galalka horay liiskaaga ugu jira",
+  "filterOutEntriesAlreadyInYourList": "Ka saar galalka horay liiskaaga ugu jira iyadoo lagu salaynayo xaaladda daawashada/akhriska.",
+  "filterSettings": "Dejinta shaandheynta",
+  "filters": "SHAANDHEYNTA",
+  "findAndManageSpecificUsers": "Raadi oo maamul isticmaalayaasha gaarka ah",
+  "findAnimeSauceByScreenshots": "Raadi isha anime-ka sawirrada shaashadda",
+  "findSource": "Raadi Isha",
+  "findYourFavouriteAnimeOrManga": "Raadi anime ama manga, manhwa ama wax kasta oo aad jeceshahay!",
+  "findYourFavouriteAnimeMangaManhwa": "Raadi Anime, Manga, Manhwa ama wax kasta oo aad jeceshahay!",
+  "finishDate": "Taariikhda dhammaadka",
+  "firstChapter": "Cutubka koowaad",
+  "firstUser": "Isticmaalaha koowaad",
+  "fitToScreenWidth": "Ku qabso ballaca shaashadda",
+  "fontFamily": "Qoyska xarfaha",
+  "fontSize": "Cabbirka xarfaha",
+  "forceReDownload": "Dib u soo dejin xoog ah",
+  "forceSyncFromSdCard": "Xoog ula sync garee kaarka SD",
+  "forks": "Forks",
+  "format": "Qaabka",
+  "formatDistribution": "Qaybinta qaabka",
+  "frameInterpolation": "Isku xidhka frame-ka",
+  "freeSupport": "Taageero bilaash ah",
+  "frequentlyRevisited": "Si joogto ah loo soo booqday",
+  "fromUrl": "Laga soo qaado URL-ka",
+  "fullWidthDetailedCardWithLarge": "Kaarka faahfaahsan ee ballaadhan oo leh sawir weyn iyo macluumaad qaybeed",
+  "fullWidthDetailedCardsWithProgress": "Kaarar faahfaahsan oo ballaadhan oo leh horumar iyo badhanka akhrinta",
+  "fullWidthHeroBannerWithCompact": "Banner weyn oo ballaadhan oo leh faahfaahin kooban iyo soo koobid degdeg ah.",
+  "general": "Guud",
+  "generalPrivacy": "Guud & Asturnaan",
+  "generalSync": "Guud & Sync",
+  "generalAppPreferencesAndSyncServices": "Doorbidyada guud ee app-ka iyo adeegyada sync",
+  "generalAppSettingsAndSyncServices": "Dejinta guud ee app-ka iyo adeegyada sync",
+  "generalPreferences": "Doorbidyada guud",
+  "genres": "Noocyada",
+  "genresUpper": "NOOCYADA",
+  "gestureForBrightnessVolume": "Gacan-ku-taabasho iftiinka & codka",
+  "getHelpWithTheCommentSystem": "Ka hel caawimaad nidaamka faallooyinka",
+  "getStarted": "Bilow",
+  "globalConcurrencyLimit": "Xaddiga guud ee isku-socodka",
+  "glowMultiplier": "Isku-dhufashada ifka",
+  "goSuperDarkMode": "U gudub mode-ka aad u madow!",
+  "goToDownloads": "Tag soo dejinta",
+  "goToExtensionsToGetStarted": "Tag kordhinta si aad u bilowdo",
+  "goToPluginDownloader": "Tag soo dejiyaha plugin-ka",
+  "goToRuntimeManager": "Tag maareeyaha runtime-ka",
+  "goodAfternoon": "Galab wanaagsan",
+  "goodEvening": "Fiidkii wanaagsanaa",
+  "goodMorning": "Subax wanaagsan",
+  "goodnight": "Habeen wanaagsan",
+  "gotIt": "Waan fahmay",
+  "grainIntensity": "Xoogga grain-ka",
+  "grainTextureOverlay": "Overlay-ga texture-ka grain-ka",
+  "grantPermission": "Oggolow ogolaanshaha",
+  "grantPermissions": "Oggolow ogolaanshayaasha",
+  "grid": "Shabakad",
+  "gridSize": "Cabbirka shabakadda",
+  "gridView": "Muuqaalka shabakadda",
+  "guest": "Marti",
+  "happySnacking": "Cunno raaxo leh",
+  "hardwareDisplayModeSwitchingIsNot": "Beddelka habka muuqaalka hardware-ka ma taageerto aaladdaada.",
+  "helpSupport": "Caawimaad & Taageero",
+  "hexColorCode": "Koodhka midabka Hex",
+  "hey": "Salaan ",
+  "hidden": "Qarsoon",
+  "hiddenFromYourPublicProfile": "Ka qarsoon profile-kaaga dadweynaha",
+  "hiddenTabs": "Tabs-ka qarsoon",
+  "hideAdultContent": "Qari waxyaabaha da' weyn",
+  "hideButton": "Qari badhanka",
+  "hideByListStatus": "Qari sida xaaladda liiska",
+  "hideCompleted": "Qari kuwa dhammaaday",
+  "hideDropped": "Qari kuwa laga tagay",
+  "hideEntriesThatAreInYour": "Qari galalka ku jira liiska qorshahaaga.",
+  "hideEntriesThatAreMarkedAs": "Qari galalka lagu calaamadiyay inay dhammaadeen liiskaaga.",
+  "hideEntriesThatYouAreCurrently": "Qari galalka aad hadda daawanayso ama akhrinayso.",
+  "hideEntriesThatYouAreRewatching": "Qari galalka aad mar kale daawanayso.",
+  "hideEntriesThatYouHaveDropped": "Qari galalka aad ka tagtay.",
+  "hideEntriesThatYouHavePut": "Qari galalka aad hakisay.",
+  "hideNsfw": "Qari NSFW",
+  "hideNsfw18Content": "Qari waxyaabaha NSFW / 18+",
+  "hideNsfwContent": "Qari waxyaabaha NSFW",
+  "hideNsfwRecommendations": "Qari talooyinka NSFW",
+  "hideOnHoldPaused": "Qari Hakisan / Joogsan",
+  "hidePlanning": "Qari Qorshaynta",
+  "hideRewatching": "Qari mar kale daawashada",
+  "hideSystemStatusAndNavigationBars": "Qari xaaladda nidaamka iyo bar-ka wadista",
+  "hideWatchingReading": "Qari Daawashada / Akhriska",
+  "history": "Taariikhda",
+  "historyStatistics": "Taariikhda & Tirakoobka",
+  "historyCardStyle": "Qaabka kaarka taariikhda",
+  "historyItemDeleted": "Shayga taariikhda waa la tirtiray",
+  "hlsParallelSegments": "Qaybaha HLS ee isku-xiga",
+  "holdAndDragAnyItemTo": "Hay oo jiid shay kasta si aad dib ugu habayso",
+  "holdToAccessHistoryEditor": "Hay si aad u gasho tafatiraha taariikhda",
+  "holdToDelete": "Hay si aad u tirtirto",
+  "holdToSpeedUp": "Hay si dhakhso u kordhiso",
+  "home": "Guriga",
+  "horizontal": "Jiif",
+  "hostEG12700": "Martida (tusaale 127.0.0.1)",
+  "hours": "Saacadaha",
+  "howItWorksCompatibilityRanks": "Sida ay u shaqeyso & Heerarka ku habboonaanta",
+  "howMuchInPercentageToMark": "Boqolkiiba intee ah ayaa qaybta loo calaamadiyaa inay la daawatay",
+  "howToUseTheCommentSystem": "Sida loo isticmaalo nidaamka faallooyinka:",
+  "hue": "Midabka (Hue)",
+  "ifEnabledAContinueWatchingBar": "Haddii la furo, bar-ka sii daawashada ayaa lagu muujin doonaa kor ka bar-ka hoose ee bogga guriga.",
+  "ifEnabledAllLibraryItemsWill": "Haddii la furo, dhammaan shayada maktabadda waxaa lala wadaagi doonaa dhammaan adeegyada raad-raaca.",
+  "ifEnabledAnymexWillAskFor": "Haddii la furo, AnymeX wuxuu weydiin doonaa ogolaanshaha raad-raaca; haddii kale wuu raad-raacayaa si caadi ah.",
+  "ifEnabledYouWillNotGet": "Haddii la furo, ma heli doontid waraysi lagu furayo waxyaabaha da' weyn ee AniList/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "Haddii cache-ka ku meelgaarka ah ee app-ka uu gaaro cabbirkan, waa si toos ah loo nadiifin doonaa.",
+  "ifYouAreUsingAJson": "Haddii aad isticmaalayso mawduuc JSON ah, isbeddelada halkan kuma saameyn doonaan xakameynta player-ka. U beddel mawduuc ku dhisan si aad dejintan u dabaqdo.",
+  "ifYouCantDonateWatchThis": "Haddii aadan deeqi karin, daawo xayaysiinta si aad u taageerto",
+  "image": "Sawir",
+  "imageShowsThumbnail": "Sawir (wuxuu muujinayaa thumbnail-ka)",
+  "imageFilterQuality": "Tayada shaandheynta sawirka",
+  "imageSharedFromAnymex": "Sawirka laga wadaagay AnymeX",
+  "imagesWillBeDownloadedInFull": "Sawirrada waxaa lagu soo dejin doonaa tayada buuxda. Cutub kasta wuxuu ku kaydsan yahay faylkiisa.",
+  "immersiveMode": "Habka dareenka buuxa",
+  "importLabel": "SOO GELI",
+  "importLabel2": "Soo geli",
+  "importManageCustomJsonThemes": "Soo geli oo maamul mawduucyada JSON ee gaarka ah",
+  "importBackup": "Soo geli backup-ka",
+  "importCustomFont": "Soo geli xarfo gaar ah",
+  "importFromUrl": "Ka soo geli URL-ka",
+  "includeAdultNsfwSuggestions": "Ku dar talooyin da' weyn & NSFW",
+  "incognito": "Qarsoodi",
+  "incognitoActive": "Incognito (Firfircoon)",
+  "incognitoMode2": "Habka Incognito",
+  "indiaUpi": "Hindiya (UPI)",
+  "info": "Macluumaad",
+  "inlineCode": "Koodka xariiqda",
+  "insert": "Geli",
+  "installPermission": "Ogolaanshaha rakibidda",
+  "installPermissionIsRequiredToUpdate": "Ogolaanshaha rakibidda ayaa loo baahan yahay si app-ka loo cusboonaysiiyo",
+  "installedPackages": "Xirmooyinka la rakibay",
+  "installedThemes": "Mawduucyada la rakibay",
+  "interfaceStyling": "Qaabka interface-ka",
+  "internalBrowser": "Browser-ka gudaha",
+  "international": "Caalami",
+  "invalidBackupFileOrIncorrectPassword": "Faylka backup-ka waa khaldan yahay ama furaha sirta ah waa khalad",
+  "invertVolumeKeys": "Rogi furayaasha codka",
+  "italic": "Xaraf fiiqan",
+  "joinDiscordCommunity": "Ku biir bulshada Discord",
+  "joinNewDiscord": "Ku biir Discord-ka cusub",
+  "joinTelegramChannel": "Ku biir kanaalka Telegram",
+  "joinUsForDroppingFeedbackOr": "Naga soo biir si aad talooyin ama codsiyo astaamo ah u soo gudbiso",
+  "jsonThemeManager": "Maareeyaha mawduuca JSON",
+  "judgment": "Xukun",
+  "keepEditing": "Sii wad tafatirka",
+  "keepItChill": "Raaxo ku sii wad",
+  "keepScreenOn": "Shaashadda hay oo daar",
+  "keepVoicePitchStableAtHigher": "Ku hay dhawaanshaha codka xawaaraha sare",
+  "koFiSupport": "Taageerada Ko-fi",
+  "languageVariant": "Kala duwanaanshaha Luqadda",
+  "lastAdded": "Kii u dambeeyay ee la daray",
+  "lastChapter": "Cutubka Ugu Dambeeya",
+  "later": "Markale",
+  "latest": "Kii ugu dambeeyay",
+  "latestManga": "Manga-da Ugu Dambeeyay",
+  "layout": "Qaabeynta",
+  "layoutStyle": "Qaabka Qaabeynta",
+  "leaderboard": "Miiska Hogaanka",
+  "learnHowToFormatYourComments": "Baro sida loo habeeyo faallooyinkaaga",
+  "leftSide": "Dhinaca Bidix",
+  "letterSpacing": "Masaafada Xarfaha",
+  "levelProgress": "Horumarka Heerka",
+  "libraryLabel": "Maktabad",
+  "librarySettings": "Dejinta Maktabadda",
+  "libraryStatistics": "Tirakoobka Maktabadda",
+  "lightness": "Iftiinka",
+  "likedBy": "Waxaa jeclaaday",
+  "lineHeight": "Dhererka Saxda",
+  "linkAutoDetected": "Xiriiriye (si toos ah loo ogaaday)",
+  "linkCopiedToClipboard": "Xiriirka waa la koobiyeeyay!",
+  "linkHasExpiredAndEpisodeUrl": "Xiriirku wuu dhacay, URL-ka qaybtana ma heli karo.",
+  "linkHasExpiredAndNoAlternative": "Xiriirku wuu dhacay, isha kale ee la helay ma jirto.",
+  "linotteDefault": "Linotte (Caadi)",
+  "liquidBackground": "Asalka Liquid",
+  "liquidMode": "Habka Liquid",
+  "listEntryUpdatedSuccessfully": "Liiska waa la cusboonaysiiyay si guul leh!",
+  "listExporter": "Dhoofiyaha Liiska",
+  "listNameAlreadyExists": "Magaca liiska horey ayuu u jiraa",
+  "listOptions": "Ikhtiyaarka Liiska",
+  "liveBlurIsUnavailableWhenUsing": "Xaga-dhabta ah ee lacag-yar ma shaqeynayo marka la isticmaalayo Fluid Mesh.",
+  "livePreview": "HORUDHAC TOOS AH",
+  "livePreview2": "Horudhac Toos ah",
+  "loadTemplate": "Soo rar Qaabka",
+  "loadingMediaFiles": "Faylasha warbaahinta ayaa la soo rarayaa...",
+  "loadingMedia": "Warbaahinta ayaa la soo rarayaa...",
+  "local": "Maxalli",
+  "localLibrary": "Maktabadda Maxalliga ah",
+  "localMedia": "Warbaahinta Maxalliga ah",
+  "location": "Goobta",
+  "logCapture": "Qabashada Logga",
+  "logDirectory": "Faylalka logga",
+  "logIn": "Gali",
+  "logInRequired": "Waa in la galo",
+  "logInToCustomizeYourPush": "Gali si aad u habayso doorbidyada ogeysiisyada.",
+  "logInToJoinTheConversation": "Gali si aad uga qayb qaadato wadahadalka oo aad faallo ugu qortid.",
+  "logOut": "Ka bax",
+  "loggedInTrackingServices": "Adeegyada raadinta ee la galay",
+  "login": "Gelitaan",
+  "loginAuthTokens": "Gelitaanka & Tokenada Aqoonsiga",
+  "loginInsideTheAppRecommended": "Ku gal gudaha app-ka (waa la talinayaa)",
+  "loginSessions": "Fadhiyada Gelitaanka",
+  "loginUsingYourDefaultBrowser": "Ku gal adigoo isticmaalaya browser-kaaga caadiga ah",
+  "loginWithToken": "Ku gal Token-ka",
+  "logoAnimation": "Animation-ka Logo-ga",
+  "logoName": "Magaca Logo-ga:",
+  "logs": "Diiwaannada",
+  "longPressPageActions": "Ficillada Bogga ee Riix Dheer",
+  "makeEverythingGlassyLiquidy": "Ka dhig wax walba mid muraayad u eg oo liquid ah...",
+  "manageAnilistLists": "Maamul Liisaska Anilist",
+  "manageCachedImagesThresholdsAndReset": "Maamul sawirada kaydsan, xadka, oo dib u deji xogta app-ka",
+  "manageDeviceStorageAndNotificationsTo": "Maamul kaydka qalabka iyo ogeysiisyada si aad warbaahintaada u soo dejiso oo aad ugu maamusho khadka internet-ka la'aanta.",
+  "manageLogCaptureAndShareSaved": "Maamul qabashada logga oo la wadaag logga la kaydiyay",
+  "manageMyanimelistLists": "Maamul Liisaska MyAnimeList",
+  "managePluginsSources": "Maamul plugin-yada & ilaha",
+  "manageSimklLists": "Maamul Liisaska Simkl",
+  "manageSourcesAndRepositoriesToUse": "Maamul ilaha iyo kaydadka si aad app-ka ugu isticmaasho si buuxda",
+  "manageYourMyanimelistAnilistSimklAccounts": "Maamul akoonnadaada MyAnimeList, Anilist, Simkl!",
+  "management": "Maamulka",
+  "manga": "Manga",
+  "mangaNovelReaderSettingsTapZones": "Dejinta akhriyaha manga & novel, aagagga riixitaanka",
+  "mangaNovelViewerSettingsTapZones": "Dejinta muuqaalka manga & novel, aagagga riixitaanka",
+  "mangaAndNovelReaderStylesAnd": "Qaababka akhriyaha manga iyo novel-ka, iyo aagagga riixitaanka",
+  "mangaCustomLists": "Liisaska Manga-ga ee Gaarka ah",
+  "mangaDetailsPhrasing": "Erayga Faahfaahinta Manga",
+  "mangaLibrary": "Maktabadda Manga",
+  "mangaList": "LIISTADA MANGA",
+  "mangaScore": "Dhibcaha Manga",
+  "mangaSectionOrder": "Kala-horraynta Qaybaha Manga",
+  "manuallyPasteOauthAccessToken": "Gacanta ku dheji OAuth access token",
+  "markAllRead": "Calaamadee dhammaan inay akhrisan",
+  "markAsWatched": "Calaamadee inaad daawatay",
+  "markdownGuide": "Hagaha Markdown",
+  "maximumDemuxerBufferMb": "Kaydka ugu badan ee demuxer-ka (MB)",
+  "maybeLater": "Waa dhici karta markale",
+  "mean": "DHEXDHEXAAD",
+  "meanScore": "Dhibcaha Dhexdhexaadka",
+  "mediaPlayback": "Warbaahinta & Ciyaarta",
+  "mediaLibrary": "Maktabadda Warbaahinta",
+  "mediaSessionBluetoothSupport": "Kalfadhiga Warbaahinta (Taageerada Bluetooth)",
+  "mediaTypeBreakdown": "Kala-jabinta Noocyada Warbaahinta",
+  "mediaYouDownloadWillAppearHere": "Warbaahinta aad soo dejiso halkan ayay ka soo muuqan doontaa.",
+  "megaskipDuration": "Muddada MegaSkip",
+  "mention": "Xusid",
+  "mentions": "Xusidyo",
+  "merge": "Isku dar",
+  "messageFriend": "Fariin saaxiib",
+  "minutesWatched": "Daqiiqadaha la daawaday",
+  "miscellaneous": "Kala duwan",
+  "missingRuntimeHost": "Runtime Host-ka waa maqan yahay",
+  "moderation": "Kormeerka",
+  "moderationActions": "Falalka Kormeerka",
+  "moderationPanel": "Guddiga Kormeerka",
+  "moderator": "Kormeeraha",
+  "moreOptions": "Ikhtiyaarro dheeraad ah",
+  "morePopularManga": "Manga-da Caanka ah ee Dheeraadka ah",
+  "moveToLeft": "U dhaqaaq bidix",
+  "moveToRight": "U dhaqaaq midig",
+  "movie": "Filim",
+  "mpvConfiguration": "Habaynta MPV",
+  "muteUser": "Aamusi isticmaalaha",
+  "mutualConnections": "Xidhiidhada Wadajirka ah",
+  "mutualFriends": "Saaxiibada Wadajirka ah",
+  "nameplates": "Calaamadaha Magaca",
+  "navBarLayout": "Qaabeynta Bar-ka Navigation-ka",
+  "navBarStyle": "Qaabka Bar-ka Navigation-ka",
+  "navigationLayout": "Qaabeynta Navigation-ka",
+  "needHelp": "Caawimaad ayaad u baahan tahay?",
+  "network": "Shabakad",
+  "newLabel": "CUSUB",
+  "newCollection": "Ururin Cusub",
+  "newCustomListName": "Magaca liiska gaarka ah ee cusub",
+  "newDownload": "Soo dejin Cusub",
+  "newList": "Liis Cusub",
+  "newestFirst": "Kuwa ugu cusub marka hore",
+  "nextRelease": "Sii deynta Xigta",
+  "nextReleasePrediction": "Saadaasha Sii deynta Xigta",
+  "noActiveDownloads": "Soo dejin firfircoon ma jiro",
+  "noActiveSourceOrMediaFound": "Isha firfircoon ama warbaahin lama helin",
+  "noActiveSourceSelected": "Isha firfircoon lama dooran",
+  "noActivity": "Dhaqdhaqaaq ma jiro",
+  "noAnimeFound": "Anime lama helin",
+  "noAudioTracksAvailable": "Raad cod ah lama heli karo",
+  "noChaptersFound": "Cutub lama helin",
+  "noChaptersFound2": "Cutub lama helin",
+  "noCommonGenres": "Noocyo isku mid ah ma jiraan",
+  "noCommonTags": "Calaamado isku mid ah ma jiraan",
+  "noContributorsFound": "Wax wax-ku-darsade ah lama helin.",
+  "noCustomListsAvailable": "Liisaska gaarka ah lama heli karo.",
+  "noCustomListsYet": "Weli liisas gaar ah ma jiro",
+  "noCustomListsYet2": "Weli liisas gaar ah ma jiro.",
+  "noDataAvailableForThisSection": "Qaybtan xog lama heli karo",
+  "noDataAvailable": "Xog lama heli karo.",
+  "noDecadeBreakdownAvailable": "Kala-jabinta tobanaankii lama heli karo",
+  "noDescriptionAvailable": "Sharaxaad lama heli karo",
+  "noDownloadedChaptersFoundForThis": "Cutubyo la soo dejiyay lama helin manga-kan",
+  "noDownloadedEpisodesFoundForThis": "Qaybo la soo dejiyay lama helin anime-kan",
+  "noEntriesFound": "Gelitaano lama helin",
+  "noEpisodesFound": "Qaybo lama helin",
+  "noExtensionManagersFound": "Maamulayaal kordhin ah lama helin.",
+  "noExtensionsFound": "Kordhin lama helin",
+  "noExtensionsInstalled": "Kordhin lama rakibin",
+  "noGenresAvailableAnilistApiMay": "Noocyo lama heli karo. API-ga AniList ayaa laga yaabaa inuu ku meel gaar ah shaqada joojiyay.",
+  "noHiddenTabs": "Tab qarsan ma jiro",
+  "noInsightsAvailableYetAddItems": "Faahfaahin weli lama heli karo. Ku dar waxyaabo maktabadaada!",
+  "noItemsInThisLibrary": "Maktabadan waxba kuma jiraan.",
+  "noLoggedStatsYetStartWatching": "Tirakoob weli lama diiwaan geliyo. Bilow daawashada/akhriska!",
+  "noMediaFilesFound": "Faylal warbaahin lama helin",
+  "noMediaFoundForThisStudio": "Warbaahin lama helin istuudiyahan",
+  "noMediaInThisList": "Liiskan warbaahin ma jiro.",
+  "noMoreActivities": "Dhaqdhaqaaq dheeraad ah ma jiro",
+  "noMoreRecommendations": "Talooyin dheeraad ah ma jiraan",
+  "noMoreUsers": "Isticmaalayaal dheeraad ah ma jiraan",
+  "noNotificationsYet": "Weli ogeysiis ma jiro",
+  "noNovelExtensionsInstalledToRead": "Buuggan si aad u akhrido kordhin novel ah lama rakibin.",
+  "noPendingReports": "Warbixin sugaya lama helin",
+  "noPlayableStreamAvailableForThis": "Qaybtan stream la ciyaari karo lama heli karo.",
+  "noPlayableStreamWasReturnedBy": "Ilahan stream la ciyaari karo ma soo celin.",
+  "noRecentActivityFoundForSelected": "Dhaqdhaqaaq dhawaan ah shaandhayntan lama helin",
+  "noRecommendationsFound": "Talooyin lama helin",
+  "noRecommendationsYet": "Weli talooyin ma jiro",
+  "noReleasesFound": "Sii deyn lama helin.",
+  "noRepliesYetBeTheFirst": "Weli jawaab ma jiro. Noqo kii ugu horreeyay!",
+  "noRepositoriesYet": "Weli kaydad ma jiro",
+  "noResult": "Natiijo ma jiro",
+  "noResultsFound": "Natiijo lama helin.",
+  "noResultsYet": "Weli natiijo ma jiro",
+  "noResultsTrySearchingByTitle": "Natiijo ma jiro. Isku day inaad magac ku raadiso.",
+  "noSearchResults": "Natiijo raadin ma jiro",
+  "noServersAvailable": "Serverro lama heli karo",
+  "noServersFound": "Serverro lama helin.",
+  "noServicesAvailable": "Adeeg lama heli karo",
+  "noSourceInstalled": "Ilo lama rakibin",
+  "noSourceSelected": "Ilo lama dooran",
+  "noSourcesFound": "Ilo lama helin",
+  "noStatsAvailable": "Tirakoob lama heli karo",
+  "noSubtitleTracksAvailable": "Raad turjumaad ah ma jiro",
+  "noTestsRunning": "Tijaabo socota ma jiro",
+  "noThemesYet": "Weli mawduucyo ma jiro",
+  "noTrackingServiceConnected": "Adeeg raad ah lama xidhin",
+  "noUsersFound": "Isticmaalayaal lama helin",
+  "noVisibleTabs": "Tab muuqda ma jiro",
+  "noVisualsFoundForThisAnime": "Muuqaal lama helin anime-kan (╥﹏╥)",
+  "noWatchOrderFound": "Habka daawashada lama helin.",
+  "notNow": "Hadda maya",
+  "notSupported": "Lama taageero",
+  "notTracked": "Lama raadin",
+  "noteAddingKotatsuRepositoryWillTake": "Fiiro gaar ah: Ku darista kaydka Kotatsu waxay qaadan doontaa ugu yaraan 1-2 daqiiqo, sababtoo ah kordhinta waa in la soo dejiyo oo la beddelo markii ugu horreysay la rarayo.",
+  "nothingDownloadedYet": "Wax weli la soo dejin",
+  "nothingToPreview": "Wax horudhac ah ma jiro",
+  "nothingToPreviewYet": "Weli wax horudhac ah ma jiro.",
+  "notificationPreferences": "Doorbidyada Ogeysiisyada",
+  "notifications": "Ogeysiisyo",
+  "notifyForOfficialAnnouncementsAndApp": "Ogeysii wararka rasmiga ah iyo cusboonaysiinta app-ka",
+  "notifyIfYourCommentIsRemoved": "Ogeysii haddii faalladaada kormeeraha uu ka saaro",
+  "notifyOnNewCommentsForMedia": "Ogeysii faallooyin cusub oo warbaahinta aad ka hadashay",
+  "notifyOnUpvotesAndDownvotes": "Ogeysii codad-taageero iyo codad-diid",
+  "notifyOnWarningsPinnedCommentsOr": "Ogeysii digniinta, faallooyinka la xardhay, ama xidhista xarriicadda",
+  "notifyWhenSomeoneMentionsYourUsername": "Ogeysii marka qof @xuso magacaaga isticmaalaha",
+  "notifyWhenSomeoneRepliesToYour": "Ogeysii marka qof faalladaada jawaabo",
+  "novel": "Novel",
+  "novelCustomLists": "Liisaska Novel-ka ee Gaarka ah",
+  "novelDetailsPhrasing": "Erayga Faahfaahinta Novel-ka",
+  "novelFontFamily": "Qoyska Farta Novel-ka",
+  "novelLibrary": "Maktabadda Novel-ka",
+  "novelSnapshots": "Sawirrada Novel-ka",
+  "novelTheme": "Mawduuca Novel-ka",
+  "novels": "Novel-ada",
+  "numberOfActiveDownloadTasks": "Tirada hawlaha soo dejinta firfircoon",
+  "numberOfParallelChunksPerDownload": "Tirada qaybaha isku-xiga ah ee soo dejin kasta",
+  "okay": "Waa hagaag",
+  "oldestFirst": "Kuwa ugu duqsi marka hore",
+  "oledMode": "Habka OLED",
+  "onMyList": "Liistayda Aniga",
+  "oneOptionPerLineLikeHwdec": "Hal ikhtiyaar safka kasta, sida hwdec=auto ama scale=ewa_lanczossharp. Safafka ku bilaabma # waa faallooyin. Profiles-ka ku jira [bracket] waa la iska indha tirayaa.",
+  "online": "Online",
+  "openCloset": "Fur Closet",
+  "openInBrowser": "Ku fur browser-ka",
+  "openSettings": "Fur Dejinta",
+  "openSource": "Isha Furan",
+  "openSupportedLinks": "Fur xiriirrada la taageero",
+  "openTheDownloadsScreenFromThe": "Ka fur shaashadda soo dejinta menu-ga",
+  "openVideoStreamInExternalPlayer": "Caadi ahaan ku fur stream-ka fiidiyaha ciyaaraha dibadda",
+  "openWebview": "Fur Webview",
+  "openingsEndings": "Bilowga & Dhammaadka",
+  "openslEsNativeAudioEngine": "Matoorka dhawaaqa asalka ah ee OpenSL ES",
+  "options": "IKHTIYAARRO",
+  "order": "KALA-SOCODKA",
+  "originalSize": "Cabbirka Asalka ah",
+  "otakuRankLevel": "Heerka Darajada Otaku",
+  "other": "Kale",
+  "otherFeatures": "Astaamo Kale",
+  "otherRecommendations": "Talooyin Kale",
+  "otherStuffs": "Waxyaabo Kale",
+  "otherTemporaryFiles": "Faylal Kale oo Ku Meel-gaadh ah",
+  "otherWaysToSupport": "Siyaabo Kale oo Taageero",
+  "others": "Kuwa kale",
+  "outlineType": "Nooca Khadka Hareeraha",
+  "overscroll": "Dhex-xoqidda (Overscroll)",
+  "overscrollToPrevNextChapter": "Overscroll to previous/next chapter",
+  "overview": "Dulmar Guud",
+  "overwrite": "Overwrite",
+  "pageAnimationDemo": "Page Animation Demo",
+  "pageReaderMode": "Page Reader Mode",
+  "paged": "Bogaysan",
+  "palette": "Midabada",
+  "palettes": "Uruurinta Midabada",
+  "paragraphSpacing": "Paragraph Spacing",
+  "parallelSegmentsForVideoDownloader": "Parallel segments for video downloader",
+  "password": "Eray Sir ah",
+  "passwordProtectBackup": "Password Protect Backup",
+  "passwordRequired": "Password Required",
+  "passwordsDontMatch": "Passwords don't match!",
+  "pasteCustomImageUrl": "Paste custom image URL...",
+  "pasteUrlHere": "Paste URL here...",
+  "pathCopiedToClipboard": "Path copied to clipboard",
+  "payViaAnyUpiApp": "Pay via any UPI App",
+  "paypalDonation": "PayPal Donation",
+  "paypalRecipientNotice": "PayPal Recipient Notice",
+  "penaltyDuration": "Penalty Duration",
+  "performance": "Performance",
+  "permissionsRequired": "Permissions Required",
+  "persistentPageIndicator": "Persistent Page Indicator",
+  "personalizeTheLookAndMakeIt": "Personalize the look and make it yours",
+  "personalizedRecommendations": "Personalized recommendations",
+  "platform": "Platform",
+  "playAroundWithAppTheme": "Play around with App theme",
+  "playAroundWithTheVideoPlayer": "Play around with the video player",
+  "playback": "Dib-u-ciyaarid",
+  "playbackSpeed": "Xawaaraha Ciyaarista",
+  "playbackSpeeds": "Xawaareyaasha Ciyaarista",
+  "player": "Ciyaaryahan",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Player controls, subtitles, and playback preferences",
+  "playerSettings": "Dejinta Ciyaaryahanka",
+  "playerTheme": "Muuqaalka Ciyaaryahanka",
+  "playerThemes": "Muuqaallada Ciyaaryahanka",
+  "pleaseChooseALogoFile": "Please choose a logo file.",
+  "pleaseEnterAPasswordOrDisable": "Please enter a password or disable password protection.",
+  "pleaseEnterASearchTerm": "Please enter a search term",
+  "pleaseEnterAUsernameToCompare": "Please enter a username to compare with.",
+  "pleaseGrantStoragePermissionToBrowse": "Please grant storage permission to browse your media files",
+  "pleaseLoginFirst": "Please login first",
+  "pleaseLoginFirstToExportYour": "Please login first to export your list.",
+  "pleaseLoginToFavorite": "Please login to favorite!",
+  "pleaseLoginToUseThisFilter": "Please login to use this filter!",
+  "pleaseProvideAReasonForThis": "Please provide a reason for this action",
+  "pleaseSelectABackupFileFirst": "Please select a backup file first",
+  "pleaseSelectAValidApkFile": "Please select a valid APK file.",
+  "pleaseSelectAValidJarFile": "Please select a valid JAR file.",
+  "pleaseSelectAtLeastOneItem": "Please select at least one item to back up.",
+  "pleaseSelectAtLeastOneItemTo": "Please select at least one item to restore.",
+  "pleaseWriteAtLeast30Characters": "Please write at least 30 characters",
+  "pluginInstallationSync": "Plugin Installation & Sync",
+  "pluginIsAlreadyUpToDate": "Plugin is already up to date.",
+  "pluginJarCopiedPleaseRestartThe": "Plugin jar copied. Please restart the app.",
+  "pluginNotInstalled": "Plugin Not Installed",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "Plugin re-downloaded successfully. Please restart to apply.",
+  "pluginReDownloadedPleaseRestartThe": "Plugin re-downloaded. Please restart the app to apply.",
+  "pluginSyncedFromLocalApk": "Plugin synced from local APK.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (Max 20MB)",
+  "popular": "Caanka ah",
+  "popularAnime": "Anime-yada Caanka ah",
+  "popularAnimes": "Anime-yada Caanka ah",
+  "popularManga": "Manga-yada Caanka ah",
+  "posterBlurMode": "Qaabka Cillad bixinta Boostarka",
+  "posterBlurScope": "Poster Blur Scope",
+  "poweredByAnimatch16PointCompatibility": "Powered by AniMatch 16-point compatibility analysis in AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Powered by Commentum v2 - Advanced comment system with moderation",
+  "preferences": "Dookhyada",
+  "preferencesSystem": "Preferences & System",
+  "preferredSubtitleLanguage": "Preferred Subtitle Language",
+  "preparingImageToShare": "Preparing image to share...",
+  "preparingStream": "Diyaarinta Daawashada",
+  "presetProviders": "PRESET PROVIDERS",
+  "preventScreenFromSleeping": "Prevent screen from sleeping",
+  "preview": "Horudhac",
+  "previewUpper": "HORUDHAC",
+  "privacySafety": "Privacy & Safety",
+  "privacySettingsAndSafetyFeatures": "Privacy settings and safety features",
+  "private": "Gaar ah",
+  "privateEntry": "Gelitaan Gaar ah",
+  "profileEffects": "Saamaynta Muuqaalka",
+  "profileIcon": "Astaanta Muuqaalka",
+  "progress": "Horumarka",
+  "progressHistory": "Progress & History",
+  "proposeNewFeaturesReportBugsAnd": "Propose new features, report bugs, and chat with other members",
+  "protocol": "PROTOCOL",
+  "proxy": "Wakiilka Shabakadda",
+  "proxyConfiguration": "Proxy Configuration",
+  "pulseaudioSoundServer": "PulseAudio sound server",
+  "queryRemoteRepositoryForAddOn": "Query remote repository for add-on updates",
+  "queuedForDownload": "Queued for download",
+  "quickSelectFollowing": "Quick Select (Following)",
+  "radiusMultiplier": "Radius Multiplier",
+  "random": "Kala Sooc La'aan",
+  "range": "Xadka",
+  "rank": "Darajada",
+  "rating": "Qiimeynta",
+  "reDownloadAndReinstallThePlugin": "Re-download and reinstall the plugin from scratch",
+  "read": "Akhriso",
+  "readArticle": "Akhri Maqaalka",
+  "readLatestUpdatesAboutThisAnime": "Read latest updates about this anime",
+  "readLatestUpdatesAboutThisManga": "Read latest updates about this manga",
+  "readOnePageAtATime": "Read one page at a time",
+  "readAheadDurationInMinutes": "Read-ahead duration in Minutes",
+  "readaheadSeconds": "Readahead seconds",
+  "reader": "Akhriste",
+  "readerBackgroundOpacity": "Reader background opacity",
+  "readerControlTheme": "Reader Control Theme",
+  "readerPreferences": "Reader Preferences",
+  "readerSettings": "Dejinta Akhristaha",
+  "readingDirection": "Reading Direction",
+  "readingLayout": "Qaabka Akhriska",
+  "readingManga": "Akhrinta Manga-ga",
+  "readingMangaPhrasing": "Reading Manga Phrasing",
+  "readingNovel": "Akhrinta Buugga",
+  "readingNovelPhrasing": "Reading Novel Phrasing",
+  "realTime4kUpscalingForAnime": "Real-time 4K upscaling for anime content",
+  "reason": "Sababta",
+  "reasonDeleted": "Sababtii waa la tirtiray.",
+  "reasonUpdated": "Sababtii waa la cusbooneysiiyay!",
+  "recentActivity": "Dhaqdhaqaaqii dhowaa",
+  "recentMediaComments": "Recent Media Comments",
+  "recentNews": "Wararkii ugu dambeeyay",
+  "recentSearches": "Baaritaannadii ugu dambeeyay",
+  "recentlyCompleted": "Recently Completed",
+  "recentlyUpdated": "Dhowaan La Cusbooneysiiyay",
+  "recommend": "Ku Tali",
+  "recommendationSubmitted": "Talo soo jeedinta waa la diray! 🎉",
+  "recommended": "Lagu Talinayo",
+  "recommendedAnime": "Recommended Anime",
+  "recommendedBy": "Waxaa ku taliyay",
+  "recommendedManga": "Recommended Manga",
+  "recommendedNovels": "Recommended Novels",
+  "reduceColorBandingArtifacts": "Reduce color banding artifacts",
+  "refreshComments": "Cusbooneysii faallooyinka",
+  "refreshRate": "Xawaaraha Cusbooneysiinta Shaashadda",
+  "relations": "Xiriirada",
+  "releaseDate": "Taariikhda La Soo Saaray",
+  "releaseYear": "Sannadka La Soo Saaray",
+  "releaseYearStats": "Release Year Stats",
+  "rememberMyChoice": "Remember my choice",
+  "rememberServer": "Xusuusnow Adeegaha",
+  "removalRequestSentToAdminsFor": "Codsiga ka saarista waxaa loo diray maamulayaasha si dib loogu eego.",
+  "remove": "Ka saar",
+  "removeBanner": "Ka saar Boobka",
+  "removeDecoration": "Remove Decoration",
+  "removeEffect": "Ka saar Saamaynta",
+  "removeFromHistory": "Remove from History",
+  "removeItems": "Ka saar Waxyaabaha",
+  "removeNameplate": "Ka saar Taargada Magaca",
+  "removeTheme": "Ka saar Muuqaalka",
+  "removeWhiteBlackBorders": "Remove white/black borders",
+  "removeYourReason": "Remove Your Reason?",
+  "rename": "Magac cusub bixi",
+  "renameList": "Magac cusub u bixi Liiska",
+  "reorderNavigationTabs": "Reorder Navigation Tabs",
+  "replaceExistingDataOnThisDevice": "Replace existing data on this device with backup",
+  "replay": "Dib u cayaar",
+  "reportsQueue": "Safafka Warbixinada",
+  "repositories": "Kaydadka",
+  "repositoryUrl": "URL-ka Kaydka",
+  "repositoryUrlUpper": "URL-KA KAYDKA",
+  "requests": "Codsiyada",
+  "requiredForCoreAndVisualTuning": "Required for Core and Visual tuning. Keep off on low-end devices.",
+  "reset": "Dib u celi",
+  "resetUpper": "DIB U CELI",
+  "resetDownloadPath": "Reset Download Path",
+  "resetNovelReaderSettings": "Dib u deji Dejinta Akhristaha Buugga",
+  "resetToDefault": "Dib ugu celi sidii hore",
+  "resetToDefault2": "Dib ugu celi Sidii Hore",
+  "resetToDefaultPicture": "Reset to Default Picture",
+  "resetToDefaultWallpaper": "Dib ugu celi sawirka asalka ah ee hore",
+  "resizeMode": "Qaabka Cabirka",
+  "resizeModes": "Qaababka Cabirka",
+  "resolution": "Tayada Muuqaalka",
+  "resolve": "Xalli",
+  "restartTheAppToApplyThe": "Restart the App to apply the update.",
+  "restoreAllNovelReaderDefaults": "Dib u soo celi dhammaan dookhyadii asalka ahaa ee buugga",
+  "restoreData": "Dib u soo celi Xogta",
+  "restorePreview": "Horudhaca Soo Celinta",
+  "restoreToDefaultInternalStorage": "Dib ugu celi kaydka gudaha ee asalka ah",
+  "restoringWillOverwriteYourSelectedLocal": "Dib u soo celintu waxay ku beddeli doontaa alaabta maktabaddaada maxalliga ah iyo dejinta la xushay waxyaabaha ku jira kaydkan.",
+  "restrictMessagesToFollowing": "Ku xaddid farriimaha dadka aad la socoto oo keliya",
+  "results": "Natiijooyinka",
+  "resultsWillAppearGroupedByExtension": "Natiijooyinka waxay u muuqan doonaan kuwo lagu kala soocay qalabka dheeriga ah",
+  "retainOriginalColor": "Retain Original Color",
+  "retry": "Isku day mar kale",
+  "rightSide": "Dhinaca Midig",
+  "riseAndShine": "Kac oo iftiim",
+  "roleUpdatedSuccessfully": "Role updated successfully",
+  "roleAll": "Doorka: Dhammaan",
+  "rollbackVersion": "Ku laabo Noocii Hore",
+  "romajiTitle": "Cinwaanka Romaji",
+  "roundUpScores": "Isku gee Dhibcaha",
+  "runtimeHost": "Martigaliyaha Shaqada",
+  "runtimeHostReleases": "Runtime Host Releases",
+  "runtimeHostRequired": "Runtime Host Required",
+  "safetyFeatures": "Astaamaha amniga:",
+  "saturation": "Iftiinka Midabka",
+  "sauceSearcher": "Baaraha Isha Asalka ah",
+  "save": "Keydi",
+  "saveEquip": "Keydi oo Isticmaal",
+  "saveChanges": "Keydi isbeddelada",
+  "saveChanges2": "Keydi Isbeddelada",
+  "saveLastFrame": "Keydi Sawirkii Ugu Dambeeyay",
+  "saveLogo": "Keydi Sumadda",
+  "savedAnimeEntriesAndProgress": "Xogta anime-ka ee la keydiyay iyo horumarka",
+  "savedLightNovelsAndReadingState": "Buugaagta la keydiyay iyo xaaladda akhriska",
+  "savedMangaEntriesAndChapters": "Manga-yada la keydiyay iyo cutubyada",
+  "savedStreamLinkHasExpiredFetching": "Xiriirintii daawashada ee la keydiyay waxay dhacday. Waxaa la soo saarayaa xiriirin cusub...",
+  "savesAScreenshotOfTheLast": "Waxay kaydisaa shaashad ka mid ah qaab-dhismeedkii ugu dambeeyay ee aad daawatay. Joojinta tan waxay si weyn u yaraynaysaa isticmaalka kaydinta",
+  "scaleFactor": "Heerka Cabirka",
+  "scalingAlgorithm": "Habka Isku-habeynta Cabirka",
+  "scanningForMoreServers": "Waxaa la baarayaa adeegayaal dheeraad ah...",
+  "scanningForVideoStreams": "Waxaa la baarayaa muuqaallada la daawan karo...",
+  "score": "Dhibcaha",
+  "scoreDistribution": "Score Distribution",
+  "scoringSystem": "Habka Dhibcaha",
+  "search": "Raadi",
+  "searchUpper": "RAADI",
+  "searchAcrossExtensions": "Search across extensions...",
+  "searchAnimeMovies": "Search anime, movies...",
+  "searchAnime": "Raadi anime...",
+  "searchExtensions": "Search Extensions",
+  "searchExtensionsEllipsis": "Search extensions...",
+  "searchFailed": "Raadintu way fashilantay",
+  "searchForAnime": "Raadi anime",
+  "searchInHistory": "Search in History...",
+  "searchInLibrary": "Search in Library...",
+  "searchItemsInList": "Search items in list...",
+  "searchManga": "Raadi manga...",
+  "searchQuery": "Qoraalka Raadinta",
+  "searchSources": "Search sources...",
+  "searchTags": "Raadi astaamaha...",
+  "searchUser": "Raadi Isticmaale",
+  "searchingDatabase": "Searching database...",
+  "searching": "Waa la raadinayaa...",
+  "season": "Xilli",
+  "seasons": "Xilliyada",
+  "secondsPerScreenLowerIsFaster": "Ilbidhiqsiyo shaashad kasta (hooseeyo ayaa degdeg badan)",
+  "secondsPerScreenPageLowerIs": "Ilbidhiqsiyo shaashad/bog kasta (hooseeyo ayaa degdeg badan)",
+  "securityEncryption": "Security & Encryption",
+  "seePeopleWhoContributedToAnymex": "Arag dadkii gacan ka gaystay AnymeX",
+  "selectAFolderWhereAnymexWill": "Xulo gal ay AnymeX ku kaydin doonto qaybaha anime-ka iyo cutubyada manga-ga ee aad soo dejisatay.",
+  "selectAnAnimeScreenshotToFind": "Xulo shaashadda anime-ka si aad u hesho meesha uu ka yimid",
+  "selectAnilistMyanimelistSimklOrExtensions": "Dooro AniList, MyAnimeList, Simkl, ama Qaabka Dheeraadka ah",
+  "selectDirectory": "Dooro Folder",
+  "selectExtensions": "Dooro Kordhinta",
+  "selectFolder": "Dooro Fayl-hayn",
+  "selectLanguage": "Dooro Luqadda",
+  "selectMediaDirectory": "Dooro Fayl-hayn Warbaahinta",
+  "selectNovelSource": "Dooro Isha Sheekada",
+  "selectProfile": "DOORO PROFILE",
+  "selectRange": "Dooro Kala-duwanaansho",
+  "selectServer": "Dooro Server",
+  "selectStatus": "Dooro Xaalad",
+  "selectSubtitleFont": "Dooro Font-ka Hoosheeyada",
+  "selectTags": "DOORO TAGS",
+  "selectTimezone": "Dooro Waqtiga Aagga",
+  "selectVersionToRollback": "Dooro Nooca Dib-u-celinta",
+  "selectVideoFile": "Dooro Faylka Fiidiyaha",
+  "selectYourPreferredContentSource": "Dooro isha nuxurka aad doorbidayso",
+  "selectedCacheCleared": "Kaydka la doortay waa la tirtiray",
+  "selectedItemsRemoved": "Waxyaabihii la doortay waa la saaray",
+  "sensitiveLoginTokensForMalSimkl": "Calaamadaha gelitaanka xasaasiga ah ee MAL, Simkl, iyo AniList",
+  "sensitiveSessionTokensForMalSimkl": "Calaamadaha fadhiga xasaasiga ah ee MAL, Simkl, iyo AniList",
+  "separateCompletedAnimeListIntoSections": "Liiska anime-ka la dhammeeyey u kala qaybi qaybo sida qaabka.",
+  "separateCompletedMangaListIntoSections": "Liiska manga-ga la dhammeeyey u kala qaybi qaybo sida qaabka.",
+  "serverDetails": "FAAHFAAHINTA SERVER-KA",
+  "serverChanIsTakingANap": "Server-chan wuu seexanayaa!",
+  "setUpYourPreferencesForThe": "U diyaarlater doorbidyadaada si aad u heshid waayo-aragnimo ugu fiican",
+  "settings": "Dejinta",
+  "settingsAccount": "Dejinta & Akoonka",
+  "settingsAuthentication": "Dejinta & Xaqiijinta",
+  "settingsSavedSuccessfully": "Dejinta si guul leh ayaa loo kaydiyey.",
+  "shaderProfilesInitialized": "Profiles-ka Shader-ka ayaa la bilaabay",
+  "shadowBanUser": "Isticmaalaha Shadow Ban-ka",
+  "shareLogs": "Wadaag logs-ka",
+  "shareMatchCard": "Wadaag Kaarka Kulanka",
+  "shareProfile": "Wadaag Profile-ka",
+  "shareTheSavedLogFileOr": "Wadaag faylka logs-ka ee la kaydiyey ama nuqul ka samee nuxurkiisa.",
+  "sharedFromAnymex": "Laga wadaagay AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Muuji saameyn dhaqdhaqaaq leh oo ku saabsan bannerada profile-ka",
+  "showAnimatedFramesAroundUserAvatars": "Muuji dhaqdhaqaaq leh oo ku wareegsan sawirrada isticmaalaha",
+  "showBatteryTime": "Muuji Batteriga & Waqtiga",
+  "showChapterTransitionEvenWithoutGaps": "Muuji isbeddelka cutubka xitaa haddii aan farqi jirin",
+  "showCommunityRecommendations": "Muuji Talooyinka Bulshada",
+  "showContinueWatchingCard": "Muuji Kaarka Sii Daawashada",
+  "showContinueWatchingOnHome": "Muuji Sii Daawashada Bogga Hore",
+  "showCustomProfileBannersFallsBack": "Muuji bannerada profile-ka gaarka ah (waxay dib ugu noqonaysaa daboolka AniList haddii la damiyo)",
+  "showNameplateBackgroundsOnCommentCards": "Muuji asalka nameplate-ka kaarka faallooyinka iyo liiska sare",
+  "showOnLeft": "Ku muuji bidix",
+  "showOnRight": "Ku muuji midig",
+  "showReadingProgress": "Muuji Horumarka Akhriska",
+  "showTimestamps": "Muuji Waqtiyada",
+  "simpleCompactListView": "Muuji liis fudud oo kooban",
+  "simpleDirectmediaLayerAudioOutput": "Wax-soo-saarka codka ee Simple DirectMedia Layer",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Qaabka fudud ee muujinaya lambarka qaybta, magaca, iyo horumarka iyada oo aan sawir yar lahayn",
+  "sizeMode": "Qaabka Cabbirka:",
+  "smartMangaSuggestions": "Soo-jeedinta manga ee caqliga leh",
+  "smootherMotionCanIncreaseGpuUsage": "Dhaqdhaqaaq naaskiis ah, waxay kordhin kartaa isticmaalka GPU",
+  "social": "Bulshada",
+  "somethingWentWrong": "Wax khalad ah ayaa dhacay",
+  "sort": "KALA SOO SAAR",
+  "sort2": "Kala soo saar",
+  "sortBy": "KU KALA SOO SAAR",
+  "sortBy2": "Ku kala soo saar",
+  "sortComments": "Kala soo saar faallooyinka",
+  "source": "Isha",
+  "sourceAndPluginConfigurations": "Dejinta isha iyo plugin-ka",
+  "sourcePreferences": "Doorbidyada Isha",
+  "spaceBetweenLetters": "Meel u dhexeysa xarfaha",
+  "spaceBetweenParagraphs": "Meel u dhexeysa faqradaha",
+  "spaceBetweenWords": "Meel u dhexeysa ereyada",
+  "spacedPages": "Bogagga Kala Fogeeyey",
+  "splitCompletedAnimeList": "Kala Qaybi Liiska Anime-ka La Dhammeeyey",
+  "splitCompletedMangaList": "Kala Qaybi Liiska Manga-ga La Dhammeeyey",
+  "spoiler": "Spoiler",
+  "spoilerTapToReveal": "Spoiler (riix si aad u muujiso)",
+  "staff": "Shaqaalaha",
+  "staffCharacterNameLanguage": "Luqadda Magaca Shaqaalaha & Jilayaasha",
+  "standardGpuRendering": "Bixinta GPU-ga caadiga ah",
+  "starOnGithub": "Ku calaamadee xiddig GitHub-ka",
+  "startANewDownloadFromThe": "Bilow soo dejisashada cusub tab-ka \"Soo dejinta Cusub\"",
+  "startChapter": "Cutubka Bilowga",
+  "startDate": "Taariikhda Bilowga",
+  "startMangaDownload": "Bilow Soo dejinta Manga",
+  "startTest": "Bilow Tijaabada",
+  "startingExtensionRuntime": "Waa la bilaabayaa wakhtiga fidinta...",
+  "statistics": "Tirakoobka",
+  "stats": "Tirakoob",
+  "status": "Xaalad",
+  "statusDistribution": "Qaybinta Xaaladda",
+  "statusPostedSuccessfully": "Xaaladda si guul leh ayaa loo dhigay!",
+  "stayUpdatedWithTheLatestReleases": "Ku sii wad inaad ogaato sii-deynta, ogeysiisyada, iyo doodaha ugu dambeeya",
+  "storagePath": "Kaydinta & Jidka",
+  "storageManager": "Maareeyaha Kaydinta",
+  "storageOptions": "Ikhtiyaarada Kaydinta",
+  "storagePermission": "Ogolaanshaha Kaydinta",
+  "storagePermissionIsRequiredToDownload": "Ogolaanshaha kaydinta ayaa loo baahan yahay si cusboonaysiinta loo soo dejiyo",
+  "storagePermissionRequired": "Ogolaanshaha Kaydinta Ayaa Loo Baahan Yahay",
+  "streakCurLong": "Silsilad (Hadda/Ugu dheer)",
+  "stretchImagesToFitScreenWidth": "Sawirrada ku ballaadhi si ay ugu habboon yihiin ballaca shaashadda",
+  "strikethrough": "Jaridda",
+  "studios": "Istuudiyaha",
+  "style": "QAAB",
+  "subtitleBackgroundColor": "Midabka Asalka Hoosheeyada",
+  "subtitleColor": "Midabka Hoosheeyada",
+  "subtitleFont": "Font-ka Hoosheeyada",
+  "subtitleOutlineColor": "Midabka Geesta Hoosheeyada",
+  "subtitleOutlineWidth": "Ballaca Geesta Hoosheeyada",
+  "subtitlePreview": "Hordhaca Hoosheeyada",
+  "subtitlePreviewText": "Qoraalka Hordhaca Hoosheeyada",
+  "subtitleSize": "Cabbirka Hoosheeyada",
+  "subtitleTransparency": "Hufnaanta Hoosheeyada",
+  "subtitles": "Hoosheeyada",
+  "summary": "Soo koobid",
+  "superAdmin": "Maamulaha Guud",
+  "supportTtfAndOtfFiles": "Taageer faylasha .ttf iyo .otf",
+  "supportAnymex": "Taageer AnymeX",
+  "supportedModes": "Qaababka La Taageero",
+  "supportedUpiApps": "Appsyada UPI ee La Taageero",
+  "suppressActivityWhenWatchingOrReading": "Ka joojin firfircoonida marka la daawanayo ama la akhrinayo nuxurka NSFW",
+  "swapUpDownActions": "Is-beddel falka sare/hoose",
+  "swipeBetweenChapters": "Ku dhufo si aad cutubyada ugu wareegto",
+  "swipeIndicatorTheme": "Mawduuca Calaamadda Dhufashada",
+  "swipeToSeek": "Dhufo si aad u raadiso",
+  "switchBetweenDefaultTitleAndRomaji": "U beddel inta u dhexeysa magaca caadiga ah iyo romaji/magaca kale maktabadda & kaararka oo dhan",
+  "switchToOnline": "Ku beddel Online",
+  "syncCompletedButThePluginIs": "Isku-xidhku wuu dhammaaday, laakiin plugin-ka weli diyaar uma aha.",
+  "syncDetails": "Faahfaahinta Isku-xidhka",
+  "syncFailed": "Isku-xidhku wuu fashilmay",
+  "synonyms": "Erayada Isku Micne",
+  "synopsis": "Soo koobid",
+  "tags": "TAGS",
+  "tags2": "Tags",
+  "takeColorFromYourWallpaperA12": "Midabka ka qaad warqadda hore (A12+)",
+  "tapToAddARepositoryUrl": "Riix + si aad ugu darto URL-ka kaydka",
+  "tapAZoneToChangeIts": "Riix aagga si aad u beddesho falkiisa",
+  "tapAction": "Falka Riixa",
+  "tapToChooseASource": "Riix si aad isha u doorato",
+  "tapToLogin": "Riix si aad u gasho",
+  "tapToLogout": "Riix si aad uga baxdo",
+  "tapToScroll": "Riix si aad u jiidto",
+  "tapYourProfileIconInThe": "Riix calaamadda profile-kaaga ee darbiga sare ee appka",
+  "tapZones": "Aagagga Riixa",
+  "tellTheCommunityWhyThisDeserves": "U sheeg bulshada sababta uu tan u mudan yahay in la fiiro gaar ah siiyo.",
+  "temporaryAppCache": "Kaydka Ku-meelgaarka ah ee App-ka",
+  "termsOfServicePrivacyPolicy": "Shuruudaha Adeegga/Siyaasadda Gaarnimada",
+  "test": "Tijaabo",
+  "testExtensions": "Tijaabi Kordhinta",
+  "testResults": "Natiijooyinka Tijaabada",
+  "testType": "Nooca Tijaabada",
+  "textSize": "Cabbirka qoraalka",
+  "theme": "Mawduuca",
+  "themeLayoutAndColors": "Mawduuca, qaabka, iyo midabyada",
+  "themes": "Mawduucyada",
+  "thisBackupIsEncryptedPleaseEnter": "Kaydkan waa la sirtay. Fadlan geli furaha sirta si aad u sii waddo.",
+  "thisDirectoryContainsNoSupportedMedia": "Fayl-hayntan ma leh faylal warbaahineed oo la taageero",
+  "thisMayTakeAFewSeconds": "Tani waxay qaadan kartaa dhowr ilbiriqsi",
+  "thisMayTakeUpTo30": "Tani waxay qaadan kartaa ilaa 30 ilbiriqsi",
+  "thisMightTakeAFewSeconds": "Tani waxay qaadan kartaa dhowr ilbiriqsi",
+  "thisReasonWillBeDeletedImmediately": "Sababtan waa la tirtiri doonaa isla markiiba.",
+  "thisWillPermanentlyDeleteAllData": "Tani waxay si joogto ah u tirtirtaa dhammaan xogta AnymeX ee la kaydiyey. Lama soo celin karo.",
+  "tipYouCanCombineTheseE": "Talo: Kuwan waad isku dari kartaa! tusaale **adag iyo *side-ka* oo wada jir**",
+  "title": "Magaca",
+  "titleCopied": "Magaca waa la koobiyeeyey",
+  "titleLanguage": "Luqadda Magaca",
+  "toDownloadForTheFirstTime": "Si aad wax u soo dejiso markii ugu horeysay, marka hore bogga Soo dejinta u gudub si aad ogolaansho u siiso:",
+  "toggleBetweenGridAndDetailedList": "Ka beddel between shabakad iyo liis faahfaahsan",
+  "toneMapping": "Isku-habeynta Midabka (Tone Mapping)",
+  "topAnime": "Anime-ka Ugu Sareeya",
+  "topComments": "Faallooyinka ugu sareeya",
+  "topGenres": "Noocyada Ugu Sareeya",
+  "topManga": "Manga-ga Ugu Sareeya",
+  "topManhua": "Manhua-ga Ugu Sareeya",
+  "topManhwa": "Manhwa-ga Ugu Sareeya",
+  "topStudios": "Istuudiyaha Ugu Sareeya",
+  "torrentServer": "Server-ka Torrent-ka",
+  "torrentStreamCache": "Kaydka Stream-ka Torrent-ka",
+  "torrserverStreamingAddOns": "TorrServer & kordhinta streaming-ka",
+  "totalChapters": "Cutubyada Guud ahaan",
+  "totalCost": "Kharashka Guud:",
+  "totalItems": "Alaabta Guud ahaan",
+  "track": "Raac",
+  "trackAiringSchedules": "Raac jadwalka baahinta",
+  "trackYourProgress": "Ma raacaa horumarkaaga?",
+  "trackingServices": "Adeegyada Raaca",
+  "transitionSubtitle": "Hoosheeyada Isbeddelka",
+  "translateTo": "Ku tarjum",
+  "translationLanguage": "Luqadda Turjumaadda",
+  "translucentNav": "Navigation-ka Hufan",
+  "trendingAnime": "Anime-ka Caanka ah",
+  "trendingAnimes": "Anime-yada Caanka ah",
+  "trendingManga": "Manga-ga Caanka ah",
+  "tryADifferentKeyword": "Isku day erey kale",
+  "tryAdjustingYourFilters": "Isku day inaad hagaajiso shaandhadaha",
+  "tryAgain": "Isku day mar kale",
+  "tryDifferentAnimationStylesForPage": "Isku day qaababka animation-ka ee kala duwan marka bogga la galayo",
+  "ttsAutoAdvance": "TTS Si Toos ah u Soco",
+  "ttsPitch": "Heerka Codka TTS",
+  "ttsSpeed": "Xawaaraha TTS",
+  "tweakGeneralAppSettings": "Hagaaji dejinta guud ee appka",
+  "typeLabel": "Nooca",
+  "typeAtLeast2CharactersTo": "Ku qor ugu yaraan 2 xaraf si aad u raadiso",
+  "ui": "UI",
+  "uiComponents": "Qaybaha UI",
+  "uiLayoutColorsAndThemes": "Qaabka UI-ga, midabyada, iyo mawduucyada",
+  "uiLayoutColorsAndVisualStyles": "Qaabka UI-ga, midabyada, iyo qaabka muuqaalka",
+  "uiSettings": "Dejinta UI",
+  "unableToPreparePlaybackRightNow": "Hadda ma suurtagasha in ciyaarta diyaar la gareeyo. Fadlan mar kale isku day.",
+  "unbanUser": "Isticmaalaha Ka Saar Mamnuucida",
+  "unbind": "Ka Fur",
+  "unifiedLibrary": "Maktabada Midowsan",
+  "uninstall": "Ka saar",
+  "universal": "Caalami",
+  "unlock": "Fur",
+  "unlockCustomizations": "Fur Habaynta Shakhsiga ah",
+  "unmuteUser": "Isticmaalaha Dhegeey",
+  "unreadOnly": "Kuwa aan la akhrin oo keliya",
+  "upcomingAnime": "Anime-ka Soo Socda",
+  "update": "Cusboonaysii",
+  "updateAll": "Dhammaan Cusboonaysii",
+  "updateCheckComplete": "Hubinta cusboonaysiinta way dhammaatay",
+  "updateOnImport": "Cusboonaysii Marka La Soo Dejiyo",
+  "updateToLatestVersion": "Cusboonaysii Nooca Ugu Dambeeya",
+  "updateYourActivity": "Cusboonaysii firfircoonidaada...",
+  "updatesPending": "Cusboonaysiinta Sugaysa",
+  "upiDonation": "Deeq UPI",
+  "uploadAnImageToGetStarted": "Soo geli sawir si aad u bilowdo",
+  "uploadImage": "Soo geli Sawir",
+  "urlCopiedToClipboard": "URL-ka waa lagu koobiyeeyey clipboard-ka",
+  "usage": "Isticmaal:",
+  "useAiToTranslateSoftSubtitles": "Isticmaal AI si aad hoosheeyada soft-ka ah si toos ah ugu turjunto",
+  "useAlternateTitle": "Isticmaal Magaca Kale",
+  "useBuffering": "Isticmaal Buffering",
+  "useCustomGesturesForReaderNavigation": "Isticmaal gesture-yo gaar ah si aad u socodsiiso akhristaha",
+  "useEnhancedEpisodeMetadataAndCovers": "Isticmaal macluumaad qaybta oo horumarsan iyo daboolo",
+  "useExternalPlayer": "Isticmaal Ciyaaryahan Dibadda ah",
+  "useKeyboardShortcutsDuringPlaybackTo": "Isticmaal gaaban-furayaasha kiiboodhka inta lagu jiro ciyaarta si aad profile-yada u beddesho",
+  "useLegacyHeader": "Isticmaal Madax-hore Caadi ah",
+  "useLibassForSubtitles": "Isticmaal Libass Hoosheeyada",
+  "useLibmpvForPlayback": "Isticmaal LibMpv Ciyaarta",
+  "useMpvConf": "Isticmaal mpv.conf",
+  "usePosterColor": "Isticmaal Midabka Posterka",
+  "useVolumeKeysToChangePages": "Isticmaal furayaasha codka si aad bogagga u beddesho",
+  "useYearRange": "Isticmaal Kala-duwanaanshaha Sannadka",
+  "user": "Isticmaalaha",
+  "userIdCopiedToClipboard": "User ID-ga waa lagu koobiyeeyey clipboard-ka",
+  "userList": "Liiska Isticmaalaha",
+  "userManagement": "Maareynta Isticmaalayaasha",
+  "userCreatedCustomMediaCollections": "Ururinta warbaahinta gaarka ah ee isticmaalayaasha abuuray",
+  "username": "Magaca Isticmaalaha",
+  "verifyTlsCertificates": "Hubi shahaadooyinka TLS",
+  "versionCopied": "Nooca waa la koobiyeeyey",
+  "vertical": "Taagan",
+  "videoPlayer": "Bilaaga Muuqaalka",
+  "videoRenderer": "Bixiyaha Muuqaalka",
+  "videoSync": "Isku-waafajinta Muuqaalka",
+  "viewAndFilterAllUsers": "Eeg oo sifee dhammaan isticmaalayaasha",
+  "viewOnAnilist": "Ka eeg AniList",
+  "viewOpeningAndEndingThemes": "Eeg heesaha furitaanka iyo dhamaadka",
+  "viewProfile": "Eeg Profaylka",
+  "viewSourceCodeOnGithub": "Eeg koodka isha ee GitHub.",
+  "viewTheChronologicalWatchOrderOf": "Eeg kala-horreynta waqtiga ee daawashada anime-kan",
+  "viewUser": "Eeg Isticmaalaha",
+  "viewUserRankingsTopContributorsReputation": "Eeg darajooyinka isticmaalayaasha, kuwa ugu fiican ee wax ku kordhiya iyo sumcadda",
+  "viewingAnimeDetails": "Faahfaahinta Anime-ka oo la eegayo",
+  "viewingMangaDetails": "Faahfaahinta Manga-ga oo la eegayo",
+  "viewingNovelDetails": "Faahfaahinta Sheekada oo la eegayo",
+  "visibleTabs": "Tabsyada La Arki Karo",
+  "visitGithubReleasesPageForChangelogs": "Booqo bogga sii-deynta GitHub si aad u hesho liiska isbedelada iyo soo dejinta gacanta",
+  "visualFromAnymex": "Muuqaalka AnymeX",
+  "voiceActors": "Codka-bixiyeyaasha",
+  "voicedCharacters": "Jilayaasha Codka Lagu Bixiyay",
+  "volumeButtonScrolling": "Wareejinta Batanka Codka",
+  "volumeKeysNavigation": "Hagidda Furayaasha Codka",
+  "volumes": "MUJALLADO",
+  "volumesRead": "Mujalladaha La Akhriay",
+  "votes": "Codadka",
+  "wWhatAreYouDoingStep": "W-waad samaynaysaa tallaabadaas, walaal, marka hore gal (●´⌓`●)",
+  "wallpaper": "Warqadda Dhabarka",
+  "warnUser": "Digniin Isticmaalaha",
+  "warning": "Digniin",
+  "wasThisHelpful": "Ma waa kaa caawiyay?",
+  "watchAd": "Daawo Xayaysiis",
+  "watchAnAdToSupport": "Daawo xayaysiis si aad u taageerto",
+  "watchAnime": "Daawo Anime",
+  "watchOrder": "Habka Daawashada",
+  "watchTogether": "Daawo Wada-jir",
+  "watchTogetherPolicy": "Siyaasadda Daawashada Wada-jirka",
+  "watchingAnime": "Daawashada Anime",
+  "watchingAnimePhrasing": "Habaynta Weedhaha Daawashada Anime",
+  "welcomeToAnymex": "Ku soo dhowoow AnymeX",
+  "whatsOnYourMind": "Maxay ku shaqaysaa maankaaga?",
+  "whenEnabledAnymexSavesLogsLocally": "Marka la shido, AnymeX wuxuu diiwaannada ku kaydiyaa qalabka ilaa la damiyo.",
+  "whyAreYouRecommendingThisMin": "Maxaad u talinaysaa tan? (ugu yaraan 30 xaraf)",
+  "whyIsThisUnderratedMin30": "Maxaad u malaynaysaa in tan aan la qiimeynin? (ugu yaraan 30 xaraf)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "Masaafada Erayada",
+  "writeAMessage": "Qor fariin...",
+  "writeLogToAFile": "Qor diiwaanka faylka",
+  "writeYourAnilistBio": "Qor taariikhdaada AniList...",
+  "wrongTitle": "Cinwaanka qaldan?",
+  "year": "Sannad",
+  "yearUpper": "SANNAD",
+  "you": "Adiga",
+  "youCanUseDiscordStyleMarkdown": "Waxaad isticmaali kartaa qaabaynta markdown ee Discord si aad faallooyinkaaga u qaabayso:",
+  "youHaveUnsentTextClosingNow": "Waxaad leedahay qoraal aan la diri karin. Hadda xidhistu waxay lumin doontaa fariintaada.",
+  "youHaveUnsentTextClosingNowWill": "Waxaad leedahay qoraal aan la diri karin. Hadda xidhistu waxay lumin doontaa jawaabkaaga.",
+  "youHaveUnsentTextClosingNowWillLose": "Waxaad leedahay qoraal aan la diri karin. Hadda xidhistu waxay lumin doontaa xaaladdaada.",
+  "youNeedModeratorPermissionsToAccess": "Waxaad u baahan tahay ogolaansho maamule si aad u gasho guddigan",
+  "youreUpLate": "Habeenka dambe ayaad ku jirtaa",
+  "yourBalance": "Haraagaaga:",
+  "yourPrivacyIsImportant": "Asturnaantaadu waa muhiim:",
+  "yourReasonHasBeenRemoved": "Sababtaada waa la tirtiray.",
+  "yourRecommendation": "Talineyntaada",
+  "yourRichPresenceActivityWillStop": "Firfircooniyaha Rich Presence-kaaga wuu joojin doonaa cusboonaysiinta.",
+  "yourRole": "Doorkaaga",
+  "yourWatchReadHistory": "Taariikhda daawashada & akhrinta",
+  "yourWatchReadStatistics": "Tirakoobka daawashada & akhrinta",
+  "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "Dhammaan agabkaaga maxalliga ah",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "Ma hubtaa?",
+  "aspectRatio": "Saamiga Muuqaalka",
+  "attackOnTitan": "Attack on Titan",
+  "audio": "Dhawaaqa",
+  "audioSubtitles": "Dhawaaqa & Turjumaadda",
+  "audioTrack": "Raad-dhawaqa",
+  "audioTracks": "Raad-dhawaqyada",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Otomaatig (AudioTrack)",
+  "autoCoreaudio": "Otomaatig (CoreAudio)",
+  "autoGpu": "Otomaatig (GPU)",
+  "autoPulseaudio": "Otomaatig (PulseAudio)",
+  "autoWasapi": "Otomaatig (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Bloom",
+  "castToDevice": "Ku dir qalabka",
+  "colorFilter": "Shaandhaynta Midabka",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "Bilaaga Dibadda",
+  "files": "Faylasha",
+  "forward": "Horey u dhig",
+  "forward30s": "Horey u dhig 30s",
+  "fullscreen": "Shaashad buuxda",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Quful Xakamaynta",
+  "lockOrientation": "Qufulka Jihada",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Necessary Murder",
+  "nextEp": "Cutub Xiga",
+  "nextEpisode": "Cutubka Xiga",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Sawir Gudaha Sawir",
+  "playlist": "Liiska Ciyaarta",
+  "previousEpisode": "Cutubkii Hore",
+  "pulseaudio": "PulseAudio",
+  "quality": "Tayada",
+  "qualitySetting": "Dejinta Tayada",
+  "readingMode": "Qaabka Akhriska",
+  "reddit": "Reddit",
+  "replay30s": "Dib u ciyaar 30s",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito iyo Makomo",
+  "sdl": "SDL",
+  "server": "Adeegaha",
+  "servers": "Serverada",
+  "shadersColorProfiles": "Shaders & Profiles-ka Midabka",
+  "shadersColors": "Shaders & Midabyada",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "Xawaaraha",
+  "sw": "SW",
+  "syncSubs": "Isku-waafaji Turjumaadda",
+  "syncSubtitles": "Isku-waafaji Turjumaadda",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Dawacada buniga ah ee degdegga badan waxay ka dul boodday eyga caajiska ah",
+  "themeMode": "Qaabka Mawduuca",
+  "thisIsFrustrating": "Tani waa niyad-jab",
+  "toYouSomeday": "Adiga, Maalin Mid",
+  "torrentFiles": "Faylasha Torrent",
+  "tracks": "Raadadka",
+  "unlockOrientation": "Fur Jihada",
+  "userAgent": "User-Agent",
+  "videoQuality": "Tayada Muuqaalka",
+  "videoServers": "Serverada Muuqaalka",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Daawo Wada-jir (Qolka Gudihiisa)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "0 waxay ka dhigan tahay tirada xargaha ee otomaatiga ah",
+  "n18Content": "Waxyaabaha 18+",
+  "aboveAverageSimilarity": "Isku-ekaansho ka sarreeya celceliska.",
+  "account": "Akoonka",
+  "activityStats": "Waxqabadka & Tirakoobka",
+  "add": "Ku dar",
+  "additionalNotesOptional": "Qoraallo dheeraad ah (ikhtiyaari)",
+  "adjustKeyVolumeScrollingSpeed": "Hagaaji Xawaaraha Wareejinta Furaha & Codka",
+  "alpha": "Alpha",
+  "alwaysChecksCurrentChapterNumberAnd": "Had iyo jeer wuxuu hubiyaa lambarka cutubka hadda jira, wuxuuna isbarbardhigaa kan xiga/hore, wuxuuna wareejiyaa kaliya marka lambarku kala duwan yahay. Hagidda cutubka ayaa shayga xiga ee liiska u gudbi doonta xitaa haddii ay jiraan kuwa isku mid ah.",
+  "animeCompleted": "Anime-ka Dhammaaday",
+  "announcementMode": "Qaabka Ogeysiinta",
+  "appIsStillLoadingTryAgain": "App-ku weli wuu soo rarayaa, isku day mar kale hadda kadib.",
+  "applyAColorTintOverPages": "Ku dabee midab bogagga",
+  "audioDelay": "Dib-u-dhaca Dhawaaqa",
+  "audioSettings": "Dejinta Dhawaaqa",
+  "audioTrack2": "Raad-dhawaqa",
+  "autoAdvance": "Horumar Otomaatig ah",
+  "autoDeleteCompletedEntries": "Si otomaatig ah u tirtir galalka la dhammeeyay",
+  "autoSyncProgress": "Isku-waafaji horumarka si otomaatig ah",
+  "automaticallyMoveToNextText": "Si otomaatig ah u gudub qoraalka xiga",
+  "automaticallyScrollAdvancePages": "Si otomaatig ah u fooro/horey u dhig bogagga",
+  "automaticallySwitchToContinuousModeFor": "Si otomaatig ah ugu beddel qaabka joogtada ah manga-yada dheer ee xariiqda ah",
+  "averageOverlap": "Isku-dhafka celceliska.",
+  "background": "Asalka",
+  "basedOnYourFavouriteAnime": "Waxaa lagu salaysan anime-kaaga aad jeceshahay.",
+  "basedOnYourFavouriteManga": "Waxaa lagu salaysan manga-gaaga aad jeceshahay.",
+  "basedOnYourTop10Manga": "Waxaa lagu salaysan 10-ka sumadood ee ugu sareeya ee manga-gaaga.",
+  "basedOnYourTop5Manga": "Waxaa lagu salaysan 5-ta nooc ee ugu sareeya ee manga-gaaga.",
+  "blue": "Buluug",
+  "botL": "Hoose-Bidix",
+  "botR": "Hoose-Midig",
+  "bridgeUpdateAvailable": "Cusboonaysiinta Bridge-ka Diyaar Ayaa",
+  "brightness": "Iftiinka",
+  "bulletList": "Liiska Dhibcaha",
+  "calendarUpper": "KALANDARKA",
+  "canadianMovies": "Filimada Kanada",
+  "canadianShows": "Bandhigyada Kanada",
+  "cannotCompareTheSameProfileWith": "Ma isbarbardhigi kartid profile isku mid ah iyada oo lafteeda la siiyo.",
+  "castToDevice2": "Ku dir qalabka",
+  "chatModeration": "Maamulka Wada-hadalka",
+  "chooseASubtitleFileFromYour": "Dooro faylka turjumaadda qalabkaaga (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Dooro sida loo codsanayo faylka JSON ee la doortay gist-ka cloud-ka AnymeX-ka.",
+  "chromaUpscaler": "Kor-u-qaadaha Chroma",
+  "cloudTools": "Qalabka Cloud-ka",
+  "code": "Koodka",
+  "commonFavouriteAnime": "Anime-yada Aad Jeceshahay ee Isku-mid ah",
+  "commonFavouriteCharacters": "Jilayaasha Aad Jeceshahay ee Isku-mid ah",
+  "commonFavouriteManga": "Manga-yada Aad Jeceshahay ee Isku-mid ah",
+  "commonPerfectAnime": "Anime-yada Qumman ee Isku-mid ah",
+  "commonPerfectManga": "Manga-yada Qumman ee Isku-mid ah",
+  "communityAdministratorOverseeingModerationAndPolicies": "Maamule bulsheed ah oo kormeeraya maamulka iyo siyaasadaha.",
+  "connectGithubFirstBeforeDeletingSync": "Marka hore ku xidh GitHub ka hor inta aadan tirtirin xogta isku-waafajinta.",
+  "connectGithubFirstToExportSync": "Marka hore ku xidh GitHub si aad u dhoofiso xogta isku-waafajinta.",
+  "connectGithubFirstToImportSync": "Marka hore ku xidh GitHub si aad u soo dhoofiso xogta isku-waafajinta.",
+  "connectGithubFirstToSyncProgress": "Marka hore ku xidh GitHub si aad u isku-waafajiso horumarka.",
+  "connectGithubFirstToViewSync": "Marka hore ku xidh GitHub si aad u aragto gist-ka isku-waafajinta.",
+  "continuousModeOnly2": "Qaabka Joogtada ah oo keliya",
+  "controls": "Xakamaynta",
+  "cookiesClearedSuccessfully": "Cookies-ka si guul leh ayaa loo nadiifiyay",
+  "copied": "La koobiyeeyay",
+  "copyUrl": "Koobiyee URL",
+  "correctDownscaling": "Hagaaji Hoos-u-dhigista",
+  "couldNotLoadStreamingServicesFrom": "Ma suurtogelin in adeegyada socodka laga soo rarto AniList API.\nAdeeggu wuxuu ku meel-gaari karaa si ku meel gaar ah ama wuu xaddidan yahay.",
+  "couldNotOpenGistInBrowser": "Ma suurtogelin in gist-ka laga furo browser-ka.",
+  "created": "La abuuray",
+  "creatorAndDeveloperOfAnymex": "Abuuraha iyo horumariyaha AnymeX.",
+  "customBrightness": "Iftiinka Gaarka ah",
+  "customizeGestures": "Habee gacmo-tilmaameedyada",
+  "deband": "Deband",
+  "debandIterations": "Celcelinta Deband",
+  "debandThreshold": "Heerka Deband",
+  "decreaseAutoScrollSpeed": "Hoosee xawaaraha wareejinta otomaatiga ah",
+  "decreaseFontSize": "Yareey Cabbirka Xarafka",
+  "deleteAnymexSyncGist": "Ma tirtirtaa AnymeX Sync Gist?",
+  "deleteCloudGist": "Tirtir Gist-ka Cloud-ka",
+  "deleteCommentMod": "Tirtir Faallada (Maamule)",
+  "details": "Faahfaahin",
+  "dictionary": "Qaamuuska",
+  "differenceFromOwnMeanScore": "Farqiga ka dhexeeya celceliska dhibcahaaga",
+  "disableChat": "Dami Wada-hadalka",
+  "disconnectThisGithubAccountFromAnymex": "Ka jooji akoonkan GitHub ee AnymeX",
+  "displayPagesInBlackWhite": "Bogagga ku soo bandhig madow & cad",
+  "downloading": "Soo dejinaya…",
+  "downscaler": "Hoos-u-dhigaha",
+  "dynamicWidget": "Widget-ka Firfircoon",
+  "eInkDisplayRefresh": "Cusboonaysiinta Shaashadda E-ink",
+  "eGAbc123": "tusaale ahaan: ABC123",
+  "eGMyAnimeLogo": "tusaale ahaan: Logo-ga Anime-kayga",
+  "editYourComment": "Wax ka beddel faalladaada...",
+  "embeddedContent": "Nuxurka lagu dhex jiro",
+  "enterTheRoomPassword": "Geli furaha qolka",
+  "enterTokenHere": "Halkan geli tokenka",
+  "error": "Khalad",
+  "exitSyncNotifications": "Ka bax ogeysiisyada isku-xidhka",
+  "exportGistJson": "Dhoofi Gist JSON",
+  "exportedGistJson": "Gist JSON waa la dhoofiyay.",
+  "failedToExportGistJson": "Gist JSON lama dhoofin karin.",
+  "failedToFetchDataFromSources": "Xogta ilaha laga soo qaadi waayay.",
+  "failedToGetCloudGistLink": "Xiriirka cloud gist-ka lama heli karin.",
+  "failedToImportGistJson": "Gist JSON lama soo dejin karin.",
+  "failedToLaunchExternalPlayer": "Ciyaaryahanka dibadda lama bilaabi karin",
+  "failedToOpenGistInBrowser": "Gist-ka browser-ka lama furi karin.",
+  "flashDuration": "Muddada Flash-ka",
+  "flashEveryNPages": "Flash bog kasta N",
+  "flashFrequency": "Inta jeer ee Flash-ka",
+  "flashScreenOnPageTurnTo": "Shaashadda ku flash-garey marka bogga la rogo si ghosting-ka looga nadiifiyo",
+  "followHost": "Raac Martida",
+  "fontSettings": "Dejinta Xarfaha",
+  "freedomSeek": "Raadinta Xorta ah",
+  "friendsNeedAPasswordToJoin": "Saaxiibada waxay u baahan yihiin furaha si ay ugu biiraan",
+  "githubClientIdNotConfigured": "GitHub client ID lama habeyn.",
+  "githubLoginFailedMissingAuthorizationCode": "Galitaanka GitHub wuu fashilmay: koodhka ogolaanshaha ayaa maqan.",
+  "githubLoginWasCancelledOrFailed": "Galitaanka GitHub waa la joojiyay ama wuu fashilmay.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Muuji jacaylkaaga",
+  "goodChemistryAndSharedTaste": "Kiimiko wanaagsan iyo dhadhan wadaag.",
+  "grayscale": "Cad-madow",
+  "green": "Cagaar",
+  "hdrToneMappingTargetPeak": "Heerka ugu sarreeya ee HDR tone mapping-ka",
+  "higherValueIncreasesDebandingStrength": "Qiimo sare ayaa kordhiya xoogga debanding-ka",
+  "horizontalPadding": "Padding-ka Toosan",
+  "hoursWatched": "Saacadaha La Daawaday",
+  "howManyFriendsCanJoin": "Intee saaxiib ayaa ku biiri kara",
+  "ifYouHaveAnIssueOr": "haddii aad dhibaato ama soo jeedin qabtid fadlan ka samee issue GitHub-ka.",
+  "imageWidth": "Ballaca Sawirka",
+  "importGistJson": "Soo dejin Gist JSON",
+  "importLocalSubtitle": "Soo dejin Turjumaadda Maxalliga ah",
+  "improveQualityWhenScalingDownVideo": "Hagaaji tayada marka fiidyaha la yareeyo",
+  "increaseAutoScrollSpeed": "Kordhi xawaaraha auto-scroll-ka",
+  "increaseFontSize": "Kordhi Cabbirka Xarfaha",
+  "invalidCompatibilityLinkMissingUsernames": "Xiriirka isku-habboonaanta khaldan: magacyada isticmaalayaasha ayaa maqan.",
+  "invalidGistUrl": "URL-ka gist-ka khaldan.",
+  "invalidRoomCodeInLink": "Koodhka qolka xiriirka khaldan",
+  "invalidWatchTogetherLink": "Xiriirka Watch Together khaldan",
+  "invertAllPageColors": "Rogo dhammaan midabada bogga",
+  "invertColors": "Rogo Midabada",
+  "inviteLink": "Xiriirka Casuumaadda",
+  "inviteLinkCopied": "Xiriirka casuumaadda waa la koobiyeeyay!",
+  "jDramas": "J-Dramas",
+  "joinNotifications": "Ogeysiisyada ku biirista",
+  "kDramas": "K-Dramas",
+  "keepBothUploadedAndCloudEntries": "Ku hay labada gelitaan ee la soo raray iyo ee cloud-ka. Haddii isla gelitaanku labada meelood ku jiro, kii cusub ayaa la hayaa. (Lagu talinayo)",
+  "keyVolumeScrollingSpeed": "Xawaaraha Scroll-ka ee Furaha & Mugga",
+  "koreanMovies": "Filimada Kuuriyaanka",
+  "leaveNotifications": "Ogeysiisyada ka baxa",
+  "liveComments": "Faallooyinka tooska ah",
+  "lockScreen": "Quful shaashadda",
+  "loginToAnilist": "Gal AniList",
+  "loginToMyanimelist": "Gal MyAnimeList",
+  "loginToSimkl": "Gal Simkl",
+  "longPressForPageActions": "Riix dheer si aad u aragto falalka bogga",
+  "longPressAPageToSave": "Riix dheer bog si aad u kaydiso, wadaagto ama koobiyeyso",
+  "lumaUpscaler": "Kordhiyaha Iftiinka (Luma)",
+  "mangaCompleted": "Manga Dhammaatay",
+  "mangaPage": "Bogga manga-ga",
+  "maxMembers": "Xubnaha ugu badan",
+  "memberLeft": "Xubin ayaa baxay",
+  "mergeUploadedEntriesOrReplaceCloud": "Isku dar gelitaanada la soo raray ama beddel xogta cloud-ka",
+  "mergeWithCloud": "Isku dar Cloud-ka",
+  "milliseconds": "Milisekoonno",
+  "missingTypeQueryParameterUseType": "Parameter-ka \"type\" ee query-ga ayaa maqan. Isticmaal type=player.",
+  "missingUrlQueryParameterForThe": "Parameter-ka \"url\" ee query-ga ee theme JSON-ka ayaa maqan.",
+  "moreIterationsStrongerDebanding": "Soo noqnoqod badan = debanding xoog badan",
+  "movies": "Filimada",
+  "moviesList": "LIISTIGA FILIMADA",
+  "navigateByNumber": "Ku dhawaaq lambar",
+  "navigation": "Dhex-maririnta",
+  "newMember": "Xubin cusub",
+  "nextChapter": "Cutubka Xiga",
+  "nextParagraph": "Faqradda Xigta",
+  "noAudio": "Ma jiro Cod",
+  "noOneCanSendMessagesIn": "Qof ma diri karo fariimo chat-ka",
+  "noStreamUrlAvailable": "URL-ka stream-ka ma jiro",
+  "noSubtitle": "Ma jiro Turjumaad",
+  "noVideo": "Ma jiro Muuqaal",
+  "notVeryCompatibleAtAll": "Ma isku habboona gabi ahaan.",
+  "numberedList": "Liis Lambarro leh",
+  "onScreenOverlays": "Dahaarka Shaashadda",
+  "onlyHostAndCoHostsCan": "Martida iyo martida-kaaliyaha ayaa keliya fariin diri kara",
+  "opacity": "Hufnaan",
+  "openInBrowser2": "Ku fur browser-ka",
+  "openYourAnymexSyncGistOn": "Ku fur gist-ka isku-xidhka AnymeX GitHub-ka",
+  "openingInExternalPlayer": "Dibadda ciyaaryahanka ayaa lagu furayaa...",
+  "orTypeCustomTag": "Ama qor calaamad gaar ah...",
+  "otherUpper": "KALE",
+  "overlayPosition": "Booska dahaarka",
+  "overrideSystemScreenBrightness": "Ka tallaab nidaamka iftiinka shaashadda",
+  "ownerAndCreatorOfTheCommentum": "Milkiilaha iyo abuuraha barta bulshada Commentum.",
+  "padding": "Padding-ka",
+  "pagesAheadOfTimeForFaster": "Bogagga hore loo soo rido si u soo dejinta u dhaqsato",
+  "partySettings": "Dejinta Kooxda",
+  "passwordIfRequired": "Furaha (haddii loo baahdo)",
+  "pasteDirectGifOrImageUrl": "Ku dhaji GIF ama URL sawir toos ah...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Kaararka & Lacagta PayPal",
+  "permanentlyRemoveAnymexSyncData": "Si joogto ah u tir xogta isku-xidhka AnymeX",
+  "pictureShaders": "Sawirka & shaders-ka",
+  "pitch": "Heerka codka",
+  "playbackIsLockedToTheHost": "Ciyaarta waxaa loo xiray martida",
+  "playbackSpeed2": "Xawaaraha ciyaarta",
+  "playerSettings2": "Dejinta ciyaaryahanka",
+  "pleaseLogInFirstThenTry": "Fadlan marka hore gal, kadibna isku day xiriirka mar kale.",
+  "pointsBreakdown": "Faahfaahinta Dhibcaha",
+  "practicallyMadeForEachOther": "Runtii ahaan waxaad u abuurmeen midba midka kale.",
+  "preloadPage": "Bogga hore loo rido",
+  "preloadPages": "Bogagga hore loo rido",
+  "preloadPagesAheadOfTimeFor": "Bogagga hore loo rido si loo soo dejiyo si dhaqso ah (Wuxuu isticmaalaa shabakad iyo RAM badan)",
+  "preventScreenFromSleepingWhileReading": "Ka hortag shaashadda inay seexato intii aad akhrinayso",
+  "previousChapter": "Cutubkii Hore",
+  "previousParagraph": "Faqradii Hore",
+  "privateRoom": "Qol Gaar ah",
+  "profileUpdated": "Profile-ka waa la cusboonaysiiyay",
+  "proportionOfTotalTimeWatched": "Qaybta Wadarta Waqtiga La Daawaday",
+  "provideAReasonForThisAction": "Sabab u soo bandhig falkan...",
+  "qualitySettings": "Dejinta Tayada",
+  "quote": "Xigasho",
+  "range75DarkestTo100": "Kala duwanaanshaha: -75 (ugu madow) ilaa 100",
+  "rateLimited": "Xadka codsiyada waa la gaadhay",
+  "reactionOverlay": "Dahaarka falcelinta",
+  "readStats": "Tirakoobka Akhriska",
+  "readTextAloud": "Qoraalka cod ku akhri",
+  "red": "Cas",
+  "reduceColorBandingInGradients": "Yaree banding-ka midabada gradient-ka",
+  "reduceHaloingWhileUpscaling": "Yaree halo-ga marka la kordhinayo tayada",
+  "refresh": "Cusboonaysii",
+  "removeCurrentCloudEntriesAndReplace": "Ka saar gelitaanada cloud-ka ee hadda jira oo ku beddel faylka la soo raray.",
+  "removeWhiteBlackBordersToMaximize": "Ka saar xuduudaha cad/madow si aad u kordhiso nuxurka",
+  "removesFinishedMediaFromCloudGist": "Wuxuu ka saaraa warbaahinta dhammaatay gist-ka cloud-ka",
+  "replaceCloudGist": "Ku beddel Cloud Gist-ka",
+  "report": "Cabasho",
+  "resetReLogin": "Dib u deji & dib u gal",
+  "resetTo1": "Dib u deji 1×",
+  "restore": "Soo celi",
+  "roomAccess": "Helitaanka Qolka",
+  "roomCode": "Koodhka Qolka",
+  "roomCodeCopiedToClipboard": "Koodhka qolka waa lagu koobiyeeyay clipboard-ka",
+  "roomDuration": "Muddada Qolka",
+  "roomNotFoundOrExpired": "Qolka lama helin ama wuu dhacay",
+  "roomPassword": "Furaha Qolka",
+  "roomPassword2": "Furaha qolka",
+  "roomSettings": "Dejinta Qolka",
+  "saveYourCurrentCloudProgressTo": "Kaydi horumarkaaga cloud-ka hadda faylka",
+  "scrollMultiplier": "Tirinta Scroll-ka",
+  "scrollSpeed": "Xawaaraha Scroll-ka",
+  "searchAnimeEpisode": "Raadi anime / qaybta...",
+  "searchAnimeGifsReactions": "Raadi anime GIF-yada, falcelinta...",
+  "searchChapters": "Raadi cutubyada...",
+  "searchFiles": "Raadi faylasha...",
+  "secondsPerPageScreen": "Ilbidhiqsiyada bog / shaashad kasta",
+  "seekAndControlPlaybackFreely": "Si xor ah u raadi oo maamul ciyaarta",
+  "selectedFileMustContainAJson": "Faylka la doortay waa inuu ka koobnaadaa JSON object.",
+  "selectedJsonHasNoValidSync": "JSON-ka la doortay ma leh gelitaano isku-xidhid sax ah.",
+  "seriesList": "LIISTIGA TAXANAHA",
+  "setAPasswordForYourRoom": "Qolkaaga u deji fure",
+  "share": "Wadaag",
+  "showANotificationWhenSomeoneJoins": "Muuji ogeysiis marka qof ku biiro kooxda",
+  "showANotificationWhenSomeoneLeaves": "Muuji ogeysiis marka qof ka baxo kooxda",
+  "showAllStreams": "Muuji dhammaan stream-yada",
+  "showChatMessagesOnThePlayer": "Muuji fariimaha chat-ka ciyaaryahanka markay yimaadaan",
+  "showEmojiReactionsFloatingOnThe": "Muuji emoji falcelinta oo ka dhex kacaysa ciyaaryahanka",
+  "showSyncResultWhenPlayerOr": "Muuji natiijada isku-xidhka marka ciyaaryahanka ama akhriyaha la xirayo",
+  "showTransitionPageEvenWhenChapters": "Muuji bogga isbeddelka xitaa marka cutubyadu isku xiga yihiin",
+  "shows": "Taxanayaasha",
+  "sigmoidUpscaling": "Sigmoid Upscaling",
+  "smootherGradientsWithSlightTemporalNoise": "Gradient-yo siman oo leh dhawaaq yar oo waqti ah",
+  "spacing": "Masaafada",
+  "speechSpeed": "Xawaaraha Hadalka",
+  "spoilers": "Spoilers",
+  "stretchImagesToFitScreenWidthOn": "Sawirrada ku fidi si ay ballaca shaashadda ugu buuxsamaan shaashadaha balaadhan",
+  "subtitleSettings": "Dejinta Turjumaadda",
+  "superAdministratorWithSystemWideManagement": "Super Administrator oo leh awoodda maamulka nidaam-ballaaran.",
+  "swapUpDownActions2": "Is-beddel falalka Sare/Hoose",
+  "syncMode": "Habka Isku-xidhka",
+  "syncPreferences": "Doorbidyada Isku-xidhka",
+  "tapScrollAmount": "Tirada Scroll-ka ee Riixitaanka",
+  "tapToOpen": "Riix si aad u furto",
+  "tapToOpenInBrowser": "Riix si aad browser-ka ugu furto",
+  "tapToOpenInSpotify": "Riix si aad Spotify-ga ugu furto",
+  "tapToViewInBrowser": "Riix si aad browser-ka ugu aragto",
+  "tapTopBottomToScroll": "Riix sare/hoose si aad u scroll-gareyso",
+  "targetPeak": "Heerka Ugu Sarreeya ee Beegsiga",
+  "temporalDither": "Dither-ka Waqtiga",
+  "textToSpeech": "Qoraal-u-Hadal",
+  "theCreatorOfThisCommentDiscussion": "Abuuraha dood-faallooyinkan.",
+  "theresASmallSparkOfAgreement": "Waxaa jira isfaham yar.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Tani waxay si joogto ah uga tirtiraysaa GitHub gist-ka horumarkaaga cloud-ka AnymeX, mana soo celin karto.",
+  "toPrevNextChapter": "Cutubka Hore/Xiga",
+  "topL": "Sare-Bidix",
+  "topR": "Sare-Midig",
+  "totals": "Wadarta",
+  "trendingMovies": "Filimada Caanka ah",
+  "trendingSeries": "Taxanaha Caanka ah",
+  "tts": "TTS",
+  "ukMovies": "Filimada UK",
+  "ukShows": "Taxanaha UK",
+  "unableToReadSelectedJsonFile": "Faylka JSON ee la doortay lama akhrin karo.",
+  "unsupportedExtension": "Kordhinta aan la taageerin",
+  "usMovies": "Filimada US",
+  "usShows": "Taxanaha US",
+  "useVolumeButtonsToScroll": "Isticmaal badamada codka si aad u scroll-gareyso",
+  "userHistory": "Taariikhda Isticmaalaha",
+  "userInfo": "Macluumaadka Isticmaalaha",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "Mudir la xaqiijiyay oo ilaaliya faallooyinka ixtiraam leh iyo ammaan.",
+  "verticalPadding": "Padding-ka Dhererka",
+  "viewCloudGist": "Eeg Cloud Gist-ka",
+  "viewUserHistory": "Eeg Taariikhda Isticmaalaha",
+  "viewUserInfo": "Eeg Macluumaadka Isticmaalaha",
+  "voice": "Codka",
+  "watchParty": "Watch Party",
+  "watchStats": "Tirakoobka Daawashada",
+  "watchingNow": "Hadda Daawanaya",
+  "webmVideo": "Muuqaalka WebM",
+  "whereLiveCommentsAppearOnScreen": "Meesha faallooyinka tooska ah ka soo muuqdaan shaashadda",
+  "whileWatchingEpisodesOrReadingChapters": "Inta aad qaybaha daawanayso ama cutubyada akhrinayso",
+  "writeAReply": "Qor jawaab...",
+  "youAreBasicallyTheSamePerson": "Gabi ahaan waxaad tahay isla qof.",
+  "youBothHaveVerySimilarTaste": "Labidiinba dhadhan aad u isku mid ah ayaad leedihiin.",
+  "all2": "← Dhammaan",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "Qaabaynta",
+  "upscale": "Kordhi tayada",
+  "appearanceStyle": "Muuqaalka & Qaabka",
+  "colorsLightDarkOledLogoAnimations": "Midabada, Iftiinka/Mugdiga, OLED & animation-ka logo-ga",
+  "fontsTypography": "Xarfaha & Qoraalka",
+  "chooseTypographyCustomFontsGlobalText": "Dooro qaabka qoraalka, xarfaha gaarka ah & cabbirka qoraalka guud",
+  "globalFontScaling": "Cabbirka Xarfaha Guud",
+  "scaling": "Cabbirka",
+  "typefaces": "Qaabka xarfaha",
+  "interfaceLayout": "Interface-ka & Qaabeynta",
+  "navBarCardStylesDetailsBlur": "Bar-ka navigation-ka, qaabka kaadhka, blur-ka faahfaahinta & qaabeynta",
+  "navigationHomeLayout": "Navigation & Qaabeynta Guriga",
+  "playbackEngineSubtitlesGesturesDecoders": "Matoorka ciyaarta, turjumaadaha, gesture-yada & decoder-yada",
+  "mangaNovelReader": "Akhriyaha Manga & Novel",
+  "readingModesDirectionColorsTapZones": "Hababka akhriska, jihada, midabada & aagagga riixitaanka",
+  "dataNetworkSystem": "Xogta, Shabakadda & Nidaamka",
+  "downloadDirectoryConcurrencyHlsSegments": "Fayl-u-dejinta soo dejinta, isku-socodka & qaybaha HLS",
+  "accountsSocial": "Akoonada & Bulshada",
+  "trackingAccounts": "Akoonada Raadinta",
+  "manageYourAnilistMyanimelistSimklAccounts": "Maamul akoonnadaada AniList, MyAnimeList & Simkl",
+  "trackingBehavior": "Habdhaqanka Raadinta",
+  "communityComments": "Bulshada & Faallooyinka",
+  "commentumProfileBadgesMarkdownPrivacy": "Profaylka Commentum, calaamadaha, markdown & asturnaanta",
+  "contentPreferences": "Doorbidyada Nuxurka",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "Shaandhaynta NSFW, maktabadda midaysan, talooyinka & liisaska",
+  "exportAndRestoreYourLibraryAnd": "Soo dhoofi oo soo celi maktabadda iyo goobaha",
+  "manageAnimeMangaNovelSourcesAnd": "Maamul ilaha & kaydka Anime, Manga & Novel",
+  "installAndUpdateCommunityAddOns": "Ku rakib oo cusboonaysii kordhinta bulshada",
+  "storageCache": "Kaydinta & Kaydka Meelgaadhka",
+  "manageCachedImagesThresholdsResetData": "Maamul sawirada kaydka ku jira, heerarka & dib u deji xogta",
+  "networkProxy": "Shabakada & Proxy",
+  "logsDiagnostics": "Diiwaannada & Baadhista",
+  "inspectExportAndShareApplicationLogs": "Eeg, soo dhoofi oo la wadaag diiwaanada app-ka",
+  "aboutSupport": "Ku saabsan & Taageero",
+  "supportDevelopmentViaKoFiPaypal": "Ku taageer horumarinta Ko-fi, PayPal & UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Nooca, cusboonaysiinta, xiriirrada bulshada & siyaasadaha sharciga",
+  "cacheAndCookiesClearedFor": "Kaydka iyo cookies-ka waa la nadiifiyay {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Cookies-ka waa la nadiifiyay {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Kaydka waa la nadiifiyay {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Nooca aan la taageerin {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Goobaha {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Faylka maxalliga ah laguma helin: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Isku-xidhku wuu fashilmay: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "APK-ga maxalliga ah laguma helin: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Qalad: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Rakibidda plugin-ka wuu fashilmay: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Natiijo lagama helin \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Xilli {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Dhacdo {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "Wararka {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Bulshada",
+  "logInWithAnilist": "Gal AniList-ka",
+  "episode2": "Dhacdo {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Soo dejinta waa dhammaatay",
+  "downloadFailedHasNoUrl": "Soo dejintu wuu fashilmay: {chapterDisplay} ma leh URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Soo dejintu wuu fashilmay: Bogag looga helin {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Soo dejintu wuu fashilmay: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Dhacdo {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} cut",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} dhacdo",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Isha \"{extensionName}\" lama helin.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Torrent-ka lama diyaarin karin: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} si joogto ah ayaa looga saari doonaa soo dejinta.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Raadintu wuu fashilmay: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Raadi {label} oo ah \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} waxyaabood taariikh ah ayaa la tirtiray",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Ma rabtaa inaad \"{itemName}\" ka saarto {_historyLabel}?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" waa la saaray",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Kor u kac",
+  "descending": "Hoos u dhac",
+  "defaultTabOrder": "Nidaamka tab-yada caadiga ah",
+  "reverseTabs": "Tab-yada ka soo noqo",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Nooca: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Alaabta: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Marka hore ku rakib {sourceName}, kadibna guji",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "BOGAG {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Raadi {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "DHAMMAATAY ({length} la doortay)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "AKHRINTA WAA SHAQEYNAYAA",
+  "streamingOn": "FIDINTU WAA SHAQEYNAYAA",
+  "freedom": "Xorriyad",
+  "shaderAdded": "Shader-ka waa la daray: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Qalad ayaa dhacay markii shader-ka la soo dhoofinayay: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Kooxaha scanlation-ka",
+  "chapterRange": "Kala duwanaanta cutubyada",
+  "downloadFailed2": "Soo dejintu wuu fashilmay: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Cutubka {formattedNumber} waa la soo dejiyay",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Soo dejinaya ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} cutub",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Bogagga {pageNumber} waa la soo rarayaa{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Bogagga waxaa lagu kaydiyay Pictures/AnymeX",
+  "pageSavedToAnymex": "Bogagga waxaa lagu kaydiyay {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Bogagga kaydinta wuu fashilmay: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Bogagga la wadaagista wuu fashilmay: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "URL-ka bogagga waa lagu koobiyay clipboard-ka",
+  "failedToCopy": "Koobiyeynta wuu fashilmay: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Bogagga waa la soo rarayaa...",
+  "goBack": "Dib u noqo",
+  "loadingPage2": "Bogagga {value}{progressText} waa la soo rarayaa...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Midabka Iftiinka",
+  "black": "Madow",
+  "white": "Cad",
+  "readerBackground": "Asalka Akhriyaha",
+  "gray": "Cirro",
+  "automatic": "Si toos ah",
+  "noneNearestNeighbor": "Midna (Nearest-neighbor)",
+  "lowBilinear": "Hooseeya (Bilinear)",
+  "mediumDefault": "Dhexdhexaad (Caadi)",
+  "highBicubic": "Sare (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (Tayada ugu fiican, laakiin gaabis)",
+  "fullscreenPreview": "Horudhac shaashadda oo dhan",
+  "enhancementPreset": "Preset-ka hagaajinta",
+  "fineTuning": "Hagaajin yar",
+  "enhancementStrength": "Xoogga hagaajinta",
+  "strength": "{value}% xoog",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Joojinta artifact-ka",
+  "cleanJpegCompressionRingingAroundLinework": "Ka saar jiirka JPEG ee ku dhaca khadadka sawirka",
+  "cache": "Kaydka",
+  "cacheSize": "Cabbirka kaydka",
+  "mbStoredOnDisk": "{mb} MB ayaa lagu kaydiyay diska",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Xallinta Sare",
+  "loadingChapter": "Cutubka waa la soo rarayaa...",
+  "noContentAvailable": "Waxba lagama helin",
+  "recommendations": "{reasonCount} talooyin",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "Talooyinka",
+  "all3": "Dhammaan ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Fariinta lama dirin: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Wadarta galka: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Waad ku biirtay qolka {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Qolalka firfircoon",
+  "joinWithCode": "Ku biir kood",
+  "leftRoom": "Qolkii waa la ka baxay",
+  "leaveReset": "Ka bax / Dib u deji",
+  "inRoom": "Qolka: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Dhacdo {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} waa la eryay",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} xubnood",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Qolka waa ka baxay",
+  "leave": "Ka bax",
+  "noActiveRooms": "Qolal firfircoon ma jiraan",
+  "roomsWillAppearHereWhenSomeone": "Qolalku halkan ayay ka soo muuqan doonaan markii qof abuuro",
+  "created2": "La abuuray · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Ku biir →",
+  "full": "Buuxa",
+  "savedToPicturesAnymex": "Waa lagu kaydiyay Pictures/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Waa lagu kaydiyay Downloads/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Waa lagu kaydiyay {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Taabo si aad profaylka u furto)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Cutubka ",
+  "episode5": "Dhacdo ",
+  "noData": "{title} (Xog ma jirto)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Raadi kordhinta {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Eeg kordhinta",
+  "goToHome": "Tag guriga",
+  "fetching": "{title} waa la soo raraa...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Qalad ayaa dhacay markii siyaasadda la soo raraysay: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" si guul leh ayaa loo daray!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" si guul leh ayaa loo cusboonaysiiyay!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Ma hubtaa inaad tirtirto \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" waa la tirtiray",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Taariikhdaadu waa faaruq",
+  "episode6": "Dhacdo {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Tus wax yar",
+  "readMore": "Akhri wax dheeraad ah",
+  "unpin": "Ka qaad pin",
+  "pinActivity": "Ku pin-garee dhaqdhaqaaqa",
+  "n1Recommendation": "1 Talooyin",
+  "recommendations2": "{count} Talooyin",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Waa la dirayaa…",
+  "addRecommendation": "Ku dar talooyin",
+  "submitRecommendation": "Dir talooyinka",
+  "currentProvider": "BIXIYAHA HADDA",
+  "profileStatsUserActivities": "Tirakoobka profaylka & dhaqdhaqaaqa isticmaalaha",
+  "manageSourcesPlugins": "Maamul ilaha & plugin-yada",
+  "savedOfflineEpisodesChapters": "Dhacdooyinka & cutubyada internet-ka la'aanta ee la kaydiyay",
+  "watchVideoFilesFromDeviceStorage": "Daawo faylasha fiidiyowga ee kaydka qalabka",
+  "syncWatchPartyWithFriends": "La wadaag xafladda daawashada saaxiibbadaa",
+  "pauseWatchHistoryAndSync": "Jooji taariikhda daawashada & isku-xidhka",
+  "appearancePlayerNetwork": "Muuqaalka, player-ka & shabakada",
+  "joining": "Waa la ku biirayaa...",
+  "joinRoom": "Ku biir qolka",
+  "shareTheCodeOrInviteLink": "La wadaag koodka ama link-ga casuumaadda saaxiibbadaa.",
+  "roomCreated": "Qolka waa la abuuray!",
+  "shareThisCodeWithFriends": "Koodkan la wadaag saaxiibbadaa:",
+  "copyCode": "Koobi koodka",
+  "copyLink": "Koobi link-ga",
+  "leaveWatchTogether": "Ma ka bixi daawashada wada jirka?",
+  "removeMember": "Ka saar xubinta",
+  "transferHost": "Wareeji martiqaadka",
+  "transferHost2": "Wareeji martiqaadka",
+  "transfer": "Wareeji",
+  "removeMember2": "Ka saar xubinta",
+  "removeFromThisWatchParty": "Ma rabtaa inaad {username} ka saarto xafladdan daawashada?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} xubnood",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} waa la koobiyay",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Qolkan server ma jiro",
+  "selectStreamingServerQualityToWatch": "Dooro tayada server-ka fidinta si aad u daawato",
+  "thisServerHasNoPlayableUrl": "Server-kan ma leh URL la daawan karo",
+  "episode7": "Dhacdo {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Waxaa laga beddelay Cutubka {start} ilaa {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} waxaa la saadaaliyay {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "DHACDO {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "Liistada MAL waa la soo dhoofiyay meeshan:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML waa la soo dhoofiyay meeshan:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Soo dhoofintu wuu fashilmay: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Liistada {value} ayaa la soo dhoofinayaa...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Soo dhoofi {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Warbaahin la daawan karo ma jirto",
+  "noThemesFound": "Mawduucyo lama helin",
+  "playAll": "Ciyaar dhammaan",
+  "theDawnOfHumanity": "Bilawga Aadanaha",
+  "orientationUnlocked": "Jihada waa la furay",
+  "orientationLocked": "Jihada waa la xidhay",
+  "skippedOpening": "Furitaanka waa la dhaafay",
+  "skippedEnding": "Dhamaadka waa la dhaafay",
+  "skippedRecap": "Soo koobidda waa la dhaafay",
+  "ifYouSeeBlackScreenUse": "Haddii aad aragto shaashad madow, u isticmaal player dibadda ah si aad u daawato",
+  "failedToStartTorrentStream": "Bilaabidda torrent-stream-ka wuu fashilmay: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Fidinta lama furin. Fadlan isku day server kale",
+  "noServersFoundForThisEpisode": "Dhacdadan server ma lagu helin.",
+  "failedToLoadEpisodeCheckYour": "Dhacdada lama soo rari karin. Hubi xiriirkaaga.",
+  "playing": "Waa la ciyaarayaa {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Faylka torrent-ka lama beddeli karin: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Turjumaadda waa la soo raray: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Qalad ayaa dhacay markii turjumaadda la soo rarayay: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Turjumaadda waa khaldan tahay!",
+  "preTranslatingSubtitles": "Turjumaadda hore ayaa la tarjumayaa...",
+  "preTranslationFailedUsingRealTime": "Turjumaadda hore way fashilantay, waxaa loo isticmaalayaa wakhtiga-dhabta ah",
+  "preTranslationErrorUsingRealTime": "Qalad turjumaadda hore, waxaa loo isticmaalayaa wakhtiga-dhabta ah",
+  "corruptedQuality": "Tayada waa khaldan tahay!",
+  "colorProfilesOnlyAvailableWithMediakit": "Profiles-ka midabka waxay diyaar yihiin kaliya player-ka MediaKit",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Fiidiyowyada fidinta ku fur player dibadda ah marka caadiga ah",
+  "quickDefaults": "Caadiyada degdega ah",
+  "orientationSpeedResizeModeExternalPlayer": "Jihada, xawaaraha, habka cabbirka & player-ka dibadda",
+  "controlsGestures": "Xakamaynta & Gesture-yada",
+  "subtitlesTranslation": "Qoraallada & Turjumaadda",
+  "languagesFontsStylingLibassTranslation": "Luuqadaha, far-ka, qaabaynta, libass & turjumaadda",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "Shaders-ka kor u qaadista, preset-yada & profiles-ka",
+  "engineAdvanced": "Mishiinka & Horumarsan",
+  "addSpeed": "Ku dar xawaare",
+  "speedPresets": "Preset-yada xawaaraha",
+  "rememberAsDefaultSpeed": "Ku xus sidii xawaaraha caadiga ah",
+  "loadedSubtitle": "Turjumaadda waa la soo raray: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Turjumaadda soo dejinta wuu fashilmay: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "KOODKA QOLKA",
+  "episodeReleasesIn": "DHACDADA {value} WAXAA LA SII DAYN DOONAA MARKA LA GAARO",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "La go'aamin doono ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Waa inaad galayso si aad faallo u qortid",
+  "readFullRules": "Akhri xeerarka oo dhan",
+  "acceptPost": "Aqbal & Dir",
+  "youNeedToBeLoggedIn2": "Waa inaad galayso si aad jawaab u qortid",
+  "commentCopiedToClipboard": "Faallada waa lagu koobiyay clipboard-ka",
+  "spam": "Spam",
+  "offensive": "Xun",
+  "harassment": "Xadgudub",
+  "offTopic": "Mawduuca ka baxsan",
+  "failedToLoadUserInfo": "Macluumaadka isticmaalaha lama soo rari karin.",
+  "noUserDataFound": "Xog isticmaale lama helin.",
+  "viewHistory": "Eeg taariikhda",
+  "failedToLoadComments": "Faallooyinka lama soo rari karin.",
+  "noCommentsFound": "Faallo lama helin.",
+  "deleted2": "LA TIRTIRAY",
+  "comment": "FAALLO",
+  "episodeMetadata": "Macluumaadka Qaybta",
+  "sessionExpiredPleaseLoginAgain": "Fadhigii wuu dhacay. Fadlan mar kale gal.",
+  "successfullyLoggedInAs": "Si guul leh ugu gashay sidii {username}",
+  "loggedOutFromDiscord": "Ka baxay Discord",
+  "clearStoredLogFiles": "Nadiifi Faylasha Diiwaanka ee Kaydsan",
+  "resetInMemoryAndDiskLogFiles": "Dib u deji faylasha diiwaanka xusuusta iyo saxanka",
+  "errorCopiedToClipboard": "Khaladka waxaa lagu koobiyeeyay sabuuradda",
+  "autoScrollOn": "Isku-wareeg toos ah wuu shaqaynayaa",
+  "autoScrollOff": "Isku-wareeg toos ah ma shaqaynayo",
+  "copyLogs": "Koobi Diiwaanka",
+  "clearLogs": "Nadiifi Diiwaanka",
+  "metadataFallbackStrategy": "Xeeladda Macluumaadka Dib-u-gurashada",
+  "activeSourceMode": "Habka Isha Firfircoon",
+  "chooseWhetherToMergeProviders": "Dooro inaad isku darto bixiyeyaasha ama aad ku qasabto adeeg gaar ah",
+  "autoMerged": "Toos (Isku-dhafan)",
+  "providerPriorityToggles": "Mudnaanta Bixiyaha iyo Furayaasha",
+  "dragHandlesToChangeFetchPriority": "Jiid gacan-qabisyada si aad u bedesho mudnaanta. Ilaha sare ayaa mudnaanta leh marka la xallinayo magacyada qaybaha, sawirrada yar-yar, iyo sharraxaadaha.",
+  "maintenance": "Dayactirka",
+  "clearMetadataCache": "Nadiifi Kaydka Macluumaadka",
+  "flushesInMemoryEpisodeThumbnails": "Waxay nadiifisaa kaydka sawirrada iyo cinwaannada qaybaha ee xusuusta",
+  "metadataCacheCleared": "Kaydka macluumaadka waa la nadiifiyay",
+  "resetToDefaultOrder": "Dib ugu celi nidaamka caadiga ah",
+  "restoreFactoryPriorityOrder": "Soo celi nidaamka mudnaanta asalka ah oo awood u yeel dhammaan bixiyeyaasha",
+  "resetEpisodeMetadataToDefaults": "Macluumaadka qaybta dib ayaa loogu celiyay sidii hore",
+  "configureProvidersAndOrder": "Habee Bixiyeyaasha iyo Nidaamka",
+  "reorderSourcesToggleIndividual": "Dib u habee ilaha, bedel bixiyeyaasha gaarka ah",
+  "autoMergedPriority": "Toos (Mudnaanta Isku-dhafan)",
+  "mergesHighestPriorityAvailable": "Wuxuu isku daraa xogta la heli karo ee mudnaanta ugu sarreysa leh",
+  "useRawProviderEpisodeTitlesOnly": "Isticmaal cinwaannada qaybaha asalka ah ee bixiyaha oo keliya",
+  "progressSliderStyle": "Qaabka Xariiqda Horumarka",
+  "seekPreview": "Horu-u-eegga Raadinta",
+  "showThumbnailScrubbingPreviewWhileSeeking": "Muuji sawirka yar ee horu-u-eegga ah inta la raadinayo",
+  "linearWavy": "Toos ah oo Mawjad leh",
+  "defaultM3": "Caadiga M3",
+  "capsule": "Kaabsul",
+  "noLogsToCopy": "Ma jiraan diiwaanno la koobiyo",
+  "logsCopiedToClipboard": "Diiwaanka waxaa lagu koobiyeeyay sabuuradda",
+  "noLogsAvailableToShare": "Ma jiraan diiwaanno la wadaagi karo",
+  "decadeFormat": "Sannadihii {decade}",
+  "mediaWithId": "Warbaahinta #{id}",
+  "tileIconShapes": "Qaababka Astaamaha Tiirarka",
+  "tilePrefixIconShape": "Qaabka astaanta horgalaha tiirka",
+  "tileIconShapesLower": "Qaababka astaamaha tiirarka",
+  "opening": "Furitaanka",
+  "ending": "Xiritaanka",
+  "recap": "Koobid",
+  "ifSubtitleNotShowingDisableLibass": "Haddii qoraalku uusan muuqan, ka dami libass meelaha lagu habeeyo oo dib u bilow",
+  "subtitlesTranslatedEntries": "Qoraallada waa la turjumay! ({count} gelis)",
+  "skippedFillerEpisodesCount": "{count, plural, other{Waxaa la booday {count} qaybood oo buuxin ah}}",
+  "unsubscribe": "Ka noqo Diiwaangelinta",
+  "subscribeToThread": "Kusoo biir mawduuca",
+  "downloadChaptersCount": "{count, plural, other{Soo deso {count} Cutub}}",
+  "downloadingChaptersCount": "{count, plural, other{Waxaa la soo dejinayaa {count} cutub...}}",
+  "moreRecommendationsCount": "{count, plural, other{+ {count} talooyin kale}}",
+  "charactersAndVoiceActors": "Jilayaasha iyo Jilayaasha Codka",
+  "unknownVa": "Jilaaga codka lama yaqaan",
+  "chaptersTimestamps": "Cutubyada iyo Shaabbadaha Waqtiga",
+  "contentSource": "Isha Nuxurka",
+  "selectPreferredTrackingAndMediaProvider": "Dooro bixiyahaaga raadraaca iyo warbaahinta ee aad doorbidid",
+  "reducesColorRingingArtifacts": "Waxay yaraysaa waxyeelada midabka",
+  "downscalesInLinearLightSpace": "Hoos u dhigida meesha iftiinka toosan",
+  "motionDithering": "Dhaqdhaqaaqa iyo Dithering",
+  "smoothMotionBetweenVideoFrames": "Dhaqdhaqaaq siman oo u dhexeeya fareemyada fiidiyowga",
+  "reducesColorBandingWithSubtle": "Waxay yaraysaa xariiqyada midabka oo leh buuq yar",
+  "unknown": "Lama yaqaan",
+  "anilistActivity": "Dhaqdhaqaaqa AniList",
+  "failedToPostStory": "Ku guuldareystay in la dhajiyo sheekada",
+  "likesCount": "{count} jecayl",
+  "newEpisodes": "Qaybo Cusub",
+  "outNowFromShowsYouAreWatching": "Hadda laga heli karo bandhigyada aad daawaneyso",
+  "planning": "Qorsheynaya",
+  "postStory": "Dhig Sheekada",
+  "postToStory": "Ku dar Sheekada",
+  "readChapter": "Akhri Cutubka {chapter}",
+  "repliesCount": "{count} jawaabood",
+  "rewatching": "Mar kale daawanaya",
+  "sendAReaction": "Dir falcelin",
+  "statusUpdate": "Cusbooneysiinta heerka",
+  "storyPostedToAnilist": "Sheekada waxaa lagu dhajiyay AniList!",
+  "viewDiscussion": "Eeg Wada-hadalka",
+  "viewInAnymex": "Ka eeg AnymeX",
+  "watched": "La daawaday",
+  "watchedEpisode": "Qaybta {episode} waa la daawaday",
+  "whatsOnYourMindAniList": "Maxaa maankaaga ku jira? (Waxaa loo dhajiyaa qoraal ahaan AniList)",
+  "yourStory": "Sheekadaada",
+  "pleaseRestartTheAppToApply": "Fadlan dib u bilow app-ka si aad isbeddelada u dhaqangeliso.",
+  "selectDataToIncludeInThis": "Xulo xogta lagu darayo kaydkan",
+  "hostBadge": "MARTIQAAD",
+  "basedOnAnimeScoredTen": "Iyadoo lagu salaynayo anime-yada aad siisay 10/10.",
+  "basedOnMangaScoredTen": "Iyadoo lagu salaynayo manga-da aad siisay 10/10."
 }

@@ -19,6 +19,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -185,66 +186,66 @@ class NotificationService extends GetxController {
       if (androidPlugin == null) return;
 
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'comments',
         'Comments',
-        description: 'New comments, replies, and edits',
+        description: Get.context!.l10n.newCommentsRepliesAndEdits,
         importance: Importance.high,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'votes',
         'Votes',
-        description: 'Upvotes and downvotes on your comments',
+        description: Get.context!.l10n.upvotesAndDownvotesOnYourComments,
         importance: Importance.defaultImportance,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'moderation',
         'Moderation',
-        description: 'Warnings, mutes, bans, and moderation actions',
+        description: Get.context!.l10n.warningsMutesBansAndModerationActions,
         importance: Importance.high,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'reports',
         'Reports',
-        description: 'Report filed, resolved, dismissed',
+        description: Get.context!.l10n.reportFiledResolvedDismissed,
         importance: Importance.defaultImportance,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'announcements',
         'Announcements',
-        description: 'Official announcements',
+        description: Get.context!.l10n.officialAnnouncements,
         importance: Importance.high,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'mentions',
         'Mentions',
-        description: 'When someone @mentions you in a comment',
+        description: Get.context!.l10n.whenSomeoneMentionsYouInA,
         importance: Importance.high,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'anilist_airing',
         'Airing Anime',
-        description: 'Notifications for new anime episode releases',
+        description: Get.context!.l10n.notificationsForNewAnimeEpisodeReleases,
         importance: Importance.high,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'anilist_social',
         'Social & Activity',
-        description: 'Notifications for follows, mentions, and likes',
+        description: Get.context!.l10n.notificationsForFollowsMentionsAndLikes,
         importance: Importance.defaultImportance,
       ));
       await androidPlugin
-          .createNotificationChannel(const AndroidNotificationChannel(
+          .createNotificationChannel(AndroidNotificationChannel(
         'downloads',
         'Downloads',
-        description: 'Notifications for completed episode and chapter downloads',
+        description: Get.context!.l10n.notificationsForCompletedEpisodeAndChapter,
         importance: Importance.defaultImportance,
       ));
     }

@@ -12,6 +12,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class CommentSectionController extends GetxController
     with GetTickerProviderStateMixin {
@@ -65,7 +66,7 @@ class CommentSectionController extends GetxController
 
   void setReplyTarget(Comment comment) {
     if (!isLoggedIn) {
-      snackBar('You need to be logged in to reply');
+      snackBar(Get.context!.l10n.youNeedToBeLoggedIn2);
       return;
     }
     if (activeEditComment.value != null) {
@@ -99,14 +100,14 @@ class CommentSectionController extends GetxController
 
   Future<void> submitEdit() async {
     if (!isLoggedIn) {
-      snackBar('You need to be logged in to edit comments');
+      snackBar(Get.context!.l10n.youNeedToBeLoggedIn3);
       return;
     }
     final comment = activeEditComment.value;
     if (comment == null) return;
     final newContent = commentController.text.trim();
     if (newContent.isEmpty) {
-      snackBar('Comment cannot be empty');
+      snackBar(Get.context!.l10n.commentCannotBeEmpty);
       return;
     }
     if (newContent == comment.commentText) {
@@ -309,7 +310,7 @@ class CommentSectionController extends GetxController
       }
     } catch (e) {
       print('Error loading comments: $e');
-      snackBar('Failed to load comments. Please try again.');
+      snackBar(Get.context!.l10n.failedToLoadCommentsPleaseTry);
     } finally {
       isLoading.value = false;
     }
@@ -396,12 +397,12 @@ class CommentSectionController extends GetxController
       comments.assignAll(organized);
 
       if (!silent) {
-        snackBar('${totalCommentsCount.value} comments loaded');
+        snackBar(Get.context!.l10n.commentsLoaded(totalCommentsCount.value.toString()));
       }
     } catch (e) {
       print('Error refreshing comments: $e');
       if (!silent) {
-        snackBar('Failed to refresh comments. Please try again.');
+        snackBar(Get.context!.l10n.failedToRefreshCommentsPleaseTry);
       }
     } finally {
       if (!silent) {
@@ -515,7 +516,7 @@ class CommentSectionController extends GetxController
 
   Future<void> addReply(Comment parentComment, String replyContent) async {
     if (!isLoggedIn) {
-      snackBar('You need to be logged in to reply');
+      snackBar(Get.context!.l10n.youNeedToBeLoggedIn2);
       return;
     }
     if (replyContent.trim().isEmpty || isSubmitting.value) return;
@@ -524,7 +525,7 @@ class CommentSectionController extends GetxController
     try {
       final parentCommentId = int.tryParse(parentComment.id) ?? 0;
       if (parentCommentId == 0) {
-        snackBar('Invalid parent comment ID');
+        snackBar(Get.context!.l10n.invalidParentCommentId);
         return;
       }
 
@@ -539,14 +540,14 @@ class CommentSectionController extends GetxController
 
       if (newComment != null) {
         await backgroundRefresh();
-        snackBar('Reply posted successfully');
+        snackBar(Get.context!.l10n.replyPostedSuccessfully);
       } else {
-        snackBar('Failed to post reply');
+        snackBar(Get.context!.l10n.failedToPostReply);
       }
 
       HapticFeedback.lightImpact();
     } catch (e) {
-      snackBar('Failed to post reply. Please try again.');
+      snackBar(Get.context!.l10n.failedToPostReplyPleaseTry);
     } finally {
       isSubmitting.value = false;
     }
@@ -554,7 +555,7 @@ class CommentSectionController extends GetxController
 
   Future<void> addComment() async {
     if (!isLoggedIn) {
-      snackBar('You need to be logged in to comment');
+      snackBar(Get.context!.l10n.youNeedToBeLoggedIn);
       return;
     }
     if (commentController.text.trim().isEmpty || isSubmitting.value) return;
@@ -571,13 +572,13 @@ class CommentSectionController extends GetxController
 
       if (newComment != null) {
         await backgroundRefresh();
-        snackBar('Comment posted successfully');
+        snackBar(Get.context!.l10n.commentPostedSuccessfully);
       }
 
       HapticFeedback.lightImpact();
       clearInputs();
     } catch (e) {
-      snackBar('Failed to add comment. Please try again.');
+      snackBar(Get.context!.l10n.failedToAddCommentPleaseTry);
     } finally {
       isSubmitting.value = false;
     }
@@ -585,7 +586,7 @@ class CommentSectionController extends GetxController
 
   Future<void> submitCurrentText() async {
     if (!isLoggedIn) {
-      snackBar('You need to be logged in to comment');
+      snackBar(Get.context!.l10n.youNeedToBeLoggedIn);
       return;
     }
     final text = commentController.text.trim();
@@ -696,7 +697,7 @@ class CommentSectionController extends GetxController
         found.dislikes = originalDislikes;
         found.userVote = originalUserVote;
         comments.refresh();
-        snackBar('Failed to update vote. Please try again.');
+        snackBar(Get.context!.l10n.failedToUpdateVotePleaseTry);
       } else {
         await backgroundRefresh();
       }
@@ -705,7 +706,7 @@ class CommentSectionController extends GetxController
       found.dislikes = originalDislikes;
       found.userVote = originalUserVote;
       comments.refresh();
-      snackBar('Failed to update vote. Please try again.');
+      snackBar(Get.context!.l10n.failedToUpdateVotePleaseTry);
     } finally {
       votingComments.remove(comment.id);
     }
@@ -737,7 +738,7 @@ class CommentSectionController extends GetxController
     try {
       final commentId = int.tryParse(comment.id) ?? 0;
       if (commentId == 0) {
-        snackBar('Invalid comment ID');
+        snackBar(Get.context!.l10n.invalidCommentId);
         return;
       }
 
@@ -746,12 +747,12 @@ class CommentSectionController extends GetxController
 
       if (updatedComment != null) {
         await backgroundRefresh();
-        snackBar('Comment edited successfully');
+        snackBar(Get.context!.l10n.commentEditedSuccessfully);
       } else {
-        snackBar('Failed to edit comment');
+        snackBar(Get.context!.l10n.failedToEditComment);
       }
     } catch (e) {
-      snackBar('Failed to edit comment');
+      snackBar(Get.context!.l10n.failedToEditComment);
     }
   }
 
@@ -759,7 +760,7 @@ class CommentSectionController extends GetxController
     try {
       final commentId = int.tryParse(comment.id) ?? 0;
       if (commentId == 0) {
-        snackBar('Invalid comment ID');
+        snackBar(Get.context!.l10n.invalidCommentId);
         return;
       }
 
@@ -775,12 +776,12 @@ class CommentSectionController extends GetxController
 
       if (success) {
         await backgroundRefresh();
-        snackBar('Comment deleted successfully');
+        snackBar(Get.context!.l10n.commentDeletedSuccessfully);
       } else {
-        snackBar('Failed to delete comment');
+        snackBar(Get.context!.l10n.failedToDeleteComment);
       }
     } catch (e) {
-      snackBar('Failed to delete comment');
+      snackBar(Get.context!.l10n.failedToDeleteComment);
     }
   }
 
@@ -789,7 +790,7 @@ class CommentSectionController extends GetxController
     try {
       final commentId = int.tryParse(comment.id) ?? 0;
       if (commentId == 0) {
-        snackBar('Invalid comment ID');
+        snackBar(Get.context!.l10n.invalidCommentId);
         return;
       }
 
@@ -806,7 +807,7 @@ class CommentSectionController extends GetxController
         }
       }
     } catch (e) {
-      snackBar('Failed to report comment');
+      snackBar(Get.context!.l10n.failedToReportComment);
     }
   }
 
@@ -818,7 +819,7 @@ class CommentSectionController extends GetxController
     try {
       final commentId = int.tryParse(comment.id) ?? 0;
       if (commentId == 0) {
-        snackBar('Invalid comment ID');
+        snackBar(Get.context!.l10n.invalidCommentId);
         return;
       }
 
@@ -832,7 +833,7 @@ class CommentSectionController extends GetxController
         await loadComments();
       }
     } catch (e) {
-      snackBar('Failed to moderate comment');
+      snackBar(Get.context!.l10n.failedToModerateComment);
     }
   }
 
@@ -862,7 +863,7 @@ class CommentSectionController extends GetxController
         await loadComments();
       }
     } catch (e) {
-      snackBar('Failed to manage user');
+      snackBar(Get.context!.l10n.failedToManageUser);
     }
   }
 

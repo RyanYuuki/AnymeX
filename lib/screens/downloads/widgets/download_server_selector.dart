@@ -190,7 +190,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
         }
       } catch (e) {
         TorrentServerOverlay.dismiss();
-        snackBar('Failed to prepare torrent: $e');
+        snackBar(Get.context!.l10n.failedToPrepareTorrent(e.toString()));
         return;
       }
     }

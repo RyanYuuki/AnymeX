@@ -118,7 +118,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                     Obx(() => CustomTile(
                           icon: Icons.report_outlined,
                           title: context.l10n.reportsQueue,
-                          description: "${reportsQueue.length} pending reports",
+                          description: context.l10n.pendingReports(reportsQueue.length.toString()),
                           postFix: isLoadingQueue.value
                               ? const SizedBox(
                                   width: 20,

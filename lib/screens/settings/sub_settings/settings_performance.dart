@@ -111,14 +111,13 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
             child: Column(
               children: [
                 AnymeXSectionBuilder(
-                  title: 'Monitoring',
+                  title: context.l10n.monitoring,
                   children: [
                     AnymeXTile.toggle(
                       icon: HugeIcons.strokeRoundedDashboardSpeed01,
-                      title: 'FPS Meter',
-                      subtitle: 'Show draggable real-time FPS overlay',
-                      value: KvHelper.get<bool>('show_fps_meter',
-                          defaultVal: false),
+                      title: context.l10n.fpsMeter,
+                      subtitle: context.l10n.showDraggableRealTimeFpsOverlay,
+                      value: KvHelper.get<bool>('show_fps_meter', defaultVal: false),
                       onChanged: (val) {
                         KvHelper.set('show_fps_meter', val);
                         FpsMeter.isVisible.value = val;
@@ -129,8 +128,8 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                 ),
                 const SizedBox(height: 20),
                 Center(
-                  child:
-                      AnymeXText(context.l10n.displayModeTuningIsNotApplicable),
+                  child: AnymeXText(
+                      context.l10n.displayModeTuningIsNotApplicable),
                 ),
               ],
             ),
@@ -204,14 +203,13 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AnymeXSectionBuilder(
-                  title: 'Monitoring',
+                  title: context.l10n.monitoring,
                   children: [
                     AnymeXTile.toggle(
                       icon: HugeIcons.strokeRoundedDashboardSpeed01,
-                      title: 'FPS Meter',
-                      subtitle: 'Show draggable real-time FPS overlay',
-                      value: KvHelper.get<bool>('show_fps_meter',
-                          defaultVal: false),
+                      title: context.l10n.fpsMeter,
+                      subtitle: context.l10n.showDraggableRealTimeFpsOverlay,
+                      value: KvHelper.get<bool>('show_fps_meter', defaultVal: false),
                       onChanged: (val) {
                         KvHelper.set('show_fps_meter', val);
                         FpsMeter.isVisible.value = val;
@@ -232,7 +230,8 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   AnymeXTile(
                     icon: Icons.info_outline_rounded,
                     title: context.l10n.displayMode,
-                    subtitle: context.l10n.hardwareDisplayModeSwitchingIsNot,
+                    subtitle:
+                        context.l10n.hardwareDisplayModeSwitchingIsNot,
                   ),
                 ] else ...[
                   AnymeXSectionBuilder(
@@ -268,11 +267,11 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   ),
                   const SizedBox(height: 20),
                   AnymeXSectionBuilder(
-                    title: 'Detected Modes & Display',
+                    title: context.l10n.detectedModesDisplay,
                     children: [
                       AnymeXTile(
                         icon: Icons.monitor_rounded,
-                        title: 'Current Display Mode',
+                        title: context.l10n.currentDisplayMode,
                         subtitle: active != null
                             ? '${active.width}x${active.height} @ ${active.refreshRate.round()}Hz'
                             : 'Unknown',
@@ -280,7 +279,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       AnymeXTile(
                         icon: Icons.layers_outlined,
                         title: context.l10n.supportedModes,
-                        subtitle: '${validModes.length} modes',
+                        subtitle: context.l10n.modes(validModes.length.toString()),
                       ),
                     ],
                   ),

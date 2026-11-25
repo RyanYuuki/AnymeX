@@ -920,7 +920,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     controller: controller,
                     decoration: InputDecoration(
                       labelText: context.l10n.hexColorCode,
-                      hintText: '#3F51B5 or 3F51B5',
+                      hintText: context.l10n.n3f51b5Or3f51b5,
                       errorText: isValid ? null : 'Invalid Hex color code',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),

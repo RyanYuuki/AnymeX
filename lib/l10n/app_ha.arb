@@ -84,7 +84,7 @@
   "settingsBackupDesc": "Fitarwa da shigo da bayanan ku",
   "settingsDownloads": "Zazzagewa",
   "settingsDownloadsDesc": "Zazzage hanyoyi & saitunan lokaci guda",
-  "settingsLogs": "Logs",
+  "settingsLogs": "Rajistan Bayanai",
   "settingsLogsDesc": "Duba ku fitar da rajistan ayyukan app",
   "settingsStorage": "Manajan ajiya",
   "settingsStorageDesc": "Sarrafa bayanan da aka adana & amfani da ajiya",
@@ -94,7 +94,7 @@
   "settingsAboutDesc": "Bayanin App, masu ba da gudummawa & lasisi",
   "settingsComments": "Sharhi",
   "settingsCommentsDesc": "Saitunan tsarin sharhi",
-  "settingsAddons": "Addons",
+  "settingsAddons": "Karin Bayani",
   "settingsAddonsDesc": "Sarrafa mai kunna bidiyo & addons masu karatu",
   "settingsSearchHint": "Bincika saitunan...",
   "mediaAnime": "Anime",
@@ -112,7 +112,7 @@
   "detailsStatus": "Matsayi",
   "detailsType": "Nau'in",
   "detailsGenres": "Nau'o'i",
-  "detailsStudios": "Studios",
+  "detailsStudios": "Situdio",
   "detailsAiring": "Yin iska",
   "detailsCompleted": "An kammala",
   "detailsOngoing": "Ci gaba",
@@ -131,13 +131,13 @@
   "playerPrevious": "A baya",
   "playerSpeed": "Gudu",
   "playerQuality": "inganci",
-  "playerSubtitles": "Subtitles",
+  "playerSubtitles": "Fassarar Magana",
   "playerFullscreen": "Cikakken allo",
-  "playerEpisode": "Episode",
+  "playerEpisode": "Kashi",
   "playerChapter": "Babi",
   "searchHint": "Bincika anime, manga, novels...",
   "searchNoResults": "Ba a sami sakamako ba",
-  "searchTrending": "Trending",
+  "searchTrending": "Wanda Ake Yayi",
   "searchPopular": "Shahararren",
   "searchRecent": "Kwanan nan",
   "errorGeneric": "Wani abu ya faru",
@@ -150,7 +150,7 @@
   "homeContinueWatching": "Ci gaba da Kallo",
   "homeContinueReading": "Ci gaba Karatun",
   "homeRecentlyUpdated": "An sabunta kwanan nan",
-  "homeTrending": "Trending",
+  "homeTrending": "Wanda Ake Yayi",
   "homePopular": "Shahararren",
   "homeTopRated": "Mafi Girma",
   "homeSeeAll": "Duba Duk",
@@ -176,5 +176,3922 @@
   "incognitoDisabled": "An kashe yanayin incognito",
   "episodeCount": "Fitowa {count}",
   "chapterCount": "{count} Babi",
-  "itemCount": "Abubuwa {count}"
+  "itemCount": "Abubuwa {count}",
+  "whatAreWeDoingToday": ", me muke yi yau?",
+  "aLogoWithThisNameAlready": "Tambari mai wannan suna ya riga ya wanzu.",
+  "about": "Game da",
+  "aboutCommentumV2": "Game da Sharhi v2",
+  "aboutTheApp": "Game da App",
+  "accessModerationToolsAndReports": "Samun damar kayan aikin daidaitawa da rahotanni",
+  "accountTokensAnilistMalSimkl": "Alamomin asusu (AniList, MAL, Simkl)",
+  "accounts": "Lissafi",
+  "accountsSync": "Asusu & Daidaitawa",
+  "actionAppliedSuccessfully": "An aiwatar da aikin cikin nasara",
+  "activeDownloads": "Zazzagewar aiki",
+  "activity": "Ayyuka",
+  "activityDeleted": "An goge aikin",
+  "activityHeatmap": "Ayyukan Heatmap",
+  "activityMergeTime": "Lokacin Haɗin Ayyuka",
+  "activityPhrasing": "Tsarin Kalmomin Ayyuka",
+  "activityRefreshed": "An sabunta ayyuka",
+  "adFreeApp": "Manhaja Ba Tare Da Talla Ba",
+  "addCustomLogo": "Ƙara Logo na Musamman",
+  "addCustomLogoGifWebp": "Ƙara Logo na Musamman (.gif, .webp)",
+  "addRepo": "Ƙara Repo",
+  "addRepository": "Ƙara wurin ajiya",
+  "addYourRecommendation": "Ƙara Shawarwarinku",
+  "addOnExtensions": "Ƙara-kan kari",
+  "addOns": "Ƙara-kan",
+  "addOnsPowerBackgroundServicesSuch": "Add-ons ikon bangon sabis kamar injin TorrServer torrent don sake kunnawa ta hanyar maganadisu kai tsaye.",
+  "addedToDownloads": "Ƙara zuwa zazzagewa",
+  "addingKotatsuRepositoryThisWillTake": "Ƙara ma'ajiyar Kotatsu. Wannan zai ɗauki akalla mintuna 1-2, da fatan za a jira...",
+  "addingRepositoryFetchingExtensions": "Ƙara ma'ajiya & debo kari...",
+  "adjustBottomBarMarginMediaDetails": "Daidaita gefen mashaya na ƙasa (shafin cikakkun bayanai kawai)",
+  "adjustCardAnimationSpeed": "Daidaita gudun motsin kati",
+  "adjustCornerRadiusOfElements": "Daidaita kusurwar radius na abubuwa",
+  "adjustDoubleTapToSeekDuration": "Daidaita Taɓa Sau Biyu Don Neman Tsawon Lokaci",
+  "adjustElementGlowIntensity": "Daidaita ƙarfin haske mai haske",
+  "adjustFrostedBlurIntensity": "Daidaita tsananin sanyi mai sanyi",
+  "adjustGlowBlurIntensity": "Daidaita ƙarfin blur haske",
+  "adjustHorizontalMarginOfBottomNavigation": "Daidaita gefe a kwance na sandar kewayawa na ƙasa",
+  "adjustItemsPerRow": "Daidaita Abubuwa a jere",
+  "adjustMediaBackdropExposure": "Daidaita fallasa bayanan baya na kafofin watsa labarai",
+  "adjustMegaskipDuration": "Daidaita Tsawon Lokaci na MegaSkip",
+  "adjustRoundnessOfAllMediaCards": "Daidaita zagaye na duk katunan mai jarida",
+  "adjustSubSize": "Daidaita Karamin Girman",
+  "adjustSubtitleOutlineWidth": "Daidaita Fassarar Fassarar Magana",
+  "adjustTextVisibility": "Daidaita ganin rubutu",
+  "admin": "Admin",
+  "adult": "Manya",
+  "aiPicks": "AI Zaba",
+  "airingAnimeNotifications": "Sanarwa na Anime Airing",
+  "all": "Duka",
+  "allClearNoReportsToReview": "Duk bayyane! Babu rahotannin da za a duba.",
+  "allSources": "Duk Tushen",
+  "allowAnymexToAutomaticallyOpenAnime": "Bada AnymeX damar buɗe hanyoyin yanar gizo ta anime & manga ta atomatik",
+  "allowInstallingUpdatesForExtensionsAnd": "Bada izinin shigar da sabuntawa don kari da app",
+  "allowOnlyUsersIFollowTo": "Bada izinin masu amfani kawai da na bi su yi min sako.",
+  "allowStorageAccessAndSelectDownload": "Bada damar ajiya kuma zaɓi babban fayil mai saukewa",
+  "allowStorageAccessToDownloadApp": "Bada damar ajiya don zazzage ƙa'idar & haɓaka haɓakawa",
+  "alreadyRecommended": "An riga an ba da shawarar",
+  "alternativeTitles": "Madadin Laƙabi",
+  "alwaysShowChapterTransition": "Koyaushe Nuna Canjin Babi",
+  "alwaysShowPageIndicator": "Koyaushe nuna alamar shafi",
+  "amountOfFilmGrainApplied": "Adadin hatsin fim da aka shafa",
+  "anifyKitsuArtwork": "Anify / Kitsu Artwork",
+  "anilistSettings": "Saitunan AniList",
+  "anilistSettings2": "Saitunan Anilist",
+  "animatchCompatibility": "Daidaitawa AniMatch",
+  "animatchLinkCopiedToClipboard": "An kwafi hanyar haɗin AniMatch zuwa allo!",
+  "animateControlOverlay": "Mai Rarraba Mai Rarraba",
+  "anime": "Anime",
+  "animeUpper": "ANIME",
+  "animeManga": "Anime da Manga",
+  "anime4kEnhancement": "Anime 4K Haɓakawa",
+  "animeAdaptation": "Anime Adafta",
+  "animeCustomLists": "Jerin Anime na Musamman",
+  "animeDetailsPhrasing": "Cikakken Bayanin Anime",
+  "animeLibrary": "Dakin Karatun Anime",
+  "animeList": "LISHIN ANIME",
+  "animeScore": "Makin Anime",
+  "animeSectionOrder": "Odar Sashen Anime",
+  "announcement": "Sanarwa",
+  "announcementUnavailable": "Babu sanarwa",
+  "announcements": "Sanarwa",
+  "anymexForkOptimisedForTv": "cokali mai yatsu AnymeX an inganta don TV",
+  "anymexIs100FreeOpenSource": "AnymeX kyauta ne 100%, buɗe tushen, kuma mara talla. Tallafin ku yana taimakawa kai tsaye a cikin farashin uwar garken da haɓaka fasalin aiki!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX kyauta ne 100%, buɗe tushen, kuma mara talla. Taimakon ku yana taimaka mini in sami kuzari don ci gaba da kulawa da haɓaka app!",
+  "appCacheExceededThresholdAndWas": "Cache app ya wuce ƙofa kuma an share shi",
+  "appDataHasBeenCompletelyReset": "An sake saita bayanan app gaba daya",
+  "appFonts": "Fonts na App",
+  "appSettingsSessions": "Saitunan App & Zaman",
+  "appearance": "Bayyanar",
+  "appearanceInterface": "Bayyanar & Interface",
+  "appearanceTheme": "Bayyanawa & Jigo",
+  "appliesAnimeMangaPosterColorOn": "Yana amfani da launin anime/manga fosta akan shafin cikakkun bayanai",
+  "apply": "Aiwatar",
+  "applyASubtleFilmGrainTexture": "Aiwatar da dabarar fim ɗin nau'in nau'in nau'in nau'in nau'in nau'in nau'in nau'in fim ɗin akan abin dubawa",
+  "applyFilters": "Aiwatar da Tace",
+  "applyOptionsFromYourMpvConf": "Aiwatar da zaɓuɓɓuka daga mpv.conf lokacin da aka fara sake kunnawa",
+  "areYouSureYouWantTo": "Shin kun tabbata kuna son share duk kukis ɗin da aka adana?",
+  "areYouSureYouWantToDelete": "Shin kun tabbata kuna son share wannan sharhi? Za a cire shi na dindindin kuma za a warware rahoton.",
+  "areYouSureYouWantToDeleteThis": "Shin kun tabbata kuna son share wannan kari?",
+  "areYouSureYouWantToDeleteThisReply": "Shin kun tabbata kuna son share wannan amsa?",
+  "askForTrackingPermission": "Nemi izinin bin diddigi",
+  "atLeast2TabsMustRemain": "Aƙalla shafuka 2 dole ne su kasance a bayyane!",
+  "audioEngine": "Injin Audio",
+  "audioPitchCorrection": "Daidaita Sautin Murya",
+  "authenticationOptional": "GASKIYA (ZABI)",
+  "auto": "Mota",
+  "autoPlay": "Kunna Da Kanta",
+  "autoScroll": "Gungura Da Kanta",
+  "autoScrollSpeed": "Gudun Gungura ta atomatik",
+  "autoSkipEd": "Tsallake ta atomatik ED",
+  "autoSkipFiller": "Tsallake Filler Da Kanta",
+  "autoSkipOnceOnly": "Tsallake Ta atomatik Sau ɗaya kawai",
+  "autoSkipOnlyOncePerWatch": "Tsallake ta atomatik sau ɗaya kawai a kowane agogon",
+  "autoSkipOp": "Tsallake ta atomatik OP",
+  "autoSkipRecap": "Tsallake Maimaitawa Da Kanta",
+  "autoSkipTheEndingSong": "Tsallake waƙar ƙarewa ta atomatik",
+  "autoSkipTheOpeningSong": "Tsallake waƙar buɗewa ta atomatik",
+  "autoSkipTheRecapSection": "Tsallake sashin sakewa ta atomatik",
+  "autoSwitchToVerticalMode": "Canja atomatik zuwa yanayin tsaye",
+  "autoTranslateSubtitles": "Fassara Fassara ta atomatik",
+  "autoWebtoonMode": "Yanayin Webtoon Da Kanta",
+  "autoClearThreshold": "Tsare-tsare ta atomatik",
+  "autoSelectDefault": "Zaba Da Kanka (Asali)",
+  "autoSelectThisServerQualityFor": "Zaɓi wannan ingancin uwar garken ta atomatik don wannan anime",
+  "automaticallyMoveToNextTextSegment": "Matsar ta atomatik zuwa sashin rubutu na gaba",
+  "automaticallyScrollContent": "Gungura abun ciki ta atomatik",
+  "automaticallyScrollPages": "Gungurawa shafuka ta atomatik",
+  "automaticallySkipFillerEpisodesWhenGoing": "Tsallake sassan filler ta atomatik lokacin da za a je jigo na gaba",
+  "automaticallyUpdateEntriesWhenImportingThe": "Sabunta shigarwar ta atomatik lokacin shigo da XML",
+  "availableAddOns": "Akwai Ƙararrawa",
+  "availableKeybindings": "Akwai Abubuwan Maɓalli:",
+  "avatarDecorations": "Avatar Ado",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Kayan ado na Avatar, farantin suna, banners & tasirin bayanin martaba",
+  "avgChapters": "Matsakaicin Babi",
+  "avgEpisodes": "Matsakaicin Fasali",
+  "back": "Baya",
+  "backdropScope": "Backdrop & Girma",
+  "backdropBrightness": "Hasken Baya",
+  "backdropSource": "Tushen Baya",
+  "backgroundOpacity": "Bayanan Bayani",
+  "backup": "Ajiyayyen",
+  "backupRestore": "Ajiyayyen & Dawo",
+  "backupAndRestoreYourLibrary": "Ajiye da mayar da ɗakin karatu",
+  "backupArchive": "Taskar Ajiyayyen",
+  "backupOwner": "Mai Ajiyayyen",
+  "backupRestoredSuccessfully": "An dawo da Ajiyayyen cikin nasara!",
+  "backupSavedSuccessfully": "Ajiyayyen an yi nasara cikin nasara!",
+  "badge": "Alama",
+  "banUser": "Ban Mai Amfani",
+  "baseUrlNotAvailableForThis": "Babu URL na tushe don wannan tushen",
+  "basedOnYourFavouriteCharacters": "Dangane da haruffan da kuka fi so.",
+  "basedOnYourFavouriteStaff": "Dangane da ma'aikatan da kuka fi so.",
+  "basedOnYourTop10Tags": "Dangane da manyan alamun ku guda 10.",
+  "basedOnYourTop3Studios": "Dangane da manyan situdiyo 3 naku.",
+  "basedOnYourTop5Genres": "Dangane da manyan nau'ikan ku guda 5.",
+  "basedOnYourTop6Voice": "Dangane da manyan masu yin muryar ku guda 6.",
+  "batchDownload": "Zazzagewar Batch",
+  "beTheFirstToRecommendThis": "Kasance farkon wanda zai ba da shawarar wannan take!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Mafi kyawun fassarar fassarar magana ta amfani da ɗakin karatu na libass",
+  "blockquote": "Blockquote",
+  "blurBackdropTuning": "blur & Backdrop Tuning",
+  "blurAmount": "Adadin blur",
+  "blurColorTint": "Tint Launi",
+  "blurMechanism": "Kayan aikin blur",
+  "blurMultiplier": "blur Multiplier",
+  "blurStyle": "Salon blur",
+  "bold": "M",
+  "boldItalic": "m + Italic",
+  "botUrlNotConfigured": "Bot URL ba a saita shi ba",
+  "bottomControls": "Ƙasashen Gudanarwa",
+  "bottomMargin": "Kasan Margin",
+  "bottomNavBarMargin": "Kasa Nav Bar Margin",
+  "broadcastYourActivityToDiscord": "Watsa ayyukan ku zuwa Discord",
+  "browsingIdle": "Browsing / Rago",
+  "browsingPhrasing": "Binciken Jumloli",
+  "bufferSize": "Girman Buffer",
+  "builtInStyles": "Gina-in Salon",
+  "byDisablingThisYouCanAvoid": "Ta hanyar kashe wannan za ku iya guje wa sauyi tsakanin rubutun kalmomi.",
+  "byIndex": "Ta Index",
+  "byUserId": "Ta ID mai amfani",
+  "byUsername": "Da Sunan mai amfani",
+  "bypassCloudflare": "Ketare Cloudflare",
+  "cacheStorage": "Cache & Ajiya",
+  "cacheMinutes": "Mintunan cache",
+  "cacheOverview": "Bayanin Cache",
+  "cachedImages": "Hotunan da aka adana",
+  "calculateCompatibility": "Ƙididdigar Daidaituwa",
+  "calculatedBasedOnWhichReleaseDecades": "An ƙididdigewa akan wane sakin shekaru da yawa kuka fi kallo kuma kuka sami mafi girma.",
+  "calendar": "Kalanda",
+  "cancel": "Soke",
+  "cannotCompareAUserWithThemselves": "Ba za a iya kwatanta mai amfani da kansu ba! Da fatan za a shigar da sunayen masu amfani guda biyu daban-daban.",
+  "cannotCompareYourProfileWithYourself": "Ba za a iya kwatanta bayanin martabarku da kanku ba! Da fatan za a shigar da wani sunan mai amfani daban.",
+  "cantPlaySinceUserClosedThe": "Ba za a iya kunna ba tunda mai amfani ya rufe app ɗin ba zato ba tsammani",
+  "cantReadSinceUserClosedThe": "Ba za a iya karantawa ba tunda mai amfani ya rufe app ɗin ba zato ba tsammani",
+  "cardAnimationDuration": "Duration Animation Card",
+  "cardRoundness": "Zagaye Katin",
+  "cardStyle": "Salon Kati",
+  "carouselStyle": "Yanayin Carousel",
+  "changeFile": "Canja Fayil",
+  "changeRole": "Canza Matsayi",
+  "changeService": "Canja Sabis",
+  "changeSubtitleBackgroundColor": "Canja launi bangon magana",
+  "changeSubtitleColors": "Canja launukan rubutu",
+  "changeSubtitleOutlineColor": "Canja launi shaci-fadi",
+  "changelog": "CHANJI",
+  "chapterListSettings": "Saitunan Lissafin Babi",
+  "chapterNumber": "Lambar Babi",
+  "chapterTileStyle": "Salon Tile Babi",
+  "chapters": "Babi",
+  "chaptersUpper": "BABI NA",
+  "chaptersVolumes": "BABI NA LITTAFI",
+  "chaptersRead": "Babi Karatu",
+  "characters": "Halaye",
+  "checkCompatibility": "Duba Daidaituwa",
+  "checkForAddOnUpdates": "Bincika Sabunta Ƙarawa",
+  "checkForUpdates": "Duba Sabuntawa",
+  "checkUpdatesFromBetaChannel": "Duba sabuntawa daga tashar beta",
+  "checkingForUpdates": "Ana duba sabuntawa!",
+  "chooseABackupFileAnymex": "Zaɓi fayil ɗin ajiya (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Zaɓi asalin al'ada don yanayin ruwa.",
+  "chooseADirectoryToBrowseYour": "Zaɓi kundin adireshi don bincika fayilolin mai jarida naku",
+  "chooseDifferentImage": "Zaɓi Hoto Daban-daban",
+  "chooseDownloadFolder": "Zaɓi Jakar Zazzagewa",
+  "chooseImage": "Zaɓi Hoto",
+  "chooseProvider": "Zaɓi Mai bayarwa",
+  "chooseQuality": "Zaɓi Quality",
+  "chooseServer": "Zaɓi uwar garken",
+  "chooseServiceTracker": "Zaɓi Sabis / Tracker",
+  "chooseShaderProfile": "Zaɓi Bayanan Shader",
+  "chooseUpiApp": "Zaɓi UPI App",
+  "chooseWhichListToShowOn": "Zaɓi jerin da za a nuna akan shafin gida",
+  "chooseYourFavouriteColor": "Zaɓi launi da kuka fi so!",
+  "chooseYourFavouritePalette": "Zaɓi palette da kuka fi so!",
+  "chromaScaler": "Mai Auna Launi",
+  "classicCarouselCardLayoutFeaturingVertical": "Tsarin katin carousel na gargajiya mai nuna katunan fosta a tsaye.",
+  "clear": "Share",
+  "clearAll": "Share Duk",
+  "clearAllHistory": "Share Duk Tarihi",
+  "clearAppCache": "Share Cache App",
+  "clearAppCacheNow": "Share cache app yanzu",
+  "clearCache": "Share Cache",
+  "clearCacheCookies": "Share Cache & Kukis",
+  "clearCookies": "Share kukis",
+  "clearCookies2": "Share Kukis",
+  "clearHistory": "Share Tarihi",
+  "clearImageCacheNow": "Share cache hoto yanzu",
+  "clearProxy": "Share wakili",
+  "clearSelected": "Share Zaɓaɓɓen",
+  "clientAll": "Abokin ciniki: Duk",
+  "close": "Kusa",
+  "closetCommunity": "Rufe & Al'umma",
+  "cloudflareChallengeSolved": "An warware kalubalen Cloudflare!",
+  "collectionName": "Sunan tarin",
+  "collections": "Tari",
+  "combineBackupDataWithExistingData": "Haɗa madadin bayanai tare da data kasance akan wannan na'urar",
+  "commentDeleted": "An Share Sharhi",
+  "commentPolicy": "Manufar Sharhi",
+  "commentReplies": "Amsa Sharhi",
+  "commentRules": "Dokokin Sharhi",
+  "commentSystem": "Tsarin Sharhi",
+  "comments": "Sharhi",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 babban tsarin sharhi ne wanda ke ba da:",
+  "commentumV2SettingsModerationPreferences": "Sharhi v2 saituna, daidaitawa & abubuwan da ake so",
+  "common": "Na kowa",
+  "commonCharacters": "Halayen gama gari",
+  "commonFavouriteStaff": "Ma'aikatan Da Aka Fi So",
+  "commonGenres": "Nau'ukan gama gari",
+  "commonSettings": "Saituna gama gari",
+  "commonStudios": "Shahararrun Situdio",
+  "commonTags": "Tags gama gari",
+  "commonVoiceActors": "Yan wasan Muryar gama gari",
+  "communityDriven": "Al'umma Ke Kokawa",
+  "communityForksOfAnymex": "cokali mai yatsu na al'umma na AnymeX",
+  "communityLeaderboard": "Al'umma Jagoran Al'umma",
+  "communityRecommendations": "Shawarwari na Al'umma",
+  "compact": "Karamin",
+  "compactCardWithEpisodeThumbnailAnd": "Karamin kati tare da thumbnail da take",
+  "compactGridOfChapterNumbers": "Karamin grid na lambobin babi",
+  "compatibility": "Daidaituwa",
+  "compatibilityRanks": "Matsakaicin Daidaituwa",
+  "compatibleWithGooglePayPhonepePaytm": "Mai jituwa tare da Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay, da duk aikace-aikacen banki na UPI.",
+  "completeAnyCloudflareChallengeThenTap": "Kammala kowane ƙalubalen Cloudflare, sannan danna \"Kukis Daidaita\" don wuce zaman zuwa kari.",
+  "compose": "Rubuta",
+  "concurrencyLimits": "Daidaito & Iyaka",
+  "configurationsRepos": "Saituna & Repos",
+  "configureExport": "Sanya & Fitarwa",
+  "configureDiscordRichPresenceActivityStatus": "Sanya Discord Rigar Kasancewar & Matsayin ayyuka",
+  "configureDnsOverHttpsProxyTls": "Sanya DNS-over-HTTPS, wakili & saitunan TLS",
+  "configureMangaAndNovelReaderDefaults": "Sanya manga da maƙasudin karatun labari",
+  "configureParallelDownloadsAndDirectory": "Sanya abubuwan zazzagewa masu daidaitawa da kundin adireshi",
+  "configurePosterBlurScopeTintBackdrop": "Sanya faifan rubutu, iyawa, tint & tushen baya",
+  "confirm": "Tabbatar",
+  "confirmRestore": "TABBATAR & MAYARWA",
+  "confirmBackupPassword": "Tabbatar da madadin kalmar sirri",
+  "conflictHandling": "Magance rikice-rikice",
+  "connect": "Haɗa",
+  "continueReading": "Ci gaba Karatun",
+  "continueWatching": "Ci gaba da Kallo",
+  "continuousModeOnly": "Yanayin ci gaba kawai",
+  "contributors": "Masu ba da gudummawa",
+  "controlTheme": "Jigon Sarrafa",
+  "controlsSubtitlesAndPlaybackPreferences": "Sarrafa, fassarar magana, da zaɓin sake kunnawa",
+  "cookiesUserAgentSynced": "An daidaita kukis & Wakilin mai amfani!",
+  "copy": "Kwafi",
+  "copyPath": "Kwafi hanya",
+  "copyUpiId": "Kwafi UPI ID",
+  "copyUserId": "Kwafi ID mai amfani",
+  "coreTeam": "Ƙungiyar Core",
+  "couldNotCalculateCompatibility": "An kasa ƙididdige dacewa.",
+  "couldNotFetchChaptersForThis": "An kasa debo babi don wannan take",
+  "couldNotFetchEpisodesForThis": "An kasa debo sassan ga wannan take",
+  "couldNotOpenDonationLink": "An kasa buɗe hanyar haɗin yanar gizo",
+  "couldNotOpenLink": "An kasa buɗe hanyar haɗin gwiwa",
+  "couldNotOpenReleasesPage": "An kasa buɗe shafin saki",
+  "couldntOpenAppSettingsOpenIt": "An kasa buɗe saitunan app. Bude shi da hannu.",
+  "count": "Kidaya",
+  "countryDistribution": "Rarraba Kasa",
+  "countryOfOrigin": "Ƙasar Asalin",
+  "create": "Ƙirƙiri",
+  "createAFullAnymexArchiveOf": "Ƙirƙiri cikakken .anymex na ɗakin karatu na kafofin watsa labaru, saituna, kari, da lokacin runduna",
+  "createActivity": "Ƙirƙiri Ayyuka",
+  "createBackup": "Ƙirƙiri Ajiyayyen",
+  "createNewList": "Ƙirƙiri Sabon Jerin",
+  "createStatus": "Ƙirƙiri Matsayi",
+  "cropBorders": "Shuka Iyakoki",
+  "current": "Yanzu • ",
+  "custom": "Na Musamman",
+  "customBanners": "Banners na al'ada",
+  "customColorPicker": "Mai Zabin Launi na Musamman",
+  "customDohUrl": "CUSTOM DOH URL",
+  "customFonts": "Alamar Haruffa",
+  "customLists": "Lists na al'ada",
+  "customLogos": "Logos na al'ada",
+  "customPlayerFlagsParameters": "Tutocin ɗan wasa na al'ada & sigogi",
+  "customScale": "Ma'auni na Musamman",
+  "customTheme": "Jigo na al'ada",
+  "customUserAgent": "Wakilin Mai Amfani na Musamman",
+  "customValue": "Darajar Al'ada",
+  "customEllipsis": "Na Musamman...",
+  "customizeCardHistoryCardCarouselNav": "Keɓance katin, katin tarihi, carousel & salon mashaya nav",
+  "customizeTheInterfaceToYourLiking": "Keɓance hanyar sadarwa zuwa ga son ku",
+  "customizeYourLogoAnimationStyle": "Keɓance salon motsin tambarin ku",
+  "dailyActivitiesWatchAndReadMetrics": "Ayyukan yau da kullun, kallo da karanta ma'auni",
+  "dailyActivityAndWatchReadProgress": "Ayyukan yau da kullun da kallo/ karanta bin diddigin ci gaba",
+  "dataCache": "Data & Cache",
+  "dataToRestore": "DATA DON MAYARWA",
+  "days": "KWANAKI",
+  "days2": "Kwanaki",
+  "daysActive": "KWANAKI AIKI",
+  "debanding": "Tashin hankali",
+  "debugStuffs": "Gyara kayan gyara",
+  "decoder": "Decoder",
+  "decoderHwdec": "Decoder (HWDec)",
+  "decoderThreads": "Zaren Decoder",
+  "decorationCloset": "Katin Ado",
+  "defaultLabel": "Tsohuwar",
+  "defaultAndroidAudiotrackApi": "Tsohuwar Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "Tsohuwar Apple CoreAudio API",
+  "defaultListOrder": "Odar Jerin Tsohuwar",
+  "defaultOrientation": "Tsohuwar Hanya",
+  "defaultPortrait": "Tsohuwar Hoto",
+  "defaultPulseaudioApi": "API ɗin PulseAudio na ainihi",
+  "defaultSize200px": "Girman Tsohuwar (200px)",
+  "defaultSystemAudioDriver": "Direba mai jiwuwa na tsarin tsoho",
+  "defaultTheme": "Tsohuwar Jigo",
+  "defaultWindowsAudioDriver": "Default Windows direban audio",
+  "delete": "Share",
+  "deleteActivity": "Share Ayyuka",
+  "deleteAll": "Share Duk",
+  "deleteAllCachedImagesTorrentStream": "Share duk hotunan da aka adana, rafukan rafi, da fayilolin wucin gadi.",
+  "deleteAllStoredHttpCookiesAcross": "Share duk kukis na HTTP da aka adana a duk yankuna.",
+  "deleteChapter": "Share Babi",
+  "deleteChapterQuestion": "Share babi?",
+  "deleteComment": "Share Sharhi",
+  "deleteCustomLogo": "Share Logo na Musamman",
+  "deleteEpisode": "Share Episode",
+  "deleteEpisodeQuestion": "Share episode?",
+  "deleteEverythingStoredOfAnymexPermanently": "Share duk abin da aka adana na AnymeX na dindindin.",
+  "deleteExtension": "Share Extension",
+  "deleteFont": "Goge Font",
+  "deleteHistoryItem": "Share Abun Tarihi",
+  "deleteList": "Share Jerin",
+  "deleteLogo": "Share Logo",
+  "deleteReason": "Share Dalili?",
+  "deleteRecommendation": "Share Shawarwari?",
+  "deleteReply": "Share Amsa",
+  "deleteReportedComment": "Share Bayanin da aka ruwaito",
+  "deleteSavedCookiesAndCloudflareTokens": "Share kukis da aka adana da alamun Cloudflare",
+  "deleteSavedCookiesCloudflareTokensAnd": "Share kukis da aka adana, alamun Cloudflare, da cache na wucin gadi",
+  "deleteSelected": "Share Zaɓaɓɓen",
+  "deleteTemporaryNetworkAndImageCache": "Share cibiyar sadarwar wucin gadi da cache hoto",
+  "deletionRequestSentToAdminsFor": "An aika buƙatar sharewa ga admins don dubawa.",
+  "demuxerMaxBuffer": "Mafi Yawan Ma'ajiyar Demuxer",
+  "demuxerReadahead": "Karanta Gaba na Demuxer",
+  "description": "Bayani",
+  "detailedClassic": "Dalla-dalla (Na gargajiya)",
+  "detailedInsights": "Cikakkun bayanai",
+  "detailsPage": "Shafin Cikakkun bayanai",
+  "developer": "Mai haɓakawa",
+  "development": "Ci gaba",
+  "direct": "Kai tsaye",
+  "directSurfaceRenderingAndroidOnly": "Matsa kai tsaye (Android kawai)",
+  "direction": "Hanyar",
+  "disableToShowAndHidePlayer": "Kashe don nunawa da ɓoye sarrafa mai kunnawa nan take",
+  "disablingMayBypassCaptivePortalsOr": "Kashewa na iya ƙetare hanyoyin shiga kamamme ko duba SSL, amma yana rage tsaro.",
+  "discard": "Yi watsi da",
+  "discardMessage": "Yi watsi da sako?",
+  "discardReply": "Yi watsi da amsa?",
+  "discardStatus": "Yi watsi da matsayi?",
+  "disconnect": "Cire haɗin",
+  "disconnectDiscord": "Cire haɗin Discord?",
+  "discordTakenDown": "An saukar da Discord",
+  "dismiss": "Korar",
+  "display": "Nunawa",
+  "displayAnimeMangaMoviesAndShows": "Nuna anime, manga, fina-finai da nunin nunin da al'umma suka ba da shawarar akan shafin gida.",
+  "displayMode": "Yanayin Nuni",
+  "displayModeTuningIsNotApplicable": "Gyara yanayin nuni baya amfani akan dandamalin tebur.",
+  "displayPlaybackOrReadingProgressTimestamps": "Nuna sake kunnawa ko karanta tambarin lokaci",
+  "displayRefreshRateResolutionAndFrame": "Nuna ƙimar wartsakewa, ƙuduri da daidaita firam",
+  "distanceBetweenLines": "Nisa tsakanin layi",
+  "distanceFromBottomOfScreen": "Nisa daga ƙasan allo",
+  "ditherDepth": "Zurfin Dither",
+  "dnsProxy": "DNS & Proxy",
+  "dontShowAgain": "Kar a sake nunawa",
+  "donate": "Ba da gudummawa",
+  "donateSupport": "Ba da gudummawa & Tallafawa",
+  "donateViaPaypal": "Ba da gudummawa ta hanyar PayPal",
+  "donateViaUpiOrPaypalTo": "Ba da gudummawa ta hanyar UPI ko PayPal don tallafawa ci gaba",
+  "donateViaUpiPaypalSupportDevelopment": "Ba da gudummawa ta hanyar UPI, PayPal & haɓaka tallafi",
+  "done": "ANYI",
+  "done2": "Anyi",
+  "doubletapToSeek": "Sau biyu Taɓa don Nema",
+  "downgradeOrSwitchToASpecific": "Rage haɓaka ko canzawa zuwa takamaiman sigar plugin",
+  "download": "Zazzagewa",
+  "download4kShaders": "Zazzage 4K Shaders",
+  "downloadAllChapters": "Zazzage Duk Babi",
+  "downloadAllEpisodes": "Zazzage Duk Fage",
+  "downloadChapter": "Zazzage Babi",
+  "downloadChunks": "Zazzage Chunks",
+  "downloadCurrentSection": "Zazzage Sashe na Yanzu",
+  "downloadEpisode": "Zazzage Episode",
+  "downloadFailedTapToRetry": "An kasa saukewa. Matsa don sake gwadawa.",
+  "downloadPath": "Zazzage Hanya",
+  "downloadPathsAndQualitySettings": "Zazzage hanyoyi da saitunan inganci",
+  "downloadPathsAndStorageSettings": "Zazzage hanyoyi da saitunan ajiya",
+  "downloadPermissions": "Zazzage Izini",
+  "downloadQualityStoragePaths": "Zazzage inganci, hanyoyin ajiya",
+  "downloadSettings": "Zazzage Saitunan",
+  "downloadSize4mb": "Girman saukewa: ~ 4MB",
+  "downloadStarted": "An Fara Zazzagewa",
+  "downloadUnreadChapters": "Zazzage Surori marasa karantawa",
+  "downloadUnwatchedEpisodes": "Zazzage abubuwan da ba a kalla ba",
+  "downloaded": "SAUKARWA",
+  "downloaded2": "An sauke",
+  "downloadedMedia": "Mai Sauke Mai jarida",
+  "downloadingImage": "Ana sauke hoto...",
+  "downloadingPackage": "Ana sauke kunshin...",
+  "downloads": "Zazzagewa",
+  "downloadsStorage": "Zazzagewa & Ajiya",
+  "downloadsPage": "Shafin Saukewa",
+  "downscalingAlgorithm": "Hanyar Rage Girma",
+  "dragAndDropToReorderNavigation": "Jawo da sauke don sake tsara shafukan mashaya kewayawa",
+  "dragToReorderStatusSections": "Ja don sake tsara sassan matsayi",
+  "dualPageMode": "Yanayin Shafi Biyu",
+  "dynamicVariablesWillBeReplacedAutomatically": "Za a maye gurbin masu canji ta atomatik. Hakanan zaka iya amfani da jumla a tsaye.",
+  "edit": "Gyara",
+  "editActivity": "Gyara Ayyuka",
+  "editCustomMpvFlagsPropertiesAnd": "Shirya tutocin mpv na al'ada, kaddarorin, da fayil ɗin daidaitawa",
+  "editLogoSettings": "Shirya Saitunan Logo",
+  "editMediaEntry": "Gyara Shigar Mai jarida",
+  "editReason": "Gyara Dalili",
+  "editRecommendationReasonMin30Chars": "Shirya dalilin shawarwarin (minti 30 chars)",
+  "edited": "Gyara",
+  "enableAnimation": "Kunna rayarwa",
+  "enableAnimationOnCarouselsForSmooth": "Kunna rayarwa akan carousels don motsi mai santsi",
+  "enableBackgroundMediaControlsForBluetooth": "Kunna ikon sarrafa kafofin watsa labarai na baya don na'urar kai ta Bluetooth da sanarwar kafofin watsa labarai na tsarin. Lura: Kunna wannan zai ƙara yawan amfani da baturi.",
+  "enableBetaUpdates": "Kunna Sabuntawar Beta",
+  "enableClassicSimpleHeaderStyleOn": "Kunna salo mai sauƙi na asali akan allon gida",
+  "enableDiscordRpc": "Kunna Discord RPC",
+  "enableExperimentalSettings": "Kunna Saitunan Gwaji",
+  "enableHoldingOnPlayerScreenTo": "Kunna riƙe kan allon mai kunnawa don hanzarta sake kunna bidiyo na ɗan lokaci",
+  "enableHorizontalSwipingOnPlayerScreen": "Kunna swiping kwance akan allon mai kunnawa don nema ta bidiyo",
+  "enableKenBurns": "Kunna Ken Burns",
+  "enableLongPressQuickActions": "Kunna dogon danna ayyuka masu sauri",
+  "enableNotificationsForUpcomingAiringEpisodes": "Kunna sanarwar don shirye-shiryen watsa shirye-shirye masu zuwa.",
+  "enableNsfwAdultEntriesInAnilist": "Kunna shigarwar NSFW/ manya a cikin abun ciki na AniList.",
+  "enableShaders": "Kunna Shaders",
+  "enableSwipeControls": "Kunna Ikon Dokewa",
+  "enableTapZones": "Kunna Yankunan Matsa",
+  "enableThisIfYouWantTo": "Kunna wannan idan kuna son riƙe ainihin launi na fuskar bangon waya",
+  "enableTranslucentNavigationBar": "Kunna mashaya kewayawa mai jujjuyawa",
+  "enableTts": "Kunna TTS",
+  "enableVerticalSwipingOnTheLeft": "Kunna swiping tsaye a gefen hagu/dama na allon mai kunnawa don daidaita haske da ƙara",
+  "enablesASoftGlowingGradientEffect": "Yana ba da damar tasiri mai laushi, mai haske.",
+  "encryptWithAes256RecommendedFor": "Rufaffen asiri tare da AES-256 (an ba da shawarar don alamomi)",
+  "encrypted": "Rufewa • ",
+  "endChapter": "Babin Ƙarshe",
+  "enterAmount": "Shigar da adadin...",
+  "enterAnilistUsername": "Shigar da sunan mai amfani AniList",
+  "enterAtLeast2Characters": "Shigar da aƙalla haruffa 2",
+  "enterBackupPassword": "Shigar da kalmar wucewa",
+  "enterFirstAnilistUsername": "Shigar da sunan mai amfani na farko na AniList",
+  "enterGithubRepositoryUrl": "Shigar GitHub URL",
+  "enterListName": "Shigar da sunan lissafin",
+  "enterPassword": "Shigar da kalmar wucewa",
+  "enterReasonOrDetailsForThis": "Shigar da dalili ko cikakkun bayanai game da wannan aikin...",
+  "enterSearchQuery": "Shigar da tambayar nema",
+  "enterUsername": "Shigar da sunan mai amfani",
+  "enterValue": "Shigar da ƙima",
+  "entryDeleted": "An share shigarwa.",
+  "episode1": "Kashi na 1",
+  "episodeListSettings": "Saitunan Jerin Jigogi",
+  "episodes": "Fitowa",
+  "episodesDuration": "LABARI & LOKACI",
+  "episodesWatched": "Abubuwan da Aka Kalla",
+  "errorOccured": "Kuskure ya faru",
+  "errorOccurred": "Kuskure Ya Faru",
+  "errorSavingImage": "Kuskuren adana hoto",
+  "errorSharingImage": "Kuskuren raba hoto",
+  "errorMissingRequiredDataItSeems": "Kuskure: Bacewar bayanan da ake buƙata. Da alama kun rufe app ɗin kai tsaye bayan karanta babin!",
+  "errorMissingRequiredMediaItSeems": "Kuskure: Bacewar kafofin watsa labarai da ake buƙata. Da alama kun rufe app ɗin kai tsaye bayan karanta babin!",
+  "errorMissingRequiredMediaItSeemsYou": "Kuskure: Bacewar kafofin watsa labarai da ake buƙata. Da alama kun rufe app ɗin kai tsaye bayan kallon shirin!",
+  "everyScoreIsMappedToA": "Kowane maki an tsara shi zuwa matsayi. Teburin da ke ƙasa yana nuna kowane sashi, lambar sa, da abin da kewayo ke wakilta.",
+  "experimental": "Gwaji",
+  "experimentalHighPerformanceRenderer": "Gwaji mai yin babban aiki",
+  "explore": "Bincika",
+  "exploreTheProjectAndContribute": "Bincika aikin kuma ku ba da gudummawa",
+  "exportLabel": "FITARWA",
+  "exportBackup": "Ajiyayyen fitarwa",
+  "exportCancelled": "An soke fitarwa.",
+  "exportDeviceBackup": "Ajiyayyen Na'urar fitarwa",
+  "exportSettings": "Saitunan fitarwa",
+  "exportYourAnimeList": "Fitar da jerin Anime ku",
+  "exportYourMangaList": "Fitar da jerin Manga na ku",
+  "extensionConfigurations": "Tsarin Tsawaitawa",
+  "extensionConfigurationsRepos": "Tsare-tsaren Tsawaitawa & Repos",
+  "extensionManager": "Extension Manager",
+  "extensionPackages": "Fakitin Tsawaita",
+  "extensionPreferences": "Abubuwan Zaɓuɓɓuka",
+  "extensionSettings": "Saitunan Tsawo",
+  "extensionSettingsAndSourceConfigurations": "Saitunan haɓakawa da saitunan tushe",
+  "extensionTesting": "Gwajin Karin Aiki",
+  "extensionType": "Nau'in Tsawo",
+  "extensions": "kari",
+  "extensionsDiagnostics": "Karin Ayyuka da Bincike",
+  "extensionsRepositories": "kari & Ma'ajiyar ajiya",
+  "extensionsSources": "kari & Tushen",
+  "extensionsTailoredToYourNeeds": "Abubuwan kari da aka keɓance da bukatun ku",
+  "externalStreamingLinks": "Hanyoyin Waje & Yawo",
+  "externalBackupsRestoreMetadataAndConfigurations": "Ajiyayyen waje yana dawo da metadata da daidaitawa lafiya.",
+  "externalBrowser": "Mai Binciken Waje",
+  "extras": "Kari",
+  "factoryReset": "Sake saitin masana'anta",
+  "factoryReset2": "Sake saitin masana'anta",
+  "failedToCheckForUpdates": "An kasa bincika sabuntawa.",
+  "failedToCheckPluginUpdates": "Ba a yi nasara ba don bincika sabunta plugin ɗin.",
+  "failedToDeleteChapter": "An kasa share babi",
+  "failedToDeleteEpisode": "An kasa share aukuwa",
+  "failedToDeleteListEntry": "An kasa share shigarwar jeri",
+  "failedToDeleteMedia": "An kasa share kafofin watsa labarai",
+  "failedToDownloadImage": "An kasa sauke hoto",
+  "failedToFetchChapters": "An kasa debo babi",
+  "failedToFetchDetails": "An kasa debo bayanai",
+  "failedToFetchImageForSharing": "An kasa ɗaukar hoto don rabawa",
+  "failedToFetchPluginReleaseDetails": "An kasa fitar da cikakkun bayanan sakin plugin.",
+  "failedToFetchPolicy": "An kasa fitar da manufa.",
+  "failedToFetchReleaseDetails": "An kasa fitar da bayanan sakin.",
+  "failedToFetchServers": "An kasa samo sabobin",
+  "failedToLoadDetails": "An kasa loda bayanai",
+  "failedToLoadFontFile": "An kasa loda fayil ɗin rubutu",
+  "failedToLoadProfileAccountMay": "An kasa loda bayanan martaba - asusun yana iya zama na sirri ko ba a samu ba",
+  "failedToLoadTorrentMetadata": "An kasa loda metadata torrent",
+  "failedToPerformAction": "An kasa yin aiki",
+  "failedToRemoveRepo": "An kasa cire repo",
+  "failedToStartExtensionRuntime": "Ba a yi nasarar Fara Lokacin Gudu ba",
+  "failedToUpdateAnilist": "An kasa sabunta AniList",
+  "failedToUpdateListEntry": "An kasa sabunta shigarwar jeri",
+  "failedToUpdatePreference": "An kasa sabunta zaɓin",
+  "failedToUpdateRole": "Ba a yi nasarar sabunta rawar ba",
+  "favoriteTitle": "Taken Da Aka Fi So",
+  "favouriteAnime": "Anime da aka fi so",
+  "favouriteCharacters": "Fitattun Haruffa",
+  "favouriteManga": "Manga da aka fi so",
+  "favouriteStaff": "Ma'aikatan Da Aka Fi So",
+  "favouriteStudios": "Fitattun Studios",
+  "featuresIssues": "Fasaloli/Batutuwa",
+  "fetchingAvailableServers": "Ana samun sabar sabar...",
+  "fetchingLatestReleaseDetails": "Ana samun sabbin bayanan saki...",
+  "fetchingTorrentFileList": "Ana kawo jerin fayilolin torrent...",
+  "filler": "FILLER",
+  "filter": "Tace",
+  "filterActivities": "Tace Ayyukan",
+  "filterActivity": "Tace Aiki",
+  "filterByChapterCount": "Tace da kidaya babi",
+  "filterByDurationMin": "Tace ta tsawon lokaci (minti)",
+  "filterByEpisodeCount": "Tace da Kidaya Episode",
+  "filterByGenre": "Tace ta Genre",
+  "filterByVolumeCount": "Tace ta hanyar Ƙididdiga",
+  "filterGenres": "Tace nau'ikan",
+  "filterOutAdultNsfwEntriesFrom": "Tace shigar manya/NSFW daga shawarwarin al'umma.",
+  "filterOutEntriesAlreadyInYour": "Tace shigarwar riga a cikin jerin ku",
+  "filterOutEntriesAlreadyInYourList": "Tace shigarwar riga a cikin lissafin ku dangane da yanayin kallo/ karantawa.",
+  "filterSettings": "Tace Saituna",
+  "filters": "TATTAUNAWA",
+  "findAndManageSpecificUsers": "Nemo ku sarrafa takamaiman masu amfani",
+  "findAnimeSauceByScreenshots": "Nemo miya anime ta hotunan kariyar kwamfuta",
+  "findSource": "Nemo Tushen",
+  "findYourFavouriteAnimeOrManga": "Nemo anime da kuka fi so ko manga, manhwa ko duk abin da kuke so!",
+  "findYourFavouriteAnimeMangaManhwa": "Nemo Anime da kuka fi so, Manga, Manhwa ko duk abin da kuke so!",
+  "finishDate": "Kwanan Ƙarshe",
+  "firstChapter": "Babin Farko",
+  "firstUser": "Mai Amfani Na Farko",
+  "fitToScreenWidth": "Dace zuwa Fadin allo",
+  "fontFamily": "Iyalin Font",
+  "fontSize": "Girman Font",
+  "forceReDownload": "Tilasta sake saukewa",
+  "forceSyncFromSdCard": "Ƙaddamar da Aiki tare daga katin SD",
+  "forks": "cokali mai yatsu",
+  "format": "Tsarin",
+  "formatDistribution": "Tsarin Rarraba",
+  "frameInterpolation": "Saka Hotuna a Tsakani",
+  "freeSupport": "Tallafin Kyauta",
+  "frequentlyRevisited": "Akai-akai Maimaitawa",
+  "fromUrl": "Daga URL",
+  "fullWidthDetailedCardWithLarge": "Cikakken cikakken kati tare da babban thumbnail da metadata episode",
+  "fullWidthDetailedCardsWithProgress": "Cikakken cikakkun katunan katunan tare da ci gaba da maɓallin karantawa",
+  "fullWidthHeroBannerWithCompact": "Tutar jaruma mai cikakken faɗin tare da taƙaitaccen bayanai da taƙaitaccen bayani.",
+  "general": "Gabaɗaya",
+  "generalPrivacy": "Gabaɗaya & Keɓantawa",
+  "generalSync": "Gabaɗaya & Daidaitawa",
+  "generalAppPreferencesAndSyncServices": "Gabaɗaya zaɓin app da sabis na daidaitawa",
+  "generalAppSettingsAndSyncServices": "Saitunan app na gabaɗaya da ayyukan daidaitawa",
+  "generalPreferences": "Gabaɗaya Zaɓuɓɓuka",
+  "genres": "Nau'o'i",
+  "genresUpper": "SAURANSU",
+  "gestureForBrightnessVolume": "Ƙaura don Haskaka & Ƙara",
+  "getHelpWithTheCommentSystem": "Nemo taimako tare da tsarin sharhi",
+  "getStarted": "Fara",
+  "globalConcurrencyLimit": "Iyakar Ayyukan Lokaci Guda",
+  "glowMultiplier": "Glow Multiplier",
+  "goSuperDarkMode": "Tafi Yanayin Super Dark!",
+  "goToDownloads": "Je zuwa Zazzagewa",
+  "goToExtensionsToGetStarted": "Jeka Extensions don farawa",
+  "goToPluginDownloader": "Je zuwa Mai Sauke Plugin",
+  "goToRuntimeManager": "Je zuwa Runtime Manager",
+  "goodAfternoon": "Barka da rana",
+  "goodEvening": "Barka da yamma",
+  "goodMorning": "Barka da safiya",
+  "goodnight": "Barka da dare",
+  "gotIt": "Na samu",
+  "grainIntensity": "Ƙarfin hatsi",
+  "grainTextureOverlay": "Rufin Yanayin Kwayar Hoto",
+  "grantPermission": "Bada Izinin",
+  "grantPermissions": "Bada Izinin",
+  "grid": "Grid",
+  "gridSize": "Girman Grid",
+  "gridView": "Duban Grid",
+  "guest": "Bako",
+  "happySnacking": "Abincin ciye-ciye mai daɗi",
+  "hardwareDisplayModeSwitchingIsNot": "Canjin yanayin nuni na kayan hardware baya samun goyan bayan na'urarka.",
+  "helpSupport": "Taimako & Taimako",
+  "hexColorCode": "Lambar launi Hex",
+  "hey": "Kai ",
+  "hidden": "Boye",
+  "hiddenFromYourPublicProfile": "Boye daga bayanan jama'a",
+  "hiddenTabs": "Shafukan boye",
+  "hideAdultContent": "Ɓoye abun ciki na manya",
+  "hideButton": "Ɓoye maɓallin",
+  "hideByListStatus": "Boye ta Halin Lissafi",
+  "hideCompleted": "Boye An Kammala",
+  "hideDropped": "Boye An Fado",
+  "hideEntriesThatAreInYour": "Boye shigarwar da ke cikin jerin tsarin ku.",
+  "hideEntriesThatAreMarkedAs": "Boye shigarwar da aka yiwa alama kamar yadda aka kammala a lissafin ku.",
+  "hideEntriesThatYouAreCurrently": "Boye abubuwan da kuke kallo ko karantawa a halin yanzu.",
+  "hideEntriesThatYouAreRewatching": "Boye shigarwar da kuke kallo.",
+  "hideEntriesThatYouHaveDropped": "Boye shigarwar da kuka jefa.",
+  "hideEntriesThatYouHavePut": "Boye shigarwar da kuka riƙe.",
+  "hideNsfw": "Ɓoye NSFW",
+  "hideNsfw18Content": "Ɓoye abun ciki na NSFW / 18+",
+  "hideNsfwContent": "Ɓoye Abubuwan NSFW",
+  "hideNsfwRecommendations": "Boye shawarwarin NSFW",
+  "hideOnHoldPaused": "Boye A Riƙe / An Dakata",
+  "hidePlanning": "Boye Tsari",
+  "hideRewatching": "Ɓoye Sake Kallon",
+  "hideSystemStatusAndNavigationBars": "Ɓoye matsayin tsarin da sandunan kewayawa",
+  "hideWatchingReading": "Boye Kallon / Karatu",
+  "history": "Tarihi",
+  "historyStatistics": "Tarihi & Kididdiga",
+  "historyCardStyle": "Salon Katin Tarihi",
+  "historyItemDeleted": "An goge abun tarihi",
+  "hlsParallelSegments": "HLS Daidaici Segments",
+  "holdAndDragAnyItemTo": "Riƙe ka ja kowane abu don sake yin oda",
+  "holdToAccessHistoryEditor": "Rike don samun damar editan tarihi",
+  "holdToDelete": "Rike don sharewa",
+  "holdToSpeedUp": "Riƙe don Sauƙaƙe",
+  "home": "Gida",
+  "horizontal": "A kwance",
+  "hostEG12700": "Mai watsa shiri (misali 127.0.0.1)",
+  "hours": "Awanni",
+  "howItWorksCompatibilityRanks": "Yadda yake aiki & Darajoji masu dacewa",
+  "howMuchInPercentageToMark": "Nawa a cikin kashi don yin alama kamar yadda ake kallo",
+  "howToUseTheCommentSystem": "Yadda ake amfani da tsarin sharhi:",
+  "hue": "Hue",
+  "ifEnabledAContinueWatchingBar": "Idan an kunna, za a nuna ci gaba da mashaya kallo sama da sandar kewayawa na ƙasa akan shafin gida.",
+  "ifEnabledAllLibraryItemsWill": "Idan an kunna, za a raba duk abubuwan laburare a duk ayyukan sa ido.",
+  "ifEnabledAnymexWillAskFor": "Idan an kunna, Anymex zai nemi izinin bin diddigin idan ba haka ba to zai bi ta tsohuwa.",
+  "ifEnabledYouWillNotGet": "Idan an kunna, ba za ku sami hanzari don kunna abun ciki na manya akan Anilist/MyAnimeList ba.",
+  "ifTemporaryAppCacheReachesThis": "Idan cache na wucin gadi ya kai wannan girman, za a share ta ta atomatik.",
+  "ifYouAreUsingAJson": "Idan kana amfani da jigon JSON, canje-canje a nan ba zai shafi ikon sarrafa mai kunnawa ba. Canja zuwa ginanniyar jigon don amfani da waɗannan saitunan.",
+  "ifYouCantDonateWatchThis": "Idan ba za ku iya ba da gudummawa ba, kalli wannan tallan don tallafawa",
+  "image": "Hoto",
+  "imageShowsThumbnail": "Hoto (yana nuna thumbnail)",
+  "imageFilterQuality": "Ingancin Tacewar Hoto",
+  "imageSharedFromAnymex": "Hoton da aka raba daga AnymeX",
+  "imagesWillBeDownloadedInFull": "Za a sauke hotuna da cikakken inganci. Ana adana kowane babi a cikin babban fayil ɗin sa.",
+  "immersiveMode": "Yanayin Immersive",
+  "importLabel": "SHIGA",
+  "importLabel2": "Shigo da",
+  "importManageCustomJsonThemes": "Shigo & sarrafa jigogin JSON na al'ada",
+  "importBackup": "Shigo Ajiyayyen",
+  "importCustomFont": "Shigo Font na Musamman",
+  "importFromUrl": "Shigo daga URL",
+  "includeAdultNsfwSuggestions": "Haɗa manya & shawarwarin NSFW",
+  "incognito": "Incognito",
+  "incognitoActive": "Incognito (Aiki)",
+  "incognitoMode2": "Yanayin Incognito",
+  "indiaUpi": "Indiya (UPI)",
+  "info": "Bayani",
+  "inlineCode": "Lambar layi",
+  "insert": "Saka",
+  "installPermission": "Shigar Izinin",
+  "installPermissionIsRequiredToUpdate": "Ana buƙatar izinin shigarwa don sabunta ƙa'idar",
+  "installedPackages": "Fakitin Shigarwa",
+  "installedThemes": "Shigar Jigogi",
+  "interfaceStyling": "Salon Interface",
+  "internalBrowser": "Mai Binciken Cikin Gida",
+  "international": "Ƙasashen Duniya",
+  "invalidBackupFileOrIncorrectPassword": "Fayil ɗin madadin mara inganci ko kalmar sirri mara inganci",
+  "invertVolumeKeys": "Juya Maɓallan Ƙarar",
+  "italic": "Italic",
+  "joinDiscordCommunity": "Shiga Discord Community",
+  "joinNewDiscord": "Shiga Sabon Discord",
+  "joinTelegramChannel": "Shiga Channel na Telegram",
+  "joinUsForDroppingFeedbackOr": "Kasance tare da mu don sauke ra'ayoyin ko buƙatun fasali",
+  "jsonThemeManager": "Manajan Jigon JSON",
+  "judgment": "Hukunci",
+  "keepEditing": "Ci gaba da gyara",
+  "keepItChill": "Ci gaba da sanyi",
+  "keepScreenOn": "Ci gaba da Allon",
+  "keepVoicePitchStableAtHigher": "Ka kiyaye sautin muryar a mafi girma da sauri",
+  "koFiSupport": "Ko-fi Support",
+  "languageVariant": "Bambancin Harshe",
+  "lastAdded": "Ƙarshe Ƙara",
+  "lastChapter": "Babin Karshe",
+  "later": "Daga baya",
+  "latest": "Bugawa",
+  "latestManga": "Sabon Manga",
+  "layout": "Tsarin tsari",
+  "layoutStyle": "Salon Salon",
+  "leaderboard": "Allon jagora",
+  "learnHowToFormatYourComments": "Koyi yadda ake tsara maganganunku",
+  "leftSide": "Gefen Hagu",
+  "letterSpacing": "Tazarar wasiƙa",
+  "levelProgress": "Ci gaban Mataki",
+  "libraryLabel": "Laburare",
+  "librarySettings": "Saitunan Laburare",
+  "libraryStatistics": "Kididdigar Laburare",
+  "lightness": "Haske",
+  "likedBy": "Wanda ya so",
+  "lineHeight": "Tsayin Layi",
+  "linkAutoDetected": "Mahada (Gano Ta Kanta)",
+  "linkCopiedToClipboard": "An kwafi hanyar haɗi zuwa allo!",
+  "linkHasExpiredAndEpisodeUrl": "Hanyar haɗin kai ta ƙare kuma babu URL ɗin labarin.",
+  "linkHasExpiredAndNoAlternative": "Hanyar haɗi ya ƙare kuma ba a sami madadin rafi ba.",
+  "linotteDefault": "Linotte (Tsoffin)",
+  "liquidBackground": "Bayanin Liquid",
+  "liquidMode": "Yanayin Liquid",
+  "listEntryUpdatedSuccessfully": "An sabunta shigarwar jeri cikin nasara!",
+  "listExporter": "Jerin Mai fitarwa",
+  "listNameAlreadyExists": "Sunan jeri ya riga ya wanzu",
+  "listOptions": "Zaɓuɓɓukan Lissafi",
+  "liveBlurIsUnavailableWhenUsing": "Babu blur live lokacin amfani da Ramin Ruwa.",
+  "livePreview": "KYAUTA LIVE",
+  "livePreview2": "Preview Live",
+  "loadTemplate": "Load da Samfura",
+  "loadingMediaFiles": "Ana loda fayilolin mai jarida...",
+  "loadingMedia": "Ana loda Mai jarida...",
+  "local": "Na gida",
+  "localLibrary": "Laburaren Gida",
+  "localMedia": "Kafofin watsa labarai na cikin gida",
+  "location": "Wuri",
+  "logCapture": "Log Kama",
+  "logDirectory": "Littafin rajista",
+  "logIn": "Shiga",
+  "logInRequired": "Ana Bukatar Shiga",
+  "logInToCustomizeYourPush": "Shiga don keɓance abubuwan zaɓin sanarwar tura ku.",
+  "logInToJoinTheConversation": "Shiga don shiga tattaunawar kuma kuyi sharhi.",
+  "logOut": "Fita",
+  "loggedInTrackingServices": "Sabis na sa ido na shiga",
+  "login": "Shiga",
+  "loginAuthTokens": "Shiga & Alamu na Gaskiya",
+  "loginInsideTheAppRecommended": "Shiga cikin app (An shawarta)",
+  "loginSessions": "Login Login",
+  "loginUsingYourDefaultBrowser": "Shiga ta hanyar amfani da tsoho mai bincike",
+  "loginWithToken": "Shiga tare da Token",
+  "logoAnimation": "Logo Animation",
+  "logoName": "Sunan tambari:",
+  "logs": "Logs",
+  "longPressPageActions": "Ayyukan Dannawa Mai Tsayi a Shafi",
+  "makeEverythingGlassyLiquidy": "Sanya komai ya zama gilashi & ruwa ...",
+  "manageAnilistLists": "Sarrafa Lissafin Anilist",
+  "manageCachedImagesThresholdsAndReset": "Sarrafa hotunan da aka adana, ƙofa, da sake saita bayanan app",
+  "manageDeviceStorageAndNotificationsTo": "Sarrafa ma'ajiyar na'ura da sanarwa don saukewa da sarrafa kafofin watsa labarai na kan layi.",
+  "manageLogCaptureAndShareSaved": "Sarrafa kama log ɗin kuma raba rajistan ayyukan da aka adana",
+  "manageMyanimelistLists": "Sarrafa Lissafin MyAnimeList",
+  "managePluginsSources": "Sarrafa plugins & tushe",
+  "manageSimklLists": "Sarrafa Lissafin Simkl",
+  "manageSourcesAndRepositoriesToUse": "Sarrafa tushe da wuraren ajiya don amfani da ƙa'idar zuwa cikakkiyar damarta",
+  "manageYourMyanimelistAnilistSimklAccounts": "Sarrafa MyAnimeList, Anilist, Simkl Accounts!",
+  "management": "Gudanarwa",
+  "manga": "Manga",
+  "mangaNovelReaderSettingsTapZones": "Saitunan karanta Manga & novel, danna yankuna",
+  "mangaNovelViewerSettingsTapZones": "Saitunan kallon Manga & novel, danna yankuna",
+  "mangaAndNovelReaderStylesAnd": "Salon karatun Manga da novel mai karantawa da yankunan famfo",
+  "mangaCustomLists": "Jerin Manga na Musamman",
+  "mangaDetailsPhrasing": "Karin Bayanin Manga",
+  "mangaLibrary": "Manga Library",
+  "mangaList": "MANGA LIST",
+  "mangaScore": "Makin Manga",
+  "mangaSectionOrder": "Oda Sashen Manga",
+  "manuallyPasteOauthAccessToken": "Manna alamar samun damar OAuth da hannu",
+  "markAllRead": "Alama duka karanta",
+  "markAsWatched": "Alama Kamar Yadda Aka Kalla",
+  "markdownGuide": "Jagorar Markdown",
+  "maximumDemuxerBufferMb": "Matsakaicin buffer demuxer (MB)",
+  "maybeLater": "Wataƙila Daga baya",
+  "mean": "MA'ANA",
+  "meanScore": "Ma'ana Maki",
+  "mediaPlayback": "Mai jarida & sake kunnawa",
+  "mediaLibrary": "Media Library",
+  "mediaSessionBluetoothSupport": "Zaman Kafofin Watsa Labarai (Tallafin Bluetooth)",
+  "mediaTypeBreakdown": "Rushewar Nau'in Mai jarida",
+  "mediaYouDownloadWillAppearHere": "Mai jarida da kuka zazzage zai bayyana a nan.",
+  "megaskipDuration": "Tsawon Lokaci na MegaSkip",
+  "mention": "Ambaci",
+  "mentions": "ambaton",
+  "merge": "Haɗa",
+  "messageFriend": "Abokin Saƙo",
+  "minutesWatched": "Mintuna Kallon",
+  "miscellaneous": "Daban-daban",
+  "missingRuntimeHost": "Bace Mai watsa shiri Lokacin Runduna",
+  "moderation": "Matsakaici",
+  "moderationActions": "Ayyukan daidaitawa",
+  "moderationPanel": "Kwamitin daidaitawa",
+  "moderator": "Mai Gudanarwa",
+  "moreOptions": "Ƙarin Zaɓuɓɓuka",
+  "morePopularManga": "Mafi Shahararren Manga",
+  "moveToLeft": "Matsa zuwa hagu",
+  "moveToRight": "Matsa zuwa dama",
+  "movie": "Fim",
+  "mpvConfiguration": "Kanfigareshan MPV",
+  "muteUser": "Yi shiru Mai amfani",
+  "mutualConnections": "Hadin Gwiwa na Juna",
+  "mutualFriends": "Abokan Juna",
+  "nameplates": "Alamomin suna",
+  "navBarLayout": "Nav Bar Layout",
+  "navBarStyle": "Nav Bar Style",
+  "navigationLayout": "Tsarin kewayawa",
+  "needHelp": "Kuna buƙatar taimako?",
+  "network": "Cibiyar sadarwa",
+  "newLabel": "SABO",
+  "newCollection": "Sabon Tarin",
+  "newCustomListName": "Sabon jerin sunayen al'ada",
+  "newDownload": "Sabuwar Zazzagewa",
+  "newList": "Sabon Jerin",
+  "newestFirst": "Sabon farko",
+  "nextRelease": "Saki na gaba",
+  "nextReleasePrediction": "Hasashen Saki na gaba",
+  "noActiveDownloads": "Babu zazzagewa mai aiki",
+  "noActiveSourceOrMediaFound": "Ba a sami tushe mai aiki ko kafofin watsa labarai ba",
+  "noActiveSourceSelected": "Babu tushen aiki da aka zaɓa",
+  "noActivity": "Babu aiki",
+  "noAnimeFound": "Ba a sami Anime ba",
+  "noAudioTracksAvailable": "Babu waƙoƙin mai jiwuwa",
+  "noChaptersFound": "Ba a Samu Babi",
+  "noChaptersFound2": "Ba a sami surori ba",
+  "noCommonGenres": "Babu nau'ikan gama-gari",
+  "noCommonTags": "Babu alamun gama gari",
+  "noContributorsFound": "Ba a sami masu ba da gudummawa ba.",
+  "noCustomListsAvailable": "Babu lissafin al'ada da akwai.",
+  "noCustomListsYet": "Babu lissafin al'ada tukuna",
+  "noCustomListsYet2": "Babu lissafin al'ada tukuna.",
+  "noDataAvailableForThisSection": "Babu bayanan da ke akwai don wannan sashe",
+  "noDataAvailable": "Babu bayanai akwai.",
+  "noDecadeBreakdownAvailable": "Babu raguwar shekaru goma da akwai",
+  "noDescriptionAvailable": "Babu Bayani Akwai",
+  "noDownloadedChaptersFoundForThis": "Babu surori da aka sauke don wannan manga",
+  "noDownloadedEpisodesFoundForThis": "Ba a sami abubuwan da aka sauke don wannan anime ba",
+  "noEntriesFound": "Babu shigarwar da aka samu",
+  "noEpisodesFound": "Ba a sami wani labari ba",
+  "noExtensionManagersFound": "Ba a sami masu sarrafa kari ba.",
+  "noExtensionsFound": "Ba a sami kari ba",
+  "noExtensionsInstalled": "Ba a shigar da kari ba",
+  "noGenresAvailableAnilistApiMay": "Babu nau'ikan da ke akwai. AniList API na iya zama ƙasa na ɗan lokaci.",
+  "noHiddenTabs": "Babu boyayyun shafuka",
+  "noInsightsAvailableYetAddItems": "Har yanzu ba a sami fahimtar juna ba. Ƙara abubuwa zuwa ɗakin karatu!",
+  "noItemsInThisLibrary": "Babu abubuwa a cikin wannan ɗakin karatu.",
+  "noLoggedStatsYetStartWatching": "Ba a yi rajista ba tukuna. Fara kallo/ karanta!",
+  "noMediaFilesFound": "Ba a Samu Fayilolin Mai jarida ba",
+  "noMediaFoundForThisStudio": "Ba a sami kafofin watsa labarai na wannan studio ba",
+  "noMediaInThisList": "Babu kafofin watsa labarai a cikin wannan jeri.",
+  "noMoreActivities": "Babu sauran ayyuka",
+  "noMoreRecommendations": "Babu sauran shawarwari",
+  "noMoreUsers": "Babu sauran masu amfani",
+  "noNotificationsYet": "Babu sanarwa tukuna",
+  "noNovelExtensionsInstalledToRead": "Ba a shigar da kari na novel don karanta wannan labari ba.",
+  "noPendingReports": "Babu rahotanni masu jira",
+  "noPlayableStreamAvailableForThis": "Babu rafi da ake iya kunnawa don wannan shirin.",
+  "noPlayableStreamWasReturnedBy": "Babu rafi mai iya kunnawa da wannan tushen ya dawo.",
+  "noRecentActivityFoundForSelected": "Ba a sami wani aiki na baya-bayan nan don zaɓaɓɓun tacewa ba",
+  "noRecommendationsFound": "Babu shawarwarin da aka samu",
+  "noRecommendationsYet": "Babu shawarwari tukuna",
+  "noReleasesFound": "Ba a sami fitowar ba.",
+  "noRepliesYetBeTheFirst": "Babu amsa tukuna. Kasance na farko!",
+  "noRepositoriesYet": "Babu wuraren ajiya tukuna",
+  "noResult": "Babu sakamako",
+  "noResultsFound": "Ba a sami sakamako ba.",
+  "noResultsYet": "Babu sakamako tukuna",
+  "noResultsTrySearchingByTitle": "Babu sakamako. Gwada bincike ta take.",
+  "noSearchResults": "Babu sakamakon bincike",
+  "noServersAvailable": "Babu sabobin samuwa",
+  "noServersFound": "Babu sabobin da aka samu.",
+  "noServicesAvailable": "Babu Sabis Akwai",
+  "noSourceInstalled": "Babu Madogaran da Aka Sanya",
+  "noSourceSelected": "Babu tushen da aka zaɓa",
+  "noSourcesFound": "Ba a samo tushe ba",
+  "noStatsAvailable": "Babu ƙididdiga da samuwa",
+  "noSubtitleTracksAvailable": "Babu waƙoƙin subtitle da akwai",
+  "noTestsRunning": "Babu gwaje-gwaje da ke gudana",
+  "noThemesYet": "Babu jigogi tukuna",
+  "noTrackingServiceConnected": "Babu sabis na sa ido da aka haɗa",
+  "noUsersFound": "Babu masu amfani da aka samu",
+  "noVisibleTabs": "Babu shafuka masu gani",
+  "noVisualsFoundForThisAnime": "Ba a sami abubuwan gani na wannan Anime ba (╥﹏╥)",
+  "noWatchOrderFound": "Ba a sami odar agogo ba.",
+  "notNow": "Ba yanzu ba",
+  "notSupported": "Ba a tallafawa",
+  "notTracked": "Ba a sa ido ba",
+  "noteAddingKotatsuRepositoryWillTake": "Lura: Ƙara ma'ajiyar Kotatsu zai ɗauki aƙalla mintuna 1-2 saboda yana buƙatar zazzagewa da canza plugin ɗin haɓakawa akan farkon kaya.",
+  "nothingDownloadedYet": "Ba a sauke komai ba tukuna",
+  "nothingToPreview": "Babu abin da za a samfoti",
+  "nothingToPreviewYet": "Ba abin da za a samfoti tukuna.",
+  "notificationPreferences": "Zaɓuɓɓukan Sanarwa",
+  "notifications": "Sanarwa",
+  "notifyForOfficialAnnouncementsAndApp": "Sanar da sanarwar hukuma da sabuntawar app",
+  "notifyIfYourCommentIsRemoved": "Sanar da idan mai gudanarwa ya cire bayanin ku",
+  "notifyOnNewCommentsForMedia": "Sanar da sabbin maganganu don kafofin watsa labarai da kuka tattauna",
+  "notifyOnUpvotesAndDownvotes": "Sanarwa akan zaɓen da aka soke",
+  "notifyOnWarningsPinnedCommentsOr": "Sanar da faɗakarwa, raƙuman tsokaci, ko makullin zaren",
+  "notifyWhenSomeoneMentionsYourUsername": "Sanar da lokacin da wani ya ambaci sunan mai amfani da ku",
+  "notifyWhenSomeoneRepliesToYour": "Sanar da lokacin da wani ya ba da amsa ga sharhin ku",
+  "novel": "Novel",
+  "novelCustomLists": "Jerin Littattafai na Musamman",
+  "novelDetailsPhrasing": "Labari Cikakkun Magana",
+  "novelFontFamily": "Novel Font Family",
+  "novelLibrary": "Littafin Novel",
+  "novelSnapshots": "Novel Snapshots",
+  "novelTheme": "Jigon labari",
+  "novels": "Littattafai",
+  "numberOfActiveDownloadTasks": "Yawan ayyukan zazzagewa masu aiki",
+  "numberOfParallelChunksPerDownload": "Adadin madaidaitan gungu-gungu a kowane zazzagewa",
+  "okay": "Lafiya",
+  "oldestFirst": "Mafi tsufa na farko",
+  "oledMode": "Yanayin Oled",
+  "onMyList": "A Jerin Nawa",
+  "oneOptionPerLineLikeHwdec": "Zaɓi ɗaya akan kowane layi, kamar hwdec=auto ko sikeli=ewa_lanczossharp. Layukan da suka fara da # tsokaci ne. An yi watsi da bayanan martaba a cikin [brackets].",
+  "online": "Kan layi",
+  "openCloset": "Bude Katin",
+  "openInBrowser": "Bude a cikin Mai lilo",
+  "openSettings": "Bude Saituna",
+  "openSource": "Buɗe Source",
+  "openSupportedLinks": "Buɗe hanyoyin haɗin gwiwa",
+  "openTheDownloadsScreenFromThe": "Bude allon Zazzagewa daga menu",
+  "openVideoStreamInExternalPlayer": "Buɗe rafi na bidiyo a cikin ɗan wasa na waje ta tsohuwa",
+  "openWebview": "Bude Duba Yanar Gizo",
+  "openingsEndings": "Budewa & Ƙarshe",
+  "openslEsNativeAudioEngine": "Bude SL ES injin sauti na asali",
+  "options": "ZABI",
+  "order": "Oda",
+  "originalSize": "Girman Asali",
+  "otakuRankLevel": "Otaku Rank Level",
+  "other": "Sauran",
+  "otherFeatures": "Sauran Siffofin",
+  "otherRecommendations": "Sauran Shawarwari",
+  "otherStuffs": "Sauran Kaya",
+  "otherTemporaryFiles": "Sauran Fayilolin wucin gadi",
+  "otherWaysToSupport": "Sauran Hanyoyi don Tallafawa",
+  "others": "Wasu",
+  "outlineType": "Nau'in Shaci",
+  "overscroll": "Overscroll",
+  "overscrollToPrevNextChapter": "Matsala zuwa gaba/babi na gaba",
+  "overview": "Dubawa",
+  "overwrite": "Rubutu",
+  "pageAnimationDemo": "Shafi Animation Demo",
+  "pageReaderMode": "Yanayin Karatun Shafi",
+  "paged": "Shafin shafi",
+  "palette": "Palette",
+  "palettes": "Palettes",
+  "paragraphSpacing": "Tazarar Tsakanin Paragraf",
+  "parallelSegmentsForVideoDownloader": "Daidaitan sassan don mai saukar da bidiyo",
+  "password": "Kalmar wucewa",
+  "passwordProtectBackup": "Kare kalmar sirri Ajiyayyen",
+  "passwordRequired": "Ana Bukatar Kalmar wucewa",
+  "passwordsDontMatch": "Kalmomin sirri ba su daidaita ba!",
+  "pasteCustomImageUrl": "Manna URL na al'ada ...",
+  "pasteUrlHere": "Manna URL anan...",
+  "pathCopiedToClipboard": "An kwafi hanyar zuwa allo",
+  "payViaAnyUpiApp": "Biya ta kowane UPI App",
+  "paypalDonation": "Taimakon PayPal",
+  "paypalRecipientNotice": "Sanarwa Mai karɓar PayPal",
+  "penaltyDuration": "Tsawon Hukunci",
+  "performance": "Ayyuka",
+  "permissionsRequired": "Ana buƙatar izini",
+  "persistentPageIndicator": "Mai Nuna Shafin da Ke Tsaye",
+  "personalizeTheLookAndMakeIt": "Keɓance kamannin kuma sanya shi naku",
+  "personalizedRecommendations": "Shawarwari na musamman",
+  "platform": "Dandalin",
+  "playAroundWithAppTheme": "Yi wasa tare da taken App",
+  "playAroundWithTheVideoPlayer": "Yi wasa tare da mai kunna bidiyo",
+  "playback": "sake kunnawa",
+  "playbackSpeed": "Saurin Kunna",
+  "playbackSpeeds": "Saurin PlayBack",
+  "player": "Mai kunnawa",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Ikon mai kunnawa, fassarar magana, da zaɓin sake kunnawa",
+  "playerSettings": "Saitunan mai kunnawa",
+  "playerTheme": "Jigon wasan",
+  "playerThemes": "Jigogi masu wasa",
+  "pleaseChooseALogoFile": "Da fatan za a zaɓi fayil ɗin tambari.",
+  "pleaseEnterAPasswordOrDisable": "Da fatan za a shigar da kalmar sirri ko musaki kariyar kalmar sirri.",
+  "pleaseEnterASearchTerm": "Da fatan za a shigar da kalmar nema",
+  "pleaseEnterAUsernameToCompare": "Da fatan za a shigar da sunan mai amfani don kwatanta da.",
+  "pleaseGrantStoragePermissionToBrowse": "Da fatan za a ba da izinin ajiya don bincika fayilolin mai jarida ku",
+  "pleaseLoginFirst": "Da fatan za a fara shiga",
+  "pleaseLoginFirstToExportYour": "Da fatan za a fara shiga don fitarwa lissafin ku.",
+  "pleaseLoginToFavorite": "Da fatan za a shiga don fi so!",
+  "pleaseLoginToUseThisFilter": "Da fatan za a shiga don amfani da wannan tacewa!",
+  "pleaseProvideAReasonForThis": "Da fatan za a ba da dalilin wannan aikin",
+  "pleaseRestartTheAppToApply": "Da fatan za a sake kunna app don aiwatar da canje-canje.",
+  "pleaseSelectABackupFileFirst": "Da fatan za a fara zaɓar fayil ɗin madadin tukuna",
+  "pleaseSelectAValidApkFile": "Da fatan za a zaɓi fayil ɗin apk mai aiki.",
+  "pleaseSelectAValidJarFile": "Da fatan za a zaɓi ingantaccen fayil na JAR.",
+  "pleaseSelectAtLeastOneItem": "Da fatan za a zaɓi aƙalla abu ɗaya don adanawa.",
+  "pleaseSelectAtLeastOneItemTo": "Da fatan za a zaɓi aƙalla abu ɗaya don maidowa.",
+  "pleaseWriteAtLeast30Characters": "Da fatan za a rubuta aƙalla haruffa 30",
+  "pluginInstallationSync": "Shigar da Plugin & Aiki tare",
+  "pluginIsAlreadyUpToDate": "Plugin ya riga ya sabunta.",
+  "pluginJarCopiedPleaseRestartThe": "Kwafi gwangwani. Da fatan za a sake kunna app.",
+  "pluginNotInstalled": "Ba a shigar da plugin ba",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "An sake sauke plugin cikin nasara. Da fatan za a sake farawa don nema.",
+  "pluginReDownloadedPleaseRestartThe": "An sake saukewa plugin. Da fatan za a sake kunna app don amfani.",
+  "pluginSyncedFromLocalApk": "Plugin da aka daidaita daga apk na gida.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (Max 20MB)",
+  "popular": "Shahararren",
+  "popularAnime": "Shahararren Anime",
+  "popularAnimes": "Shahararrun Anime",
+  "popularManga": "Shahararren Manga",
+  "posterBlurMode": "Yanayin Hoto",
+  "posterBlurScope": "Matsakaicin Ƙirar Hoto",
+  "poweredByAnimatch16PointCompatibility": "Ƙaddamar da AniMatch 16-maki 16 daidaita daidaito a cikin AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Ƙarfafawa ta Commentum v2 - Babban tsarin sharhi tare da daidaitawa",
+  "preferences": "Abubuwan da ake so",
+  "preferencesSystem": "Zaɓuɓɓuka & Tsari",
+  "preferredSubtitleLanguage": "Harshen Magana da aka Fi so",
+  "preparingImageToShare": "Ana shirya hoto don raba...",
+  "preparingStream": "Ana shirya rafi",
+  "presetProviders": "MASU BAYAR DA PRESET",
+  "preventScreenFromSleeping": "Hana allo barci",
+  "preview": "Dubawa",
+  "previewUpper": "GABATARWA",
+  "privacySafety": "Keɓantawa & Tsaro",
+  "privacySettingsAndSafetyFeatures": "Saitunan keɓantawa da fasalulluka na aminci",
+  "private": "Na sirri",
+  "privateEntry": "Shigowar sirri",
+  "profileEffects": "Tasirin Bayanan Martaba",
+  "profileIcon": "Alamar bayanin martaba",
+  "progress": "Ci gaba",
+  "progressHistory": "Ci gaba & Tarihi",
+  "proposeNewFeaturesReportBugsAnd": "Ba da shawarar sabbin abubuwa, bayar da rahoton kurakurai, da yin taɗi tare da sauran membobin",
+  "protocol": "PROTOCOL",
+  "proxy": "Wakili",
+  "proxyConfiguration": "Kanfigareshan wakili",
+  "pulseaudioSoundServer": "PulseAudio uwar garken sauti",
+  "queryRemoteRepositoryForAddOn": "Neman ma'ajiyar nisa don ƙarin sabuntawa",
+  "queuedForDownload": "An yi layi don saukewa",
+  "quickSelectFollowing": "Zaɓin Saurin (Bi)",
+  "radiusMultiplier": "Mai Ninka Kewaye",
+  "random": "Bazuwar",
+  "range": "Rage",
+  "rank": "Daraja",
+  "rating": "Rating",
+  "reDownloadAndReinstallThePlugin": "Sake saukewa kuma sake shigar da plugin ɗin daga karce",
+  "read": "Karanta",
+  "readArticle": "Karanta Mukala",
+  "readLatestUpdatesAboutThisAnime": "Karanta sabbin abubuwan sabuntawa game da wannan anime",
+  "readLatestUpdatesAboutThisManga": "Karanta sabbin abubuwa game da wannan manga",
+  "readOnePageAtATime": "Karanta shafi ɗaya a lokaci ɗaya",
+  "readAheadDurationInMinutes": "Tsawon karatun gaba a cikin mintuna",
+  "readaheadSeconds": "Kara karantawa dakika",
+  "reader": "Mai karatu",
+  "readerBackgroundOpacity": "Fahimtar bayanan mai karatu",
+  "readerControlTheme": "Jigon Kula da Karatu",
+  "readerPreferences": "Zabi Mai Karatu",
+  "readerSettings": "Saitunan Karatu",
+  "readingDirection": "Hanyar Karatu",
+  "readingLayout": "Tsarin Karatu",
+  "readingManga": "Karatun Manga",
+  "readingMangaPhrasing": "Karatun Maganar Manga",
+  "readingNovel": "Karatun Novel",
+  "readingNovelPhrasing": "Karatun Novel Jumla",
+  "realTime4kUpscalingForAnime": "Haɓakawa na ainihin lokacin 4K don abun ciki na anime",
+  "reason": "Dalili",
+  "reasonDeleted": "Dalilin share.",
+  "reasonUpdated": "Dalilin sabunta!",
+  "recentActivity": "Ayyukan kwanan nan",
+  "recentMediaComments": "Sharhin Kafofin watsa labarai na baya-bayan nan",
+  "recentNews": "Labarai na baya-bayan nan",
+  "recentSearches": "Bincike na baya-bayan nan",
+  "recentlyCompleted": "An Kammala Kwanan nan",
+  "recentlyUpdated": "An sabunta kwanan nan",
+  "recommend": "Shawara",
+  "recommendationSubmitted": "An ƙaddamar da shawarwarin! 🎉",
+  "recommended": "Nasiha",
+  "recommendedAnime": "Anime shawarar",
+  "recommendedBy": "Nasiha daga",
+  "recommendedManga": "Nasiha Manga",
+  "recommendedNovels": "Nasihar Novels",
+  "reduceColorBandingArtifacts": "Rage kayan haɗakar launi",
+  "refreshComments": "Sake tsokaci",
+  "refreshRate": "Matsakaicin Sassauta",
+  "relations": "Dangantaka",
+  "releaseDate": "Ranar Fitarwa",
+  "releaseYear": "Shekarar Fitarwa",
+  "releaseYearStats": "Kididdigar Shekarar Saki",
+  "rememberMyChoice": "Ka tuna zabina",
+  "rememberServer": "Tuna Sabar",
+  "removalRequestSentToAdminsFor": "An aika buƙatar cirewa ga admins don dubawa.",
+  "remove": "Cire",
+  "removeBanner": "Cire Tuta",
+  "removeDecoration": "Cire Ado",
+  "removeEffect": "Cire Tasiri",
+  "removeFromHistory": "Cire daga Tarihi",
+  "removeItems": "Cire Abubuwan",
+  "removeNameplate": "Cire Farantin Suna",
+  "removeTheme": "Cire Jigo",
+  "removeWhiteBlackBorders": "Cire iyakoki fari/baƙar fata",
+  "removeYourReason": "Cire Dalili?",
+  "rename": "Sake suna",
+  "renameList": "Sake suna Jerin",
+  "reorderNavigationTabs": "Sake yin oda Tabs Kewayawa",
+  "replaceExistingDataOnThisDevice": "Maye gurbin data kasance akan wannan na'urar tare da madadin",
+  "replay": "Sake kunnawa",
+  "reportsQueue": "Layinda Rahotanni",
+  "repositories": "Wuraren ajiya",
+  "repositoryUrl": "Wurin ajiya URL",
+  "repositoryUrlUpper": "URL MAKARANTA",
+  "requests": "Bukatu",
+  "requiredForCoreAndVisualTuning": "Da ake buƙata don Core da Visual tuning. Ci gaba a kan ƙananan na'urori.",
+  "reset": "Sake saiti",
+  "resetUpper": "Sake saitin",
+  "resetDownloadPath": "Sake saita Hanyar Zazzagewa",
+  "resetNovelReaderSettings": "Sake saita Saitunan Karatun Novel",
+  "resetToDefault": "Sake saita zuwa tsoho",
+  "resetToDefault2": "Sake saita zuwa Tsoffin",
+  "resetToDefaultPicture": "Sake saita zuwa Tsoffin Hoto",
+  "resetToDefaultWallpaper": "Sake saita zuwa tsohuwar fuskar bangon waya!",
+  "resizeMode": "Yanayin Gyara",
+  "resizeModes": "Matsakaicin Yanayin",
+  "resolution": "Ƙaddamarwa",
+  "resolve": "Gyara",
+  "restartTheAppToApplyThe": "Sake kunna aikace-aikacen don amfani da sabuntawar.",
+  "restoreAllNovelReaderDefaults": "Mayar da duk abubuwan da suka dace na karatun novel",
+  "restoreData": "Mayar da Bayanai",
+  "restorePreview": "Mayar da Preview",
+  "restoreToDefaultInternalStorage": "Dawo zuwa tsoffin ma'ajiyar ciki",
+  "restoringWillOverwriteYourSelectedLocal": "Maidowa zai sake rubuta abubuwan da aka zaɓa na ɗakin karatu na gida da saitunan tare da abubuwan da ke cikin wannan madadin.",
+  "restrictMessagesToFollowing": "Ƙuntata Saƙonni Zuwa Bibiya",
+  "results": "Sakamako",
+  "resultsWillAppearGroupedByExtension": "Sakamako zai bayyana a hade tare da tsawo",
+  "retainOriginalColor": "Rike Asalin Launi",
+  "retry": "Sake gwadawa",
+  "rightSide": "Gefen Dama",
+  "riseAndShine": "Tashi da haske",
+  "roleUpdatedSuccessfully": "An sabunta rawar cikin nasara",
+  "roleAll": "Matsayi: Duka",
+  "rollbackVersion": "Sigar Rollback",
+  "romajiTitle": "Romaji Title",
+  "roundUpScores": "Zagaye Up Maki",
+  "runtimeHost": "Runtime Mai watsa shiri",
+  "runtimeHostReleases": "Sakin Runtime Mai Runduna",
+  "runtimeHostRequired": "Ana Bukatar Mai watsa shiri lokacin gudu",
+  "safetyFeatures": "Siffofin aminci:",
+  "saturation": "Jikewa",
+  "sauceSearcher": "Mai Neman miya",
+  "save": "Ajiye",
+  "saveEquip": "Ajiye & Kayan aiki",
+  "saveChanges": "Ajiye canje-canje",
+  "saveChanges2": "Ajiye Canje-canje",
+  "saveLastFrame": "Ajiye Tsarin Ƙarshe",
+  "saveLogo": "Ajiye Logo",
+  "savedAnimeEntriesAndProgress": "An adana shigarwar anime da ci gaba",
+  "savedLightNovelsAndReadingState": "Ajiye litattafan haske da yanayin karatu",
+  "savedMangaEntriesAndChapters": "An adana shigarwar manga da surori",
+  "savedStreamLinkHasExpiredFetching": "Hanyar hanyar rafi da aka ajiye ta ƙare. Ana samun sabon hanyar haɗi...",
+  "savesAScreenshotOfTheLast": "Ajiye hoton hoto na firam na ƙarshe da kuka kallo. Kashe wannan yana rage yawan amfani da ajiya",
+  "scaleFactor": "Factor Sikeli",
+  "scalingAlgorithm": "Hanyar Auna Girma",
+  "scanningForMoreServers": "Ana dubawa don ƙarin sabobin...",
+  "scanningForVideoStreams": "Ana duba rafukan bidiyo...",
+  "score": "Maki",
+  "scoreDistribution": "Rarraba Maki",
+  "scoringSystem": "Tsarin Maki",
+  "search": "Bincika",
+  "searchUpper": "BINCIKE",
+  "searchAcrossExtensions": "Bincika a fadin kari...",
+  "searchAnimeMovies": "Bincika anime, fina-finai...",
+  "searchAnime": "Nemi anime...",
+  "searchExtensions": "Nemo kari",
+  "searchExtensionsEllipsis": "Neman kari...",
+  "searchFailed": "Bincike ya kasa",
+  "searchForAnime": "Bincika anime",
+  "searchInHistory": "Bincika a Tarihi...",
+  "searchInLibrary": "Bincika a Laburare...",
+  "searchItemsInList": "Bincika abubuwa a cikin jerin...",
+  "searchManga": "Nemi manga...",
+  "searchQuery": "Neman Tambaya",
+  "searchSources": "Bincika kafofin...",
+  "searchTags": "Bincika alamun...",
+  "searchUser": "Nemi mai amfani",
+  "searchingDatabase": "Neman bayanan bayanai...",
+  "searching": "Neman...",
+  "season": "Kaka",
+  "seasons": "Lokaci",
+  "secondsPerScreenLowerIsFaster": "Daƙiƙa a kowane allo (ƙananan yana da sauri)",
+  "secondsPerScreenPageLowerIs": "Daƙiƙa a kowane allo/shafi (ƙananan yana da sauri)",
+  "securityEncryption": "Tsaro & Rufewa",
+  "seePeopleWhoContributedToAnymex": "Dubi mutanen da suka ba da gudummawa ga AnymeX",
+  "selectAFolderWhereAnymexWill": "Zaɓi babban fayil inda AnymeX zai adana abubuwan anime da aka zazzage ku da surori manga.",
+  "selectAnAnimeScreenshotToFind": "Zaɓi hoton anime don nemo tushen sa",
+  "selectAnilistMyanimelistSimklOrExtensions": "Zaɓi AniList, MyAnimeList, Simkl, ko Yanayin kari",
+  "selectDataToIncludeInThis": "Zaɓi bayanai don haɗawa a cikin wannan madadin",
+  "selectDirectory": "Zaɓi Jagora",
+  "selectExtensions": "Zaɓi kari",
+  "selectFolder": "Zaɓi Jaka",
+  "selectLanguage": "Zaɓi Harshe",
+  "selectMediaDirectory": "Zaɓi Jagorar Mai jarida",
+  "selectNovelSource": "Zaɓi Tushen Novel",
+  "selectProfile": "ZABEN PROFILE",
+  "selectRange": "Zaɓi Range",
+  "selectServer": "Zaɓi uwar garken",
+  "selectStatus": "Zaɓi Matsayi",
+  "selectSubtitleFont": "Zaɓi Font Subtitle",
+  "selectTags": "Zabi TAGS",
+  "selectTimezone": "Zaɓi Yankin Lokaci",
+  "selectVersionToRollback": "Zaɓi Siga don Juyawa",
+  "selectVideoFile": "Zaɓi Fayil na Bidiyo",
+  "selectYourPreferredContentSource": "Zaɓi tushen abun ciki da kuka fi so",
+  "selectedCacheCleared": "An share cache da aka zaɓa",
+  "selectedItemsRemoved": "An cire abubuwan da aka zaɓa",
+  "sensitiveLoginTokensForMalSimkl": "Alamun shiga masu hankali don MAL, Simkl, da AniList",
+  "sensitiveSessionTokensForMalSimkl": "Alamu masu ma'ana don MAL, Simkl, da AniList",
+  "separateCompletedAnimeListIntoSections": "Rarrabe jerin anime da aka kammala zuwa sassa ta tsari.",
+  "separateCompletedMangaListIntoSections": "Rarrabe jerin manga da aka kammala zuwa sassa ta tsari.",
+  "serverDetails": "BAYANIN SABABBIN",
+  "serverChanIsTakingANap": "Server-chan yana hutawa!",
+  "setUpYourPreferencesForThe": "Saita abubuwan da kuka zaɓa don ƙwarewa mafi kyau",
+  "settings": "Saituna",
+  "settingsAccount": "Saituna & Asusu",
+  "settingsAuthentication": "Saituna & Tabbatarwa",
+  "settingsSavedSuccessfully": "An ajiye saituna cikin nasara.",
+  "shaderProfilesInitialized": "An Ƙaddamar da Bayanan Shader",
+  "shadowBanUser": "Shadow Ban User",
+  "shareLogs": "Raba rajistan ayyukan",
+  "shareMatchCard": "Raba Katin Match",
+  "shareProfile": "Raba Bayanan martaba",
+  "shareTheSavedLogFileOr": "Raba fayil ɗin log ɗin da aka ajiye ko kwafi abinda ke ciki.",
+  "sharedFromAnymex": "An raba daga AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Nuna tasirin tasiri mai rai akan tutocin bayanan martaba",
+  "showAnimatedFramesAroundUserAvatars": "Nuna firam masu rai a kusa da avatar masu amfani",
+  "showBatteryTime": "Nuna Baturi & Lokaci",
+  "showChapterTransitionEvenWithoutGaps": "Nuna canjin babi ko da ba tare da gibi ba",
+  "showCommunityRecommendations": "Nuna Shawarwari na Al'umma",
+  "showContinueWatchingCard": "Nuna Ci gaba da Kallon Katin",
+  "showContinueWatchingOnHome": "Nuna Ci gaba da Kallo akan Gida",
+  "showCustomProfileBannersFallsBack": "Nuna tutocin bayanin martaba na al'ada (ya koma murfin AniList idan a kashe)",
+  "showNameplateBackgroundsOnCommentCards": "Nuna bayanan farantin suna akan katunan sharhi da allon jagora",
+  "showOnLeft": "Nuna a hagu",
+  "showOnRight": "Nuna akan dama",
+  "showReadingProgress": "Nuna Ci gaban Karatu",
+  "showTimestamps": "Nuna Tamburan Lokaci",
+  "simpleCompactListView": "Sauƙaƙan ƙanƙantar lissafin duba",
+  "simpleDirectmediaLayerAudioOutput": "Sauƙaƙe fitowar mai jiwuwa Layer DirectMedia",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Sauƙaƙan shimfidar wuri mai nuna lambar aukuwa, take, da ci gaba ba tare da ɗan yatsa ba",
+  "sizeMode": "Yanayin Girma:",
+  "smartMangaSuggestions": "Smart manga shawarwari",
+  "smootherMotionCanIncreaseGpuUsage": "Motsi mai laushi, na iya ƙara yawan amfanin GPU",
+  "social": "Zamantakewa",
+  "somethingWentWrong": "Wani abu ya faru",
+  "sort": "TSIRA",
+  "sort2": "Tsara",
+  "sortBy": "SARA TA",
+  "sortBy2": "Tsare Ta",
+  "sortComments": "Tsara sharhi",
+  "source": "Source",
+  "sourceAndPluginConfigurations": "Tushen tushe da saitunan plugin",
+  "sourcePreferences": "Zaɓuɓɓukan Tushen",
+  "spaceBetweenLetters": "sarari tsakanin haruffa",
+  "spaceBetweenParagraphs": "Tara tsakanin sakin layi",
+  "spaceBetweenWords": "sarari tsakanin kalmomi",
+  "spacedPages": "Shafukan da aka raba",
+  "splitCompletedAnimeList": "Raba Kammala Jerin Anime",
+  "splitCompletedMangaList": "Raba Kammala Jerin Manga",
+  "spoiler": "Mai ɓarna",
+  "spoilerTapToReveal": "Mai ɓarna (matsa don bayyana)",
+  "staff": "Ma'aikata",
+  "staffCharacterNameLanguage": "Harshen Sunan Ma'aikata & Harafi",
+  "standardGpuRendering": "Daidaitaccen ma'anar GPU",
+  "starOnGithub": "Tauraro akan GitHub",
+  "startANewDownloadFromThe": "Fara sabon zazzagewa daga shafin \"Sabon Zazzagewa\"",
+  "startChapter": "Fara Babi",
+  "startDate": "Ranar farawa",
+  "startMangaDownload": "Fara Sauke Manga",
+  "startTest": "Fara Gwaji",
+  "startingExtensionRuntime": "Fara tsawaita lokacin gudu...",
+  "statistics": "Kididdiga",
+  "stats": "Ƙididdiga",
+  "status": "Matsayi",
+  "statusDistribution": "Rarraba Matsayi",
+  "statusPostedSuccessfully": "An buga matsayi cikin nasara!",
+  "stayUpdatedWithTheLatestReleases": "Ci gaba da sabuntawa tare da sabbin abubuwan sakewa, sanarwa, da tattaunawa",
+  "storagePath": "Adana & Hanya",
+  "storageManager": "Manajan ajiya",
+  "storageOptions": "Zaɓuɓɓukan ajiya",
+  "storagePermission": "Izinin ajiya",
+  "storagePermissionIsRequiredToDownload": "Ana buƙatar izinin ajiya don zazzage sabuntawa",
+  "storagePermissionRequired": "Ana Bukatar Izinin Ajiya",
+  "streakCurLong": "Streak (Cur/Dogon)",
+  "stretchImagesToFitScreenWidth": "Miƙe hotuna don dacewa da faɗin allo",
+  "strikethrough": "Ci gaba",
+  "studios": "Studios",
+  "style": "SALO",
+  "subtitleBackgroundColor": "Launuka Fassarar Magana",
+  "subtitleColor": "Launuka Subtitle",
+  "subtitleFont": "Rubutun rubutun rubutu",
+  "subtitleOutlineColor": "Launuka Ƙirar Ƙarfafawa",
+  "subtitleOutlineWidth": "Fadin Fassarar Fassarar Takaddama",
+  "subtitlePreview": "Duban taken taken",
+  "subtitlePreviewText": "Rubutun Preview Subtitle",
+  "subtitleSize": "Girman Subtitle",
+  "subtitleTransparency": "Fassarar Subtitle",
+  "subtitles": "Subtitles",
+  "summary": "Takaitawa",
+  "superAdmin": "Babban Shugaba",
+  "supportTtfAndOtfFiles": "Goyan bayan fayilolin .ttf da .otf",
+  "supportAnymex": "Taimakawa AnymeX",
+  "supportedModes": "Hanyoyi masu goyan baya",
+  "supportedUpiApps": "Ayyukan UPI masu goyan baya",
+  "suppressActivityWhenWatchingOrReading": "Matse ayyuka lokacin kallo ko karanta abun ciki na NSFW",
+  "swapUpDownActions": "Musanya sama/sasa ayyuka",
+  "swipeBetweenChapters": "Dogara Tsakanin Babi",
+  "swipeIndicatorTheme": "Jigon Mai Nuna Sharar Hannu",
+  "swipeToSeek": "Dokewa don Nema",
+  "switchBetweenDefaultTitleAndRomaji": "Canja tsakanin tsoho take da romaji/madadin take a fadin laburare & katunan",
+  "switchToOnline": "Canja zuwa Kan layi",
+  "syncCompletedButThePluginIs": "An gama daidaitawa, amma plugin ɗin bai shirya ba tukuna.",
+  "syncDetails": "Bayanan Daidaitawa",
+  "syncFailed": "An gaza daidaitawa",
+  "synonyms": "Makamantu",
+  "synopsis": "Takaitaccen bayani",
+  "tags": "TAGS",
+  "tags2": "Tags",
+  "takeColorFromYourWallpaperA12": "Ɗauki launi daga fuskar bangon waya (A12+)",
+  "tapToAddARepositoryUrl": "Matsa + don ƙara URL ɗin ajiya",
+  "tapAZoneToChangeIts": "Matsa yanki don canza aikinsa",
+  "tapAction": "Matsa Aiki",
+  "tapToChooseASource": "Matsa don zaɓar tushen",
+  "tapToLogin": "Matsa don shiga",
+  "tapToLogout": "Matsa don fita",
+  "tapToScroll": "Matsa don Gungurawa",
+  "tapYourProfileIconInThe": "Matsa alamar bayanin ku a saman mashaya app",
+  "tapZones": "Matsa Yankuna",
+  "tellTheCommunityWhyThisDeserves": "Faɗa wa al'umma dalilin da ya sa wannan ya cancanci ƙarin kulawa.",
+  "temporaryAppCache": "Cache App na wucin gadi",
+  "termsOfServicePrivacyPolicy": "Sharuɗɗan Sabis/Manufar Keɓantawa",
+  "test": "Gwaji",
+  "testExtensions": "Gwaji Extensions",
+  "testResults": "Sakamakon Gwaji",
+  "testType": "Nau'in Gwaji",
+  "textSize": "Girman rubutu",
+  "theme": "Jigo",
+  "themeLayoutAndColors": "Jigo, shimfidawa, da launuka",
+  "themes": "Jigogi",
+  "thisBackupIsEncryptedPleaseEnter": "An rufaffen wannan madadin. Da fatan za a shigar da kalmar wucewa don ci gaba.",
+  "thisDirectoryContainsNoSupportedMedia": "Wannan jagorar ya ƙunshi fayilolin mai jarida da aka goyan baya",
+  "thisMayTakeAFewSeconds": "Wannan na iya ɗaukar 'yan daƙiƙa kaɗan",
+  "thisMayTakeUpTo30": "Wannan na iya ɗaukar har zuwa daƙiƙa 30",
+  "thisMightTakeAFewSeconds": "Wannan na iya ɗaukar 'yan daƙiƙa kaɗan",
+  "thisReasonWillBeDeletedImmediately": "Za a share wannan dalilin nan da nan.",
+  "thisWillPermanentlyDeleteAllData": "Wannan zai share duk bayanan da aka adana na AnymeX har abada. Ba za a iya soke wannan ba.",
+  "tipYouCanCombineTheseE": "Tukwici: Kuna iya haɗa waɗannan! misali ** m da *italic* tare**",
+  "title": "Take",
+  "titleCopied": "An kwafi taken",
+  "titleLanguage": "Harshen Take",
+  "toDownloadForTheFirstTime": "Don saukewa a karon farko, ba da izini ta ziyartar shafin Zazzagewa da farko:",
+  "toggleBetweenGridAndDetailedList": "Canja tsakanin grid da cikakken jeri",
+  "toneMapping": "Taswirar Sautin",
+  "topAnime": "Babban Anime",
+  "topComments": "Manyan maganganu",
+  "topGenres": "Manyan nau'ikan",
+  "topManga": "Babban Manga",
+  "topManhua": "Babban Manhua",
+  "topManhwa": "Babban Manhwa",
+  "topStudios": "Manyan Studios",
+  "torrentServer": "Torrent Server",
+  "torrentStreamCache": "Ma'ajiyar Gudun Torrent",
+  "torrserverStreamingAddOns": "TorrServer & ƙara-kan yawo",
+  "totalChapters": "Jimlar Babi",
+  "totalCost": "Jimlar Kudin:",
+  "totalItems": "Jimlar Abubuwa",
+  "track": "Waƙa",
+  "trackAiringSchedules": "Bibiyar jadawalin isar da sako",
+  "trackYourProgress": "Bibiyar ci gaban ku?",
+  "trackingServices": "Sabis na Bibiya",
+  "transitionSubtitle": "Juyin Juya Hali",
+  "translateTo": "Fassara Zuwa",
+  "translationLanguage": "Harshen Fassara",
+  "translucentNav": "Translucent Nav",
+  "trendingAnime": "Anime Trending",
+  "trendingAnimes": "Animes masu tasowa",
+  "trendingManga": "Trending Manga",
+  "tryADifferentKeyword": "Gwada wata maɓalli daban",
+  "tryAdjustingYourFilters": "Gwada daidaita matattarar ku",
+  "tryAgain": "Sake gwadawa",
+  "tryDifferentAnimationStylesForPage": "Gwada salon raye-raye daban-daban don mashigan shafi",
+  "ttsAutoAdvance": "TTS Auto Advance",
+  "ttsPitch": "Karin Sautin TTS",
+  "ttsSpeed": "Farashin TTS",
+  "tweakGeneralAppSettings": "Tweak na gaba ɗaya saitunan app",
+  "typeLabel": "Nau'in",
+  "typeAtLeast2CharactersTo": "Buga aƙalla haruffa 2 don bincika",
+  "ui": "UI",
+  "uiComponents": "Abubuwan UI",
+  "uiLayoutColorsAndThemes": "Tsarin UI, launuka, da jigogi",
+  "uiLayoutColorsAndVisualStyles": "Tsarin UI, launuka, da salon gani",
+  "uiSettings": "Saitunan UI",
+  "unableToPreparePlaybackRightNow": "An kasa shirya sake kunnawa a yanzu. Da fatan za a sake gwadawa.",
+  "unbanUser": "Cire Mai Amfani",
+  "unbind": "Cire daurin",
+  "unifiedLibrary": "Haɗaɗɗen Laburare",
+  "uninstall": "Cire shigarwa",
+  "universal": "Universal",
+  "unlock": "Buɗe",
+  "unlockCustomizations": "Buɗe Keɓancewa",
+  "unmuteUser": "Cire mai amfani",
+  "unreadOnly": "Rashin karantawa kawai",
+  "upcomingAnime": "Anime mai zuwa",
+  "update": "Sabuntawa",
+  "updateAll": "Sabunta Duk",
+  "updateCheckComplete": "An kammala rajistan sabuntawa",
+  "updateOnImport": "Sabuntawa akan Shigowa",
+  "updateToLatestVersion": "Sabunta zuwa Sabbin Sigar",
+  "updateYourActivity": "Sabunta ayyukanku...",
+  "updatesPending": "Ana jiran sabuntawa",
+  "upiDonation": "Kyautar UPI",
+  "uploadAnImageToGetStarted": "Loda hoto don farawa",
+  "uploadImage": "Loda Hoto",
+  "urlCopiedToClipboard": "An kwafi URL zuwa allo",
+  "usage": "Amfani:",
+  "useAiToTranslateSoftSubtitles": "Yi amfani da AI don fassara sassauƙan rubutu kai tsaye",
+  "useAlternateTitle": "Yi amfani da Madadin Take",
+  "useBuffering": "Yi amfani da Buffering",
+  "useCustomGesturesForReaderNavigation": "Yi amfani da motsin motsi na al'ada don kewayawa mai karatu",
+  "useEnhancedEpisodeMetadataAndCovers": "Yi amfani da ingantaccen metadata da murfi",
+  "useExternalPlayer": "Yi amfani da Wasan Waje",
+  "useKeyboardShortcutsDuringPlaybackTo": "Yi amfani da gajerun hanyoyin keyboard yayin sake kunnawa don canza bayanan martaba",
+  "useLegacyHeader": "Yi amfani da Legacy Header",
+  "useLibassForSubtitles": "Yi amfani da Libass don Rubutun Labarai",
+  "useLibmpvForPlayback": "Yi amfani da LibMpv don sake kunnawa",
+  "useMpvConf": "Yi amfani da mpv.conf",
+  "usePosterColor": "Yi amfani da Launin Poster",
+  "useVolumeKeysToChangePages": "Yi amfani da maɓallin ƙara don canza shafuka",
+  "useYearRange": "Amfani da Range na Shekara",
+  "user": "Mai amfani",
+  "userIdCopiedToClipboard": "An kwafi ID na mai amfani zuwa allo",
+  "userList": "Jerin masu amfani",
+  "userManagement": "Gudanar da Mai amfani",
+  "userCreatedCustomMediaCollections": "Tarin kafofin watsa labarai na al'ada da mai amfani ya ƙirƙira",
+  "username": "Sunan mai amfani",
+  "verifyTlsCertificates": "Tabbatar da takaddun shaida na TLS",
+  "versionCopied": "An kwafi sigar",
+  "vertical": "A tsaye",
+  "videoPlayer": "Mai kunna Bidiyo",
+  "videoRenderer": "Mai Sauraron Bidiyo",
+  "videoSync": "Daidaita Bidiyo",
+  "viewAndFilterAllUsers": "Duba ku tace duk masu amfani",
+  "viewOnAnilist": "Duba AniList",
+  "viewOpeningAndEndingThemes": "Duba jigogi na buɗewa da ƙarewa",
+  "viewProfile": "Duba Bayanan martaba",
+  "viewSourceCodeOnGithub": "Duba lambar tushe akan github.",
+  "viewTheChronologicalWatchOrderOf": "Duba tsarin agogon lokaci na wannan anime",
+  "viewUser": "Duba Mai amfani",
+  "viewUserRankingsTopContributorsReputation": "Duba martabar mai amfani, manyan masu ba da gudummawa & suna",
+  "viewingAnimeDetails": "Duba cikakkun bayanan Anime",
+  "viewingMangaDetails": "Duba cikakkun bayanai na Manga",
+  "viewingNovelDetails": "Kallon Cikakken Bayanin Novel",
+  "visibleTabs": "Shafukan bayyane",
+  "visitGithubReleasesPageForChangelogs": "Ziyarci shafin saki na GitHub don canje-canje da zazzagewar hannu",
+  "visualFromAnymex": "Na gani daga AnymeX",
+  "voiceActors": "Masu Sauraron Murya",
+  "voicedCharacters": "Halayen Murya",
+  "volumeButtonScrolling": "Gungura Maɓallin Ƙara",
+  "volumeKeysNavigation": "Maballan Sauti don Kewaya",
+  "volumes": "LITTAFI",
+  "volumesRead": "Juzu'i Karatu",
+  "votes": "Ƙuri'u",
+  "wWhatAreYouDoingStep": "W-me kake yi step-bro, shiga kafin kayi haka (●'⌓`●)",
+  "wallpaper": "Wallpaper",
+  "warnUser": "Gargadi Mai Amfani",
+  "warning": "Gargadi",
+  "wasThisHelpful": "Wannan ya taimaka?",
+  "watchAd": "Kalli Ad",
+  "watchAnAdToSupport": "Kalli Ad don Tallafawa",
+  "watchAnime": "Watch Anime",
+  "watchOrder": "Watch Order",
+  "watchTogether": "Kallon Tare",
+  "watchTogetherPolicy": "Manufar Kallon Tare",
+  "watchingAnime": "Kallon Anime",
+  "watchingAnimePhrasing": "Kallon Kalmomin Anime",
+  "welcomeToAnymex": "Barka da zuwa AnymeX",
+  "whatsOnYourMind": "Menene a ranka?",
+  "whenEnabledAnymexSavesLogsLocally": "Lokacin da aka kunna, AnymeX yana adana rajistan ayyukan gida har sai an kashe shi.",
+  "whyAreYouRecommendingThisMin": "Me yasa kuke ba da shawarar wannan? (minti 30)",
+  "whyIsThisUnderratedMin30": "Me ya sa wannan ba a ƙima ba? (minti 30)",
+  "windowsAudioSessionApi": "API ɗin Zama Audio na Windows",
+  "wordSpacing": "Tazarar Kalma",
+  "writeAMessage": "Rubuta sako...",
+  "writeLogToAFile": "Rubuta log zuwa fayil",
+  "writeYourAnilistBio": "Rubuta tarihin rayuwar ku na AniList...",
+  "wrongTitle": "Taken kuskure?",
+  "year": "Shekara",
+  "yearUpper": "SHEKARA",
+  "you": "Kai",
+  "youCanUseDiscordStyleMarkdown": "Kuna iya amfani da alamar Discord-style don tsara maganganunku:",
+  "youHaveUnsentTextClosingNow": "Kuna da rubutun da ba a aika ba. Rufewa yanzu zai rasa saƙonku.",
+  "youHaveUnsentTextClosingNowWill": "Kuna da rubutun da ba a aika ba. Rufewa yanzu zai rasa amsar ku.",
+  "youHaveUnsentTextClosingNowWillLose": "Kuna da rubutun da ba a aika ba. Rufewa yanzu zai rasa matsayin ku.",
+  "youNeedModeratorPermissionsToAccess": "Kuna buƙatar izinin gudanarwa don samun damar wannan rukunin",
+  "youreUpLate": "Kun makara",
+  "yourBalance": "Ma'aunin ku:",
+  "yourPrivacyIsImportant": "Sirrin ku yana da mahimmanci:",
+  "yourReasonHasBeenRemoved": "An cire dalilinku.",
+  "yourRecommendation": "Shawarar ku",
+  "yourRichPresenceActivityWillStop": "Ayyukan kasancewar ku mai albarka zai daina ɗaukakawa.",
+  "yourRole": "Matsayinku",
+  "yourWatchReadHistory": "Tarihin kallon ku & karantawa",
+  "yourWatchReadStatistics": "Kididdigar agogon ku & karantawa",
+  "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "Duk kayanka na gida",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "Ka tabbata?",
+  "aspectRatio": "Halayen Rabo",
+  "attackOnTitan": "Kai hari kan Titan",
+  "audio": "Audio",
+  "audioSubtitles": "Audio & Subtitles",
+  "audioTrack": "Waƙar Audio",
+  "audioTracks": "Waƙoƙin Sauti",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Auto (AudioTrack)",
+  "autoCoreaudio": "Auto (CoreAudio)",
+  "autoGpu": "Auto (GPU)",
+  "autoPulseaudio": "Auto (PulseAudio)",
+  "autoWasapi": "Auto (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Bloom",
+  "castToDevice": "Jefa zuwa Na'ura",
+  "colorFilter": "Tace Launi",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Aljani Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "Wasan Waje",
+  "files": "Fayiloli",
+  "forward": "Gaba",
+  "forward30s": "Gaba 30s",
+  "fullscreen": "Cikakken allo",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU na gaba (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Makullin Gudanarwa",
+  "lockOrientation": "Hanyar Kulle",
+  "mal": "MAL",
+  "materialYou": "Material Ka",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Kisan Dole",
+  "nextEp": "Na gaba Ep.",
+  "nextEpisode": "Kashi Na Gaba",
+  "nsfw": "NSFW",
+  "openslEs": "BudeSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Hoto a Hoto",
+  "playlist": "Jerin waƙa",
+  "previousEpisode": "Kashi Na Baya",
+  "pulseaudio": "PulseAudio",
+  "quality": "inganci",
+  "qualitySetting": "Saitin inganci",
+  "readingMode": "Yanayin Karatu",
+  "reddit": "Reddit",
+  "replay30s": "Maimaita 30s",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito dan Makomo",
+  "sdl": "SDL",
+  "server": "Sabar",
+  "servers": "Sabar",
+  "shadersColorProfiles": "Shaders & Bayanan Launuka",
+  "shadersColors": "Shaders & Launuka",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Matsayin Solo",
+  "speed": "Gudu",
+  "sw": "SW",
+  "syncSubs": "Abokan daidaitawa",
+  "syncSubtitles": "Sync Subtitles",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Kaza mai gudu ta tsallake kare mai kasala",
+  "themeMode": "Yanayin Jigo",
+  "thisIsFrustrating": "Wannan Abin Takaici ne",
+  "toYouSomeday": "Zuwa gare ku, wata rana",
+  "torrentFiles": "Fayilolin Torrent",
+  "tracks": "Waƙoƙi",
+  "unlockOrientation": "Buɗe Hanya",
+  "userAgent": "Mai amfani-Agent",
+  "videoQuality": "Ingantaccen Bidiyo",
+  "videoServers": "Sabbin Bidiyo",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Kallon Tare (A cikin Daki)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "0 yana nufin ƙididdige zaren atomatik",
+  "n18Content": "18+ Abun ciki",
+  "aboveAverageSimilarity": "Sama da matsakaicin kamanni.",
+  "account": "Asusu",
+  "activityStats": "Ayyuka & Ƙididdiga",
+  "add": "Ƙara",
+  "additionalNotesOptional": "Ƙarin bayanin kula (na zaɓi)",
+  "adjustKeyVolumeScrollingSpeed": "Daidaita Maɓalli & Saurin Gungura ƙara",
+  "alpha": "Alfa",
+  "alwaysChecksCurrentChapterNumberAnd": "Koyaushe bincika lambar babi na yanzu kuma yana kwatanta shi da babi na gaba/gaba, kewayawa kawai lokacin da lambar ta bambanta. Kewaya ta Babi kawai zai matsa zuwa abu na gaba a cikin jeri ko da akwai kwafi.",
+  "animeCompleted": "An Kammala Anime",
+  "announcementMode": "Yanayin Sanarwa",
+  "appIsStillLoadingTryAgain": "Har yanzu app yana lodawa, sake gwadawa ba da jimawa ba.",
+  "applyAColorTintOverPages": "Aiwatar da tint mai launi akan shafuka",
+  "audioDelay": "Jinkirta Sauti",
+  "audioSettings": "Saitunan Sauti",
+  "audioTrack2": "Waƙar sauti",
+  "autoAdvance": "Auto Advance",
+  "autoDeleteCompletedEntries": "Share abubuwan da aka kammala ta atomatik",
+  "autoSyncProgress": "Ci gaban daidaitawa ta atomatik",
+  "automaticallyMoveToNextText": "Matsar ta atomatik zuwa rubutu na gaba",
+  "automaticallyScrollAdvancePages": "Gungurawa/shafukan gaba ta atomatik",
+  "automaticallySwitchToContinuousModeFor": "Canza ta atomatik zuwa yanayin ci gaba don manga mai tsayi",
+  "averageOverlap": "Matsakaicin zoba.",
+  "background": "Fage",
+  "basedOnYourFavouriteAnime": "Dangane da anime da kuka fi so.",
+  "basedOnYourFavouriteManga": "Dangane da manga da kuka fi so.",
+  "basedOnYourTop10Manga": "Dangane da manyan alamun manga guda 10 na ku.",
+  "basedOnYourTop5Manga": "Dangane da manyan nau'ikan manga 5 na ku.",
+  "blue": "Blue",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "Akwai Sabunta Gada",
+  "brightness": "Haske",
+  "bulletList": "Jerin Harsashi",
+  "calendarUpper": "KAlandar",
+  "canadianMovies": "Fina-finan Kanada",
+  "canadianShows": "Nunin Kanada",
+  "cannotCompareTheSameProfileWith": "Ba za a iya kwatanta bayanin martaba ɗaya da kanta ba.",
+  "castToDevice2": "Jefa zuwa na'ura",
+  "chatModeration": "Tattaunawar Taɗi",
+  "chooseASubtitleFileFromYour": "Zaɓi fayil ɗin subtitle daga na'urarka (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Zaɓi yadda ake amfani da zaɓaɓɓen fayil ɗin JSON zuwa gist ɗin girgije na AnymeX ɗinku.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "Kayan aikin Cloud",
+  "code": "Lambar",
+  "commonFavouriteAnime": "Anime Da Aka Fi So",
+  "commonFavouriteCharacters": "Haruffan Fiyayyen Halitta",
+  "commonFavouriteManga": "Manga na gama-gari",
+  "commonPerfectAnime": "Cikakken Anime gama gari",
+  "commonPerfectManga": "Shahararren Manga",
+  "communityAdministratorOverseeingModerationAndPolicies": "Mai gudanar da al'umma yana kula da daidaitawa da manufofi.",
+  "connectGithubFirstBeforeDeletingSync": "Haɗa GitHub da farko kafin share bayanan aiki tare.",
+  "connectGithubFirstToExportSync": "Haɗa GitHub da farko don fitarwa bayanan aiki tare.",
+  "connectGithubFirstToImportSync": "Haɗa GitHub da farko don shigo da bayanan daidaitawa.",
+  "connectGithubFirstToSyncProgress": "Haɗa GitHub da farko don daidaita ci gaba.",
+  "connectGithubFirstToViewSync": "Haɗa GitHub da farko don duba sync gist.",
+  "continuousModeOnly2": "Yanayin Ci gaba kawai",
+  "controls": "Sarrafa",
+  "cookiesClearedSuccessfully": "An share kukis cikin nasara",
+  "copied": "Kwafi",
+  "copyUrl": "Kwafi URL",
+  "correctDownscaling": "Madaidaicin Downscaling",
+  "couldNotLoadStreamingServicesFrom": "An kasa loda ayyukan yawo daga AniList API.\nSabis ɗin na iya zama na ɗan lokaci babu shi ko iyakataccen ƙima.",
+  "couldNotOpenGistInBrowser": "Ba za a iya buɗe gist a browser ba.",
+  "created": "Ƙirƙiri",
+  "creatorAndDeveloperOfAnymex": "Mahalicci kuma mai haɓaka AnymeX.",
+  "customBrightness": "Hasken Al'ada",
+  "customizeGestures": "Keɓance motsin motsi",
+  "deband": "Deband",
+  "debandIterations": "Deband Iterations",
+  "debandThreshold": "Ƙaddamar da Deband",
+  "decreaseAutoScrollSpeed": "Rage saurin gungurawa ta atomatik",
+  "decreaseFontSize": "Rage Girman Font",
+  "deleteAnymexSyncGist": "A goge AnymeX Sync Gist?",
+  "deleteCloudGist": "Goge Cloud Gist",
+  "deleteCommentMod": "Share Sharhi (Mod)",
+  "details": "Cikakkun bayanai",
+  "dictionary": "Kamus",
+  "differenceFromOwnMeanScore": "Bambanci daga Makin Maki",
+  "disableChat": "Kashe Taɗi",
+  "disconnectThisGithubAccountFromAnymex": "Cire haɗin wannan asusun GitHub daga AnymeX",
+  "displayPagesInBlackWhite": "Nuna shafuka da baki & fari",
+  "downloading": "Ana saukewa…",
+  "downscaler": "Downscaler",
+  "dynamicWidget": "Widget mai ƙarfi",
+  "eInkDisplayRefresh": "Sabunta Allon E-ink",
+  "eGAbc123": "misali Saukewa: ABC123",
+  "eGMyAnimeLogo": "misali My Anime Logo",
+  "editYourComment": "Gyara sharhinku...",
+  "embeddedContent": "Abun ciki mai ciki",
+  "enterTheRoomPassword": "Shigar da kalmar sirrin dakin",
+  "enterTokenHere": "Shigar da alamar anan",
+  "error": "Kuskure",
+  "exitSyncNotifications": "Fita sanarwar daidaitawa",
+  "exportGistJson": "Fitar da Gist JSON",
+  "exportedGistJson": "Bayanin JSON.",
+  "failedToExportGistJson": "An kasa fitar da gist JSON.",
+  "failedToFetchDataFromSources": "An kasa debo bayanai daga tushe.",
+  "failedToGetCloudGistLink": "An kasa samun hanyar haɗin gist ɗin girgije.",
+  "failedToImportGistJson": "An kasa shigo da gist JSON.",
+  "failedToLaunchExternalPlayer": "An kasa ƙaddamar da ɗan wasan waje",
+  "failedToOpenGistInBrowser": "An kasa buɗe gist a browser.",
+  "flashDuration": "Tsawon Lokaci",
+  "flashEveryNPages": "Flash Kowane Shafi N",
+  "flashFrequency": "Mitar walƙiya",
+  "flashScreenOnPageTurnTo": "Filashin allo a shafi yana juya don share fatalwa",
+  "followHost": "Bi Mai watsa shiri",
+  "fontSettings": "Saitunan Font",
+  "freedomSeek": "Neman 'Yanci",
+  "friendsNeedAPasswordToJoin": "Abokai suna buƙatar kalmar sirri don shiga",
+  "githubClientIdNotConfigured": "GitHub ID abokin ciniki ba a saita shi ba.",
+  "githubLoginFailedMissingAuthorizationCode": "Shigar GitHub ya kasa: lambar izini ta ɓace.",
+  "githubLoginWasCancelledOrFailed": "An soke ko gaza shiga GitHub.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Nuna soyayyar ku",
+  "goodChemistryAndSharedTaste": "Chemistry mai kyau da dandano mai ban sha'awa.",
+  "grayscale": "Girman launin toka",
+  "green": "Kore",
+  "hdrToneMappingTargetPeak": "Tsarar Mafi Kololuwar HDR",
+  "higherValueIncreasesDebandingStrength": "Ƙimar da ta fi girma tana ƙãra ƙarfin rikidewa",
+  "horizontalPadding": "A kwance Padding",
+  "hoursWatched": "Awanni Kallon",
+  "howManyFriendsCanJoin": "Abokai nawa zasu iya shiga",
+  "ifYouHaveAnIssueOr": "idan kuna da wata matsala ko wata shawara don Allah a ba da matsala a github.",
+  "imageWidth": "Nisa Hoto",
+  "importGistJson": "Shigo da Gist JSON",
+  "importLocalSubtitle": "Shigo Subtitle na gida",
+  "improveQualityWhenScalingDownVideo": "Haɓaka inganci lokacin rage girman bidiyo",
+  "increaseAutoScrollSpeed": "Ƙara saurin gungurawa ta atomatik",
+  "increaseFontSize": "Ƙara Girman Font",
+  "invalidCompatibilityLinkMissingUsernames": "Hanyar dacewa mara inganci: bata sunan mai amfani.",
+  "invalidGistUrl": "URL mara inganci.",
+  "invalidRoomCodeInLink": "Lambar daki mara inganci a mahaɗin",
+  "invalidWatchTogetherLink": "Mahaɗin Kallon Tare mara inganci",
+  "invertAllPageColors": "Juya duk launukan shafi",
+  "invertColors": "Juyawa Launuka",
+  "inviteLink": "Gayyatar Link",
+  "inviteLinkCopied": "An kwafe hanyar haɗin gayyata!",
+  "jDramas": "J-Wasan kwaikwayo",
+  "joinNotifications": "Haɗa sanarwar",
+  "kDramas": "K-Dramas",
+  "keepBothUploadedAndCloudEntries": "Ci gaba da ɗorawa da shigarwar gajimare. Idan shigarwa iri ɗaya ta kasance a wurare biyu, ana ajiye sabuwar. (An shawarta)",
+  "keyVolumeScrollingSpeed": "Maɓalli & Saurin Gungurawa ƙara",
+  "koreanMovies": "Fina-finan Koriya",
+  "leaveNotifications": "Bar sanarwa",
+  "liveComments": "Sharhi kai tsaye",
+  "lockScreen": "Kulle allo",
+  "loginToAnilist": "Shiga zuwa AniList",
+  "loginToMyanimelist": "Shiga zuwa MyAnimeList",
+  "loginToSimkl": "Shiga zuwa Simkl",
+  "longPressForPageActions": "Dogon Latsa don Ayyukan Shafi",
+  "longPressAPageToSave": "Dogon danna shafi don adanawa, raba, ko kwafe shi",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "Manga ya Kammala",
+  "mangaPage": "Manga page",
+  "maxMembers": "Mafi yawan Membobi",
+  "memberLeft": "Memba ya bar",
+  "mergeUploadedEntriesOrReplaceCloud": "Haɗa shigarwar da aka ɗora ko maye gurbin bayanan gajimare",
+  "mergeWithCloud": "Haɗa Da Cloud",
+  "milliseconds": "Millise seconds",
+  "missingTypeQueryParameterUseType": "Rasa sigar tambaya ta \"nau'in\". Yi amfani da nau'in = mai kunnawa.",
+  "missingUrlQueryParameterForThe": "Bacewar sigar tambayar \"url\" don taken JSON.",
+  "moreIterationsStrongerDebanding": "Ƙarin maimaitawa = ƙarar ƙima",
+  "movies": "Fina-finai",
+  "moviesList": "LISHIN FIM",
+  "navigateByNumber": "Kewaya ta Lamba",
+  "navigation": "Kewayawa",
+  "newMember": "Sabon memba",
+  "nextChapter": "Babi na gaba",
+  "nextParagraph": "Sakin layi na gaba",
+  "noAudio": "Babu Audio",
+  "noOneCanSendMessagesIn": "Babu wanda zai iya aika saƙonni a cikin hira",
+  "noStreamUrlAvailable": "Babu URL ɗin rafi akwai",
+  "noSubtitle": "Babu Subtitle",
+  "noVideo": "Babu Bidiyo",
+  "notVeryCompatibleAtAll": "Ba mai jituwa sosai kwata-kwata.",
+  "numberedList": "Jerin Lissafi",
+  "onScreenOverlays": "Litattafan allo",
+  "onlyHostAndCoHostsCan": "Mai watsa shiri da masu haɗin gwiwa ne kawai ke iya aika saƙonni",
+  "opacity": "Bahaushe",
+  "openInBrowser2": "Bude a browser",
+  "openYourAnymexSyncGistOn": "Bude bayanin daidaitawa na AnymeX akan GitHub",
+  "openingInExternalPlayer": "Ana buɗewa a cikin ɗan wasa na waje...",
+  "orTypeCustomTag": "Ko kuma a buga alamar al'ada...",
+  "otherUpper": "WASU",
+  "overlayPosition": "Matsayi mai rufi",
+  "overrideSystemScreenBrightness": "Soke hasken allon tsarin",
+  "ownerAndCreatorOfTheCommentum": "Mallaki kuma mahaliccin dandalin Commentum.",
+  "padding": "Padding",
+  "pagesAheadOfTimeForFaster": "Shafukan gaba da lokaci don saurin lodawa",
+  "partySettings": "Saitunan Jam'iyya",
+  "passwordIfRequired": "Kalmar wucewa (idan an buƙata)",
+  "pasteDirectGifOrImageUrl": "Manna GIF kai tsaye ko URL na hoto...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Katuna & Ma'auni na PayPal",
+  "permanentlyRemoveAnymexSyncData": "Cire bayanan daidaitawa na AnymeX na dindindin",
+  "pictureShaders": "Hoto & Shaders",
+  "pitch": "Fita",
+  "playbackIsLockedToTheHost": "An kulle sake kunnawa ga mai gida",
+  "playbackSpeed2": "Saurin sake kunnawa",
+  "playerSettings2": "Saitunan mai kunnawa",
+  "pleaseLogInFirstThenTry": "Da fatan za a shiga farko, sannan a sake gwada hanyar haɗin.",
+  "pointsBreakdown": "Rushewar maki",
+  "practicallyMadeForEachOther": "A zahiri sanya wa juna.",
+  "preloadPage": "Preload Page",
+  "preloadPages": "Preload Shafuka",
+  "preloadPagesAheadOfTimeFor": "Preload shafuka kafin lokaci don yin lodi da sauri (Yana cin ƙarin hanyar sadarwa da rago)",
+  "preventScreenFromSleepingWhileReading": "Hana allo barci yayin karatu",
+  "previousChapter": "Babi na Baya",
+  "previousParagraph": "Sakin layi na baya",
+  "privateRoom": "Daki mai zaman kansa",
+  "profileUpdated": "An sabunta bayanan martaba",
+  "proportionOfTotalTimeWatched": "Adadin Jimlar Lokacin Dubawa",
+  "provideAReasonForThisAction": "Bayar da dalilin wannan aikin...",
+  "qualitySettings": "Saitunan inganci",
+  "quote": "Magana",
+  "range75DarkestTo100": "Rage: -75 (mafi duhu) zuwa 100",
+  "rateLimited": "Ƙimar iyaka",
+  "reactionOverlay": "Maimaita martani",
+  "readStats": "Karanta Stats",
+  "readTextAloud": "Karanta rubutu da ƙarfi",
+  "red": "Ja",
+  "reduceColorBandingInGradients": "Rage baƙar launi a gradients",
+  "reduceHaloingWhileUpscaling": "Rage haloing yayin haɓakawa",
+  "refresh": "Sake sabuntawa",
+  "removeCurrentCloudEntriesAndReplace": "Cire shigarwar gajimare na yanzu kuma musanya su da fayil ɗin da aka ɗora.",
+  "removeWhiteBlackBordersToMaximize": "Cire iyakoki fari/baƙar fata don haɓaka abun ciki",
+  "removesFinishedMediaFromCloudGist": "Yana cire ƙaƙƙarfan kafofin watsa labarai daga gist ɗin gajimare",
+  "replaceCloudGist": "Sauya Cloud Gist",
+  "report": "Rahoton",
+  "resetReLogin": "Sake saita & sake shiga",
+  "resetTo1": "Sake saita zuwa 1×",
+  "restore": "Maida",
+  "roomAccess": "Shiga Daki",
+  "roomCode": "Lambar daki",
+  "roomCodeCopiedToClipboard": "An kwafi lambar ɗaki zuwa allo",
+  "roomDuration": "Tsawon Daki",
+  "roomNotFoundOrExpired": "Ba a samo ɗakin ko ya ƙare ba",
+  "roomPassword": "Kalmar wucewa",
+  "roomPassword2": "Kalmar sirrin dakin",
+  "roomSettings": "Saitunan ɗaki",
+  "saveYourCurrentCloudProgressTo": "Ajiye ci gaban girgijen ku na yanzu zuwa fayil",
+  "scrollMultiplier": "Gungura Multiplier",
+  "scrollSpeed": "Gungura Gudun",
+  "searchAnimeEpisode": "Bincika anime / episode...",
+  "searchAnimeGifsReactions": "Bincika GIFs anime, martani...",
+  "searchChapters": "Bincika babi...",
+  "searchFiles": "Bincika fayilolin...",
+  "secondsPerPageScreen": "Daƙiƙa a kowane shafi / allo",
+  "seekAndControlPlaybackFreely": "Nemo da sarrafa sake kunnawa kyauta",
+  "selectedFileMustContainAJson": "Dole ne fayil ɗin da aka zaɓa ya ƙunshi abu JSON.",
+  "selectedJsonHasNoValidSync": "JSON da aka zaɓa bashi da ingantaccen shigarwar aiki tare.",
+  "seriesList": "JERIN JINJI",
+  "setAPasswordForYourRoom": "Saita kalmar sirri don ɗakin ku",
+  "share": "Raba",
+  "showANotificationWhenSomeoneJoins": "Nuna sanarwa lokacin da wani ya shiga jam'iyyar",
+  "showANotificationWhenSomeoneLeaves": "Nuna sanarwa lokacin da wani ya bar jam'iyyar",
+  "showAllStreams": "Nuna duk rafukan",
+  "showChatMessagesOnThePlayer": "Nuna saƙonnin taɗi akan mai kunnawa yayin da suke shigowa",
+  "showEmojiReactionsFloatingOnThe": "Nuna halayen emoji suna yawo akan mai kunnawa",
+  "showSyncResultWhenPlayerOr": "Nuna sakamakon daidaitawa lokacin da mai kunnawa ko mai karatu ya rufe",
+  "showTransitionPageEvenWhenChapters": "Nuna shafin canji koda lokacin surori suna kusa",
+  "shows": "Nunawa",
+  "sigmoidUpscaling": "Sigmoid Upscaling",
+  "smootherGradientsWithSlightTemporalNoise": "Ƙananan gradients tare da ƙaramar amo na ɗan lokaci",
+  "spacing": "Tazara",
+  "speechSpeed": "Saurin Magana",
+  "spoilers": "Masu lalata",
+  "stretchImagesToFitScreenWidthOn": "Miƙe hotuna don dacewa da faɗin allo akan faɗuwar fuska",
+  "subtitleSettings": "Saitunan rubutu",
+  "superAdministratorWithSystemWideManagement": "Super Administrator tare da ikon gudanarwa mai faɗin tsarin.",
+  "swapUpDownActions2": "Canza Ayyukan Sama/Ƙasa",
+  "syncMode": "Yanayin Aiki tare",
+  "syncPreferences": "Zaɓuɓɓukan Daidaitawa",
+  "tapScrollAmount": "Matsa Adadin Gungurawa",
+  "tapToOpen": "Matsa don buɗewa",
+  "tapToOpenInBrowser": "Matsa don buɗewa a browser",
+  "tapToOpenInSpotify": "Matsa don buɗewa a cikin Spotify",
+  "tapToViewInBrowser": "Matsa don dubawa a browser",
+  "tapTopBottomToScroll": "Matsa sama/ƙasa don gungurawa",
+  "targetPeak": "Kololuwar manufa",
+  "temporalDither": "Dither na ɗan lokaci",
+  "textToSpeech": "Rubutu-zuwa-Magana",
+  "theCreatorOfThisCommentDiscussion": "Wanda ya kirkiro wannan zaure na tattaunawa.",
+  "theresASmallSparkOfAgreement": "Akwai ƙaramin tartsatsin yarjejeniya.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Wannan yana share cikakken bayanin ci gaban girgije na AnymeX daga GitHub kuma ba za a iya sakewa ba.",
+  "toPrevNextChapter": "Zuwa Gaba/Babi na Gaba",
+  "topL": "Babban-L",
+  "topR": "Babban-R",
+  "totals": "Jimlar",
+  "trendingMovies": "Fina-finai masu tasowa",
+  "trendingSeries": "Trending Series",
+  "tts": "TTS",
+  "ukMovies": "Fina-finan Burtaniya",
+  "ukShows": "Nunin Burtaniya",
+  "unableToReadSelectedJsonFile": "An kasa karanta zaɓaɓɓen fayil ɗin JSON.",
+  "unsupportedExtension": "Tsawo mara tallafi",
+  "usMovies": "Fina-finan Amurka",
+  "usShows": "Nunin Amurka",
+  "useVolumeButtonsToScroll": "Yi amfani da maɓallin ƙara don gungurawa",
+  "userHistory": "Tarihin Mai amfani",
+  "userInfo": "Bayanin mai amfani",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "Tabbatar da mai gudanarwa yana kiyaye tsokaci cikin girmamawa da aminci.",
+  "verticalPadding": "Rufewar Tsaye",
+  "viewCloudGist": "Duba Cloud Gist",
+  "viewUserHistory": "Duba Tarihin Mai amfani",
+  "viewUserInfo": "Duba Bayanin Mai Amfani",
+  "voice": "Murya",
+  "watchParty": "Watch Party",
+  "watchStats": "Watch Stats",
+  "watchingNow": "Kallon Yanzu",
+  "webmVideo": "WebM Bidiyo",
+  "whereLiveCommentsAppearOnScreen": "Inda maganganun kai tsaye suka bayyana akan allo",
+  "whileWatchingEpisodesOrReadingChapters": "Yayin kallon shirye-shirye ko karanta surori",
+  "writeAReply": "Rubuta amsa...",
+  "youAreBasicallyTheSamePerson": "Kai mutum ɗaya ne.",
+  "youBothHaveVerySimilarTaste": "Ku duka kuna da dandano iri ɗaya.",
+  "all2": "← Duk",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "Salo",
+  "upscale": "Babban girman",
+  "appearanceStyle": "Bayyanar & Salo",
+  "colorsLightDarkOledLogoAnimations": "Launuka, Haske/Duhu, OLED & rayarwa ta tambari",
+  "fontsTypography": "Fonts & Rubutun rubutu",
+  "chooseTypographyCustomFontsGlobalText": "Zaɓi rubutun rubutu, rubutun al'ada & sikelin rubutu na duniya",
+  "globalFontScaling": "Girmar Rubutun Dukka",
+  "scaling": "Sikeli",
+  "typefaces": "Fuskokin rubutu",
+  "interfaceLayout": "Fuskar Aikace-aikace da Tsari",
+  "navBarCardStylesDetailsBlur": "Mashigin Nav, salon katin, blur bayanai & shimfidawa",
+  "navigationHomeLayout": "Kewayawa & Tsarin Gida",
+  "playbackEngineSubtitlesGesturesDecoders": "Injin sake kunnawa, fassarar magana, motsin motsi & masu gyarawa",
+  "mangaNovelReader": "Mai Karanta Manga da Littafi",
+  "readingModesDirectionColorsTapZones": "Yanayin karatu, jagora, launuka & yankunan famfo",
+  "dataNetworkSystem": "Bayanai, Hanyar Sadarwa da Tsari",
+  "downloadDirectoryConcurrencyHlsSegments": "Zazzage kundin adireshi, haɗin kai & sassan HLS",
+  "accountsSocial": "Accounts & Social",
+  "trackingAccounts": "Bibiyar Lissafi",
+  "manageYourAnilistMyanimelistSimklAccounts": "Sarrafa asusun AniList, MyAnimeList & Simkl",
+  "trackingBehavior": "Halin Bibiya",
+  "communityComments": "Al'umma & Sharhi",
+  "commentumProfileBadgesMarkdownPrivacy": "Bayanin sharhi, bajis, alama da keɓantawa",
+  "contentPreferences": "Abun ciki & Zaɓuɓɓuka",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFW tace, ɗakin karatu ɗaya, shawarwari & jeri",
+  "exportAndRestoreYourLibraryAnd": "Fitarwa da mayar da ɗakin karatu da saitunanku",
+  "manageAnimeMangaNovelSourcesAnd": "Sarrafa Anime, Manga & Novel kafofin da wuraren ajiya",
+  "installAndUpdateCommunityAddOns": "Shigar da sabunta add-kan al'umma",
+  "storageCache": "Adana & Cache",
+  "manageCachedImagesThresholdsResetData": "Sarrafa hotunan da aka adana, ƙofa & sake saitin bayanai",
+  "networkProxy": "Network & Proxy",
+  "logsDiagnostics": "Logs & Diagnostics",
+  "inspectExportAndShareApplicationLogs": "Duba, fitarwa da raba rajistan ayyukan aikace-aikacen",
+  "aboutSupport": "Game da & Tallafi",
+  "supportDevelopmentViaKoFiPaypal": "Taimakawa ci gaba ta hanyar Ko-fi, PayPal & UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Siga, sabuntawa, hanyoyin haɗin kai & manufofin doka",
+  "cacheAndCookiesClearedFor": "An share cache da kukis don {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "An share kukis don {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "An share cache don {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Nau'in {type} mara tallafi",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Saitunan {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Ba a sami fayil na gida a: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "An kasa aiki tare: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Ba a sami apk na gida a: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Kuskure: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "An gaza shigar da plugin: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Babu sakamakon da aka samu na \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Lokacin {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Rahoton da aka ƙayyade na {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "Labaran {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Al'umma",
+  "logInWithAnilist": "Shiga tare da AniList",
+  "episode2": "Rahoton da aka ƙayyade na {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "An gama saukewa",
+  "downloadFailedHasNoUrl": "An kasa saukewa: {chapterDisplay} ba shi da URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "An kasa saukewa: Babu shafuka da aka samo don {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "An kasa saukewa: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Rahoton da aka ƙayyade na {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "Farashin {count}",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "Farashin {count}",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Ba a samo tushen \"{extensionName}\" ba.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "An kasa shirya rafi: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "Za a cire {display} na dindindin daga abubuwan zazzagewar ku.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Binciken ya kasa: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Nemo {label} don \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "An goge abubuwan tarihin {deletedCount}",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Cire \"{itemName}\" daga {_historyLabel} naku?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "An cire \"{itemName}\"",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Hawan hawa",
+  "descending": "Saukowa",
+  "defaultTabOrder": "Odar shafin na asali",
+  "reverseTabs": "Juya shafuka",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Saukewa: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Saukewa: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Shigar {sourceName} Farko, Sannan Danna",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "SHAFI {value}/{value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Bincika {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "ANYI ({length} zaba)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "ANA KARATU AKAN",
+  "streamingOn": "YAWO AKAN",
+  "freedom": "'Yanci",
+  "shaderAdded": "Shader ya kara da cewa: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Kuskuren shigo da inuwa: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Scanlators",
+  "chapterRange": "Babi Range",
+  "downloadFailed2": "An kasa saukewa: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "An sauke babin {formattedNumber}",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Ana saukewa ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} surori",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Ana loda shafi {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "An ajiye shafi zuwa Hotuna/AnymeX",
+  "pageSavedToAnymex": "An ajiye shafi zuwa {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "An kasa ajiye shafi: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "An kasa raba shafi: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "An kwafi URL ɗin shafi zuwa allo",
+  "failedToCopy": "An kasa yin kwafin: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Ana loda shafuka...",
+  "goBack": "Komawa",
+  "loadingPage2": "Ana loda shafi {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Launi mai walƙiya",
+  "black": "Baki",
+  "white": "Fari",
+  "readerBackground": "Fagen Karatu",
+  "gray": "Grey",
+  "automatic": "Na atomatik",
+  "noneNearestNeighbor": "Babu (Makwabci-Kusa)",
+  "lowBilinear": "Ƙananan (Bilinear)",
+  "mediumDefault": "Matsakaici (Tsoffin)",
+  "highBicubic": "Babban (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (Mafi kyawun inganci, a hankali)",
+  "fullscreenPreview": "Duba Cikakken Allo",
+  "enhancementPreset": "Saita Haɓaka",
+  "fineTuning": "Kyakkyawan Tunatarwa",
+  "enhancementStrength": "Ƙarfin Ƙarfafawa",
+  "strength": "{value}% ƙarfi",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Danna Kuskuren Hoto",
+  "cleanJpegCompressionRingingAroundLinework": "Tsaftace matsi na JPEG yana ƙara kewaye da aikin layi",
+  "cache": "Cache",
+  "cacheSize": "Girman Cache",
+  "mbStoredOnDisk": "{mb} MB da aka adana akan faifai",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Super Resolution",
+  "loadingChapter": "Ana loda babin...",
+  "noContentAvailable": "Babu abun ciki samuwa",
+  "recommendations": "shawarwarin {reasonCount}",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "'s Recs",
+  "all3": "Duk ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "An kasa aika saƙo: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Jimlar shigarwa: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Dakin da aka haɗa {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Dakuna Masu Aiki",
+  "joinWithCode": "Shiga tare da Code",
+  "leftRoom": "Dakin hagu",
+  "leaveReset": "Bar / Sake saiti",
+  "inRoom": "A cikin Daki: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Episode {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Farashin {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "Membobin {length}/{maxMembers}",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Ya fice daga dakin",
+  "leave": "Bar",
+  "noActiveRooms": "Babu dakuna masu aiki",
+  "roomsWillAppearHereWhenSomeone": "Dakuna za su bayyana a nan lokacin da wani ya ƙirƙiri ɗaya",
+  "created2": "An ƙirƙira · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Shiga →",
+  "full": "Cikakkun",
+  "savedToPicturesAnymex": "Ajiye zuwa Hotuna/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Ajiye zuwa Zazzagewa/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Ajiye zuwa {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Taɓa don buɗe bayanin martaba)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Babi ",
+  "episode5": "Episode ",
+  "noData": "{title} (Babu Bayanai)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Nemo kari na {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Nemo kari",
+  "goToHome": "Jeka Gida",
+  "fetching": "Ana kawo {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Kuskuren ɗauko manufar: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "An ƙara \"{name}\" cikin nasara!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "An sabunta \"{name}\" cikin nasara!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Shin kun tabbata kuna son share \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "An goge \"{name}\"",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Tarihinku fanko ne",
+  "episode6": "Rahoton da aka ƙayyade na {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Nuna kaɗan",
+  "readMore": "Kara karantawa",
+  "unpin": "Cire",
+  "pinActivity": "Ayyukan Pin",
+  "n1Recommendation": "1 Shawara",
+  "recommendations2": "Shawarwari {count}",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Ana ƙaddamarwa…",
+  "addRecommendation": "Ƙara Shawarwari",
+  "submitRecommendation": "Gabatar da Shawarwari",
+  "currentProvider": "MAI BAYAR DA YANZU",
+  "profileStatsUserActivities": "Bayanan martaba & ayyukan mai amfani",
+  "manageSourcesPlugins": "Sarrafa tushe & plugins",
+  "savedOfflineEpisodesChapters": "Ajiye shirye-shiryen layi & surori",
+  "watchVideoFilesFromDeviceStorage": "Kalli fayilolin bidiyo daga ajiyar na'ura",
+  "syncWatchPartyWithFriends": "Daidaita taron agogon tare da abokai",
+  "pauseWatchHistoryAndSync": "Dakatar da tarihin kallo da aiki tare",
+  "appearancePlayerNetwork": "Bayyanawa, mai kunnawa & hanyar sadarwa",
+  "joining": "Ana shiga...",
+  "joinRoom": "Shiga Daki",
+  "shareTheCodeOrInviteLink": "Raba lambar ko gayyatar hanyar haɗin gwiwa tare da abokai.",
+  "roomCreated": "Daki An Ƙirƙiri!",
+  "shareThisCodeWithFriends": "Raba wannan lambar tare da abokai:",
+  "copyCode": "Kwafi Code",
+  "copyLink": "Kwafi Link",
+  "leaveWatchTogether": "Bar Kallon Tare?",
+  "removeMember": "Cire Memba",
+  "transferHost": "Mai watsa shiri Canja wurin",
+  "transferHost2": "Canja wurin mai masaukin baki",
+  "transfer": "Canja wurin",
+  "removeMember2": "Cire memba",
+  "removeFromThisWatchParty": "Cire {username} daga wannan taron agogon?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount}/{maxMembers} membobi",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "An kofe {label}",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Babu sabobin da ke akwai don wannan ɗakin",
+  "selectStreamingServerQualityToWatch": "Zaɓi ingancin uwar garken yawo don kallo",
+  "thisServerHasNoPlayableUrl": "Wannan uwar garken ba shi da URL mai iya kunnawa",
+  "episode7": "Rahoton da aka ƙayyade na {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "An daidaita shi daga Babin {start} zuwa {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} an annabta akan {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "EPISODE {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "An fitar da lissafin MAL zuwa:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "An fitar da AniList XML zuwa:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "An gaza fitarwa: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Ana fitar da jerin {value} ku...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Fitar da {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Babu kafofin watsa labarai masu iya kunnawa",
+  "noThemesFound": "Ba a sami jigogi ba",
+  "playAll": "Kunna Duk",
+  "theDawnOfHumanity": "Alfijir na Dan Adam",
+  "orientationUnlocked": "An buɗe Orientation",
+  "orientationLocked": "An kulle Orientation",
+  "skippedOpening": "An tsallake Buɗewa",
+  "skippedEnding": "An tsallake Ƙare",
+  "skippedRecap": "Tsalle Maimaitawa",
+  "ifYouSeeBlackScreenUse": "Idan ka ga baƙar fata, yi amfani da mai kunnawa waje don kallo",
+  "failedToStartTorrentStream": "An kasa fara rafi: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "An kasa buɗe rafi. Da fatan za a gwada wani uwar garken",
+  "noServersFoundForThisEpisode": "Babu sabobin da aka samo don wannan taron.",
+  "failedToLoadEpisodeCheckYour": "An kasa loda shirin. Duba haɗin ku.",
+  "playing": "Yin wasa {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "An kasa canza fayil ɗin torrent: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "An ɗora taken taken: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Kuskuren ɗora juzu'i: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Lalacewar Subtitle!",
+  "preTranslatingSubtitles": "Pre-fassara fassarori...",
+  "preTranslationFailedUsingRealTime": "Pre-fassara ya gaza, ta amfani da koma baya na ainihin lokaci",
+  "preTranslationErrorUsingRealTime": "Kuskuren pre-fassara, ta amfani da koma baya na ainihin lokaci",
+  "corruptedQuality": "Lalacewar inganci!",
+  "colorProfilesOnlyAvailableWithMediakit": "Bayanan martaba masu launi suna samuwa kawai tare da mai kunna MediaKit",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Buɗe rafukan bidiyo a cikin ɗan wasa na waje ta tsohuwa",
+  "quickDefaults": "Matsaloli masu sauri",
+  "orientationSpeedResizeModeExternalPlayer": "Gabatarwa, saurin, yanayin girman girman & mai kunnawa waje",
+  "controlsGestures": "Sarrafa & Motsawa",
+  "subtitlesTranslation": "Subtitles & Fassara",
+  "languagesFontsStylingLibassTranslation": "Harsuna, fonts, salo, libass & fassara",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "Shaders masu haɓakawa, saitattun bayanai & bayanan martaba",
+  "engineAdvanced": "Injin & Na ci gaba",
+  "addSpeed": "Ƙara Gudu",
+  "speedPresets": "Saitunan Sauri",
+  "rememberAsDefaultSpeed": "Ka tuna azaman tsoho gudun",
+  "loadedSubtitle": "Subtitle mai lodi: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Ba a yi nasarar saukewa ba: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "CODE na daki",
+  "episodeReleasesIn": "EPISODE {value} YA SAKI CIKIN",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Kuna buƙatar shiga don yin sharhi",
+  "readFullRules": "Karanta Cikakken Dokoki",
+  "acceptPost": "Karɓa & Buga",
+  "youNeedToBeLoggedIn2": "Kuna buƙatar shiga don ba da amsa",
+  "commentCopiedToClipboard": "An kwafe sharhi zuwa allo",
+  "spam": "Spam",
+  "offensive": "M",
+  "harassment": "Cin zarafi",
+  "offTopic": "Kashe-Topic",
+  "failedToLoadUserInfo": "An kasa loda bayanan mai amfani.",
+  "noUserDataFound": "Ba a sami bayanan mai amfani ba.",
+  "viewHistory": "Duba Tarihi",
+  "failedToLoadComments": "An kasa loda sharhi.",
+  "noCommentsFound": "Ba a sami tsokaci ba.",
+  "deleted2": "GAME DA",
+  "comment": "SHARHI",
+  "failedToLoadUserHistory": "An kasa loda tarihin mai amfani.",
+  "noHistoryFound": "Ba a sami tarihi ba.",
+  "youNeedToBeLoggedIn3": "Kuna buƙatar shiga don gyara sharhi",
+  "commentCannotBeEmpty": "Sharhi ba zai iya zama fanko ba",
+  "failedToLoadCommentsPleaseTry": "An kasa loda sharhi Da fatan za a sake gwadawa.",
+  "commentsLoaded": "An ɗora sharhin {value}",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "An kasa sabunta sharhi Da fatan za a sake gwadawa.",
+  "invalidParentCommentId": "ID sharhin iyaye mara inganci",
+  "replyPostedSuccessfully": "An buga amsa cikin nasara",
+  "failedToPostReply": "An kasa aika amsa",
+  "failedToPostReplyPleaseTry": "An kasa aika amsa. Da fatan za a sake gwadawa.",
+  "commentPostedSuccessfully": "An buga sharhi cikin nasara",
+  "failedToAddCommentPleaseTry": "An kasa ƙara sharhi. Da fatan za a sake gwadawa.",
+  "failedToUpdateVotePleaseTry": "An kasa sabunta kuri'a. Da fatan za a sake gwadawa.",
+  "invalidCommentId": "ID sharhi mara inganci",
+  "commentEditedSuccessfully": "An gyara sharhi cikin nasara",
+  "failedToEditComment": "An kasa gyara sharhi",
+  "commentDeletedSuccessfully": "An share sharhi cikin nasara",
+  "failedToDeleteComment": "An kasa share sharhi",
+  "failedToReportComment": "An kasa bayar da rahoton sharhi",
+  "failedToModerateComment": "An kasa daidaita sharhi",
+  "failedToManageUser": "An kasa sarrafa mai amfani",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ maki). Matsayi ya dogara ne akan ayyuka na gaske ({realPoints} pts).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} da aka samu pts + {text} rawar rawa ({label}). Matsayi ya dogara ne akan ayyuka na gaske.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Rage Episode",
+  "episodeIsDownloaded": "An sauke fasalin {number}",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "Rahoton da aka ƙayyade na {length}",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 - Tashi daga Inuwa",
+  "frierenBeyondJourneySEnd": "Frieren: Bayan Ƙarshen Tafiya",
+  "bleachThousandYearBloodWar": "BLEACH: Yakin Jini na Shekara Dubu",
+  "cardCustomizer": "Katin Customizer",
+  "presetStyle": "Salon Saiti",
+  "chooseFrom5AuthenticBuiltIn": "Zaɓi daga ingantattun ƙirar ƙira guda 5",
+  "sizingGeometry": "Girma & Geometry",
+  "cardSize": "Girman Kati",
+  "scaleCardsProportionallyWithoutDistortion": "Sikelin katunan daidai gwargwado ba tare da murdiya ba",
+  "landscapeCards": "Katunan shimfidar wuri",
+  "formatCardsIn169Widescreen": "Tsara katunan a cikin 16:9 daidaitawar allo",
+  "selectPosterImageAspectRatio": "Zaɓi rabon hoto na fosta",
+  "titleLines": "Layin Take",
+  "maximumNumberOfTitleLinesDisplayed": "Matsakaicin adadin layukan take da aka nuna",
+  "gestureAreas": "Yankunan ishara",
+  "resetDefault": "Sake saita Tsohuwar",
+  "overlay": "Mai rufi",
+  "volume": "Ƙarar",
+  "brightnessArea": "Yankin Haske",
+  "overlayAreaTap": "Wurin Mai Rufe (Taɓa)",
+  "volumeArea": "Wurin Ƙara",
+  "resetToDefaultLayout": "Sake saita zuwa tsoho shimfidar wuri",
+  "moveToSlot": "Matsar zuwa ramin",
+  "topBar": "Babban Bar",
+  "bottomLeft": "Hagu ƙasa",
+  "bottomRight": "Kasa Dama",
+  "themesOverlay": "Jigogi & Mai rufi",
+  "gesturesSeeking": "Hannun Hannu & Neman",
+  "horizontalSwipeAcrossTheScreenTo": "Juye a kwance a kan allo don nema",
+  "autoSkipCompletion": "Tsallakewa ta atomatik & Kammala",
+  "percentageWatchedBeforeMarkingCompleted": "Kashi na kallo kafin alamar kammalawa",
+  "playerControls": "Sarrafa mai kunnawa",
+  "mpvConfSavedSuccessfully": "mpv.conf an ajiye shi cikin nasara",
+  "hardwareDrivers": "Hardware & Direbobi",
+  "systemIntegrations": "Tsarin & Haɗin kai",
+  "experimentalMpvTuning": "Gwajin MPV Tuning",
+  "editMpvConf": "Shirya mpv.conf",
+  "modeA": "Mode A",
+  "modeB": "Yanayin B",
+  "modeC": "Yanayin C",
+  "modeAA": "Yanayin A+A",
+  "modeBB": "Yanayin B+B",
+  "modeCA": "Yanayin C+A",
+  "natural": "Halitta",
+  "vivid": "m",
+  "cinema": "Cinema",
+  "soft": "Mai laushi",
+  "warm": "Dumi",
+  "cool": "Sanyi",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinema HDR",
+  "vividPop": "Popular Pop",
+  "dark": "Duhu",
+  "anime4kEngine": "Injin Anime4K",
+  "anime4kShaders2": "Anime4K shaders",
+  "devicePerformanceTier": "Matsayin Ayyukan Na'ura",
+  "midRange": "Tsakanin zango",
+  "highEnd": "Babban-ƙarshe",
+  "shaderMode": "Yanayin Shader",
+  "colorPreset": "Saitin Launi",
+  "desktopPlaybackKeybindings": "Maɓallin sake kunnawa Desktop",
+  "customSubtitleFonts": "Rubutun Subtitle na Musamman",
+  "importedFont": "Font da aka shigo da \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Shin kun tabbata kuna son share \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Harshe & Fassara",
+  "renderingBehavior": "Bayar da Hali",
+  "disableToAvoidFadeTransitionsBetween": "Kashe don guje wa faɗuwar sauye-sauye tsakanin rubutun kalmomi",
+  "typographyOutline": "Rubutun rubutu & Shaci",
+  "adjustSubtitleFontSize": "Daidaita girman font subtitle",
+  "adjustSubtitleOutlineThickness": "Daidaita kauri mai ƙayyadadden ƙayyadaddun magana",
+  "colorsPosition": "Launuka & Matsayi",
+  "changeSubtitleTextColor": "Canja launin rubutun subtitle",
+  "mangaReader": "Mai karanta Manga",
+  "layoutDirection": "Layout & Jagoranci",
+  "autoSwitchToVerticalModeFor": "Canja atomatik zuwa yanayin tsaye don shafukan yanar gizo",
+  "imageDisplay": "Hoto & Nuni",
+  "interfaceSession": "Interface & Zama",
+  "mangaControlsGestures": "Sarrafa Manga & Hannun Hannu",
+  "overscrollToPreviousNextChapter": "Juyawa zuwa babi na baya/gaba",
+  "automaticallyScrollMangaPages": "Gungurawa shafukan manga ta atomatik",
+  "swapVolumeUpDownActions": "Musanya ƙarar sama/ƙasa ayyuka",
+  "novelReader": "Karatun Novel",
+  "themeDisplay": "Jigo & Nuni",
+  "displayChapterPercentageWhileReading": "Nuna kashi kashi yayin karantawa",
+  "displayStatusInfoInTheNovel": "Nuna bayanin matsayi a cikin mai karanta labari",
+  "typographySpacing": "Rubutun rubutu & Tazara",
+  "novelControlsGestures": "Sarrafa Novel & Motsa Jiki",
+  "tapScreenEdgesToScrollNovel": "Matsa gefan allo don gungurawa shafukan labari",
+  "swipeGestures": "Dokewa Hannun Hannu",
+  "volumeKeyScrolling": "Gungura Maɓallin Ƙara",
+  "useHardwareVolumeButtonsToScroll": "Yi amfani da maɓallan ƙarar hardware don gungurawa litattafai",
+  "automaticallyScrollNovelContent": "Gungura cikin labari ta atomatik",
+  "textToSpeechTts": "Rubutu-zuwa-Magana (TTS)",
+  "readNovelChaptersAloud": "Karanta babin labari da ƙarfi",
+  "speechRate": "Yawan magana",
+  "voicePitch": "Muryar murya",
+  "areYouSureYouWantTo4": "Shin kun tabbata kuna son fita daga {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "An kasa bincika sabuntawa: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "An shigar da {name} cikin nasara",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "An kasa shigar da {name}: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "An sabunta {name} cikin nasara",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "An kasa sabunta {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Cire {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} an cire shi",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "An kasa cire {name}: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "Oda Sashe na {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Fadakarwa & Aiki tare",
+  "enableNotifications": "Kunna Fadakarwa",
+  "syncAnilistNotificationsWithDeviceNotifications": "Daidaita sanarwar AniList tare da sanarwar na'urar",
+  "airingAlerts": "Faɗakarwar Iska",
+  "socialAlerts": "Faɗakarwar Jama'a",
+  "notifyOnNewFollowers": "Sanarwa akan sababbin mabiya",
+  "activityAlerts": "Faɗakarwar Ayyuka",
+  "syncInterval": "Tazarar Aiki tare",
+  "regionTimezone": "Yanki & Yankin Lokaci",
+  "profileBio": "Bayanan Halitta",
+  "backupFailed": "An kasa Ajiyayyen: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Kuskuren zaɓar fayil: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "An kasa loda madadin: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "An kasa dawowa: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} lakabi da tarihi",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "taken {mangaCount} da surori",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "taken {novelCount} da yanayin karatu",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} lissafin al'ada a fadin kafofin watsa labarai",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} rijistar shigarwar tsawo",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} tsawo zip daure",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Taimako & Bayani",
+  "libraryContentSafety": "Laburare & Amintaccen abun ciki",
+  "homePageLists": "Jerin Shafukan Gida",
+  "chooseWhichListsToShowOn": "Zaɓi jerin sunayen da za a nuna akan shafin gida",
+  "homePageCards": "Katunan Shafin Gida ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Kallon $anime",
+  "viewingAnime": "Kallon $anime",
+  "readingManga2": "Karatun $manga",
+  "viewingManga": "Kallon $manga",
+  "readingNovel2": "Karatun $novel",
+  "viewingNovel": "Kallon $novel",
+  "browsingStatus": "Duba $status",
+  "upiIdCopied": "ID na UPI kofe: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Kwafi UPI ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Matsa don ƙaddamar da GPay, PhonePe, Paytm, da sauransu.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Zazzage Fadakarwa",
+  "reDownloadFailed": "An kasa sake saukewa: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Ba a yi nasara ba: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "An kasa ƙara repo: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Aiwatar da font \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "An kasa sauke \"{fontName}\"",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "Shigo da amfani da \"{fontName}\"",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "An kasa shigo da fayil ɗin rubutu",
+  "deleted3": "An goge \"{fontName}\"",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Laburaren Font",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Tsohuwar font mai zagaye na geometric da aka tsara don AnymeX",
+  "systemFont": "Tsarin Font",
+  "useYourDeviceOsDefaultSystem": "Yi amfani da nau'in tsarin tsoho na OS na na'urar ku",
+  "loadYourOwnTtfOrOtf": "Load da naku fayilolin rubutu na .ttf ko .otf",
+  "pendingReports": "Rahoton {length} yana jiran",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Kukis & Ajiya",
+  "monitoring": "Saka idanu",
+  "fpsMeter": "FPS Mitar",
+  "showDraggableRealTimeFpsOverlay": "Nuna abin rufe fuska na FPS na ainihin lokaci",
+  "detectedModesDisplay": "Hanyoyin Gano & Nuni",
+  "currentDisplayMode": "Yanayin Nuni na Yanzu",
+  "modes": "Yanayin {length}",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Keɓance",
+  "stylingLibass": "{subLang} • {subFont} • Salo & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Sarrafa & Taɓa Yankunan",
+  "customizeTapZones": "Keɓance Wuraren Taɓa",
+  "configurePagedAndWebtoonTapRegions": "Sanya yankuna masu shafi da shafukan yanar gizo",
+  "fitBordersSpacing": "{value} • Fit, iyakoki & tazara",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Salon babi, alamar shafi & kulle allo",
+  "overscrollActionsAutoScrollVolume": "Motsi sama da kima, ayyuka, gungurawa ta kanta da sauti",
+  "themeTypography": "Jigo & Rubutun rubutu",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Yanayin Karatu & Nuni",
+  "pageModeProgressBatteryIndicator": "Yanayin shafi, ci gaba & alamar baturi",
+  "readPageByPageInsteadOf": "Karanta shafi-bi-shafi maimakon gungurawa",
+  "displayPercentageInReadingBar": "Nuna kashi a mashaya karatu",
+  "displayBatteryAndTimeInReader": "Nuna baturi da lokaci a mashaya mai karatu",
+  "gesturesNavigation": "Motsi & Kewayawa",
+  "tapToScrollSwipeAutoScroll": "Matsa don gungurawa, gogewa, gungurawa ta atomatik & ƙara",
+  "tapEdgesOfScreenToScroll": "Matsa gefuna na allo don gungurawa sama/ƙasa",
+  "swipeHorizontallyToChangeChapters": "Dokewa a kwance don canza babi",
+  "useVolumeKeysToScroll": "Yi amfani da maɓallin ƙara don gungurawa",
+  "textToSpeechTts2": "Rubutu zuwa Magana (TTS)",
+  "textToSpeechReadingSupport": "Taimakon karatun rubutu-zuwa-magana",
+  "speechRate2": "Yawan Magana",
+  "voicePitch2": "Muryar Murya",
+  "appPostersIconsAvatarsSize": "Fastocin app, gumaka, avatars. Saukewa: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Gudun bidiyo na wucin gadi. Saukewa: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Zazzage shafukan yanar gizo na labari. Saukewa: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Logs, zazzagewar lokaci. Saukewa: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "An kasa share cache: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "An gaza sake saitin masana'anta: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 ko 3F51B5",
+  "motionDisplay": "Motsi & Nuni",
+  "visualEffectsTuning": "Tasirin gani & Tunatarwa",
+  "historyCard": "Katin tarihi",
+  "carousel": "Carousel",
+  "navBar": "Nav bar",
+  "themeDarkModeLayoutStyling": "Jigo, yanayin duhu & salo na shimfidawa",
+  "gesturesSubtitlesVideoSettings": "Hannun motsin rai, fassarar magana da saitunan bidiyo",
+  "settingsTiles": "Saitunan tayal",
+  "oledMode2": "Yanayin OLED",
+  "primaryAccount": "Babban Asusun ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "An haɗa zuwa {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Haɗa zuwa {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "suna {value}",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Cire \"{id}\"? Ba za a iya soke wannan ba.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Ana shigo da…",
+  "addJsonFiles": "Ƙara Fayilolin JSON",
+  "previousStyle": "Salon da ya gabata",
+  "nextStyle": "Salo na gaba",
+  "currentStyle": "Salon na yanzu",
+  "useThisStyle": "Yi amfani da wannan salon",
+  "pleaseLogInToGetRecommendations": "Da fatan za a shiga don samun shawarwari",
+  "chapter1": "Babi na 1",
+  "deletedSuccessfully": "An Yi Nasarar Share {value}",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "An Shiga Simkl Cikin Nasara!",
+  "yepFailed": "Eh, An kasa",
+  "userInfoFetchingFailed": "An kasa kawo bayanin mai amfani!",
+  "githubLoginFailed": "An kasa shiga GitHub: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "An riga an gama daidaitawa.",
+  "anotherSyncActionIsAlreadyIn": "Wani aikin daidaitawa ya riga ya ci gaba.",
+  "noAnymexSyncGistFoundTo": "Ba a sami gist ɗin daidaitawa na AnymeX don sharewa ba.",
+  "noAnymexSyncGistFoundInitialize": "Ba a sami ainihin abin daidaitawa na AnymeX ba. Fara fara.",
+  "githubGistSync": "GitHub Gist Sync",
+  "manage": "Sarrafa",
+  "manageGithubGistSync": "Sarrafa Aiki tare GitHub Gist",
+  "joinedTheParty": "{username} ya shiga jam'iyyar",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} ya bar jam'iyyar",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Mai watsa shiri ya canza zuwa Episode {episodeNumber} na {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Kuskuren ɗauko sharhi",
+  "errorAddingComment": "Kuskuren ƙara sharhi",
+  "errorUpdatingVote": "Kuskuren sabunta kuri'a",
+  "errorEditingComment": "Kuskuren gyara sharhi",
+  "errorDeletingComment": "Kuskuren share sharhi",
+  "commentReportedSuccessfully": "An yi rahoton sharhi cikin nasara",
+  "errorReportingComment": "Kuskuren bayar da rahoton sharhi",
+  "errorFetchingReportsQueue": "Kuskuren ɗauko jerin rahotanni",
+  "reportResolvedSuccessfully": "An warware rahoton cikin nasara",
+  "failedToResolveReport": "An kasa warware rahoton",
+  "errorResolvingReport": "Kuskuren warware rahoton",
+  "errorFetchingUserInfo": "Kuskuren debo bayanan mai amfani",
+  "errorFetchingUserHistory": "Kuskuren ɗauko tarihin mai amfani",
+  "errorFetchingUserStats": "Kuskuren debo kididdigar mai amfani",
+  "errorListingUsers": "Kuskuren lissafin masu amfani",
+  "errorSearchingUsers": "Kuskuren neman masu amfani",
+  "errorFetchingModerationQueue": "Kuskuren debo layin daidaitawa",
+  "commentModeratedSuccessfully": "An daidaita sharhi cikin nasara",
+  "errorModeratingComment": "Kuskuren daidaita sharhi",
+  "userManagedSuccessfully": "An gudanar da mai amfani cikin nasara",
+  "errorManagingUser": "Kuskuren sarrafa mai amfani",
+  "errorGettingInitialDeepLink": "Kuskuren samun hanyar haɗin farko mai zurfi: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Kuskuren buɗe hanyar haɗin yanar gizo: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Kwafi bayanan kuskure",
+  "whatSNew": "Menene Sabo",
+  "updatedToV": "An sabunta shi zuwa v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "An kasa buɗe hanyar haɗin talla",
+  "newAnilistUpdates": "{length} Sabbin Sabunta AniList",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} ƙari",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Sabunta na'urori",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Ƙara repo... da fatan za a jira.",
+  "unsupportedThemeTypeSupportedPlayer": "Nau'in jigo mara tallafi \"{type}\". Tallafi: mai kunnawa.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Ana shigo da jigon ɗan wasa daga mahaɗin...",
+  "themeIsInvalid": "Jigo mara inganci: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Jigon JSON yana aiki. An shigo da {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Dakin shiga {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "An kasa shiga ɗakin: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Ana ƙididdige daidaiton AniMatch don {user1} & {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Raba tare da zaɓin sabis ɗin saƙonku",
+  "shareAnymexLink": "Raba hanyar haɗin AnymeX",
+  "opensDirectlyInAnymex": "Yana buɗewa kai tsaye a cikin AnymeX",
+  "newCommentsRepliesAndEdits": "Sabbin sharhi, amsoshi, da gyarawa",
+  "upvotesAndDownvotesOnYourComments": "Ra'ayoyi da raɗaɗi akan ra'ayoyin ku",
+  "warningsMutesBansAndModerationActions": "Gargaɗi, bebe, hanawa, da ayyukan daidaitawa",
+  "reportFiledResolvedDismissed": "An gabatar da rahoto, warwarewa, kori",
+  "officialAnnouncements": "Sanarwa na hukuma",
+  "whenSomeoneMentionsYouInA": "Lokacin da wani ya ambaci ku a cikin sharhi",
+  "notificationsForNewAnimeEpisodeReleases": "Sanarwa don sabon fitowar wasan anime",
+  "notificationsForFollowsMentionsAndLikes": "Sanarwa don masu biyowa, ambaton, da abubuwan so",
+  "notificationsForCompletedEpisodeAndChapter": "Sanarwa don kammala shirin da zazzagewar babi",
+  "signIn": "Shiga",
+  "failedToCheckForUpdates3": "An kasa bincika sabuntawa",
+  "noUpdatesAvailable": "Babu sabuntawa akwai samuwa",
+  "errorCheckingForUpdates": "Kuskuren duba sabuntawa",
+  "installPermissionRequired": "Ana buƙatar shigar da izini",
+  "downloadFailed3": "An kasa saukewa",
+  "newVersionAvailable": "Akwai Sabon Sigar",
+  "episodeMetadata": "Metadata na Kashi",
+  "sessionExpiredPleaseLoginAgain": "Zaman ya ƙare. Da fatan za a sake shiga.",
+  "successfullyLoggedInAs": "An yi nasarar shiga a matsayin {username}",
+  "loggedOutFromDiscord": "An fita daga Discord",
+  "clearStoredLogFiles": "Share Fayilolin Rubuce-rubucen da Aka Ajiye",
+  "resetInMemoryAndDiskLogFiles": "Sake saita fayilolin rajista a cikin ƙwaƙwalwa da diski",
+  "errorCopiedToClipboard": "An kwafi kuskure zuwa allo",
+  "autoScrollOn": "Gungurawa ta atomatik Kunne",
+  "autoScrollOff": "Gungurawa ta atomatik Kashe",
+  "copyLogs": "Kwafi Rubuce-rubuce",
+  "clearLogs": "Share Rubuce-rubuce",
+  "metadataFallbackStrategy": "Dabarun Mayar da Metadata",
+  "activeSourceMode": "Yanayin Tushen da ke Aiki",
+  "chooseWhetherToMergeProviders": "Zaɓi ko za a haɗa masu bayarwa ko tilasta wani takamaiman sabis",
+  "autoMerged": "Na atomatik (An haɗa)",
+  "providerPriorityToggles": "Fifikon Masu Ba da Sabis da Maballai",
+  "dragHandlesToChangeFetchPriority": "Jawo hannaye don canza fifiko. Manyan hanyoyin tushe suna da fifiko yayin warware lakabin kashi, hotuna, da kwatance.",
+  "maintenance": "Gyara da Kulawa",
+  "clearMetadataCache": "Share Ma'ajiyar Metadata",
+  "flushesInMemoryEpisodeThumbnails": "Yana share ma'ajiyar hotuna da lakabin kashi a cikin ƙwaƙwalwa",
+  "metadataCacheCleared": "An share ma'ajiyar metadata",
+  "resetToDefaultOrder": "Sake saita zuwa Tsarin Asali",
+  "restoreFactoryPriorityOrder": "Mayar da tsarin fifiko na asali kuma kunna duk masu ba da sabis",
+  "resetEpisodeMetadataToDefaults": "An sake saita metadata na kashi zuwa asali",
+  "configureProvidersAndOrder": "Sanya Masu Ba da Sabis da Tsari",
+  "reorderSourcesToggleIndividual": "Sake tsara hanyoyin tushe, kunna ko kashe masu ba da sabis ɗaya-ɗaya",
+  "autoMergedPriority": "Na atomatik (Haɗaɗɗen Fifiko)",
+  "mergesHighestPriorityAvailable": "Yana haɗa bayanan da ke akwai masu fifiko mafi girma",
+  "useRawProviderEpisodeTitlesOnly": "Yi amfani da ainihin lakabin kashi na mai ba da sabis kawai",
+  "progressSliderStyle": "Salon Nunin Cigaba",
+  "seekPreview": "Fakewar Dubawa",
+  "showThumbnailScrubbingPreviewWhileSeeking": "Nuna hoton dubawa yayin ci gaba ko komawa baya",
+  "linearWavy": "Taguwar Layi",
+  "defaultM3": "Asali M3",
+  "capsule": "Kwaya",
+  "noLogsToCopy": "Babu rajistar da za a kwafa",
+  "logsCopiedToClipboard": "An kwafi rajista zuwa allo",
+  "noLogsAvailableToShare": "Babu rajistar da za a iya rabawa",
+  "decadeFormat": "Shekarun {decade}",
+  "mediaWithId": "Kafofin Watsa Labarai #{id}",
+  "tileIconShapes": "Siffofin Alamar Falele",
+  "tilePrefixIconShape": "Siffar alamar gaba ta falele",
+  "tileIconShapesLower": "Siffofin alamar falele",
+  "opening": "Bude Waƙa",
+  "ending": "Ƙarshen Waƙa",
+  "recap": "Takaitawa",
+  "ifSubtitleNotShowingDisableLibass": "Idan fassarar ba ta bayyana ba, kashe libass a saituna kuma sake farawa",
+  "subtitlesTranslatedEntries": "An fassara fassarar! ({count} shigarwar)",
+  "skippedFillerEpisodesCount": "{count, plural, other{An tsallake kashi {count} na filler}}",
+  "unsubscribe": "Cire Rajista",
+  "subscribeToThread": "Yi rajista a zaren",
+  "downloadChaptersCount": "{count, plural, other{Zazzage Babi {count}}}",
+  "downloadingChaptersCount": "{count, plural, other{Ana zazzage babi {count}...}}",
+  "moreRecommendationsCount": "{count, plural, other{+ shawarwari {count} ƙari}}",
+  "charactersAndVoiceActors": "Haruffa da Masu Muryar Murya",
+  "unknownVa": "Mawallafin muryar da ba a sani ba",
+  "chaptersTimestamps": "Surori da Tambarin Lokaci",
+  "contentSource": "Tushen Abun ciki",
+  "selectPreferredTrackingAndMediaProvider": "Zaɓi mai ba da sabis na bin diddigi da kafofin watsa labarai da kuka fi so",
+  "reducesColorRingingArtifacts": "Yana rage lahani na ringing na launi",
+  "downscalesInLinearLightSpace": "Yana rage girma a sararin haske na layi",
+  "motionDithering": "Motsi da Dithering",
+  "smoothMotionBetweenVideoFrames": "Motsi mai santsi tsakanin firam ɗin bidiyo",
+  "reducesColorBandingWithSubtle": "Yana rage banding na launi tare da ƙaramin amo",
+  "unknown": "Ba a sani ba",
+  "anilistActivity": "Ayyukan AniList",
+  "failedToPostStory": "An gaza buga labari",
+  "likesCount": "{count} so",
+  "newEpisodes": "Sabbin Sashe",
+  "outNowFromShowsYouAreWatching": "Akwai yanzu daga shirye-shiryen da kuke kallo",
+  "planning": "Shiri",
+  "postStory": "Buga Labari",
+  "postToStory": "Buga zuwa Labari",
+  "readChapter": "Karanta Babi {chapter}",
+  "repliesCount": "{count} amsoshi",
+  "rewatching": "Sake Kallo",
+  "sendAReaction": "Aika martani",
+  "statusUpdate": "Sabunta Matsayi",
+  "storyPostedToAnilist": "An buga labari zuwa AniList!",
+  "viewDiscussion": "Duba Tattaunawa",
+  "viewInAnymex": "Duba a AnymeX",
+  "watched": "An Kalla",
+  "watchedEpisode": "An kalli Kashi {episode}",
+  "whatsOnYourMindAniList": "Me ke zuciyarka? (Yana bugawa azaman rubutu akan AniList)",
+  "yourStory": "Labarinku",
+  "hostBadge": "MAI GIDA",
+  "basedOnAnimeScoredTen": "Bisa ga anime da ka ba wa maki 10/10.",
+  "basedOnMangaScoredTen": "Bisa ga manga da ka ba wa maki 10/10."
 }

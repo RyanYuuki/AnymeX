@@ -195,6 +195,8 @@ String settingsLabel(AppLocalizations l10n, String english) => switch (english) 
     'Votes' => l10n.votes,
     'Content & Preferences' => l10n.contentPreferences,
     'App Language' => l10n.labelLanguage,
+    'Episode Metadata' => l10n.episodeMetadata,
+    'Library & Content Safety' => l10n.libraryContentSafety,
     'Language, NSFW filter, unified library, recommendations & lists' =>
         '${l10n.labelLanguage}, ${l10n.nsfwFilterUnifiedLibraryRecommendationsLists}',
     'NSFW filter, unified library, recommendations & lists' => l10n.nsfwFilterUnifiedLibraryRecommendationsLists,

@@ -176,5 +176,3922 @@
   "incognitoDisabled": "Anonimni način rada onemogućen",
   "episodeCount": "{count} epizoda",
   "chapterCount": "{count} poglavlja",
-  "itemCount": "{count} stavki"
+  "itemCount": "{count} stavki",
+  "whatAreWeDoingToday": ", što radimo danas?",
+  "aLogoWithThisNameAlready": "Logo s ovim nazivom već postoji.",
+  "about": "O",
+  "aboutCommentumV2": "O Commentumu v2",
+  "aboutTheApp": "O aplikaciji",
+  "accessModerationToolsAndReports": "Pristupite alatima i izvješćima za moderiranje",
+  "accountTokensAnilistMalSimkl": "Tokeni računa (AniList, MAL, Simkl)",
+  "accounts": "Računi",
+  "accountsSync": "Računi i sinkronizacija",
+  "actionAppliedSuccessfully": "Radnja je uspješno primijenjena",
+  "activeDownloads": "Aktivna preuzimanja",
+  "activity": "aktivnost",
+  "activityDeleted": "Aktivnost izbrisana",
+  "activityHeatmap": "Toplinska karta aktivnosti",
+  "activityMergeTime": "Vrijeme spajanja aktivnosti",
+  "activityPhrasing": "Aktivnost Fraziranje",
+  "activityRefreshed": "Aktivnost je osvježena",
+  "adFreeApp": "Aplikacija bez oglasa",
+  "addCustomLogo": "Dodajte prilagođeni logotip",
+  "addCustomLogoGifWebp": "Dodaj prilagođeni logotip (.gif, .webp)",
+  "addRepo": "Dodaj Repo",
+  "addRepository": "Dodaj spremište",
+  "addYourRecommendation": "Dodajte svoju preporuku",
+  "addOnExtensions": "Proširenja dodataka",
+  "addOns": "Dodaci",
+  "addOnsPowerBackgroundServicesSuch": "Dodaci pokreću pozadinske usluge kao što je torrent streaming motor TorrServer za reprodukciju izravne magnetske veze.",
+  "addedToDownloads": "Dodano u preuzimanja",
+  "addingKotatsuRepositoryThisWillTake": "Dodavanje repozitorija Kotatsu. Ovo će trajati najmanje 1-2 minute, pričekajte...",
+  "addingRepositoryFetchingExtensions": "Dodavanje spremišta i dohvaćanje proširenja...",
+  "adjustBottomBarMarginMediaDetails": "Podesite marginu donje trake (samo stranica s detaljima medija)",
+  "adjustCardAnimationSpeed": "Podesite brzinu animacije kartice",
+  "adjustCornerRadiusOfElements": "Podesite polumjer kuta elemenata",
+  "adjustDoubleTapToSeekDuration": "Podesite trajanje dvostrukog dodira za traženje",
+  "adjustElementGlowIntensity": "Podesite intenzitet sjaja elementa",
+  "adjustFrostedBlurIntensity": "Podesite intenzitet zamućenja",
+  "adjustGlowBlurIntensity": "Podesite intenzitet zamućenja sjaja",
+  "adjustHorizontalMarginOfBottomNavigation": "Podesite vodoravnu marginu donje navigacijske trake",
+  "adjustItemsPerRow": "Prilagodite stavke po retku",
+  "adjustMediaBackdropExposure": "Prilagodite ekspoziciju medijske pozadine",
+  "adjustMegaskipDuration": "Podesite trajanje MegaSkipa",
+  "adjustRoundnessOfAllMediaCards": "Podesite okruglost svih medijskih kartica",
+  "adjustSubSize": "Podesite veličinu podnaslova",
+  "adjustSubtitleOutlineWidth": "Podesite širinu okvira podnaslova",
+  "adjustTextVisibility": "Podesite vidljivost teksta",
+  "admin": "Administrator",
+  "adult": "Odrasla osoba",
+  "aiPicks": "Odabir AI",
+  "airingAnimeNotifications": "Obavijesti o emitiranju animea",
+  "all": "sve",
+  "allClearNoReportsToReview": "Sve jasno! Nema izvješća za pregled.",
+  "allSources": "Svi izvori",
+  "allowAnymexToAutomaticallyOpenAnime": "Dopustite AnymeX-u da automatski otvara anime & manga web poveznice",
+  "allowInstallingUpdatesForExtensionsAnd": "Dopusti instaliranje ažuriranja za proširenja i aplikaciju",
+  "allowOnlyUsersIFollowTo": "Dopusti samo korisnicima koje pratim da mi šalju poruke.",
+  "allowStorageAccessAndSelectDownload": "Dopustite pristup pohrani i odaberite mapu za preuzimanje",
+  "allowStorageAccessToDownloadApp": "Dopustite pristup pohrani za preuzimanje ažuriranja aplikacija i proširenja",
+  "alreadyRecommended": "Već preporučeno",
+  "alternativeTitles": "Alternativni naslovi",
+  "alwaysShowChapterTransition": "Uvijek prikaži prijelaz poglavlja",
+  "alwaysShowPageIndicator": "Uvijek prikaži indikator stranice",
+  "amountOfFilmGrainApplied": "Količina primijenjene zrnatosti filma",
+  "anifyKitsuArtwork": "Anify / Kitsu umjetničko djelo",
+  "anilistSettings": "Postavke AniList",
+  "anilistSettings2": "Postavke anilista",
+  "animatchCompatibility": "AniMatch kompatibilnost",
+  "animatchLinkCopiedToClipboard": "Veza AniMatch kopirana u međuspremnik!",
+  "animateControlOverlay": "Animirajte kontrolni sloj",
+  "anime": "Anime",
+  "animeUpper": "ANIME",
+  "animeManga": "Anime & Manga",
+  "anime4kEnhancement": "Anime 4K poboljšanje",
+  "animeAdaptation": "Anime adaptacija",
+  "animeCustomLists": "Anime prilagođeni popisi",
+  "animeDetailsPhrasing": "Fraziranje detalja animea",
+  "animeLibrary": "Knjižnica animea",
+  "animeList": "POPIS ANIMEA",
+  "animeScore": "Anime rezultat",
+  "animeSectionOrder": "Redoslijed odjeljka anime",
+  "announcement": "Najava",
+  "announcementUnavailable": "Najava nedostupna",
+  "announcements": "Obavijesti",
+  "anymexForkOptimisedForTv": "AnymeX vilica optimizirana za TV",
+  "anymexIs100FreeOpenSource": "AnymeX je 100% besplatan, otvorenog koda i bez oglasa. Vaša podrška izravno pomaže u troškovima poslužitelja i aktivnom razvoju značajki!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX je 100% besplatan, otvorenog koda i bez oglasa. vaša me podrška motivira za kontinuirano održavanje i poboljšanje aplikacije!",
+  "appCacheExceededThresholdAndWas": "Predmemorija aplikacije premašila je prag i izbrisana je",
+  "appDataHasBeenCompletelyReset": "Podaci aplikacije potpuno su poništeni",
+  "appFonts": "Fontovi aplikacije",
+  "appSettingsSessions": "Postavke aplikacije i sesije",
+  "appearance": "Izgled",
+  "appearanceInterface": "Izgled i sučelje",
+  "appearanceTheme": "Izgled i tema",
+  "appliesAnimeMangaPosterColorOn": "Primjenjuje boju anime/manga postera na stranici s detaljima",
+  "apply": "primijeniti",
+  "applyASubtleFilmGrainTexture": "Nanesite suptilnu teksturu filma preko sučelja",
+  "applyFilters": "Primijeni filtre",
+  "applyOptionsFromYourMpvConf": "Primijenite opcije iz vašeg mpv.conf-a kada započne reprodukcija",
+  "areYouSureYouWantTo": "Jeste li sigurni da želite izbrisati sve spremljene kolačiće?",
+  "areYouSureYouWantToDelete": "Jeste li sigurni da želite izbrisati ovaj komentar? Bit će trajno uklonjen i prijava će biti riješena.",
+  "areYouSureYouWantToDeleteThis": "Jeste li sigurni da želite izbrisati ovo proširenje?",
+  "areYouSureYouWantToDeleteThisReply": "Jeste li sigurni da želite izbrisati ovaj odgovor?",
+  "askForTrackingPermission": "Zatraži dopuštenje za praćenje",
+  "atLeast2TabsMustRemain": "Najmanje 2 kartice moraju ostati vidljive!",
+  "audioEngine": "Audio motor",
+  "audioPitchCorrection": "Korekcija visine zvuka",
+  "authenticationOptional": "PROVJERA AUTENTIFIKACIJE (OPCIONALNO)",
+  "auto": "Automatski",
+  "autoPlay": "Automatska reprodukcija",
+  "autoScroll": "Automatsko pomicanje",
+  "autoScrollSpeed": "Brzina automatskog pomicanja",
+  "autoSkipEd": "Automatski preskoči ED",
+  "autoSkipFiller": "Automatsko popunjavanje preskakanja",
+  "autoSkipOnceOnly": "Automatski preskoči samo jednom",
+  "autoSkipOnlyOncePerWatch": "Automatsko preskakanje samo jednom po gledanju",
+  "autoSkipOp": "Automatski preskoči OP",
+  "autoSkipRecap": "Automatsko preskakanje Recap",
+  "autoSkipTheEndingSong": "Automatsko preskakanje završne pjesme",
+  "autoSkipTheOpeningSong": "Automatski preskoči uvodnu pjesmu",
+  "autoSkipTheRecapSection": "Automatski preskoči odjeljak sa sažetkom",
+  "autoSwitchToVerticalMode": "Automatsko prebacivanje u okomiti način rada",
+  "autoTranslateSubtitles": "Automatski prijevod titlova",
+  "autoWebtoonMode": "Automatski način webtoona",
+  "autoClearThreshold": "Prag automatskog brisanja",
+  "autoSelectDefault": "Automatski odabir (zadano)",
+  "autoSelectThisServerQualityFor": "Automatski odaberite ovu kvalitetu poslužitelja za ovaj anime",
+  "automaticallyMoveToNextTextSegment": "Automatski prijeđite na sljedeći segment teksta",
+  "automaticallyScrollContent": "Automatski pomičite sadržaj",
+  "automaticallyScrollPages": "Automatski pomičite stranice",
+  "automaticallySkipFillerEpisodesWhenGoing": "Automatski preskoči dodatne epizode kada ide na sljedeću epizodu",
+  "automaticallyUpdateEntriesWhenImportingThe": "Automatski ažurirajte unose prilikom uvoza XML-a",
+  "availableAddOns": "Dostupni dodaci",
+  "availableKeybindings": "Dostupni tipkovnici:",
+  "avatarDecorations": "Dekoracije avatara",
+  "avatarDecorationsNameplatesBannersProfileEffects": "Ukrasi za avatare, pločice s imenima, natpisi i profilni efekti",
+  "avgChapters": "Prosj. poglavlja",
+  "avgEpisodes": "Prosj. epizoda",
+  "back": "natrag",
+  "backdropScope": "Pozadina i opseg",
+  "backdropBrightness": "Svjetlina pozadine",
+  "backdropSource": "Izvor pozadine",
+  "backgroundOpacity": "Neprozirnost pozadine",
+  "backup": "Sigurnosna kopija",
+  "backupRestore": "Sigurnosno kopiranje i vraćanje",
+  "backupAndRestoreYourLibrary": "Sigurnosno kopirajte i vratite svoju knjižnicu",
+  "backupArchive": "Sigurnosna arhiva",
+  "backupOwner": "Rezervni vlasnik",
+  "backupRestoredSuccessfully": "Sigurnosna kopija uspješno vraćena!",
+  "backupSavedSuccessfully": "Sigurnosna kopija je uspješno spremljena!",
+  "badge": "Značka",
+  "banUser": "Ban korisnika",
+  "baseUrlNotAvailableForThis": "Osnovni URL nije dostupan za ovaj izvor",
+  "basedOnYourFavouriteCharacters": "Na temelju vaših omiljenih likova.",
+  "basedOnYourFavouriteStaff": "Na temelju vašeg omiljenog osoblja.",
+  "basedOnYourTop10Tags": "Na temelju vaših top 10 oznaka.",
+  "basedOnYourTop3Studios": "Na temelju vaša 3 najbolja studija.",
+  "basedOnYourTop5Genres": "Na temelju vaših 5 najboljih žanrova.",
+  "basedOnYourTop6Voice": "Na temelju vaših 6 najboljih glasovnih glumaca.",
+  "batchDownload": "Skupno preuzimanje",
+  "beTheFirstToRecommendThis": "Budite prvi koji će preporučiti ovaj naslov!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Bolji prikaz titlova pomoću libass biblioteke",
+  "blockquote": "Blok citat",
+  "blurBackdropTuning": "Zamućenje i podešavanje pozadine",
+  "blurAmount": "Količina zamućenja",
+  "blurColorTint": "Nijansa zamućenja boje",
+  "blurMechanism": "Mehanizam zamućivanja",
+  "blurMultiplier": "Multiplikator zamućenja",
+  "blurStyle": "Stil zamućenja",
+  "bold": "Podebljano",
+  "boldItalic": "Podebljano + kurziv",
+  "botUrlNotConfigured": "URL bota nije konfiguriran",
+  "bottomControls": "Donje kontrole",
+  "bottomMargin": "Donja margina",
+  "bottomNavBarMargin": "Donja margina navigacijske trake",
+  "broadcastYourActivityToDiscord": "Emitirajte svoju aktivnost na Discord",
+  "browsingIdle": "Pregledavanje / mirovanje",
+  "browsingPhrasing": "Pregledavanje fraza",
+  "bufferSize": "Veličina međuspremnika",
+  "builtInStyles": "Ugrađeni stilovi",
+  "byDisablingThisYouCanAvoid": "Isključivanjem ove opcije možete izbjeći prijelaz između titlova.",
+  "byIndex": "Po indeksu",
+  "byUserId": "Po ID-u korisnika",
+  "byUsername": "Po korisničkom imenu",
+  "bypassCloudflare": "Zaobiđite Cloudflare",
+  "cacheStorage": "Predmemorija i pohrana",
+  "cacheMinutes": "Predmemorija minuta",
+  "cacheOverview": "Pregled predmemorije",
+  "cachedImages": "Slike u predmemoriji",
+  "calculateCompatibility": "Izračunajte kompatibilnost",
+  "calculatedBasedOnWhichReleaseDecades": "Izračunato na temelju desetljeća izdanja koje ste najviše gledali i dobili najviše bodova.",
+  "calendar": "Kalendar",
+  "cancel": "Odustani",
+  "cannotCompareAUserWithThemselves": "Ne možete uspoređivati korisnika sa samim sobom! Unesite dva različita korisnička imena.",
+  "cannotCompareYourProfileWithYourself": "Ne možete uspoređivati ​​svoj profil sa samim sobom! Unesite drugo korisničko ime.",
+  "cantPlaySinceUserClosedThe": "Ne mogu igrati jer je korisnik naglo zatvorio aplikaciju",
+  "cantReadSinceUserClosedThe": "Ne mogu čitati jer je korisnik naglo zatvorio aplikaciju",
+  "cardAnimationDuration": "Trajanje animacije kartice",
+  "cardRoundness": "Zaokruženost kartice",
+  "cardStyle": "Stil kartice",
+  "carouselStyle": "Stil vrtuljka",
+  "changeFile": "Promjena datoteke",
+  "changeRole": "Promjena uloge",
+  "changeService": "Promjena usluge",
+  "changeSubtitleBackgroundColor": "Promjena boje pozadine titlova",
+  "changeSubtitleColors": "Promjena boje podnaslova",
+  "changeSubtitleOutlineColor": "Promjena boje obrisa podnaslova",
+  "changelog": "DNEVNIK PROMJENA",
+  "chapterListSettings": "Postavke popisa poglavlja",
+  "chapterNumber": "Broj poglavlja",
+  "chapterTileStyle": "Stil pločice poglavlja",
+  "chapters": "poglavlja",
+  "chaptersUpper": "POGLAVLJA",
+  "chaptersVolumes": "POGLAVLJA I SVEZCI",
+  "chaptersRead": "Pročitana poglavlja",
+  "characters": "Likovi",
+  "checkCompatibility": "Provjerite kompatibilnost",
+  "checkForAddOnUpdates": "Provjerite ima li ažuriranja dodataka",
+  "checkForUpdates": "Provjerite ima li ažuriranja",
+  "checkUpdatesFromBetaChannel": "Provjerite ažuriranja s beta kanala",
+  "checkingForUpdates": "Provjera ažuriranja!",
+  "chooseABackupFileAnymex": "Odaberite datoteku sigurnosne kopije (.anymex)",
+  "chooseACustomBackgroundForLiquid": "Odaberite prilagođenu pozadinu za tekući način rada.",
+  "chooseADirectoryToBrowseYour": "Odaberite direktorij za pregledavanje medijskih datoteka",
+  "chooseDifferentImage": "Odaberite drugu sliku",
+  "chooseDownloadFolder": "Odaberite mapu za preuzimanje",
+  "chooseImage": "Odaberite sliku",
+  "chooseProvider": "Odaberite Provider",
+  "chooseQuality": "Odaberite kvalitetu",
+  "chooseServer": "Odaberite poslužitelj",
+  "chooseServiceTracker": "Odaberite Usluga / Tracker",
+  "chooseShaderProfile": "Odaberite Shader Profile",
+  "chooseUpiApp": "Odaberite aplikaciju UPI",
+  "chooseWhichListToShowOn": "Odaberite koji popis želite prikazati na početnoj stranici",
+  "chooseYourFavouriteColor": "Odaberite svoju omiljenu boju!",
+  "chooseYourFavouritePalette": "Odaberite svoju omiljenu paletu!",
+  "chromaScaler": "Skaler kroma",
+  "classicCarouselCardLayoutFeaturingVertical": "Klasični karusel raspored kartica s okomitim posterima.",
+  "clear": "čisto",
+  "clearAll": "Obriši sve",
+  "clearAllHistory": "Obriši svu povijest",
+  "clearAppCache": "Očisti predmemoriju aplikacije",
+  "clearAppCacheNow": "Sada izbrišite predmemoriju aplikacije",
+  "clearCache": "Očisti predmemoriju",
+  "clearCacheCookies": "Očisti predmemoriju i kolačiće",
+  "clearCookies": "Obriši kolačiće",
+  "clearCookies2": "Obriši kolačiće",
+  "clearHistory": "Obriši povijest",
+  "clearImageCacheNow": "Sada očistite predmemoriju slika",
+  "clearProxy": "Obriši proxy",
+  "clearSelected": "Obriši odabrano",
+  "clientAll": "Klijent: Svi",
+  "close": "Zatvori",
+  "closetCommunity": "Ormar i zajednica",
+  "cloudflareChallengeSolved": "Cloudflare izazov riješen!",
+  "collectionName": "Naziv zbirke",
+  "collections": "Zbirke",
+  "combineBackupDataWithExistingData": "Kombinirajte sigurnosne kopije podataka s postojećim podacima na ovom uređaju",
+  "commentDeleted": "Komentar izbrisan",
+  "commentPolicy": "Politika komentara",
+  "commentReplies": "Odgovori na komentare",
+  "commentRules": "Pravila komentara",
+  "commentSystem": "Sustav komentara",
+  "comments": "Komentari",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 je napredni sustav komentara koji pruža:",
+  "commentumV2SettingsModerationPreferences": "Postavke, moderiranje i postavke Commentuma v2",
+  "common": "Uobičajeno",
+  "commonCharacters": "Uobičajeni likovi",
+  "commonFavouriteStaff": "Zajedničko omiljeno osoblje",
+  "commonGenres": "Uobičajeni žanrovi",
+  "commonSettings": "Uobičajene postavke",
+  "commonStudios": "Uobičajeni studiji",
+  "commonTags": "Uobičajene oznake",
+  "commonVoiceActors": "Uobičajeni glasovni glumci",
+  "communityDriven": "Vođen zajednicom",
+  "communityForksOfAnymex": "Vilice zajednice AnymeX",
+  "communityLeaderboard": "Leaderboard zajednice",
+  "communityRecommendations": "Preporuke zajednice",
+  "compact": "Kompaktan",
+  "compactCardWithEpisodeThumbnailAnd": "Kompaktna kartica sa sličicom i naslovom epizode",
+  "compactGridOfChapterNumbers": "Kompaktna mreža brojeva poglavlja",
+  "compatibility": "Kompatibilnost",
+  "compatibilityRanks": "Rangovi kompatibilnosti",
+  "compatibleWithGooglePayPhonepePaytm": "Kompatibilan s Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay i svim UPI bankarskim aplikacijama.",
+  "completeAnyCloudflareChallengeThenTap": "Dovršite bilo koji Cloudflare izazov, a zatim dodirnite \"Sinkroniziraj kolačiće\" da proslijedite sesiju ekstenzijama.",
+  "compose": "Sastavi",
+  "concurrencyLimits": "Konkurentnost i ograničenja",
+  "configurationsRepos": "Konfiguracije i spremišta",
+  "configureExport": "Konfiguriraj i izvezi",
+  "configureDiscordRichPresenceActivityStatus": "Konfigurirajte Discord Bogatu prisutnost i status aktivnosti",
+  "configureDnsOverHttpsProxyTls": "Konfigurirajte postavke DNS-over-HTTPS, proxy i TLS",
+  "configureMangaAndNovelReaderDefaults": "Konfigurirajte zadane postavke čitača manga i romana",
+  "configureParallelDownloadsAndDirectory": "Konfigurirajte paralelna preuzimanja i imenik",
+  "configurePosterBlurScopeTintBackdrop": "Konfigurirajte zamućenje postera, opseg, boju i izvor pozadine",
+  "confirm": "Potvrdi",
+  "confirmRestore": "POTVRDI I VRATI",
+  "confirmBackupPassword": "Potvrdite sigurnosnu lozinku",
+  "conflictHandling": "Rješavanje sukoba",
+  "connect": "Poveži se",
+  "continueReading": "Nastavite čitati",
+  "continueWatching": "Nastavite s gledanjem",
+  "continuousModeOnly": "Samo kontinuirani način rada",
+  "contributors": "Suradnici",
+  "controlTheme": "Kontrolna tema",
+  "controlsSubtitlesAndPlaybackPreferences": "Kontrole, titlovi i postavke reprodukcije",
+  "cookiesUserAgentSynced": "Kolačići i korisnički agent sinkronizirani!",
+  "copy": "Kopiraj",
+  "copyPath": "Kopiraj put",
+  "copyUpiId": "Kopiraj UPI ID",
+  "copyUserId": "Kopiraj korisnički ID",
+  "coreTeam": "Glavni tim",
+  "couldNotCalculateCompatibility": "Nije moguće izračunati kompatibilnost.",
+  "couldNotFetchChaptersForThis": "Nije moguće dohvatiti poglavlja za ovaj naslov",
+  "couldNotFetchEpisodesForThis": "Nije moguće dohvatiti epizode za ovaj naslov",
+  "couldNotOpenDonationLink": "Nije moguće otvoriti vezu za donaciju",
+  "couldNotOpenLink": "Nije moguće otvoriti vezu",
+  "couldNotOpenReleasesPage": "Nije moguće otvoriti stranicu s izdanjima",
+  "couldntOpenAppSettingsOpenIt": "Nije moguće otvoriti postavke aplikacije. Otvorite ga ručno.",
+  "count": "brojati",
+  "countryDistribution": "Distribucija po zemlji",
+  "countryOfOrigin": "Zemlja podrijetla",
+  "create": "Stvorite",
+  "createAFullAnymexArchiveOf": "Stvorite punu .anymex arhivu svoje medijske biblioteke, postavki, ekstenzija i vremena izvođenja hosta",
+  "createActivity": "Kreiraj aktivnost",
+  "createBackup": "Napravi sigurnosnu kopiju",
+  "createNewList": "Stvori novi popis",
+  "createStatus": "Kreiraj status",
+  "cropBorders": "Granice usjeva",
+  "current": "Trenutno • ",
+  "custom": "Custom",
+  "customBanners": "Prilagođeni banneri",
+  "customColorPicker": "Prilagođeni birač boja",
+  "customDohUrl": "PRILAGOĐENI DOH URL",
+  "customFonts": "Prilagođeni fontovi",
+  "customLists": "Prilagođeni popisi",
+  "customLogos": "Prilagođeni logotipi",
+  "customPlayerFlagsParameters": "Prilagođene zastavice i parametri igrača",
+  "customScale": "Prilagođeno mjerilo",
+  "customTheme": "Prilagođena tema",
+  "customUserAgent": "Prilagođeni korisnički agent",
+  "customValue": "Prilagođena vrijednost",
+  "customEllipsis": "Prilagođeno...",
+  "customizeCardHistoryCardCarouselNav": "Prilagodite stilove kartice, kartice povijesti, karusela i navigacijske trake",
+  "customizeTheInterfaceToYourLiking": "Prilagodite sučelje svojim željama",
+  "customizeYourLogoAnimationStyle": "Prilagodite svoj stil animacije logotipa",
+  "dailyActivitiesWatchAndReadMetrics": "Dnevne aktivnosti, gledajte i čitajte metrike",
+  "dailyActivityAndWatchReadProgress": "Dnevna aktivnost i praćenje napretka gledanja/čitanja",
+  "dataCache": "Podaci i predmemorija",
+  "dataToRestore": "PODACI ZA VRAĆANJE",
+  "days": "DANA",
+  "days2": "dana",
+  "daysActive": "DANA AKTIVNOSTI",
+  "debanding": "Raspuštanje",
+  "debugStuffs": "Otklanjanje pogrešaka",
+  "decoder": "Dekoder",
+  "decoderHwdec": "Dekoder (HWDec)",
+  "decoderThreads": "Dekoderske niti",
+  "decorationCloset": "Ormar za dekoraciju",
+  "defaultLabel": "Zadano",
+  "defaultAndroidAudiotrackApi": "Zadani Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "Zadani Apple CoreAudio API",
+  "defaultListOrder": "Zadani redoslijed popisa",
+  "defaultOrientation": "Zadana orijentacija",
+  "defaultPortrait": "Zadani portret",
+  "defaultPulseaudioApi": "Zadani PulseAudio API",
+  "defaultSize200px": "Zadana veličina (200 px)",
+  "defaultSystemAudioDriver": "Zadani audio upravljački program sustava",
+  "defaultTheme": "Zadana tema",
+  "defaultWindowsAudioDriver": "Zadani audio upravljački program za Windows",
+  "delete": "Izbriši",
+  "deleteActivity": "Izbriši aktivnost",
+  "deleteAll": "Izbriši sve",
+  "deleteAllCachedImagesTorrentStream": "Izbrišite sve predmemorirane slike, dijelove torrent streama i privremene datoteke.",
+  "deleteAllStoredHttpCookiesAcross": "Izbrišite sve pohranjene HTTP kolačiće na svim domenama.",
+  "deleteChapter": "Izbriši poglavlje",
+  "deleteChapterQuestion": "Izbrisati poglavlje?",
+  "deleteComment": "Izbriši komentar",
+  "deleteCustomLogo": "Izbriši prilagođeni logotip",
+  "deleteEpisode": "Izbriši epizodu",
+  "deleteEpisodeQuestion": "Izbrisati epizodu?",
+  "deleteEverythingStoredOfAnymexPermanently": "Trajno izbrišite sve pohranjeno u AnymeX.",
+  "deleteExtension": "Izbriši ekstenziju",
+  "deleteFont": "Izbriši font",
+  "deleteHistoryItem": "Brisanje stavke povijesti",
+  "deleteList": "Izbriši popis",
+  "deleteLogo": "Izbriši logotip",
+  "deleteReason": "Izbrisati razlog?",
+  "deleteRecommendation": "Izbrisati preporuku?",
+  "deleteReply": "Izbriši odgovor",
+  "deleteReportedComment": "Izbriši prijavljeni komentar",
+  "deleteSavedCookiesAndCloudflareTokens": "Izbrišite spremljene kolačiće i Cloudflare tokene",
+  "deleteSavedCookiesCloudflareTokensAnd": "Izbrišite spremljene kolačiće, Cloudflare tokene i privremenu predmemoriju",
+  "deleteSelected": "Izbriši odabrano",
+  "deleteTemporaryNetworkAndImageCache": "Izbrišite privremenu predmemoriju mreže i slike",
+  "deletionRequestSentToAdminsFor": "Zahtjev za brisanje poslan administratorima na pregled.",
+  "demuxerMaxBuffer": "Maksimalni međuspremnik demuksera",
+  "demuxerReadahead": "Predučitavanje demuksera",
+  "description": "Opis",
+  "detailedClassic": "Detaljno (klasično)",
+  "detailedInsights": "Detaljni uvidi",
+  "detailsPage": "Stranica s detaljima",
+  "developer": "Developer",
+  "development": "Razvoj",
+  "direct": "Izravno",
+  "directSurfaceRenderingAndroidOnly": "Izravno površinsko renderiranje (samo Android)",
+  "direction": "Smjer",
+  "disableToShowAndHidePlayer": "Onemogućite da biste odmah prikazali i sakrili kontrole igrača",
+  "disablingMayBypassCaptivePortalsOr": "Onemogućivanjem se mogu zaobići captive portali ili SSL inspekcija, ali se smanjuje sigurnost.",
+  "discard": "Odbaciti",
+  "discardMessage": "Odbaciti poruku?",
+  "discardReply": "Odbaciti odgovor?",
+  "discardStatus": "Odbaciti status?",
+  "disconnect": "Prekini vezu",
+  "disconnectDiscord": "Odspojiti Discord?",
+  "discordTakenDown": "Discord Skinut",
+  "dismiss": "Odbaciti",
+  "display": "Prikaz",
+  "displayAnimeMangaMoviesAndShows": "Prikazujte anime, mange, filmove i emisije koje preporučuje zajednica na početnoj stranici.",
+  "displayMode": "Način prikaza",
+  "displayModeTuningIsNotApplicable": "Podešavanje načina prikaza nije primjenjivo na platformama stolnih računala.",
+  "displayPlaybackOrReadingProgressTimestamps": "Prikaz vremenskih oznaka napretka reprodukcije ili čitanja",
+  "displayRefreshRateResolutionAndFrame": "Brzina osvježavanja zaslona, razlučivost i podešavanje okvira",
+  "distanceBetweenLines": "Udaljenost između linija",
+  "distanceFromBottomOfScreen": "Udaljenost od dna zaslona",
+  "ditherDepth": "Dubina dithera",
+  "dnsProxy": "DNS i proxy",
+  "dontShowAgain": "Ne prikazuj više",
+  "donate": "Donirajte",
+  "donateSupport": "Donirajte i podržite",
+  "donateViaPaypal": "Donirajte putem PayPala",
+  "donateViaUpiOrPaypalTo": "Donirajte putem UPI ili PayPala kako biste podržali razvoj",
+  "donateViaUpiPaypalSupportDevelopment": "Donirajte putem UPI, PayPala i podržite razvoj",
+  "done": "GOTOVO",
+  "done2": "Gotovo",
+  "doubletapToSeek": "Dvaput dodirnite za traženje",
+  "downgradeOrSwitchToASpecific": "Vratite se na stariju verziju ili se prebacite na određenu verziju dodatka",
+  "download": "preuzimanje",
+  "download4kShaders": "Preuzmite 4K shadere",
+  "downloadAllChapters": "Preuzmite sva poglavlja",
+  "downloadAllEpisodes": "Preuzmite sve epizode",
+  "downloadChapter": "Preuzmi poglavlje",
+  "downloadChunks": "Preuzmite Chunks",
+  "downloadCurrentSection": "Preuzmite trenutni odjeljak",
+  "downloadEpisode": "Preuzmi epizodu",
+  "downloadFailedTapToRetry": "Preuzimanje nije uspjelo. Dodirnite za ponovni pokušaj.",
+  "downloadPath": "Put preuzimanja",
+  "downloadPathsAndQualitySettings": "Putovi preuzimanja i postavke kvalitete",
+  "downloadPathsAndStorageSettings": "Putovi preuzimanja i postavke pohrane",
+  "downloadPermissions": "Dopuštenja za preuzimanje",
+  "downloadQualityStoragePaths": "Kvaliteta preuzimanja, putevi pohrane",
+  "downloadSettings": "Postavke preuzimanja",
+  "downloadSize4mb": "Veličina preuzimanja: ~4MB",
+  "downloadStarted": "Preuzimanje je započelo",
+  "downloadUnreadChapters": "Preuzmite nepročitana poglavlja",
+  "downloadUnwatchedEpisodes": "Preuzmite negledane epizode",
+  "downloaded": "PREUZETO",
+  "downloaded2": "Preuzeto",
+  "downloadedMedia": "Preuzeti mediji",
+  "downloadingImage": "Preuzimanje slike...",
+  "downloadingPackage": "Preuzimanje paketa...",
+  "downloads": "Preuzimanja",
+  "downloadsStorage": "Preuzimanja i pohrana",
+  "downloadsPage": "Stranica preuzimanja",
+  "downscalingAlgorithm": "Algoritam smanjenja veličine",
+  "dragAndDropToReorderNavigation": "Povucite i ispustite za promjenu redoslijeda kartica navigacijske trake",
+  "dragToReorderStatusSections": "Povucite za promjenu rasporeda odjeljaka statusa",
+  "dualPageMode": "Način dvostrukih stranica",
+  "dynamicVariablesWillBeReplacedAutomatically": "Dinamičke varijable će se automatski zamijeniti. Također možete koristiti statičnu frazu.",
+  "edit": "Uredi",
+  "editActivity": "Uredi aktivnost",
+  "editCustomMpvFlagsPropertiesAnd": "Uredite prilagođene mpv zastavice, svojstva i konfiguracijsku datoteku",
+  "editLogoSettings": "Uredi postavke logotipa",
+  "editMediaEntry": "Uredi medijski unos",
+  "editReason": "Uredi razlog",
+  "editRecommendationReasonMin30Chars": "Uredi razlog preporuke (najmanje 30 znakova)",
+  "edited": "Uređeno",
+  "enableAnimation": "Omogući animaciju",
+  "enableAnimationOnCarouselsForSmooth": "Omogućite animaciju na vrtuljcima za glatko kretanje",
+  "enableBackgroundMediaControlsForBluetooth": "Omogućite pozadinske kontrole medija za Bluetooth slušalice i medijske obavijesti sustava. Napomena: ako ovo omogućite, povećat ćete potrošnju baterije.",
+  "enableBetaUpdates": "Omogući beta ažuriranja",
+  "enableClassicSimpleHeaderStyleOn": "Omogućite klasični stil jednostavnog zaglavlja na početnim zaslonima",
+  "enableDiscordRpc": "Omogući Discord RPC",
+  "enableExperimentalSettings": "Omogući eksperimentalne postavke",
+  "enableHoldingOnPlayerScreenTo": "Omogućite držanje na zaslonu playera da biste privremeno ubrzali reprodukciju videozapisa",
+  "enableHorizontalSwipingOnPlayerScreen": "Omogućite vodoravno pomicanje na zaslonu playera za pretraživanje kroz videozapis",
+  "enableKenBurns": "Omogući Kena Burnsa",
+  "enableLongPressQuickActions": "Omogućite brze radnje dugim pritiskom",
+  "enableNotificationsForUpcomingAiringEpisodes": "Omogućite obavijesti za nadolazeće epizode emitiranja.",
+  "enableNsfwAdultEntriesInAnilist": "Omogući unose NSFW/za odrasle u sadržaju AniList.",
+  "enableShaders": "Omogući shadere",
+  "enableSwipeControls": "Omogući kontrole prelaska",
+  "enableTapZones": "Omogući dodirne zone",
+  "enableThisIfYouWantTo": "Omogućite ovo ako želite zadržati izvornu boju pozadine",
+  "enableTranslucentNavigationBar": "Omogući prozirnu navigacijsku traku",
+  "enableTts": "Omogući TTS",
+  "enableVerticalSwipingOnTheLeft": "Omogućite okomito povlačenje s lijeve/desne strane zaslona playera za podešavanje svjetline i glasnoće",
+  "enablesASoftGlowingGradientEffect": "Omogućuje mekani, sjajni efekt gradijenta.",
+  "encryptWithAes256RecommendedFor": "Šifriranje s AES-256 (preporučeno za autentifikacije)",
+  "encrypted": "Šifrirano • ",
+  "endChapter": "Završetak poglavlja",
+  "enterAmount": "Unesite iznos...",
+  "enterAnilistUsername": "Unesite AniList korisničko ime",
+  "enterAtLeast2Characters": "Unesite najmanje 2 znaka",
+  "enterBackupPassword": "Unesite sigurnosnu lozinku",
+  "enterFirstAnilistUsername": "Unesite prvo korisničko ime AniList",
+  "enterGithubRepositoryUrl": "Unesite URL spremišta GitHub",
+  "enterListName": "Unesite naziv popisa",
+  "enterPassword": "Unesite lozinku",
+  "enterReasonOrDetailsForThis": "Unesite razlog ili detalje za ovu radnju...",
+  "enterSearchQuery": "Unesite upit za pretraživanje",
+  "enterUsername": "Unesite korisničko ime",
+  "enterValue": "Unesite vrijednost",
+  "entryDeleted": "Unos izbrisan.",
+  "episode1": "epizoda 1",
+  "episodeListSettings": "Postavke popisa epizoda",
+  "episodes": "Epizode",
+  "episodesDuration": "EPIZODE I TRAJANJE",
+  "episodesWatched": "Gledane epizode",
+  "errorOccured": "Došlo je do pogreške",
+  "errorOccurred": "Došlo je do pogreške",
+  "errorSavingImage": "Pogreška prilikom spremanja slike",
+  "errorSharingImage": "Pogreška prilikom dijeljenja slike",
+  "errorMissingRequiredDataItSeems": "Greška: Nedostaju potrebni podaci. Čini se da ste zatvorili aplikaciju odmah nakon čitanja poglavlja!",
+  "errorMissingRequiredMediaItSeems": "Pogreška: nedostaje potreban medij. Čini se da ste zatvorili aplikaciju odmah nakon čitanja poglavlja!",
+  "errorMissingRequiredMediaItSeemsYou": "Pogreška: nedostaje potreban medij. Čini se da ste zatvorili aplikaciju odmah nakon gledanja epizode!",
+  "everyScoreIsMappedToA": "Svaki se rezultat preslikava na rang. Donja tablica prikazuje svaku zagradu, njenu značku i što raspon predstavlja.",
+  "experimental": "Eksperimentalno",
+  "experimentalHighPerformanceRenderer": "Eksperimentalni renderer visokih performansi",
+  "explore": "Istražite",
+  "exploreTheProjectAndContribute": "Istražite projekt i doprinesite",
+  "exportLabel": "IZVOZ",
+  "exportBackup": "Izvoz sigurnosne kopije",
+  "exportCancelled": "Izvoz otkazan.",
+  "exportDeviceBackup": "Izvoz sigurnosne kopije uređaja",
+  "exportSettings": "Postavke izvoza",
+  "exportYourAnimeList": "Izvezite svoj popis anime filmova",
+  "exportYourMangaList": "Izvezite svoj Manga popis",
+  "extensionConfigurations": "Konfiguracije proširenja",
+  "extensionConfigurationsRepos": "Konfiguracije proširenja i spremišta",
+  "extensionManager": "Upravitelj proširenja",
+  "extensionPackages": "Paketi proširenja",
+  "extensionPreferences": "Postavke proširenja",
+  "extensionSettings": "Postavke proširenja",
+  "extensionSettingsAndSourceConfigurations": "Postavke proširenja i konfiguracije izvora",
+  "extensionTesting": "Ekstenzivno testiranje",
+  "extensionType": "Vrsta proširenja",
+  "extensions": "Ekstenzije",
+  "extensionsDiagnostics": "Proširenja i dijagnostika",
+  "extensionsRepositories": "Proširenja i spremišta",
+  "extensionsSources": "Proširenja i izvori",
+  "extensionsTailoredToYourNeeds": "Ekstenzije prilagođene vašim potrebama",
+  "externalStreamingLinks": "Vanjske veze i veze za strujanje",
+  "externalBackupsRestoreMetadataAndConfigurations": "Vanjske sigurnosne kopije sigurno vraćaju metapodatke i konfiguracije.",
+  "externalBrowser": "Vanjski preglednik",
+  "extras": "Dodaci",
+  "factoryReset": "Vraćanje na tvorničke postavke",
+  "factoryReset2": "Vraćanje na tvorničke postavke",
+  "failedToCheckForUpdates": "Provjera ažuriranja nije uspjela.",
+  "failedToCheckPluginUpdates": "Provjera ažuriranja dodataka nije uspjela.",
+  "failedToDeleteChapter": "Brisanje poglavlja nije uspjelo",
+  "failedToDeleteEpisode": "Brisanje epizode nije uspjelo",
+  "failedToDeleteListEntry": "Brisanje unosa popisa nije uspjelo",
+  "failedToDeleteMedia": "Brisanje medija nije uspjelo",
+  "failedToDownloadImage": "Preuzimanje slike nije uspjelo",
+  "failedToFetchChapters": "Dohvaćanje poglavlja nije uspjelo",
+  "failedToFetchDetails": "Dohvaćanje pojedinosti nije uspjelo",
+  "failedToFetchImageForSharing": "Nije uspjelo dohvaćanje slike za dijeljenje",
+  "failedToFetchPluginReleaseDetails": "Dohvaćanje pojedinosti o izdanju dodatka nije uspjelo.",
+  "failedToFetchPolicy": "Dohvaćanje pravila nije uspjelo.",
+  "failedToFetchReleaseDetails": "Dohvaćanje pojedinosti o izdanju nije uspjelo.",
+  "failedToFetchServers": "Dohvaćanje poslužitelja nije uspjelo",
+  "failedToLoadDetails": "Učitavanje pojedinosti nije uspjelo",
+  "failedToLoadFontFile": "Nije uspjelo učitavanje datoteke fonta",
+  "failedToLoadProfileAccountMay": "Učitavanje profila nije uspjelo — račun je možda privatan ili nije pronađen",
+  "failedToLoadTorrentMetadata": "Neuspješno učitavanje metapodataka torrenta",
+  "failedToPerformAction": "Radnja nije uspjela",
+  "failedToRemoveRepo": "Uklanjanje spremišta nije uspjelo",
+  "failedToStartExtensionRuntime": "Pokretanje Extension Runtime nije uspjelo",
+  "failedToUpdateAnilist": "Ažuriranje AniList nije uspjelo",
+  "failedToUpdateListEntry": "Ažuriranje unosa popisa nije uspjelo",
+  "failedToUpdatePreference": "Ažuriranje postavki nije uspjelo",
+  "failedToUpdateRole": "Ažuriranje uloge nije uspjelo",
+  "favoriteTitle": "Omiljeni naslov",
+  "favouriteAnime": "Omiljeni anime",
+  "favouriteCharacters": "Omiljeni likovi",
+  "favouriteManga": "Omiljena manga",
+  "favouriteStaff": "Omiljeno osoblje",
+  "favouriteStudios": "Omiljeni studiji",
+  "featuresIssues": "Značajke/problemi",
+  "fetchingAvailableServers": "Dohvaćanje dostupnih poslužitelja...",
+  "fetchingLatestReleaseDetails": "Dohvaćanje pojedinosti o najnovijem izdanju...",
+  "fetchingTorrentFileList": "Dohvaćanje popisa torrent datoteka...",
+  "filler": "PUNILO",
+  "filter": "Filter",
+  "filterActivities": "Filtrirajte aktivnosti",
+  "filterActivity": "Aktivnost filtra",
+  "filterByChapterCount": "Filtriraj prema broju poglavlja",
+  "filterByDurationMin": "Filtriraj po trajanju (min)",
+  "filterByEpisodeCount": "Filtriraj prema broju epizoda",
+  "filterByGenre": "Filtriraj po žanru",
+  "filterByVolumeCount": "Filtriraj prema broju volumena",
+  "filterGenres": "Filtrirajte žanrove",
+  "filterOutAdultNsfwEntriesFrom": "Filtrirajte unose za odrasle/NSFW iz preporuka zajednice.",
+  "filterOutEntriesAlreadyInYour": "Filtrirajte unose koji su već na vašem popisu",
+  "filterOutEntriesAlreadyInYourList": "Filtrirajte unose koji su već na vašem popisu na temelju statusa gledanja/čitanja.",
+  "filterSettings": "Postavke filtera",
+  "filters": "FILTERI",
+  "findAndManageSpecificUsers": "Pronađite određene korisnike i upravljajte njima",
+  "findAnimeSauceByScreenshots": "Pronađite anime umak pomoću snimaka zaslona",
+  "findSource": "Pronađite izvor",
+  "findYourFavouriteAnimeOrManga": "Pronađite svoj omiljeni anime ili mangu, manhwa ili što god želite!",
+  "findYourFavouriteAnimeMangaManhwa": "Pronađite svoj omiljeni anime, mangu, manhwa ili što god želite!",
+  "finishDate": "Datum završetka",
+  "firstChapter": "Prvo poglavlje",
+  "firstUser": "Prvi korisnik",
+  "fitToScreenWidth": "Prilagodi širini zaslona",
+  "fontFamily": "Obitelj fontova",
+  "fontSize": "Veličina fonta",
+  "forceReDownload": "Prisilno ponovno preuzimanje",
+  "forceSyncFromSdCard": "Prisilna sinkronizacija sa SD kartice",
+  "forks": "Vilice",
+  "format": "Format",
+  "formatDistribution": "Distribucija formata",
+  "frameInterpolation": "Interpolacija okvira",
+  "freeSupport": "Besplatna podrška",
+  "frequentlyRevisited": "Često posjećivan",
+  "fromUrl": "S URL-a",
+  "fullWidthDetailedCardWithLarge": "Detaljna kartica pune širine s velikom minijaturom i metapodacima o epizodi",
+  "fullWidthDetailedCardsWithProgress": "Detaljne kartice pune širine s gumbom za napredak i čitanje",
+  "fullWidthHeroBannerWithCompact": "Hero banner pune širine s kompaktnim detaljima i brzim sinopsisom.",
+  "general": "generalno",
+  "generalPrivacy": "Općenito & privatnost",
+  "generalSync": "Općenito i sinkronizacija",
+  "generalAppPreferencesAndSyncServices": "Opće postavke aplikacije i usluge sinkronizacije",
+  "generalAppSettingsAndSyncServices": "Opće postavke aplikacije i usluge sinkronizacije",
+  "generalPreferences": "Opće postavke",
+  "genres": "Žanrovi",
+  "genresUpper": "ŽANROVI",
+  "gestureForBrightnessVolume": "Pokret za svjetlinu i glasnoću",
+  "getHelpWithTheCommentSystem": "Zatražite pomoć sa sustavom komentara",
+  "getStarted": "Započnite",
+  "globalConcurrencyLimit": "Globalno ograničenje istodobnosti",
+  "glowMultiplier": "Množitelj sjaja",
+  "goSuperDarkMode": "Prijeđite na Super Dark Mode!",
+  "goToDownloads": "Idite na Preuzimanja",
+  "goToExtensionsToGetStarted": "Za početak idite na Proširenja",
+  "goToPluginDownloader": "Idite na Plugin Downloader",
+  "goToRuntimeManager": "Idite na Runtime Manager",
+  "goodAfternoon": "dobar dan",
+  "goodEvening": "dobra večer",
+  "goodMorning": "dobro jutro",
+  "goodnight": "laku noc",
+  "gotIt": "shvaćam",
+  "grainIntensity": "Intenzitet zrna",
+  "grainTextureOverlay": "Prekrivanje zrnate teksture",
+  "grantPermission": "Dajte dopuštenje",
+  "grantPermissions": "Dodijeli dopuštenja",
+  "grid": "Mreža",
+  "gridSize": "Veličina mreže",
+  "gridView": "Mrežni prikaz",
+  "guest": "Gost",
+  "happySnacking": "Sretno grickanje",
+  "hardwareDisplayModeSwitchingIsNot": "Vaš uređaj ne podržava hardversku promjenu načina prikaza.",
+  "helpSupport": "Pomoć i podrška",
+  "hexColorCode": "Hex kod boje",
+  "hey": "hej ",
+  "hidden": "Skriveno",
+  "hiddenFromYourPublicProfile": "Skriveno s vašeg javnog profila",
+  "hiddenTabs": "Skrivene kartice",
+  "hideAdultContent": "Sakrij sadržaj za odrasle",
+  "hideButton": "Sakrij gumb",
+  "hideByListStatus": "Sakrij po statusu popisa",
+  "hideCompleted": "Sakrij dovršeno",
+  "hideDropped": "Sakrij ispušteno",
+  "hideEntriesThatAreInYour": "Sakrijte unose koji se nalaze na vašem popisu planova.",
+  "hideEntriesThatAreMarkedAs": "Sakrijte unose koji su označeni kao dovršeni na vašem popisu.",
+  "hideEntriesThatYouAreCurrently": "Sakrijte unose koje trenutno gledate ili čitate.",
+  "hideEntriesThatYouAreRewatching": "Sakrijte unose koje ponovno gledate.",
+  "hideEntriesThatYouHaveDropped": "Sakrijte unose koje ste ispustili.",
+  "hideEntriesThatYouHavePut": "Sakrijte unose koje ste stavili na čekanje.",
+  "hideNsfw": "Sakrij NSFW",
+  "hideNsfw18Content": "Sakrij sadržaj NSFW / 18+",
+  "hideNsfwContent": "Sakrij NSFW sadržaj",
+  "hideNsfwRecommendations": "Sakrij NSFW preporuke",
+  "hideOnHoldPaused": "Sakrij Na čekanju / Pauzirano",
+  "hidePlanning": "Sakrij planiranje",
+  "hideRewatching": "Sakrij ponovno gledanje",
+  "hideSystemStatusAndNavigationBars": "Sakrij status sustava i navigacijske trake",
+  "hideWatchingReading": "Sakrij gledanje / čitanje",
+  "history": "Povijest",
+  "historyStatistics": "Povijest i statistika",
+  "historyCardStyle": "Stil povijesne kartice",
+  "historyItemDeleted": "Stavka povijesti izbrisana",
+  "hlsParallelSegments": "HLS paralelni segmenti",
+  "holdAndDragAnyItemTo": "Držite i povucite bilo koju stavku za promjenu redoslijeda",
+  "holdToAccessHistoryEditor": "Držite za pristup uređivaču povijesti",
+  "holdToDelete": "Držite za brisanje",
+  "holdToSpeedUp": "Držite za ubrzanje",
+  "home": "Dom",
+  "horizontal": "Horizontalno",
+  "hostEG12700": "Domaćin (npr. 127.0.0.1)",
+  "hours": "sati",
+  "howItWorksCompatibilityRanks": "Kako radi i rangovi kompatibilnosti",
+  "howMuchInPercentageToMark": "Koliko u postocima označiti epizodu kao pogledanu",
+  "howToUseTheCommentSystem": "Kako koristiti sustav komentara:",
+  "hue": "Nijansa",
+  "ifEnabledAContinueWatchingBar": "Ako je omogućeno, traka za nastavak gledanja bit će prikazana iznad donje navigacijske trake na početnoj stranici.",
+  "ifEnabledAllLibraryItemsWill": "Ako je omogućeno, sve stavke knjižnice dijelit će se na svim uslugama praćenja.",
+  "ifEnabledAnymexWillAskFor": "Ako je omogućeno, Anymex će tražiti dopuštenje za praćenje ako nije, tada će pratiti prema zadanim postavkama.",
+  "ifEnabledYouWillNotGet": "Ako je omogućeno, nećete dobiti upit za omogućavanje sadržaja za odrasle na Anilist/MyAnimeList.",
+  "ifTemporaryAppCacheReachesThis": "Ako privremena predmemorija aplikacije dosegne ovu veličinu, automatski će se izbrisati.",
+  "ifYouAreUsingAJson": "Ako koristite JSON temu, promjene ovdje neće utjecati na kontrole igrača. Prijeđite na ugrađenu temu da biste primijenili ove postavke.",
+  "ifYouCantDonateWatchThis": "Ako ne možete donirati, pogledajte ovaj oglas za podršku",
+  "image": "Slika",
+  "imageShowsThumbnail": "Slika (prikazuje sličicu)",
+  "imageFilterQuality": "Kvaliteta filtra slike",
+  "imageSharedFromAnymex": "Slika podijeljena sa AnymeX",
+  "imagesWillBeDownloadedInFull": "Slike će biti preuzete u punoj kvaliteti. Svako poglavlje pohranjeno je u vlastitu mapu.",
+  "immersiveMode": "Imerzivni način rada",
+  "importLabel": "UVOZ",
+  "importLabel2": "uvoz",
+  "importManageCustomJsonThemes": "Uvoz i upravljanje prilagođenim JSON temama",
+  "importBackup": "Uvoz sigurnosne kopije",
+  "importCustomFont": "Uvoz prilagođenog fonta",
+  "importFromUrl": "Uvoz s URL-a",
+  "includeAdultNsfwSuggestions": "Uključite prijedloge za odrasle i NSFW",
+  "incognito": "Inkognito",
+  "incognitoActive": "Anonimno (aktivno)",
+  "incognitoMode2": "Anonimni način rada",
+  "indiaUpi": "Indija (UPI)",
+  "info": "Info",
+  "inlineCode": "Inline kod",
+  "insert": "Ubacite",
+  "installPermission": "Dopuštenje za instalaciju",
+  "installPermissionIsRequiredToUpdate": "Za ažuriranje aplikacije potrebno je dopuštenje za instalaciju",
+  "installedPackages": "Instalirani paketi",
+  "installedThemes": "Instalirane teme",
+  "interfaceStyling": "Stil sučelja",
+  "internalBrowser": "Interni preglednik",
+  "international": "Međunarodni",
+  "invalidBackupFileOrIncorrectPassword": "Nevažeća datoteka sigurnosne kopije ili netočna lozinka",
+  "invertVolumeKeys": "Obrnuti tipke za glasnoću",
+  "italic": "kurziv",
+  "joinDiscordCommunity": "Pridružite se Discord zajednici",
+  "joinNewDiscord": "Pridružite se novom Discord",
+  "joinTelegramChannel": "Pridružite se Telegram kanalu",
+  "joinUsForDroppingFeedbackOr": "Pridružite nam se za slanje povratnih informacija ili zahtjeva za značajke",
+  "jsonThemeManager": "Upravitelj tema JSON",
+  "judgment": "Presuda",
+  "keepEditing": "Nastavite s uređivanjem",
+  "keepItChill": "Držite ga na hladnom",
+  "keepScreenOn": "Drži zaslon uključenim",
+  "keepVoicePitchStableAtHigher": "Održavajte visinu glasa stabilnom pri većim brzinama",
+  "koFiSupport": "Podrška za Ko-fi",
+  "languageVariant": "Jezična varijanta",
+  "lastAdded": "Zadnje dodano",
+  "lastChapter": "Posljednje poglavlje",
+  "later": "kasnije",
+  "latest": "Najnoviji",
+  "latestManga": "Najnovija manga",
+  "layout": "Izgled",
+  "layoutStyle": "Stil rasporeda",
+  "leaderboard": "Leaderboard",
+  "learnHowToFormatYourComments": "Naučite kako oblikovati svoje komentare",
+  "leftSide": "Lijeva strana",
+  "letterSpacing": "Razmak između slova",
+  "levelProgress": "Napredak razine",
+  "libraryLabel": "Knjižnica",
+  "librarySettings": "Postavke knjižnice",
+  "libraryStatistics": "Knjižnična statistika",
+  "lightness": "Lakoća",
+  "likedBy": "Sviđa mi se",
+  "lineHeight": "Visina linije",
+  "linkAutoDetected": "Veza (automatski otkrivena)",
+  "linkCopiedToClipboard": "Veza je kopirana u međuspremnik!",
+  "linkHasExpiredAndEpisodeUrl": "Veza je istekla i URL epizode nije dostupan.",
+  "linkHasExpiredAndNoAlternative": "Veza je istekla i nije pronađen nijedan alternativni tok.",
+  "linotteDefault": "Linotte (zadano)",
+  "liquidBackground": "Tekuća pozadina",
+  "liquidMode": "Tekući način rada",
+  "listEntryUpdatedSuccessfully": "Unos popisa uspješno ažuriran!",
+  "listExporter": "Izvoznik popisa",
+  "listNameAlreadyExists": "Naziv popisa već postoji",
+  "listOptions": "Opcije popisa",
+  "liveBlurIsUnavailableWhenUsing": "Zamućenje uživo nije dostupno kada se koristi Fluid Mesh.",
+  "livePreview": "PREGLED UŽIVO",
+  "livePreview2": "Pregled uživo",
+  "loadTemplate": "Učitaj predložak",
+  "loadingMediaFiles": "Učitavanje medijskih datoteka...",
+  "loadingMedia": "Učitavanje medija...",
+  "local": "Lokalni",
+  "localLibrary": "Lokalna knjižnica",
+  "localMedia": "Lokalni mediji",
+  "location": "Lokacija",
+  "logCapture": "Hvatanje dnevnika",
+  "logDirectory": "Dnevnik imenika",
+  "logIn": "Prijavite se",
+  "logInRequired": "Prijava je obavezna",
+  "logInToCustomizeYourPush": "Prijavite se kako biste prilagodili svoje postavke push obavijesti.",
+  "logInToJoinTheConversation": "Prijavite se da biste se pridružili razgovoru i komentirali.",
+  "logOut": "Odjava",
+  "loggedInTrackingServices": "Usluge praćenja prijavljenih",
+  "login": "Prijava",
+  "loginAuthTokens": "Tokeni za prijavu i autorizaciju",
+  "loginInsideTheAppRecommended": "Prijava unutar aplikacije (preporučeno)",
+  "loginSessions": "Sesije prijave",
+  "loginUsingYourDefaultBrowser": "Prijavite se pomoću zadanog preglednika",
+  "loginWithToken": "Prijavite se tokenom",
+  "logoAnimation": "Animacija logotipa",
+  "logoName": "Naziv logotipa:",
+  "logs": "Dnevnici",
+  "longPressPageActions": "Radnje stranice dugim pritiskom",
+  "makeEverythingGlassyLiquidy": "Učini sve staklenim i tekućim...",
+  "manageAnilistLists": "Upravljanje popisima anilista",
+  "manageCachedImagesThresholdsAndReset": "Upravljajte predmemoriranim slikama, pragovima i resetirajte podatke aplikacije",
+  "manageDeviceStorageAndNotificationsTo": "Upravljajte pohranom uređaja i obavijestima za preuzimanje i upravljanje svojim medijima izvan mreže.",
+  "manageLogCaptureAndShareSaved": "Upravljajte snimanjem dnevnika i dijelite spremljene zapisnike",
+  "manageMyanimelistLists": "Upravljanje MyAnimeList popisima",
+  "managePluginsSources": "Upravljanje dodacima i izvorima",
+  "manageSimklLists": "Upravljanje Simkl popisima",
+  "manageSourcesAndRepositoriesToUse": "Upravljajte izvorima i spremištima kako biste koristili aplikaciju u punom potencijalu",
+  "manageYourMyanimelistAnilistSimklAccounts": "Upravljajte svojim MyAnimeList, Anilist, Simkl računima!",
+  "management": "Upravljanje",
+  "manga": "Manga",
+  "mangaNovelReaderSettingsTapZones": "Postavke čitača manga i romana, dodirne zone",
+  "mangaNovelViewerSettingsTapZones": "Postavke preglednika manga i romana, dodirne zone",
+  "mangaAndNovelReaderStylesAnd": "Stilovi čitača manga i romana i dodirne zone",
+  "mangaCustomLists": "Manga prilagođeni popisi",
+  "mangaDetailsPhrasing": "Fraziranje pojedinosti mange",
+  "mangaLibrary": "Biblioteka manga",
+  "mangaList": "POPIS MANGA",
+  "mangaScore": "Manga rezultat",
+  "mangaSectionOrder": "Redoslijed odjeljka mange",
+  "manuallyPasteOauthAccessToken": "Ručno zalijepite OAuth pristupni token",
+  "markAllRead": "Označi sve pročitano",
+  "markAsWatched": "Označi kao gledano",
+  "markdownGuide": "Vodič za označavanje",
+  "maximumDemuxerBufferMb": "Maksimalni međuspremnik demuxera (MB)",
+  "maybeLater": "Možda kasnije",
+  "mean": "ZNAČITI",
+  "meanScore": "Prosječna ocjena",
+  "mediaPlayback": "Mediji i reprodukcija",
+  "mediaLibrary": "Mediateka",
+  "mediaSessionBluetoothSupport": "Medijska sesija (Bluetooth podrška)",
+  "mediaTypeBreakdown": "Raščlamba vrste medija",
+  "mediaYouDownloadWillAppearHere": "Ovdje će se pojaviti mediji koje preuzmete.",
+  "megaskipDuration": "Trajanje MegaSkipa",
+  "mention": "Spomenuti",
+  "mentions": "Spominjanja",
+  "merge": "Spojiti",
+  "messageFriend": "Poruka prijatelju",
+  "minutesWatched": "Gledane minute",
+  "miscellaneous": "Razno",
+  "missingRuntimeHost": "Nedostaje Runtime Host",
+  "moderation": "Umjerenost",
+  "moderationActions": "Akcije moderiranja",
+  "moderationPanel": "Ploča za moderiranje",
+  "moderator": "Moderator",
+  "moreOptions": "Više opcija",
+  "morePopularManga": "Više popularnih manga",
+  "moveToLeft": "Pomaknite se lijevo",
+  "moveToRight": "Pomaknite se udesno",
+  "movie": "Film",
+  "mpvConfiguration": "MPV konfiguracija",
+  "muteUser": "Isključi zvuk korisnika",
+  "mutualConnections": "Međusobne veze",
+  "mutualFriends": "Zajednički prijatelji",
+  "nameplates": "Pločice s imenima",
+  "navBarLayout": "Izgled navigacijske trake",
+  "navBarStyle": "Stil navigacijske trake",
+  "navigationLayout": "Raspored navigacije",
+  "needHelp": "Trebate pomoć?",
+  "network": "mreža",
+  "newLabel": "NOVO",
+  "newCollection": "Nova kolekcija",
+  "newCustomListName": "Novi prilagođeni naziv popisa",
+  "newDownload": "Novo preuzimanje",
+  "newList": "Novi popis",
+  "newestFirst": "Prvo najnoviji",
+  "nextRelease": "Sljedeće izdanje",
+  "nextReleasePrediction": "Predviđanje sljedećeg izdanja",
+  "noActiveDownloads": "Nema aktivnih preuzimanja",
+  "noActiveSourceOrMediaFound": "Nema aktivnog izvora ili medija",
+  "noActiveSourceSelected": "Nije odabran nijedan aktivni izvor",
+  "noActivity": "Nema aktivnosti",
+  "noAnimeFound": "Nije pronađen nijedan anime",
+  "noAudioTracksAvailable": "Nema dostupnih zvučnih zapisa",
+  "noChaptersFound": "Nisu pronađena poglavlja",
+  "noChaptersFound2": "Nisu pronađena poglavlja",
+  "noCommonGenres": "Nema uobičajenih žanrova",
+  "noCommonTags": "Nema uobičajenih oznaka",
+  "noContributorsFound": "Nije pronađen nijedan suradnik.",
+  "noCustomListsAvailable": "Nema dostupnih prilagođenih popisa.",
+  "noCustomListsYet": "Još nema prilagođenih popisa",
+  "noCustomListsYet2": "Još nema prilagođenih popisa.",
+  "noDataAvailableForThisSection": "Nema dostupnih podataka za ovaj dio",
+  "noDataAvailable": "Nema dostupnih podataka.",
+  "noDecadeBreakdownAvailable": "Nije dostupna raščlamba desetljeća",
+  "noDescriptionAvailable": "Opis nije dostupan",
+  "noDownloadedChaptersFoundForThis": "Nisu pronađena preuzeta poglavlja za ovu mangu",
+  "noDownloadedEpisodesFoundForThis": "Nisu pronađene preuzete epizode za ovaj anime",
+  "noEntriesFound": "Nema pronađenih unosa",
+  "noEpisodesFound": "Nema pronađenih epizoda",
+  "noExtensionManagersFound": "Nije pronađen nijedan upravitelj proširenja.",
+  "noExtensionsFound": "Nisu pronađena proširenja",
+  "noExtensionsInstalled": "Nema instaliranih proširenja",
+  "noGenresAvailableAnilistApiMay": "Nema dostupnih žanrova. AniList API možda privremeno ne radi.",
+  "noHiddenTabs": "Nema skrivenih kartica",
+  "noInsightsAvailableYetAddItems": "Još nema dostupnih uvida. Dodajte stavke u svoju knjižnicu!",
+  "noItemsInThisLibrary": "Nema stavki u ovoj knjižnici.",
+  "noLoggedStatsYetStartWatching": "Još nema zabilježenih statistika. Počnite gledati/čitati!",
+  "noMediaFilesFound": "Nema pronađenih medijskih datoteka",
+  "noMediaFoundForThisStudio": "Nema pronađenih medija za ovaj studio",
+  "noMediaInThisList": "Nema medija na ovom popisu.",
+  "noMoreActivities": "Nema više aktivnosti",
+  "noMoreRecommendations": "Nema više preporuka",
+  "noMoreUsers": "Nema više korisnika",
+  "noNotificationsYet": "Još nema obavijesti",
+  "noNovelExtensionsInstalledToRead": "Nema instaliranih proširenja romana za čitanje ovog romana.",
+  "noPendingReports": "Nema izvješća na čekanju",
+  "noPlayableStreamAvailableForThis": "Nema dostupnog streama za ovu epizodu.",
+  "noPlayableStreamWasReturnedBy": "Ovaj izvor nije vratio nijedan stream koji se može reproducirati.",
+  "noRecentActivityFoundForSelected": "Nije pronađena nedavna aktivnost za odabrane filtre",
+  "noRecommendationsFound": "Nema pronađenih preporuka",
+  "noRecommendationsYet": "Još nema preporuka",
+  "noReleasesFound": "Nema pronađenih izdanja.",
+  "noRepliesYetBeTheFirst": "Još nema odgovora. Budite prvi!",
+  "noRepositoriesYet": "Još nema spremišta",
+  "noResult": "Bez rezultata",
+  "noResultsFound": "Nema rezultata.",
+  "noResultsYet": "Još nema rezultata",
+  "noResultsTrySearchingByTitle": "Nema rezultata. Pokušajte pretraživati ​​po naslovu.",
+  "noSearchResults": "Nema rezultata pretraživanja",
+  "noServersAvailable": "Nema dostupnih poslužitelja",
+  "noServersFound": "Nema pronađenih poslužitelja.",
+  "noServicesAvailable": "Nema dostupnih usluga",
+  "noSourceInstalled": "Nema instaliranog izvora",
+  "noSourceSelected": "Izvor nije odabran",
+  "noSourcesFound": "Nema pronađenih izvora",
+  "noStatsAvailable": "Nema dostupnih statistika",
+  "noSubtitleTracksAvailable": "Nema dostupnih zapisa titlova",
+  "noTestsRunning": "Ne izvode se testovi",
+  "noThemesYet": "Još nema tema",
+  "noTrackingServiceConnected": "Nije povezana usluga praćenja",
+  "noUsersFound": "Nema pronađenih korisnika",
+  "noVisibleTabs": "Nema vidljivih kartica",
+  "noVisualsFoundForThisAnime": "Nije pronađen nijedan vizualni materijal za ovaj anime (╥﹏╥)",
+  "noWatchOrderFound": "Nije pronađen redoslijed gledanja.",
+  "notNow": "Ne sad",
+  "notSupported": "Nije podržano",
+  "notTracked": "Nije praćeno",
+  "noteAddingKotatsuRepositoryWillTake": "Napomena: Dodavanje Kotatsu repozitorija trajat će najmanje 1-2 minute jer treba preuzeti i pretvoriti dodatak proširenja pri prvom učitavanju.",
+  "nothingDownloadedYet": "Još ništa nije preuzeto",
+  "nothingToPreview": "Ništa za pregled",
+  "nothingToPreviewYet": "Još nema ništa za pregled.",
+  "notificationPreferences": "Postavke obavijesti",
+  "notifications": "Obavijesti",
+  "notifyForOfficialAnnouncementsAndApp": "Obavijestite o službenim najavama i ažuriranjima aplikacija",
+  "notifyIfYourCommentIsRemoved": "Obavijestite ako vaš komentar ukloni moderator",
+  "notifyOnNewCommentsForMedia": "Obavijestite o novim komentarima za medije o kojima ste razgovarali",
+  "notifyOnUpvotesAndDownvotes": "Obavijesti o pozitivnim i negativnim glasovima",
+  "notifyOnWarningsPinnedCommentsOr": "Obavijesti o upozorenjima, prikvačenim komentarima ili zaključavanjima niti",
+  "notifyWhenSomeoneMentionsYourUsername": "Obavijestite kada netko @spomene vaše korisničko ime",
+  "notifyWhenSomeoneRepliesToYour": "Obavijesti kada netko odgovori na tvoj komentar",
+  "novel": "Roman",
+  "novelCustomLists": "Roman Custom Lists",
+  "novelDetailsPhrasing": "Pojedinosti o romanu",
+  "novelFontFamily": "Obitelj romanskih fontova",
+  "novelLibrary": "Biblioteka romana",
+  "novelSnapshots": "Roman Snapshots",
+  "novelTheme": "Tema romana",
+  "novels": "Romani",
+  "numberOfActiveDownloadTasks": "Broj aktivnih zadataka preuzimanja",
+  "numberOfParallelChunksPerDownload": "Broj paralelnih dijelova po preuzimanju",
+  "okay": "u redu",
+  "oldestFirst": "Prvo najstariji",
+  "oledMode": "Oled način",
+  "onMyList": "Na mom popisu",
+  "oneOptionPerLineLikeHwdec": "Jedna opcija po retku, na primjer hwdec=auto ili scale=ewa_lanczossharp. Redovi koji počinju s # su komentari. Profili u [zagradama] se zanemaruju.",
+  "online": "Online",
+  "openCloset": "Otvori ormar",
+  "openInBrowser": "Otvori u pregledniku",
+  "openSettings": "Otvorite postavke",
+  "openSource": "Open Source",
+  "openSupportedLinks": "Otvorite podržane veze",
+  "openTheDownloadsScreenFromThe": "Otvorite zaslon Preuzimanja iz izbornika",
+  "openVideoStreamInExternalPlayer": "Otvori video stream u vanjskom playeru prema zadanim postavkama",
+  "openWebview": "Otvori Webview",
+  "openingsEndings": "Otvaranje i završetak",
+  "openslEsNativeAudioEngine": "Izvorni audio motor OpenSL ES",
+  "options": "OPCIJE",
+  "order": "NARUDŽBA",
+  "originalSize": "Izvorna veličina",
+  "otakuRankLevel": "Otaku rang razina",
+  "other": "ostalo",
+  "otherFeatures": "Ostale značajke",
+  "otherRecommendations": "Ostale preporuke",
+  "otherStuffs": "Ostalo",
+  "otherTemporaryFiles": "Ostale privremene datoteke",
+  "otherWaysToSupport": "Drugi načini podrške",
+  "others": "Ostali",
+  "outlineType": "Vrsta obrisa",
+  "overscroll": "Prekoračenje",
+  "overscrollToPrevNextChapter": "Pomaknite se do prethodnog/sljedećeg poglavlja",
+  "overview": "Pregled",
+  "overwrite": "Prebrisati",
+  "pageAnimationDemo": "Demonstracija animacije stranice",
+  "pageReaderMode": "Način čitanja stranica",
+  "paged": "Stranicano",
+  "palette": "Paleta",
+  "palettes": "Palete",
+  "paragraphSpacing": "Razmak između odlomaka",
+  "parallelSegmentsForVideoDownloader": "Paralelni segmenti za video downloader",
+  "password": "Lozinka",
+  "passwordProtectBackup": "Sigurnosna kopija zaštite lozinkom",
+  "passwordRequired": "Potrebna lozinka",
+  "passwordsDontMatch": "Lozinke se ne podudaraju!",
+  "pasteCustomImageUrl": "Zalijepi prilagođeni URL slike...",
+  "pasteUrlHere": "Ovdje zalijepi URL...",
+  "pathCopiedToClipboard": "Put je kopiran u međuspremnik",
+  "payViaAnyUpiApp": "Platite putem bilo koje UPI aplikacije",
+  "paypalDonation": "PayPal donacija",
+  "paypalRecipientNotice": "Obavijest o primatelju PayPala",
+  "penaltyDuration": "Trajanje kazne",
+  "performance": "Izvedba",
+  "permissionsRequired": "Potrebna dopuštenja",
+  "persistentPageIndicator": "Trajni indikator stranice",
+  "personalizeTheLookAndMakeIt": "Personalizirajte izgled i učinite ga svojim",
+  "personalizedRecommendations": "Personalizirane preporuke",
+  "platform": "Platforma",
+  "playAroundWithAppTheme": "Igrajte se temom aplikacije",
+  "playAroundWithTheVideoPlayer": "Igrajte se s video playerom",
+  "playback": "Reprodukcija",
+  "playbackSpeed": "Brzina reprodukcije",
+  "playbackSpeeds": "Brzine reprodukcije",
+  "player": "Igrač",
+  "playerControlsSubtitlesAndPlaybackPreferences": "Kontrole playera, titlovi i postavke reprodukcije",
+  "playerSettings": "Postavke playera",
+  "playerTheme": "Tema igrača",
+  "playerThemes": "Teme igrača",
+  "pleaseChooseALogoFile": "Odaberite datoteku logotipa.",
+  "pleaseEnterAPasswordOrDisable": "Unesite lozinku ili onemogućite zaštitu lozinkom.",
+  "pleaseEnterASearchTerm": "Unesite pojam za pretraživanje",
+  "pleaseEnterAUsernameToCompare": "Unesite korisničko ime za usporedbu.",
+  "pleaseGrantStoragePermissionToBrowse": "Dajte dopuštenje za pohranu kako biste pregledavali svoje medijske datoteke",
+  "pleaseLoginFirst": "Prvo se prijavite",
+  "pleaseLoginFirstToExportYour": "Prvo se prijavite da biste izvezli svoj popis.",
+  "pleaseLoginToFavorite": "Molimo prijavite se u favorite!",
+  "pleaseLoginToUseThisFilter": "Molimo prijavite se za korištenje ovog filtera!",
+  "pleaseProvideAReasonForThis": "Navedite razlog za ovu radnju",
+  "pleaseRestartTheAppToApply": "Ponovno pokrenite aplikaciju kako biste primijenili promjene.",
+  "pleaseSelectABackupFileFirst": "Prvo odaberite datoteku sigurnosne kopije",
+  "pleaseSelectAValidApkFile": "Odaberite valjanu APK datoteku.",
+  "pleaseSelectAValidJarFile": "Odaberite valjanu JAR datoteku.",
+  "pleaseSelectAtLeastOneItem": "Odaberite barem jednu stavku za sigurnosno kopiranje.",
+  "pleaseSelectAtLeastOneItemTo": "Odaberite barem jednu stavku za vraćanje.",
+  "pleaseWriteAtLeast30Characters": "Molimo napišite najmanje 30 znakova",
+  "pluginInstallationSync": "Instalacija i sinkronizacija dodataka",
+  "pluginIsAlreadyUpToDate": "Dodatak je već ažuriran.",
+  "pluginJarCopiedPleaseRestartThe": "Jar dodatka je kopiran. Ponovno pokrenite aplikaciju.",
+  "pluginNotInstalled": "Dodatak nije instaliran",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "Dodatak je uspješno ponovno preuzet. Ponovno pokrenite za primjenu.",
+  "pluginReDownloadedPleaseRestartThe": "Dodatak je ponovno preuzet. Ponovno pokrenite aplikaciju za primjenu.",
+  "pluginSyncedFromLocalApk": "Dodatak sinkroniziran iz lokalnog APK-a.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (maks. 20 MB)",
+  "popular": "Popularno",
+  "popularAnime": "Popularni Anime",
+  "popularAnimes": "Popularni anime",
+  "popularManga": "Popularne mange",
+  "posterBlurMode": "Način zamućivanja postera",
+  "posterBlurScope": "Opseg zamućivanja postera",
+  "poweredByAnimatch16PointCompatibility": "Pokreće AniMatch Analiza kompatibilnosti u 16 točaka u AnymeX",
+  "poweredByCommentumV2AdvancedComment": "Pokreće Commentum v2 - Napredni sustav komentara s moderiranjem",
+  "preferences": "Postavke",
+  "preferencesSystem": "Postavke i sustav",
+  "preferredSubtitleLanguage": "Željeni jezik titlova",
+  "preparingImageToShare": "Priprema slike za dijeljenje...",
+  "preparingStream": "Priprema toka",
+  "presetProviders": "PRESET PONUĐAČA",
+  "preventScreenFromSleeping": "Spriječiti stanje mirovanja zaslona",
+  "preview": "Pregled",
+  "previewUpper": "PREGLED",
+  "privacySafety": "Privatnost i sigurnost",
+  "privacySettingsAndSafetyFeatures": "Postavke privatnosti i sigurnosne značajke",
+  "private": "Privatno",
+  "privateEntry": "Privatni ulaz",
+  "profileEffects": "Profilni efekti",
+  "profileIcon": "Ikona profila",
+  "progress": "napredak",
+  "progressHistory": "Napredak i povijest",
+  "proposeNewFeaturesReportBugsAnd": "Predložite nove značajke, prijavite greške i razgovarajte s drugim članovima",
+  "protocol": "PROTOKOL",
+  "proxy": "Proxy",
+  "proxyConfiguration": "Proxy konfiguracija",
+  "pulseaudioSoundServer": "PulseAudio zvučni poslužitelj",
+  "queryRemoteRepositoryForAddOn": "Upitajte udaljeno spremište za ažuriranja dodataka",
+  "queuedForDownload": "U redu za preuzimanje",
+  "quickSelectFollowing": "Brzi odabir (praćeno)",
+  "radiusMultiplier": "Multiplikator radijusa",
+  "random": "Slučajno",
+  "range": "Raspon",
+  "rank": "rang",
+  "rating": "Ocjena",
+  "reDownloadAndReinstallThePlugin": "Ponovno preuzmite i ponovo instalirajte dodatak ispočetka",
+  "read": "čitati",
+  "readArticle": "Pročitaj članak",
+  "readLatestUpdatesAboutThisAnime": "Pročitajte najnovija ažuriranja o ovom animeu",
+  "readLatestUpdatesAboutThisManga": "Pročitajte najnovija ažuriranja o ovoj mangi",
+  "readOnePageAtATime": "Čitajte jednu po jednu stranicu",
+  "readAheadDurationInMinutes": "Trajanje čitanja unaprijed u minutama",
+  "readaheadSeconds": "Čitaj unaprijed sekunde",
+  "reader": "Čitatelj",
+  "readerBackgroundOpacity": "Neprozirnost pozadine čitača",
+  "readerControlTheme": "Tema upravljanja čitačem",
+  "readerPreferences": "Postavke čitatelja",
+  "readerSettings": "Postavke čitača",
+  "readingDirection": "Smjer čitanja",
+  "readingLayout": "Raspored čitanja",
+  "readingManga": "Čitanje Mange",
+  "readingMangaPhrasing": "Čitanje manga fraza",
+  "readingNovel": "Čitanje romana",
+  "readingNovelPhrasing": "Čitanje romana Fraziranje",
+  "realTime4kUpscalingForAnime": "4K povećanje u stvarnom vremenu za anime sadržaj",
+  "reason": "razum",
+  "reasonDeleted": "Razlog izbrisan.",
+  "reasonUpdated": "Razlog ažuriran!",
+  "recentActivity": "Nedavna aktivnost",
+  "recentMediaComments": "Nedavni medijski komentari",
+  "recentNews": "Najnovije vijesti",
+  "recentSearches": "Nedavna pretraživanja",
+  "recentlyCompleted": "Nedavno dovršeno",
+  "recentlyUpdated": "Nedavno ažurirano",
+  "recommend": "preporučiti",
+  "recommendationSubmitted": "Preporuka poslana! 🎉",
+  "recommended": "Preporučeno",
+  "recommendedAnime": "Preporučeni anime",
+  "recommendedBy": "Preporučeno od",
+  "recommendedManga": "Preporučena manga",
+  "recommendedNovels": "Preporučeni romani",
+  "reduceColorBandingArtifacts": "Smanjite artefakte traka u boji",
+  "refreshComments": "Osvježi komentare",
+  "refreshRate": "Učestalost osvježavanja",
+  "relations": "Odnosi",
+  "releaseDate": "Datum izlaska",
+  "releaseYear": "Godina izdanja",
+  "releaseYearStats": "Statistika godine izdanja",
+  "rememberMyChoice": "Upamti moj izbor",
+  "rememberServer": "Zapamti poslužitelj",
+  "removalRequestSentToAdminsFor": "Zahtjev za uklanjanje poslan administratorima na pregled.",
+  "remove": "Ukloniti",
+  "removeBanner": "Ukloni banner",
+  "removeDecoration": "Uklonite ukras",
+  "removeEffect": "Ukloni učinak",
+  "removeFromHistory": "Ukloni iz povijesti",
+  "removeItems": "Ukloni stavke",
+  "removeNameplate": "Uklonite natpisnu pločicu",
+  "removeTheme": "Ukloni temu",
+  "removeWhiteBlackBorders": "Uklonite bijele/crne rubove",
+  "removeYourReason": "Ukloniti svoj razlog?",
+  "rename": "Preimenuj",
+  "renameList": "Preimenuj popis",
+  "reorderNavigationTabs": "Promjena redoslijeda navigacijskih kartica",
+  "replaceExistingDataOnThisDevice": "Zamijenite postojeće podatke na ovom uređaju sigurnosnom kopijom",
+  "replay": "Replay",
+  "reportsQueue": "Red čekanja izvješća",
+  "repositories": "Spremišta",
+  "repositoryUrl": "URL spremišta",
+  "repositoryUrlUpper": "URL SPREMIŠTA",
+  "requests": "Zahtjevi",
+  "requiredForCoreAndVisualTuning": "Potrebno za osnovno i vizualno podešavanje. Držite se isključeno na jeftinijim uređajima.",
+  "reset": "Resetiraj",
+  "resetUpper": "RESETIRANJE",
+  "resetDownloadPath": "Poništi put preuzimanja",
+  "resetNovelReaderSettings": "Poništi postavke čitača romana",
+  "resetToDefault": "Vrati na zadano",
+  "resetToDefault2": "Vrati na zadano",
+  "resetToDefaultPicture": "Vrati na zadanu sliku",
+  "resetToDefaultWallpaper": "Vrati na zadanu pozadinu!",
+  "resizeMode": "Način promjene veličine",
+  "resizeModes": "Načini promjene veličine",
+  "resolution": "Rezolucija",
+  "resolve": "razriješiti",
+  "restartTheAppToApplyThe": "Ponovno pokrenite aplikaciju za primjenu ažuriranja.",
+  "restoreAllNovelReaderDefaults": "Vratite sve zadane postavke čitača romana",
+  "restoreData": "Vrati podatke",
+  "restorePreview": "Vrati pregled",
+  "restoreToDefaultInternalStorage": "Vraćanje na zadanu internu pohranu",
+  "restoringWillOverwriteYourSelectedLocal": "Vraćanje će prebrisati vaše odabrane stavke lokalne knjižnice i postavke sadržajem ove sigurnosne kopije.",
+  "restrictMessagesToFollowing": "Ograniči poruke na praćenje",
+  "results": "Rezultati",
+  "resultsWillAppearGroupedByExtension": "Rezultati će se pojaviti grupirani po proširenju",
+  "retainOriginalColor": "Zadrži izvornu boju",
+  "retry": "Pokušaj ponovo",
+  "rightSide": "Desna strana",
+  "riseAndShine": "Ustani i zablistaj",
+  "roleUpdatedSuccessfully": "Uloga je uspješno ažurirana",
+  "roleAll": "Uloga: Svi",
+  "rollbackVersion": "Vraćanje verzije",
+  "romajiTitle": "Romaji naslov",
+  "roundUpScores": "Zaokruži rezultate",
+  "runtimeHost": "Domaćin izvođenja",
+  "runtimeHostReleases": "Runtime Host izdanja",
+  "runtimeHostRequired": "Potreban host za vrijeme izvođenja",
+  "safetyFeatures": "Sigurnosne značajke:",
+  "saturation": "Zasićenost",
+  "sauceSearcher": "Tražilica umaka",
+  "save": "spremiti",
+  "saveEquip": "Spremi i opremi",
+  "saveChanges": "Spremite promjene",
+  "saveChanges2": "Spremi promjene",
+  "saveLastFrame": "Spremi zadnji okvir",
+  "saveLogo": "Spremi logotip",
+  "savedAnimeEntriesAndProgress": "Spremljeni anime unosi i napredak",
+  "savedLightNovelsAndReadingState": "Spremljeni lagani romani i stanje čitanja",
+  "savedMangaEntriesAndChapters": "Spremljeni unosi i poglavlja mange",
+  "savedStreamLinkHasExpiredFetching": "Veza za spremljeni stream je istekla. Dohvaćanje nove veze...",
+  "savesAScreenshotOfTheLast": "Sprema snimku zaslona posljednjeg kadra koji ste gledali. Onemogućivanjem ove značajke smanjuje se korištenje pohrane",
+  "scaleFactor": "Faktor razmjera",
+  "scalingAlgorithm": "Algoritam skaliranja",
+  "scanningForMoreServers": "Traženje više poslužitelja...",
+  "scanningForVideoStreams": "Traženje video tokova...",
+  "score": "rezultat",
+  "scoreDistribution": "Distribucija rezultata",
+  "scoringSystem": "Sustav bodovanja",
+  "search": "Traži",
+  "searchUpper": "PRETRAGA",
+  "searchAcrossExtensions": "Pretraživanje proširenja...",
+  "searchAnimeMovies": "Traži anime, filmove...",
+  "searchAnime": "Traži anime...",
+  "searchExtensions": "Proširenja pretraživanja",
+  "searchExtensionsEllipsis": "Proširenja za pretraživanje...",
+  "searchFailed": "Pretraga nije uspjela",
+  "searchForAnime": "Traži anime",
+  "searchInHistory": "Traži u povijesti...",
+  "searchInLibrary": "Traži u knjižnici...",
+  "searchItemsInList": "Pretraži stavke na popisu...",
+  "searchManga": "Traži mangu...",
+  "searchQuery": "Upit za pretraživanje",
+  "searchSources": "Traži izvore...",
+  "searchTags": "Traži oznake...",
+  "searchUser": "Traži korisnika",
+  "searchingDatabase": "Pretraživanje baze podataka...",
+  "searching": "Pretraživanje...",
+  "season": "sezona",
+  "seasons": "Godišnja doba",
+  "secondsPerScreenLowerIsFaster": "Sekundi po zaslonu (manje je brže)",
+  "secondsPerScreenPageLowerIs": "Sekundi po ekranu/stranici (manje je brže)",
+  "securityEncryption": "Sigurnost i šifriranje",
+  "seePeopleWhoContributedToAnymex": "Pogledajte osobe koje su pridonijele AnymeX",
+  "selectAFolderWhereAnymexWill": "Odaberite mapu u koju će AnymeX spremati vaše preuzete anime epizode i manga poglavlja.",
+  "selectAnAnimeScreenshotToFind": "Odaberite snimak zaslona animea da biste pronašli njegov izvor",
+  "selectAnilistMyanimelistSimklOrExtensions": "Odaberite način rada AniList, MyAnimeList, Simkl ili Extensions",
+  "selectDataToIncludeInThis": "Odaberite podatke koje želite uključiti u ovu sigurnosnu kopiju",
+  "selectDirectory": "Odaberite imenik",
+  "selectExtensions": "Odaberite Proširenja",
+  "selectFolder": "Odaberite mapu",
+  "selectLanguage": "Odaberite jezik",
+  "selectMediaDirectory": "Odaberite Media Directory",
+  "selectNovelSource": "Odaberite izvor novele",
+  "selectProfile": "ODABERITE PROFIL",
+  "selectRange": "Odaberite Raspon",
+  "selectServer": "Odaberite poslužitelj",
+  "selectStatus": "Odaberite Status",
+  "selectSubtitleFont": "Odaberite Font podnaslova",
+  "selectTags": "ODABIR OZNAKA",
+  "selectTimezone": "Odaberite vremensku zonu",
+  "selectVersionToRollback": "Odaberite verziju za vraćanje",
+  "selectVideoFile": "Odaberite video datoteku",
+  "selectYourPreferredContentSource": "Odaberite željeni izvor sadržaja",
+  "selectedCacheCleared": "Odabrana predmemorija je izbrisana",
+  "selectedItemsRemoved": "Odabrane stavke uklonjene",
+  "sensitiveLoginTokensForMalSimkl": "Osjetljivi tokeni za prijavu za MAL, Simkl i AniList",
+  "sensitiveSessionTokensForMalSimkl": "Osjetljivi tokeni sesije za MAL, Simkl i AniList",
+  "separateCompletedAnimeListIntoSections": "Odvojite dovršeni popis animea u odjeljke po formatu.",
+  "separateCompletedMangaListIntoSections": "Odvojite dovršeni popis manga u odjeljke po formatu.",
+  "serverDetails": "DETALJI POSLUŽITELJA",
+  "serverChanIsTakingANap": "Server-chan drijema!",
+  "setUpYourPreferencesForThe": "Postavite svoje postavke za najbolje iskustvo",
+  "settings": "postavke",
+  "settingsAccount": "Postavke i račun",
+  "settingsAuthentication": "Postavke i autentifikacija",
+  "settingsSavedSuccessfully": "Postavke su uspješno spremljene.",
+  "shaderProfilesInitialized": "Profili shadera inicijalizirani",
+  "shadowBanUser": "Korisnik Shadow Ban",
+  "shareLogs": "Podijelite zapise",
+  "shareMatchCard": "Podijeli karticu podudaranja",
+  "shareProfile": "Podijelite profil",
+  "shareTheSavedLogFileOr": "Podijelite spremljenu datoteku dnevnika ili kopirajte njezin sadržaj.",
+  "sharedFromAnymex": "Podijeljeno sa AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "Prikaži slojeve animiranih efekata na bannerima profila",
+  "showAnimatedFramesAroundUserAvatars": "Prikaži animirane okvire oko korisničkih avatara",
+  "showBatteryTime": "Prikaži bateriju i vrijeme",
+  "showChapterTransitionEvenWithoutGaps": "Prikaži prijelaz poglavlja čak i bez razmaka",
+  "showCommunityRecommendations": "Prikaži preporuke zajednice",
+  "showContinueWatchingCard": "Prikaži karticu za nastavak gledanja",
+  "showContinueWatchingOnHome": "Show Continue Watching na početnoj stranici",
+  "showCustomProfileBannersFallsBack": "Prikaži prilagođene natpise profila (vraća se na naslovnicu AniList ako je isključeno)",
+  "showNameplateBackgroundsOnCommentCards": "Prikaži pozadinu pločice s imenom na karticama komentara i ploči s najboljim rezultatima",
+  "showOnLeft": "Prikaži lijevo",
+  "showOnRight": "Prikaži desno",
+  "showReadingProgress": "Prikaži napredak čitanja",
+  "showTimestamps": "Prikaži vremenske oznake",
+  "simpleCompactListView": "Jednostavan kompaktni prikaz popisa",
+  "simpleDirectmediaLayerAudioOutput": "Jednostavan DirectMedia Layer audio izlaz",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "Jednostavan izgled koji prikazuje broj epizode, naslov i napredak bez minijature",
+  "sizeMode": "Način veličine:",
+  "smartMangaSuggestions": "Pametni prijedlozi za mange",
+  "smootherMotionCanIncreaseGpuUsage": "Glatkije kretanje, može povećati upotrebu GPU-a",
+  "social": "Društveni",
+  "somethingWentWrong": "Nešto nije u redu",
+  "sort": "SORTIRAJ",
+  "sort2": "Poredaj",
+  "sortBy": "SORTIRAJ PO",
+  "sortBy2": "Poredaj po",
+  "sortComments": "Razvrstaj komentare",
+  "source": "Izvor",
+  "sourceAndPluginConfigurations": "Konfiguracije izvora i dodataka",
+  "sourcePreferences": "Postavke izvora",
+  "spaceBetweenLetters": "Razmak između slova",
+  "spaceBetweenParagraphs": "Razmak između odlomaka",
+  "spaceBetweenWords": "Razmak između riječi",
+  "spacedPages": "Razmaknute stranice",
+  "splitCompletedAnimeList": "Split dovršen popis animea",
+  "splitCompletedMangaList": "Split Completed Manga List",
+  "spoiler": "Spojler",
+  "spoilerTapToReveal": "Spoiler (dodirnite za otkrivanje)",
+  "staff": "Osoblje",
+  "staffCharacterNameLanguage": "Jezik imena osoblja i likova",
+  "standardGpuRendering": "Standardno GPU renderiranje",
+  "starOnGithub": "Zvijezda na GitHub",
+  "startANewDownloadFromThe": "Započnite novo preuzimanje s kartice \"Novo preuzimanje\"",
+  "startChapter": "Početak poglavlja",
+  "startDate": "Datum početka",
+  "startMangaDownload": "Pokrenite preuzimanje mange",
+  "startTest": "Započni test",
+  "startingExtensionRuntime": "Pokretanje vremena izvođenja proširenja...",
+  "statistics": "Statistika",
+  "stats": "Statistika",
+  "status": "Status",
+  "statusDistribution": "Distribucija statusa",
+  "statusPostedSuccessfully": "Status je uspješno objavljen!",
+  "stayUpdatedWithTheLatestReleases": "Budite u tijeku s najnovijim izdanjima, najavama i raspravama",
+  "storagePath": "Pohranjivanje i put",
+  "storageManager": "Upravitelj pohrane",
+  "storageOptions": "Mogućnosti pohrane",
+  "storagePermission": "Dopuštenje za pohranu",
+  "storagePermissionIsRequiredToDownload": "Za preuzimanje ažuriranja potrebna je dozvola za pohranu",
+  "storagePermissionRequired": "Potrebno dopuštenje za pohranu",
+  "streakCurLong": "Niz (krivi/dugi)",
+  "stretchImagesToFitScreenWidth": "Razvucite slike kako bi odgovarale širini zaslona",
+  "strikethrough": "Precrtano",
+  "studios": "Studiji",
+  "style": "STIL",
+  "subtitleBackgroundColor": "Boja pozadine titla",
+  "subtitleColor": "Boja podnaslova",
+  "subtitleFont": "Font podnaslova",
+  "subtitleOutlineColor": "Boja obrisa podnaslova",
+  "subtitleOutlineWidth": "Širina obrisa podnaslova",
+  "subtitlePreview": "Pretpregled titlova",
+  "subtitlePreviewText": "Tekst pretpregleda titla",
+  "subtitleSize": "Veličina podnaslova",
+  "subtitleTransparency": "Transparentnost podnaslova",
+  "subtitles": "titlovi",
+  "summary": "Sažetak",
+  "superAdmin": "Super Administrator",
+  "supportTtfAndOtfFiles": "Podržava .ttf i .otf datoteke",
+  "supportAnymex": "Podrška AnymeX",
+  "supportedModes": "Podržani načini rada",
+  "supportedUpiApps": "Podržane UPI aplikacije",
+  "suppressActivityWhenWatchingOrReading": "Spriječite aktivnost prilikom gledanja ili čitanja NSFW sadržaja",
+  "swapUpDownActions": "Zamijenite akcije gore/dolje",
+  "swipeBetweenChapters": "Prijeđite prstom između poglavlja",
+  "swipeIndicatorTheme": "Tema indikatora prijelaza",
+  "swipeToSeek": "Prijeđite prstom za traženje",
+  "switchBetweenDefaultTitleAndRomaji": "Prebacivanje između zadanog naslova i romaji/alternativnog naslova u knjižnici i karticama",
+  "switchToOnline": "Prebacite se na Online",
+  "syncCompletedButThePluginIs": "Sinkronizacija je dovršena, ali dodatak još nije spreman.",
+  "syncDetails": "Pojedinosti sinkronizacije",
+  "syncFailed": "Sinkronizacija nije uspjela",
+  "synonyms": "Sinonimi",
+  "synopsis": "Sinopsis",
+  "tags": "OZNAKE",
+  "tags2": "oznake",
+  "takeColorFromYourWallpaperA12": "Uzmite boju iz pozadine (A12+)",
+  "tapToAddARepositoryUrl": "Dodirnite + za dodavanje URL-a spremišta",
+  "tapAZoneToChangeIts": "Dodirnite zonu da promijenite njezinu akciju",
+  "tapAction": "Dodirnite Akcija",
+  "tapToChooseASource": "Dodirnite za odabir izvora",
+  "tapToLogin": "Dodirnite za prijavu",
+  "tapToLogout": "Dodirnite za odjavu",
+  "tapToScroll": "Dodirnite za pomicanje",
+  "tapYourProfileIconInThe": "Dodirnite ikonu svog profila na gornjoj traci aplikacije",
+  "tapZones": "Dodirnite Zone",
+  "tellTheCommunityWhyThisDeserves": "Recite zajednici zašto ovo zaslužuje više pažnje.",
+  "temporaryAppCache": "Privremena predmemorija aplikacije",
+  "termsOfServicePrivacyPolicy": "Uvjeti pružanja usluge/Politika privatnosti",
+  "test": "test",
+  "testExtensions": "Testna proširenja",
+  "testResults": "Rezultati testa",
+  "testType": "Vrsta testa",
+  "textSize": "Veličina teksta",
+  "theme": "Tema",
+  "themeLayoutAndColors": "Tema, izgled i boje",
+  "themes": "Teme",
+  "thisBackupIsEncryptedPleaseEnter": "Ova sigurnosna kopija je šifrirana. Unesite lozinku za nastavak.",
+  "thisDirectoryContainsNoSupportedMedia": "Ovaj direktorij ne sadrži podržane medijske datoteke",
+  "thisMayTakeAFewSeconds": "Ovo može potrajati nekoliko sekundi",
+  "thisMayTakeUpTo30": "To može potrajati do 30 sekundi",
+  "thisMightTakeAFewSeconds": "Ovo može potrajati nekoliko sekundi",
+  "thisReasonWillBeDeletedImmediately": "Ovaj razlog će biti odmah izbrisan.",
+  "thisWillPermanentlyDeleteAllData": "Ovo će trajno izbrisati sve podatke pohranjene na AnymeX. Ovo se ne može poništiti.",
+  "tipYouCanCombineTheseE": "Savjet: možete ih kombinirati! npr. **podebljano i *kurziv* zajedno**",
+  "title": "Naslov",
+  "titleCopied": "Naslov kopiran",
+  "titleLanguage": "Jezik naslova",
+  "toDownloadForTheFirstTime": "Za preuzimanje po prvi put, dajte dopuštenja tako da prvo posjetite stranicu Preuzimanja:",
+  "toggleBetweenGridAndDetailedList": "Prebacivanje između mreže i detaljnog popisa",
+  "toneMapping": "Tonsko mapiranje",
+  "topAnime": "Top Anime",
+  "topComments": "Najbolji komentari",
+  "topGenres": "Najbolji žanrovi",
+  "topManga": "Vrhunska manga",
+  "topManhua": "Top Manhua",
+  "topManhwa": "Top Manhwa",
+  "topStudios": "Vrhunski studiji",
+  "torrentServer": "Torrent poslužitelj",
+  "torrentStreamCache": "Torrent Stream Cache",
+  "torrserverStreamingAddOns": "TorrServer i dodaci za strujanje",
+  "totalChapters": "Ukupno poglavlja",
+  "totalCost": "Ukupni trošak:",
+  "totalItems": "Ukupno stavki",
+  "track": "Staza",
+  "trackAiringSchedules": "Pratite rasporede emitiranja",
+  "trackYourProgress": "Pratiti svoj napredak?",
+  "trackingServices": "Usluge praćenja",
+  "transitionSubtitle": "Prijelazni podnaslov",
+  "translateTo": "Prevedi na",
+  "translationLanguage": "Jezik prijevoda",
+  "translucentNav": "Translucent Nav",
+  "trendingAnime": "Anime u trendu",
+  "trendingAnimes": "Anime u trendu",
+  "trendingManga": "Manga u trendu",
+  "tryADifferentKeyword": "Pokušajte s drugom ključnom riječi",
+  "tryAdjustingYourFilters": "Pokušajte prilagoditi svoje filtre",
+  "tryAgain": "Pokušajte ponovno",
+  "tryDifferentAnimationStylesForPage": "Isprobajte različite stilove animacije za ulaze na stranice",
+  "ttsAutoAdvance": "TTS Auto Advance",
+  "ttsPitch": "TTS Visina",
+  "ttsSpeed": "TTS Brzina",
+  "tweakGeneralAppSettings": "Podesite opće postavke aplikacije",
+  "typeLabel": "Vrsta",
+  "typeAtLeast2CharactersTo": "Unesite najmanje 2 znaka za pretraživanje",
+  "ui": "korisničko sučelje",
+  "uiComponents": "Komponente korisničkog sučelja",
+  "uiLayoutColorsAndThemes": "Izgled korisničkog sučelja, boje i teme",
+  "uiLayoutColorsAndVisualStyles": "Izgled korisničkog sučelja, boje i vizualni stilovi",
+  "uiSettings": "Postavke korisničkog sučelja",
+  "unableToPreparePlaybackRightNow": "Trenutačno nije moguće pripremiti reprodukciju. Molimo pokušajte ponovo.",
+  "unbanUser": "Poništi zabranu korisnika",
+  "unbind": "Odvezati",
+  "unifiedLibrary": "Objedinjena knjižnica",
+  "uninstall": "Deinstaliraj",
+  "universal": "Univerzalni",
+  "unlock": "Otključaj",
+  "unlockCustomizations": "Otključaj prilagodbe",
+  "unmuteUser": "Uključi zvuk korisnika",
+  "unreadOnly": "Samo nepročitano",
+  "upcomingAnime": "Nadolazeći anime",
+  "update": "Ažuriranje",
+  "updateAll": "Ažuriraj sve",
+  "updateCheckComplete": "Provjera ažuriranja dovršena",
+  "updateOnImport": "Ažuriranje uvoza",
+  "updateToLatestVersion": "Ažurirajte na najnoviju verziju",
+  "updateYourActivity": "Ažurirajte svoju aktivnost...",
+  "updatesPending": "Ažuriranja na čekanju",
+  "upiDonation": "UPI Donacija",
+  "uploadAnImageToGetStarted": "Učitajte sliku da biste započeli",
+  "uploadImage": "Učitaj sliku",
+  "urlCopiedToClipboard": "URL kopiran u međuspremnik",
+  "usage": "Upotreba:",
+  "useAiToTranslateSoftSubtitles": "Upotrijebite AI za prijevod mekih titlova uživo",
+  "useAlternateTitle": "Koristite alternativni naslov",
+  "useBuffering": "Koristite međuspremnik",
+  "useCustomGesturesForReaderNavigation": "Koristite prilagođene geste za navigaciju čitača",
+  "useEnhancedEpisodeMetadataAndCovers": "Koristite poboljšane metapodatke i naslovnice epizoda",
+  "useExternalPlayer": "Koristite vanjski player",
+  "useKeyboardShortcutsDuringPlaybackTo": "Koristite tipkovničke prečace tijekom reprodukcije za promjenu profila",
+  "useLegacyHeader": "Koristite naslijeđeno zaglavlje",
+  "useLibassForSubtitles": "Koristite Libass za titlove",
+  "useLibmpvForPlayback": "Koristite LibMpv za reprodukciju",
+  "useMpvConf": "Koristite mpv.conf",
+  "usePosterColor": "Koristite boju postera",
+  "useVolumeKeysToChangePages": "Koristite tipke za glasnoću za promjenu stranica",
+  "useYearRange": "Koristite raspon godina",
+  "user": "Korisnik",
+  "userIdCopiedToClipboard": "Korisnički ID kopiran u međuspremnik",
+  "userList": "Popis korisnika",
+  "userManagement": "Upravljanje korisnicima",
+  "userCreatedCustomMediaCollections": "Prilagođene medijske zbirke koje su izradili korisnici",
+  "username": "Korisničko ime",
+  "verifyTlsCertificates": "Provjerite TLS certifikate",
+  "versionCopied": "Verzija kopirana",
+  "vertical": "Okomito",
+  "videoPlayer": "Video player",
+  "videoRenderer": "Video renderer",
+  "videoSync": "Video Sync",
+  "viewAndFilterAllUsers": "Pregledajte i filtrirajte sve korisnike",
+  "viewOnAnilist": "Pogledajte na AniList",
+  "viewOpeningAndEndingThemes": "Pogledajte uvodne i završne teme",
+  "viewProfile": "Pogledaj profil",
+  "viewSourceCodeOnGithub": "Pogledajte izvorni kod na githubu.",
+  "viewTheChronologicalWatchOrderOf": "Pogledajte kronološki redoslijed gledanja ovog animea",
+  "viewUser": "Prikaži korisnika",
+  "viewUserRankingsTopContributorsReputation": "Pogledajte rangiranje korisnika, najveće suradnike i reputaciju",
+  "viewingAnimeDetails": "Pregledavanje pojedinosti o animeu",
+  "viewingMangaDetails": "Pregledavanje pojedinosti o mangi",
+  "viewingNovelDetails": "Pregled pojedinosti romana",
+  "visibleTabs": "Vidljive kartice",
+  "visitGithubReleasesPageForChangelogs": "Posjetite stranicu GitHub izdanja za zapise promjena i ručna preuzimanja",
+  "visualFromAnymex": "Vizualno iz AnymeX",
+  "voiceActors": "glasovni glumci",
+  "voicedCharacters": "Izraženi likovi",
+  "volumeButtonScrolling": "Pomicanje tipke za glasnoću",
+  "volumeKeysNavigation": "Navigacija tipkama za glasnoću",
+  "volumes": "SVEMCI",
+  "volumesRead": "Pročitani svesci",
+  "votes": "Glasovi",
+  "wWhatAreYouDoingStep": "Š-što radiš-brato, prijavi se prije nego što to učiniš (●´⌓`●)",
+  "wallpaper": "Tapeta",
+  "warnUser": "Upozori korisnika",
+  "warning": "Upozorenje",
+  "wasThisHelpful": "Je li ovo bilo od pomoći?",
+  "watchAd": "Pogledajte oglas",
+  "watchAnAdToSupport": "Pogledajte oglas za podršku",
+  "watchAnime": "Gledajte anime",
+  "watchOrder": "Watch Order",
+  "watchTogether": "Gledajte zajedno",
+  "watchTogetherPolicy": "Politika gledanja zajedno",
+  "watchingAnime": "Gledanje animea",
+  "watchingAnimePhrasing": "Gledanje anime fraza",
+  "welcomeToAnymex": "Dobrodošli u AnymeX",
+  "whatsOnYourMind": "Što ti je na umu?",
+  "whenEnabledAnymexSavesLogsLocally": "Kada je omogućen, AnymeX sprema zapise lokalno dok se ne onemogući.",
+  "whyAreYouRecommendingThisMin": "Zašto ovo preporučuješ? (najmanje 30 znakova)",
+  "whyIsThisUnderratedMin30": "Zašto je ovo podcijenjeno? (najmanje 30 znakova)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "Razmak između riječi",
+  "writeAMessage": "Napiši poruku...",
+  "writeLogToAFile": "Pisanje dnevnika u datoteku",
+  "writeYourAnilistBio": "Napišite svoju AniList biografiju...",
+  "wrongTitle": "Pogrešan naslov?",
+  "year": "godine",
+  "yearUpper": "GODINA",
+  "you": "ti",
+  "youCanUseDiscordStyleMarkdown": "Za oblikovanje komentara možete koristiti markdown u stilu Discord:",
+  "youHaveUnsentTextClosingNow": "Imate neposlan tekst. Ako zatvorite sada, izgubit ćete svoju poruku.",
+  "youHaveUnsentTextClosingNowWill": "Imate neposlan tekst. Ako sada zatvorite, izgubit ćete svoj odgovor.",
+  "youHaveUnsentTextClosingNowWillLose": "Imate neposlan tekst. Ako sada zatvorite, izgubit ćete status.",
+  "youNeedModeratorPermissionsToAccess": "Za pristup ovoj ploči potrebna su vam dopuštenja moderatora",
+  "youreUpLate": "Budan si do kasno",
+  "yourBalance": "Vaše stanje:",
+  "yourPrivacyIsImportant": "Vaša privatnost je važna:",
+  "yourReasonHasBeenRemoved": "Vaš razlog je uklonjen.",
+  "yourRecommendation": "Vaša preporuka",
+  "yourRichPresenceActivityWillStop": "Vaša bogata aktivnost prisutnosti prestat će se ažurirati.",
+  "yourRole": "Vaša uloga",
+  "yourWatchReadHistory": "Vaša povijest gledanja i čitanja",
+  "yourWatchReadStatistics": "Vaša statistika gledanja i čitanja",
+  "advancedLinuxSoundArchitecture": "Napredna Linux zvučna arhitektura",
+  "al": "AL",
+  "allYourLocalShi": "Sav vaš lokalni sadržaj",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "Jeste li sigurni?",
+  "aspectRatio": "Omjer slike",
+  "attackOnTitan": "Napad na Titan",
+  "audio": "Audio",
+  "audioSubtitles": "Audio i titlovi",
+  "audioTrack": "Audio zapis",
+  "audioTracks": "Audio zapisi",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "Auto (AudioTrack)",
+  "autoCoreaudio": "Automatski (CoreAudio)",
+  "autoGpu": "Automatski (GPU)",
+  "autoPulseaudio": "Automatski (PulseAudio)",
+  "autoWasapi": "Automatski (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "Bloom",
+  "castToDevice": "Emitiranje na uređaj",
+  "colorFilter": "Filtar boja",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "Ubojica demona: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "Vanjski player",
+  "files": "Datoteke",
+  "forward": "Naprijed",
+  "forward30s": "Naprijed 30s",
+  "fullscreen": "Cijeli zaslon",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "Kontrole zaključavanja",
+  "lockOrientation": "Orijentacija zaključavanja",
+  "mal": "MAL",
+  "materialYou": "Materijalni Vi",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Nužno ubojstvo",
+  "nextEp": "Sljedeća ep.",
+  "nextEpisode": "Sljedeća epizoda",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "Slika u slici",
+  "playlist": "Popis pjesama",
+  "previousEpisode": "Prethodna epizoda",
+  "pulseaudio": "PulseAudio",
+  "quality": "Kvaliteta",
+  "qualitySetting": "Postavka kvalitete",
+  "readingMode": "Način čitanja",
+  "reddit": "Reddit",
+  "replay30s": "Repriza 30-ih",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito i Makomo",
+  "sdl": "SDL",
+  "server": "poslužitelj",
+  "servers": "poslužitelji",
+  "shadersColorProfiles": "Shaderi i profili boja",
+  "shadersColors": "Shaderi i boje",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "ČARAPE5",
+  "soloLeveling": "Solo niveliranje",
+  "speed": "Brzina",
+  "sw": "SW",
+  "syncSubs": "Sync Subs",
+  "syncSubtitles": "Sinkronizacija titlova",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "Brza smeđa lisica preskače lijenog psa",
+  "themeMode": "Način rada teme",
+  "thisIsFrustrating": "Ovo je frustrirajuće",
+  "toYouSomeday": "Tebi, jednog dana",
+  "torrentFiles": "Torrent datoteke",
+  "tracks": "Pjesme",
+  "unlockOrientation": "Otključaj orijentaciju",
+  "userAgent": "Korisnički agent",
+  "videoQuality": "Kvaliteta videa",
+  "videoServers": "Video poslužitelji",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "Gledajte zajedno (u sobi)",
+  "webtoon": "Webtoon",
+  "n0MeansAutomaticThreadCount": "0 znači automatsko brojanje niti",
+  "n18Content": "18+ Sadržaj",
+  "aboveAverageSimilarity": "Natprosječna sličnost.",
+  "account": "Račun",
+  "activityStats": "Aktivnost i statistika",
+  "add": "Dodaj",
+  "additionalNotesOptional": "Dodatne napomene (nije obavezno)",
+  "adjustKeyVolumeScrollingSpeed": "Podesite brzinu pomicanja tipki i glasnoće",
+  "alpha": "alfa",
+  "alwaysChecksCurrentChapterNumberAnd": "Uvijek provjerava trenutni broj poglavlja i uspoređuje ga sa sljedećim/prethodnim poglavljem, navigirajući samo kada je broj drugačiji. Navigacija po poglavlju samo će se pomaknuti na sljedeću stavku na popisu čak i ako postoje duplikati.",
+  "animeCompleted": "Anime dovršen",
+  "announcementMode": "Način najave",
+  "appIsStillLoadingTryAgain": "Aplikacija se još uvijek učitava, pokušajte ponovno uskoro.",
+  "applyAColorTintOverPages": "Nanesite ton boje preko stranica",
+  "audioDelay": "Kašnjenje zvuka",
+  "audioSettings": "Audio postavke",
+  "audioTrack2": "Audio zapis",
+  "autoAdvance": "Automatski unaprijed",
+  "autoDeleteCompletedEntries": "Automatsko brisanje dovršenih unosa",
+  "autoSyncProgress": "Napredak automatske sinkronizacije",
+  "automaticallyMoveToNextText": "Automatski prijeđi na sljedeći tekst",
+  "automaticallyScrollAdvancePages": "Automatsko pomicanje/prelazak na stranice",
+  "automaticallySwitchToContinuousModeFor": "Automatski prijeđite na kontinuirani način rada za mangu s dugim trakama",
+  "averageOverlap": "Prosječno preklapanje.",
+  "background": "Pozadina",
+  "basedOnYourFavouriteAnime": "Na temelju vašeg omiljenog animea.",
+  "basedOnYourFavouriteManga": "Na temelju vaše omiljene mange.",
+  "basedOnYourTop10Manga": "Na temelju vaših 10 najpopularnijih manga oznaka.",
+  "basedOnYourTop5Manga": "Na temelju vaših 5 najboljih manga žanrova.",
+  "blue": "Plava",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "Dostupno ažuriranje mosta",
+  "brightness": "Svjetlina",
+  "bulletList": "Bullet List",
+  "calendarUpper": "KALENDAR",
+  "canadianMovies": "Kanadski filmovi",
+  "canadianShows": "Kanadske emisije",
+  "cannotCompareTheSameProfileWith": "Ne može se usporediti isti profil sam sa sobom.",
+  "castToDevice2": "Emitiraj na uređaj",
+  "chatModeration": "Moderiranje chata",
+  "chooseASubtitleFileFromYour": "Odaberite datoteku titlova sa svog uređaja (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "Odaberite kako primijeniti odabranu JSON datoteku na svoju suštinu AnymeX oblaka.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "Alati u oblaku",
+  "code": "Šifra",
+  "commonFavouriteAnime": "Zajednički omiljeni anime",
+  "commonFavouriteCharacters": "Uobičajeni omiljeni likovi",
+  "commonFavouriteManga": "Uobičajena omiljena manga",
+  "commonPerfectAnime": "Common Perfect Anime",
+  "commonPerfectManga": "Common Perfect Manga",
+  "communityAdministratorOverseeingModerationAndPolicies": "Administrator zajednice nadzire moderiranje i pravila.",
+  "connectGithubFirstBeforeDeletingSync": "Prvo povežite GitHub prije brisanja sinkroniziranih podataka.",
+  "connectGithubFirstToExportSync": "Prvo povežite GitHub za izvoz sinkroniziranih podataka.",
+  "connectGithubFirstToImportSync": "Prvo povežite GitHub za uvoz sinkroniziranih podataka.",
+  "connectGithubFirstToSyncProgress": "Prvo povežite GitHub za sinkronizaciju napretka.",
+  "connectGithubFirstToViewSync": "Prvo povežite GitHub da biste vidjeli sadržaj sinkronizacije.",
+  "continuousModeOnly2": "Samo kontinuirani način rada",
+  "controls": "Kontrole",
+  "cookiesClearedSuccessfully": "Kolačići su uspješno izbrisani",
+  "copied": "Kopirano",
+  "copyUrl": "Kopiraj URL",
+  "correctDownscaling": "Ispravno smanjenje veličine",
+  "couldNotLoadStreamingServicesFrom": "Nije moguće učitati usluge strujanja iz AniList API-ja.\nUsluga je možda privremeno nedostupna ili je ograničena brzinom.",
+  "couldNotOpenGistInBrowser": "Nije moguće otvoriti sadržaj u pregledniku.",
+  "created": "Stvoreno",
+  "creatorAndDeveloperOfAnymex": "Kreator i programer AnymeX.",
+  "customBrightness": "Prilagođena svjetlina",
+  "customizeGestures": "Prilagodite geste",
+  "deband": "Deband",
+  "debandIterations": "Deband iteracije",
+  "debandThreshold": "Deband Threshold",
+  "decreaseAutoScrollSpeed": "Smanjite brzinu automatskog pomicanja",
+  "decreaseFontSize": "Smanji veličinu fonta",
+  "deleteAnymexSyncGist": "Izbrisati AnymeX Sync Gist?",
+  "deleteCloudGist": "Izbriši Cloud Gist",
+  "deleteCommentMod": "Izbriši komentar (Mod)",
+  "details": "pojedinosti",
+  "dictionary": "Rječnik",
+  "differenceFromOwnMeanScore": "Razlika od vlastite srednje ocjene",
+  "disableChat": "Onemogući chat",
+  "disconnectThisGithubAccountFromAnymex": "Odspojite ovaj GitHub račun sa AnymeX",
+  "displayPagesInBlackWhite": "Prikaži stranice crno-bijelo",
+  "downloading": "Preuzimanje...",
+  "downscaler": "Smanjivač ljestvice",
+  "dynamicWidget": "Dinamički widget",
+  "eInkDisplayRefresh": "Osvježavanje zaslona e-tinte",
+  "eGAbc123": "npr. ABC123",
+  "eGMyAnimeLogo": "npr. Moj anime logo",
+  "editYourComment": "Uredite svoj komentar...",
+  "embeddedContent": "Ugrađeni sadržaj",
+  "enterTheRoomPassword": "Unesite lozinku sobe",
+  "enterTokenHere": "Ovdje unesite token",
+  "error": "Greška",
+  "exitSyncNotifications": "Izlaz iz obavijesti o sinkronizaciji",
+  "exportGistJson": "Izvoz Gist JSON",
+  "exportedGistJson": "Izvezen sadržaj JSON.",
+  "failedToExportGistJson": "Izvoz sadržaja JSON nije uspio.",
+  "failedToFetchDataFromSources": "Dohvaćanje podataka iz izvora nije uspjelo.",
+  "failedToGetCloudGistLink": "Dohvaćanje veze za sadržaj oblaka nije uspjelo.",
+  "failedToImportGistJson": "Uvoz sadržaja JSON nije uspio.",
+  "failedToLaunchExternalPlayer": "Pokretanje vanjskog playera nije uspjelo",
+  "failedToOpenGistInBrowser": "Nije uspjelo otvaranje sadržaja u pregledniku.",
+  "flashDuration": "Trajanje bljeskalice",
+  "flashEveryNPages": "Flash svakih N stranica",
+  "flashFrequency": "Frekvencija bljeskanja",
+  "flashScreenOnPageTurnTo": "Flash zaslon na okretanju stranice za uklanjanje duhova",
+  "followHost": "Slijedite domaćina",
+  "fontSettings": "Postavke fonta",
+  "freedomSeek": "Potraga za slobodom",
+  "friendsNeedAPasswordToJoin": "Prijatelji trebaju lozinku za pridruživanje",
+  "githubClientIdNotConfigured": "ID klijenta GitHub nije konfiguriran.",
+  "githubLoginFailedMissingAuthorizationCode": "GitHub prijava nije uspjela: nedostaje autorizacijski kod.",
+  "githubLoginWasCancelledOrFailed": "GitHub prijava je otkazana ili nije uspjela.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • Pokažite svoju ljubav",
+  "goodChemistryAndSharedTaste": "Dobra kemija i zajednički ukus.",
+  "grayscale": "Sivi tonovi",
+  "green": "zelena",
+  "hdrToneMappingTargetPeak": "HDR tone mapping ciljani vrh",
+  "higherValueIncreasesDebandingStrength": "Veća vrijednost povećava čvrstoću odvajanja",
+  "horizontalPadding": "Horizontalna podloga",
+  "hoursWatched": "Sati gledanja",
+  "howManyFriendsCanJoin": "Koliko se prijatelja može pridružiti",
+  "ifYouHaveAnIssueOr": "ako imate problem ili bilo kakav prijedlog, postavite problem na github.",
+  "imageWidth": "Širina slike",
+  "importGistJson": "Uvoz Gist JSON",
+  "importLocalSubtitle": "Uvoz lokalnog titla",
+  "improveQualityWhenScalingDownVideo": "Poboljšajte kvalitetu pri smanjivanju videozapisa",
+  "increaseAutoScrollSpeed": "Povećajte brzinu automatskog pomicanja",
+  "increaseFontSize": "Povećaj veličinu fonta",
+  "invalidCompatibilityLinkMissingUsernames": "Nevažeća veza kompatibilnosti: nedostaju korisnička imena.",
+  "invalidGistUrl": "Nevažeći osnovni URL.",
+  "invalidRoomCodeInLink": "Nevažeći kod sobe u poveznici",
+  "invalidWatchTogetherLink": "Nevažeća veza Gledajte zajedno",
+  "invertAllPageColors": "Obrnuti sve boje stranice",
+  "invertColors": "Invertiraj boje",
+  "inviteLink": "Link za pozivnicu",
+  "inviteLinkCopied": "Veza s pozivnicom kopirana!",
+  "jDramas": "J-drame",
+  "joinNotifications": "Obavijesti o pridruživanju",
+  "kDramas": "K-drame",
+  "keepBothUploadedAndCloudEntries": "Čuvajte i učitane i unose u oblaku. Ako isti unos postoji na oba mjesta, zadržava se noviji. (preporučeno)",
+  "keyVolumeScrollingSpeed": "Brzina pomicanja tipki i glasnoće",
+  "koreanMovies": "Korejski filmovi",
+  "leaveNotifications": "Ostavite obavijesti",
+  "liveComments": "Komentari uživo",
+  "lockScreen": "Zaključani zaslon",
+  "loginToAnilist": "Prijavite se na AniList",
+  "loginToMyanimelist": "Prijavite se na MyAnimeList",
+  "loginToSimkl": "Prijavite se na Simkl",
+  "longPressForPageActions": "Dugo pritisnite za radnje stranice",
+  "longPressAPageToSave": "Dugo pritisnite stranicu da je spremite, podijelite ili kopirate",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "Manga dovršena",
+  "mangaPage": "Manga stranica",
+  "maxMembers": "Maksimalni broj članova",
+  "memberLeft": "Član lijevo",
+  "mergeUploadedEntriesOrReplaceCloud": "Spojite učitane unose ili zamijenite podatke iz oblaka",
+  "mergeWithCloud": "Spojite se s oblakom",
+  "milliseconds": "Milisekunde",
+  "missingTypeQueryParameterUseType": "Nedostaje parametar upita \"vrsta\". Koristite type=player.",
+  "missingUrlQueryParameterForThe": "Nedostaje \"url\" parametar upita za temu JSON.",
+  "moreIterationsStrongerDebanding": "Više iteracija = jače debanding",
+  "movies": "Filmovi",
+  "moviesList": "POPIS FILMOVA",
+  "navigateByNumber": "Navigacija prema broju",
+  "navigation": "Navigacija",
+  "newMember": "Novi član",
+  "nextChapter": "Sljedeće poglavlje",
+  "nextParagraph": "Sljedeći paragraf",
+  "noAudio": "Nema zvuka",
+  "noOneCanSendMessagesIn": "Nitko ne može slati poruke u chatu",
+  "noStreamUrlAvailable": "URL streama nije dostupan",
+  "noSubtitle": "Bez podnaslova",
+  "noVideo": "Nema videa",
+  "notVeryCompatibleAtAll": "Uopće nije baš kompatibilno.",
+  "numberedList": "Numerirani popis",
+  "onScreenOverlays": "Prekrivanja na zaslonu",
+  "onlyHostAndCoHostsCan": "Samo domaćin i sudomaćini mogu slati poruke",
+  "opacity": "Neprozirnost",
+  "openInBrowser2": "Otvori u pregledniku",
+  "openYourAnymexSyncGistOn": "Otvorite svoju AnymeX sinkronizaciju na GitHub",
+  "openingInExternalPlayer": "Otvaranje u vanjskom playeru...",
+  "orTypeCustomTag": "Ili upišite prilagođenu oznaku...",
+  "otherUpper": "OSTALO",
+  "overlayPosition": "Položaj preklapanja",
+  "overrideSystemScreenBrightness": "Nadjačaj svjetlinu zaslona sustava",
+  "ownerAndCreatorOfTheCommentum": "Vlasnik i kreator platforme zajednice Commentum.",
+  "padding": "Padding",
+  "pagesAheadOfTimeForFaster": "Stranice unaprijed za brže učitavanje",
+  "partySettings": "Postavke zabave",
+  "passwordIfRequired": "Lozinka (ako je potrebna)",
+  "pasteDirectGifOrImageUrl": "Zalijepi izravni GIF ili URL slike...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • Kartice i stanje na PayPalu",
+  "permanentlyRemoveAnymexSyncData": "Trajno uklonite podatke o sinkronizaciji AnymeX",
+  "pictureShaders": "Slika & shaderi",
+  "pitch": "Pitch",
+  "playbackIsLockedToTheHost": "Reprodukcija je zaključana za host",
+  "playbackSpeed2": "Brzina reprodukcije",
+  "playerSettings2": "Postavke playera",
+  "pleaseLogInFirstThenTry": "Prvo se prijavite, a zatim pokušajte ponovno s linkom.",
+  "pointsBreakdown": "Raščlamba bodova",
+  "practicallyMadeForEachOther": "Praktično stvoreni jedno za drugo.",
+  "preloadPage": "Prethodno učitaj stranicu",
+  "preloadPages": "Prethodno učitaj stranice",
+  "preloadPagesAheadOfTimeFor": "Unaprijed učitaj stranice radi bržeg učitavanja (troši više mreže i RAM-a)",
+  "preventScreenFromSleepingWhileReading": "Spriječite mirovanje zaslona tijekom čitanja",
+  "previousChapter": "Prethodno poglavlje",
+  "previousParagraph": "Prethodni paragraf",
+  "privateRoom": "Privatna soba",
+  "profileUpdated": "Profil ažuriran",
+  "proportionOfTotalTimeWatched": "Udio ukupnog vremena gledanja",
+  "provideAReasonForThisAction": "Navedite razlog za ovu radnju...",
+  "qualitySettings": "Postavke kvalitete",
+  "quote": "Citat",
+  "range75DarkestTo100": "Raspon: -75 (najtamnije) do 100",
+  "rateLimited": "Stopa ograničena",
+  "reactionOverlay": "Prekrivanje reakcije",
+  "readStats": "Pročitajte statistiku",
+  "readTextAloud": "Pročitaj tekst naglas",
+  "red": "crvena",
+  "reduceColorBandingInGradients": "Smanjite trake boja u gradijentima",
+  "reduceHaloingWhileUpscaling": "Smanjite svjetlucanje tijekom povećavanja veličine",
+  "refresh": "Osvježi",
+  "removeCurrentCloudEntriesAndReplace": "Uklonite trenutne unose u oblak i zamijenite ih učitanom datotekom.",
+  "removeWhiteBlackBordersToMaximize": "Uklonite bijele/crne obrube kako biste povećali sadržaj",
+  "removesFinishedMediaFromCloudGist": "Uklanja gotove medije iz suštine oblaka",
+  "replaceCloudGist": "Zamijenite Cloud Gist",
+  "report": "izvješće",
+  "resetReLogin": "Resetiraj i ponovno se prijavi",
+  "resetTo1": "Vrati na 1×",
+  "restore": "Vratiti",
+  "roomAccess": "Pristup sobi",
+  "roomCode": "Šifra sobe",
+  "roomCodeCopiedToClipboard": "Šifra sobe kopirana je u međuspremnik",
+  "roomDuration": "Trajanje sobe",
+  "roomNotFoundOrExpired": "Soba nije pronađena ili je istekla",
+  "roomPassword": "Lozinka sobe",
+  "roomPassword2": "Lozinka sobe",
+  "roomSettings": "Postavke sobe",
+  "saveYourCurrentCloudProgressTo": "Spremite svoj trenutni napredak u oblaku u datoteku",
+  "scrollMultiplier": "Scroll Multiplier",
+  "scrollSpeed": "Brzina pomicanja",
+  "searchAnimeEpisode": "Traži anime / epizodu...",
+  "searchAnimeGifsReactions": "Pretraživanje anime GIF-ova, reakcija...",
+  "searchChapters": "Pretraži poglavlja...",
+  "searchFiles": "Traži datoteke...",
+  "secondsPerPageScreen": "Sekundi po stranici / ekranu",
+  "seekAndControlPlaybackFreely": "Slobodno tražite i kontrolirajte reprodukciju",
+  "selectedFileMustContainAJson": "Odabrana datoteka mora sadržavati objekt JSON.",
+  "selectedJsonHasNoValidSync": "Odabrani JSON nema važeće unose sinkronizacije.",
+  "seriesList": "POPIS SERIJA",
+  "setAPasswordForYourRoom": "Postavite lozinku za svoju sobu",
+  "share": "Podijelite",
+  "showANotificationWhenSomeoneJoins": "Prikaži obavijest kada se netko pridruži zabavi",
+  "showANotificationWhenSomeoneLeaves": "Prikaži obavijest kada netko napusti zabavu",
+  "showAllStreams": "Prikaži sve streamove",
+  "showChatMessagesOnThePlayer": "Prikaži chat poruke na playeru čim stignu",
+  "showEmojiReactionsFloatingOnThe": "Prikaži reakcije emojija koji lebde na playeru",
+  "showSyncResultWhenPlayerOr": "Prikaži rezultat sinkronizacije kada se player ili čitač zatvore",
+  "showTransitionPageEvenWhenChapters": "Prikaži prijelaznu stranicu čak i kada su poglavlja susjedna",
+  "shows": "emisije",
+  "sigmoidUpscaling": "Sigmoidno povećanje veličine",
+  "smootherGradientsWithSlightTemporalNoise": "Glatkiji gradijenti s blagim vremenskim šumom",
+  "spacing": "Razmak",
+  "speechSpeed": "Brzina govora",
+  "spoilers": "Spoileri",
+  "stretchImagesToFitScreenWidthOn": "Razvucite slike kako bi odgovarale širini zaslona na širokim zaslonima",
+  "subtitleSettings": "Postavke titlova",
+  "superAdministratorWithSystemWideManagement": "Super administrator s ovlastima upravljanja cijelim sustavom.",
+  "swapUpDownActions2": "Zamijenite akcije gore/dolje",
+  "syncMode": "Način sinkronizacije",
+  "syncPreferences": "Postavke sinkronizacije",
+  "tapScrollAmount": "Dodirnite Pomakni iznos",
+  "tapToOpen": "Dodirnite za otvaranje",
+  "tapToOpenInBrowser": "Dodirnite za otvaranje u pregledniku",
+  "tapToOpenInSpotify": "Dodirnite za otvaranje u Spotify",
+  "tapToViewInBrowser": "Dodirnite za prikaz u pregledniku",
+  "tapTopBottomToScroll": "Dodirnite vrh/dno za pomicanje",
+  "targetPeak": "Target Peak",
+  "temporalDither": "Temporalno podrhtavanje",
+  "textToSpeech": "Tekst u govor",
+  "theCreatorOfThisCommentDiscussion": "Kreator ove teme za raspravu o komentarima.",
+  "theresASmallSparkOfAgreement": "Postoji mala iskra slaganja.",
+  "thisPermanentlyDeletesYourAnymexCloud": "Ovime se trajno briše vaš AnymeX napredak u oblaku iz GitHub i ne može se poništiti.",
+  "toPrevNextChapter": "Na prethodno/sljedeće poglavlje",
+  "topL": "Top-L",
+  "topR": "Top-R",
+  "totals": "Ukupno",
+  "trendingMovies": "Filmovi u trendu",
+  "trendingSeries": "Serija u trendu",
+  "tts": "TTS",
+  "ukMovies": "UK filmovi",
+  "ukShows": "UK emisije",
+  "unableToReadSelectedJsonFile": "Nije moguće pročitati odabranu JSON datoteku.",
+  "unsupportedExtension": "Nepodržano proširenje",
+  "usMovies": "Američki filmovi",
+  "usShows": "Američke emisije",
+  "useVolumeButtonsToScroll": "Koristite tipke za glasnoću za pomicanje",
+  "userHistory": "Korisnička povijest",
+  "userInfo": "Informacije o korisniku",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "Provjereni moderator čuva komentare s poštovanjem i sigurno.",
+  "verticalPadding": "Okomito padding",
+  "viewCloudGist": "Pogledajte Cloud Gist",
+  "viewUserHistory": "Pregledajte korisničku povijest",
+  "viewUserInfo": "Pregledajte podatke o korisniku",
+  "voice": "Glas",
+  "watchParty": "Watch Party",
+  "watchStats": "Pogledajte statistiku",
+  "watchingNow": "Gledam sada",
+  "webmVideo": "WebM Video",
+  "whereLiveCommentsAppearOnScreen": "Gdje se pojavljuju komentari uživo na zaslonu",
+  "whileWatchingEpisodesOrReadingChapters": "Dok gledate epizode ili čitate poglavlja",
+  "writeAReply": "Napišite odgovor...",
+  "youAreBasicallyTheSamePerson": "Vi ste u osnovi ista osoba.",
+  "youBothHaveVerySimilarTaste": "Oboje imate vrlo sličan ukus.",
+  "all2": "← Sve",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.konf",
+  "styling": "Stiliziranje",
+  "upscale": "Vrhunski",
+  "appearanceStyle": "Izgled i stil",
+  "colorsLightDarkOledLogoAnimations": "Boje, svijetlo/tamno, OLED i animacije logotipa",
+  "fontsTypography": "Fontovi i tipografija",
+  "chooseTypographyCustomFontsGlobalText": "Odaberite tipografiju, prilagođene fontove i globalnu skalu teksta",
+  "globalFontScaling": "Globalno skaliranje fonta",
+  "scaling": "Skaliranje",
+  "typefaces": "Tipovi slova",
+  "interfaceLayout": "Sučelje i izgled",
+  "navBarCardStylesDetailsBlur": "Navigacijska traka, stilovi kartica, zamućenje detalja i raspored",
+  "navigationHomeLayout": "Navigacija i izgled doma",
+  "playbackEngineSubtitlesGesturesDecoders": "Mehanizam za reprodukciju, titlovi, pokreti i dekoderi",
+  "mangaNovelReader": "Čitač manga i romana",
+  "readingModesDirectionColorsTapZones": "Načini čitanja, smjer, boje i dodirne zone",
+  "dataNetworkSystem": "Podaci, mreža i sustav",
+  "downloadDirectoryConcurrencyHlsSegments": "Preuzmite direktorij, konkurentnost i HLS segmente",
+  "accountsSocial": "Računi i društvene mreže",
+  "trackingAccounts": "Praćenje računa",
+  "manageYourAnilistMyanimelistSimklAccounts": "Upravljajte svojim AniList, MyAnimeList i Simkl računima",
+  "trackingBehavior": "Praćenje ponašanja",
+  "communityComments": "Zajednica i komentari",
+  "commentumProfileBadgesMarkdownPrivacy": "Profil komentara, značke, markdown i privatnost",
+  "contentPreferences": "Sadržaj i postavke",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFW filter, objedinjena biblioteka, preporuke i popisi",
+  "exportAndRestoreYourLibraryAnd": "Izvezite i vratite svoju knjižnicu i postavke",
+  "manageAnimeMangaNovelSourcesAnd": "Upravljajte izvorima i skladištima animea, manga i romana",
+  "installAndUpdateCommunityAddOns": "Instalirajte i ažurirajte dodatke zajednice",
+  "storageCache": "Pohrana i predmemorija",
+  "manageCachedImagesThresholdsResetData": "Upravljajte predmemoriranim slikama, pragovima i resetirajte podatke",
+  "networkProxy": "Mreža i proxy",
+  "logsDiagnostics": "Dnevnici i dijagnostika",
+  "inspectExportAndShareApplicationLogs": "Pregledajte, izvozite i dijelite zapisnike aplikacija",
+  "aboutSupport": "O & podrška",
+  "supportDevelopmentViaKoFiPaypal": "Podržite razvoj putem Ko-fi, PayPal & UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "Verzija, ažuriranja, društvene veze i pravne politike",
+  "cacheAndCookiesClearedFor": "Predmemorija i kolačići izbrisani za {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Kolačići očišćeni za {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Predmemorija očišćena za {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Nepodržana vrsta {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "Postavke {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Lokalna datoteka nije pronađena na: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Sinkronizacija nije uspjela: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Lokalni APK nije pronađen na: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Pogreška: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Instalacija dodatka nije uspjela: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "Nema pronađenih rezultata za \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Sezona {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Epizoda {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title} Vijesti",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "zajednica",
+  "logInWithAnilist": "Prijavite se sa AniList",
+  "episode2": "Epizoda {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Preuzimanje dovršeno",
+  "downloadFailedHasNoUrl": "Preuzimanje nije uspjelo: {chapterDisplay} nema URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Preuzimanje nije uspjelo: nisu pronađene stranice za {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Preuzimanje nije uspjelo: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Epizoda {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} pogl",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} ep",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Izvor \"{extensionName}\" nije pronađen.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Nije uspjela priprema torrenta: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} će biti trajno uklonjen iz vaših preuzimanja.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Pretraga nije uspjela: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Traži {label} za \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} stavke povijesti izbrisane",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Ukloniti \"{itemName}\" sa svog {_historyLabel}?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "Uklonjeno \"{itemName}\"",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Uzlazno",
+  "descending": "Spuštajući se",
+  "defaultTabOrder": "Zadani redoslijed kartica",
+  "reverseTabs": "Obrnuti tabulator",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Vrsta: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Predmeti: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Prvo instalirajte {sourceName}, a zatim kliknite",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "STRANICA {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Traži {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "GOTOVO (odabrano {length})",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "MOŽE SE ČITATI NA",
+  "streamingOn": "STREAM DALJE",
+  "freedom": "sloboda",
+  "shaderAdded": "Dodan shader: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Pogreška pri uvozu shadera: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Skenatori",
+  "chapterRange": "Raspon poglavlja",
+  "downloadFailed2": "Preuzimanje nije uspjelo: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Poglavlje {formattedNumber} je preuzeto",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Preuzimanje ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} poglavlja",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Učitavanje stranice {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Stranica spremljena u Slike/AnymeX",
+  "pageSavedToAnymex": "Stranica spremljena u {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Nije uspjelo spremanje stranice: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Dijeljenje stranice nije uspjelo: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "URL stranice kopiran u međuspremnik",
+  "failedToCopy": "Kopiranje nije uspjelo: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Učitavanje stranica...",
+  "goBack": "Idi natrag",
+  "loadingPage2": "Učitavanje stranice {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Boja bljeskalice",
+  "black": "Crna",
+  "white": "Bijela",
+  "readerBackground": "Pozadina čitatelja",
+  "gray": "Sivo",
+  "automatic": "Automatski",
+  "noneNearestNeighbor": "Ništa (najbliži susjed)",
+  "lowBilinear": "Nisko (bilinearno)",
+  "mediumDefault": "Srednje (zadano)",
+  "highBicubic": "Visoko (bikubično)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (Najbolja kvaliteta, sporije)",
+  "fullscreenPreview": "Pregled preko cijelog zaslona",
+  "enhancementPreset": "Unaprijed postavljeno poboljšanje",
+  "fineTuning": "Fino podešavanje",
+  "enhancementStrength": "Snaga poboljšanja",
+  "strength": "{value}% čvrstoće",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Suzbijanje artefakata",
+  "cleanJpegCompressionRingingAroundLinework": "Čista JPEG kompresija zvoni oko linija",
+  "cache": "Predmemorija",
+  "cacheSize": "Veličina predmemorije",
+  "mbStoredOnDisk": "{mb} MB pohranjeno na disku",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Super rezolucija",
+  "loadingChapter": "Učitavanje poglavlja...",
+  "noContentAvailable": "Nema dostupnog sadržaja",
+  "recommendations": "{reasonCount} preporuke",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "'s Recs",
+  "all3": "Sve ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Neuspješno postavljanje poruke: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Ukupno unosa: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Pridružio se sobi {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Aktivne sobe",
+  "joinWithCode": "Pridružite se s kodom",
+  "leftRoom": "Lijeva soba",
+  "leaveReset": "Napusti / Resetiraj",
+  "inRoom": "U sobi: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Epizoda {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Šutnuo {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "Članovi {length}/{maxMembers}",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Napustio sobu",
+  "leave": "Otiđi",
+  "noActiveRooms": "Nema aktivnih soba",
+  "roomsWillAppearHereWhenSomeone": "Sobe će se pojaviti ovdje kada ih netko stvori",
+  "created2": "Kreirano · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Pridružite se →",
+  "full": "puna",
+  "savedToPicturesAnymex": "Spremljeno u Slike/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Spremljeno u Preuzimanja/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Spremljeno u {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Dodirnite za otvaranje profila)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "poglavlje ",
+  "episode5": "epizoda ",
+  "noData": "{title} (Nema podataka)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Traži {title} proširenja...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Pregledajte proširenja",
+  "goToHome": "Idi na početnu stranicu",
+  "fetching": "Dohvaćanje {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Pogreška pri dohvaćanju pravila: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "Uspješno dodan \"{name}\"!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "Uspješno ažuriran \"{name}\"!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Jeste li sigurni da želite izbrisati \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "Izbrisano \"{name}\"",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Vaša povijest je prazna",
+  "episode6": "Epizoda {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Prikaži manje",
+  "readMore": "Pročitajte više",
+  "unpin": "Otkvači",
+  "pinActivity": "Prikvači aktivnost",
+  "n1Recommendation": "1 preporuka",
+  "recommendations2": "Preporuke {count}",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Slanje...",
+  "addRecommendation": "Dodajte preporuku",
+  "submitRecommendation": "Pošaljite preporuku",
+  "currentProvider": "TRENUTNI PONUĐAČ",
+  "profileStatsUserActivities": "Statistika profila i aktivnosti korisnika",
+  "manageSourcesPlugins": "Upravljanje izvorima i dodacima",
+  "savedOfflineEpisodesChapters": "Spremljene izvanmrežne epizode i poglavlja",
+  "watchVideoFilesFromDeviceStorage": "Gledajte video datoteke iz pohrane uređaja",
+  "syncWatchPartyWithFriends": "Sinkronizirajte zabavu gledanja s prijateljima",
+  "pauseWatchHistoryAndSync": "Pauzirajte povijest gledanja i sinkronizaciju",
+  "appearancePlayerNetwork": "Izgled, igrač i mreža",
+  "joining": "Pridruživanje...",
+  "joinRoom": "Pridružite se sobi",
+  "shareTheCodeOrInviteLink": "Podijelite kod ili vezu poziva s prijateljima.",
+  "roomCreated": "Soba stvorena!",
+  "shareThisCodeWithFriends": "Podijelite ovaj kod s prijateljima:",
+  "copyCode": "Kopiraj kod",
+  "copyLink": "Kopiraj vezu",
+  "leaveWatchTogether": "Napustiti Watch Together?",
+  "removeMember": "Ukloni člana",
+  "transferHost": "Prijenos domaćina",
+  "transferHost2": "Prijenos domaćina",
+  "transfer": "Prijenos",
+  "removeMember2": "Ukloni člana",
+  "removeFromThisWatchParty": "Ukloniti {username} s ove zabave gledanja?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "Članovi {onlineCount} / {maxMembers}",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} kopirano",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "Nema dostupnih poslužitelja za ovu sobu",
+  "selectStreamingServerQualityToWatch": "Odaberite kvalitetu streaming poslužitelja za gledanje",
+  "thisServerHasNoPlayableUrl": "Ovaj poslužitelj nema URL koji se može igrati",
+  "episode7": "Epizoda {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Prilagođeno iz poglavlja {start} u {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} predviđen na {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "EPIZODA {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MAL popis izvezen u:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML izvezen u: \n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Izvoz nije uspio: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Izvoz vašeg popisa {value}...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Izvezi {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "Nema dostupnih medija za reprodukciju",
+  "noThemesFound": "Nisu pronađene teme",
+  "playAll": "Igraj sve",
+  "theDawnOfHumanity": "Zora čovječanstva",
+  "orientationUnlocked": "Orijentacija otključana",
+  "orientationLocked": "Orijentacija zaključana",
+  "skippedOpening": "Preskočeno otvaranje",
+  "skippedEnding": "Preskočen kraj",
+  "skippedRecap": "Preskočeno ponavljanje",
+  "ifYouSeeBlackScreenUse": "Ako vidite crni ekran, koristite vanjski player za gledanje",
+  "failedToStartTorrentStream": "Pokretanje torrent streama nije uspjelo: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Otvaranje streama nije uspjelo. Pokušajte s drugim poslužiteljem",
+  "noServersFoundForThisEpisode": "Nije pronađen nijedan poslužitelj za ovu epizodu.",
+  "failedToLoadEpisodeCheckYour": "Učitavanje epizode nije uspjelo. Provjerite vezu.",
+  "playing": "Igram {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Promjena torrent datoteke nije uspjela: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Podnaslov je učitan: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Greška pri učitavanju podnaslova: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Oštećen titl!",
+  "preTranslatingSubtitles": "Prethodno prevođenje titlova...",
+  "preTranslationFailedUsingRealTime": "Prethodno prevođenje nije uspjelo, korištenje zamjene u stvarnom vremenu",
+  "preTranslationErrorUsingRealTime": "Pogreška prije prijevoda, korištenje zamjene u stvarnom vremenu",
+  "corruptedQuality": "Pokvarena kvaliteta!",
+  "colorProfilesOnlyAvailableWithMediakit": "Profili boja dostupni su samo s MediaKit playerom",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Otvarajte video streamove u vanjskom playeru prema zadanim postavkama",
+  "quickDefaults": "Brze zadane postavke",
+  "orientationSpeedResizeModeExternalPlayer": "Orijentacija, brzina, način promjene veličine i vanjski player",
+  "controlsGestures": "Kontrole i geste",
+  "subtitlesTranslation": "Titlovi i prijevod",
+  "languagesFontsStylingLibassTranslation": "Jezici, fontovi, stil, libas i prijevod",
+  "anime4kShaders": "Anime4K & Shaderi",
+  "upscalingShadersPresetsProfiles": "Povećavanje shadera, unaprijed postavljenih postavki i profila",
+  "engineAdvanced": "Motor i napredni",
+  "addSpeed": "Dodajte brzinu",
+  "speedPresets": "Unaprijed postavljene brzine",
+  "rememberAsDefaultSpeed": "Zapamti kao zadanu brzinu",
+  "loadedSubtitle": "Učitan titl: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Nije uspjelo preuzimanje podnaslova: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "ŠIFRA SOBE",
+  "episodeReleasesIn": "EPIZODA {value} IZLAZI U",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "Za komentiranje morate biti prijavljeni",
+  "readFullRules": "Pročitajte cijela pravila",
+  "acceptPost": "Prihvati i objavi",
+  "youNeedToBeLoggedIn2": "Morate biti prijavljeni da biste odgovorili",
+  "commentCopiedToClipboard": "Komentar kopiran u međuspremnik",
+  "spam": "Spam",
+  "offensive": "Uvredljivo",
+  "harassment": "Uznemiravanje",
+  "offTopic": "Izvan teme",
+  "failedToLoadUserInfo": "Nije uspjelo učitavanje podataka o korisniku.",
+  "noUserDataFound": "Nisu pronađeni korisnički podaci.",
+  "viewHistory": "Pogledaj povijest",
+  "failedToLoadComments": "Nije uspjelo učitavanje komentara.",
+  "noCommentsFound": "Nema komentara.",
+  "deleted2": "OBRISAN",
+  "comment": "KOMENTIRAJTE",
+  "failedToLoadUserHistory": "Učitavanje korisničke povijesti nije uspjelo.",
+  "noHistoryFound": "Povijest nije pronađena.",
+  "youNeedToBeLoggedIn3": "Za uređivanje komentara morate biti prijavljeni",
+  "commentCannotBeEmpty": "Komentar ne može biti prazan",
+  "failedToLoadCommentsPleaseTry": "Nije uspjelo učitavanje komentara. Molimo pokušajte ponovo.",
+  "commentsLoaded": "{value} komentari učitani",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Osvježavanje komentara nije uspjelo. Molimo pokušajte ponovo.",
+  "invalidParentCommentId": "Nevažeći nadređeni ID komentara",
+  "replyPostedSuccessfully": "Odgovor je uspješno objavljen",
+  "failedToPostReply": "Neuspješno objavljivanje odgovora",
+  "failedToPostReplyPleaseTry": "Neuspješno objavljivanje odgovora. Molimo pokušajte ponovo.",
+  "commentPostedSuccessfully": "Komentar je uspješno objavljen",
+  "failedToAddCommentPleaseTry": "Dodavanje komentara nije uspjelo. Molimo pokušajte ponovo.",
+  "failedToUpdateVotePleaseTry": "Ažuriranje glasovanja nije uspjelo. Molimo pokušajte ponovo.",
+  "invalidCommentId": "Nevažeći ID komentara",
+  "commentEditedSuccessfully": "Komentar je uspješno uređen",
+  "failedToEditComment": "Uređivanje komentara nije uspjelo",
+  "commentDeletedSuccessfully": "Komentar je uspješno izbrisan",
+  "failedToDeleteComment": "Brisanje komentara nije uspjelo",
+  "failedToReportComment": "Prijava komentara nije uspjela",
+  "failedToModerateComment": "Moderiranje komentara nije uspjelo",
+  "failedToManageUser": "Upravljanje korisnikom nije uspjelo",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ bodova). Poredak se temelji na stvarnoj aktivnosti ({realPoints} bodovi).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} je zaradio bodove + {text} bonus za ulogu ({label}). Rangiranje se temelji na stvarnoj aktivnosti.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Raspon epizoda",
+  "episodeIsDownloaded": "Epizoda {number} je preuzeta",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} epizode",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo izravnavanje, sezona 2 – Ustani iz sjene",
+  "frierenBeyondJourneySEnd": "Frieren: Iza kraja putovanja",
+  "bleachThousandYearBloodWar": "BLEACH: Tisućugodišnji krvavi rat",
+  "cardCustomizer": "Prilagodba kartica",
+  "presetStyle": "Unaprijed postavljen stil",
+  "chooseFrom5AuthenticBuiltIn": "Birajte između 5 autentičnih ugradbenih dizajna",
+  "sizingGeometry": "Dimenzioniranje i geometrija",
+  "cardSize": "Veličina kartice",
+  "scaleCardsProportionallyWithoutDistortion": "Proporcionalno skaliranje kartica bez izobličenja",
+  "landscapeCards": "Pejzažne kartice",
+  "formatCardsIn169Widescreen": "Formatirajte kartice u 16:9 widescreen orijentaciji",
+  "selectPosterImageAspectRatio": "Odaberite omjer slike postera",
+  "titleLines": "Naslovni redovi",
+  "maximumNumberOfTitleLinesDisplayed": "Maksimalan broj prikazanih redaka naslova",
+  "gestureAreas": "Područja gesta",
+  "resetDefault": "Resetiraj zadano",
+  "overlay": "Prekrivanje",
+  "volume": "Volumen",
+  "brightnessArea": "Područje svjetline",
+  "overlayAreaTap": "Područje preklapanja (dodirnite)",
+  "volumeArea": "Područje volumena",
+  "resetToDefaultLayout": "Vrati na zadani izgled",
+  "moveToSlot": "Pomakni se u utor",
+  "topBar": "Gornja traka",
+  "bottomLeft": "Dolje lijevo",
+  "bottomRight": "Dolje desno",
+  "themesOverlay": "Teme i preklapanje",
+  "gesturesSeeking": "Geste i traženje",
+  "horizontalSwipeAcrossTheScreenTo": "Vodoravno prijeđite prstom preko zaslona za traženje",
+  "autoSkipCompletion": "Automatsko preskakanje i dovršavanje",
+  "percentageWatchedBeforeMarkingCompleted": "Postotak gledanja prije dovršetka označavanja",
+  "playerControls": "Kontrole igrača",
+  "mpvConfSavedSuccessfully": "mpv.conf je uspješno spremljen",
+  "hardwareDrivers": "Hardver i upravljački programi",
+  "systemIntegrations": "Sustav i integracije",
+  "experimentalMpvTuning": "Eksperimentalno ugađanje MPV-a",
+  "editMpvConf": "Uredi mpv.conf",
+  "modeA": "Način A",
+  "modeB": "Način B",
+  "modeC": "Način C",
+  "modeAA": "Način rada A+A",
+  "modeBB": "Način B+B",
+  "modeCA": "Način rada C+A",
+  "natural": "Prirodno",
+  "vivid": "Živopisno",
+  "cinema": "kino",
+  "soft": "Meko",
+  "warm": "Topla",
+  "cool": "Cool",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Kino HDR",
+  "vividPop": "Živopisni pop",
+  "dark": "tamno",
+  "anime4kEngine": "Anime4K Engine",
+  "anime4kShaders2": "Anime4K shaderi",
+  "devicePerformanceTier": "Razina izvedbe uređaja",
+  "midRange": "Srednje klase",
+  "highEnd": "Vrhunski",
+  "shaderMode": "Shader Mode",
+  "colorPreset": "Unaprijed postavljena boja",
+  "desktopPlaybackKeybindings": "Tipkovnice za reprodukciju na radnoj površini",
+  "customSubtitleFonts": "Prilagođeni fontovi titlova",
+  "importedFont": "Uvezeni font \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Jeste li sigurni da želite izbrisati \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Jezik i prijevod",
+  "renderingBehavior": "Renderiranje i ponašanje",
+  "disableToAvoidFadeTransitionsBetween": "Onemogućite kako biste izbjegli blijede prijelaze između titlova",
+  "typographyOutline": "Tipografija i obris",
+  "adjustSubtitleFontSize": "Podesite veličinu fonta titlova",
+  "adjustSubtitleOutlineThickness": "Podesite debljinu obrisa podnaslova",
+  "colorsPosition": "Boje i položaj",
+  "changeSubtitleTextColor": "Promjena boje teksta podnaslova",
+  "mangaReader": "Čitač manga",
+  "layoutDirection": "Raspored i smjer",
+  "autoSwitchToVerticalModeFor": "Automatsko prebacivanje u okomiti način rada za webtoone",
+  "imageDisplay": "Slika i zaslon",
+  "interfaceSession": "Sučelje i sesija",
+  "mangaControlsGestures": "Manga kontrole i geste",
+  "overscrollToPreviousNextChapter": "Prelistajte do prethodnog/sljedećeg poglavlja",
+  "automaticallyScrollMangaPages": "Automatski pomičite manga stranice",
+  "swapVolumeUpDownActions": "Zamijenite radnje za povećanje/smanjenje glasnoće",
+  "novelReader": "Čitanka romana",
+  "themeDisplay": "Tema i zaslon",
+  "displayChapterPercentageWhileReading": "Prikaz postotka poglavlja tijekom čitanja",
+  "displayStatusInfoInTheNovel": "Prikaz informacija o statusu u čitaču romana",
+  "typographySpacing": "Tipografija i razmaci",
+  "novelControlsGestures": "Nove kontrole i geste",
+  "tapScreenEdgesToScrollNovel": "Dodirnite rubove zaslona za pomicanje stranica romana",
+  "swipeGestures": "Pokreti prijelaza",
+  "volumeKeyScrolling": "Pomicanje tipki za glasnoću",
+  "useHardwareVolumeButtonsToScroll": "Koristite hardverske tipke za glasnoću za listanje romana",
+  "automaticallyScrollNovelContent": "Automatski pomičite novi sadržaj",
+  "textToSpeechTts": "Tekst u govor (TTS)",
+  "readNovelChaptersAloud": "Čitajte poglavlja romana naglas",
+  "speechRate": "Brzina govora",
+  "voicePitch": "Visina glasa",
+  "areYouSureYouWantTo4": "Jeste li sigurni da se želite odjaviti sa {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Provjera ažuriranja nije uspjela: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} je uspješno instaliran",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Instalacija {name} nije uspjela: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} je uspješno ažuriran",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Neuspješno ažuriranje {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Deinstalirajte {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} deinstaliran",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Deinstalacija {name} nije uspjela: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "Redoslijed odjeljka {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Obavijesti i sinkronizacija",
+  "enableNotifications": "Omogući obavijesti",
+  "syncAnilistNotificationsWithDeviceNotifications": "Sinkronizirajte AniList obavijesti s obavijestima uređaja",
+  "airingAlerts": "Obavijesti o emitiranju",
+  "socialAlerts": "Društvena upozorenja",
+  "notifyOnNewFollowers": "Obavijesti o novim pratiteljima",
+  "activityAlerts": "Upozorenja o aktivnostima",
+  "syncInterval": "Interval sinkronizacije",
+  "regionTimezone": "Regija i vremenska zona",
+  "profileBio": "Biografija profila",
+  "backupFailed": "Sigurnosno kopiranje nije uspjelo: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Pogreška pri odabiru datoteke: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Neuspješno učitavanje sigurnosne kopije: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Vraćanje nije uspjelo: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} naslovi i povijest",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} naslovi i poglavlja",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} naslovi i stanje čitanja",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} prilagođeni popisi u svim medijima",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} registrirani unosi proširenja",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} produžni zip paketi",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Pomoć i informacije",
+  "libraryContentSafety": "Sigurnost knjižnice i sadržaja",
+  "homePageLists": "Popisi početnih stranica",
+  "chooseWhichListsToShowOn": "Odaberite popise za prikaz na početnoj stranici",
+  "homePageCards": "Kartice početne stranice ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Gleda $anime",
+  "viewingAnime": "Gleda $anime",
+  "readingManga2": "Čita $manga",
+  "viewingManga": "Čita $manga",
+  "readingNovel2": "Čita $novel",
+  "viewingNovel": "Čita $novel",
+  "browsingStatus": "Pregledava $status",
+  "upiIdCopied": "UPI ID kopiran: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Kopiraj UPI ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Dodirnite za pokretanje GPay, PhonePe, Paytm itd.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Obavijesti o preuzimanju",
+  "reDownloadFailed": "Ponovno preuzimanje nije uspjelo: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Vraćanje nije uspjelo: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Nije uspjelo dodavanje repoa: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Primijenjeni font \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Nije uspjelo preuzimanje \"{fontName}\"",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "Uvezeno i primijenjeno \"{fontName}\"",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Uvoz datoteke fonta nije uspio",
+  "deleted3": "Izbrisano \"{fontName}\"",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Knjižnica fontova",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Zadani geometrijski zaobljeni font dizajniran za AnymeX",
+  "systemFont": "Font sustava",
+  "useYourDeviceOsDefaultSystem": "Upotrijebite zadani oblik sustava OS-a vašeg uređaja",
+  "loadYourOwnTtfOrOtf": "Učitajte vlastite .ttf ili .otf datoteke tipografije",
+  "pendingReports": "{length} izvješća na čekanju",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Kolačići i pohrana",
+  "monitoring": "Praćenje",
+  "fpsMeter": "FPS mjerač",
+  "showDraggableRealTimeFpsOverlay": "Prikaži FPS sloj koji se može povlačiti u stvarnom vremenu",
+  "detectedModesDisplay": "Otkriveni načini rada i prikaz",
+  "currentDisplayMode": "Trenutačni način prikaza",
+  "modes": "{length} modovi",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Prilagodite",
+  "stylingLibass": "{subLang} • {subFont} • Styling & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Kontrole i dodirne zone",
+  "customizeTapZones": "Prilagodi dodirne zone",
+  "configurePagedAndWebtoonTapRegions": "Konfigurirajte stranice i webtoon dodirne regije",
+  "fitBordersSpacing": "{value} • Prilagodba, obrubi i razmaci",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Stil poglavlja, indikator stranice i zaključavanje zaslona",
+  "overscrollActionsAutoScrollVolume": "Prekoračenje, radnje, automatsko pomicanje i glasnoća",
+  "themeTypography": "Tema i tipografija",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Način čitanja i prikaz",
+  "pageModeProgressBatteryIndicator": "Način stranice, indikator napretka i baterije",
+  "readPageByPageInsteadOf": "Čitajte stranicu po stranicu umjesto listanja",
+  "displayPercentageInReadingBar": "Prikaz postotka u traci za čitanje",
+  "displayBatteryAndTimeInReader": "Prikaz baterije i vremena na traci čitača",
+  "gesturesNavigation": "Geste i navigacija",
+  "tapToScrollSwipeAutoScroll": "Dodirnite za pomicanje, prevlačenje, automatsko pomicanje i glasnoću",
+  "tapEdgesOfScreenToScroll": "Dodirnite rubove zaslona za pomicanje gore/dolje",
+  "swipeHorizontallyToChangeChapters": "Prijeđite prstom vodoravno za promjenu poglavlja",
+  "useVolumeKeysToScroll": "Koristite tipke za glasnoću za pomicanje",
+  "textToSpeechTts2": "Tekst u govor (TTS)",
+  "textToSpeechReadingSupport": "Podrška za čitanje teksta u govor",
+  "speechRate2": "Brzina govora",
+  "voicePitch2": "Visina glasa",
+  "appPostersIconsAvatarsSize": "Posteri aplikacija, ikone, avatari. Veličina: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Privremeni video komadi. Veličina: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Preuzete web stranice romana. Veličina: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Dnevnici, privremena preuzimanja. Veličina: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Brisanje predmemorije nije uspjelo: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Vraćanje na tvorničke postavke nije uspjelo: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 ili 3F51B5",
+  "motionDisplay": "Kretanje i prikaz",
+  "visualEffectsTuning": "Vizualni efekti i podešavanje",
+  "historyCard": "Kartica povijesti",
+  "carousel": "vrtuljak",
+  "navBar": "Navigacijska traka",
+  "themeDarkModeLayoutStyling": "Tema, tamni način i stil izgleda",
+  "gesturesSubtitlesVideoSettings": "Pokreti, titlovi i postavke videa",
+  "settingsTiles": "Pločice postavki",
+  "oledMode2": "Način rada OLED",
+  "primaryAccount": "Primarni račun ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Povezan na {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Spojite se na {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} naslovi",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Ukloniti \"{id}\"? Ovo se ne može poništiti.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Uvoz...",
+  "addJsonFiles": "Dodajte JSON datoteke",
+  "previousStyle": "Prethodni stil",
+  "nextStyle": "Sljedeći stil",
+  "currentStyle": "Trenutačni stil",
+  "useThisStyle": "Koristite ovaj stil",
+  "pleaseLogInToGetRecommendations": "Prijavite se kako biste dobili preporuke",
+  "chapter1": "Poglavlje 1",
+  "deletedSuccessfully": "{value} Uspješno izbrisan",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl se uspješno prijavio!",
+  "yepFailed": "Da, neuspješno",
+  "userInfoFetchingFailed": "Dohvaćanje korisničkih podataka nije uspjelo!",
+  "githubLoginFailed": "GitHub prijava nije uspjela: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Sinkronizacija je već u tijeku.",
+  "anotherSyncActionIsAlreadyIn": "Druga sinkronizacija je već u tijeku.",
+  "noAnymexSyncGistFoundTo": "Nije pronađen sadržaj sinkronizacije AnymeX za brisanje.",
+  "noAnymexSyncGistFoundInitialize": "Nije pronađen sadržaj sinkronizacije AnymeX. Prvo inicijaliziraj.",
+  "githubGistSync": "GitHub Gist Sinkronizacija",
+  "manage": "Upravljaj",
+  "manageGithubGistSync": "Upravljanje GitHub Gist sinkronizacijom",
+  "joinedTheParty": "{username} se pridružio zabavi",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} je napustio zabavu",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Domaćin se prebacio na epizodu {episodeNumber} od {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Pogreška pri dohvaćanju komentara",
+  "errorAddingComment": "Pogreška pri dodavanju komentara",
+  "errorUpdatingVote": "Pogreška prilikom ažuriranja glasovanja",
+  "errorEditingComment": "Pogreška pri uređivanju komentara",
+  "errorDeletingComment": "Pogreška pri brisanju komentara",
+  "commentReportedSuccessfully": "Komentar je uspješno prijavljen",
+  "errorReportingComment": "Pogreška pri prijavljivanju komentara",
+  "errorFetchingReportsQueue": "Pogreška pri dohvaćanju reda čekanja izvješća",
+  "reportResolvedSuccessfully": "Prijava je uspješno riješena",
+  "failedToResolveReport": "Neuspješno rješavanje izvješća",
+  "errorResolvingReport": "Izvješće o rješavanju pogreške",
+  "errorFetchingUserInfo": "Pogreška pri dohvaćanju podataka o korisniku",
+  "errorFetchingUserHistory": "Pogreška pri dohvaćanju korisničke povijesti",
+  "errorFetchingUserStats": "Pogreška pri dohvaćanju korisničke statistike",
+  "errorListingUsers": "Pogreška u popisu korisnika",
+  "errorSearchingUsers": "Pogreška pri traženju korisnika",
+  "errorFetchingModerationQueue": "Pogreška pri dohvaćanju reda čekanja za moderiranje",
+  "commentModeratedSuccessfully": "Komentar je uspješno moderiran",
+  "errorModeratingComment": "Pogreška pri moderiranju komentara",
+  "userManagedSuccessfully": "Korisnik je uspješno upravljao",
+  "errorManagingUser": "Pogreška pri upravljanju korisnikom",
+  "errorGettingInitialDeepLink": "Pogreška pri dobivanju početne dubinske veze: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Pogreška pri otvaranju veze: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Kopiraj detalje pogreške",
+  "whatSNew": "Što je novo",
+  "updatedToV": "Ažurirano na v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Nije moguće otvoriti vezu oglasa",
+  "newAnilistUpdates": "{length} Nova AniList ažuriranja",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} više",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Osvježi uređaje",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Dodavanje repoa... pričekajte.",
+  "unsupportedThemeTypeSupportedPlayer": "Nepodržana vrsta teme \"{type}\". Podržano: player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Uvoz teme playera s veze...",
+  "themeIsInvalid": "Tema je nevažeća: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Tema JSON je važeća. Uvezeni {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Pridruživanje sobi {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Nije uspjelo pridruživanje sobi: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Izračunavanje kompatibilnosti AniMatch za {user1} i {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Podijelite s odabranom uslugom praćenja",
+  "shareAnymexLink": "Podijeli AnymeX vezu",
+  "opensDirectlyInAnymex": "Otvara se izravno u AnymeX",
+  "newCommentsRepliesAndEdits": "Novi komentari, odgovori i izmjene",
+  "upvotesAndDownvotesOnYourComments": "Glasovi za i protiv vaših komentara",
+  "warningsMutesBansAndModerationActions": "Upozorenja, isključivanja zvuka, zabrane i radnje moderiranja",
+  "reportFiledResolvedDismissed": "Prijava podnesena, riješeno, odbačeno",
+  "officialAnnouncements": "Službene objave",
+  "whenSomeoneMentionsYouInA": "Kad vas netko @spomene u komentaru",
+  "notificationsForNewAnimeEpisodeReleases": "Obavijesti o izdanjima novih epizoda animea",
+  "notificationsForFollowsMentionsAndLikes": "Obavijesti o praćenjima, spominjanjima i lajkovima",
+  "notificationsForCompletedEpisodeAndChapter": "Obavijesti o dovršenim preuzimanjima epizoda i poglavlja",
+  "signIn": "Prijavite se",
+  "failedToCheckForUpdates3": "Provjera ažuriranja nije uspjela",
+  "noUpdatesAvailable": "Nema dostupnih ažuriranja",
+  "errorCheckingForUpdates": "Pogreška pri provjeri ažuriranja",
+  "installPermissionRequired": "Potrebna je dozvola za instalaciju",
+  "downloadFailed3": "Preuzimanje nije uspjelo",
+  "newVersionAvailable": "Nova verzija dostupna",
+  "episodeMetadata": "Metapodaci epizoda",
+  "sessionExpiredPleaseLoginAgain": "Sesija je istekla. Molimo prijavite se ponovno.",
+  "successfullyLoggedInAs": "Uspješno prijavljeni kao {username}",
+  "loggedOutFromDiscord": "Odjavljeni s Discorda",
+  "clearStoredLogFiles": "Izbriši spremljene datoteke zapisnika",
+  "resetInMemoryAndDiskLogFiles": "Poništi datoteke zapisnika u memoriji i na disku",
+  "errorCopiedToClipboard": "Pogreška kopirana u međuspremnik",
+  "autoScrollOn": "Automatsko pomicanje uključeno",
+  "autoScrollOff": "Automatsko pomicanje isključeno",
+  "copyLogs": "Kopiraj zapisnike",
+  "clearLogs": "Izbriši zapisnike",
+  "metadataFallbackStrategy": "Strategija zamjenskih metapodataka",
+  "activeSourceMode": "Način aktivnog izvora",
+  "chooseWhetherToMergeProviders": "Odaberite želite li spojiti pružatelje ili nametnuti određenu uslugu",
+  "autoMerged": "Automatski (spojeno)",
+  "providerPriorityToggles": "Prioritet pružatelja i prekidači",
+  "dragHandlesToChangeFetchPriority": "Povucite ručice za promjenu prioriteta. Gornji izvori imaju prednost pri rješavanju naslova epizoda, sličica i opisa.",
+  "maintenance": "Održavanje",
+  "clearMetadataCache": "Očisti predmemoriju metapodataka",
+  "flushesInMemoryEpisodeThumbnails": "Prazni predmemoriju sličica i naslova epizoda u memoriji",
+  "metadataCacheCleared": "Predmemorija metapodataka očišćena",
+  "resetToDefaultOrder": "Poništi na zadani redoslijed",
+  "restoreFactoryPriorityOrder": "Vrati tvornički redoslijed prioriteta i omogući sve pružatelje",
+  "resetEpisodeMetadataToDefaults": "Metapodaci epizoda poništeni na zadane vrijednosti",
+  "configureProvidersAndOrder": "Konfiguriraj pružatelje i redoslijed",
+  "reorderSourcesToggleIndividual": "Promijeni redoslijed izvora, uključi/isključi pojedinačne pružatelje",
+  "autoMergedPriority": "Automatski (spojeni prioritet)",
+  "mergesHighestPriorityAvailable": "Spaja dostupne podatke najvišeg prioriteta",
+  "useRawProviderEpisodeTitlesOnly": "Koristi samo izvorne naslove epizoda pružatelja",
+  "progressSliderStyle": "Stil klizača napretka",
+  "seekPreview": "Pretpregled premotavanja",
+  "showThumbnailScrubbingPreviewWhileSeeking": "Prikaži sličicu pretpregleda tijekom premotavanja",
+  "linearWavy": "Linearno valovito",
+  "defaultM3": "Zadano M3",
+  "capsule": "Kapsula",
+  "noLogsToCopy": "Nema zapisnika za kopiranje",
+  "logsCopiedToClipboard": "Zapisnici kopirani u međuspremnik",
+  "noLogsAvailableToShare": "Nema dostupnih zapisnika za dijeljenje",
+  "decadeFormat": "{decade}-e",
+  "mediaWithId": "Medij #{id}",
+  "tileIconShapes": "Oblici ikona pločica",
+  "tilePrefixIconShape": "Oblik prefiksne ikone pločice",
+  "tileIconShapesLower": "Oblici ikona pločica",
+  "opening": "Uvodna špica",
+  "ending": "Odjavna špica",
+  "recap": "Sažetak",
+  "ifSubtitleNotShowingDisableLibass": "Ako se titlovi ne prikazuju, onemogućite libass u postavkama i ponovno pokrenite",
+  "subtitlesTranslatedEntries": "Titlovi prevedeni! ({count} stavaka)",
+  "skippedFillerEpisodesCount": "{count, plural, =1{Preskočena 1 popratna epizoda} other{Preskočeno {count} popratnih epizoda}}",
+  "unsubscribe": "Otkaži pretplatu",
+  "subscribeToThread": "Pretplati se na temu",
+  "downloadChaptersCount": "{count, plural, =1{Preuzmi 1 poglavlje} other{Preuzmi {count} poglavlja}}",
+  "downloadingChaptersCount": "{count, plural, =1{Preuzimanje 1 poglavlja...} other{Preuzimanje {count} poglavlja...}}",
+  "moreRecommendationsCount": "{count, plural, =1{+ još 1 preporuka} other{+ još {count} preporuka}}",
+  "charactersAndVoiceActors": "Likovi i glasovni glumci",
+  "unknownVa": "Nepoznati glasovni glumac",
+  "chaptersTimestamps": "Poglavlja i vremenske oznake",
+  "contentSource": "Izvor sadržaja",
+  "selectPreferredTrackingAndMediaProvider": "Odaberite željenog pružatelja praćenja i medija",
+  "reducesColorRingingArtifacts": "Smanjuje artefakte prelijevanja boja",
+  "downscalesInLinearLightSpace": "Smanjuje mjerilo u linearnom svjetlosnom prostoru",
+  "motionDithering": "Pokret i dithering",
+  "smoothMotionBetweenVideoFrames": "Glatko kretanje između video sličica",
+  "reducesColorBandingWithSubtle": "Smanjuje pruganje boja suptilnim šumom",
+  "unknown": "Nepoznato",
+  "anilistActivity": "AniList aktivnost",
+  "failedToPostStory": "Neuspješno objavljivanje priče",
+  "likesCount": "{count} sviđanja",
+  "newEpisodes": "Nove epizode",
+  "outNowFromShowsYouAreWatching": "Dostupno sada iz serija koje gledate",
+  "planning": "Planirano",
+  "postStory": "Objavi priču",
+  "postToStory": "Objavi u priču",
+  "readChapter": "Pročitajte pogl. {chapter}",
+  "repliesCount": "{count} odgovora",
+  "rewatching": "Ponovno gledanje",
+  "sendAReaction": "Pošalji reakciju",
+  "statusUpdate": "Ažuriranje statusa",
+  "storyPostedToAnilist": "Priča je objavljena na AniListu!",
+  "viewDiscussion": "Prikaži raspravu",
+  "viewInAnymex": "Prikaži u AnymeX-u",
+  "watched": "Gledano",
+  "watchedEpisode": "Pogledana ep. {episode}",
+  "whatsOnYourMindAniList": "Što vam je na umu? (Objavljuje se kao tekstualna aktivnost na AniListu)",
+  "yourStory": "Vaša priča",
+  "hostBadge": "DOMAĆIN",
+  "basedOnAnimeScoredTen": "Na temelju animea koje ste ocijenili s 10/10.",
+  "basedOnMangaScoredTen": "Na temelju mange koje ste ocijenili s 10/10."
 }

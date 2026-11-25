@@ -284,7 +284,7 @@ class _CommentSectionState extends State<CommentSection>
 
   void _handlePostComment() {
     if (!controller.isLoggedIn) {
-      snackBar('You need to be logged in to comment');
+      snackBar(context.l10n.youNeedToBeLoggedIn);
       return;
     }
     final bool hasAccepted = General.hasAcceptedCommentRules.get<bool>(false);
@@ -301,7 +301,7 @@ class _CommentSectionState extends State<CommentSection>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const AnymeXText('Comment Policy', maxLines: null),
+        title: AnymeXText(context.l10n.commentPolicy, maxLines: null),
         content: const AnymeXText(
           'To maintain a safe and friendly community, please read and accept our comment policy before posting.\n\nWe do not tolerate spam, harassment, or offensive content.',
           maxLines: null,
@@ -312,7 +312,7 @@ class _CommentSectionState extends State<CommentSection>
               Navigator.pop(context);
               showPolicySheet(context, PolicyType.commentRules);
             },
-            child: const AnymeXText('Read Full Rules', maxLines: null),
+            child: AnymeXText(context.l10n.readFullRules, maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -320,7 +320,7 @@ class _CommentSectionState extends State<CommentSection>
               Navigator.pop(context);
               controller.addComment();
             },
-            child: const AnymeXText('Accept & Post', maxLines: null),
+            child: AnymeXText(context.l10n.acceptPost, maxLines: null),
           ),
         ],
       ),
@@ -1519,7 +1519,7 @@ class _CommentSectionState extends State<CommentSection>
                           GestureDetector(
                             onTap: () {
                               if (!controller.isLoggedIn) {
-                                snackBar('You need to be logged in to reply');
+                                snackBar(context.l10n.youNeedToBeLoggedIn2);
                                 return;
                               }
                               if (!widget.showInlineInput) {
@@ -1872,7 +1872,7 @@ class _CommentSectionState extends State<CommentSection>
                           GestureDetector(
                             onTap: () {
                               if (!controller.isLoggedIn) {
-                                snackBar('You need to be logged in to reply');
+                                snackBar(context.l10n.youNeedToBeLoggedIn2);
                                 return;
                               }
                               if (!widget.showInlineInput) {
@@ -2134,7 +2134,7 @@ class _CommentSectionState extends State<CommentSection>
                         Navigator.pop(ctx);
                         Clipboard.setData(
                             ClipboardData(text: comment.commentText));
-                        snackBar('Comment copied to clipboard');
+                        snackBar(context.l10n.commentCopiedToClipboard);
                       },
                     ),
                     if (isOwnComment) ...[
@@ -2428,7 +2428,7 @@ class _CommentSectionState extends State<CommentSection>
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogCtx),
-                    child: AnymeXText('Cancel',
+                    child: AnymeXText(context.l10n.actionCancel,
                         color: colorScheme.onSurfaceVariant, maxLines: null),
                   ),
                   const SizedBox(width: 8),
@@ -2445,7 +2445,7 @@ class _CommentSectionState extends State<CommentSection>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const AnymeXText('Save', maxLines: null),
+                    child: AnymeXText(context.l10n.actionSave, maxLines: null),
                   ),
                 ],
               ),
@@ -2511,7 +2511,7 @@ class _CommentSectionState extends State<CommentSection>
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogCtx),
-                    child: AnymeXText('Cancel',
+                    child: AnymeXText(context.l10n.actionCancel,
                         color: colorScheme.onSurfaceVariant, maxLines: null),
                   ),
                   const SizedBox(width: 8),
@@ -2527,7 +2527,7 @@ class _CommentSectionState extends State<CommentSection>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const AnymeXText('Delete', maxLines: null),
+                    child: AnymeXText(context.l10n.actionDelete, maxLines: null),
                   ),
                 ],
               ),
@@ -2548,14 +2548,14 @@ class _CommentSectionState extends State<CommentSection>
       context: context,
       builder: (dialogCtx) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        insetPadding: EdgeInsets.symmetric(horizontal: 24),
         child: AnymeXContainer(
           borderRadius: BorderRadius.circular(24),
           color: colorScheme.surfaceContainerHigh,
           border: Border.all(
             color: colorScheme.outlineVariant.withOpacity(0.2),
           ),
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2572,8 +2572,8 @@ class _CommentSectionState extends State<CommentSection>
                           color: colorScheme.error, size: 22),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SizedBox(width: 12),
+                  Expanded(
                     child: AnymeXText(
                       'Report Comment',
                       size: 18,
@@ -2583,14 +2583,14 @@ class _CommentSectionState extends State<CommentSection>
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               AnymeXText(
                 'Please select a reason for reporting this comment:',
                 color: colorScheme.onSurfaceVariant,
                 size: 14,
                 maxLines: null,
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 value: reasonController.text.isEmpty
                     ? null
@@ -2601,26 +2601,26 @@ class _CommentSectionState extends State<CommentSection>
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                items: const [
+                items: [
                   DropdownMenuItem(
-                      value: 'spam', child: AnymeXText('Spam', maxLines: null)),
+                      value: 'spam', child: AnymeXText(context.l10n.spam, maxLines: null)),
                   DropdownMenuItem(
                       value: 'offensive',
-                      child: AnymeXText('Offensive', maxLines: null)),
+                      child: AnymeXText(context.l10n.offensive, maxLines: null)),
                   DropdownMenuItem(
                       value: 'harassment',
-                      child: AnymeXText('Harassment', maxLines: null)),
+                      child: AnymeXText(context.l10n.harassment, maxLines: null)),
                   DropdownMenuItem(
                       value: 'spoiler',
-                      child: AnymeXText('Spoiler', maxLines: null)),
+                      child: AnymeXText(context.l10n.spoiler, maxLines: null)),
                   DropdownMenuItem(
                       value: 'nsfw', child: AnymeXText('NSFW', maxLines: null)),
                   DropdownMenuItem(
                       value: 'off_topic',
-                      child: AnymeXText('Off-Topic', maxLines: null)),
+                      child: AnymeXText(context.l10n.offTopic, maxLines: null)),
                   DropdownMenuItem(
                       value: 'other',
-                      child: AnymeXText('Other', maxLines: null)),
+                      child: AnymeXText(context.l10n.other, maxLines: null)),
                 ],
                 onChanged: (value) {
                   reasonController.text = value ?? '';
@@ -2643,7 +2643,7 @@ class _CommentSectionState extends State<CommentSection>
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogCtx),
-                    child: AnymeXText('Cancel',
+                    child: AnymeXText(context.l10n.actionCancel,
                         color: colorScheme.onSurfaceVariant, maxLines: null),
                   ),
                   const SizedBox(width: 8),
@@ -2663,7 +2663,7 @@ class _CommentSectionState extends State<CommentSection>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const AnymeXText('Report', maxLines: null),
+                    child: AnymeXText(context.l10n.report, maxLines: null),
                   ),
                 ],
               ),
@@ -2868,7 +2868,7 @@ class _CommentSectionState extends State<CommentSection>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const AnymeXText('Cancel', maxLines: null),
+            child: AnymeXText(context.l10n.actionCancel, maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -2884,7 +2884,7 @@ class _CommentSectionState extends State<CommentSection>
                     foregroundColor: context.colors.onError,
                   )
                 : null,
-            child: AnymeXText(isDestructive ? 'Delete' : 'Confirm',
+            child: AnymeXText(isDestructive ? context.l10n.actionDelete : context.l10n.actionConfirm,
                 maxLines: null),
           ),
         ],
@@ -3135,7 +3135,7 @@ class _CommentSectionState extends State<CommentSection>
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const AnymeXText('User Info', maxLines: null),
+        title: AnymeXText(context.l10n.userInfo, maxLines: null),
         content: FutureBuilder(
           future: controller.getUserInfoFromDb(userId),
           builder: (context, snapshot) {
@@ -3149,14 +3149,14 @@ class _CommentSectionState extends State<CommentSection>
             }
 
             if (!snapshot.hasData || snapshot.data == null) {
-              return const AnymeXText('Failed to load user info.',
+              return AnymeXText(context.l10n.failedToLoadUserInfo,
                   maxLines: null);
             }
 
             final data = snapshot.data!;
             final users = data['users'] as List<dynamic>? ?? [];
             if (users.isEmpty) {
-              return const AnymeXText('No user data found.', maxLines: null);
+              return AnymeXText(context.l10n.noUserDataFound, maxLines: null);
             }
 
             final user = users.first as Map<String, dynamic>;
@@ -3259,7 +3259,7 @@ class _CommentSectionState extends State<CommentSection>
                         _showUserHistoryDialog(context, userId, controller);
                       },
                       icon: const Icon(Icons.history, size: 18),
-                      label: const AnymeXText('View History', maxLines: null),
+                      label: AnymeXText(context.l10n.viewHistory, maxLines: null),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -3274,7 +3274,7 @@ class _CommentSectionState extends State<CommentSection>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const AnymeXText('Close', maxLines: null),
+            child: AnymeXText(context.l10n.actionClose, maxLines: null),
           ),
         ],
       ),
@@ -3346,14 +3346,14 @@ class _CommentSectionState extends State<CommentSection>
                         }
 
                         if (!snapshot.hasData || snapshot.data == null) {
-                          return const Center(
+                          return Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.error_outline,
                                     size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                AnymeXText('Failed to load comments.',
+                                AnymeXText(context.l10n.failedToLoadComments,
                                     maxLines: null),
                               ],
                             ),
@@ -3371,14 +3371,14 @@ class _CommentSectionState extends State<CommentSection>
                         }).toList();
 
                         if (comments.isEmpty) {
-                          return const Center(
+                          return Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.comment_outlined,
                                     size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                AnymeXText('No comments found.',
+                                AnymeXText(context.l10n.noCommentsFound,
                                     style:
                                         TextStyle(fontWeight: FontWeight.w500),
                                     maxLines: null),
@@ -3419,7 +3419,7 @@ class _CommentSectionState extends State<CommentSection>
                                               .withOpacity(0.1),
                                           borderRadius:
                                               BorderRadius.circular(4),
-                                          child: AnymeXText('DELETED',
+                                          child: AnymeXText(context.l10n.deleted2,
                                               color: colorScheme.error,
                                               size: 10,
                                               variant: TextVariant.bold,
@@ -3433,7 +3433,7 @@ class _CommentSectionState extends State<CommentSection>
                                               .withOpacity(0.1),
                                           borderRadius:
                                               BorderRadius.circular(4),
-                                          child: AnymeXText('COMMENT',
+                                          child: AnymeXText(context.l10n.comment,
                                               color: colorScheme.primary,
                                               size: 10,
                                               variant: TextVariant.bold,
@@ -3541,7 +3541,7 @@ class _CommentSectionState extends State<CommentSection>
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const AnymeXText('User History', maxLines: null),
+        title: AnymeXText(context.l10n.userHistory, maxLines: null),
         content: SizedBox(
           width: double.maxFinite,
           child: FutureBuilder(
@@ -3557,7 +3557,7 @@ class _CommentSectionState extends State<CommentSection>
               }
 
               if (!snapshot.hasData || snapshot.data == null) {
-                return const AnymeXText('Failed to load user history.',
+                return AnymeXText(context.l10n.failedToLoadUserHistory,
                     maxLines: null);
               }
 
@@ -3565,13 +3565,13 @@ class _CommentSectionState extends State<CommentSection>
               final history = data['history'] as List<dynamic>? ?? [];
 
               if (history.isEmpty) {
-                return const Column(
+                return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(height: 16),
                     Icon(Icons.history, size: 48, color: Colors.grey),
                     SizedBox(height: 12),
-                    AnymeXText('No history found.',
+                    AnymeXText(context.l10n.noHistoryFound,
                         style: TextStyle(fontWeight: FontWeight.w500),
                         maxLines: null),
                   ],
@@ -3724,7 +3724,7 @@ class _CommentSectionState extends State<CommentSection>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const AnymeXText('Close', maxLines: null),
+            child: AnymeXText(context.l10n.actionClose, maxLines: null),
           ),
         ],
       ),

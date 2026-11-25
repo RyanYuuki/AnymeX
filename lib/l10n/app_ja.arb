@@ -176,5 +176,3922 @@
   "incognitoDisabled": "シークレットモードが無効になっています",
   "episodeCount": "{count} 話",
   "chapterCount": "{count} 章",
-  "itemCount": "{count} 個のアイテム"
+  "itemCount": "{count} 個のアイテム",
+  "whatAreWeDoingToday": "、今日は何をするの？",
+  "aLogoWithThisNameAlready": "この名前のロゴはすでに存在しています。",
+  "about": "概要",
+  "aboutCommentumV2": "Commentum v2について",
+  "aboutTheApp": "アプリについて",
+  "accessModerationToolsAndReports": "モデレーションツールとレポートにアクセスする",
+  "accountTokensAnilistMalSimkl": "アカウントトークン（AniList、MAL、Simkl）",
+  "accounts": "勘定科目",
+  "accountsSync": "アカウントと同期",
+  "actionAppliedSuccessfully": "アクションが正常に適用されました",
+  "activeDownloads": "アクティブなダウンロード",
+  "activity": "アクティビティ",
+  "activityDeleted": "アクティビティが削除されました",
+  "activityHeatmap": "アクティビティ・ヒートマップ",
+  "activityMergeTime": "アクティビティのマージ時間",
+  "activityPhrasing": "活動の表現",
+  "activityRefreshed": "アクティビティが更新されました",
+  "adFreeApp": "広告なしのアプリ",
+  "addCustomLogo": "カスタムロゴを追加する",
+  "addCustomLogoGifWebp": "カスタムロゴを追加（.gif、.webp）",
+  "addRepo": "リポジトリを追加",
+  "addRepository": "リポジトリを追加",
+  "addYourRecommendation": "おすすめを追加する",
+  "addOnExtensions": "アドオン拡張機能",
+  "addOns": "アドオン",
+  "addOnsPowerBackgroundServicesSuch": "アドオンは、マグネットリンクを直接再生するためのTorrServerトレントストリーミングエンジンなど、バックグラウンドサービスを支えています。",
+  "addedToDownloads": "ダウンロードに追加されました",
+  "addingKotatsuRepositoryThisWillTake": "Kotatsuリポジトリを追加しています。少なくとも1～2分ほどかかりますので、しばらくお待ちください...",
+  "addingRepositoryFetchingExtensions": "リポジトリの追加と拡張機能の取得中...",
+  "adjustBottomBarMarginMediaDetails": "下部バーの余白を調整する（メディア詳細ページのみ）",
+  "adjustCardAnimationSpeed": "カードのアニメーション速度を調整する",
+  "adjustCornerRadiusOfElements": "要素の角の半径を調整する",
+  "adjustDoubleTapToSeekDuration": "ダブルタップによる早送り・巻き戻しの時間を調整する",
+  "adjustElementGlowIntensity": "要素のグローの明るさを調整する",
+  "adjustFrostedBlurIntensity": "フロストぼかしの強さを調整する",
+  "adjustGlowBlurIntensity": "グローブラーの強さを調整する",
+  "adjustHorizontalMarginOfBottomNavigation": "下部ナビゲーションバーの水平マージンを調整する",
+  "adjustItemsPerRow": "1行あたりの項目数を調整する",
+  "adjustMediaBackdropExposure": "メディア背景の露出を調整する",
+  "adjustMegaskipDuration": "MegaSkipの持続時間を調整する",
+  "adjustRoundnessOfAllMediaCards": "すべてのメディアカードの丸みを調整する",
+  "adjustSubSize": "サブサイズの調整",
+  "adjustSubtitleOutlineWidth": "字幕の枠の幅を調整する",
+  "adjustTextVisibility": "テキストの表示設定を変更する",
+  "admin": "管理者",
+  "adult": "大人",
+  "aiPicks": "AIのおすすめ",
+  "airingAnimeNotifications": "アニメ放送のお知らせ",
+  "all": "すべて",
+  "allClearNoReportsToReview": "問題なし！確認すべき報告はありません。",
+  "allSources": "すべての情報源",
+  "allowAnymexToAutomaticallyOpenAnime": "AnymeXに、アニメやマンガのウェブリンクを自動的に開くことを許可する",
+  "allowInstallingUpdatesForExtensionsAnd": "拡張機能およびアプリの更新プログラムのインストールを許可する",
+  "allowOnlyUsersIFollowTo": "「自分がフォローしているユーザーからのみメッセージを受け取る」に設定する。",
+  "allowStorageAccessAndSelectDownload": "ストレージへのアクセスを許可し、ダウンロード先フォルダを選択してください",
+  "allowStorageAccessToDownloadApp": "アプリや拡張機能の更新をダウンロードするために、ストレージへのアクセスを許可する",
+  "alreadyRecommended": "すでに推奨済み",
+  "alternativeTitles": "別タイトル",
+  "alwaysShowChapterTransition": "章の切り替えを常に表示する",
+  "alwaysShowPageIndicator": "常にページインジケーターを表示する",
+  "amountOfFilmGrainApplied": "適用されたフィルムの粒子の量",
+  "anifyKitsuArtwork": "Anify / Kitsu のアートワーク",
+  "anilistSettings": "AniListの設定",
+  "anilistSettings2": "Anilistの設定",
+  "animatchCompatibility": "AniMatchの互換性",
+  "animatchLinkCopiedToClipboard": "AniMatchのリンクがクリップボードにコピーされました！",
+  "animateControlOverlay": "アニメーション付きコントロールオーバーレイ",
+  "anime": "アニメ",
+  "animeUpper": "アニメ",
+  "animeManga": "アニメ・マンガ",
+  "anime4kEnhancement": "アニメの4K画質向上",
+  "animeAdaptation": "アニメ化",
+  "animeCustomLists": "アニメのカスタムリスト",
+  "animeDetailsPhrasing": "アニメの詳細に関する表現",
+  "animeLibrary": "アニメライブラリ",
+  "animeList": "アニメ一覧",
+  "animeScore": "アニメのスコア",
+  "animeSectionOrder": "アニメコーナーの注文",
+  "announcement": "お知らせ",
+  "announcementUnavailable": "お知らせは表示されていません",
+  "announcements": "お知らせ",
+  "anymexForkOptimisedForTv": "テレビ向けに最適化されたAnymeXのフォーク",
+  "anymexIs100FreeOpenSource": "AnymeXは100%無料、オープンソース、そして広告なしです。皆様からのご支援は、サーバー費用や機能開発に直接役立てられます！",
+  "anymexIs100FreeOpenSourceAnd": "AnymeXは100%無料、オープンソース、そして広告なしです。皆様のご支援が、私がこのアプリを継続的に維持・改善していくための原動力となっています！",
+  "appCacheExceededThresholdAndWas": "アプリのキャッシュが閾値を超えたため、クリアされました",
+  "appDataHasBeenCompletelyReset": "アプリのデータが完全にリセットされました",
+  "appFonts": "アプリのフォント",
+  "appSettingsSessions": "アプリの設定とセッション",
+  "appearance": "外観",
+  "appearanceInterface": "外観とインターフェース",
+  "appearanceTheme": "外観とテーマ",
+  "appliesAnimeMangaPosterColorOn": "詳細ページにアニメ・マンガのポスターカラーを適用します",
+  "apply": "応募する",
+  "applyASubtleFilmGrainTexture": "インターフェース全体に、ほのかなフィルムグレインの質感を施す",
+  "applyFilters": "フィルターを適用する",
+  "applyOptionsFromYourMpvConf": "再生開始時に mpv.conf のオプションを適用する",
+  "areYouSureYouWantTo": "保存されているクッキーをすべて削除してもよろしいですか？",
+  "areYouSureYouWantToDelete": "このコメントを削除してもよろしいですか？ 削除すると、コメントは完全に削除され、通報は解決済みとなります。",
+  "areYouSureYouWantToDeleteThis": "この拡張機能を削除してもよろしいですか？",
+  "areYouSureYouWantToDeleteThisReply": "この返信を削除してもよろしいですか？",
+  "askForTrackingPermission": "追跡の許可を求める",
+  "atLeast2TabsMustRemain": "少なくとも2つのタブは表示されたままにしておく必要があります！",
+  "audioEngine": "オーディオエンジン",
+  "audioPitchCorrection": "音声のピッチ補正",
+  "authenticationOptional": "認証（任意）",
+  "auto": "自動車",
+  "autoPlay": "自動再生",
+  "autoScroll": "自動スクロール",
+  "autoScrollSpeed": "自動スクロール速度",
+  "autoSkipEd": "EDの自動スキップ",
+  "autoSkipFiller": "自動スキップフィラー",
+  "autoSkipOnceOnly": "「1回のみ自動スキップ」",
+  "autoSkipOnlyOncePerWatch": "1回の視聴につき、自動スキップは1回のみ",
+  "autoSkipOp": "オープニングを自動スキップ",
+  "autoSkipRecap": "自動スキップのまとめ",
+  "autoSkipTheEndingSong": "エンディング曲を自動的にスキップする",
+  "autoSkipTheOpeningSong": "オープニング曲を自動的にスキップする",
+  "autoSkipTheRecapSection": "要約セクションを自動的にスキップする",
+  "autoSwitchToVerticalMode": "縦向きモードへの自動切り替え",
+  "autoTranslateSubtitles": "字幕の自動翻訳",
+  "autoWebtoonMode": "自動ウェブトゥーンモード",
+  "autoClearThreshold": "自動クリアのしきい値",
+  "autoSelectDefault": "自動選択（デフォルト）",
+  "autoSelectThisServerQualityFor": "このアニメには、このサーバー品質を自動的に選択する",
+  "automaticallyMoveToNextTextSegment": "自動的に次のテキストセグメントに移動する",
+  "automaticallyScrollContent": "コンテンツを自動的にスクロールする",
+  "automaticallyScrollPages": "ページを自動的にスクロールする",
+  "automaticallySkipFillerEpisodesWhenGoing": "次のエピソードに進む際、つなぎのエピソードを自動的にスキップする",
+  "automaticallyUpdateEntriesWhenImportingThe": "XMLをインポートする際に、エントリを自動的に更新する",
+  "availableAddOns": "利用可能なアドオン",
+  "availableKeybindings": "利用可能なキーバインド：",
+  "avatarDecorations": "アバターの装飾",
+  "avatarDecorationsNameplatesBannersProfileEffects": "アバター用装飾、ネームプレート、バナー、プロフィールエフェクト",
+  "avgChapters": "平均章数",
+  "avgEpisodes": "1話あたりの平均",
+  "back": "戻る",
+  "backdropScope": "背景と範囲",
+  "backdropBrightness": "背景の明るさ",
+  "backdropSource": "背景画像の出典",
+  "backgroundOpacity": "背景の不透明度",
+  "backup": "バックアップ",
+  "backupRestore": "バックアップと復元",
+  "backupAndRestoreYourLibrary": "ライブラリのバックアップと復元",
+  "backupArchive": "バックアップアーカイブ",
+  "backupOwner": "バックアップ所有者",
+  "backupRestoredSuccessfully": "バックアップの復元が正常に完了しました！",
+  "backupSavedSuccessfully": "バックアップが正常に保存されました！",
+  "badge": "バッジ",
+  "banUser": "ユーザーをブロックする",
+  "baseUrlNotAvailableForThis": "このソースにはベースURLがありません",
+  "basedOnYourFavouriteCharacters": "お気に入りのキャラクターをモチーフにしています。",
+  "basedOnYourFavouriteStaff": "お気に入りのスタッフを基に。",
+  "basedOnYourTop10Tags": "あなたのタグ上位10件に基づいて。",
+  "basedOnYourTop3Studios": "あなたが選んだスタジオ上位3つに基づいて。",
+  "basedOnYourTop5Genres": "あなたのトップ5のジャンルに基づいて。",
+  "basedOnYourTop6Voice": "あなたが選んだ声優トップ6に基づいて。",
+  "batchDownload": "一括ダウンロード",
+  "beTheFirstToRecommendThis": "このタイトルを一番乗りでおすすめしましょう！",
+  "betterSubtitleRenderingUsingLibassLibrary": "libass ライブラリを用いた字幕表示の改善",
+  "blockquote": "引用",
+  "blurBackdropTuning": "ぼかしと背景の調整",
+  "blurAmount": "ぼかし量",
+  "blurColorTint": "色の色合いをぼかす",
+  "blurMechanism": "ぼかしメカニズム",
+  "blurMultiplier": "ぼかし倍率",
+  "blurStyle": "ブラー・スタイル",
+  "bold": "太字",
+  "boldItalic": "太字＋斜体",
+  "botUrlNotConfigured": "ボットのURLが設定されていません",
+  "bottomControls": "下部コントロール",
+  "bottomMargin": "下余白",
+  "bottomNavBarMargin": "下部ナビゲーションバーの余白",
+  "broadcastYourActivityToDiscord": "自分のアクティビティをDiscordに配信する",
+  "browsingIdle": "ブラウジング / アイドル",
+  "browsingPhrasing": "表現の閲覧",
+  "bufferSize": "バッファサイズ",
+  "builtInStyles": "組み込みスタイル",
+  "byDisablingThisYouCanAvoid": "この機能を無効にすることで、字幕間の切り替えを回避できます。",
+  "byIndex": "インデックス別",
+  "byUserId": "ユーザーID別",
+  "byUsername": "ユーザー名別",
+  "bypassCloudflare": "Cloudflareをバイパスする",
+  "cacheStorage": "キャッシュとストレージ",
+  "cacheMinutes": "キャッシュの記録",
+  "cacheOverview": "キャッシュの概要",
+  "cachedImages": "キャッシュされた画像",
+  "calculateCompatibility": "互換性を計算する",
+  "calculatedBasedOnWhichReleaseDecades": "どの時代の作品を最も多く視聴し、最も高いスコアを記録したかに基づいて算出されています。",
+  "calendar": "カレンダー",
+  "cancel": "キャンセル",
+  "cannotCompareAUserWithThemselves": "同じユーザー同士を比較することはできません！2つの異なるユーザー名を入力してください。",
+  "cannotCompareYourProfileWithYourself": "ご自身のプロフィールとご自身を比較することはできません！別のユーザー名を入力してください。",
+  "cantPlaySinceUserClosedThe": "ユーザーがアプリを突然終了したため、再生できません",
+  "cantReadSinceUserClosedThe": "ユーザーがアプリを突然終了したため、読み取れません",
+  "cardAnimationDuration": "カードのアニメーション時間",
+  "cardRoundness": "カードの丸み",
+  "cardStyle": "カードのスタイル",
+  "carouselStyle": "カルーセル形式",
+  "changeFile": "ファイルの変更",
+  "changeRole": "役割を変更する",
+  "changeService": "サービスの変更",
+  "changeSubtitleBackgroundColor": "字幕の背景色を変更する",
+  "changeSubtitleColors": "字幕の色を変更する",
+  "changeSubtitleOutlineColor": "字幕の輪郭の色を変更する",
+  "changelog": "変更履歴",
+  "chapterListSettings": "「目次」の設定",
+  "chapterNumber": "章番号",
+  "chapterTileStyle": "章の見出しスタイル",
+  "chapters": "章",
+  "chaptersUpper": "章",
+  "chaptersVolumes": "章・巻",
+  "chaptersRead": "読んだ章",
+  "characters": "登場人物",
+  "checkCompatibility": "互換性を確認する",
+  "checkForAddOnUpdates": "アドオンの更新を確認する",
+  "checkForUpdates": "更新の確認",
+  "checkUpdatesFromBetaChannel": "ベータチャンネルの更新情報を確認する",
+  "checkingForUpdates": "更新の確認中！",
+  "chooseABackupFileAnymex": "バックアップファイル（.anymex）を選択してください",
+  "chooseACustomBackgroundForLiquid": "リキッドモード用のカスタム背景を選択してください。",
+  "chooseADirectoryToBrowseYour": "メディアファイルを閲覧するディレクトリを選択してください",
+  "chooseDifferentImage": "別の画像を選択する",
+  "chooseDownloadFolder": "ダウンロード先フォルダを選択してください",
+  "chooseImage": "画像を選択",
+  "chooseProvider": "プロバイダーを選択してください",
+  "chooseQuality": "品質を重視しましょう",
+  "chooseServer": "サーバーを選択",
+  "chooseServiceTracker": "サービスの選択 / トラッカー",
+  "chooseShaderProfile": "シェーダープロファイルを選択",
+  "chooseUpiApp": "「UPI」アプリを選択してください",
+  "chooseWhichListToShowOn": "ホームページに表示するリストを選択してください",
+  "chooseYourFavouriteColor": "お気に入りの色を選んでください！",
+  "chooseYourFavouritePalette": "お気に入りのカラーパレットを選んでください！",
+  "chromaScaler": "クロマ・スケーラー",
+  "classicCarouselCardLayoutFeaturingVertical": "縦長のポスターカードを採用した、クラシックなカルーセル風のカードレイアウト。",
+  "clear": "クリア",
+  "clearAll": "すべてクリア",
+  "clearAllHistory": "履歴をすべて消去",
+  "clearAppCache": "アプリのキャッシュを消去する",
+  "clearAppCacheNow": "今すぐアプリのキャッシュを消去する",
+  "clearCache": "キャッシュを消去",
+  "clearCacheCookies": "キャッシュとクッキーを削除する",
+  "clearCookies": "クッキーを削除する",
+  "clearCookies2": "クッキーを削除する",
+  "clearHistory": "履歴を消去",
+  "clearImageCacheNow": "今すぐ画像キャッシュをクリアする",
+  "clearProxy": "プロキシをクリアする",
+  "clearSelected": "選択を解除",
+  "clientAll": "クライアント：すべて",
+  "close": "閉じる",
+  "closetCommunity": "クローゼット＆コミュニティ",
+  "cloudflareChallengeSolved": "Cloudflareの課題を解決しました！",
+  "collectionName": "コレクション名",
+  "collections": "コレクション",
+  "combineBackupDataWithExistingData": "バックアップデータを、このデバイス上の既存のデータと統合する",
+  "commentDeleted": "コメントが削除されました",
+  "commentPolicy": "コメントに関する方針",
+  "commentReplies": "コメントへの返信",
+  "commentRules": "コメントのルール",
+  "commentSystem": "コメントシステム",
+  "comments": "コメント",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 は、以下の機能を提供する高度なコメントシステムです：",
+  "commentumV2SettingsModerationPreferences": "Commentum v2 の設定、モデレーション、および環境設定",
+  "common": "一般的な",
+  "commonCharacters": "共通の登場人物",
+  "commonFavouriteStaff": "人気スタッフランキング",
+  "commonGenres": "代表的なジャンル",
+  "commonSettings": "一般的な設定",
+  "commonStudios": "コモン・スタジオズ",
+  "commonTags": "よく使われるタグ",
+  "commonVoiceActors": "よく起用される声優",
+  "communityDriven": "コミュニティ主導",
+  "communityForksOfAnymex": "AnymeXのコミュニティフォーク",
+  "communityLeaderboard": "コミュニティのランキング",
+  "communityRecommendations": "コミュニティからの推奨事項",
+  "compact": "コンパクト",
+  "compactCardWithEpisodeThumbnailAnd": "エピソードのサムネイルとタイトルが記載されたコンパクトなカード",
+  "compactGridOfChapterNumbers": "章番号のコンパクトなグリッド",
+  "compatibility": "互換性",
+  "compatibilityRanks": "互換性ランク",
+  "compatibleWithGooglePayPhonepePaytm": "Google Pay、PhonePe、Paytm、BHIM、Cred、Navi、Amazon Pay、およびすべてのUPI対応銀行アプリに対応しています。",
+  "completeAnyCloudflareChallengeThenTap": "Cloudflareのチャレンジをいずれか1つ完了したら、「Cookieを同期」をタップして、セッションを拡張機能に引き継ぎます。",
+  "compose": "作成",
+  "concurrencyLimits": "並行処理と制限事項",
+  "configurationsRepos": "設定とリポジトリ",
+  "configureExport": "設定とエクスポート",
+  "configureDiscordRichPresenceActivityStatus": "Discordのリッチプレゼンスとアクティビティステータスを設定する",
+  "configureDnsOverHttpsProxyTls": "DNS-over-HTTPS、プロキシ、およびTLSの設定を行う",
+  "configureMangaAndNovelReaderDefaults": "漫画・小説リーダーのデフォルト設定を構成する",
+  "configureParallelDownloadsAndDirectory": "並列ダウンロードとディレクトリの設定",
+  "configurePosterBlurScopeTintBackdrop": "ポスターのぼかし、範囲、色合い、および背景ソースの設定",
+  "confirm": "確認",
+  "confirmRestore": "確認と復元",
+  "confirmBackupPassword": "バックアップパスワードの確認",
+  "conflictHandling": "競合の処理",
+  "connect": "接続",
+  "continueReading": "続きを読む",
+  "continueWatching": "続きを見る",
+  "continuousModeOnly": "連続モードのみ",
+  "contributors": "寄稿者",
+  "controlTheme": "テーマの制御",
+  "controlsSubtitlesAndPlaybackPreferences": "操作、字幕、再生設定",
+  "cookiesUserAgentSynced": "クッキーとユーザーエージェントが同期されました！",
+  "copy": "コピー",
+  "copyPath": "パスをコピー",
+  "copyUpiId": "UPI IDをコピー",
+  "copyUserId": "ユーザーIDをコピー",
+  "coreTeam": "コアチーム",
+  "couldNotCalculateCompatibility": "互換性を計算できませんでした。",
+  "couldNotFetchChaptersForThis": "このタイトルの章を取得できませんでした",
+  "couldNotFetchEpisodesForThis": "このタイトルのエピソードを取得できませんでした",
+  "couldNotOpenDonationLink": "寄付リンクを開くことができませんでした",
+  "couldNotOpenLink": "リンクを開くことができませんでした",
+  "couldNotOpenReleasesPage": "リリースページを開くことができませんでした",
+  "couldntOpenAppSettingsOpenIt": "アプリの設定を開くことができませんでした。手動で開いてください。",
+  "count": "カウント",
+  "countryDistribution": "国別内訳",
+  "countryOfOrigin": "原産国",
+  "create": "作成",
+  "createAFullAnymexArchiveOf": "メディアライブラリ、設定、拡張機能、およびホストランタイムの完全な .anymex アーカイブを作成します",
+  "createActivity": "アクティビティを作成する",
+  "createBackup": "バックアップを作成する",
+  "createNewList": "新しいリストを作成する",
+  "createStatus": "ステータスの作成",
+  "cropBorders": "作物の縁取り",
+  "current": "最新情報 • ",
+  "custom": "カスタム",
+  "customBanners": "カスタムバナー",
+  "customColorPicker": "カスタムカラーピッカー",
+  "customDohUrl": "カスタム DOH URL",
+  "customFonts": "カスタムフォント",
+  "customLists": "カスタムリスト",
+  "customLogos": "カスタムロゴ",
+  "customPlayerFlagsParameters": "カスタムプレーヤーのフラグとパラメータ",
+  "customScale": "カスタムスケール",
+  "customTheme": "カスタムテーマ",
+  "customUserAgent": "カスタムユーザーエージェント",
+  "customValue": "カスタム値",
+  "customEllipsis": "カスタム...",
+  "customizeCardHistoryCardCarouselNav": "カード、履歴カード、カルーセル、ナビゲーションバーのスタイルをカスタマイズする",
+  "customizeTheInterfaceToYourLiking": "お好みに合わせてインターフェースをカスタマイズしてください",
+  "customizeYourLogoAnimationStyle": "ロゴアニメーションのスタイルをカスタマイズする",
+  "dailyActivitiesWatchAndReadMetrics": "日々の活動、指標の確認と分析",
+  "dailyActivityAndWatchReadProgress": "日々の活動や視聴・読書の進捗状況の追跡",
+  "dataCache": "データとキャッシュ",
+  "dataToRestore": "復元対象のデータ",
+  "days": "DAYS",
+  "days2": "日",
+  "daysActive": "アクティブ日数",
+  "debanding": "バンドの取り外し",
+  "debugStuffs": "デバッグ関連",
+  "decoder": "デコーダ",
+  "decoderHwdec": "デコーダ (HWDec)",
+  "decoderThreads": "デコーダ・スレッド",
+  "decorationCloset": "飾り物用クローゼット",
+  "defaultLabel": "デフォルト",
+  "defaultAndroidAudiotrackApi": "Androidの標準AudioTrack API",
+  "defaultAppleCoreaudioApi": "AppleのCoreAudio API（デフォルト）",
+  "defaultListOrder": "デフォルトのリスト順",
+  "defaultOrientation": "デフォルトの向き",
+  "defaultPortrait": "デフォルトの縦向き",
+  "defaultPulseaudioApi": "デフォルトのPulseAudio API",
+  "defaultSize200px": "デフォルトサイズ（200px）",
+  "defaultSystemAudioDriver": "システムのデフォルトのオーディオドライバ",
+  "defaultTheme": "デフォルトのテーマ",
+  "defaultWindowsAudioDriver": "Windowsのデフォルトのオーディオドライバー",
+  "delete": "削除",
+  "deleteActivity": "アクティビティを削除",
+  "deleteAll": "すべて削除",
+  "deleteAllCachedImagesTorrentStream": "キャッシュされた画像、トレントストリームのチャンク、および一時ファイルをすべて削除します。",
+  "deleteAllStoredHttpCookiesAcross": "すべてのドメインにわたって保存されているHTTPクッキーをすべて削除します。",
+  "deleteChapter": "章を削除",
+  "deleteChapterQuestion": "この章を削除しますか？",
+  "deleteComment": "コメントを削除",
+  "deleteCustomLogo": "カスタムロゴを削除する",
+  "deleteEpisode": "エピソードを削除",
+  "deleteEpisodeQuestion": "このエピソードを削除しますか？",
+  "deleteEverythingStoredOfAnymexPermanently": "AnymeXに保存されているすべてのデータを完全に削除します。",
+  "deleteExtension": "拡張子を削除",
+  "deleteFont": "フォントを削除",
+  "deleteHistoryItem": "履歴項目を削除",
+  "deleteList": "リストを削除",
+  "deleteLogo": "ロゴを削除",
+  "deleteReason": "削除理由？",
+  "deleteRecommendation": "「推奨」を削除しますか？",
+  "deleteReply": "削除　返信",
+  "deleteReportedComment": "報告されたコメントを削除する",
+  "deleteSavedCookiesAndCloudflareTokens": "保存されたクッキーとCloudflareトークンを削除する",
+  "deleteSavedCookiesCloudflareTokensAnd": "保存されたCookie、Cloudflareトークン、および一時キャッシュを削除する",
+  "deleteSelected": "選択した項目を削除",
+  "deleteTemporaryNetworkAndImageCache": "一時的なネットワークキャッシュとイメージキャッシュを削除する",
+  "deletionRequestSentToAdminsFor": "削除依頼を管理者に送信し、審査を依頼しました。",
+  "demuxerMaxBuffer": "デマルチプレクサの最大バッファ",
+  "demuxerReadahead": "デマルチプレクサのリードアヘッド",
+  "description": "説明",
+  "detailedClassic": "詳細（クラシック）",
+  "detailedInsights": "詳細な分析",
+  "detailsPage": "詳細ページ",
+  "developer": "開発者",
+  "development": "開発",
+  "direct": "ダイレクト",
+  "directSurfaceRenderingAndroidOnly": "ダイレクトサーフェスレンダリング（Androidのみ）",
+  "direction": "方向",
+  "disableToShowAndHidePlayer": "「無効」に設定すると、プレーヤーのコントロールを瞬時に表示・非表示にできます",
+  "disablingMayBypassCaptivePortalsOr": "この機能を無効にすると、キャプティブポータルやSSLインスペクションをバイパスできる可能性がありますが、セキュリティが低下します。",
+  "discard": "破棄",
+  "discardMessage": "このメッセージを削除しますか？",
+  "discardReply": "返信を破棄しますか？",
+  "discardStatus": "ステータスを破棄しますか？",
+  "disconnect": "切断",
+  "disconnectDiscord": "Discordの接続を切断しますか？",
+  "discordTakenDown": "Discordが停止された",
+  "dismiss": "閉じる",
+  "display": "表示",
+  "displayAnimeMangaMoviesAndShows": "コミュニティから推薦されたアニメ、マンガ、映画、テレビ番組をトップページに表示します。",
+  "displayMode": "表示モード",
+  "displayModeTuningIsNotApplicable": "表示モードの調整は、デスクトッププラットフォームでは利用できません。",
+  "displayPlaybackOrReadingProgressTimestamps": "再生または読み取りの進行状況のタイムスタンプを表示する",
+  "displayRefreshRateResolutionAndFrame": "ディスプレイのリフレッシュレート、解像度、およびフレーム調整",
+  "distanceBetweenLines": "行間",
+  "distanceFromBottomOfScreen": "画面下端からの距離",
+  "ditherDepth": "ディザ深度",
+  "dnsProxy": "DNS およびプロキシ",
+  "dontShowAgain": "今後表示しない",
+  "donate": "寄付する",
+  "donateSupport": "寄付・支援",
+  "donateViaPaypal": "PayPal経由で寄付する",
+  "donateViaUpiOrPaypalTo": "開発を支援するために、UPIまたはPayPalを通じて寄付をお願いします",
+  "donateViaUpiPaypalSupportDevelopment": "UPIやPayPalを通じて寄付し、開発を支援してください",
+  "done": "完了",
+  "done2": "完了",
+  "doubletapToSeek": "ダブルタップで早送り・巻き戻し",
+  "downgradeOrSwitchToASpecific": "特定のプラグインのバージョンをダウングレードするか、そのバージョンに切り替える",
+  "download": "ダウンロード",
+  "download4kShaders": "4Kシェーダーをダウンロード",
+  "downloadAllChapters": "全章をダウンロード",
+  "downloadAllEpisodes": "全エピソードをダウンロード",
+  "downloadChapter": "章をダウンロード",
+  "downloadChunks": "チャンクのダウンロード",
+  "downloadCurrentSection": "現在のセクションをダウンロード",
+  "downloadEpisode": "エピソードをダウンロード",
+  "downloadFailedTapToRetry": "ダウンロードに失敗しました。タップして再試行してください。",
+  "downloadPath": "ダウンロードパス",
+  "downloadPathsAndQualitySettings": "ダウンロード先と画質設定",
+  "downloadPathsAndStorageSettings": "ダウンロードパスと保存設定",
+  "downloadPermissions": "ダウンロードの権限",
+  "downloadQualityStoragePaths": "ダウンロード品質、保存先",
+  "downloadSettings": "設定のダウンロード",
+  "downloadSize4mb": "ダウンロードサイズ：約4MB",
+  "downloadStarted": "ダウンロードが開始されました",
+  "downloadUnreadChapters": "未読の章をダウンロード",
+  "downloadUnwatchedEpisodes": "未視聴のエピソードをダウンロード",
+  "downloaded": "ダウンロード済み",
+  "downloaded2": "ダウンロード済み",
+  "downloadedMedia": "ダウンロードしたメディア",
+  "downloadingImage": "画像のダウンロード中...",
+  "downloadingPackage": "パッケージのダウンロード中...",
+  "downloads": "ダウンロード",
+  "downloadsStorage": "ダウンロードとストレージ",
+  "downloadsPage": "ダウンロードページ",
+  "downscalingAlgorithm": "ダウンスケーリングアルゴリズム",
+  "dragAndDropToReorderNavigation": "ドラッグ＆ドロップでナビゲーションバーのタブの順序を変更する",
+  "dragToReorderStatusSections": "ステータスセクションをドラッグして並べ替え",
+  "dualPageMode": "2ページ表示モード",
+  "dynamicVariablesWillBeReplacedAutomatically": "動的な変数は自動的に置換されます。静的なフレーズを使用することもできます。",
+  "edit": "編集",
+  "editActivity": "アクティビティの編集",
+  "editCustomMpvFlagsPropertiesAnd": "mpvのカスタムフラグ、プロパティ、および設定ファイルを編集する",
+  "editLogoSettings": "ロゴ設定の編集",
+  "editMediaEntry": "メディアエントリの編集",
+  "editReason": "編集理由",
+  "editRecommendationReasonMin30Chars": "推奨理由を編集する（30文字以上）",
+  "edited": "編集済み",
+  "enableAnimation": "アニメーションを有効にする",
+  "enableAnimationOnCarouselsForSmooth": "カルーセルのアニメーションを有効にして、滑らかな動きを実現する",
+  "enableBackgroundMediaControlsForBluetooth": "Bluetoothヘッドセットのバックグラウンドメディアコントロールと、システムのメディア通知を有効にします。注：これを有効にすると、バッテリーの消費量が増加します。",
+  "enableBetaUpdates": "ベータ版の更新を有効にする",
+  "enableClassicSimpleHeaderStyleOn": "ホーム画面で従来のシンプルなヘッダースタイルを有効にする",
+  "enableDiscordRpc": "Discord RPC を有効にする",
+  "enableExperimentalSettings": "実験的な設定を有効にする",
+  "enableHoldingOnPlayerScreenTo": "プレイヤー画面で長押しすると、動画の再生速度を一時的に速くできるようにする",
+  "enableHorizontalSwipingOnPlayerScreen": "プレイヤー画面で横スワイプができるようにし、動画の早送り・巻き戻しができるようにする",
+  "enableKenBurns": "ケン・バーンズ機能を有効にする",
+  "enableLongPressQuickActions": "長押しによるクイックアクションを有効にする",
+  "enableNotificationsForUpcomingAiringEpisodes": "今後放送予定のエピソードの通知を有効にしてください。",
+  "enableNsfwAdultEntriesInAnilist": "AniListのコンテンツで、NSFW／成人向けのエントリーを有効にする。",
+  "enableShaders": "シェーダーを有効にする",
+  "enableSwipeControls": "スワイプ操作を有効にする",
+  "enableTapZones": "タップゾーンを有効にする",
+  "enableThisIfYouWantTo": "壁紙の元の色をそのまま残したい場合は、これを有効にしてください",
+  "enableTranslucentNavigationBar": "半透明のナビゲーションバーを有効にする",
+  "enableTts": "TTSを有効にする",
+  "enableVerticalSwipingOnTheLeft": "プレーヤー画面の左右で縦方向にスワイプできるようにし、明るさと音量を調整できるようにする",
+  "enablesASoftGlowingGradientEffect": "柔らかく、ほのかに輝くグラデーション効果を実現します。",
+  "encryptWithAes256RecommendedFor": "AES-256で暗号化（認証トークンには推奨）",
+  "encrypted": "暗号化済み • ",
+  "endChapter": "章の終わり",
+  "enterAmount": "金額を入力してください...",
+  "enterAnilistUsername": "AniListのユーザー名を入力してください",
+  "enterAtLeast2Characters": "2文字以上入力してください",
+  "enterBackupPassword": "バックアップパスワードを入力してください",
+  "enterFirstAnilistUsername": "最初のAniListユーザー名を入力してください",
+  "enterGithubRepositoryUrl": "GitHub リポジトリの URL を入力してください",
+  "enterListName": "リスト名を入力してください",
+  "enterPassword": "パスワードを入力してください",
+  "enterReasonOrDetailsForThis": "この操作の理由または詳細を入力してください...",
+  "enterSearchQuery": "検索語句を入力してください",
+  "enterUsername": "ユーザー名を入力してください",
+  "enterValue": "値を入力してください",
+  "entryDeleted": "エントリが削除されました。",
+  "episode1": "第1話",
+  "episodeListSettings": "エピソード一覧の設定",
+  "episodes": "エピソード",
+  "episodesDuration": "エピソード数と放送時間",
+  "episodesWatched": "視聴済みのエピソード",
+  "errorOccured": "エラーが発生しました",
+  "errorOccurred": "エラーが発生しました",
+  "errorSavingImage": "画像の保存に失敗しました",
+  "errorSharingImage": "画像の共有に失敗しました",
+  "errorMissingRequiredDataItSeems": "エラー：必要なデータが不足しています。この章を読み終えた直後にアプリを閉じてしまったようです！",
+  "errorMissingRequiredMediaItSeems": "エラー：必要なメディアがありません。この章を読み終えた直後にアプリを閉じてしまったようです！",
+  "errorMissingRequiredMediaItSeemsYou": "エラー：必要なメディアが見つかりません。エピソードを視聴した後、すぐにアプリを閉じてしまったようです！",
+  "everyScoreIsMappedToA": "すべてのスコアにはランクが割り当てられています。以下の表には、各ランク帯、そのバッジ、およびその範囲が何を表しているかが示されています。",
+  "experimental": "実験的",
+  "experimentalHighPerformanceRenderer": "実験的な高性能レンダラー",
+  "explore": "探索する",
+  "exploreTheProjectAndContribute": "プロジェクトを詳しく見て、貢献しましょう",
+  "exportLabel": "エクスポート",
+  "exportBackup": "バックアップのエクスポート",
+  "exportCancelled": "エクスポートがキャンセルされました。",
+  "exportDeviceBackup": "デバイスのバックアップをエクスポート",
+  "exportSettings": "設定のエクスポート",
+  "exportYourAnimeList": "アニメリストをエクスポートする",
+  "exportYourMangaList": "漫画リストをエクスポートする",
+  "extensionConfigurations": "拡張機能の設定",
+  "extensionConfigurationsRepos": "拡張機能の設定とリポジトリ",
+  "extensionManager": "拡張機能マネージャー",
+  "extensionPackages": "拡張パッケージ",
+  "extensionPreferences": "拡張機能の設定",
+  "extensionSettings": "拡張機能の設定",
+  "extensionSettingsAndSourceConfigurations": "拡張機能の設定とソースの設定",
+  "extensionTesting": "拡張機能のテスト",
+  "extensionType": "拡張機能の種類",
+  "extensions": "拡張機能",
+  "extensionsDiagnostics": "拡張機能と診断",
+  "extensionsRepositories": "拡張機能とリポジトリ",
+  "extensionsSources": "拡張機能とソース",
+  "extensionsTailoredToYourNeeds": "お客様のニーズに合わせた拡張機能",
+  "externalStreamingLinks": "外部リンクおよびストリーミングリンク",
+  "externalBackupsRestoreMetadataAndConfigurations": "外部バックアップにより、メタデータや設定を安全に復元できます。",
+  "externalBrowser": "外部ブラウザ",
+  "extras": "特典",
+  "factoryReset": "工場出荷時設定へのリセット",
+  "factoryReset2": "工場出荷時設定へのリセット",
+  "failedToCheckForUpdates": "アップデートの確認に失敗しました。",
+  "failedToCheckPluginUpdates": "プラグインの更新確認に失敗しました。",
+  "failedToDeleteChapter": "章の削除に失敗しました",
+  "failedToDeleteEpisode": "エピソードの削除に失敗しました",
+  "failedToDeleteListEntry": "リストのエントリを削除できませんでした",
+  "failedToDeleteMedia": "メディアの削除に失敗しました",
+  "failedToDownloadImage": "画像のダウンロードに失敗しました",
+  "failedToFetchChapters": "章の取得に失敗しました",
+  "failedToFetchDetails": "詳細の取得に失敗しました",
+  "failedToFetchImageForSharing": "共有用の画像の取得に失敗しました",
+  "failedToFetchPluginReleaseDetails": "プラグインのリリース詳細の取得に失敗しました。",
+  "failedToFetchPolicy": "ポリシーの取得に失敗しました。",
+  "failedToFetchReleaseDetails": "リリースの詳細を取得できませんでした。",
+  "failedToFetchServers": "サーバーの取得に失敗しました",
+  "failedToLoadDetails": "詳細の読み込みに失敗しました",
+  "failedToLoadFontFile": "フォントファイルの読み込みに失敗しました",
+  "failedToLoadProfileAccountMay": "プロファイルの読み込みに失敗しました — アカウントが非公開であるか、見つかりませんでした",
+  "failedToLoadTorrentMetadata": "トレントのメタデータの読み込みに失敗しました",
+  "failedToPerformAction": "操作を実行できませんでした",
+  "failedToRemoveRepo": "リポジトリの削除に失敗しました",
+  "failedToStartExtensionRuntime": "拡張機能ランタイムの起動に失敗しました",
+  "failedToUpdateAnilist": "AniListの更新に失敗しました",
+  "failedToUpdateListEntry": "リスト項目の更新に失敗しました",
+  "failedToUpdatePreference": "設定の更新に失敗しました",
+  "failedToUpdateRole": "ロールの更新に失敗しました",
+  "favoriteTitle": "お気に入りのタイトル",
+  "favouriteAnime": "お気に入りのアニメ",
+  "favouriteCharacters": "お気に入りのキャラクター",
+  "favouriteManga": "お気に入りの漫画",
+  "favouriteStaff": "お気に入りのスタッフ",
+  "favouriteStudios": "お気に入りのスタジオ",
+  "featuresIssues": "機能／課題",
+  "fetchingAvailableServers": "利用可能なサーバーを取得中...",
+  "fetchingLatestReleaseDetails": "最新リリースの詳細を取得中...",
+  "fetchingTorrentFileList": "トレントファイルの一覧を取得中...",
+  "filler": "フィラー",
+  "filter": "フィルター",
+  "filterActivities": "アクティビティを絞り込む",
+  "filterActivity": "アクティビティのフィルタリング",
+  "filterByChapterCount": "章数で絞り込む",
+  "filterByDurationMin": "「所要時間（分）」で絞り込む",
+  "filterByEpisodeCount": "エピソード数で絞り込む",
+  "filterByGenre": "ジャンルで絞り込む",
+  "filterByVolumeCount": "「ボリューム数」で絞り込む",
+  "filterGenres": "ジャンルを絞り込む",
+  "filterOutAdultNsfwEntriesFrom": "コミュニティのおすすめから、成人向け／NSFWの投稿を除外する。",
+  "filterOutEntriesAlreadyInYour": "リストにすでに含まれている項目を除外する",
+  "filterOutEntriesAlreadyInYourList": "視聴・読了状況に基づいて、リストにすでに含まれている項目を除外します。",
+  "filterSettings": "フィルタ設定",
+  "filters": "フィルター",
+  "findAndManageSpecificUsers": "特定のユーザーを検索・管理する",
+  "findAnimeSauceByScreenshots": "スクリーンショットからアニメのソースを探す",
+  "findSource": "ソースを探す",
+  "findYourFavouriteAnimeOrManga": "お気に入りのアニメやマンガ、マンファなど、好きな作品を見つけよう！",
+  "findYourFavouriteAnimeMangaManhwa": "お気に入りのアニメ、マンガ、マンファ、あるいは好きなものを何でも見つけてください！",
+  "finishDate": "完了日",
+  "firstChapter": "第1章",
+  "firstUser": "最初のユーザー",
+  "fitToScreenWidth": "画面幅に合わせて表示",
+  "fontFamily": "フォントファミリー",
+  "fontSize": "文字サイズ",
+  "forceReDownload": "再ダウンロードを強制する",
+  "forceSyncFromSdCard": "SDカードからの強制同期",
+  "forks": "フォークス",
+  "format": "フォーマット",
+  "formatDistribution": "フォーマットの配布",
+  "frameInterpolation": "フレーム補間",
+  "freeSupport": "無料サポート",
+  "frequentlyRevisited": "頻繁に再訪される",
+  "fromUrl": "URLより",
+  "fullWidthDetailedCardWithLarge": "大きなサムネイルとエピソードのメタデータが表示された、全幅の詳細カード",
+  "fullWidthDetailedCardsWithProgress": "進行状況と「読む」ボタンが付いた全幅の詳細カード",
+  "fullWidthHeroBannerWithCompact": "詳細を簡潔にまとめ、概要を簡潔に示した全幅のヒーローバナー。",
+  "general": "概要",
+  "generalPrivacy": "一般およびプライバシー",
+  "generalSync": "一般設定と同期",
+  "generalAppPreferencesAndSyncServices": "アプリ全般の設定と同期サービス",
+  "generalAppSettingsAndSyncServices": "アプリの基本設定と同期サービス",
+  "generalPreferences": "一般設定",
+  "genres": "ジャンル",
+  "genresUpper": "ジャンル",
+  "gestureForBrightnessVolume": "明るさと音量のジェスチャー",
+  "getHelpWithTheCommentSystem": "コメントシステムに関するサポートを受ける",
+  "getStarted": "はじめに",
+  "globalConcurrencyLimit": "グローバル同時実行数の上限",
+  "glowMultiplier": "グロー・マルチプライヤー",
+  "goSuperDarkMode": "スーパーダークモードに切り替えよう！",
+  "goToDownloads": "「ダウンロード」へ移動",
+  "goToExtensionsToGetStarted": "「拡張機能」に移動して、始めましょう",
+  "goToPluginDownloader": "「プラグインダウンローダー」へ移動",
+  "goToRuntimeManager": "「ランタイムマネージャー」へ移動",
+  "goodAfternoon": "こんにちは",
+  "goodEvening": "こんばんは",
+  "goodMorning": "おはようございます",
+  "goodnight": "おやすみなさい",
+  "gotIt": "了解しました",
+  "grainIntensity": "穀物の風味の強さ",
+  "grainTextureOverlay": "穀物の質感オーバーレイ",
+  "grantPermission": "許可を付与する",
+  "grantPermissions": "権限の付与",
+  "grid": "グリッド",
+  "gridSize": "グリッドサイズ",
+  "gridView": "グリッド表示",
+  "guest": "ゲスト",
+  "happySnacking": "おやつを楽しんで",
+  "hardwareDisplayModeSwitchingIsNot": "お使いのデバイスでは、ハードウェアによる表示モードの切り替えはサポートされていません。",
+  "helpSupport": "ヘルプとサポート",
+  "hexColorCode": "16進数カラーコード",
+  "hey": "やあ ",
+  "hidden": "非表示",
+  "hiddenFromYourPublicProfile": "公開プロフィールには表示されません",
+  "hiddenTabs": "非表示のタブ",
+  "hideAdultContent": "成人向けコンテンツを非表示にする",
+  "hideButton": "「非表示」ボタン",
+  "hideByListStatus": "リストのステータスで非表示にする",
+  "hideCompleted": "「完了」を非表示にする",
+  "hideDropped": "「非表示」が解除されました",
+  "hideEntriesThatAreInYour": "プランリストに含まれている項目を非表示にします。",
+  "hideEntriesThatAreMarkedAs": "リスト内で「完了」とマークされた項目を非表示にします。",
+  "hideEntriesThatYouAreCurrently": "現在視聴中または読んでいる項目を非表示にします。",
+  "hideEntriesThatYouAreRewatching": "もう一度見ている項目を非表示にする。",
+  "hideEntriesThatYouHaveDropped": "削除したエントリを非表示にします。",
+  "hideEntriesThatYouHavePut": "保留にしたエントリを非表示にします。",
+  "hideNsfw": "NSFWを非表示にする",
+  "hideNsfw18Content": "NSFW／18歳以上向けコンテンツを非表示にする",
+  "hideNsfwContent": "NSFWコンテンツを非表示にする",
+  "hideNsfwRecommendations": "NSFWのおすすめを非表示にする",
+  "hideOnHoldPaused": "「保留中」を非表示にする / 一時停止",
+  "hidePlanning": "計画の非表示",
+  "hideRewatching": "「再視聴」を非表示にする",
+  "hideSystemStatusAndNavigationBars": "システムステータスバーとナビゲーションバーを非表示にする",
+  "hideWatchingReading": "「視聴・閲覧」を非表示にする",
+  "history": "沿革",
+  "historyStatistics": "沿革と統計",
+  "historyCardStyle": "歴史カードの様式",
+  "historyItemDeleted": "履歴項目が削除されました",
+  "hlsParallelSegments": "HLSの並列セグメント",
+  "holdAndDragAnyItemTo": "項目を長押ししてドラッグすると、順序を変更できます",
+  "holdToAccessHistoryEditor": "長押しして履歴エディタを開く",
+  "holdToDelete": "長押しで削除",
+  "holdToSpeedUp": "長押しで高速化",
+  "home": "ホーム",
+  "horizontal": "水平",
+  "hostEG12700": "ホスト（例：127.0.0.1）",
+  "hours": "営業時間",
+  "howItWorksCompatibilityRanks": "仕組みと互換性ランク",
+  "howMuchInPercentageToMark": "エピソードを「視聴済み」としてマークするには、何パーセント必要ですか",
+  "howToUseTheCommentSystem": "コメント機能の使い方：",
+  "hue": "色相",
+  "ifEnabledAContinueWatchingBar": "この機能を有効にすると、ホームページの下部ナビゲーションバーの上に「続きを見る」バーが表示されます。",
+  "ifEnabledAllLibraryItemsWill": "この機能を有効にすると、すべてのライブラリ項目がすべての追跡サービス間で共有されます。",
+  "ifEnabledAnymexWillAskFor": "この機能が有効になっている場合、Anymexは追跡の許可を求めますが、有効になっていない場合はデフォルトで追跡を行います。",
+  "ifEnabledYouWillNotGet": "この設定を有効にすると、Anilist/MyAnimeListで成人向けコンテンツを有効にする際の確認メッセージが表示されなくなります。",
+  "ifTemporaryAppCacheReachesThis": "一時的なアプリのキャッシュがこのサイズに達すると、自動的に削除されます。",
+  "ifYouAreUsingAJson": "JSONテーマを使用している場合、ここでの変更はプレイヤーの操作には反映されません。これらの設定を適用するには、組み込みのテーマに切り替えてください。",
+  "ifYouCantDonateWatchThis": "寄付ができない場合は、この広告をご覧いただき、ご支援をお願いいたします",
+  "image": "画像",
+  "imageShowsThumbnail": "画像（サムネイル表示）",
+  "imageFilterQuality": "画像フィルターの画質",
+  "imageSharedFromAnymex": "AnymeXから共有された画像",
+  "imagesWillBeDownloadedInFull": "画像は最高画質でダウンロードされます。各章はそれぞれ個別のフォルダに保存されます。",
+  "immersiveMode": "没入モード",
+  "importLabel": "インポート",
+  "importLabel2": "インポート",
+  "importManageCustomJsonThemes": "カスタムJSONテーマのインポートと管理",
+  "importBackup": "バックアップのインポート",
+  "importCustomFont": "カスタムフォントのインポート",
+  "importFromUrl": "URLからインポート",
+  "includeAdultNsfwSuggestions": "成人向けおよびNSFWの提案を含める",
+  "incognito": "インコグニート",
+  "incognitoActive": "インコグニート（アクティブ）",
+  "incognitoMode2": "シークレットモード",
+  "indiaUpi": "インド（UPI）",
+  "info": "情報",
+  "inlineCode": "インラインコード",
+  "insert": "挿入",
+  "installPermission": "インストール権限",
+  "installPermissionIsRequiredToUpdate": "アプリを更新するには、インストール権限が必要です",
+  "installedPackages": "インストール済みのパッケージ",
+  "installedThemes": "インストール済みのテーマ",
+  "interfaceStyling": "インターフェースのスタイリング",
+  "internalBrowser": "内蔵ブラウザ",
+  "international": "国際",
+  "invalidBackupFileOrIncorrectPassword": "バックアップファイルが無効か、パスワードが間違っています",
+  "invertVolumeKeys": "音量キーの機能を反転させる",
+  "italic": "イタリック体",
+  "joinDiscordCommunity": "Discordコミュニティに参加する",
+  "joinNewDiscord": "新しいDiscordに参加する",
+  "joinTelegramChannel": "Telegramチャンネルに参加する",
+  "joinUsForDroppingFeedbackOr": "ご意見や機能のリクエストをお寄せください",
+  "jsonThemeManager": "JSONテーママネージャー",
+  "judgment": "判決",
+  "keepEditing": "編集を続ける",
+  "keepItChill": "気楽にね",
+  "keepScreenOn": "画面をオンに保つ",
+  "keepVoicePitchStableAtHigher": "スピードが上がっても声の高さを一定に保つ",
+  "koFiSupport": "Ko-fiによる支援",
+  "languageVariant": "言語のバリエーション",
+  "lastAdded": "最新追加",
+  "lastChapter": "最終章",
+  "later": "また後で",
+  "latest": "最新情報",
+  "latestManga": "最新のマンガ",
+  "layout": "レイアウト",
+  "layoutStyle": "レイアウトスタイル",
+  "leaderboard": "ランキング",
+  "learnHowToFormatYourComments": "コメントの書式設定方法について",
+  "leftSide": "左側",
+  "letterSpacing": "文字間隔",
+  "levelProgress": "レベル進行状況",
+  "libraryLabel": "図書館",
+  "librarySettings": "ライブラリの設定",
+  "libraryStatistics": "図書館の統計",
+  "lightness": "軽さ",
+  "likedBy": "「いいね！」した人",
+  "lineHeight": "行間",
+  "linkAutoDetected": "リンク（自動検出）",
+  "linkCopiedToClipboard": "リンクがクリップボードにコピーされました！",
+  "linkHasExpiredAndEpisodeUrl": "リンクの有効期限が切れており、エピソードのURLにアクセスできません。",
+  "linkHasExpiredAndNoAlternative": "リンクの有効期限が切れており、代替の配信ソースは見つかりませんでした。",
+  "linotteDefault": "Linotte（デフォルト）",
+  "liquidBackground": "液体の背景",
+  "liquidMode": "リキッドモード",
+  "listEntryUpdatedSuccessfully": "リストのエントリが正常に更新されました！",
+  "listExporter": "リストエクスポーター",
+  "listNameAlreadyExists": "リスト名はすでに存在します",
+  "listOptions": "リストのオプション",
+  "liveBlurIsUnavailableWhenUsing": "「Fluid Mesh」を使用している場合、「ライブブラー」機能は利用できません。",
+  "livePreview": "ライブプレビュー",
+  "livePreview2": "ライブプレビュー",
+  "loadTemplate": "テンプレートを読み込む",
+  "loadingMediaFiles": "メディアファイルを読み込んでいます...",
+  "loadingMedia": "メディアを読み込み中...",
+  "local": "ローカル",
+  "localLibrary": "地元の図書館",
+  "localMedia": "地元メディア",
+  "location": "場所",
+  "logCapture": "ログの取得",
+  "logDirectory": "ログディレクトリ",
+  "logIn": "ログイン",
+  "logInRequired": "ログインが必要です",
+  "logInToCustomizeYourPush": "プッシュ通知の設定をカスタマイズするには、ログインしてください。",
+  "logInToJoinTheConversation": "ログインして、会話に参加し、コメントを投稿してください。",
+  "logOut": "ログアウト",
+  "loggedInTrackingServices": "ログインが必要な追跡サービス",
+  "login": "ログイン",
+  "loginAuthTokens": "ログインおよび認証トークン",
+  "loginInsideTheAppRecommended": "アプリ内でログインする（推奨）",
+  "loginSessions": "ログインセッション",
+  "loginUsingYourDefaultBrowser": "デフォルトのブラウザでログインしてください",
+  "loginWithToken": "トークンでログイン",
+  "logoAnimation": "ロゴアニメーション",
+  "logoName": "ロゴ名：",
+  "logs": "ログ",
+  "longPressPageActions": "ページの長押しによる操作",
+  "makeEverythingGlassyLiquidy": "すべてをガラスのように透き通った、液体のような感じに……",
+  "manageAnilistLists": "Anilistリストの管理",
+  "manageCachedImagesThresholdsAndReset": "キャッシュされた画像、しきい値の管理、およびアプリデータのリセット",
+  "manageDeviceStorageAndNotificationsTo": "デバイスのストレージと通知を設定して、メディアをオフラインでダウンロード・管理しましょう。",
+  "manageLogCaptureAndShareSaved": "ログの取得を管理し、保存したログを共有する",
+  "manageMyanimelistLists": "MyAnimeListのリストを管理する",
+  "managePluginsSources": "プラグインとソースの管理",
+  "manageSimklLists": "Simklのリストを管理する",
+  "manageSourcesAndRepositoriesToUse": "アプリを最大限に活用するために、ソースとリポジトリを管理しましょう",
+  "manageYourMyanimelistAnilistSimklAccounts": "MyAnimeList、Anilist、Simklのアカウントを管理しましょう！",
+  "management": "経営",
+  "manga": "マンガ",
+  "mangaNovelReaderSettingsTapZones": "漫画・小説リーダーの設定、タップゾーン",
+  "mangaNovelViewerSettingsTapZones": "漫画・小説ビューアの設定、タップゾーン",
+  "mangaAndNovelReaderStylesAnd": "漫画や小説のリーダーのスタイルとタップゾーン",
+  "mangaCustomLists": "マンガのカスタムリスト",
+  "mangaDetailsPhrasing": "漫画の詳細に関する表現",
+  "mangaLibrary": "マンガライブラリ",
+  "mangaList": "マンガ一覧",
+  "mangaScore": "マンガスコア",
+  "mangaSectionOrder": "漫画コーナーの注文",
+  "manuallyPasteOauthAccessToken": "OAuthアクセストークンを手動で貼り付ける",
+  "markAllRead": "すべて既読にする",
+  "markAsWatched": "「視聴済み」としてマークする",
+  "markdownGuide": "マークダウンガイド",
+  "maximumDemuxerBufferMb": "デマルチプレクサの最大バッファ容量（MB）",
+  "maybeLater": "また後で",
+  "mean": "平均",
+  "meanScore": "平均スコア",
+  "mediaPlayback": "メディアと再生",
+  "mediaLibrary": "メディアライブラリ",
+  "mediaSessionBluetoothSupport": "メディアセッション（Bluetooth対応）",
+  "mediaTypeBreakdown": "メディア種別の内訳",
+  "mediaYouDownloadWillAppearHere": "ダウンロードしたメディアはここに表示されます。",
+  "megaskipDuration": "MegaSkipの再生時間",
+  "mention": "言及",
+  "mentions": "言及",
+  "merge": "結合",
+  "messageFriend": "友達にメッセージを送る",
+  "minutesWatched": "視聴時間",
+  "miscellaneous": "その他",
+  "missingRuntimeHost": "ランタイムホストが見つかりません",
+  "moderation": "モデレーション",
+  "moderationActions": "モデレーションの措置",
+  "moderationPanel": "モデレーション・パネル",
+  "moderator": "モデレーター",
+  "moreOptions": "その他のオプション",
+  "morePopularManga": "人気の漫画をもっと見る",
+  "moveToLeft": "左へ移動",
+  "moveToRight": "右へ移動",
+  "movie": "映画",
+  "mpvConfiguration": "MPVの仕様",
+  "muteUser": "ユーザーをミュートする",
+  "mutualConnections": "相互のつながり",
+  "mutualFriends": "共通の友人",
+  "nameplates": "銘板",
+  "navBarLayout": "ナビゲーションバーのレイアウト",
+  "navBarStyle": "ナビゲーションバーのスタイル",
+  "navigationLayout": "ナビゲーションレイアウト",
+  "needHelp": "お困りですか？",
+  "network": "ネットワーク",
+  "newLabel": "新着",
+  "newCollection": "新作コレクション",
+  "newCustomListName": "新しいカスタムリスト名",
+  "newDownload": "新しいダウンロード",
+  "newList": "新しいリスト",
+  "newestFirst": "新しい順",
+  "nextRelease": "次回のリリース",
+  "nextReleasePrediction": "次期リリースの予測",
+  "noActiveDownloads": "現在ダウンロード中のものはありません",
+  "noActiveSourceOrMediaFound": "有効なソースやメディアが見つかりませんでした",
+  "noActiveSourceSelected": "選択されているアクティブなソースはありません",
+  "noActivity": "活動なし",
+  "noAnimeFound": "該当するアニメが見つかりませんでした",
+  "noAudioTracksAvailable": "利用可能なオーディオトラックはありません",
+  "noChaptersFound": "該当する章が見つかりませんでした",
+  "noChaptersFound2": "該当する章が見つかりませんでした",
+  "noCommonGenres": "一般的なジャンルなし",
+  "noCommonTags": "共通のタグはありません",
+  "noContributorsFound": "寄稿者は見つかりませんでした。",
+  "noCustomListsAvailable": "利用可能なカスタムリストはありません。",
+  "noCustomListsYet": "まだカスタムリストはありません",
+  "noCustomListsYet2": "まだカスタムリストはありません。",
+  "noDataAvailableForThisSection": "このセクションに関するデータはありません",
+  "noDataAvailable": "データはありません。",
+  "noDecadeBreakdownAvailable": "10年ごとの内訳は利用できません",
+  "noDescriptionAvailable": "説明文はありません",
+  "noDownloadedChaptersFoundForThis": "この漫画のダウンロード済み章は見つかりませんでした",
+  "noDownloadedEpisodesFoundForThis": "このアニメのダウンロード済みエピソードは見つかりませんでした",
+  "noEntriesFound": "該当するエントリが見つかりませんでした",
+  "noEpisodesFound": "該当するエピソードが見つかりませんでした",
+  "noExtensionManagersFound": "拡張機能マネージャーが見つかりませんでした。",
+  "noExtensionsFound": "拡張機能が見つかりませんでした",
+  "noExtensionsInstalled": "拡張機能はインストールされていません",
+  "noGenresAvailableAnilistApiMay": "該当するジャンルがありません。AniList APIが一時的に利用できない可能性があります。",
+  "noHiddenTabs": "非表示のタブはありません",
+  "noInsightsAvailableYetAddItems": "まだインサイトはありません。ライブラリにアイテムを追加しましょう！",
+  "noItemsInThisLibrary": "このライブラリにはアイテムがありません。",
+  "noLoggedStatsYetStartWatching": "まだ記録された統計データはありません。視聴・閲覧を始めましょう！",
+  "noMediaFilesFound": "メディアファイルが見つかりませんでした",
+  "noMediaFoundForThisStudio": "このスタジオに関連するメディアが見つかりませんでした",
+  "noMediaInThisList": "このリストにはメディアがありません。",
+  "noMoreActivities": "これ以上のアクティビティはありません",
+  "noMoreRecommendations": "これ以上のおすすめはありません",
+  "noMoreUsers": "ユーザーはいません",
+  "noNotificationsYet": "まだ通知はありません",
+  "noNovelExtensionsInstalledToRead": "この小説を読むために、新しい拡張機能はインストールされていません。",
+  "noPendingReports": "未処理のレポートはありません",
+  "noPlayableStreamAvailableForThis": "このエピソードの再生可能なストリームはありません。",
+  "noPlayableStreamWasReturnedBy": "このソースからは再生可能なストリームが返されませんでした。",
+  "noRecentActivityFoundForSelected": "選択した条件に一致する最近のアクティビティは見つかりませんでした",
+  "noRecommendationsFound": "該当する推奨事項が見つかりませんでした",
+  "noRecommendationsYet": "まだおすすめはありません",
+  "noReleasesFound": "該当するリリースが見つかりませんでした。",
+  "noRepliesYetBeTheFirst": "まだ返信はありません。ぜひ最初のコメントを投稿してください！",
+  "noRepositoriesYet": "まだリポジトリはありません",
+  "noResult": "結果なし",
+  "noResultsFound": "結果は見つかりませんでした。",
+  "noResultsYet": "まだ結果はありません",
+  "noResultsTrySearchingByTitle": "結果が見つかりませんでした。タイトルで検索してみてください。",
+  "noSearchResults": "検索結果はありません",
+  "noServersAvailable": "利用可能なサーバーがありません",
+  "noServersFound": "サーバーが見つかりませんでした。",
+  "noServicesAvailable": "利用可能なサービスはありません",
+  "noSourceInstalled": "ソースがインストールされていません",
+  "noSourceSelected": "ソースが選択されていません",
+  "noSourcesFound": "該当する情報源が見つかりませんでした",
+  "noStatsAvailable": "統計データはありません",
+  "noSubtitleTracksAvailable": "利用可能な字幕トラックはありません",
+  "noTestsRunning": "実行中のテストはありません",
+  "noThemesYet": "まだテーマはありません",
+  "noTrackingServiceConnected": "追跡サービスが接続されていません",
+  "noUsersFound": "該当するユーザーが見つかりませんでした",
+  "noVisibleTabs": "タブが表示されていない",
+  "noVisualsFoundForThisAnime": "このアニメの画像が見つかりませんでした (╥﹏╥)",
+  "noWatchOrderFound": "視聴リストが見つかりませんでした。",
+  "notNow": "今はいい",
+  "notSupported": "対応していません",
+  "notTracked": "追跡対象外",
+  "noteAddingKotatsuRepositoryWillTake": "注：Kotatsuリポジトリの追加には、初回読み込み時に拡張プラグインのダウンロードと変換が必要となるため、少なくとも1～2分かかります。",
+  "nothingDownloadedYet": "まだ何もダウンロードされていません",
+  "nothingToPreview": "プレビューする内容はありません",
+  "nothingToPreviewYet": "まだプレビューできるものはありません。",
+  "notificationPreferences": "通知設定",
+  "notifications": "通知",
+  "notifyForOfficialAnnouncementsAndApp": "公式のお知らせやアプリの更新情報を通知する",
+  "notifyIfYourCommentIsRemoved": "コメントがモデレーターによって削除された場合は通知する",
+  "notifyOnNewCommentsForMedia": "議論したメディアへの新しいコメントがある場合に通知する",
+  "notifyOnUpvotesAndDownvotes": "「いいね」や「嫌い」の通知を受け取る",
+  "notifyOnWarningsPinnedCommentsOr": "警告、固定されたコメント、またはスレッドのロックについて通知する",
+  "notifyWhenSomeoneMentionsYourUsername": "誰かがあなたのユーザー名を@メンションしたときに通知する",
+  "notifyWhenSomeoneRepliesToYour": "自分のコメントに返信があったときに通知する",
+  "novel": "小説",
+  "novelCustomLists": "新しいカスタムリスト",
+  "novelDetailsPhrasing": "小説の詳細に関する表現",
+  "novelFontFamily": "新しいフォントファミリー",
+  "novelLibrary": "小説ライブラリ",
+  "novelSnapshots": "小説のスナップショット",
+  "novelTheme": "小説のテーマ",
+  "novels": "小説",
+  "numberOfActiveDownloadTasks": "アクティブなダウンロードタスクの数",
+  "numberOfParallelChunksPerDownload": "ダウンロードごとの並列チャンクの数",
+  "okay": "わかった",
+  "oldestFirst": "古い順",
+  "oledMode": "OLEDモード",
+  "onMyList": "「マイリスト」",
+  "oneOptionPerLineLikeHwdec": "1行につき1つのオプションを指定します（例：hwdec=auto、scale=ewa_lanczossharp）。#で始まる行はコメントです。[角括弧]で囲まれたプロファイルは無視されます。",
+  "online": "オンライン",
+  "openCloset": "クローゼットを開ける",
+  "openInBrowser": "ブラウザで開く",
+  "openSettings": "「設定」を開く",
+  "openSource": "オープンソース",
+  "openSupportedLinks": "サポート対象のリンクを開く",
+  "openTheDownloadsScreenFromThe": "メニューから「ダウンロード」画面を開く",
+  "openVideoStreamInExternalPlayer": "デフォルトで外部プレーヤーで動画ストリームを開く",
+  "openWebview": "WebViewを開く",
+  "openingsEndings": "始まりと終わり",
+  "openslEsNativeAudioEngine": "OpenSL ES ネイティブオーディオエンジン",
+  "options": "オプション",
+  "order": "注文",
+  "originalSize": "元のサイズ",
+  "otakuRankLevel": "オタクランクレベル",
+  "other": "その他",
+  "otherFeatures": "その他の機能",
+  "otherRecommendations": "その他の推奨事項",
+  "otherStuffs": "その他",
+  "otherTemporaryFiles": "その他の一時ファイル",
+  "otherWaysToSupport": "その他の支援方法",
+  "others": "その他",
+  "outlineType": "アウトラインタイプ",
+  "overscroll": "オーバースクロール",
+  "overscrollToPrevNextChapter": "スクロールして前の章／次の章へ進む",
+  "overview": "概要",
+  "overwrite": "上書き",
+  "pageAnimationDemo": "ページアニメーションのデモ",
+  "pageReaderMode": "ページリーダーモード",
+  "paged": "ページ分け",
+  "palette": "パレット",
+  "palettes": "パレット",
+  "paragraphSpacing": "段落間隔",
+  "parallelSegmentsForVideoDownloader": "動画ダウンローダー用の並列セグメント",
+  "password": "パスワード",
+  "passwordProtectBackup": "バックアップにパスワード保護をかける",
+  "passwordRequired": "パスワードが必要です",
+  "passwordsDontMatch": "パスワードが一致しません！",
+  "pasteCustomImageUrl": "カスタム画像のURLを貼り付けてください...",
+  "pasteUrlHere": "ここにURLを貼り付けてください...",
+  "pathCopiedToClipboard": "パスがクリップボードにコピーされました",
+  "payViaAnyUpiApp": "任意のUPIアプリで支払う",
+  "paypalDonation": "PayPalによる寄付",
+  "paypalRecipientNotice": "PayPal受取人への通知",
+  "penaltyDuration": "ペナルティの期間",
+  "performance": "パフォーマンス",
+  "permissionsRequired": "必要な権限",
+  "persistentPageIndicator": "常時表示ページインジケーター",
+  "personalizeTheLookAndMakeIt": "自分だけのスタイルに仕上げましょう",
+  "personalizedRecommendations": "パーソナライズされたおすすめ",
+  "platform": "プラットフォーム",
+  "playAroundWithAppTheme": "アプリのテーマをいろいろ試してみよう",
+  "playAroundWithTheVideoPlayer": "ビデオプレーヤーをいろいろ試してみてください",
+  "playback": "再生",
+  "playbackSpeed": "再生速度",
+  "playbackSpeeds": "再生速度",
+  "player": "プレイヤー",
+  "playerControlsSubtitlesAndPlaybackPreferences": "操作設定、字幕、再生設定",
+  "playerSettings": "プレイヤー設定",
+  "playerTheme": "プレイヤーのテーマ",
+  "playerThemes": "プレイヤーテーマ",
+  "pleaseChooseALogoFile": "ロゴファイルをお選びください。",
+  "pleaseEnterAPasswordOrDisable": "パスワードを入力するか、パスワード保護を無効にしてください。",
+  "pleaseEnterASearchTerm": "検索語句を入力してください",
+  "pleaseEnterAUsernameToCompare": "比較対象のユーザー名を入力してください。",
+  "pleaseGrantStoragePermissionToBrowse": "メディアファイルを閲覧するための保存権限を許可してください",
+  "pleaseLoginFirst": "まずログインしてください",
+  "pleaseLoginFirstToExportYour": "リストをエクスポートするには、まずログインしてください。",
+  "pleaseLoginToFavorite": "お気に入りに登録するには、ログインしてください！",
+  "pleaseLoginToUseThisFilter": "このフィルターをご利用になるには、ログインしてください！",
+  "pleaseProvideAReasonForThis": "この措置の理由をご記入ください",
+  "pleaseRestartTheAppToApply": "変更を反映させるには、アプリを再起動してください。",
+  "pleaseSelectABackupFileFirst": "まずバックアップファイルを選択してください",
+  "pleaseSelectAValidApkFile": "有効なAPKファイルを選択してください。",
+  "pleaseSelectAValidJarFile": "有効なJARファイルを選択してください。",
+  "pleaseSelectAtLeastOneItem": "バックアップする項目を少なくとも1つ選択してください。",
+  "pleaseSelectAtLeastOneItemTo": "復元する項目を少なくとも1つ選択してください。",
+  "pleaseWriteAtLeast30Characters": "30文字以上入力してください",
+  "pluginInstallationSync": "プラグインのインストールと同期",
+  "pluginIsAlreadyUpToDate": "プラグインはすでに最新の状態です。",
+  "pluginJarCopiedPleaseRestartThe": "プラグインのJARファイルがコピーされました。アプリを再起動してください。",
+  "pluginNotInstalled": "プラグインがインストールされていません",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "プラグインの再ダウンロードが完了しました。変更を反映させるには、再起動してください。",
+  "pluginReDownloadedPleaseRestartThe": "プラグインを再ダウンロードしました。変更を反映させるには、アプリを再起動してください。",
+  "pluginSyncedFromLocalApk": "プラグインがローカルのAPKから同期されました。",
+  "pngJpgWebpGifMax20mb": "PNG、JPG、WEBP、GIF（最大20MB）",
+  "popular": "人気",
+  "popularAnime": "人気のアニメ",
+  "popularAnimes": "人気のアニメ",
+  "popularManga": "人気の漫画",
+  "posterBlurMode": "ポスターぼかしモード",
+  "posterBlurScope": "ポスターのぼかし範囲",
+  "poweredByAnimatch16PointCompatibility": "AnymeXにおけるAniMatchによる16項目の互換性分析",
+  "poweredByCommentumV2AdvancedComment": "Commentum v2 搭載 - モデレーション機能を備えた高度なコメントシステム",
+  "preferences": "設定",
+  "preferencesSystem": "設定とシステム",
+  "preferredSubtitleLanguage": "希望する字幕言語",
+  "preparingImageToShare": "共有する画像を準備中...",
+  "preparingStream": "ストリームの準備",
+  "presetProviders": "プリセットプロバイダー",
+  "preventScreenFromSleeping": "画面のスリープを防ぐ",
+  "preview": "プレビュー",
+  "previewUpper": "プレビュー",
+  "privacySafety": "プライバシーと安全性",
+  "privacySettingsAndSafetyFeatures": "プライバシー設定とセキュリティ機能",
+  "private": "非公開",
+  "privateEntry": "非公開エントリー",
+  "profileEffects": "プロファイルの効果",
+  "profileIcon": "プロフィールアイコン",
+  "progress": "進捗状況",
+  "progressHistory": "進捗と沿革",
+  "proposeNewFeaturesReportBugsAnd": "新機能の提案、バグの報告、他のメンバーとのチャット",
+  "protocol": "プロトコル",
+  "proxy": "プロキシ",
+  "proxyConfiguration": "プロキシの設定",
+  "pulseaudioSoundServer": "PulseAudio サウンドサーバー",
+  "queryRemoteRepositoryForAddOn": "リモートリポジトリにアドオンの更新があるか確認する",
+  "queuedForDownload": "ダウンロード待ち",
+  "quickSelectFollowing": "クイックセレクト（フォロー中）",
+  "radiusMultiplier": "半径倍率",
+  "random": "ランダム",
+  "range": "範囲",
+  "rank": "ランク",
+  "rating": "評価",
+  "reDownloadAndReinstallThePlugin": "プラグインを最初から再度ダウンロードして、再インストールしてください",
+  "read": "読む",
+  "readArticle": "記事を読む",
+  "readLatestUpdatesAboutThisAnime": "このアニメに関する最新情報をチェック",
+  "readLatestUpdatesAboutThisManga": "この漫画に関する最新情報をチェック",
+  "readOnePageAtATime": "1ページずつ読んでください",
+  "readAheadDurationInMinutes": "先読み時間（分）",
+  "readaheadSeconds": "先読み秒数",
+  "reader": "リーダー",
+  "readerBackgroundOpacity": "読者の背景の不透明度",
+  "readerControlTheme": "リーダーコントロールテーマ",
+  "readerPreferences": "読者の設定",
+  "readerSettings": "読者設定",
+  "readingDirection": "読み順",
+  "readingLayout": "レイアウトの読み方",
+  "readingManga": "漫画を読む",
+  "readingMangaPhrasing": "漫画の表現の読み方",
+  "readingNovel": "小説を読む",
+  "readingNovelPhrasing": "小説の表現の読み方",
+  "realTime4kUpscalingForAnime": "アニメコンテンツ向けのリアルタイム4Kアップスケーリング",
+  "reason": "理由",
+  "reasonDeleted": "削除理由。",
+  "reasonUpdated": "更新理由！",
+  "recentActivity": "最近の活動",
+  "recentMediaComments": "最近のメディアでの発言",
+  "recentNews": "最新ニュース",
+  "recentSearches": "最近の検索",
+  "recentlyCompleted": "最近完了した",
+  "recentlyUpdated": "最近更新されました",
+  "recommend": "おすすめ",
+  "recommendationSubmitted": "推薦を提出しました！ 🎉",
+  "recommended": "おすすめ",
+  "recommendedAnime": "おすすめのアニメ",
+  "recommendedBy": "おすすめ：",
+  "recommendedManga": "おすすめの漫画",
+  "recommendedNovels": "おすすめの小説",
+  "reduceColorBandingArtifacts": "カラーバンディングのアーティファクトを低減する",
+  "refreshComments": "コメントを更新する",
+  "refreshRate": "リフレッシュレート",
+  "relations": "関係",
+  "releaseDate": "発売日",
+  "releaseYear": "公開年",
+  "releaseYearStats": "リリース年の統計",
+  "rememberMyChoice": "私の選択を覚えておいてください",
+  "rememberServer": "サーバーを記憶する",
+  "removalRequestSentToAdminsFor": "削除依頼を管理者に送信し、審査を依頼しました。",
+  "remove": "削除",
+  "removeBanner": "バナーを非表示にする",
+  "removeDecoration": "装飾を削除する",
+  "removeEffect": "効果を解除する",
+  "removeFromHistory": "履歴から削除",
+  "removeItems": "アイテムを削除する",
+  "removeNameplate": "銘板を取り外す",
+  "removeTheme": "テーマを削除する",
+  "removeWhiteBlackBorders": "白／黒の枠を削除する",
+  "removeYourReason": "「理性を取り除く？」",
+  "rename": "名前の変更",
+  "renameList": "名前の変更リスト",
+  "reorderNavigationTabs": "ナビゲーションタブの順序を変更する",
+  "replaceExistingDataOnThisDevice": "このデバイス上の既存のデータをバックアップで上書きする",
+  "replay": "リプレイ",
+  "reportsQueue": "レポートのキュー",
+  "repositories": "リポジトリ",
+  "repositoryUrl": "リポジトリのURL",
+  "repositoryUrlUpper": "リポジトリのURL",
+  "requests": "リクエスト",
+  "requiredForCoreAndVisualTuning": "コアおよびビジュアルのチューニングに必要です。低スペック端末ではオフにしておいてください。",
+  "reset": "リセット",
+  "resetUpper": "リセット",
+  "resetDownloadPath": "ダウンロード先のパスをリセット",
+  "resetNovelReaderSettings": "Novel Readerの設定をリセットする",
+  "resetToDefault": "デフォルト設定に戻す",
+  "resetToDefault2": "デフォルト設定に戻す",
+  "resetToDefaultPicture": "デフォルトの画像にリセット",
+  "resetToDefaultWallpaper": "壁紙をデフォルトに戻す！",
+  "resizeMode": "サイズ変更モード",
+  "resizeModes": "サイズ変更モード",
+  "resolution": "決議",
+  "resolve": "解決",
+  "restartTheAppToApplyThe": "更新を反映させるには、アプリを再起動してください。",
+  "restoreAllNovelReaderDefaults": "「Novel Reader」のすべてのデフォルト設定を復元する",
+  "restoreData": "データの復元",
+  "restorePreview": "プレビューを復元",
+  "restoreToDefaultInternalStorage": "内部ストレージをデフォルトの状態に戻す",
+  "restoringWillOverwriteYourSelectedLocal": "復元を行うと、選択したローカルライブラリのアイテムおよび設定が、このバックアップの内容で上書きされます。",
+  "restrictMessagesToFollowing": "メッセージの受信対象を「フォロー中」に限定する",
+  "results": "結果",
+  "resultsWillAppearGroupedByExtension": "結果は拡張子ごとにグループ分けされて表示されます",
+  "retainOriginalColor": "元の色をそのまま維持する",
+  "retry": "再試行",
+  "rightSide": "右側",
+  "riseAndShine": "おはようございます",
+  "roleUpdatedSuccessfully": "役割の更新に成功しました",
+  "roleAll": "対象：すべて",
+  "rollbackVersion": "ロールバック版",
+  "romajiTitle": "ローマ字タイトル",
+  "roundUpScores": "ラウンドアップのスコア",
+  "runtimeHost": "ランタイムホスト",
+  "runtimeHostReleases": "Runtime Hostのリリース情報",
+  "runtimeHostRequired": "ランタイムホストが必要",
+  "safetyFeatures": "安全機能：",
+  "saturation": "飽和",
+  "sauceSearcher": "ソース検索ツール",
+  "save": "保存",
+  "saveEquip": "保存＆装備",
+  "saveChanges": "変更を保存",
+  "saveChanges2": "変更を保存",
+  "saveLastFrame": "最後のフレームを保存",
+  "saveLogo": "ロゴを保存",
+  "savedAnimeEntriesAndProgress": "保存されたアニメのエントリーと視聴状況",
+  "savedLightNovelsAndReadingState": "保存したライトノベルと読み進め状況",
+  "savedMangaEntriesAndChapters": "保存済みの漫画作品と巻・話",
+  "savedStreamLinkHasExpiredFetching": "保存されたストリームリンクの有効期限が切れました。新しいリンクを取得しています...",
+  "savesAScreenshotOfTheLast": "最後に視聴したフレームのスクリーンショットを保存します。この機能を無効にすると、ストレージの使用量が大幅に削減されます",
+  "scaleFactor": "スケール係数",
+  "scalingAlgorithm": "スケーリングアルゴリズム",
+  "scanningForMoreServers": "さらにサーバーを検索中...",
+  "scanningForVideoStreams": "動画ストリームを検索中...",
+  "score": "スコア",
+  "scoreDistribution": "得点の分布",
+  "scoringSystem": "採点システム",
+  "search": "検索",
+  "searchUpper": "検索",
+  "searchAcrossExtensions": "拡張機能を横断して検索...",
+  "searchAnimeMovies": "アニメや映画などを検索…",
+  "searchAnime": "アニメを検索...",
+  "searchExtensions": "検索拡張機能",
+  "searchExtensionsEllipsis": "検索の拡張機能...",
+  "searchFailed": "検索に失敗しました",
+  "searchForAnime": "アニメを検索",
+  "searchInHistory": "履歴を検索...",
+  "searchInLibrary": "ライブラリ内を検索...",
+  "searchItemsInList": "リスト内の項目を検索...",
+  "searchManga": "漫画を検索...",
+  "searchQuery": "検索クエリ",
+  "searchSources": "情報源を検索...",
+  "searchTags": "検索タグ...",
+  "searchUser": "ユーザーを検索",
+  "searchingDatabase": "データベースを検索中...",
+  "searching": "検索中...",
+  "season": "シーズン",
+  "seasons": "季節",
+  "secondsPerScreenLowerIsFaster": "1画面あたりの秒数（数値が小さいほど高速）",
+  "secondsPerScreenPageLowerIs": "画面／ページあたりの秒数（数値が小さいほど高速）",
+  "securityEncryption": "セキュリティと暗号化",
+  "seePeopleWhoContributedToAnymex": "AnymeXに貢献した人々を見る",
+  "selectAFolderWhereAnymexWill": "AnymeXがダウンロードしたアニメのエピソードやマンガの巻を保存するフォルダを選択してください。",
+  "selectAnAnimeScreenshotToFind": "アニメのスクリーンショットを選択して、その出典を確認してください",
+  "selectAnilistMyanimelistSimklOrExtensions": "「AniList」、「MyAnimeList」、「Simkl」、または「拡張機能」モードを選択してください",
+  "selectDataToIncludeInThis": "このバックアップに含めるデータを選択してください",
+  "selectDirectory": "ディレクトリを選択",
+  "selectExtensions": "拡張機能を選択",
+  "selectFolder": "フォルダを選択",
+  "selectLanguage": "言語を選択",
+  "selectMediaDirectory": "メディアディレクトリを選択してください",
+  "selectNovelSource": "小説の出典を選択",
+  "selectProfile": "プロフィールを選択",
+  "selectRange": "範囲を選択",
+  "selectServer": "サーバーを選択",
+  "selectStatus": "ステータスを選択",
+  "selectSubtitleFont": "字幕のフォントを選択",
+  "selectTags": "タグを選択",
+  "selectTimezone": "タイムゾーンを選択してください",
+  "selectVersionToRollback": "ロールバックするバージョンを選択してください",
+  "selectVideoFile": "動画ファイルを選択してください",
+  "selectYourPreferredContentSource": "ご希望のコンテンツソースを選択してください",
+  "selectedCacheCleared": "選択したキャッシュを削除しました",
+  "selectedItemsRemoved": "選択した項目が削除されました",
+  "sensitiveLoginTokensForMalSimkl": "MAL、Simkl、AniList用の機密ログイントークン",
+  "sensitiveSessionTokensForMalSimkl": "MAL、Simkl、AniList向けの機密性の高いセッショントークン",
+  "separateCompletedAnimeListIntoSections": "完成したアニメのリストを、形式ごとにセクション分けする。",
+  "separateCompletedMangaListIntoSections": "完成した漫画のリストを、形式ごとにセクション分けする。",
+  "serverDetails": "サーバーの詳細",
+  "serverChanIsTakingANap": "サーバーちゃんが昼寝中！",
+  "setUpYourPreferencesForThe": "最適な利用体験を得るために、設定を調整してください",
+  "settings": "設定",
+  "settingsAccount": "設定とアカウント",
+  "settingsAuthentication": "設定と認証",
+  "settingsSavedSuccessfully": "設定が正常に保存されました。",
+  "shaderProfilesInitialized": "シェーダープロファイルが初期化されました",
+  "shadowBanUser": "シャドウバンされたユーザー",
+  "shareLogs": "ログを共有する",
+  "shareMatchCard": "マッチカードを共有する",
+  "shareProfile": "プロフィールを共有する",
+  "shareTheSavedLogFileOr": "保存したログファイルを共有するか、その内容をコピーしてください。",
+  "sharedFromAnymex": "AnymeXからシェアされました",
+  "showAnimatedEffectOverlaysOnProfile": "プロフィールバナーにアニメーション効果のオーバーレイを表示する",
+  "showAnimatedFramesAroundUserAvatars": "ユーザーのアバターの周囲にアニメーションフレームを表示する",
+  "showBatteryTime": "バッテリーと時刻を表示する",
+  "showChapterTransitionEvenWithoutGaps": "隙間がなくても章の切り替えを表示する",
+  "showCommunityRecommendations": "コミュニティのおすすめを表示",
+  "showContinueWatchingCard": "「続きを見る」カードを表示する",
+  "showContinueWatchingOnHome": "ホーム画面で「続きを見る」を表示する",
+  "showCustomProfileBannersFallsBack": "カスタムプロフィールバナーを表示する（オフの場合はAniListのカバー画像に切り替わる）",
+  "showNameplateBackgroundsOnCommentCards": "コメントカードやリーダーボードにネームプレートの背景を表示する",
+  "showOnLeft": "左側に表示",
+  "showOnRight": "右側に表示",
+  "showReadingProgress": "読書の進捗を表示する",
+  "showTimestamps": "タイムスタンプを表示",
+  "simpleCompactListView": "シンプルでコンパクトなリスト表示",
+  "simpleDirectmediaLayerAudioOutput": "Simple DirectMedia Layerによるオーディオ出力",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "サムネイルなしで、エピソード番号、タイトル、再生進捗を表示するシンプルなレイアウト",
+  "sizeMode": "サイズモード：",
+  "smartMangaSuggestions": "おすすめの漫画",
+  "smootherMotionCanIncreaseGpuUsage": "動きが滑らかになり、GPUの使用率が上がる可能性があります",
+  "social": "ソーシャル",
+  "somethingWentWrong": "何か問題が発生しました",
+  "sort": "並べ替え",
+  "sort2": "並べ替え",
+  "sortBy": "並べ替え",
+  "sortBy2": "並べ替え",
+  "sortComments": "コメントを並べ替える",
+  "source": "出典",
+  "sourceAndPluginConfigurations": "ソースおよびプラグインの設定",
+  "sourcePreferences": "ソース設定",
+  "spaceBetweenLetters": "文字間のスペース",
+  "spaceBetweenParagraphs": "段落間のスペース",
+  "spaceBetweenWords": "単語間のスペース",
+  "spacedPages": "余白のあるページ",
+  "splitCompletedAnimeList": "「完結済みアニメ一覧」",
+  "splitCompletedMangaList": "完結済み漫画一覧（分割版）",
+  "spoiler": "ネタバレ",
+  "spoilerTapToReveal": "ネタバレ（タップして表示）",
+  "staff": "スタッフ",
+  "staffCharacterNameLanguage": "スタッフ・キャラクター名 言語",
+  "standardGpuRendering": "標準のGPUレンダリング",
+  "starOnGithub": "GitHubでスターをつける",
+  "startANewDownloadFromThe": "「新規ダウンロード」タブから新しいダウンロードを開始する",
+  "startChapter": "章の始まり",
+  "startDate": "開始日",
+  "startMangaDownload": "マンガのダウンロードを開始",
+  "startTest": "テストを開始",
+  "startingExtensionRuntime": "拡張機能の実行を開始します...",
+  "statistics": "統計",
+  "stats": "統計",
+  "status": "ステータス",
+  "statusDistribution": "ステータスの分布",
+  "statusPostedSuccessfully": "ステータスの投稿に成功しました！",
+  "stayUpdatedWithTheLatestReleases": "最新リリース、お知らせ、ディスカッションの最新情報をチェックしましょう",
+  "storagePath": "保存先とパス",
+  "storageManager": "ストレージマネージャー",
+  "storageOptions": "保存方法",
+  "storagePermission": "保存の許可",
+  "storagePermissionIsRequiredToDownload": "アップデートをダウンロードするには、保存権限が必要です",
+  "storagePermissionRequired": "保存の許可が必要",
+  "streakCurLong": "連勝（短期／長期）",
+  "stretchImagesToFitScreenWidth": "画像を画面の幅に合わせて引き伸ばす",
+  "strikethrough": "取り消し線",
+  "studios": "スタジオ",
+  "style": "STYLE",
+  "subtitleBackgroundColor": "字幕の背景色",
+  "subtitleColor": "字幕の色",
+  "subtitleFont": "字幕のフォント",
+  "subtitleOutlineColor": "字幕の輪郭色",
+  "subtitleOutlineWidth": "字幕の輪郭の幅",
+  "subtitlePreview": "字幕プレビュー",
+  "subtitlePreviewText": "字幕プレビューテキスト",
+  "subtitleSize": "字幕のサイズ",
+  "subtitleTransparency": "字幕の透明度",
+  "subtitles": "字幕",
+  "summary": "概要",
+  "superAdmin": "スーパー管理者",
+  "supportTtfAndOtfFiles": ".ttf および .otf ファイルに対応しています",
+  "supportAnymex": "AnymeXをサポートする",
+  "supportedModes": "対応モード",
+  "supportedUpiApps": "対応しているUPIアプリ",
+  "suppressActivityWhenWatchingOrReading": "NSFWコンテンツを視聴または閲覧する際のアクティビティを抑制する",
+  "swapUpDownActions": "スワップ（上/下）操作",
+  "swipeBetweenChapters": "章間をスワイプして移動",
+  "swipeIndicatorTheme": "スワイプインジケーターテーマ",
+  "swipeToSeek": "スワイプして検索",
+  "switchBetweenDefaultTitleAndRomaji": "ライブラリおよびカード全体で、デフォルトのタイトルとローマ字表記／別タイトルを切り替える",
+  "switchToOnline": "オンラインに切り替える",
+  "syncCompletedButThePluginIs": "同期は完了しましたが、プラグインはまだ準備ができていません。",
+  "syncDetails": "同期の詳細",
+  "syncFailed": "同期に失敗しました",
+  "synonyms": "同義語",
+  "synopsis": "あらすじ",
+  "tags": "タグ",
+  "tags2": "タグ",
+  "takeColorFromYourWallpaperA12": "壁紙の色を取り込む（A12+）",
+  "tapToAddARepositoryUrl": "「+」をタップしてリポジトリのURLを追加します",
+  "tapAZoneToChangeIts": "ゾーンをタップして、そのアクションを変更します",
+  "tapAction": "タップ操作",
+  "tapToChooseASource": "タップしてソースを選択してください",
+  "tapToLogin": "タップしてログイン",
+  "tapToLogout": "タップしてログアウト",
+  "tapToScroll": "タップしてスクロール",
+  "tapYourProfileIconInThe": "アプリの上部バーにあるプロフィールアイコンをタップしてください",
+  "tapZones": "タップゾーン",
+  "tellTheCommunityWhyThisDeserves": "この件がなぜもっと注目されるべきなのか、コミュニティに伝えてください。",
+  "temporaryAppCache": "アプリのキャッシュ（一時データ）",
+  "termsOfServicePrivacyPolicy": "利用規約／プライバシーポリシー",
+  "test": "テスト",
+  "testExtensions": "テスト拡張機能",
+  "testResults": "試験結果",
+  "testType": "テストの種類",
+  "textSize": "文字サイズ",
+  "theme": "テーマ",
+  "themeLayoutAndColors": "テーマ、レイアウト、および色",
+  "themes": "テーマ",
+  "thisBackupIsEncryptedPleaseEnter": "このバックアップは暗号化されています。続行するにはパスワードを入力してください。",
+  "thisDirectoryContainsNoSupportedMedia": "このディレクトリには、サポートされているメディアファイルは含まれていません",
+  "thisMayTakeAFewSeconds": "これには数秒かかるかもしれません",
+  "thisMayTakeUpTo30": "この処理には最大30秒かかる場合があります",
+  "thisMightTakeAFewSeconds": "これには数秒かかるかもしれません",
+  "thisReasonWillBeDeletedImmediately": "この理由は直ちに削除されます。",
+  "thisWillPermanentlyDeleteAllData": "これにより、AnymeXに保存されているすべてのデータが完全に削除されます。この操作は元に戻すことができません。",
+  "tipYouCanCombineTheseE": "ヒント：これらを組み合わせることもできます！例：**太字と*斜体*を一緒に**",
+  "title": "タイトル",
+  "titleCopied": "タイトルをコピーしました",
+  "titleLanguage": "タイトル言語",
+  "toDownloadForTheFirstTime": "初めてダウンロードする場合は、まず「ダウンロード」ページにアクセスして権限を付与してください：",
+  "toggleBetweenGridAndDetailedList": "グリッド表示と詳細リスト表示を切り替える",
+  "toneMapping": "トーンマッピング",
+  "topAnime": "人気アニメ",
+  "topComments": "人気のコメント",
+  "topGenres": "人気のジャンル",
+  "topManga": "人気の漫画",
+  "topManhua": "人気のマンファ",
+  "topManhwa": "人気のマンファ",
+  "topStudios": "トップスタジオ",
+  "torrentServer": "トレントサーバー",
+  "torrentStreamCache": "トレント・ストリーム・キャッシュ",
+  "torrserverStreamingAddOns": "TorrServer およびストリーミング用アドオン",
+  "totalChapters": "全章数",
+  "totalCost": "総費用：",
+  "totalItems": "商品総数",
+  "track": "トラック",
+  "trackAiringSchedules": "放送スケジュールを確認する",
+  "trackYourProgress": "進捗状況を把握しますか？",
+  "trackingServices": "追跡サービス",
+  "transitionSubtitle": "トランジションの字幕",
+  "translateTo": "翻訳先",
+  "translationLanguage": "翻訳言語",
+  "translucentNav": "半透明のナビゲーション",
+  "trendingAnime": "注目のアニメ",
+  "trendingAnimes": "注目のアニメ",
+  "trendingManga": "注目のマンガ",
+  "tryADifferentKeyword": "別のキーワードを試してみてください",
+  "tryAdjustingYourFilters": "フィルタの設定を変更してみてください",
+  "tryAgain": "もう一度試す",
+  "tryDifferentAnimationStylesForPage": "ページの表示時に、さまざまなアニメーションスタイルを試してみてください",
+  "ttsAutoAdvance": "TTS 自動進め",
+  "ttsPitch": "TTSのピッチ",
+  "ttsSpeed": "TTSの速度",
+  "tweakGeneralAppSettings": "アプリの基本設定を調整する",
+  "typeLabel": "種類",
+  "typeAtLeast2CharactersTo": "検索するには、2文字以上入力してください",
+  "ui": "UI",
+  "uiComponents": "UIコンポーネント",
+  "uiLayoutColorsAndThemes": "UIのレイアウト、色、テーマ",
+  "uiLayoutColorsAndVisualStyles": "UIのレイアウト、配色、およびビジュアルスタイル",
+  "uiSettings": "UI設定",
+  "unableToPreparePlaybackRightNow": "現在、再生の準備ができません。後ほどもう一度お試しください。",
+  "unbanUser": "ユーザーの利用停止を解除する",
+  "unbind": "紐を解く",
+  "unifiedLibrary": "統合ライブラリ",
+  "uninstall": "アンインストール",
+  "universal": "ユニバーサル",
+  "unlock": "ロック解除",
+  "unlockCustomizations": "カスタマイズ機能のロック解除",
+  "unmuteUser": "ユーザーのミュートを解除",
+  "unreadOnly": "未読のみ",
+  "upcomingAnime": "近日公開のアニメ",
+  "update": "更新",
+  "updateAll": "すべて更新",
+  "updateCheckComplete": "更新の確認が完了しました",
+  "updateOnImport": "輸入に関する最新情報",
+  "updateToLatestVersion": "最新バージョンへの更新",
+  "updateYourActivity": "アクティビティを更新してください...",
+  "updatesPending": "更新待ち",
+  "upiDonation": "UPIへの寄付",
+  "uploadAnImageToGetStarted": "まずは画像をアップロードしましょう",
+  "uploadImage": "画像をアップロード",
+  "urlCopiedToClipboard": "URLがクリップボードにコピーされました",
+  "usage": "使用方法：",
+  "useAiToTranslateSoftSubtitles": "AIを活用してソフト字幕をリアルタイムで翻訳する",
+  "useAlternateTitle": "別タイトルを使用する",
+  "useBuffering": "バッファリングを使用する",
+  "useCustomGesturesForReaderNavigation": "リーダーの操作にカスタムジェスチャーを使用する",
+  "useEnhancedEpisodeMetadataAndCovers": "強化されたエピソードのメタデータとカバー画像を使用する",
+  "useExternalPlayer": "外部プレーヤーを使用する",
+  "useKeyboardShortcutsDuringPlaybackTo": "再生中にキーボードショートカットを使ってプロファイルを切り替える",
+  "useLegacyHeader": "レガシーヘッダーを使用する",
+  "useLibassForSubtitles": "字幕にはLibassを使用する",
+  "useLibmpvForPlayback": "再生にはLibMpvを使用する",
+  "useMpvConf": "mpv.conf を使用する",
+  "usePosterColor": "ポスターカラーを使用する",
+  "useVolumeKeysToChangePages": "音量キーを使ってページを切り替えてください",
+  "useYearRange": "「年範囲」を使用する",
+  "user": "ユーザー",
+  "userIdCopiedToClipboard": "ユーザーIDがクリップボードにコピーされました",
+  "userList": "ユーザー一覧",
+  "userManagement": "ユーザー管理",
+  "userCreatedCustomMediaCollections": "ユーザーが作成したカスタムメディアコレクション",
+  "username": "ユーザー名",
+  "verifyTlsCertificates": "TLS証明書の検証",
+  "versionCopied": "バージョンがコピーされました",
+  "vertical": "縦方向",
+  "videoPlayer": "動画プレーヤー",
+  "videoRenderer": "ビデオレンダラー",
+  "videoSync": "ビデオ同期",
+  "viewAndFilterAllUsers": "すべてのユーザーを表示・絞り込み",
+  "viewOnAnilist": "AniListで見る",
+  "viewOpeningAndEndingThemes": "オープニング・エンディングテーマを見る",
+  "viewProfile": "プロフィールを表示",
+  "viewSourceCodeOnGithub": "GitHubでソースコードを表示する。",
+  "viewTheChronologicalWatchOrderOf": "このアニメの時系列順の視聴順を見る",
+  "viewUser": "ユーザーを表示",
+  "viewUserRankingsTopContributorsReputation": "ユーザーランキング、トップ貢献者、およびレピュテーションを表示する",
+  "viewingAnimeDetails": "アニメの詳細を表示",
+  "viewingMangaDetails": "漫画の詳細を表示",
+  "viewingNovelDetails": "小説の詳細を表示",
+  "visibleTabs": "表示されているタブ",
+  "visitGithubReleasesPageForChangelogs": "変更履歴や手動ダウンロードについては、GitHubのリリースページをご覧ください",
+  "visualFromAnymex": "AnymeXのビジュアル",
+  "voiceActors": "声優",
+  "voicedCharacters": "声の出演",
+  "volumeButtonScrolling": "音量ボタンによるスクロール",
+  "volumeKeysNavigation": "音量キーによる操作",
+  "volumes": "巻数",
+  "volumesRead": "読んだ冊数",
+  "votes": "投票数",
+  "wWhatAreYouDoingStep": "え、何してるの、義兄さん？　それをする前にログインしてよ (●´⌓`●)",
+  "wallpaper": "壁紙",
+  "warnUser": "ユーザーに警告する",
+  "warning": "警告",
+  "wasThisHelpful": "この情報は役に立ちましたか？",
+  "watchAd": "広告を見る",
+  "watchAnAdToSupport": "広告を見て支援する",
+  "watchAnime": "アニメを見る",
+  "watchOrder": "視聴順",
+  "watchTogether": "一緒に観よう",
+  "watchTogetherPolicy": "「一緒に視聴する」に関する方針",
+  "watchingAnime": "アニメを見る",
+  "watchingAnimePhrasing": "アニメのセリフの表現について",
+  "welcomeToAnymex": "AnymeXへようこそ",
+  "whatsOnYourMind": "今、何を考えていますか？",
+  "whenEnabledAnymexSavesLogsLocally": "有効にすると、AnymeXは無効になるまでログをローカルに保存します。",
+  "whyAreYouRecommendingThisMin": "なぜこれを勧めるのですか？（30文字以上）",
+  "whyIsThisUnderratedMin30": "なぜこれは過小評価されているのでしょうか？（30文字以上）",
+  "windowsAudioSessionApi": "Windows オーディオ セッション API",
+  "wordSpacing": "単語間のスペース",
+  "writeAMessage": "メッセージを入力してください...",
+  "writeLogToAFile": "ログをファイルに書き込む",
+  "writeYourAnilistBio": "AniListのプロフィールを書いてください…",
+  "wrongTitle": "タイトルが間違っていますか？",
+  "year": "年",
+  "yearUpper": "年",
+  "you": "あなた",
+  "youCanUseDiscordStyleMarkdown": "コメントの書式設定には、Discord形式のマークダウンを使用できます：",
+  "youHaveUnsentTextClosingNow": "送信されていないメッセージがあります。このまま閉じると、メッセージが消えてしまいます。",
+  "youHaveUnsentTextClosingNowWill": "送信されていないメッセージがあります。このまま閉じると、返信内容が失われます。",
+  "youHaveUnsentTextClosingNowWillLose": "送信されていないメッセージがあります。今閉じてしまうと、ステータスが消えてしまいます。",
+  "youNeedModeratorPermissionsToAccess": "このパネルにアクセスするには、モデレーター権限が必要です",
+  "youreUpLate": "夜更かししてるね",
+  "yourBalance": "残高：",
+  "yourPrivacyIsImportant": "お客様のプライバシーは重要です：",
+  "yourReasonHasBeenRemoved": "その理由は削除されました。",
+  "yourRecommendation": "おすすめ",
+  "yourRichPresenceActivityWillStop": "「リッチプレゼンス」のアクティビティの更新は停止されます。",
+  "yourRole": "あなたの役割",
+  "yourWatchReadHistory": "あなたの視聴・閲覧履歴",
+  "yourWatchReadStatistics": "あなたの閲覧・読了統計",
+  "advancedLinuxSoundArchitecture": "高度なLinuxサウンドアーキテクチャ",
+  "al": "AL",
+  "allYourLocalShi": "お住まいの地域のすべての…",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "アニリスト",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "本当にいいんですか？",
+  "aspectRatio": "アスペクト比",
+  "attackOnTitan": "進撃の巨人",
+  "audio": "音声",
+  "audioSubtitles": "音声・字幕",
+  "audioTrack": "オーディオトラック",
+  "audioTracks": "オーディオトラック",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "自動（オーディオトラック）",
+  "autoCoreaudio": "自動（CoreAudio）",
+  "autoGpu": "自動（GPU）",
+  "autoPulseaudio": "自動（PulseAudio）",
+  "autoWasapi": "自動（WASAPI）",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "ブルーム",
+  "castToDevice": "デバイスへのキャスト",
+  "colorFilter": "カラーフィルター",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "鬼滅の刃",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "外部プレーヤー",
+  "files": "ファイル",
+  "forward": "次へ",
+  "forward30s": "フォワード30秒",
+  "fullscreen": "全画面表示",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "GPU",
+  "gpuNextVulkan": "GPU Next（Vulkan）",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "呪術廻戦",
+  "lockControls": "ロックの操作",
+  "lockOrientation": "向きを固定する",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodecの埋め込み",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "必要な殺人",
+  "nextEp": "次回",
+  "nextEpisode": "次回",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "ピクチャー・イン・ピクチャー",
+  "playlist": "プレイリスト",
+  "previousEpisode": "前回のエピソード",
+  "pulseaudio": "PulseAudio",
+  "quality": "品質",
+  "qualitySetting": "品質設定",
+  "readingMode": "読書モード",
+  "reddit": "Reddit",
+  "replay30s": "30秒の再生",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "サビトとマコモ",
+  "sdl": "SDL",
+  "server": "サーバー",
+  "servers": "サーバー",
+  "shadersColorProfiles": "シェーダーとカラープロファイル",
+  "shadersColors": "シェーダーと色",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "ソロ・レベリング",
+  "speed": "速度",
+  "sw": "SW",
+  "syncSubs": "字幕の同期",
+  "syncSubtitles": "字幕を同期する",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "「素早い茶色のキツネが、のろまな犬を飛び越える」",
+  "themeMode": "テーマモード",
+  "thisIsFrustrating": "これはイライラする",
+  "toYouSomeday": "いつか、君へ",
+  "torrentFiles": "トレントファイル",
+  "tracks": "収録曲",
+  "unlockOrientation": "向きを解除",
+  "userAgent": "User-Agent",
+  "videoQuality": "映像品質",
+  "videoServers": "ビデオサーバー",
+  "vs": "VS",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "一緒に観る（室内）",
+  "webtoon": "ウェブトゥーン",
+  "n0MeansAutomaticThreadCount": "0は自動糸数カウントを意味します",
+  "n18Content": "18歳以上向けコンテンツ",
+  "aboveAverageSimilarity": "平均以上の類似度。",
+  "account": "アカウント",
+  "activityStats": "アクティビティと統計",
+  "add": "追加",
+  "additionalNotesOptional": "補足（任意）",
+  "adjustKeyVolumeScrollingSpeed": "キーと音量のスクロール速度を調整する",
+  "alpha": "アルファ",
+  "alwaysChecksCurrentChapterNumberAnd": "常に現在の章番号を確認し、それと前後の章番号を比較して、番号が異なる場合にのみ移動します。「章単位で移動」では、重複がある場合でも、リスト内の次の項目に移動するだけです。",
+  "animeCompleted": "アニメ（完結済み）",
+  "announcementMode": "告知モード",
+  "appIsStillLoadingTryAgain": "アプリの読み込み中です。しばらくしてからもう一度お試しください。",
+  "applyAColorTintOverPages": "ページ全体に色合いを適用する",
+  "audioDelay": "オーディオの遅延",
+  "audioSettings": "オーディオ設定",
+  "audioTrack2": "音声トラック",
+  "autoAdvance": "自動送り",
+  "autoDeleteCompletedEntries": "完了したエントリを自動削除する",
+  "autoSyncProgress": "進捗状況の自動同期",
+  "automaticallyMoveToNextText": "自動的に次のテキストへ移動する",
+  "automaticallyScrollAdvancePages": "ページを自動的にスクロール／めくる",
+  "automaticallySwitchToContinuousModeFor": "長編漫画の場合は、自動的に連続表示モードに切り替わります",
+  "averageOverlap": "平均オーバーラップ。",
+  "background": "背景",
+  "basedOnYourFavouriteAnime": "お気に入りのアニメを基にしています。",
+  "basedOnYourFavouriteManga": "お気に入りの漫画を原作としています。",
+  "basedOnYourTop10Manga": "あなたの漫画タグ上位10件に基づいて。",
+  "basedOnYourTop5Manga": "あなたの好きな漫画ジャンルトップ5に基づいて。",
+  "blue": "青",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "Bridgeのアップデートが利用可能になりました",
+  "brightness": "明るさ",
+  "bulletList": "箇条書き",
+  "calendarUpper": "カレンダー",
+  "canadianMovies": "カナダ映画",
+  "canadianShows": "カナダの番組",
+  "cannotCompareTheSameProfileWith": "同じプロファイルをそれ自体と比較することはできません。",
+  "castToDevice2": "デバイスへのキャスト",
+  "chatModeration": "チャットのモデレーション",
+  "chooseASubtitleFileFromYour": "お使いのデバイスから字幕ファイルを選択してください（.srt、.vtt、.ass、.ssa）",
+  "chooseHowToApplyTheSelected": "選択したJSONファイルをAnymeXクラウドgistにどのように適用するかを選択してください。",
+  "chromaUpscaler": "Chroma アップスケーラー",
+  "cloudTools": "クラウドツール",
+  "code": "コード",
+  "commonFavouriteAnime": "みんなのお気に入りのアニメ",
+  "commonFavouriteCharacters": "よく挙げられる人気キャラクター",
+  "commonFavouriteManga": "みんなに人気の漫画",
+  "commonPerfectAnime": "定番の完璧なアニメ",
+  "commonPerfectManga": "『コモン・パーフェクト』のマンガ",
+  "communityAdministratorOverseeingModerationAndPolicies": "モデレーションやポリシーの管理を担当するコミュニティ管理者。",
+  "connectGithubFirstBeforeDeletingSync": "同期データを削除する前に、まずGitHubに接続してください。",
+  "connectGithubFirstToExportSync": "同期データをエクスポートするには、まずGitHubを接続してください。",
+  "connectGithubFirstToImportSync": "同期データをインポートするには、まずGitHubを接続してください。",
+  "connectGithubFirstToSyncProgress": "まずGitHubを接続して、進捗状況を同期してください。",
+  "connectGithubFirstToViewSync": "同期されたgistを表示するには、まずGitHubを接続してください。",
+  "continuousModeOnly2": "連続モードのみ",
+  "controls": "操作方法",
+  "cookiesClearedSuccessfully": "クッキーの削除に成功しました",
+  "copied": "コピーしました",
+  "copyUrl": "URLをコピー",
+  "correctDownscaling": "正しいダウンスケーリング",
+  "couldNotLoadStreamingServicesFrom": "AniList API からストリーミングサービスを読み込めませんでした。\n サービスが一時的に利用できないか、アクセス制限がかかっている可能性があります。",
+  "couldNotOpenGistInBrowser": "ブラウザでgistを開くことができませんでした。",
+  "created": "作成日",
+  "creatorAndDeveloperOfAnymex": "AnymeXの考案者兼開発者。",
+  "customBrightness": "明るさのカスタマイズ",
+  "customizeGestures": "ジェスチャーをカスタマイズする",
+  "deband": "バンドを外す",
+  "debandIterations": "デバンドの反復処理",
+  "debandThreshold": "デバンド閾値",
+  "decreaseAutoScrollSpeed": "自動スクロールの速度を下げる",
+  "decreaseFontSize": "文字サイズを小さくする",
+  "deleteAnymexSyncGist": "AnymeX Sync Gist を削除しますか？",
+  "deleteCloudGist": "Cloud Gist を削除",
+  "deleteCommentMod": "コメントを削除（モデレーター）",
+  "details": "詳細",
+  "dictionary": "辞書",
+  "differenceFromOwnMeanScore": "自身の平均スコアとの差",
+  "disableChat": "チャットを無効にする",
+  "disconnectThisGithubAccountFromAnymex": "この GitHub アカウントを AnymeX から切り離す",
+  "displayPagesInBlackWhite": "ページを白黒で表示する",
+  "downloading": "ダウンロード中…",
+  "downscaler": "ダウンスケーラー",
+  "dynamicWidget": "動的ウィジェット",
+  "eInkDisplayRefresh": "E-inkディスプレイのリフレッシュ",
+  "eGAbc123": "例：ABC123",
+  "eGMyAnimeLogo": "例：My Anime Logo",
+  "editYourComment": "コメントを編集する...",
+  "embeddedContent": "埋め込みコンテンツ",
+  "enterTheRoomPassword": "部屋のパスワードを入力してください",
+  "enterTokenHere": "ここにトークンを入力してください",
+  "error": "エラー",
+  "exitSyncNotifications": "同期通知を終了する",
+  "exportGistJson": "GistのJSONをエクスポート",
+  "exportedGistJson": "gistのJSONをエクスポートしました。",
+  "failedToExportGistJson": "gistのJSONのエクスポートに失敗しました。",
+  "failedToFetchDataFromSources": "ソースからのデータ取得に失敗しました。",
+  "failedToGetCloudGistLink": "クラウドのGistリンクの取得に失敗しました。",
+  "failedToImportGistJson": "gistのJSONのインポートに失敗しました。",
+  "failedToLaunchExternalPlayer": "外部プレーヤーの起動に失敗しました",
+  "failedToOpenGistInBrowser": "ブラウザでgistを開くことができませんでした。",
+  "flashDuration": "フラッシュの持続時間",
+  "flashEveryNPages": "Nページごとにフラッシュ表示",
+  "flashFrequency": "点滅頻度",
+  "flashScreenOnPageTurnTo": "ページをめくった際にフラッシュ画面を表示して、残像を消す",
+  "followHost": "ホストをフォローする",
+  "fontSettings": "フォント設定",
+  "freedomSeek": "自由を求める",
+  "friendsNeedAPasswordToJoin": "友達が参加するにはパスワードが必要です",
+  "githubClientIdNotConfigured": "GitHubクライアントIDが設定されていません。",
+  "githubLoginFailedMissingAuthorizationCode": "GitHubへのログインに失敗しました：認証コードがありません。",
+  "githubLoginWasCancelledOrFailed": "GitHubへのログインがキャンセルされたか、失敗しました。",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • 愛を伝えよう",
+  "goodChemistryAndSharedTaste": "相性が良く、趣味も合う。",
+  "grayscale": "グレースケール",
+  "green": "グリーン",
+  "hdrToneMappingTargetPeak": "HDRトーンマッピングのターゲットピーク",
+  "higherValueIncreasesDebandingStrength": "値が高くなると、デバンディング強度が向上する",
+  "horizontalPadding": "水平方向のパディング",
+  "hoursWatched": "視聴時間",
+  "howManyFriendsCanJoin": "何人の友達が参加できますか",
+  "ifYouHaveAnIssueOr": "問題やご提案がございましたら、GitHubでイシューを作成してください。",
+  "imageWidth": "画像の幅",
+  "importGistJson": "GistのJSONをインポートする",
+  "importLocalSubtitle": "ローカルの字幕をインポートする",
+  "improveQualityWhenScalingDownVideo": "動画を縮小する際の画質を向上させる",
+  "increaseAutoScrollSpeed": "自動スクロールの速度を上げる",
+  "increaseFontSize": "文字サイズを大きくする",
+  "invalidCompatibilityLinkMissingUsernames": "無効な互換性リンク：ユーザー名が欠落しています。",
+  "invalidGistUrl": "GistのURLが無効です。",
+  "invalidRoomCodeInLink": "リンク内の部屋番号が無効です",
+  "invalidWatchTogetherLink": "「一緒に視聴」リンクが無効です",
+  "invertAllPageColors": "ページのすべての色を反転する",
+  "invertColors": "色を反転",
+  "inviteLink": "招待リンク",
+  "inviteLinkCopied": "招待リンクがコピーされました！",
+  "jDramas": "日本のドラマ",
+  "joinNotifications": "参加通知",
+  "kDramas": "韓国ドラマ",
+  "keepBothUploadedAndCloudEntries": "アップロードされたエントリとクラウド上のエントリの両方を保持します。両方に同じエントリが存在する場合、新しい方が保持されます。（推奨）",
+  "keyVolumeScrollingSpeed": "キーとボリュームのスクロール速度",
+  "koreanMovies": "韓国映画",
+  "leaveNotifications": "通知をオフにする",
+  "liveComments": "ライブコメント",
+  "lockScreen": "ロック画面",
+  "loginToAnilist": "AniListにログインする",
+  "loginToMyanimelist": "MyAnimeListにログインする",
+  "loginToSimkl": "Simklにログインする",
+  "longPressForPageActions": "長押しでページ操作を行う",
+  "longPressAPageToSave": "ページを長押しすると、保存、共有、またはコピーができます",
+  "lumaUpscaler": "Luma アップスケーラー",
+  "mangaCompleted": "完結した漫画",
+  "mangaPage": "漫画のページ",
+  "maxMembers": "Maxの会員数",
+  "memberLeft": "メンバーが退会しました",
+  "mergeUploadedEntriesOrReplaceCloud": "アップロードされたエントリを統合するか、クラウド上のデータを上書きする",
+  "mergeWithCloud": "クラウドとの統合",
+  "milliseconds": "ミリ秒",
+  "missingTypeQueryParameterUseType": "クエリパラメータ「type」が指定されていません。type=player を指定してください。",
+  "missingUrlQueryParameterForThe": "テーマのJSONに「url」クエリパラメータが欠落しています。",
+  "moreIterationsStrongerDebanding": "反復回数が多ければ多いほど、デバンディング効果が強くなる",
+  "movies": "映画",
+  "moviesList": "映画一覧",
+  "navigateByNumber": "番号順に閲覧する",
+  "navigation": "ナビゲーション",
+  "newMember": "新規会員",
+  "nextChapter": "次の章",
+  "nextParagraph": "次の段落",
+  "noAudio": "音声なし",
+  "noOneCanSendMessagesIn": "チャットでは誰もメッセージを送信できません",
+  "noStreamUrlAvailable": "ストリームのURLが見つかりません",
+  "noSubtitle": "字幕なし",
+  "noVideo": "動画はありません",
+  "notVeryCompatibleAtAll": "まったく相性が良くない。",
+  "numberedList": "番号付きリスト",
+  "onScreenOverlays": "画面上のオーバーレイ",
+  "onlyHostAndCoHostsCan": "メッセージを送信できるのは、ホストと共同ホストのみです",
+  "opacity": "不透明度",
+  "openInBrowser2": "ブラウザで開く",
+  "openYourAnymexSyncGistOn": "GitHubでAnymeXの同期用gistを開く",
+  "openingInExternalPlayer": "外部プレーヤーで開きます...",
+  "orTypeCustomTag": "または、カスタムタグを入力してください...",
+  "otherUpper": "その他",
+  "overlayPosition": "オーバーレイの位置",
+  "overrideSystemScreenBrightness": "システムの画面輝度を上書きする",
+  "ownerAndCreatorOfTheCommentum": "Commentumコミュニティプラットフォームのオーナー兼創設者。",
+  "padding": "パディング",
+  "pagesAheadOfTimeForFaster": "読み込みを高速化するために、ページを事前に読み込む",
+  "partySettings": "パーティーの設定",
+  "passwordIfRequired": "パスワード（必要な場合）",
+  "pasteDirectGifOrImageUrl": "GIFや画像のURLを直接貼り付けてください...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • カードとPayPal残高",
+  "permanentlyRemoveAnymexSyncData": "AnymeXの同期データを完全に削除する",
+  "pictureShaders": "画像とシェーダー",
+  "pitch": "ピッチ",
+  "playbackIsLockedToTheHost": "再生はホストに固定されています",
+  "playbackSpeed2": "再生速度",
+  "playerSettings2": "プレイヤー設定",
+  "pleaseLogInFirstThenTry": "まずログインしてから、もう一度リンクを試してみてください。",
+  "pointsBreakdown": "ポイントの内訳",
+  "practicallyMadeForEachOther": "まさに互いにぴったりの組み合わせだ。",
+  "preloadPage": "ページの事前読み込み",
+  "preloadPages": "ページのプリロード",
+  "preloadPagesAheadOfTimeFor": "読み込みを高速化するために、事前にページをプリロードする（ネットワーク通信量とRAMの使用量が増加します）",
+  "preventScreenFromSleepingWhileReading": "読書中に画面がスリープ状態にならないようにする",
+  "previousChapter": "前の章",
+  "previousParagraph": "前の段落",
+  "privateRoom": "個室",
+  "profileUpdated": "プロフィールが更新されました",
+  "proportionOfTotalTimeWatched": "総視聴時間に占める割合",
+  "provideAReasonForThisAction": "この措置の理由を説明してください…",
+  "qualitySettings": "品質設定",
+  "quote": "引用",
+  "range75DarkestTo100": "範囲：-75（最も暗い）から100",
+  "rateLimited": "レート制限あり",
+  "reactionOverlay": "反応オーバーレイ",
+  "readStats": "統計を見る",
+  "readTextAloud": "テキストを音声で読み上げる",
+  "red": "赤",
+  "reduceColorBandingInGradients": "グラデーションの色の縞模様を軽減する",
+  "reduceHaloingWhileUpscaling": "アップスケーリング時のハロー現象を低減する",
+  "refresh": "更新",
+  "removeCurrentCloudEntriesAndReplace": "現在のクラウド上のエントリを削除し、アップロードしたファイルに置き換えてください。",
+  "removeWhiteBlackBordersToMaximize": "白または黒の枠を削除して、コンテンツを最大限に表示する",
+  "removesFinishedMediaFromCloudGist": "クラウドのgistから完成したメディアを削除します",
+  "replaceCloudGist": "Cloud Gist を置き換える",
+  "report": "レポート",
+  "resetReLogin": "リセットして再ログイン",
+  "resetTo1": "1×にリセット",
+  "restore": "復元",
+  "roomAccess": "部屋の入室",
+  "roomCode": "部屋番号",
+  "roomCodeCopiedToClipboard": "ルームコードがクリップボードにコピーされました",
+  "roomDuration": "部屋の利用時間",
+  "roomNotFoundOrExpired": "その部屋が見つかりません、または有効期限が切れています",
+  "roomPassword": "部屋のパスワード",
+  "roomPassword2": "部屋のパスワード",
+  "roomSettings": "部屋の設定",
+  "saveYourCurrentCloudProgressTo": "現在のクラウド上の進行状況をファイルに保存する",
+  "scrollMultiplier": "スクロール倍率",
+  "scrollSpeed": "スクロール速度",
+  "searchAnimeEpisode": "アニメ／エピソードを検索...",
+  "searchAnimeGifsReactions": "アニメのGIFやリアクションなどを検索…",
+  "searchChapters": "章を検索...",
+  "searchFiles": "ファイルを検索...",
+  "secondsPerPageScreen": "1ページ／画面あたりの秒数",
+  "seekAndControlPlaybackFreely": "再生を自由に検索・制御",
+  "selectedFileMustContainAJson": "選択したファイルには、JSONオブジェクトが含まれている必要があります。",
+  "selectedJsonHasNoValidSync": "選択されたJSONには、有効な同期エントリがありません。",
+  "seriesList": "シリーズ一覧",
+  "setAPasswordForYourRoom": "お部屋のパスワードを設定してください",
+  "share": "シェア",
+  "showANotificationWhenSomeoneJoins": "誰かがパーティーに参加したときに通知を表示する",
+  "showANotificationWhenSomeoneLeaves": "誰かがパーティーを離れる際に通知を表示する",
+  "showAllStreams": "すべてのストリームを表示",
+  "showChatMessagesOnThePlayer": "チャットメッセージが届くたびに、プレーヤー上に表示する",
+  "showEmojiReactionsFloatingOnThe": "プレーヤーの上に浮かぶ絵文字のリアクションを表示する",
+  "showSyncResultWhenPlayerOr": "プレーヤーまたはリーダーが閉じられた際に、同期結果を表示する",
+  "showTransitionPageEvenWhenChapters": "章が隣接している場合でも、遷移ページを表示する",
+  "shows": "番組",
+  "sigmoidUpscaling": "S字型アップスケーリング",
+  "smootherGradientsWithSlightTemporalNoise": "わずかな時間的ノイズを伴う、より滑らかなグラデーション",
+  "spacing": "間隔",
+  "speechSpeed": "話し方のスピード",
+  "spoilers": "ネタバレ",
+  "stretchImagesToFitScreenWidthOn": "ワイドスクリーンでは、画像を画面の幅に合わせて引き伸ばす",
+  "subtitleSettings": "字幕設定",
+  "superAdministratorWithSystemWideManagement": "システム全体の管理権限を持つスーパー管理者。",
+  "swapUpDownActions2": "「上へ」「下へ」の操作",
+  "syncMode": "同期モード",
+  "syncPreferences": "同期設定",
+  "tapScrollAmount": "「スクロール量」をタップ",
+  "tapToOpen": "タップして開く",
+  "tapToOpenInBrowser": "タップしてブラウザで開く",
+  "tapToOpenInSpotify": "タップしてSpotifyで開く",
+  "tapToViewInBrowser": "タップしてブラウザで開く",
+  "tapTopBottomToScroll": "上または下をタップしてスクロールしてください",
+  "targetPeak": "目標ピーク",
+  "temporalDither": "時間ディザ",
+  "textToSpeech": "テキスト読み上げ",
+  "theCreatorOfThisCommentDiscussion": "このコメントスレッドの作成者。",
+  "theresASmallSparkOfAgreement": "ほんの少しばかり、意見が一致する兆しが見える。",
+  "thisPermanentlyDeletesYourAnymexCloud": "これにより、GitHub上のAnymeXクラウドの進捗ギストが完全に削除され、この操作は元に戻せません。",
+  "toPrevNextChapter": "前の章／次の章へ",
+  "topL": "トップ-L",
+  "topR": "トップ-R",
+  "totals": "合計",
+  "trendingMovies": "注目の映画",
+  "trendingSeries": "注目のシリーズ",
+  "tts": "TTS",
+  "ukMovies": "英国映画",
+  "ukShows": "英国の番組",
+  "unableToReadSelectedJsonFile": "選択したJSONファイルを読み込めません。",
+  "unsupportedExtension": "サポートされていない拡張機能",
+  "usMovies": "アメリカの映画",
+  "usShows": "米国の番組",
+  "useVolumeButtonsToScroll": "音量ボタンを使ってスクロールしてください",
+  "userHistory": "利用履歴",
+  "userInfo": "ユーザー情報",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "コメントが礼儀正しく、安全な状態を保つよう管理している、認証済みのモデレーターです。",
+  "verticalPadding": "垂直方向のパディング",
+  "viewCloudGist": "Cloud Gist を表示",
+  "viewUserHistory": "ユーザー履歴を表示",
+  "viewUserInfo": "ユーザー情報を表示",
+  "voice": "音声",
+  "watchParty": "視聴会",
+  "watchStats": "視聴統計",
+  "watchingNow": "現在視聴中",
+  "webmVideo": "WebM動画",
+  "whereLiveCommentsAppearOnScreen": "画面上にライブコメントが表示される場所",
+  "whileWatchingEpisodesOrReadingChapters": "エピソードを観たり、章を読んだりしながら",
+  "writeAReply": "返信を書く...",
+  "youAreBasicallyTheSamePerson": "基本的には、あなたも同じような人です。",
+  "youBothHaveVerySimilarTaste": "お二人の趣味はすごく似ていますね。",
+  "all2": "← すべて",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "スタイリング",
+  "upscale": "高級",
+  "appearanceStyle": "外観とスタイル",
+  "colorsLightDarkOledLogoAnimations": "色、明暗、OLED、ロゴのアニメーション",
+  "fontsTypography": "フォントとタイポグラフィ",
+  "chooseTypographyCustomFontsGlobalText": "タイポグラフィ、カスタムフォント、および全体的なテキストの拡大縮小を選択する",
+  "globalFontScaling": "グローバルフォントスケーリング",
+  "scaling": "スケーリング",
+  "typefaces": "書体",
+  "interfaceLayout": "インターフェースとレイアウト",
+  "navBarCardStylesDetailsBlur": "ナビゲーションバー、カードスタイル、詳細部分のぼかし、レイアウト",
+  "navigationHomeLayout": "ナビゲーションとホーム画面のレイアウト",
+  "playbackEngineSubtitlesGesturesDecoders": "再生エンジン、字幕、ジェスチャー、デコーダー",
+  "mangaNovelReader": "漫画・小説リーダー",
+  "readingModesDirectionColorsTapZones": "読み取りモード、方向、色、タップゾーン",
+  "dataNetworkSystem": "データ、ネットワーク、システム",
+  "downloadDirectoryConcurrencyHlsSegments": "ダウンロードディレクトリ、同時実行、およびHLSセグメント",
+  "accountsSocial": "アカウントとソーシャルメディア",
+  "trackingAccounts": "アカウントの追跡",
+  "manageYourAnilistMyanimelistSimklAccounts": "AniList、MyAnimeList、Simklのアカウントを管理する",
+  "trackingBehavior": "行動の追跡",
+  "communityComments": "コミュニティとコメント",
+  "commentumProfileBadgesMarkdownPrivacy": "Commentumのプロフィール、バッジ、マークダウン、プライバシー",
+  "contentPreferences": "コンテンツと設定",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "NSFWフィルター、統合ライブラリ、おすすめ機能、リスト",
+  "exportAndRestoreYourLibraryAnd": "ライブラリと設定のエクスポートと復元",
+  "manageAnimeMangaNovelSourcesAnd": "アニメ、マンガ、小説のソースとリポジトリを管理する",
+  "installAndUpdateCommunityAddOns": "コミュニティアドオンのインストールと更新",
+  "storageCache": "ストレージとキャッシュ",
+  "manageCachedImagesThresholdsResetData": "キャッシュされた画像、しきい値、およびリセットデータの管理",
+  "networkProxy": "ネットワークとプロキシ",
+  "logsDiagnostics": "ログと診断情報",
+  "inspectExportAndShareApplicationLogs": "アプリケーションログの確認、エクスポート、共有",
+  "aboutSupport": "「About」と「サポート」",
+  "supportDevelopmentViaKoFiPaypal": "Ko-fi、PayPal、UPIを通じて開発を支援してください",
+  "versionUpdatesSocialLinksLegalPolicies": "バージョン、更新情報、ソーシャルメディアへのリンク、および法的方針",
+  "cacheAndCookiesClearedFor": "{name} のキャッシュとクッキーを削除しました",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "{name} のクッキーが削除されました",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "{name} のキャッシュをクリアしました",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "サポートされていない型 {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "{name}の設定",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "{apkPath} にローカルファイルが見つかりません",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "同期に失敗しました：{e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "{localPath} にローカル APK が見つかりません",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "エラー：{e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "プラグインのインストールに失敗しました：{error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "「{query}」の検索結果は見つかりませんでした",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "シーズン {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "エピソード{i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title}ニュース",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "コミュニティ",
+  "logInWithAnilist": "AniListでログイン",
+  "episode2": "エピソード{number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "ダウンロードが完了しました",
+  "downloadFailedHasNoUrl": "ダウンロードに失敗しました：{chapterDisplay} に URL がありません",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "ダウンロードに失敗しました：{chapterDisplay} に対応するページが見つかりませんでした",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "ダウンロードに失敗しました：{chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "エピソード{epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count}文字",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count}話",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "ソース「{extensionName}」が見つかりません。",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "トレントの準備に失敗しました：{e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display}は、ダウンロード一覧から完全に削除されます。",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "検索に失敗しました：{e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "{label} で「{title}」を検索…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount}件の履歴項目が削除されました",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "{_historyLabel} から「{itemName}」を削除しますか？",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "「{itemName}」を削除しました",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "昇順",
+  "descending": "降順",
+  "defaultTabOrder": "デフォルトのタブ順序",
+  "reverseTabs": "タブを反転",
+  "id": "ID：{mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "タイプ：{type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "アイテム数：{length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "まず{sourceName}をインストールしてから、クリックしてください",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "PAGE {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "{value}を検索...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "完了（{length}件を選択）",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "閲覧可能：",
+  "streamingOn": "配信中",
+  "freedom": "自由",
+  "shaderAdded": "シェーダーが追加されました：{fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "シェーダーのインポート中にエラーが発生しました：{e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "スキャンレーター",
+  "chapterRange": "章の範囲",
+  "downloadFailed2": "ダウンロードに失敗しました：{errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "第{formattedNumber}章がダウンロードされました",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "ダウンロード中 ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length}章",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "{pageNumber}ページを読み込み中{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "ページが「Pictures/AnymeX」に保存されました",
+  "pageSavedToAnymex": "ページが {path}/AnymeX に保存されました",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "ページの保存に失敗しました：{e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "ページの共有に失敗しました：{e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "ページのURLがクリップボードにコピーされました",
+  "failedToCopy": "コピーに失敗しました：{e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "ページを読み込んでいます...",
+  "goBack": "戻る",
+  "loadingPage2": "ページを読み込み中 {value} {progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "フラッシュカラー",
+  "black": "黒",
+  "white": "白",
+  "readerBackground": "読者の背景",
+  "gray": "グレー",
+  "automatic": "自動",
+  "noneNearestNeighbor": "なし（最近傍法）",
+  "lowBilinear": "低（双線形）",
+  "mediumDefault": "中（デフォルト）",
+  "highBicubic": "高（バイキュービック）",
+  "lanczosPreScaleBestQualitySlower": "Lanczos プリスケール（最高品質、処理速度は遅い）",
+  "fullscreenPreview": "全画面プレビュー",
+  "enhancementPreset": "エンハンスメントプリセット",
+  "fineTuning": "微調整",
+  "enhancementStrength": "強化強度",
+  "strength": "{value}％の強度",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "アーティファクトの抑制",
+  "cleanJpegCompressionRingingAroundLinework": "線画の周囲に見られるJPEG圧縮によるリングノイズ",
+  "cache": "キャッシュ",
+  "cacheSize": "キャッシュサイズ",
+  "mbStoredOnDisk": "{mb}MBがディスクに保存されています",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "超解像",
+  "loadingChapter": "章を読み込み中...",
+  "noContentAvailable": "コンテンツはありません",
+  "recommendations": "{reasonCount}件のおすすめ",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "のおすすめ",
+  "all3": "すべて（{length}）",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "メッセージの投稿に失敗しました：{e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "応募総数：{total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "{code} ルームに参加しました！",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "利用中の部屋",
+  "joinWithCode": "Codeに参加する",
+  "leftRoom": "部屋を出た",
+  "leaveReset": "終了 / リセット",
+  "inRoom": "室内：{code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - 第{value2}話",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} をキックしました",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}／{maxMembers}名のメンバー",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "部屋を出た",
+  "leave": "退室",
+  "noActiveRooms": "利用中の部屋はありません",
+  "roomsWillAppearHereWhenSomeone": "誰かが部屋を作成すると、ここに表示されます",
+  "created2": "作成日 · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "参加する →",
+  "full": "全文",
+  "savedToPicturesAnymex": "「写真」/「AnymeX」/{fileName}に保存されました",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "「ダウンロード」フォルダ内の「AnymeX」フォルダに{fileName}として保存されました",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "{path}/AnymeX に保存されました",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}：@{username}（タップしてプロフィールを開く）",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "章 ",
+  "episode5": "エピソード ",
+  "noData": "{title}（データなし）",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "{title}の拡張子を検索...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "拡張機能を閲覧する",
+  "goToHome": "ホームへ",
+  "fetching": "{title}を取得中...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "ポリシーの取得中にエラーが発生しました：{e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "「{name}」の追加に成功しました！",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "「{name}」の更新に成功しました！",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "「{name}」を削除してもよろしいですか？",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "「{name}」を削除しました",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "履歴は空です",
+  "episode6": "エピソード{value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "表示を縮小",
+  "readMore": "続きを読む",
+  "unpin": "ピン留めを解除",
+  "pinActivity": "ピンの動き",
+  "n1Recommendation": "1 件のおすすめ",
+  "recommendations2": "{count}件のおすすめ",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "送信中…",
+  "addRecommendation": "おすすめを追加",
+  "submitRecommendation": "推薦を送信する",
+  "currentProvider": "現在のプロバイダー",
+  "profileStatsUserActivities": "プロフィール統計とユーザーの活動状況",
+  "manageSourcesPlugins": "ソースとプラグインの管理",
+  "savedOfflineEpisodesChapters": "オフラインで保存されたエピソードとチャプター",
+  "watchVideoFilesFromDeviceStorage": "デバイスのストレージにある動画ファイルを再生する",
+  "syncWatchPartyWithFriends": "友達と「ウォッチパーティー」を同期する",
+  "pauseWatchHistoryAndSync": "視聴履歴と同期を一時停止する",
+  "appearancePlayerNetwork": "外観、プレイヤー、ネットワーク",
+  "joining": "接続中...",
+  "joinRoom": "ルームに参加する",
+  "shareTheCodeOrInviteLink": "コードや招待リンクを友達と共有しましょう。",
+  "roomCreated": "部屋が作成されました！",
+  "shareThisCodeWithFriends": "このコードを友達と共有しましょう：",
+  "copyCode": "コードをコピー",
+  "copyLink": "リンクをコピー",
+  "leaveWatchTogether": "「Watch Together」を離れる？",
+  "removeMember": "メンバーを削除",
+  "transferHost": "転送ホスト",
+  "transferHost2": "転送ホスト",
+  "transfer": "移籍",
+  "removeMember2": "メンバーを削除する",
+  "removeFromThisWatchParty": "このウォッチパーティーから{username}を削除しますか？",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount}／{maxMembers}名のメンバー",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label}がコピーされました",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "この部屋には利用可能なサーバーがありません",
+  "selectStreamingServerQualityToWatch": "視聴するストリーミングサーバーの画質を選択してください",
+  "thisServerHasNoPlayableUrl": "このサーバーには再生可能なURLがありません",
+  "episode7": "エピソード{episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "{start}から{end}までの章を基に作成",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh}は{releaseDate}に公開予定",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP{value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "エピソード {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MALリストのエクスポート先：\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniListのXMLを\n{savedPath}にエクスポートしました",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "エクスポートに失敗しました：{value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "{value}リストをエクスポートしています...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "{value}のXMLをエクスポート",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "再生可能なメディアがありません",
+  "noThemesFound": "該当するテーマが見つかりませんでした",
+  "playAll": "すべて再生",
+  "theDawnOfHumanity": "人類の夜明け",
+  "orientationUnlocked": "オリエンテーションのロック解除",
+  "orientationLocked": "向きが固定されています",
+  "skippedOpening": "オープニングをスキップ",
+  "skippedEnding": "省略された結末",
+  "skippedRecap": "省略された要約",
+  "ifYouSeeBlackScreenUse": "画面が真っ暗な場合は、外部プレーヤーを使用して視聴してください",
+  "failedToStartTorrentStream": "トレントストリームの起動に失敗しました：{e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "ストリームを開くことができませんでした。別のサーバーをお試しください",
+  "noServersFoundForThisEpisode": "このエピソードに対応するサーバーが見つかりませんでした。",
+  "failedToLoadEpisodeCheckYour": "エピソードの読み込みに失敗しました。インターネット接続を確認してください。",
+  "playing": "{value}を再生中",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "トレントファイルの切り替えに失敗しました：{e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "字幕を読み込みました：{fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "字幕の読み込み中にエラーが発生しました：{e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "字幕が破損しています！",
+  "preTranslatingSubtitles": "字幕の事前翻訳中...",
+  "preTranslationFailedUsingRealTime": "事前翻訳に失敗したため、リアルタイムのフォールバックを使用しています",
+  "preTranslationErrorUsingRealTime": "翻訳前のエラー、リアルタイムのフォールバックを使用中",
+  "corruptedQuality": "品質が劣化している！",
+  "colorProfilesOnlyAvailableWithMediakit": "カラープロファイルは、MediaKitプレーヤーでのみ利用可能です",
+  "x": "{value}×",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "デフォルトで、動画ストリームを外部プレーヤーで開く",
+  "quickDefaults": "クイックデフォルト",
+  "orientationSpeedResizeModeExternalPlayer": "オリエンテーション、再生速度、サイズ変更モード、および外部プレーヤー",
+  "controlsGestures": "操作とジェスチャー",
+  "subtitlesTranslation": "字幕・翻訳",
+  "languagesFontsStylingLibassTranslation": "言語、フォント、スタイル、libass、および翻訳",
+  "anime4kShaders": "Anime4K とシェーダー",
+  "upscalingShadersPresetsProfiles": "シェーダー、プリセット、プロファイルのアップスケーリング",
+  "engineAdvanced": "エンジン＆アドバンスト",
+  "addSpeed": "スピードアップ",
+  "speedPresets": "速度プリセット",
+  "rememberAsDefaultSpeed": "デフォルトの速度として記憶する",
+  "loadedSubtitle": "読み込まれた字幕：{name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "字幕のダウンロードに失敗しました：{e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "ルームコード",
+  "episodeReleasesIn": "エピソード{value}が公開されます",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "未定（{length}）",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "コメントするにはログインする必要があります",
+  "readFullRules": "ルール全文を読む",
+  "acceptPost": "「同意して投稿」",
+  "youNeedToBeLoggedIn2": "返信するにはログインする必要があります",
+  "commentCopiedToClipboard": "コメントがクリップボードにコピーされました",
+  "spam": "スパム",
+  "offensive": "攻撃的",
+  "harassment": "ハラスメント",
+  "offTopic": "話題から外れる",
+  "failedToLoadUserInfo": "ユーザー情報の読み込みに失敗しました。",
+  "noUserDataFound": "ユーザーデータが見つかりませんでした。",
+  "viewHistory": "履歴を表示",
+  "failedToLoadComments": "コメントの読み込みに失敗しました。",
+  "noCommentsFound": "コメントは見つかりませんでした。",
+  "deleted2": "削除済み",
+  "comment": "コメント",
+  "failedToLoadUserHistory": "ユーザーの履歴を読み込めませんでした。",
+  "noHistoryFound": "履歴が見つかりませんでした。",
+  "youNeedToBeLoggedIn3": "コメントを編集するには、ログインする必要があります",
+  "commentCannotBeEmpty": "コメントは空欄にできません",
+  "failedToLoadCommentsPleaseTry": "コメントの読み込みに失敗しました。もう一度お試しください。",
+  "commentsLoaded": "{value}件のコメントを読み込みました",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "コメントの更新に失敗しました。もう一度お試しください。",
+  "invalidParentCommentId": "親コメントのIDが無効です",
+  "replyPostedSuccessfully": "返信が正常に投稿されました",
+  "failedToPostReply": "返信の投稿に失敗しました",
+  "failedToPostReplyPleaseTry": "返信の投稿に失敗しました。もう一度お試しください。",
+  "commentPostedSuccessfully": "コメントの投稿に成功しました",
+  "failedToAddCommentPleaseTry": "コメントの追加に失敗しました。もう一度お試しください。",
+  "failedToUpdateVotePleaseTry": "投票の更新に失敗しました。もう一度お試しください。",
+  "invalidCommentId": "コメントIDが無効です",
+  "commentEditedSuccessfully": "コメントの編集に成功しました",
+  "failedToEditComment": "コメントの編集に失敗しました",
+  "commentDeletedSuccessfully": "コメントが正常に削除されました",
+  "failedToDeleteComment": "コメントの削除に失敗しました",
+  "failedToReportComment": "コメントの報告に失敗しました",
+  "failedToModerateComment": "コメントのモデレートに失敗しました",
+  "failedToManageUser": "ユーザーの管理に失敗しました",
+  "pointsRankingIsBasedOnReal": "{username}：{label}（∞ポイント）。ランキングは実際の活動実績（{realPoints}ポイント）に基づいています。",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}：獲得ポイント {realPoints} ＋ {text} の役割ボーナス（{label}）。ランキングは実際の活動実績に基づいて決定されます。",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "エピソード範囲",
+  "episodeIsDownloaded": "エピソード{number}がダウンロードされました",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length}話",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP{formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "『ソロ・レベリング』シーズン2 – 影から立ち上がる",
+  "frierenBeyondJourneySEnd": "『フレイレン：旅の果てを超えて』",
+  "bleachThousandYearBloodWar": "BLEACH：千年の血戦",
+  "cardCustomizer": "カードカスタマイズツール",
+  "presetStyle": "プリセットスタイル",
+  "chooseFrom5AuthenticBuiltIn": "5種類の本格的なビルトインデザインからお選びください",
+  "sizingGeometry": "サイズと形状",
+  "cardSize": "カードのサイズ",
+  "scaleCardsProportionallyWithoutDistortion": "歪みなく、カードを比例的に拡大・縮小する",
+  "landscapeCards": "風景カード",
+  "formatCardsIn169Widescreen": "カードを16:9のワイドスクリーン向きにフォーマットする",
+  "selectPosterImageAspectRatio": "ポスター画像のアスペクト比を選択してください",
+  "titleLines": "タイトル行",
+  "maximumNumberOfTitleLinesDisplayed": "表示されるタイトル行の最大数",
+  "gestureAreas": "ジェスチャー領域",
+  "resetDefault": "初期設定に戻す",
+  "overlay": "オーバーレイ",
+  "volume": "巻数",
+  "brightnessArea": "輝度領域",
+  "overlayAreaTap": "オーバーレイ領域（タップ）",
+  "volumeArea": "体積・面積",
+  "resetToDefaultLayout": "デフォルトのレイアウトにリセット",
+  "moveToSlot": "スロットに移動",
+  "topBar": "トップバー",
+  "bottomLeft": "左下",
+  "bottomRight": "右下",
+  "themesOverlay": "テーマとオーバーレイ",
+  "gesturesSeeking": "ジェスチャーと探索",
+  "horizontalSwipeAcrossTheScreenTo": "画面を横にスワイプして早送り・巻き戻しします",
+  "autoSkipCompletion": "自動スキップと自動補完",
+  "percentageWatchedBeforeMarkingCompleted": "「完了」とマークする前に視聴した割合",
+  "playerControls": "プレイヤーの操作方法",
+  "mpvConfSavedSuccessfully": "mpv.conf の保存に成功しました",
+  "hardwareDrivers": "ハードウェアとドライバー",
+  "systemIntegrations": "システムと連携",
+  "experimentalMpvTuning": "実験的なMPVチューニング",
+  "editMpvConf": "mpv.conf を編集する",
+  "modeA": "モードA",
+  "modeB": "モードB",
+  "modeC": "モードC",
+  "modeAA": "モード A+A",
+  "modeBB": "モード B+B",
+  "modeCA": "モード C+A",
+  "natural": "ナチュラル",
+  "vivid": "鮮やか",
+  "cinema": "映画",
+  "soft": "ソフト",
+  "warm": "暖かい",
+  "cool": "かっこいい",
+  "anime4k": "アニメ 4K",
+  "cinemaHdr": "シネマHDR",
+  "vividPop": "ビビッド・ポップ",
+  "dark": "ダーク",
+  "anime4kEngine": "Anime4Kエンジン",
+  "anime4kShaders2": "Anime4K シェーダー",
+  "devicePerformanceTier": "デバイスのパフォーマンス階層",
+  "midRange": "ミッドレンジ",
+  "highEnd": "ハイエンド",
+  "shaderMode": "シェーダーモード",
+  "colorPreset": "カラープリセット",
+  "desktopPlaybackKeybindings": "デスクトップでの再生用キー割り当て",
+  "customSubtitleFonts": "カスタム字幕フォント",
+  "importedFont": "フォント「{fontName}」をインポートしました",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "「{font}」を削除してもよろしいですか？",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "言語と翻訳",
+  "renderingBehavior": "レンダリングと動作",
+  "disableToAvoidFadeTransitionsBetween": "字幕間のフェード遷移を回避するには、この機能を無効にしてください",
+  "typographyOutline": "タイポグラフィとアウトライン",
+  "adjustSubtitleFontSize": "字幕のフォントサイズを調整する",
+  "adjustSubtitleOutlineThickness": "字幕の輪郭の太さを調整する",
+  "colorsPosition": "色と位置",
+  "changeSubtitleTextColor": "字幕の文字色を変更する",
+  "mangaReader": "マンガリーダー",
+  "layoutDirection": "レイアウト・演出",
+  "autoSwitchToVerticalModeFor": "ウェブトゥーンの表示を自動的に縦向きに切り替える",
+  "imageDisplay": "画像・ディスプレイ",
+  "interfaceSession": "インターフェースとセッション",
+  "mangaControlsGestures": "マンガの操作とジェスチャー",
+  "overscrollToPreviousNextChapter": "スクロールして前の章／次の章へ進む",
+  "automaticallyScrollMangaPages": "漫画のページを自動的にスクロールする",
+  "swapVolumeUpDownActions": "スワップの量を増減する操作",
+  "novelReader": "小説リーダー",
+  "themeDisplay": "テーマと表示",
+  "displayChapterPercentageWhileReading": "読書中に章の進捗率を表示する",
+  "displayStatusInfoInTheNovel": "小説リーダーにステータス情報を表示する",
+  "typographySpacing": "タイポグラフィと余白",
+  "novelControlsGestures": "新しい操作方法とジェスチャー",
+  "tapScreenEdgesToScrollNovel": "画面の端をタップして小説のページをめくってください",
+  "swipeGestures": "スワイプ操作",
+  "volumeKeyScrolling": "音量キーによるスクロール",
+  "useHardwareVolumeButtonsToScroll": "ハードウェアの音量ボタンを使って小説をスクロールする",
+  "automaticallyScrollNovelContent": "小説の本文を自動的にスクロールする",
+  "textToSpeechTts": "テキスト読み上げ（TTS）",
+  "readNovelChaptersAloud": "小説の章を声に出して読む",
+  "speechRate": "発話速度",
+  "voicePitch": "声の高さ",
+  "areYouSureYouWantTo4": "{title} からログアウトしてもよろしいですか？",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "アップデートの確認に失敗しました：{e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name}のインストールが完了しました",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} のインストールに失敗しました：{e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name}の更新に成功しました",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} の更新に失敗しました：{e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "{name} をアンインストールする",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name}がアンインストールされました",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} のアンインストールに失敗しました：{e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} セクションの順序",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "通知と同期",
+  "enableNotifications": "通知を有効にする",
+  "syncAnilistNotificationsWithDeviceNotifications": "AniListの通知をデバイスの通知と同期する",
+  "airingAlerts": "放送に関するお知らせ",
+  "socialAlerts": "ソーシャルアラート",
+  "notifyOnNewFollowers": "新しいフォロワーがいた際に通知する",
+  "activityAlerts": "アクティビティ通知",
+  "syncInterval": "同期間隔",
+  "regionTimezone": "地域とタイムゾーン",
+  "profileBio": "プロフィール・略歴",
+  "backupFailed": "バックアップに失敗しました：{value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "ファイルの選択に失敗しました：{value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "バックアップの読み込みに失敗しました：{value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "復元に失敗しました：{value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount}作品と視聴履歴",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount}の作品と巻",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount}冊のタイトルと読書状況",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} メディアを横断したカスタムリスト",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount}件の登録済み拡張機能エントリ",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount}個の拡張機能ZIPバンドル",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "ヘルプと情報",
+  "libraryContentSafety": "ライブラリとコンテンツの安全性",
+  "homePageLists": "ホームページ一覧",
+  "chooseWhichListsToShowOn": "ホームページに表示するリストを選択してください",
+  "homePageCards": "ホームページのカード（{value}）",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "$animeを鑑賞中",
+  "viewingAnime": "$anime を表示中",
+  "readingManga2": "$mangaを読む",
+  "viewingManga": "$manga を表示中",
+  "readingNovel2": "$novel を読む",
+  "viewingNovel": "$novel を表示中",
+  "upiIdCopied": "UPI ID をコピーしました：{_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "UPI ID（{_upiId}）をコピーする",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • タップしてGPay、PhonePe、Paytmなどを起動してください。",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "ダウンロード通知",
+  "reDownloadFailed": "再ダウンロードに失敗しました：{error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "ロールバックに失敗しました：{error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "リポジトリの追加に失敗しました：{_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "「{fontName}」というフォントが適用されました",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "「{fontName}」のダウンロードに失敗しました",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "「{fontName}」をインポートして適用しました",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "フォントファイルのインポートに失敗しました",
+  "deleted3": "「{fontName}」を削除しました",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "フォントライブラリ",
+  "linotte": "リノッテ",
+  "defaultGeometricRoundedFontDesignedFor": "AnymeX向けにデザインされた、デフォルトの幾何学的な丸ゴシック体",
+  "systemFont": "システムフォント",
+  "useYourDeviceOsDefaultSystem": "お使いのデバイスのOSのデフォルトのシステムフォントを使用してください",
+  "loadYourOwnTtfOrOtf": "独自の .ttf または .otf フォントファイルを読み込む",
+  "pendingReports": "未処理のレポート {length}件",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "クッキーとストレージ",
+  "monitoring": "モニタリング",
+  "fpsMeter": "FPSメーター",
+  "showDraggableRealTimeFpsOverlay": "ドラッグ可能なリアルタイムFPSオーバーレイを表示する",
+  "detectedModesDisplay": "検出モードと表示",
+  "currentDisplayMode": "現在の表示モード",
+  "modes": "{length}モード",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "カスタマイズ",
+  "stylingLibass": "{subLang} • {subFont} • スタイリングとlibass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "ホライズ",
+  "vert": "Vert",
+  "controlsTapZones": "操作方法とタップゾーン",
+  "customizeTapZones": "タップゾーンのカスタマイズ",
+  "configurePagedAndWebtoonTapRegions": "ページ切り替えおよびウェブトゥーンのタップ領域を設定する",
+  "fitBordersSpacing": "{value} • 配置、枠線、余白",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "章のスタイル、ページインジケーター、画面ロック",
+  "overscrollActionsAutoScrollVolume": "オーバースクロール、操作、自動スクロール、音量",
+  "themeTypography": "テーマとタイポグラフィ",
+  "pt": "{value}ポイント",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value}px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "読書モードと表示",
+  "pageModeProgressBatteryIndicator": "ページモード、進行状況、バッテリー残量表示",
+  "readPageByPageInsteadOf": "スクロールするのではなく、ページごとに読む",
+  "displayPercentageInReadingBar": "読み取りバーにパーセンテージを表示する",
+  "displayBatteryAndTimeInReader": "リーダーバーにバッテリー残量と時刻を表示する",
+  "gesturesNavigation": "ジェスチャーとナビゲーション",
+  "tapToScrollSwipeAutoScroll": "タップしてスクロール、スワイプ、自動スクロール、音量調整",
+  "tapEdgesOfScreenToScroll": "画面の端をタップして上下にスクロールします",
+  "swipeHorizontallyToChangeChapters": "横にスワイプして章を切り替えてください",
+  "useVolumeKeysToScroll": "音量キーを使ってスクロールしてください",
+  "textToSpeechTts2": "テキスト読み上げ（TTS）",
+  "textToSpeechReadingSupport": "テキスト読み上げ機能",
+  "speechRate2": "発話速度",
+  "voicePitch2": "声の高さ",
+  "appPostersIconsAvatarsSize": "アプリのポスター、アイコン、アバター。サイズ：{value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "一時的な動画チャンク。サイズ：{value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "ダウンロードしたウェブ小説のページ。サイズ：{value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "ログ、一時ダウンロードファイル。サイズ：{value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "キャッシュのクリアに失敗しました：{e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "工場出荷時設定へのリセットに失敗しました：{e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 または 3F51B5",
+  "motionDisplay": "モーション＆ディスプレイ",
+  "visualEffectsTuning": "ビジュアルエフェクトとチューニング",
+  "historyCard": "履歴カード",
+  "carousel": "カルーセル",
+  "navBar": "ナビゲーションバー",
+  "themeDarkModeLayoutStyling": "テーマ、ダークモード、およびレイアウトのスタイリング",
+  "gesturesSubtitlesVideoSettings": "ジェスチャー、字幕、動画の設定",
+  "settingsTiles": "設定タイル",
+  "oledMode2": "OLEDモード",
+  "primaryAccount": "メインアカウント（{title}）",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "{title}に関連する",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "{title} に接続する",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value}のタイトル",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "「{id}」を削除しますか？ この操作は元に戻せません。",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "読み込み中…",
+  "addJsonFiles": "JSONファイルを追加する",
+  "previousStyle": "以前のスタイル",
+  "nextStyle": "次のスタイル",
+  "currentStyle": "現在のスタイル",
+  "useThisStyle": "このスタイルを使用してください",
+  "pleaseLogInToGetRecommendations": "おすすめ情報をご覧になるには、ログインしてください",
+  "chapter1": "第1章",
+  "deletedSuccessfully": "{value}の削除に成功しました",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simklへのログインに成功しました！",
+  "yepFailed": "うん、失敗した",
+  "userInfoFetchingFailed": "ユーザー情報の取得に失敗しました！",
+  "githubLoginFailed": "GitHubへのログインに失敗しました：{ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "同期はすでに進行中です。",
+  "anotherSyncActionIsAlreadyIn": "別の同期処理がすでに実行中です。",
+  "noAnymexSyncGistFoundTo": "削除対象のAnymeX同期Gistは見つかりませんでした。",
+  "noAnymexSyncGistFoundInitialize": "AnymeXの同期用gistが見つかりませんでした。まず初期化を行ってください。",
+  "githubGistSync": "GitHub Gist 同期",
+  "manage": "管理",
+  "manageGithubGistSync": "GitHub Gist Sync の管理",
+  "joinedTheParty": "{username}さんがパーティーに参加しました",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username}さんがパーティーを離れました",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "ホストが{title}の第{episodeNumber}話に切り替わりました",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "コメントの取得に失敗しました",
+  "errorAddingComment": "コメントの追加に失敗しました",
+  "errorUpdatingVote": "投票の更新に失敗しました",
+  "errorEditingComment": "コメントの編集中にエラーが発生しました",
+  "errorDeletingComment": "コメントの削除に失敗しました",
+  "commentReportedSuccessfully": "コメントの投稿に成功しました",
+  "errorReportingComment": "エラー報告に関するコメント",
+  "errorFetchingReportsQueue": "レポートキューの取得中にエラーが発生しました",
+  "reportResolvedSuccessfully": "レポートは正常に解決されました",
+  "failedToResolveReport": "レポートの解決に失敗しました",
+  "errorResolvingReport": "レポートの解決に失敗しました",
+  "errorFetchingUserInfo": "ユーザー情報の取得に失敗しました",
+  "errorFetchingUserHistory": "ユーザー履歴の取得中にエラーが発生しました",
+  "errorFetchingUserStats": "ユーザー統計情報の取得中にエラーが発生しました",
+  "errorListingUsers": "ユーザーの一覧表示中にエラーが発生しました",
+  "errorSearchingUsers": "ユーザーの検索中にエラーが発生しました",
+  "errorFetchingModerationQueue": "モデレーションキューの取得中にエラーが発生しました",
+  "commentModeratedSuccessfully": "コメントの承認が完了しました",
+  "errorModeratingComment": "コメントのモデレート中にエラーが発生しました",
+  "userManagedSuccessfully": "ユーザーの管理に成功しました",
+  "errorManagingUser": "ユーザーの管理中にエラーが発生しました",
+  "errorGettingInitialDeepLink": "初期のディープリンクの取得に失敗しました：{err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "リンクの開く際にエラーが発生しました：{err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "エラーの詳細をコピー",
+  "whatSNew": "新着情報",
+  "updatedToV": "v{current} に更新されました",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "広告リンクを開くことができませんでした",
+  "newAnilistUpdates": "{length}件のAniListの最新更新情報",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText} \n + {value} 以上",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "デバイスを更新する",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "リポジトリを追加しています…しばらくお待ちください。",
+  "unsupportedThemeTypeSupportedPlayer": "サポートされていないテーマタイプ「{type}」。サポートされているタイプ：player。",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "リンクからプレイヤーテーマを読み込んでいます...",
+  "themeIsInvalid": "テーマが無効です：{first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "テーマのJSONは有効です。{imported} {label} をインポートしました。",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "{code} ルームに参加中...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "ルームへの参加に失敗しました：{err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "{user1} と {user2} の AniMatch 互換性を計算中...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "選択した追跡サービスで共有する",
+  "shareAnymexLink": "AnymeXのリンクを共有する",
+  "opensDirectlyInAnymex": "AnymeXで直接開きます",
+  "newCommentsRepliesAndEdits": "新しいコメント、返信、および編集",
+  "upvotesAndDownvotesOnYourComments": "コメントへの「いいね」と「嫌い」",
+  "warningsMutesBansAndModerationActions": "警告、ミュート、利用停止、およびモデレーション措置",
+  "reportFiledResolvedDismissed": "報告書の提出、解決、却下",
+  "officialAnnouncements": "公式発表",
+  "whenSomeoneMentionsYouInA": "コメントで誰かがあなたを@メンションしたとき",
+  "notificationsForNewAnimeEpisodeReleases": "アニメの新エピソード配信に関する通知",
+  "notificationsForFollowsMentionsAndLikes": "フォロー、メンション、いいねに関する通知",
+  "notificationsForCompletedEpisodeAndChapter": "エピソードおよびチャプターのダウンロード完了通知",
+  "signIn": "ログイン",
+  "failedToCheckForUpdates3": "アップデートの確認に失敗しました",
+  "noUpdatesAvailable": "更新情報はありません",
+  "errorCheckingForUpdates": "更新の確認中にエラーが発生しました",
+  "installPermissionRequired": "インストール権限が必要です",
+  "downloadFailed3": "ダウンロードに失敗しました",
+  "newVersionAvailable": "新バージョンがリリースされました",
+  "browsingStatus": "$status を閲覧中",
+  "episodeMetadata": "エピソードのメタデータ",
+  "sessionExpiredPleaseLoginAgain": "セッションの有効期限が切れました。再度ログインしてください。",
+  "successfullyLoggedInAs": "{username} としてログインしました",
+  "loggedOutFromDiscord": "Discordからログアウトしました",
+  "clearStoredLogFiles": "保存されたログファイルを削除",
+  "resetInMemoryAndDiskLogFiles": "メモリおよびディスクのログファイルをリセット",
+  "errorCopiedToClipboard": "エラーをクリップボードにコピーしました",
+  "autoScrollOn": "自動スクロール オン",
+  "autoScrollOff": "自動スクロール オフ",
+  "copyLogs": "ログをコピー",
+  "clearLogs": "ログをクリア",
+  "metadataFallbackStrategy": "メタデータのフォールバック戦略",
+  "activeSourceMode": "アクティブソースモード",
+  "chooseWhetherToMergeProviders": "プロバイダーを統合するか特定のサービスを強制するかを選択",
+  "autoMerged": "自動（統合）",
+  "providerPriorityToggles": "プロバイダーの優先順位と切り替え",
+  "dragHandlesToChangeFetchPriority": "ハンドルをドラッグして優先度を変更します。上位のソースがタイトル、サムネイル、説明の解決時に優先されます。",
+  "maintenance": "メンテナンス",
+  "clearMetadataCache": "メタデータキャッシュを削除",
+  "flushesInMemoryEpisodeThumbnails": "メモリ内のエピソードサムネイルとタイトルのキャッシュを消去します",
+  "metadataCacheCleared": "メタデータキャッシュを削除しました",
+  "resetToDefaultOrder": "デフォルトの順序にリセット",
+  "restoreFactoryPriorityOrder": "初期の優先順位を復元しすべてのプロバイダーを有効にします",
+  "resetEpisodeMetadataToDefaults": "エピソードのメタデータをデフォルトにリセットしました",
+  "configureProvidersAndOrder": "プロバイダーと順序を設定",
+  "reorderSourcesToggleIndividual": "ソースを並べ替え、個々のプロバイダーを切り替えます",
+  "autoMergedPriority": "自動（統合優先度）",
+  "mergesHighestPriorityAvailable": "最も優先度の高い利用可能なデータを統合します",
+  "useRawProviderEpisodeTitlesOnly": "プロバイダーの元のエピソードタイトルのみを使用",
+  "progressSliderStyle": "進行状況スライダーのスタイル",
+  "seekPreview": "シークプレビュー",
+  "showThumbnailScrubbingPreviewWhileSeeking": "シーク中にサムネイルプレビューを表示します",
+  "linearWavy": "リニア ウェーブ",
+  "defaultM3": "デフォルト M3",
+  "capsule": "カプセル",
+  "noLogsToCopy": "コピーするログがありません",
+  "logsCopiedToClipboard": "ログをクリップボードにコピーしました",
+  "noLogsAvailableToShare": "共有できるログがありません",
+  "decadeFormat": "{decade}年代",
+  "mediaWithId": "メディア #{id}",
+  "tileIconShapes": "タイルアイコンの形状",
+  "tilePrefixIconShape": "タイルプレフィックスアイコンの形状",
+  "tileIconShapesLower": "タイルアイコンの形状",
+  "opening": "オープニング",
+  "ending": "エンディング",
+  "recap": "あらすじ",
+  "ifSubtitleNotShowingDisableLibass": "字幕が表示されない場合は設定でlibassを無効にして再起動してください",
+  "subtitlesTranslatedEntries": "字幕を翻訳しました！（{count} 件）",
+  "skippedFillerEpisodesCount": "{count, plural, other{{count} 件のフィラーエピソードをスキップしました}}",
+  "unsubscribe": "登録解除",
+  "subscribeToThread": "スレッドを購読",
+  "downloadChaptersCount": "{count, plural, other{{count} 話をダウンロード}}",
+  "downloadingChaptersCount": "{count, plural, other{{count} 話をダウンロード中...}}",
+  "moreRecommendationsCount": "{count, plural, other{+ 他に {count} 件のおすすめ}}",
+  "charactersAndVoiceActors": "キャラクター＆声優",
+  "unknownVa": "声優不明",
+  "chaptersTimestamps": "チャプターとタイムスタンプ",
+  "contentSource": "コンテンツソース",
+  "selectPreferredTrackingAndMediaProvider": "優先するトラッキングおよびメディアプロバイダーを選択してください",
+  "reducesColorRingingArtifacts": "カラーリンギングアーティファクトを低減します",
+  "downscalesInLinearLightSpace": "リニア光空間でダウンスケールします",
+  "motionDithering": "モーションとディザリング",
+  "smoothMotionBetweenVideoFrames": "ビデオフレーム間のスムーズな動き",
+  "reducesColorBandingWithSubtle": "わずかなノイズでカラーバンディングを低減します",
+  "unknown": "不明",
+  "anilistActivity": "AniListのアクティビティ",
+  "failedToPostStory": "ストーリーの投稿に失敗しました",
+  "likesCount": "{count}件のいいね",
+  "newEpisodes": "新着エピソード",
+  "outNowFromShowsYouAreWatching": "視聴中の作品から配信中",
+  "planning": "視聴予定",
+  "postStory": "ストーリーを投稿",
+  "postToStory": "ストーリーに追加",
+  "readChapter": "第{chapter}話を読む",
+  "repliesCount": "{count}件の返信",
+  "rewatching": "再視聴中",
+  "sendAReaction": "リアクションを送信",
+  "statusUpdate": "近況アップデート",
+  "storyPostedToAnilist": "AniListにストーリーを投稿しました！",
+  "viewDiscussion": "ディスカッションを見る",
+  "viewInAnymex": "AnymeXで開く",
+  "watched": "視聴済み",
+  "watchedEpisode": "第{episode}話を視聴しました",
+  "whatsOnYourMindAniList": "今何を考えていますか？（AniListにテキストアクティビティとして投稿されます）",
+  "yourStory": "あなたのストーリー",
+  "hostBadge": "ホスト",
+  "basedOnAnimeScoredTen": "10/10 と評価したアニメに基づいています。",
+  "basedOnMangaScoredTen": "10/10 と評価した漫画に基づいています。"
 }

@@ -19,7 +19,7 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
               ? "Watch Together Policy"
               : "Comment Rules";
 
-  snackBar('Fetching $title...');
+  snackBar(context.l10n.fetching(title.toString()));
 
   try {
     const String url =
@@ -75,7 +75,7 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
       snackBar(Get.context!.l10n.failedToFetchPolicy, duration: 2000);
     }
   } catch (e) {
-    snackBar("Error fetching policy: $e", duration: 2000);
+    snackBar(Get.context!.l10n.errorFetchingPolicy(e.toString()), duration: 2000);
   }
 }
 

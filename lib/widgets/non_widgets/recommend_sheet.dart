@@ -1121,7 +1121,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: colors.onPrimary))
                   : const Icon(Icons.send_rounded, size: 16),
-              label: AnymeXText(_submitting ? 'Submitting…' : 'Add Recommendation'),
+              label: AnymeXText(_submitting ? context.l10n.submitting : context.l10n.addRecommendation),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -1200,7 +1200,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: colors.onPrimary))
                 : const Icon(Icons.send_rounded, size: 18),
-            label: AnymeXText(_submitting ? 'Submitting…' : 'Submit Recommendation'),
+            label: AnymeXText(_submitting ? context.l10n.submitting : context.l10n.submitRecommendation),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

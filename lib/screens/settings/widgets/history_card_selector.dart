@@ -143,7 +143,7 @@ class HistoryCardSelector extends StatelessWidget {
       onTap: () {},
     ),
     HistoryModel(
-      title: 'Frieren: Beyond Journey\'s End',
+      title: Get.context!.l10n.frierenBeyondJourneySEnd,
       cover: 'https://image.tmdb.org/t/p/w500/cuV2O53rOT2wb8GFUmp8G7vRgtm.jpg',
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-n2222m.jpg',

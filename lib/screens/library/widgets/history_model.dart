@@ -185,7 +185,7 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
   final source =
       Get.find<SourceController>().getMangaExtensionByName(sourceName);
   if (source == null) {
-    snackBar("Install $sourceName First, Then Click");
+    snackBar(Get.context!.l10n.installFirstThenClick(sourceName.toString()));
     return;
   }
 
@@ -265,7 +265,7 @@ Future<void> _handleNovelTap(OfflineMedia media) async {
   final source =
       Get.find<SourceController>().getNovelExtensionByName(sourceName);
   if (source == null) {
-    snackBar("Install $sourceName First, Then Click");
+    snackBar(Get.context!.l10n.installFirstThenClick(sourceName.toString()));
     return;
   }
 
@@ -299,7 +299,7 @@ Future<void> _handleAnimeTap(OfflineMedia media) async {
 
   final source = Get.find<SourceController>().getExtensionByValue(sourceName);
   if (source == null) {
-    snackBar("Install $sourceName First, Then Click");
+    snackBar(Get.context!.l10n.installFirstThenClick(sourceName.toString()));
     return;
   }
 

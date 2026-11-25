@@ -64,7 +64,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
       'portrait': 'Portrait',
     };
     showSelectionDialog<String>(
-      title: 'Default Orientation',
+      title: context.l10n.defaultOrientation,
       items: orientations.keys.toList(),
       selectedItem: settings.defaultOrientation.obs,
       getTitle: (value) => orientations[value] ?? 'Auto (Landscape)',
@@ -79,7 +79,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   void _showPlaybackSpeedDialog() {
     final speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
     showSelectionDialog<double>(
-      title: 'Playback Speed',
+      title: context.l10n.playbackSpeed,
       items: speeds,
       selectedItem: settings.speed.obs,
       getTitle: (s) => '${s}x',
@@ -94,7 +94,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   void _showResizeModeDialog() {
     const modes = ['contain', 'cover', 'fill', 'fitWidth', 'fitHeight'];
     showSelectionDialog<String>(
-      title: 'Resize Mode',
+      title: context.l10n.resizeMode,
       items: modes,
       selectedItem: settings.resizeMode.obs,
       getTitle: (m) => m.capitalizeFirst ?? m,
@@ -202,12 +202,12 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
               children: [
                 if (widget.isModal) _buildModalHeader(context),
                 AnymeXSectionBuilder(
-                  title: 'Quick Defaults',
+                  title: context.l10n.quickDefaults,
                   children: [
                     AnymeXTile(
                       icon: Icons.screen_rotation_rounded,
                       onTap: _showDefaultOrientationDialog,
-                      title: 'Default Orientation',
+                      title: context.l10n.defaultOrientation,
                       subtitle: const {
                             'landscape': 'Auto (Landscape)',
                             'auto_full': 'Auto (Full)',
@@ -220,8 +220,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     AnymeXTile(
                       icon: Icons.speed_rounded,
                       onTap: _showPlaybackSpeedDialog,
-                      title: 'Playback Speed',
-                      subtitle: '${settings.speed.toStringAsFixed(2)}x',
+                      title: context.l10n.playbackSpeed,
+                      subtitle: context.l10n.x((settings.speed.toStringAsFixed(2)).toString()),
                     ),
                     AnymeXTile(
                       icon: Icons.aspect_ratio_rounded,
@@ -232,7 +232,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.launch_rounded,
-                      title: 'Use External Player',
+                      title: context.l10n.useExternalPlayer,
                       subtitle:
                           'Open video streams in an external player by default',
                       value: _useExternalPlayer,
@@ -246,26 +246,26 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                   ],
                 ),
                 AnymeXSectionBuilder(
-                  title: 'Customize',
+                  title: context.l10n.customize,
                   children: [
                     AnymeXTile(
                       icon: HugeIcons.strokeRoundedPlaySquare,
-                      title: 'Controls & Gestures',
+                      title: context.l10n.controlsGestures,
                       subtitle:
                           '$controlTheme • $indicatorTheme • Bottom bar & seek',
                       onTap: () =>
-                          _openSubPage(const SettingsPlayerControls()),
+                          _openSubPage(SettingsPlayerControls()),
                     ),
                     AnymeXTile(
                       icon: Icons.subtitles_rounded,
-                      title: 'Subtitles & Translation',
-                      subtitle: '$subLang • $subFont • Styling & libass',
+                      title: context.l10n.subtitlesTranslation,
+                      subtitle: context.l10n.stylingLibass(subLang.toString(), subFont.toString()),
                       onTap: () =>
-                          _openSubPage(const SettingsPlayerSubtitles()),
+                          _openSubPage(SettingsPlayerSubtitles()),
                     ),
                     AnymeXTile(
                       icon: Icons.auto_awesome_rounded,
-                      title: 'Anime4K & Shaders',
+                      title: context.l10n.anime4kShaders,
                       subtitle: shadersOn
                           ? 'Enabled (${settings.selectedProfile})'
                           : 'Upscaling shaders & keybindings',
@@ -273,7 +273,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     ),
                     AnymeXTile(
                       icon: Icons.memory_rounded,
-                      title: 'Engine & Advanced',
+                      title: context.l10n.engineAdvanced,
                       subtitle:
                           'Decoder (${settings.hardwareDecoder.toUpperCase()}) • Renderer • mpv.conf',
                       onTap: () => _openSubPage(const SettingsPlayerEngine()),

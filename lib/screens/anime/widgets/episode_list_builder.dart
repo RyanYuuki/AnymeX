@@ -1055,7 +1055,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                                 : 'Ep ${formatEpisodeNumberLabel(chunkedEpisodes[safeChunkIndex].first.number)}–${formatEpisodeNumberLabel(chunkedEpisodes[safeChunkIndex].last.number)}';
 
                             return AnymeXPopupMenuButton<int>(
-                              title: 'Episode Range',
+                              title: context.l10n.episodeRange,
                               theme: Theme.of(context),
                               items: List.generate(chunkedEpisodes.length,
                                   (index) {
@@ -1180,7 +1180,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
               child: InkWell(
                 borderRadius: BorderRadius.circular(10),
                 onTap: () {
-                  snackBar('Episode ${episode.number} is downloaded');
+                  snackBar(context.l10n.episodeIsDownloaded(episode.number.toString()));
                 },
                 child: Container(
                   width: 32,
@@ -1204,7 +1204,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
           );
         case DownloadItemStatus.downloading:
           return Tooltip(
-            message: 'Downloading (${(state.progress * 100).toInt()}%)',
+            message: context.l10n.downloading2(((state.progress * 100).toInt()).toString()),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1482,7 +1482,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
     final options = <_BatchOption>[
       (
         title: context.l10n.downloadUnwatchedEpisodes,
-        subtitle: '${unwatched.length} episodes',
+        subtitle: context.l10n.episodes2(unwatched.length.toString()),
         icon: Icons.playlist_play_rounded,
         enabled: unwatched.isNotEmpty,
         onTap: () {
@@ -1496,7 +1496,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
       ),
       (
         title: context.l10n.downloadCurrentSection,
-        subtitle: '${chunkNotDownloaded.length} episodes',
+        subtitle: context.l10n.episodes2(chunkNotDownloaded.length.toString()),
         icon: Icons.view_carousel_outlined,
         enabled: chunkNotDownloaded.isNotEmpty,
         onTap: () {
@@ -1510,7 +1510,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
       ),
       (
         title: context.l10n.downloadAllEpisodes,
-        subtitle: '${allNotDownloaded.length} episodes',
+        subtitle: context.l10n.episodes2(allNotDownloaded.length.toString()),
         icon: Icons.file_download_outlined,
         enabled: allNotDownloaded.isNotEmpty,
         onTap: () {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -2243,8 +2244,8 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
               ),
             ),
             AnymeXTile.toggle(
-              title: 'Sigmoid upscaling',
-              subtitle: 'Reduces color ringing artifacts',
+              title: context.l10n.sigmoidUpscaling,
+              subtitle: context.l10n.reducesColorRingingArtifacts,
               value: sigmoid,
               onChanged: (val) {
                 setState(() => _visualSettings['sigmoidUpscaling'] = val);
@@ -2252,8 +2253,8 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
               },
             ),
             AnymeXTile.toggle(
-              title: 'Correct downscaling',
-              subtitle: 'Downscales in linear light space',
+              title: context.l10n.correctDownscaling,
+              subtitle: context.l10n.downscalesInLinearLightSpace,
               value: downscale,
               onChanged: (val) {
                 setState(() => _visualSettings['correctDownscaling'] = val);
@@ -2264,11 +2265,11 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
         ),
         const SizedBox(height: 16),
         AnymeXSectionBuilder(
-          title: 'Motion & Dithering',
+          title: context.l10n.motionDithering,
           children: [
             AnymeXTile.toggle(
-              title: 'Frame interpolation',
-              subtitle: 'Smooth motion between video frames',
+              title: context.l10n.frameInterpolation,
+              subtitle: context.l10n.smoothMotionBetweenVideoFrames,
               value: interpolation,
               onChanged: (val) {
                 setState(() => _visualSettings['interpolation'] = val);
@@ -2276,8 +2277,8 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
               },
             ),
             AnymeXTile.toggle(
-              title: 'Temporal dither',
-              subtitle: 'Reduces color banding with subtle noise',
+              title: context.l10n.temporalDither,
+              subtitle: context.l10n.reducesColorBandingWithSubtle,
               value: dither,
               onChanged: (val) {
                 setState(() => _visualSettings['temporalDither'] = val);

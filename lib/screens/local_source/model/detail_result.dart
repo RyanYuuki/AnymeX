@@ -77,7 +77,7 @@ class DetailResult {
       return DetailSeasons(
         episodes,
         id: seasonId,
-        title: 'Season ${seasonId.substring(1)}',
+        title: Get.context!.l10n.season2((seasonId.substring(1)).toString()),
         poster: '',
       );
     }).toList();
@@ -122,7 +122,7 @@ class DetailSeasons {
           'season': json['season_number'] ?? '',
           'episode': i,
         }),
-        title: 'Episode $i',
+        title: Get.context!.l10n.episode(i.toString()),
         poster: 'https://image.tmdb.org/t/p/w500$posterPath',
       ));
     }

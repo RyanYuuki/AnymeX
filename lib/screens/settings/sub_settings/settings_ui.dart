@@ -56,7 +56,7 @@ class _SettingsUiState extends State<SettingsUi> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Interface & Layout',
+      headerTitle: context.l10n.interfaceLayout,
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -78,7 +78,7 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile(
                             icon: Icons.tune_rounded,
-                            title: 'Card Customizer',
+                            title: context.l10n.cardCustomizer,
                             subtitle:
                                 'Customize carousel card styles, geometry, and layout',
                             onTap: () =>
@@ -95,7 +95,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Navigation & Home Layout',
+                        title: context.l10n.navigationHomeLayout,
                         children: [
                           AnymeXTile.pills<bool>(
                             icon: Icons.view_sidebar_rounded,
@@ -113,7 +113,7 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile(
                             icon: Icons.reorder_rounded,
-                            title: 'Reorder Navigation Tabs',
+                            title: context.l10n.reorderNavigationTabs,
                             subtitle:
                                 'Drag and drop to reorder navigation bar tabs',
                             onTap: () => _showReorderTabsDialog(context),
@@ -130,7 +130,7 @@ class _SettingsUiState extends State<SettingsUi> {
                           PlatformBuilder(
                             androidBuilder: AnymeXTile.slider(
                               icon: Icons.margin_rounded,
-                              title: 'Bottom Nav Bar Margin',
+                              title: context.l10n.bottomNavBarMargin,
                               subtitle:
                                   'Adjust horizontal margin of bottom navigation bar',
                               value: settings.bottomNavBarMargin,
@@ -142,7 +142,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             ),
                             desktopBuilder: AnymeXTile.slider(
                               icon: Icons.margin_rounded,
-                              title: 'Bottom Nav Bar Margin',
+                              title: context.l10n.bottomNavBarMargin,
                               subtitle:
                                   'Adjust bottom bar margin (media details page only)',
                               value: settings.bottomNavBarMargin,
@@ -165,7 +165,7 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.play_circle_outline_rounded,
-                            title: 'Show Continue Watching on Home',
+                            title: context.l10n.showContinueWatchingOnHome,
                             subtitle:
                                 'Display a continue watching bar above the bottom navigation bar on home',
                             value: settings.showHomeContinueWatching.value,
@@ -176,11 +176,11 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Motion & Display',
+                        title: context.l10n.motionDisplay,
                         children: [
                           AnymeXTile.toggle(
                             icon: HugeIcons.strokeRoundedBounceRight,
-                            title: "Enable Animation",
+                            title: context.l10n.enableAnimation,
                             subtitle:
                                 "Enable animation on carousels for smooth motion",
                             value: settings.enableAnimation,
@@ -202,7 +202,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Visual Effects & Tuning',
+                        title: context.l10n.visualEffectsTuning,
                         children: [
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedLighthouse,

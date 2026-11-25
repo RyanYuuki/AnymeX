@@ -642,7 +642,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
           ),
         ),
         const SizedBox(height: 14),
-        AnymeXText('Total entries: $total',
+        AnymeXText(context.l10n.totalEntries(total.toString()),
           size: 13,
           color: c.onSurfaceVariant,
         ),

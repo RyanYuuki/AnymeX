@@ -7,6 +7,7 @@ import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../cast_service.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class CastDeviceDialog {
   static void show(BuildContext context, PlayerController controller) {
@@ -92,7 +93,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                   onPressed: () async {
                     await castService.stopCasting();
                   },
-                  child: const AnymeXText('Disconnect'),
+                  child: AnymeXText(Get.context!.l10n.disconnect),
                 ),
               ],
             ),
@@ -354,7 +355,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
           isVisible: widget.controller.isCastPaneOpened.value,
           onOverlayTap: _closePane,
           child: WatchSettingsPane(
-            title: 'Cast to Device',
+            title: Get.context!.l10n.castToDevice,
             onClose: _closePane,
             actions: [
               Obx(() => castService.isSearching.value
@@ -364,7 +365,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : IconButton(
-                      tooltip: 'Refresh devices',
+                      tooltip: Get.context!.l10n.refreshDevices,
                       onPressed: () => castService.startDiscovery(),
                       icon: const Icon(Icons.refresh_rounded),
                     )),

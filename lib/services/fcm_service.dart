@@ -7,6 +7,7 @@ import 'package:anymex/widgets/non_widgets/in_app_notification_banner.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -146,7 +147,7 @@ class FcmService {
     AnymeXDialog(
       title: data['title']?.toString() ?? 'Notification',
       message: data['body']?.toString() ?? '',
-      confirmText: 'Okay',
+      confirmText: Get.context!.l10n.okay,
       showCancelButton: false,
       onConfirm: () {},
     ).show(context);

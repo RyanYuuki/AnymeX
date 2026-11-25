@@ -146,12 +146,12 @@ void initDeepLinkListener(List<String> args) async {
     final initialUri = await appLinks.getInitialLink();
     if (initialUri != null) Deeplink.handleDeepLink(initialUri);
   } catch (err) {
-    errorSnackBar('Error getting initial deep link: $err');
+    errorSnackBar(Get.context!.l10n.errorGettingInitialDeepLink(err.toString()));
   }
 
   appLinks.uriLinkStream.listen(
     (uri) => Deeplink.handleDeepLink(uri),
-    onError: (err) => errorSnackBar('Error Opening link: $err'),
+    onError: (err) => errorSnackBar(Get.context!.l10n.errorOpeningLink(err.toString())),
   );
 }
 
@@ -275,7 +275,7 @@ void main(List<String> args) async {
                     Clipboard.setData(
                         ClipboardData(text: details.exceptionAsString()));
                   },
-                  child: const Text('Copy error details'),
+                  child: Text(Get.context!.l10n.copyErrorDetails),
                 ),
               ],
             ),
@@ -550,7 +550,7 @@ class _FilterScreenState extends State<FilterScreen> {
         KvHelper.get<String>('last_seen_app_version', defaultVal: '');
     if (lastSeen.isNotEmpty && lastSeen != current) {
       if (context.mounted) {
-        snackBar('Updated to v$current', title: "What's New");
+        snackBar(Get.context!.l10n.updatedToV(current.toString()), title: Get.context!.l10n.whatSNew);
       }
     }
     KvHelper.set('last_seen_app_version', current);

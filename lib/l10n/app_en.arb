@@ -2217,6 +2217,1816 @@
   "aboutSupport": "About & Support",
   "supportDevelopmentViaKoFiPaypal": "Support development via Ko-fi, PayPal & UPI",
   "versionUpdatesSocialLinksLegalPolicies": "Version, updates, social links & legal policies",
+  "cacheAndCookiesClearedFor": "Cache and cookies cleared for {name}",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "Cookies cleared for {name}",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "Cache cleared for {name}",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "Unsupported type {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "{name} Settings",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "Local file not found at: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "Sync failed: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "Local APK not found at: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "Error: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "Plugin installation failed: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "No results found for \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "Season {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "Episode {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title} News",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "Community",
+  "logInWithAnilist": "Log In with AniList",
+  "episode2": "Episode {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "Download Completed",
+  "downloadFailedHasNoUrl": "Download failed: {chapterDisplay} has no URL",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "Download failed: No pages found for {chapterDisplay}",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "Download failed: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "Episode {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} eps",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "Source \"{extensionName}\" not found.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "Failed to prepare torrent: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} will be permanently removed from your downloads.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "Search failed: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Search {label} for \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} history items deleted",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "Remove \"{itemName}\" from your {_historyLabel}?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "Removed \"{itemName}\"",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "Ascending",
+  "descending": "Descending",
+  "defaultTabOrder": "Default tab order",
+  "reverseTabs": "Reverse tabs",
+  "id": "ID: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "Type: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "Items: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "Install {sourceName} First, Then Click",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "PAGE {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "Search {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "DONE ({length} selected)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "READABLE ON",
+  "streamingOn": "STREAMING ON",
+  "freedom": "Freedom",
+  "shaderAdded": "Shader added: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "Error importing shader: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "Scanlators",
+  "chapterRange": "Chapter Range",
+  "downloadFailed2": "Download failed: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "Chapter {formattedNumber} is downloaded",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "Downloading ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} chapters",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "Loading page {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "Page saved to Pictures/AnymeX",
+  "pageSavedToAnymex": "Page saved to {path}/AnymeX",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "Failed to save page: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "Failed to share page: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "Page URL copied to clipboard",
+  "failedToCopy": "Failed to copy: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "Loading pages...",
+  "goBack": "Go Back",
+  "loadingPage2": "Loading page {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "Flash Color",
+  "black": "Black",
+  "white": "White",
+  "readerBackground": "Reader Background",
+  "gray": "Gray",
+  "automatic": "Automatic",
+  "noneNearestNeighbor": "None (Nearest-neighbor)",
+  "lowBilinear": "Low (Bilinear)",
+  "mediumDefault": "Medium (Default)",
+  "highBicubic": "High (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos Pre-scale (Best quality, slower)",
+  "fullscreenPreview": "Fullscreen Preview",
+  "enhancementPreset": "Enhancement Preset",
+  "fineTuning": "Fine Tuning",
+  "enhancementStrength": "Enhancement Strength",
+  "strength": "{value}% strength",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "Artifact Suppression",
+  "cleanJpegCompressionRingingAroundLinework": "Clean JPEG compression ringing around linework",
+  "cache": "Cache",
+  "cacheSize": "Cache Size",
+  "mbStoredOnDisk": "{mb} MB stored on disk",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "Super Resolution",
+  "loadingChapter": "Loading chapter...",
+  "noContentAvailable": "No content available",
+  "recommendations": "{reasonCount} recommendations",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "'s Recs",
+  "all3": "All ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "Failed to post message: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "Total entries: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "Joined room {code}!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "Active Rooms",
+  "joinWithCode": "Join with Code",
+  "leftRoom": "Left room",
+  "leaveReset": "Leave / Reset",
+  "inRoom": "In Room: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - Episode {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "Kicked {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} members",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "Left the room",
+  "leave": "Leave",
+  "noActiveRooms": "No active rooms",
+  "roomsWillAppearHereWhenSomeone": "Rooms will appear here when someone creates one",
+  "created2": "Created · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "Join →",
+  "full": "Full",
+  "savedToPicturesAnymex": "Saved to Pictures/AnymeX/{fileName}",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Saved to Downloads/AnymeX/{fileName}",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "Saved to {path}/AnymeX",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (Tap to open profile)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "Chapter ",
+  "episode5": "Episode ",
+  "noData": "{title} (No Data)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "Search {title} extensions...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "Browse Extensions",
+  "goToHome": "Go to Home",
+  "fetching": "Fetching {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "Error fetching policy: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "Added \"{name}\" successfully!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "Updated \"{name}\" successfully!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "Are you sure you want to delete \"{name}\"?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "Deleted \"{name}\"",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "Your history is empty",
+  "episode6": "Episode {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "Show Less",
+  "readMore": "Read More",
+  "unpin": "Unpin",
+  "pinActivity": "Pin Activity",
+  "n1Recommendation": "1 Recommendation",
+  "recommendations2": "{count} Recommendations",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Submitting…",
+  "addRecommendation": "Add Recommendation",
+  "submitRecommendation": "Submit Recommendation",
+  "currentProvider": "CURRENT PROVIDER",
+  "profileStatsUserActivities": "Profile stats & user activities",
+  "manageSourcesPlugins": "Manage sources & plugins",
+  "savedOfflineEpisodesChapters": "Saved offline episodes & chapters",
+  "watchVideoFilesFromDeviceStorage": "Watch video files from device storage",
+  "syncWatchPartyWithFriends": "Sync watch party with friends",
+  "pauseWatchHistoryAndSync": "Pause watch history and sync",
+  "appearancePlayerNetwork": "Appearance, player & network",
+  "joining": "Joining...",
+  "joinRoom": "Join Room",
+  "shareTheCodeOrInviteLink": "Share the code or invite link with friends.",
+  "roomCreated": "Room Created!",
+  "shareThisCodeWithFriends": "Share this code with friends:",
+  "copyCode": "Copy Code",
+  "copyLink": "Copy Link",
+  "leaveWatchTogether": "Leave Watch Together?",
+  "removeMember": "Remove Member",
+  "transferHost": "Transfer Host",
+  "transferHost2": "Transfer host",
+  "transfer": "Transfer",
+  "removeMember2": "Remove member",
+  "removeFromThisWatchParty": "Remove {username} from this watch party?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} members",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} copied",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "No servers available for this room",
+  "selectStreamingServerQualityToWatch": "Select streaming server quality to watch",
+  "thisServerHasNoPlayableUrl": "This server has no playable URL",
+  "episode7": "Episode {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "Adapted from Chapter {start} to {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} predicted on {releaseDate}",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "EPISODE {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "MAL list exported to:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML exported to:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Export failed: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "Exporting your {value} list...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "Export {value} XML",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "No playable media available",
+  "noThemesFound": "No themes found",
+  "playAll": "Play All",
+  "theDawnOfHumanity": "The Dawn of Humanity",
+  "orientationUnlocked": "Orientation Unlocked",
+  "orientationLocked": "Orientation Locked",
+  "skippedOpening": "Skipped Opening",
+  "skippedEnding": "Skipped Ending",
+  "skippedRecap": "Skipped Recap",
+  "ifYouSeeBlackScreenUse": "If you see black screen, use external player for watching",
+  "failedToStartTorrentStream": "Failed to start torrent stream: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "Failed to open stream. Please try other server",
+  "noServersFoundForThisEpisode": "No servers found for this episode.",
+  "failedToLoadEpisodeCheckYour": "Failed to load episode. Check your connection.",
+  "playing": "Playing {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "Failed to switch torrent file: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "Subtitle loaded: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "Error loading subtitle: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "Corrupted Subtitle!",
+  "preTranslatingSubtitles": "Pre-translating subtitles...",
+  "preTranslationFailedUsingRealTime": "Pre-translation failed, using real-time fallback",
+  "preTranslationErrorUsingRealTime": "Pre-translation error, using real-time fallback",
+  "corruptedQuality": "Corrupted Quality!",
+  "colorProfilesOnlyAvailableWithMediakit": "Color profiles only available with MediaKit player",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "Open video streams in an external player by default",
+  "quickDefaults": "Quick Defaults",
+  "orientationSpeedResizeModeExternalPlayer": "Orientation, speed, resize mode & external player",
+  "controlsGestures": "Controls & Gestures",
+  "subtitlesTranslation": "Subtitles & Translation",
+  "languagesFontsStylingLibassTranslation": "Languages, fonts, styling, libass & translation",
+  "anime4kShaders": "Anime4K & Shaders",
+  "upscalingShadersPresetsProfiles": "Upscaling shaders, presets & profiles",
+  "engineAdvanced": "Engine & Advanced",
+  "addSpeed": "Add Speed",
+  "speedPresets": "Speed Presets",
+  "rememberAsDefaultSpeed": "Remember as default speed",
+  "loadedSubtitle": "Loaded subtitle: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "Failed to download subtitle: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "ROOM CODE",
+  "episodeReleasesIn": "EPISODE {value} RELEASES IN",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "You need to be logged in to comment",
+  "readFullRules": "Read Full Rules",
+  "acceptPost": "Accept & Post",
+  "youNeedToBeLoggedIn2": "You need to be logged in to reply",
+  "commentCopiedToClipboard": "Comment copied to clipboard",
+  "spam": "Spam",
+  "offensive": "Offensive",
+  "harassment": "Harassment",
+  "offTopic": "Off-Topic",
+  "failedToLoadUserInfo": "Failed to load user info.",
+  "noUserDataFound": "No user data found.",
+  "viewHistory": "View History",
+  "failedToLoadComments": "Failed to load comments.",
+  "noCommentsFound": "No comments found.",
+  "deleted2": "DELETED",
+  "comment": "COMMENT",
+  "failedToLoadUserHistory": "Failed to load user history.",
+  "noHistoryFound": "No history found.",
+  "youNeedToBeLoggedIn3": "You need to be logged in to edit comments",
+  "commentCannotBeEmpty": "Comment cannot be empty",
+  "failedToLoadCommentsPleaseTry": "Failed to load comments. Please try again.",
+  "commentsLoaded": "{value} comments loaded",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "Failed to refresh comments. Please try again.",
+  "invalidParentCommentId": "Invalid parent comment ID",
+  "replyPostedSuccessfully": "Reply posted successfully",
+  "failedToPostReply": "Failed to post reply",
+  "failedToPostReplyPleaseTry": "Failed to post reply. Please try again.",
+  "commentPostedSuccessfully": "Comment posted successfully",
+  "failedToAddCommentPleaseTry": "Failed to add comment. Please try again.",
+  "failedToUpdateVotePleaseTry": "Failed to update vote. Please try again.",
+  "invalidCommentId": "Invalid comment ID",
+  "commentEditedSuccessfully": "Comment edited successfully",
+  "failedToEditComment": "Failed to edit comment",
+  "commentDeletedSuccessfully": "Comment deleted successfully",
+  "failedToDeleteComment": "Failed to delete comment",
+  "failedToReportComment": "Failed to report comment",
+  "failedToModerateComment": "Failed to moderate comment",
+  "failedToManageUser": "Failed to manage user",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ points). Ranking is based on real activity ({realPoints} pts).",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} earned pts + {text} role bonus ({label}). Ranking is based on real activity.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "Episode Range",
+  "episodeIsDownloaded": "Episode {number} is downloaded",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} episodes",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "Card Customizer",
+  "presetStyle": "Preset Style",
+  "chooseFrom5AuthenticBuiltIn": "Choose from 5 authentic built-in designs",
+  "sizingGeometry": "Sizing & Geometry",
+  "cardSize": "Card Size",
+  "scaleCardsProportionallyWithoutDistortion": "Scale cards proportionally without distortion",
+  "landscapeCards": "Landscape Cards",
+  "formatCardsIn169Widescreen": "Format cards in 16:9 widescreen orientation",
+  "selectPosterImageAspectRatio": "Select poster image aspect ratio",
+  "titleLines": "Title Lines",
+  "maximumNumberOfTitleLinesDisplayed": "Maximum number of title lines displayed",
+  "gestureAreas": "Gesture Areas",
+  "resetDefault": "Reset Default",
+  "overlay": "Overlay",
+  "volume": "Volume",
+  "brightnessArea": "Brightness Area",
+  "overlayAreaTap": "Overlay Area (Tap)",
+  "volumeArea": "Volume Area",
+  "resetToDefaultLayout": "Reset to default layout",
+  "moveToSlot": "Move to slot",
+  "topBar": "Top Bar",
+  "bottomLeft": "Bottom Left",
+  "bottomRight": "Bottom Right",
+  "themesOverlay": "Themes & Overlay",
+  "gesturesSeeking": "Gestures & Seeking",
+  "horizontalSwipeAcrossTheScreenTo": "Horizontal swipe across the screen to seek",
+  "autoSkipCompletion": "Auto Skip & Completion",
+  "percentageWatchedBeforeMarkingCompleted": "Percentage watched before marking completed",
+  "playerControls": "Player Controls",
+  "mpvConfSavedSuccessfully": "mpv.conf saved successfully",
+  "hardwareDrivers": "Hardware & Drivers",
+  "systemIntegrations": "System & Integrations",
+  "experimentalMpvTuning": "Experimental MPV Tuning",
+  "editMpvConf": "Edit mpv.conf",
+  "modeA": "Mode A",
+  "modeB": "Mode B",
+  "modeC": "Mode C",
+  "modeAA": "Mode A+A",
+  "modeBB": "Mode B+B",
+  "modeCA": "Mode C+A",
+  "natural": "Natural",
+  "vivid": "Vivid",
+  "cinema": "Cinema",
+  "soft": "Soft",
+  "warm": "Warm",
+  "cool": "Cool",
+  "anime4k": "Anime 4K",
+  "cinemaHdr": "Cinema HDR",
+  "vividPop": "Vivid Pop",
+  "dark": "Dark",
+  "anime4kEngine": "Anime4K Engine",
+  "anime4kShaders2": "Anime4K shaders",
+  "devicePerformanceTier": "Device Performance Tier",
+  "midRange": "Mid-range",
+  "highEnd": "High-end",
+  "shaderMode": "Shader Mode",
+  "colorPreset": "Color Preset",
+  "desktopPlaybackKeybindings": "Desktop Playback Keybindings",
+  "customSubtitleFonts": "Custom Subtitle Fonts",
+  "importedFont": "Imported font \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "Are you sure you want to delete \"{font}\"?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "Language & Translation",
+  "renderingBehavior": "Rendering & Behavior",
+  "disableToAvoidFadeTransitionsBetween": "Disable to avoid fade transitions between subtitles",
+  "typographyOutline": "Typography & Outline",
+  "adjustSubtitleFontSize": "Adjust subtitle font size",
+  "adjustSubtitleOutlineThickness": "Adjust subtitle outline thickness",
+  "colorsPosition": "Colors & Position",
+  "changeSubtitleTextColor": "Change subtitle text color",
+  "mangaReader": "Manga Reader",
+  "layoutDirection": "Layout & Direction",
+  "autoSwitchToVerticalModeFor": "Auto switch to vertical mode for webtoons",
+  "imageDisplay": "Image & Display",
+  "interfaceSession": "Interface & Session",
+  "mangaControlsGestures": "Manga Controls & Gestures",
+  "overscrollToPreviousNextChapter": "Overscroll to previous/next chapter",
+  "automaticallyScrollMangaPages": "Automatically scroll manga pages",
+  "swapVolumeUpDownActions": "Swap volume up/down actions",
+  "novelReader": "Novel Reader",
+  "themeDisplay": "Theme & Display",
+  "displayChapterPercentageWhileReading": "Display chapter percentage while reading",
+  "displayStatusInfoInTheNovel": "Display status info in the novel reader",
+  "typographySpacing": "Typography & Spacing",
+  "novelControlsGestures": "Novel Controls & Gestures",
+  "tapScreenEdgesToScrollNovel": "Tap screen edges to scroll novel pages",
+  "swipeGestures": "Swipe Gestures",
+  "volumeKeyScrolling": "Volume Key Scrolling",
+  "useHardwareVolumeButtonsToScroll": "Use hardware volume buttons to scroll novels",
+  "automaticallyScrollNovelContent": "Automatically scroll novel content",
+  "textToSpeechTts": "Text-to-Speech (TTS)",
+  "readNovelChaptersAloud": "Read novel chapters aloud",
+  "speechRate": "Speech rate",
+  "voicePitch": "Voice pitch",
+  "areYouSureYouWantTo4": "Are you sure you want to log out from {title}?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "Failed to check for updates: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} installed successfully",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "Failed to install {name}: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} updated successfully",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "Failed to update {name}: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "Uninstall {name}",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} uninstalled",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "Failed to uninstall {name}: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "{title} Section Order",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "Notifications & Sync",
+  "enableNotifications": "Enable Notifications",
+  "syncAnilistNotificationsWithDeviceNotifications": "Sync AniList notifications with device notifications",
+  "airingAlerts": "Airing Alerts",
+  "socialAlerts": "Social Alerts",
+  "notifyOnNewFollowers": "Notify on new followers",
+  "activityAlerts": "Activity Alerts",
+  "syncInterval": "Sync Interval",
+  "regionTimezone": "Region & Timezone",
+  "profileBio": "Profile Bio",
+  "backupFailed": "Backup failed: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Error selecting file: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "Failed to load backup: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "Restore failed: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} titles and history",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} titles and chapters",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} titles and reading state",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "{totalLists} custom lists across media",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} registered extension entries",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} extension zip bundles",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "Help & Information",
+  "libraryContentSafety": "Library & Content Safety",
+  "homePageLists": "Home Page Lists",
+  "chooseWhichListsToShowOn": "Choose which lists to show on home page",
+  "homePageCards": "Home Page Cards ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "Watching $anime",
+  "viewingAnime": "Viewing $anime",
+  "readingManga2": "Reading $manga",
+  "viewingManga": "Viewing $manga",
+  "readingNovel2": "Reading $novel",
+  "viewingNovel": "Viewing $novel",
+  "browsingStatus": "Browsing $status",
+  "upiIdCopied": "UPI ID copied: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "Copy UPI ID ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • Tap to launch GPay, PhonePe, Paytm, etc.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "Download Notifications",
+  "reDownloadFailed": "Re-download failed: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "Rollback failed: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Failed to add repo: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "Applied font \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "Failed to download \"{fontName}\"",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "Imported & applied \"{fontName}\"",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "Failed to import font file",
+  "deleted3": "Deleted \"{fontName}\"",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "Font Library",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "Default geometric rounded font designed for AnymeX",
+  "systemFont": "System Font",
+  "useYourDeviceOsDefaultSystem": "Use your device OS default system typeface",
+  "loadYourOwnTtfOrOtf": "Load your own .ttf or .otf typography files",
+  "pendingReports": "{length} pending reports",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "Cookies & Storage",
+  "monitoring": "Monitoring",
+  "fpsMeter": "FPS Meter",
+  "showDraggableRealTimeFpsOverlay": "Show draggable real-time FPS overlay",
+  "detectedModesDisplay": "Detected Modes & Display",
+  "currentDisplayMode": "Current Display Mode",
+  "modes": "{length} modes",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "Customize",
+  "stylingLibass": "{subLang} • {subFont} • Styling & libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "Horiz",
+  "vert": "Vert",
+  "controlsTapZones": "Controls & Tap Zones",
+  "customizeTapZones": "Customize Tap Zones",
+  "configurePagedAndWebtoonTapRegions": "Configure paged and webtoon tap regions",
+  "fitBordersSpacing": "{value} • Fit, borders & spacing",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "Chapter style, page indicator & screen lock",
+  "overscrollActionsAutoScrollVolume": "Overscroll, actions, auto scroll & volume",
+  "themeTypography": "Theme & Typography",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "Reading Mode & Display",
+  "pageModeProgressBatteryIndicator": "Page mode, progress & battery indicator",
+  "readPageByPageInsteadOf": "Read page-by-page instead of scrolling",
+  "displayPercentageInReadingBar": "Display percentage in reading bar",
+  "displayBatteryAndTimeInReader": "Display battery and time in reader bar",
+  "gesturesNavigation": "Gestures & Navigation",
+  "tapToScrollSwipeAutoScroll": "Tap to scroll, swipe, auto scroll & volume",
+  "tapEdgesOfScreenToScroll": "Tap edges of screen to scroll up/down",
+  "swipeHorizontallyToChangeChapters": "Swipe horizontally to change chapters",
+  "useVolumeKeysToScroll": "Use volume keys to scroll",
+  "textToSpeechTts2": "Text to Speech (TTS)",
+  "textToSpeechReadingSupport": "Text-to-speech reading support",
+  "speechRate2": "Speech Rate",
+  "voicePitch2": "Voice Pitch",
+  "appPostersIconsAvatarsSize": "App posters, icons, avatars. Size: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "Temporary video chunks. Size: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "Downloaded web novel pages. Size: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "Logs, temp downloads. Size: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "Failed to clear cache: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "Factory reset failed: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 or 3F51B5",
+  "motionDisplay": "Motion & Display",
+  "visualEffectsTuning": "Visual Effects & Tuning",
+  "historyCard": "History card",
+  "carousel": "Carousel",
+  "navBar": "Nav bar",
+  "themeDarkModeLayoutStyling": "Theme, dark mode & layout styling",
+  "gesturesSubtitlesVideoSettings": "Gestures, subtitles & video settings",
+  "settingsTiles": "Settings tiles",
+  "oledMode2": "OLED Mode",
+  "primaryAccount": "Primary Account ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "Connected to {title}",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "Connect to {title}",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} titles",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "Remove \"{id}\"? This cannot be undone.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "Importing…",
+  "addJsonFiles": "Add JSON Files",
+  "previousStyle": "Previous style",
+  "nextStyle": "Next style",
+  "currentStyle": "Current style",
+  "useThisStyle": "Use this style",
+  "pleaseLogInToGetRecommendations": "Please log in to get recommendations",
+  "chapter1": "Chapter 1",
+  "deletedSuccessfully": "{value} Deleted Successfully",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl Logined Successfully!",
+  "yepFailed": "Yep, Failed",
+  "userInfoFetchingFailed": "User Info Fetching Failed!",
+  "githubLoginFailed": "GitHub login failed: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "Sync already in progress.",
+  "anotherSyncActionIsAlreadyIn": "Another sync action is already in progress.",
+  "noAnymexSyncGistFoundTo": "No AnymeX sync gist found to delete.",
+  "noAnymexSyncGistFoundInitialize": "No AnymeX sync gist found. Initialize first.",
+  "githubGistSync": "GitHub Gist Sync",
+  "manage": "Manage",
+  "manageGithubGistSync": "Manage GitHub Gist Sync",
+  "joinedTheParty": "{username} joined the party",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} left the party",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "Host switched to Episode {episodeNumber} of {title}",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "Error fetching comments",
+  "errorAddingComment": "Error adding comment",
+  "errorUpdatingVote": "Error updating vote",
+  "errorEditingComment": "Error editing comment",
+  "errorDeletingComment": "Error deleting comment",
+  "commentReportedSuccessfully": "Comment reported successfully",
+  "errorReportingComment": "Error reporting comment",
+  "errorFetchingReportsQueue": "Error fetching reports queue",
+  "reportResolvedSuccessfully": "Report resolved successfully",
+  "failedToResolveReport": "Failed to resolve report",
+  "errorResolvingReport": "Error resolving report",
+  "errorFetchingUserInfo": "Error fetching user info",
+  "errorFetchingUserHistory": "Error fetching user history",
+  "errorFetchingUserStats": "Error fetching user stats",
+  "errorListingUsers": "Error listing users",
+  "errorSearchingUsers": "Error searching users",
+  "errorFetchingModerationQueue": "Error fetching moderation queue",
+  "commentModeratedSuccessfully": "Comment moderated successfully",
+  "errorModeratingComment": "Error moderating comment",
+  "userManagedSuccessfully": "User managed successfully",
+  "errorManagingUser": "Error managing user",
+  "errorGettingInitialDeepLink": "Error getting initial deep link: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "Error Opening link: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "Copy error details",
+  "whatSNew": "What's New",
+  "updatedToV": "Updated to v{current}",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "Could not open ad link",
+  "newAnilistUpdates": "{length} New AniList Updates",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} more",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "Refresh devices",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "Adding repo... please wait.",
+  "unsupportedThemeTypeSupportedPlayer": "Unsupported theme type \"{type}\". Supported: player.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "Importing player theme from link...",
+  "themeIsInvalid": "Theme is invalid: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "Theme JSON is valid. Imported {imported} {label}.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "Joining room {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "Failed to join room: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "Calculating AniMatch compatibility for {user1} & {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "Share with your selected tracking service",
+  "shareAnymexLink": "Share AnymeX link",
+  "opensDirectlyInAnymex": "Opens directly in AnymeX",
+  "newCommentsRepliesAndEdits": "New comments, replies, and edits",
+  "upvotesAndDownvotesOnYourComments": "Upvotes and downvotes on your comments",
+  "warningsMutesBansAndModerationActions": "Warnings, mutes, bans, and moderation actions",
+  "reportFiledResolvedDismissed": "Report filed, resolved, dismissed",
+  "officialAnnouncements": "Official announcements",
+  "whenSomeoneMentionsYouInA": "When someone @mentions you in a comment",
+  "notificationsForNewAnimeEpisodeReleases": "Notifications for new anime episode releases",
+  "notificationsForFollowsMentionsAndLikes": "Notifications for follows, mentions, and likes",
+  "notificationsForCompletedEpisodeAndChapter": "Notifications for completed episode and chapter downloads",
+  "signIn": "Sign In",
+  "failedToCheckForUpdates3": "Failed to check for updates",
+  "noUpdatesAvailable": "No updates available",
+  "errorCheckingForUpdates": "Error checking for updates",
+  "installPermissionRequired": "Install permission required",
+  "downloadFailed3": "Download Failed",
+  "newVersionAvailable": "New Version Available",
   "newEpisodes": "New Episodes",
   "outNowFromShowsYouAreWatching": "Out now from shows you're watching",
   "yourStory": "Your Story",
@@ -2230,7 +4040,6 @@
   "viewDiscussion": "View Discussion",
   "sendAReaction": "Send a reaction",
   "statusUpdate": "Status update",
-  "activity": "Activity",
   "likesCount": "{count} likes",
   "@likesCount": {
     "placeholders": {
@@ -2265,5 +4074,132 @@
   },
   "watched": "Watched",
   "planning": "Planning",
-  "rewatching": "Rewatching"
+  "rewatching": "Rewatching",
+  "episodeMetadata": "Episode Metadata",
+  "sessionExpiredPleaseLoginAgain": "Session expired. Please login again.",
+  "successfullyLoggedInAs": "Successfully logged in as {username}",
+  "@successfullyLoggedInAs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "loggedOutFromDiscord": "Logged out from Discord",
+  "clearStoredLogFiles": "Clear Stored Log Files",
+  "resetInMemoryAndDiskLogFiles": "Reset in-memory and disk log files",
+  "errorCopiedToClipboard": "Error copied to clipboard",
+  "autoScrollOn": "Auto-scroll On",
+  "autoScrollOff": "Auto-scroll Off",
+  "copyLogs": "Copy Logs",
+  "clearLogs": "Clear Logs",
+  "metadataFallbackStrategy": "Metadata Fallback Strategy",
+  "activeSourceMode": "Active Source Mode",
+  "chooseWhetherToMergeProviders": "Choose whether to merge providers or force a specific service",
+  "autoMerged": "Auto (Merged)",
+  "providerPriorityToggles": "Provider Priority & Toggles",
+  "dragHandlesToChangeFetchPriority": "Drag handles to change fetch priority. Top sources take precedence when resolving episode titles, thumbnails, and descriptions.",
+  "maintenance": "Maintenance",
+  "clearMetadataCache": "Clear Metadata Cache",
+  "flushesInMemoryEpisodeThumbnails": "Flushes in-memory episode thumbnails and titles cache",
+  "metadataCacheCleared": "Metadata cache cleared",
+  "resetToDefaultOrder": "Reset to Default Order",
+  "restoreFactoryPriorityOrder": "Restore factory priority order and enable all providers",
+  "resetEpisodeMetadataToDefaults": "Reset episode metadata to defaults",
+  "configureProvidersAndOrder": "Configure Providers & Order",
+  "reorderSourcesToggleIndividual": "Reorder sources, toggle individual providers",
+  "autoMergedPriority": "Auto (Merged Priority)",
+  "mergesHighestPriorityAvailable": "Merges highest-priority available data",
+  "useRawProviderEpisodeTitlesOnly": "Use raw provider episode titles only",
+  "progressSliderStyle": "Progress Slider Style",
+  "seekPreview": "Seek Preview",
+  "showThumbnailScrubbingPreviewWhileSeeking": "Show thumbnail scrubbing preview while seeking",
+  "linearWavy": "Linear Wavy",
+  "defaultM3": "Default M3",
+  "capsule": "Capsule",
+  "noLogsToCopy": "No logs to copy",
+  "logsCopiedToClipboard": "Logs copied to clipboard",
+  "noLogsAvailableToShare": "No logs available to share",
+  "decadeFormat": "{decade}s",
+  "@decadeFormat": {
+    "placeholders": {
+      "decade": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaWithId": "Media #{id}",
+  "@mediaWithId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tileIconShapes": "Tile Icon Shapes",
+  "tilePrefixIconShape": "Tile prefix icon shape",
+  "tileIconShapesLower": "Tile icon shapes",
+  "opening": "Opening",
+  "ending": "Ending",
+  "recap": "Recap",
+  "ifSubtitleNotShowingDisableLibass": "If subtitle is not showing up then disable libass in settings and restart",
+  "subtitlesTranslatedEntries": "Subtitles translated! ({count} entries)",
+  "@subtitlesTranslatedEntries": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skippedFillerEpisodesCount": "{count, plural, =1{Skipped 1 filler episode} other{Skipped {count} filler episodes}}",
+  "@skippedFillerEpisodesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsubscribe": "Unsubscribe",
+  "subscribeToThread": "Subscribe to thread",
+  "downloadChaptersCount": "{count, plural, =1{Download 1 Chapter} other{Download {count} Chapters}}",
+  "@downloadChaptersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadingChaptersCount": "{count, plural, =1{Downloading 1 chapter...} other{Downloading {count} chapters...}}",
+  "@downloadingChaptersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreRecommendationsCount": "{count, plural, =1{+ 1 more recommendation} other{+ {count} more recommendations}}",
+  "@moreRecommendationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "charactersAndVoiceActors": "Characters & Voice Actors",
+  "unknownVa": "Unknown VA",
+  "chaptersTimestamps": "Chapters & Timestamps",
+  "contentSource": "Content Source",
+  "selectPreferredTrackingAndMediaProvider": "Select your preferred tracking and media provider",
+  "reducesColorRingingArtifacts": "Reduces color ringing artifacts",
+  "downscalesInLinearLightSpace": "Downscales in linear light space",
+  "motionDithering": "Motion & Dithering",
+  "smoothMotionBetweenVideoFrames": "Smooth motion between video frames",
+  "reducesColorBandingWithSubtle": "Reduces color banding with subtle noise",
+  "unknown": "Unknown",
+  "@unknown": {
+    "description": "Fallback text for unknown character or entity"
+  },
+  "hostBadge": "HOST",
+  "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
 }

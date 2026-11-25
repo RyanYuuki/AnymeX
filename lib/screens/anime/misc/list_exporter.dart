@@ -311,12 +311,12 @@ class _ListExporterPageState extends State<ListExporterPage> {
       }
 
       if (serviceHandler.serviceType.value == ServicesType.mal) {
-        successSnackBar('MAL list exported to:\n$savedPath', duration: 5000);
+        successSnackBar(Get.context!.l10n.malListExportedToN(savedPath.toString()), duration: 5000);
       } else {
-        successSnackBar('AniList XML exported to:\n$savedPath', duration: 5000);
+        successSnackBar(Get.context!.l10n.anilistXmlExportedToN(savedPath.toString()), duration: 5000);
       }
     } catch (e) {
-      errorSnackBar("Export failed: ${e.toString()}");
+      errorSnackBar(Get.context!.l10n.exportFailed((e.toString()).toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -372,7 +372,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
               onPressed: () => Get.back(),
               icon: const Icon(Icons.arrow_back_ios_new),
             ),
-            title: AnymeXText("${widget.isManga ? "Manga" : "Anime"} List Exporter",
+            title: AnymeXText("${widget.isManga ? context.l10n.navManga : "Anime"} List Exporter",
               variant: TextVariant.bold,
               size: 18,
               color: colorScheme.primary,
@@ -434,7 +434,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                                     size: 16,
                                   ),
                                   const SizedBox(height: 5),
-                                  AnymeXText("Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
+                                  AnymeXText(context.l10n.exportingYourList((widget.isManga ? 'manga' : 'anime').toString()),
                                     size: 14,
                                     color: Colors.grey,
                                   ),
@@ -513,7 +513,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               const Icon(HugeIcons.strokeRoundedDownload01,
                                   color: Colors.white),
                               const SizedBox(width: 10),
-                              AnymeXText("Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
+                              AnymeXText(context.l10n.exportXml((serviceType == ServicesType.mal ? 'MAL' : 'AniList').toString()),
                                 variant: TextVariant.bold,
                                 color: Colors.white,
                                 size: 16,

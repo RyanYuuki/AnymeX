@@ -60,7 +60,7 @@ class SettingItem {
 
     if (_normalize(title).contains(nQuery) || _normalize(settingsLabel(Get.context!.l10n, title)).contains(nQuery)) return true;
     if (subtitle != null && _normalize(subtitle!).contains(nQuery)) return true;
-    if (section != null && _normalize(section!).contains(nQuery)) return true;
+    if (section != null && (_normalize(section!).contains(nQuery) || _normalize(settingsLabel(Get.context!.l10n, section!)).contains(nQuery))) return true;
     for (final tag in searchTags) {
       if (_normalize(tag).contains(nQuery)) return true;
     }

@@ -104,11 +104,11 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                           ],
                         ),
                         AnymeXSectionBuilder(
-                          title: 'Notifications',
+                          title: context.l10n.notifications,
                           children: [
                             AnymeXTile.toggle(
                               icon: Icons.notifications_active_outlined,
-                              title: 'Download Notifications',
+                              title: context.l10n.downloadNotifications,
                               subtitle:
                                   'Show rich notification with poster art when download completes',
                               value: KvHelper.get<bool>(

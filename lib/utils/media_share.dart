@@ -5,6 +5,8 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 
 class MediaShare {
   static Future<void> showOptions({
@@ -34,7 +36,7 @@ class MediaShare {
                         : 'Share ${_serviceLabel(resolvedService)} link',
                   ),
                   subtitle:
-                      const AnymeXText('Share with your selected tracking service'),
+                      AnymeXText(Get.context!.l10n.shareWithYourSelectedTrackingService),
                   onTap: () async {
                     Navigator.of(sheetContext).pop();
                     final link = _buildTrackingShareLink(
@@ -53,8 +55,8 @@ class MediaShare {
                 ),
                 ListTile(
                   leading: const Icon(Icons.share_rounded),
-                  title: const AnymeXText('Share AnymeX link'),
-                  subtitle: const AnymeXText('Opens directly in AnymeX'),
+                  title: AnymeXText(Get.context!.l10n.shareAnymexLink),
+                  subtitle: AnymeXText(Get.context!.l10n.opensDirectlyInAnymex),
                   onTap: () async {
                     Navigator.of(sheetContext).pop();
                     final link = _buildAnymexShareLink(

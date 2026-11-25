@@ -133,7 +133,7 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
           builder: (ctx) => AlertDialog(
             title: AnymeXText(context.l10n.removeTheme),
             icon: const Icon(Icons.delete_forever_rounded),
-            content: AnymeXText('Remove "$id"? This cannot be undone.'),
+            content: AnymeXText(context.l10n.removeThisCannotBeUndone(id.toString())),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
@@ -320,7 +320,7 @@ class _ImportActionsRow extends StatelessWidget {
                         strokeWidth: 2.5, color: context.colors.onPrimary),
                   )
                 : const Icon(Icons.file_open_rounded),
-            label: AnymeXText(isImporting ? 'Importing…' : 'Add JSON Files'),
+            label: AnymeXText(isImporting ? context.l10n.importing : context.l10n.addJsonFiles),
           ),
         ),
         const SizedBox(width: 10),

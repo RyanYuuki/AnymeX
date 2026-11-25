@@ -120,7 +120,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.watchingAnimePhrasing,
                     currentVal: animeWatching,
                     defaultVal: 'Watching \$anime',
-                    hintText: 'Watching \$anime',
+                    hintText: context.l10n.watchingAnime2,
                     variablesHelp: 'Variables: \$anime, \$episode, \$totalEpisodes',
                     onSave: (val) {
                       setState(() {
@@ -138,7 +138,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.animeDetailsPhrasing,
                     currentVal: animeDetails,
                     defaultVal: 'Viewing \$anime',
-                    hintText: 'Viewing \$anime',
+                    hintText: context.l10n.viewingAnime,
                     variablesHelp: 'Variables: \$anime',
                     onSave: (val) {
                       setState(() {
@@ -156,7 +156,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.readingMangaPhrasing,
                     currentVal: mangaReading,
                     defaultVal: 'Reading \$manga',
-                    hintText: 'Reading \$manga',
+                    hintText: context.l10n.readingManga2,
                     variablesHelp:
                         'Variables: \$manga, \$chapter, \$page, \$totalPages',
                     onSave: (val) {
@@ -175,7 +175,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.mangaDetailsPhrasing,
                     currentVal: mangaDetails,
                     defaultVal: 'Viewing \$manga',
-                    hintText: 'Viewing \$manga',
+                    hintText: context.l10n.viewingManga,
                     variablesHelp: 'Variables: \$manga',
                     onSave: (val) {
                       setState(() {
@@ -193,7 +193,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.readingNovelPhrasing,
                     currentVal: novelReading,
                     defaultVal: 'Reading \$novel',
-                    hintText: 'Reading \$novel',
+                    hintText: context.l10n.readingNovel2,
                     variablesHelp: 'Variables: \$novel, \$chapter',
                     onSave: (val) {
                       setState(() {
@@ -211,7 +211,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.novelDetailsPhrasing,
                     currentVal: novelDetails,
                     defaultVal: 'Viewing \$novel',
-                    hintText: 'Viewing \$novel',
+                    hintText: context.l10n.viewingNovel,
                     variablesHelp: 'Variables: \$novel',
                     onSave: (val) {
                       setState(() {
@@ -229,7 +229,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     title: context.l10n.browsingPhrasing,
                     currentVal: idleFormat,
                     defaultVal: 'Browsing \$status',
-                    hintText: 'Browsing \$status',
+                    hintText: context.l10n.browsingStatus,
                     variablesHelp: 'Variables: \$status, \$title',
                     onSave: (val) {
                       setState(() {

@@ -51,7 +51,7 @@
   "labelAll": "ሁሉም",
   "labelNone": "ምንም",
   "labelEnabled": "ነቅቷል",
-  "labelDisabled": "ተሰናክሏል።",
+  "labelDisabled": "ተሰናክሏል",
   "labelOn": "በርቷል",
   "labelOff": "ጠፍቷል",
   "labelYes": "አዎ",
@@ -85,7 +85,7 @@
   "settingsDownloads": "ውርዶች",
   "settingsDownloadsDesc": "ዱካዎችን እና በተመሳሳይ ጊዜ ቅንብሮችን ያውርዱ",
   "settingsLogs": "መዝገቦች",
-  "settingsLogsDesc": "የመተግበሪያ ምዝግብ ማስታወሻዎችን ይመልከቱ እና ወደ ውጪ ይላኩ።",
+  "settingsLogsDesc": "የመተግበሪያ ምዝግብ ማስታወሻዎችን ይመልከቱ እና ወደ ውጪ ይላኩ",
   "settingsStorage": "የማከማቻ አስተዳዳሪ",
   "settingsStorageDesc": "የተሸጎጠ ውሂብ እና የማከማቻ አጠቃቀምን ያቀናብሩ",
   "settingsDonation": "ልገሳ",
@@ -123,8 +123,8 @@
   "libraryDropped": "ወድቋል",
   "libraryPlanToWatch": "ለመመልከት እቅድ ያውጡ",
   "libraryPlanToRead": "ለማንበብ ያቅዱ",
-  "libraryEmpty": "ቤተ-መጽሐፍትህ ባዶ ነው።",
-  "libraryNoItems": "ምንም ንጥሎች አልተገኙም።",
+  "libraryEmpty": "ቤተ-መጽሐፍትህ ባዶ ነው",
+  "libraryNoItems": "ምንም ንጥሎች አልተገኙም",
   "playerPlay": "ይጫወቱ",
   "playerPause": "ለአፍታ አቁም",
   "playerNext": "ቀጥሎ",
@@ -136,17 +136,17 @@
   "playerEpisode": "ክፍል",
   "playerChapter": "ምዕራፍ",
   "searchHint": "አኒሜ፣ ማንጋ፣ ልብወለድ ፈልግ...",
-  "searchNoResults": "ምንም ውጤቶች አልተገኙም።",
+  "searchNoResults": "ምንም ውጤቶች አልተገኙም",
   "searchTrending": "በመታየት ላይ ያለ",
   "searchPopular": "ታዋቂ",
   "searchRecent": "የቅርብ ጊዜ",
-  "errorGeneric": "የሆነ ችግር ተፈጥሯል።",
+  "errorGeneric": "የሆነ ችግር ተፈጥሯል",
   "errorNetwork": "የአውታረ መረብ ስህተት። እባክዎ ግንኙነትዎን ያረጋግጡ።",
-  "errorNotFound": "አልተገኘም።",
+  "errorNotFound": "አልተገኘም",
   "errorTimeout": "ጥያቄ ጊዜው አልፏል። እባክዎ እንደገና ይሞክሩ።",
   "errorServerError": "የአገልጋይ ስህተት። እባክዎ ቆይተው እንደገና ይሞክሩ።",
-  "errorNoInternet": "ምንም የበይነመረብ ግንኙነት የለም።",
-  "errorUnknown": "ያልታወቀ ስህተት ተከስቷል።",
+  "errorNoInternet": "ምንም የበይነመረብ ግንኙነት የለም",
+  "errorUnknown": "ያልታወቀ ስህተት ተከስቷል",
   "homeContinueWatching": "መመልከቱን ይቀጥሉ",
   "homeContinueReading": "ማንበቡን ይቀጥሉ",
   "homeRecentlyUpdated": "በቅርብ ጊዜ ዘምኗል",
@@ -161,20 +161,3937 @@
   "statsDaysWatched": "የታዩ ቀናት",
   "statsChaptersRead": "ምዕራፎች ያንብቡ",
   "extensionsInstalled": "ተጭኗል",
-  "extensionsAvailable": "ይገኛል።",
+  "extensionsAvailable": "ይገኛል",
   "extensionsUpdatesAvailable": "ዝማኔዎች ይገኛሉ",
   "extensionsInstall": "ጫን",
   "extensionsUninstall": "አራግፍ",
   "downloadsActive": "ንቁ",
   "downloadsCompleted": "ተጠናቀቀ",
   "downloadsPaused": "ባለበት ቆሟል",
-  "downloadsFailed": "አልተሳካም።",
+  "downloadsFailed": "አልተሳካም",
   "onboardingWelcome": "ወደ AnymeX እንኳን በደህና መጡ",
   "onboardingGetStarted": "ጀምር",
   "incognitoMode": "ማንነት የማያሳውቅ ሁነታ",
-  "incognitoEnabled": "ማንነት የማያሳውቅ ሁነታ ነቅቷል።",
-  "incognitoDisabled": "ማንነት የማያሳውቅ ሁነታ ተሰናክሏል።",
+  "incognitoEnabled": "ማንነት የማያሳውቅ ሁነታ ነቅቷል",
+  "incognitoDisabled": "ማንነት የማያሳውቅ ሁነታ ተሰናክሏል",
   "episodeCount": "{count} ክፍሎች",
   "chapterCount": "{count} ምዕራፎች",
-  "itemCount": "{count} እቃዎች"
+  "itemCount": "{count} እቃዎች",
+  "whatAreWeDoingToday": ", ዛሬ ምን እየሰራን ነው?",
+  "aLogoWithThisNameAlready": "ይህ ስም ያለው አርማ አስቀድሞ አለ።",
+  "about": "ስለ",
+  "aboutCommentumV2": "ስለ Commentum v2",
+  "aboutTheApp": "ስለ መተግበሪያው",
+  "accessModerationToolsAndReports": "የልዝብና (ሞዴሬሽን) መሣሪያዎችን እና ሪፖርቶችን ማግኘት",
+  "accountTokensAnilistMalSimkl": "የመለያ ቶከኖች (AniList፣ MAL፣ Simkl)",
+  "accounts": "መለያዎች",
+  "accountsSync": "መለያዎች እና ማመሳሰል",
+  "actionAppliedSuccessfully": "እርምጃው በተሳካ ሁኔታ ተተግብሯል",
+  "activeDownloads": "ንቁ ማውረዶች",
+  "activity": "እንቅስቃሴ",
+  "activityDeleted": "እንቅስቃሴው ተሰርዟል",
+  "activityHeatmap": "የእንቅስቃሴ ሙቀት ካርታ",
+  "activityMergeTime": "የእንቅስቃሴ ማዋሃጃ ሰዓት",
+  "activityPhrasing": "የእንቅስቃሴ አባባል",
+  "activityRefreshed": "እንቅስቃሴው ታድሷል",
+  "adFreeApp": "ማስታወቂያ የሌለው መተግበሪያ",
+  "addCustomLogo": "ብጁ ሎጎ ጨምር",
+  "addCustomLogoGifWebp": "ብጁ ሎጎ ጨምር (.gif፣ .webp)",
+  "addRepo": "መጋዘን (Repo) ጨምር",
+  "addRepository": "መጋዘን (Repository) ጨምር",
+  "addYourRecommendation": "የእርስዎን ምክር ያክሉ",
+  "addOnExtensions": "ተጨማሪ ኤክስቴንሽኖች",
+  "addOns": "ተጨማሪዎች (Add-ons)",
+  "addOnsPowerBackgroundServicesSuch": "ተጨማሪዎች እንደ TorrServer ቶረንት ፕሌይባክ ያሉ የጀርባ አገልግሎቶችን ያጠናክራሉ።",
+  "addedToDownloads": "ወደ ማውረዶች ታክሏል",
+  "addingKotatsuRepositoryThisWillTake": "የKotatsu መጋዘን እየታከለ ነው። ይህ ቢያንስ 1-2 ደቂቃ ሊወስድ ይችላል፣ እባክዎ ይጠብቁ...",
+  "addingRepositoryFetchingExtensions": "መጋዘን በመጨመር ላይ እና ኤክስቴንሽኖችን በማምጣት ላይ...",
+  "adjustBottomBarMarginMediaDetails": "የታችኛውን ባር ህዳግ አስተካክል (የሚዲያ ዝርዝሮች ገጽ ብቻ)",
+  "adjustCardAnimationSpeed": "የካርድ እነማ ፍጥነት አስተካክል",
+  "adjustCornerRadiusOfElements": "የንጥሎች ጥግ ክብደት አስተካክል",
+  "adjustDoubleTapToSeekDuration": "ድርብ መታ ማድረጊያ ቆይታ አስተካክል",
+  "adjustElementGlowIntensity": "የንጥል ብርሃን ጥንካሬ አስተካክል",
+  "adjustFrostedBlurIntensity": "የብዥታ ጥንካሬ አስተካክል",
+  "adjustGlowBlurIntensity": "የብርሃን ብዥታ ጥንካሬ አስተካክል",
+  "adjustHorizontalMarginOfBottomNavigation": "የታችኛው የ ዳሰሳ አሞሌ አግድም ህዳግ አስተካክል",
+  "adjustItemsPerRow": "በእያንዳንዱ ረድፍ ያሉ ንጥሎችን አስተካክል",
+  "adjustMediaBackdropExposure": "የሚዲያ ጀርባ ብርሃን አስተካክል",
+  "adjustMegaskipDuration": "የሜጋስኪፕ ቆይታ አስተካክል",
+  "adjustRoundnessOfAllMediaCards": "የሁሉም ሚዲያ ካርዶች ክብደት አስተካክል",
+  "adjustSubSize": "የንዑስ ጽሁፍ መጠን አስተካክል",
+  "adjustSubtitleOutlineWidth": "የንዑስ ጽሁፍ ገጽታ ውፍረት አስተካክል",
+  "adjustTextVisibility": "የጽሁፍ ታይነት አስተካክል",
+  "admin": "አስተዳዳሪ",
+  "adult": "አዋቂ",
+  "aiPicks": "በAI የተመረጡ",
+  "airingAnimeNotifications": "የአኒም ልቀት ማሳወቂያዎች",
+  "all": "ሁሉም",
+  "allClearNoReportsToReview": "ሁሉም ንጹህ ነው! የሚገመገሙ ሪፖርቶች የሉም።",
+  "allSources": "ሁሉም ምንጮች",
+  "allowAnymexToAutomaticallyOpenAnime": "AnymeX የአኒም እና ማንጋ ድር አገናኞችን በራሱ እንዲከፍት ፍቀድ",
+  "allowInstallingUpdatesForExtensionsAnd": "ለቅጥያዎች እና መተግበሪያ ማሻሻያዎችን መጫን ፍቀድ",
+  "allowOnlyUsersIFollowTo": "እኔ የምከተላቸው ተጠቃሚዎች ብቻ መልዕክት እንዲልኩልኝ ፍቀድ።",
+  "allowStorageAccessAndSelectDownload": "የማከማቻ መዳረሻ ፍቀድ እና የማውረጃ አቃፊ ይምረጡ",
+  "allowStorageAccessToDownloadApp": "የመተግበሪያ እና ቅጥያ ማሻሻያዎችን ለማውረድ የማከማቻ መዳረሻ ፍቀድ",
+  "alreadyRecommended": "უკვე ተመክሯል",
+  "alternativeTitles": "ተለዋጭ ርዕሶች",
+  "alwaysShowChapterTransition": "ሁልጊዜ የምዕራፍ ሽግግር አሳይ",
+  "alwaysShowPageIndicator": "ሁልጊዜ የገጽ ማሳያ አሳይ",
+  "amountOfFilmGrainApplied": "የተተገበረው የፊልም ግሬይን መጠን",
+  "anifyKitsuArtwork": "Anify / Kitsu የጥበብ ስራ",
+  "anilistSettings": "የAniList ቅንብሮች",
+  "anilistSettings2": "የAnilist ቅንብሮች",
+  "animatchCompatibility": "የAniMatch ተኳኋኝነት",
+  "animatchLinkCopiedToClipboard": "የAniMatch ሊንክ ወደ መቅረጫው ተገልብጧል!",
+  "animateControlOverlay": "የመቆጣጠሪያ መደራረብን ማነቃቃት",
+  "anime": "አኒሜ",
+  "animeUpper": "አኒሜ",
+  "animeManga": "አኒሜ እና ማንጋ",
+  "anime4kEnhancement": "የአኒሜ 4ኬ ማሻሻያ",
+  "animeAdaptation": "የአኒሜ መላመድ",
+  "animeCustomLists": "ብጁ የአኒሜ ዝርዝሮች",
+  "animeDetailsPhrasing": "የአኒሜ ዝርዝሮች አቀራረብ",
+  "animeLibrary": "የአኒሜ ላይብረሪ",
+  "animeList": "የአኒሜ ዝርዝር",
+  "animeScore": "የአኒሜ ውጤት",
+  "animeSectionOrder": "የአኒሜ ክፍሎች ቅደም ተከተል",
+  "announcement": "ማስታወቂያ",
+  "announcementUnavailable": "ማስታወቂያው የለም",
+  "announcements": "ማስታወቂያዎች",
+  "anymexForkOptimisedForTv": "ለቲቪ የተስተካከለ የAnymeX ፎርክ",
+  "anymexIs100FreeOpenSource": "AnymeX 100% ነፃ፣ ክፍት ምንጭ እና ከማስታወቂያ ነፃ ነው። የእርስዎ ድጋፍ በቀጥታ የአገልጋይ ወጪዎችን እና የባህሪ ልማትን ይረዳል!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX 100% ነፃ፣ ክፍት ምንጭ እና ከማስታወቂያ ነፃ ነው። ድጋፍዎ አፑን በቀጣይነት እንድጠብቅ እና እንድያሻሽል ተነሳሽነት ይሰጠኛል!",
+  "appCacheExceededThresholdAndWas": "የመተግበሪያው መሸጎጫ ገደብ አልፏል እናም ጸድቷል",
+  "appDataHasBeenCompletelyReset": "የመተግበሪያ ውሂብ ሙሉ በሙሉ ዳግም ተጀምሯል",
+  "appFonts": "የመተግበሪያ ፊደላት",
+  "appSettingsSessions": "የመተግበሪያ ቅንብሮች እና ክፍለ ጊዜዎች",
+  "appearance": "ገጽታ",
+  "appearanceInterface": "ገጽታ እና በይነገጽ",
+  "appearanceTheme": "ገጽታ እና ጭብጥ",
+  "appliesAnimeMangaPosterColorOn": "በዝርዝር ገጽ ላይ የአኒም/ማንጋ ፖስተር ቀለም ይጠቀሙ",
+  "apply": "ተግብር",
+  "applyASubtleFilmGrainTexture": "በበይነገጹ ላይ ቀለል ያለ የፊልም እህል ገጽታ ይተግብሩ",
+  "applyFilters": "ማጣሪያዎችን ተግብር",
+  "applyOptionsFromYourMpvConf": "መልሶ ማጫወት ሲጀምር ከ mpv.conf አማራጮችን ተግብር",
+  "areYouSureYouWantTo": "ሁሉንም የተቀመጡ ኩኪዎችን መሰረዝ እንደሚፈልጉ እርግጠኛ ነዎት?",
+  "areYouSureYouWantToDelete": "ይህንን አስተያየት መሰረዝ እንደሚፈልጉ እርግጠኛ ነዎት? ለዘላለም ይወገዳል እና ሪፖርቱ ይፈታል።",
+  "areYouSureYouWantToDeleteThis": "ይህንን ኤክስቴንሽን መሰረዝ እንደሚፈልጉ እርግጠኛ ነዎት?",
+  "areYouSureYouWantToDeleteThisReply": "ይህንን ምላሽ መሰረዝ እንደሚፈልጉ እርግጠኛ ነዎት?",
+  "askForTrackingPermission": "የክትትል ፈቃድ ይጠይቁ",
+  "atLeast2TabsMustRemain": "ቢያንስ 2 ትሮች መታየት አለባቸው!",
+  "audioEngine": "የኦዲዮ ሞተር",
+  "audioPitchCorrection": "የኦዲዮ ፒች ማስተካከያ",
+  "authenticationOptional": "ማረጋገጫ (አማካሪ)",
+  "auto": "ራሱ",
+  "autoPlay": "በራሱ አጫወት",
+  "autoScroll": "ራስ-ሰር ማሸብለል",
+  "autoScrollSpeed": "የራስ-ሰር ማሸብለል ፍጥነት",
+  "autoSkipEd": "ED በራሱ ዝለል",
+  "autoSkipFiller": "መሙያ በራሱ ዝለል",
+  "autoSkipOnceOnly": "አንዴ ብቻ በራሱ ዝለል",
+  "autoSkipOnlyOncePerWatch": "በእያንዳንዱ እይታ አንድ ጊዜ ብቻ በራሱ ዝለል",
+  "autoSkipOp": "OP በራሱ ዝለል",
+  "autoSkipRecap": "ማጠቃለያ በራሱ ዝለል",
+  "autoSkipTheEndingSong": "የመጨረሻውን ዘፈን በራሱ ዝለል",
+  "autoSkipTheOpeningSong": "መክፈቻውን ዘፈን በራሱ ዝለል",
+  "autoSkipTheRecapSection": "የማጠቃለያ ክፍሉን በራሱ ዝለል",
+  "autoSwitchToVerticalMode": "በራሱ ወደ ቀጥ ያለ ሁኔታ ቀይር",
+  "autoTranslateSubtitles": "ንዑስ ርዕሶችን በራሱ ተርጉም",
+  "autoWebtoonMode": "አውቶ ዌብቱን ሁኔታ",
+  "autoClearThreshold": "ራስ-ሰር ማጽጃ ገደብ",
+  "autoSelectDefault": "ራስ-ሰር ምረጥ (ነባሪ)",
+  "autoSelectThisServerQualityFor": "ለዚህ አኒሜ የዚህን ሰርቨር ጥራት በራስ-ሰር ምረጥ",
+  "automaticallyMoveToNextTextSegment": "በራስ-ሰር ወደሚቀጥለው የጽሑፍ ክፍል ሂድ",
+  "automaticallyScrollContent": "ይዘትን በራስ-ሰርሸብል አድርግ",
+  "automaticallyScrollPages": "ገጾችን በራስ-ሰር ሽብል አድርግ",
+  "automaticallySkipFillerEpisodesWhenGoing": "ወደ ቀጣዩ ክፍል ሲኬድ ፋለር ክፍሎችን በራስ-ሰር ዝለል",
+  "automaticallyUpdateEntriesWhenImportingThe": "XML ሲያስገቡ ግቤቶችን በራስ-ሰር አዘምን",
+  "availableAddOns": "የሚገኙ ተጨማሪዎች",
+  "availableKeybindings": "የሚገኙ የቁልፍ ትስስሮች፡",
+  "avatarDecorations": "የመገለጫ ምስል ማስጌጫዎች",
+  "avatarDecorationsNameplatesBannersProfileEffects": "የመገለጫ ምስል ማስጌጫዎች፣ የስም ሰሌዳዎች፣ ባነሮች እና የመገለጫ ውጤቶች",
+  "avgChapters": "አማካይ ምዕራፎች",
+  "avgEpisodes": "አማካይ ክፍሎች",
+  "back": "ተመለስ",
+  "backdropScope": "የጀርባ እና ወሰን",
+  "backdropBrightness": "የጀርባ ብሩህነት",
+  "backdropSource": "የጀርባ ምንጭ",
+  "backgroundOpacity": "የጀርባ ግልጽነት",
+  "backup": "ምትኬ",
+  "backupRestore": "ምትኬ እና እነበረበት መልስ",
+  "backupAndRestoreYourLibrary": "ቤተ-መጽሐፍትዎን ምትኬ ያስቀምጡ እና ወደነበረበት ይመልሱ",
+  "backupArchive": "የምትኬ ማህደር",
+  "backupOwner": "የምትኬ ባለቤት",
+  "backupRestoredSuccessfully": "ምትኬ በተሳካ ሁኔታ ተመለሰ!",
+  "backupSavedSuccessfully": "ምትኬ በተሳካ ሁኔታ ተቀምጧል!",
+  "badge": "መለያ",
+  "banUser": "ተጠቃሚን አግድ",
+  "baseUrlNotAvailableForThis": "መሠረታዊ ዩአርኤል ለዚህ ምንጭ አይገኝም",
+  "basedOnYourFavouriteCharacters": "በሚወዷቸው ገጸ-ባህሪያት ላይ በመመስረት።",
+  "basedOnYourFavouriteStaff": "በሚወዷቸው ሰራተኞች ላይ በመመስረት።",
+  "basedOnYourTop10Tags": "ከፍተኛ 10 መለያዎችዎ ላይ በመመስረት።",
+  "basedOnYourTop3Studios": "ከፍተኛ 3 ስቱዲዮዎችዎ ላይ በመመስረት።",
+  "basedOnYourTop5Genres": "ከፍተኛ 5 ዘውጎችዎ ላይ በመመስረት።",
+  "basedOnYourTop6Voice": "ከፍተኛ 6 የድምጽ ተዋናዮችዎ ላይ በመመስረት።",
+  "batchDownload": "በጥቅል ማውረድ",
+  "beTheFirstToRecommendThis": "ይህንን ርዕስ መጀመሪያ የሚመክሩት ይሁኑ!",
+  "betterSubtitleRenderingUsingLibassLibrary": "Libass ቤተ-መጽሐፍት በመጠቀም የተሻለ የትርጉም ጽሁፍ ማቅረቢያ",
+  "blockquote": "የጥቀس ማገጃ",
+  "blurBackdropTuning": "ድብዝዛ እና የጀርባ ማስተካከያ",
+  "blurAmount": "የድብዝዛ መጠን",
+  "blurColorTint": "የድብዝዛ ቀለም ጥላ",
+  "blurMechanism": "የድብዝዛ ዘዴ",
+  "blurMultiplier": "የድብዝዛ ማባዣ",
+  "blurStyle": "የድብዝዛ ዘይቤ",
+  "bold": "ውፍረት",
+  "boldItalic": "ውፍረት + ስስ",
+  "botUrlNotConfigured": "የቦት URL አልተዋቀረም",
+  "bottomControls": "የታችኛው መቆጣጠሪያዎች",
+  "bottomMargin": "የታችኛው ህዳግ",
+  "bottomNavBarMargin": "የታችኛው ናቪጌሽን ባር ህዳግ",
+  "broadcastYourActivityToDiscord": "እንቅስቃሴዎን ወደ Discord ያሰራጩ",
+  "browsingIdle": "በማሰስ ላይ / ዝግ",
+  "browsingPhrasing": "የማሰሻ አባባል",
+  "bufferSize": "የመ缓冲区 መጠን",
+  "builtInStyles": "አብሮ የተሰሩ ዘይቤዎች",
+  "byDisablingThisYouCanAvoid": "ይህንን በማሰናከል በትርጉም ጽሁፎች መካከል ያለውን ሽግግር ማስወገድ ይችላሉ።",
+  "byIndex": "በማውጫ",
+  "byUserId": "በተጠቃሚ መታወቂያ",
+  "byUsername": "በተጠቃሚ ስም",
+  "bypassCloudflare": "ክላውድፍላርን ማለፍ",
+  "cacheStorage": "መሸጎጫ እና ማከማቻ",
+  "cacheMinutes": "የመሸጎጫ ደቂቃዎች",
+  "cacheOverview": "የመሸጎጫ አጠቃላይ እይታ",
+  "cachedImages": "የተሸጎጡ ምስሎች",
+  "calculateCompatibility": "ተኳሃኝነትን አስላ",
+  "calculatedBasedOnWhichReleaseDecades": "በጣም ካየሃቸው እና ከፍተኛ ውጤት ካገኘህባቸው የምርቃት አሥርት ዓመታት አንጻር ይሰላል።",
+  "calendar": "የቀን መቁጠሪያ",
+  "cancel": "ሰርዝ",
+  "cannotCompareAUserWithThemselves": "አንድን ተጠቃሚ ከራሱ ጋር ማወዳደር አይቻልም! እባክዎ ሁለት የተለያዩ የተጠቃሚ ስሞችን ያስገቡ።",
+  "cannotCompareYourProfileWithYourself": "መገለጫዎን ከራስዎ ጋር ማወዳደር አይቻልም! እባክዎ የተለየ የተጠቃሚ ስም ያስገቡ።",
+  "cantPlaySinceUserClosedThe": "ተጠቃሚው መተግበሪያውን በድንገት ስለዘጋው ማጫወት አይቻልም",
+  "cantReadSinceUserClosedThe": "ተጠቃሚው መተግበሪያውን በድንገት ስለዘጋው ማንበብ አይቻልም",
+  "cardAnimationDuration": "የካርድ እነማ ቆይታ",
+  "cardRoundness": "የካርድ ክብነት",
+  "cardStyle": "የካርድ ዓይነት",
+  "carouselStyle": "የካሮሰል ዓይነት",
+  "changeFile": "ፋይል ቀይር",
+  "changeRole": "ሚና ቀይር",
+  "changeService": "አገልግሎት ቀይር",
+  "changeSubtitleBackgroundColor": "የንዑስ ርዕስ ከስተጀርባ ቀለም ቀይር",
+  "changeSubtitleColors": "የንዑስ ርዕስ ቀለሞችን ቀይር",
+  "changeSubtitleOutlineColor": "የንዑስ ርዕስ ዙሪያ መስመር ቀለም ቀይር",
+  "changelog": "የለውጥ ማስታወሻ",
+  "chapterListSettings": "የምዕራፍ ዝርዝር ቅንብሮች",
+  "chapterNumber": "የምዕራፍ ቁጥር",
+  "chapterTileStyle": "የምዕራፍ ንጣፍ ዓይነት",
+  "chapters": "ምዕራፎች",
+  "chaptersUpper": "ምዕራፎች",
+  "chaptersVolumes": "ምዕራፎች እና ጥራዞች",
+  "chaptersRead": "የተነበቡ ምዕራፎች",
+  "characters": "ገጸ-ባህሪያት",
+  "checkCompatibility": "ተኳሃኝነትን ያረጋግጡ",
+  "checkForAddOnUpdates": "የተሰኪ ዝመናዎችን ያረጋግጡ",
+  "checkForUpdates": "ዝመናዎችን ያረጋግጡ",
+  "checkUpdatesFromBetaChannel": "ቤታ ቻናል ዝመናዎችን ያረጋግጡ",
+  "checkingForUpdates": "ዝመናዎችን በመፈተሽ ላይ!",
+  "chooseABackupFileAnymex": "የምትኬ ፋይል ይምረጡ (.anymex)",
+  "chooseACustomBackgroundForLiquid": "ለሊኩድ ሞድ የተለየ ዳራ ይምረጡ።",
+  "chooseADirectoryToBrowseYour": "የሚዲያ ፋይሎችዎን ለማሰስ ማህደር ይምረጡ",
+  "chooseDifferentImage": "ሌላ ምስል ይምረጡ",
+  "chooseDownloadFolder": "የውርድ ማህደር ይምረጡ",
+  "chooseImage": "ምስል ይምረጡ",
+  "chooseProvider": "አቅራቢ ይምረጡ",
+  "chooseQuality": "ጥራት ይምረጡ",
+  "chooseServer": "ሰርቨር ይምረጡ",
+  "chooseServiceTracker": "አገልግሎት / መከታተያ ይምረጡ",
+  "chooseShaderProfile": "የሼደር ፕሮፋይል ይምረጡ",
+  "chooseUpiApp": "የ UPI መተግበሪያ ይምረጡ",
+  "chooseWhichListToShowOn": "በመነሻ ገጽ ላይ የሚታየውን ዝርዝር ይምረጡ",
+  "chooseYourFavouriteColor": "ተወዳጅ ቀለምዎን ይምረጡ!",
+  "chooseYourFavouritePalette": "ተወዳጅ የቀለም ቅንብርዎን ይምረጡ!",
+  "chromaScaler": "ክሮማ ስኬለር",
+  "classicCarouselCardLayoutFeaturingVertical": "ቀጥ ያሉ ፖስተር ካርዶችን የሚያሳይ ክላሲክ የካሮሴል ካርድ አቀማመጥ።",
+  "clear": "አጽዳ",
+  "clearAll": "ሁሉንም አጽዳ",
+  "clearAllHistory": "ሁሉንም ታሪክ አጽዳ",
+  "clearAppCache": "የመተግበሪያ መሸጎጫ አጽዳ",
+  "clearAppCacheNow": "የመተግበሪያ መሸጎጫ አሁን አጽዳ",
+  "clearCache": "መሸጎጫ አጽዳ",
+  "clearCacheCookies": "መሸጎጫ እና ኩኪዎችን አጽዳ",
+  "clearCookies": "ኩኪዎችን አጽዳ",
+  "clearCookies2": "ኩኪዎችን አጽዳ",
+  "clearHistory": "ታሪክ አጽዳ",
+  "clearImageCacheNow": "የምስል መሸጎጫ አሁን አጽዳ",
+  "clearProxy": "ፕሮክሲ አጽዳ",
+  "clearSelected": "የተመረጡትን አጽዳ",
+  "clientAll": "ደንበኛ፡ ሁሉም",
+  "close": "ዝጋ",
+  "closetCommunity": "መዝገብ እና ማህበረሰብ",
+  "cloudflareChallengeSolved": "የCloudflare ፈተና ተፈትቷል!",
+  "collectionName": "የስብስብ ስም",
+  "collections": "ስብስቦች",
+  "combineBackupDataWithExistingData": "የምትኬ ውሂብን በዚህ መሳሪያ ላይ ካሉ ነባር ውሂቦች ጋር አጣምር",
+  "commentDeleted": "አስተያየቱ ተሰርዟል",
+  "commentPolicy": "የአስተያየት ፖሊሲ",
+  "commentReplies": "የአስተያየት ምላሾች",
+  "commentRules": "የአስተያየት ደንቦች",
+  "commentSystem": "የአስተያየት ስርዓት",
+  "comments": "አስተያየቶች",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 የሚከተሉትን የሚያቀርብ የላቀ የአስተያየት ስርዓት ነው፡",
+  "commentumV2SettingsModerationPreferences": "የCommentum v2 ቅንብሮች፣ ልከኝነት እና ምርጫዎች",
+  "common": "የተለመደ",
+  "commonCharacters": "የተለመዱ ገጸ-ባህሪያት",
+  "commonFavouriteStaff": "የተለመዱ ተወዳጅ ሰራተኞች",
+  "commonGenres": "የተለመዱ ዘውጎች",
+  "commonSettings": "የተለመዱ ቅንብሮች",
+  "commonStudios": "የተለመዱ ስዲዮዎች",
+  "commonTags": "የተለመዱ መለያዎች",
+  "commonVoiceActors": "የተለመዱ የድምፅ አርቲስቶች",
+  "communityDriven": "ማህበረሰብን መሰረት ያደረገ",
+  "communityForksOfAnymex": "የAnymeX ማህበረሰብ ቅርንጫፎች",
+  "communityLeaderboard": "የማህበረሰብ መሪ ሰሌዳ",
+  "communityRecommendations": "የማህበረሰብ ምክሮች",
+  "compact": "የተጣበበ",
+  "compactCardWithEpisodeThumbnailAnd": "የክፍል ምስል እና ርዕስ ያለው የታመቀ ካርድ",
+  "compactGridOfChapterNumbers": "የምዕራፍ ቁጥሮች የታመቀ ፍርግርግ",
+  "compatibility": "ተኳኋኝነት",
+  "compatibilityRanks": "የተኳኋኝነት ደረጃዎች",
+  "compatibleWithGooglePayPhonepePaytm": "ከ Google Pay, PhonePe, Paytm, BHIM, Cred, Navi, Amazon Pay እና ከሁሉም የUPI የባንክ መተግበሪያዎች ጋር ተኳሃኝ ነው።",
+  "completeAnyCloudflareChallengeThenTap": "ማንኛውንም የCloudflare ፈተና ያጠናቅቁ፣ ከዚያ ክፍለ ጊዜውን ወደ ቅጥያዎች ለማስተላለፍ \"ኩኪዎችን አመሳስል\" የሚለውን ይጫኑ።",
+  "compose": "ጻፍ",
+  "concurrencyLimits": "ተመሳሳይነት እና ገደቦች",
+  "configurationsRepos": "ማዋቀሪያዎች እና ማከማቻዎች",
+  "configureExport": "አዋቅር እና ላክ",
+  "configureDiscordRichPresenceActivityStatus": "Discord Rich Presence እና የእንቅስቃሴ ሁኔታን ያዋቅሩ",
+  "configureDnsOverHttpsProxyTls": "DNS-over-HTTPS፣ ፕሮክሲ እና TLS ቅንብሮችን ያዋቅሩ",
+  "configureMangaAndNovelReaderDefaults": "የማንጋ እና የልቦለድ አንባቢ ነባሪዎችን ያዋቅሩ",
+  "configureParallelDownloadsAndDirectory": "ትይዩ ውርዶችን እና ማውጫን ያዋቅሩ",
+  "configurePosterBlurScopeTintBackdrop": "የፖስተር ድብዝዛ፣ ወሰን፣ ቀለም እና የጀርባ ምንጭ ያዋቅሩ",
+  "confirm": "አረጋግጥ",
+  "confirmRestore": "አረጋግጥ እና መልስ",
+  "confirmBackupPassword": "የምትኬ የይለፍ ቃል አረጋግጥ",
+  "conflictHandling": "ግጭት አያያዝ",
+  "connect": "ተገናኝ",
+  "continueReading": "ማንበብ ይቀጥሉ",
+  "continueWatching": "መመልከት ይቀጥሉ",
+  "continuousModeOnly": "ቀጣይነት ያለው ሁነታ ብቻ",
+  "contributors": "አዋላጆች",
+  "controlTheme": "የመቆጣጠሪያ ጭብጥ",
+  "controlsSubtitlesAndPlaybackPreferences": "መቆጣጠሪያዎች፣ υπότιτλοι እና የመልሶ ማጫወት ምርጫዎች",
+  "cookiesUserAgentSynced": "ኩኪዎች እና ዩዘር-ኤጀንት ተመሳስለዋል!",
+  "copy": "ቅዳ",
+  "copyPath": "መንገዱን ቅዳ",
+  "copyUpiId": "የ UPI መታወቂያ ቅዳ",
+  "copyUserId": "የተጠቃሚ መታወቂያ ቅዳ",
+  "coreTeam": "ዋና ቡድን",
+  "couldNotCalculateCompatibility": "ተኳሃኝነትን ማስላት አልተቻለም።",
+  "couldNotFetchChaptersForThis": "ለዚህ ርዕስ ምዕራፎችን ማلب አገኘ",
+  "couldNotFetchEpisodesForThis": "ለዚህ ርዕስ ክፍሎችን ማግኘት አልተቻለም",
+  "couldNotOpenDonationLink": "የልገሳ አገናኙን መክፈት አልተቻለም",
+  "couldNotOpenLink": "አገናኙን መክፈት አልተቻለም",
+  "couldNotOpenReleasesPage": "የመልቀቂያ ገጹን መክፈት አልተቻለም",
+  "couldntOpenAppSettingsOpenIt": "የመተግበሪያ ቅንብሮችን መክፈት አልተቻለም። በእጅ ይክፈቱት።",
+  "count": "ቆጠራ",
+  "countryDistribution": "የሀገር ስርጭት",
+  "countryOfOrigin": "የመነሻ ሀገር",
+  "create": "ፍጠር",
+  "createAFullAnymexArchiveOf": "የሚዲያ ቤተ-መጽሐፍትዎን፣ ቅንብሮችዎን፣ ኤክስቴንሽኖችዎን እና የሆስት 런ታይም ሙሉ .anymex መዝገብ ይፍጠሩ",
+  "createActivity": "እንቅስቃሴ ፍጠር",
+  "createBackup": "ምትኬ ፍጠር",
+  "createNewList": "አዲስ ዝርዝር ፍጠር",
+  "createStatus": "ሁኔታ ፍጠር",
+  "cropBorders": "ድንበር ቆርጦ ማውጣት",
+  "current": "የአሁኑ • ",
+  "custom": "ብጁ",
+  "customBanners": "ብጁ ሰንደቆች",
+  "customColorPicker": "ብጁ የቀለም መራጭ",
+  "customDohUrl": "ብጁ DOH ዩአርኤል",
+  "customFonts": "ብጁ ፊደላት",
+  "customLists": "ብጁ ዝርዝሮች",
+  "customLogos": "ብጁ አርማዎች",
+  "customPlayerFlagsParameters": "ብጁ ማጫወቻ ባንዲራዎች እና መለኪያዎች",
+  "customScale": "ብጁ ልኬት",
+  "customTheme": "ብጁ ገጽታ",
+  "customUserAgent": "ብጁ የተጠቃሚ ወኪል",
+  "customValue": "ብጁ እሴት",
+  "customEllipsis": "ብጁ...",
+  "customizeCardHistoryCardCarouselNav": "የካርድ፣ የታሪክ ካርድ፣ የካሮሰል እና የ π አሰሳ አሞሌ ዘይቤዎችን አስተካክል",
+  "customizeTheInterfaceToYourLiking": "በፍላጎትዎ መነጽሩን ያብጁ",
+  "customizeYourLogoAnimationStyle": "የአርማዎን እነማ ዘይቤ ያብጁ",
+  "dailyActivitiesWatchAndReadMetrics": "ዕለታዊ እንቅስቃሴዎች፣ የመመልከት እና የማንበብ መለኪያዎች",
+  "dailyActivityAndWatchReadProgress": "ዕለታዊ እንቅስቃሴ እና የመመልከት/የማንበብ ሂደት ክትትል",
+  "dataCache": "ውሂብ እና መሸጎጫ",
+  "dataToRestore": "ሊመለሱ የሚችሉ ውሂቦች",
+  "days": "ቀናት",
+  "days2": "ቀናት",
+  "daysActive": "ንቁ ቀናት",
+  "debanding": "ዲባንዲንግ",
+  "debugStuffs": "የዲባግ ነገሮች",
+  "decoder": "ዲኮደር",
+  "decoderHwdec": "ዲኮደር (HWDec)",
+  "decoderThreads": "የዲኮደር ክሮች",
+  "decorationCloset": "የጌጣጌጥ መደርደሪያ",
+  "defaultLabel": "ነባሪ",
+  "defaultAndroidAudiotrackApi": "ነባሪ የ Android AudioTrack API",
+  "defaultAppleCoreaudioApi": "ነባሪ የ Apple CoreAudio API",
+  "defaultListOrder": "ነባሪ የዝርዝር ቅደም ተከተል",
+  "defaultOrientation": "ነባሪ አቀማመጥ",
+  "defaultPortrait": "ነባሪ ပုံ",
+  "defaultPulseaudioApi": "ነባሪ የPulseAudio API",
+  "defaultSize200px": "ነባሪ መጠን (200px)",
+  "defaultSystemAudioDriver": "ነባሪ የስርዓት ኦዲዮ ድራይቨር",
+  "defaultTheme": "ነባሪ ገጽታ",
+  "defaultWindowsAudioDriver": "ነባሪ የWindows ኦዲዮ ድራይቨር",
+  "delete": "አጥፋ",
+  "deleteActivity": "እንቅስቃሴን አጥፋ",
+  "deleteAll": "ሁሉንም አጥፋ",
+  "deleteAllCachedImagesTorrentStream": "ሁሉንም መሸጎጫ ምስሎች፣ የቶረንት στሬም ቻንኮች እና ጊዜያዊ ፋይሎች አጥፋ።",
+  "deleteAllStoredHttpCookiesAcross": "በሁሉም ዶችኖች ላይ የተከማቹትን የHTTP ኩኪዎች አጥፋ።",
+  "deleteChapter": "ምዕራፍ አጥፋ",
+  "deleteChapterQuestion": "ምዕራፉ ይጥፋ?",
+  "deleteComment": "አስተያየት አጥፋ",
+  "deleteCustomLogo": "ብጁ ሎጎ አጥፋ",
+  "deleteEpisode": "ክፍል አጥፋ",
+  "deleteEpisodeQuestion": "ክፍሉ ይጥፋ?",
+  "deleteEverythingStoredOfAnymexPermanently": "የተከማቸውን የAnymeX መረጃ በሙሉ ከነቤቱ አጥፋ።",
+  "deleteExtension": "ኤክስቴንሽን አጥፋ",
+  "deleteFont": "ፊደል አጥፋ",
+  "deleteHistoryItem": "የታሪክ ንጥል አጥፋ",
+  "deleteList": "ዝርዝር አጥፋ",
+  "deleteLogo": "ሎጎ አጥፋ",
+  "deleteReason": "ምክንያት አጥፋ?",
+  "deleteRecommendation": "ምክር አጥፋ?",
+  "deleteReply": "መልስ አጥፋ",
+  "deleteReportedComment": "ሪፖርት የተደረገበት አስተያየት አጥፋ",
+  "deleteSavedCookiesAndCloudflareTokens": "የተቀመጡ ኩኪዎችን እና የCloudflare ቶከኖችን አጥፋ",
+  "deleteSavedCookiesCloudflareTokensAnd": "የተቀመጡ ኩኪዎች፣ የCloudflare ቶከኖች እና ጊዜያዊ መሸጎጫ አጥፋ",
+  "deleteSelected": "የተመረጡትን አጥፋ",
+  "deleteTemporaryNetworkAndImageCache": "தற்காலிக நெட்வொர்க் மற்றும் பட கேச்-ஐ நீக்கு",
+  "deletionRequestSentToAdminsFor": "மதிப்பாய்வுக்காக நிர்வாகிகளுக்கு நீக்குதல் கோரிக்கை அனுப்பப்பட்டது.",
+  "demuxerMaxBuffer": "டிமுக்ஸர் அதிகபட்ச இடையக",
+  "demuxerReadahead": "டிமுக்ஸர் ரீடஹெட்",
+  "description": "விவரம்",
+  "detailedClassic": "விரிவானது (கிளாசிக்)",
+  "detailedInsights": "விரிவான நுண்ணறிவுகள்",
+  "detailsPage": "விவரப் பக்கம்",
+  "developer": "டெவலப்பர்",
+  "development": "डेவலப்மென்ட்",
+  "direct": "நேரடி",
+  "directSurfaceRenderingAndroidOnly": "நேரடி மேற்பரப்பு ரெண்டரிங் (Android மட்டும்)",
+  "direction": "திசை",
+  "disableToShowAndHidePlayer": "பிளேயர் கட்டுப்பாடுகளை உடனடியாகக் காட்டவும் மறைக்கவும் முடக்கவும்",
+  "disablingMayBypassCaptivePortalsOr": "இதை முடக்குவது கேப்டிவ் போர்டல்கள் அல்லது எஸ்எஸ்எல் பரிசோதனையைத் தவிர்க்கலாம், ஆனால் பாதுகாப்பைக் குறைக்கும்.",
+  "discard": "நிராகரி",
+  "discardMessage": "செய்தியை நிராகரிக்கவா?",
+  "discardReply": "பதிலை நிராகரிக்கவா?",
+  "discardStatus": "நிலையை நிராகரிக்கவா?",
+  "disconnect": "துண்டி",
+  "disconnectDiscord": "Discord இணைப்பைத் துண்டிக்கவா?",
+  "discordTakenDown": "Discord அகற்றப்பட்டது",
+  "dismiss": "நிராகரி",
+  "display": "காட்சி",
+  "displayAnimeMangaMoviesAndShows": "முகப்புப் பக்கத்தில் சமூகத்தால் பரிந்துரைக்கப்பட்ட அனிமேஷன், மாங்கா, திரைப்படங்கள் மற்றும் நிகழ்ச்சிகளைக் காட்டு.",
+  "displayMode": "காட்சி முறை",
+  "displayModeTuningIsNotApplicable": "டெஸ்க்டாப் தளங்களில் காட்சி முறை சரிசெய்தல் பொருந்தாது.",
+  "displayPlaybackOrReadingProgressTimestamps": "இயக்கம் அல்லது வாசிப்பு முன்னேற்ற நேர முத்திரைகளைக் காட்டு",
+  "displayRefreshRateResolutionAndFrame": "புதுப்பிப்பு வீதம், தீர்மானம் மற்றும் பிரேம் சரிசெய்தல் ஆகியவற்றைக் காட்டு",
+  "distanceBetweenLines": "கோடுகளுக்கு இடையே உள்ள தூரம்",
+  "distanceFromBottomOfScreen": "ከማስተካከያው ግርጌ ያለው ርቀት",
+  "ditherDepth": "የቀለም ጥልቀት",
+  "dnsProxy": "ዲ ኤን ኤስ እና ፕሮክሲ",
+  "dontShowAgain": "ዳግመኛ አታሳይ",
+  "donate": "ለገስ",
+  "donateSupport": "ልገሳ እና ድጋፍ",
+  "donateViaPaypal": "በ PayPal ለገስ",
+  "donateViaUpiOrPaypalTo": "እድገቱን ለመደገፍ በ UPI ወይም PayPal ለገስ",
+  "donateViaUpiPaypalSupportDevelopment": "በ UPI፣ PayPal ለገስ እና እድገቱን ደግፍ",
+  "done": "ተጠናቋል",
+  "done2": "ተጠናቋል",
+  "doubletapToSeek": "ለመሻገር ሁለቴ ንካ",
+  "downgradeOrSwitchToASpecific": "ወደተወሰነ የፕለጊን ስሪት ዝቅ አድርግ ወይም ቀይር",
+  "download": "አውርድ",
+  "download4kShaders": "የ 4K ሼደሮችን አውርድ",
+  "downloadAllChapters": "ሁሉንም ምዕራፎች አውርድ",
+  "downloadAllEpisodes": "ሁሉንም ክፍሎች አውርድ",
+  "downloadChapter": "ምዕራፍ አውርድ",
+  "downloadChunks": "ክፍሎችን አውርድ",
+  "downloadCurrentSection": "የአሁኑን ክፍል አውርድ",
+  "downloadEpisode": "ክፍል አውርድ",
+  "downloadFailedTapToRetry": "ማውረድ አልተሳካም። እንደገና ለመሞከር ንካ።",
+  "downloadPath": "የማውረጃ መንገድ",
+  "downloadPathsAndQualitySettings": "የማውረጃ መንገዶች እና የጥራት ማስተካከያዎች",
+  "downloadPathsAndStorageSettings": "የማውረጃ መንገዶች እና የማከማቻ ማስተካከያዎች",
+  "downloadPermissions": "የማውረድ ፈቃዶች",
+  "downloadQualityStoragePaths": "የማውረድ ጥራት፣ የማከማቻ መንገዶች",
+  "downloadSettings": "የማውረጃ ማስተካከያዎች",
+  "downloadSize4mb": "የማውረጃ መጠን: ~4MB",
+  "downloadStarted": "ማውረድ ተጀምሯል",
+  "downloadUnreadChapters": "ያነበቡዋቸውን ምዕራፎች አውርድ",
+  "downloadUnwatchedEpisodes": "ያዩዋቸውን ክፍሎች አውርድ",
+  "downloaded": "ተወርዷል",
+  "downloaded2": "ተወርዷል",
+  "downloadedMedia": "የወረዱ ሚዲያዎች",
+  "downloadingImage": "ምስል እያወረደ ነው...",
+  "downloadingPackage": "ጥቅል እያወረደ ነው...",
+  "downloads": "ውርዶች",
+  "downloadsStorage": "ውርዶች እና ማከማቻ",
+  "downloadsPage": "የውርዶች ገጽ",
+  "downscalingAlgorithm": "የመጠን መቀነሻ ስልተ-ቀመር",
+  "dragAndDropToReorderNavigation": "የአሰሳ አሞሌ ትሮችን እንደገና ለማደራጀት ጎትተው ይጣሉ",
+  "dragToReorderStatusSections": "የሁኔታ ክፍሎችን እንደገና ለማደራጀት ጎትት",
+  "dualPageMode": "ድርብ ገጽ ሁነታ",
+  "dynamicVariablesWillBeReplacedAutomatically": "ተለዋዋጭ ተለዋጮች በራስ-ሰር ይተካሉ። የማይንቀሳቀስ ሀረግ መጠቀምም ይችላሉ።",
+  "edit": "አስተካክል",
+  "editActivity": "እንቅስቃሴ አስተካክል",
+  "editCustomMpvFlagsPropertiesAnd": "ብጁ mpv ባንዲራዎችን፣ ባህሪያትን እና የማዋቀሪያ ፋይልን ያስተካክሉ",
+  "editLogoSettings": "የአርማ ቅንብሮችን አስተካክል",
+  "editMediaEntry": "የሚዲያ ግቤት አስተካክል",
+  "editReason": "ምክንያት አስተካክል",
+  "editRecommendationReasonMin30Chars": "የምክር ምክንያት አስተካክል (ቢያንስ 30 ፊደላት)",
+  "edited": "ተስተካክሏል",
+  "enableAnimation": "አኒሜሽን አንቃ",
+  "enableAnimationOnCarouselsForSmooth": "ለስላሳ እንቅስቃሴ በካሮውሰል ላይ አኒሜሽን አንቃ",
+  "enableBackgroundMediaControlsForBluetooth": "ለብሉቱዝ ጆሮ ማዳመጫዎች እና የስርዓት ሚዲያ ማሳወቂያዎች የጀርባ ሚዲያ መቆጣጠሪያዎችን አንቃ። ማስታወሻ፡ ይህንን ማብራት የባትሪ አጠቃቀምን ይጨምራል።",
+  "enableBetaUpdates": "የቤታ ማሻሻያዎችን አንቃ",
+  "enableClassicSimpleHeaderStyleOn": "በመነሻ ማያ ገጾች ላይ ክላሲክ ቀላል ርዕስ ዘይቤን አንቃ",
+  "enableDiscordRpc": "Discord RPC አንቃ",
+  "enableExperimentalSettings": "የሙከራ ቅንብሮችን አንቃ",
+  "enableHoldingOnPlayerScreenTo": "የቪዲዮ ማጫወቻው ላይ በመያዝ ጊዜያዊ ፍጥነት ለመጨመር አንቃ",
+  "enableHorizontalSwipingOnPlayerScreen": "በቪዲዮ ውስጥ ለመዘዋወር በአግድም ማንሸራተትን አንቃ",
+  "enableKenBurns": "የኬን በርንስ (Ken Burns) አንቃ",
+  "enableLongPressQuickActions": "ረጅም ተጭኖ ፈጣን እርምጃዎችን አንቃ",
+  "enableNotificationsForUpcomingAiringEpisodes": "ለሚለቀቁት አዳዲስ ክፍሎች ማሳወቂያዎችን አንቃ።",
+  "enableNsfwAdultEntriesInAnilist": "በAniList ይዘት ውስጥ NSFW/አዋቂዎች የሚመለከቱ ግቤቶችን አንቃ።",
+  "enableShaders": "ሼደሮችን (Shaders) አንቃ",
+  "enableSwipeControls": "የማንሸራተት መቆጣጠሪያዎችን አንቃ",
+  "enableTapZones": "የመታኛ ዞኖችን አንቃ",
+  "enableThisIfYouWantTo": "የግድግዳ ወረቀትዎን ዋና ቀለም ማስቀመጥ ከፈለጉ ይህንን አንቃ",
+  "enableTranslucentNavigationBar": "ግልጽነት ያለው የናቪጌሽን ባር አንቃ",
+  "enableTts": "TTS አንቃ",
+  "enableVerticalSwipingOnTheLeft": "ብሩህነት እና ድምጽ ለማስተካከል በማጫወቻው ማስተካከያ በግራ/ቀኝ በኩል በአቀባዊ ማንሸራተትን አንቃ",
+  "enablesASoftGlowingGradientEffect": "ለስላሳ፣ የሚያበራ የגרዲየንት ተፅዕኖ ያስችላል።",
+  "encryptWithAes256RecommendedFor": "በ AES-256 ኢንክሪፕት አድርግ (ለማረጋገጫ  ምልክቶች ይመከራል)",
+  "encrypted": "ኢንክሪፕት ተደርጓል • ",
+  "endChapter": "ምዕራፍ ጨርስ",
+  "enterAmount": "መጠን አስገባ...",
+  "enterAnilistUsername": "የ AniList መለያ ስም አስገባ",
+  "enterAtLeast2Characters": "ቢያንስ 2 ፊደላትን አስገባ",
+  "enterBackupPassword": "የምትኬ የይለፍ ቃል አስገባ",
+  "enterFirstAnilistUsername": "የመጀመሪያውን የ AniList መለያ ስም አስገባ",
+  "enterGithubRepositoryUrl": "የ GitHub ማከማቻ ዩአርኤል (URL) አስገባ",
+  "enterListName": "የዝርዝር ስም አስገባ",
+  "enterPassword": "የይለፍ ቃል አስገባ",
+  "enterReasonOrDetailsForThis": "ለዚህ እርምጃ ምክንያት ወይም ዝርዝር አስገባ...",
+  "enterSearchQuery": "የፍለጋ ቃል አስገባ",
+  "enterUsername": "መለያ ስም አስገባ",
+  "enterValue": "ዋጋ አስገባ",
+  "entryDeleted": "ግቤቱ ተሰርዟል።",
+  "episode1": "ክፍል 1",
+  "episodeListSettings": "የክፍሎች ዝርዝር ማስተካከያ",
+  "episodes": "ክፍሎች",
+  "episodesDuration": "ክፍሎች እና ቆይታ",
+  "episodesWatched": "የታዩ ክፍሎች",
+  "errorOccured": "ስህተት ተፈጥሯል",
+  "errorOccurred": "ስህተት ተፈጥሯል",
+  "errorSavingImage": "ምስሉን ማስቀመጥ አልተቻለም",
+  "errorSharingImage": "ምስሉን ማጋራት አልተቻለም",
+  "errorMissingRequiredDataItSeems": "ስህተት፡ አስፈላጊ መረጃ ጠፍቷል። ምዕራፉን እንዳነበቡ ወዲያውኑ መተግበሪያውን የዘጋጉት ይመስላል!",
+  "errorMissingRequiredMediaItSeems": "ስህተት፡ አስፈላጊ ሚዲያ ጠፍቷል። ምዕራፉን እንዳነበቡ ወዲያውኑ መተግበሪያውን የዘጋጉት ይመስላል!",
+  "errorMissingRequiredMediaItSeemsYou": "ስህተት፡ አስፈላጊ ሚዲያ ጠፍቷል። ክፍሉን እንዳዩት ወዲያውኑ መተግበሪያውን የዘጋጉት ይመስላል!",
+  "everyScoreIsMappedToA": "እያንዳንዱ ውጤት ደረጃ ተሰጥቶታል። ከዚህ በታች ያለው ሰንጠረዥ እያንዳንዱን ምድብ፣ መለያውን እና የቁጥር ክልሉን ያሳያል።",
+  "experimental": "የሙከራ",
+  "experimentalHighPerformanceRenderer": "የሙከራ ከፍተኛ አፈጻጸም ሬንደረር",
+  "explore": "ያስሱ",
+  "exploreTheProjectAndContribute": "ፕሮጀክቱን ያስሱ እና አስተዋጽኦ ያድርጉ",
+  "exportLabel": "निर्यात (ላክ)",
+  "exportBackup": "ምትኬ ላክ",
+  "exportCancelled": "መላክ ተሰርዟል።",
+  "exportDeviceBackup": "የመሳሪያ ምትኬ ላክ",
+  "exportSettings": "ማስተካከያዎችን ላክ",
+  "exportYourAnimeList": "የአኒሜ ዝርዝርዎን ላክ",
+  "exportYourMangaList": "የማንጋ ዝርዝርዎን ላክ",
+  "extensionConfigurations": "የኤክስቴንሽን ማዋቀሪያዎች",
+  "extensionConfigurationsRepos": "የኤክስቴንሽን ማዋቀሪያዎች እና ማከማቻዎች",
+  "extensionManager": "የኤክስቴንሽን አስተዳዳሪ",
+  "extensionPackages": "የኤክስቴንሽን ፓኬጆች",
+  "extensionPreferences": "የኤክስቴንሽን ምርጫዎች",
+  "extensionSettings": "የኤክስቴንሽን ማስተካከያዎች",
+  "extensionSettingsAndSourceConfigurations": "የኤክስቴንሽን ቅንብሮች እና የመነሻ ውቅሮች",
+  "extensionTesting": "የኤክስቴንሽን ሙከራ",
+  "extensionType": "የኤክስቴንሽን ዓይነት",
+  "extensions": "ኤክስቴንሽኖች",
+  "extensionsDiagnostics": "ኤክስቴንሽኖች እና ምርመራዎች",
+  "extensionsRepositories": "ኤክስቴንሽኖች እና ማከማቻዎች",
+  "extensionsSources": "ኤክስቴንሽኖች እና ምንጮች",
+  "extensionsTailoredToYourNeeds": "ለእርስዎ ፍላጎት የተዘጋጁ ኤክስቴንሽኖች",
+  "externalStreamingLinks": "የውጭ እና የዥረት አገናኞች",
+  "externalBackupsRestoreMetadataAndConfigurations": "ውጫዊ ምትኬዎች መረጃዎችን እና ውቅሮችን በደህና ይመልሳሉ።",
+  "externalBrowser": "ውጫዊ አሳሽ",
+  "extras": "ተጨማሪዎች",
+  "factoryReset": "የፋብሪካ ዳግም ማስጀመር",
+  "factoryReset2": "የፋብሪካ ዳግም ማስጀመር",
+  "failedToCheckForUpdates": "ዝማኔዎችን ማረጋገጥ አልተሳካም።",
+  "failedToCheckPluginUpdates": "የፕለጊን ዝማኔዎችን ማረጋገጥ አልተሳካም።",
+  "failedToDeleteChapter": "ምዕራፉን መሰረዝ አልተሳካም",
+  "failedToDeleteEpisode": "ክፍሉን መሰረዝ አልተሳካም",
+  "failedToDeleteListEntry": "የዝርዝር ግቤትን መሰረዝ አልተሳካም",
+  "failedToDeleteMedia": "ሚዲያውን መሰረዝ አልተሳካም",
+  "failedToDownloadImage": "ምስሉን ማውረድ አልተሳካም",
+  "failedToFetchChapters": "ምዕራፎችን ማምጣት አልተሳካም",
+  "failedToFetchDetails": "ዝርዝሮችን ማምጣት አልተሳካም",
+  "failedToFetchImageForSharing": "ለማጋራት ምስል ማምጣት አልተሳካም",
+  "failedToFetchPluginReleaseDetails": "የፕለጊን ልቀት ዝርዝሮችን ማምጣት አልተሳካም።",
+  "failedToFetchPolicy": "ፖሊሲውን ማምጣት አልተሳካምም።",
+  "failedToFetchReleaseDetails": "የልቀት ዝርዝሮችን ማምጣት አልተሳካም።",
+  "failedToFetchServers": "አገልጋዮችን ማምጣት አልተሳካም",
+  "failedToLoadDetails": "ዝርዝሮችን መጫን አልተሳካም",
+  "failedToLoadFontFile": "የፊደል ቅርጸ-ቁምፊ ፋይል መጫን አልተሳካም",
+  "failedToLoadProfileAccountMay": "መገለጫውን መጫን አልተቻለም — መለያው የግል ሊሆን ወይም አልተገኘም",
+  "failedToLoadTorrentMetadata": "የቶረንት ሜታዳታ መጫን አልተቻለም",
+  "failedToPerformAction": "ድርጊቱን ማከናወን አልተቻለም",
+  "failedToRemoveRepo": "ማከማቻውን ማስወገድ አልተቻለም",
+  "failedToStartExtensionRuntime": "የኤክስቴንሽን ሩንታይም ማስጀመር አልተቻለም",
+  "failedToUpdateAnilist": "AniList ማዘመን አልተቻለም",
+  "failedToUpdateListEntry": "የዝርዝር ግቤትን ማዘመን አልተቻለም",
+  "failedToUpdatePreference": "ምርጫውን ማዘመን አልተቻለም",
+  "failedToUpdateRole": "ሚናውን ማዘመን አልተቻለም",
+  "favoriteTitle": "ተወዳጅ ርዕስ",
+  "favouriteAnime": "ተወዳጅ አኒሜ",
+  "favouriteCharacters": "ተወዳጅ ገጸ-ባህሪያት",
+  "favouriteManga": "ተወዳጅ ማንጋ",
+  "favouriteStaff": "ተወዳጅ ሰራተኞች",
+  "favouriteStudios": "ተወዳጅ ስቱዲዮዎች",
+  "featuresIssues": "ባህሪያት/ጉዳዮች",
+  "fetchingAvailableServers": "የሚገኙ ሰርቨሮችን በመጫን ላይ...",
+  "fetchingLatestReleaseDetails": "የቅርብ ጊዜ ልቀት ዝርዝሮችን በመጫን ላይ...",
+  "fetchingTorrentFileList": "የቶረንት ፋይል ዝርዝር በመጫን ላይ...",
+  "filler": "ፊለር",
+  "filter": "አጣራ",
+  "filterActivities": "እንቅስቃሴዎችን አጣራ",
+  "filterActivity": "እንቅስቃሴን አጣራ",
+  "filterByChapterCount": "በምዕራፍ ብዛት አጣራ",
+  "filterByDurationMin": "በቆይታ ጊዜ (ደቂቃ) አጣራ",
+  "filterByEpisodeCount": "በክፍል ብዛት አጣራ",
+  "filterByGenre": "በዘርፍ አጣራ",
+  "filterByVolumeCount": "በጥራዝ ብዛት አጣራ",
+  "filterGenres": "ዘርፎችን አጣራ",
+  "filterOutAdultNsfwEntriesFrom": "ከሰዎች ከሚሰጡ ምክሮች ውስጥ አዋቂዎችን/NSFW ይዘቶችን አጣርቶ አስወግድ።",
+  "filterOutEntriesAlreadyInYour": "በዝርዝርዎ ውስጥ ያሉትን አስቀድመው አጣራ",
+  "filterOutEntriesAlreadyInYourList": "በመመልከት/በማንበብ ሁኔታ ላይ በመመስረት በዝርዝርዎ ውስጥ ያሉትን ግቤቶች አጣራ።",
+  "filterSettings": "የማጣሪያ ቅንብሮች",
+  "filters": "ማጣሪያዎች",
+  "findAndManageSpecificUsers": "특정 사용자 찾기 및 관리",
+  "findAnimeSauceByScreenshots": "በቅጽበታዊ ገጽ እይታዎች የአኒም ምንጭ ፈልግ",
+  "findSource": "ምንጭ ፈልግ",
+  "findYourFavouriteAnimeOrManga": "የሚወዱትን አኒም ወይም ማንጋ፣ ማንህዋ ወይም የሚፈልጉትን ያግኙ!",
+  "findYourFavouriteAnimeMangaManhwa": "የሚወዱትን አኒም፣ ማንጋ፣ ማንህዋ ወይም የሚፈልጉትን ያግኙ!",
+  "finishDate": "ያለቀበት ቀን",
+  "firstChapter": "የመጀመሪያ ምዕራፍ",
+  "firstUser": "የመጀመሪያ ተጠቃሚ",
+  "fitToScreenWidth": "ከማያ ገጽ ስፋት ጋር አስተካክል",
+  "fontFamily": "የፊደል ዓይነት",
+  "fontSize": "የፊደል መጠን",
+  "forceReDownload": "በግድ እንደገና አውርድ",
+  "forceSyncFromSdCard": "ከ SD ካርድ በግድ አመሳስል",
+  "forks": "ፎርኮች",
+  "format": "ቅርጸት",
+  "formatDistribution": "የቅርጸት ስርጭት",
+  "frameInterpolation": "የክፈፍ ማ插入 (Frame Interpolation)",
+  "freeSupport": "ነፃ ድጋፍ",
+  "frequentlyRevisited": "ብዙ ጊዜ የሚጎበኙ",
+  "fromUrl": "ከ URL",
+  "fullWidthDetailedCardWithLarge": "የትዕይንት ክፍል መረጃ እና ትልቅ ድንክዬ ያለው ሙሉ ስፋት ያለው ዝርዝር ካርድ",
+  "fullWidthDetailedCardsWithProgress": "እድገት እና የማንበብ አዝራር ያላቸው ሙሉ ስፋት ዝርዝር ካርዶች",
+  "fullWidthHeroBannerWithCompact": "የታመቀ ዝርዝሮች እና ፈጣን ማጠቃለያ ያለው ሙሉ ስፋት የጀግና ባነር።",
+  "general": "አጠቃላይ",
+  "generalPrivacy": "አጠቃላይ እና ግላዊነት",
+  "generalSync": "አጠቃላይ እና ማመሳሰል",
+  "generalAppPreferencesAndSyncServices": "አጠቃላይ የመተግበሪያ ምርጫዎች እና የማመሳሰል አገልግሎቶች",
+  "generalAppSettingsAndSyncServices": "አጠቃላይ የመተግበሪያ ቅንብሮች እና የማመሳሰል አገልግሎቶች",
+  "generalPreferences": "አጠቃላይ ምርጫዎች",
+  "genres": "ዘውጎች",
+  "genresUpper": "ዘውጎች",
+  "gestureForBrightnessVolume": "ለብርሃን እና ድምፅ የእጅ ምልክት",
+  "getHelpWithTheCommentSystem": "ስለ አስተያየት መስጫው ስርዓት እርዳታ ያግኙ",
+  "getStarted": "ይጀምሩ",
+  "globalConcurrencyLimit": "ዓለም አቀፍ የአንድ ጊዜ ሂደቶች ገደብ",
+  "glowMultiplier": "የብሩህነት ማባዣ",
+  "goSuperDarkMode": "ወደ እጅግ ጨለማ ሁኔታ ይቀይሩ!",
+  "goToDownloads": "ወደ ማውረዶች ይሂዱ",
+  "goToExtensionsToGetStarted": "ለመጀመር ወደ ቅጥያዎች ይሂዱ",
+  "goToPluginDownloader": "ወደ ፕለጊን ማውረጃ ይሂዱ",
+  "goToRuntimeManager": "ወደ ሩንታይም አስተዳዳሪ ይሂዱ",
+  "goodAfternoon": "እንደምን አደሩ/ዋሉ",
+  "goodEvening": "እንደምን አመሹ",
+  "goodMorning": "እንደምን አደሩ",
+  "goodnight": "ደህና እደሩ",
+  "gotIt": "ገባኝ",
+  "grainIntensity": "የጥራጥሬ ጥንካሬ",
+  "grainTextureOverlay": "የጥራጥሬ ቴክስቸር መደራረብ",
+  "grantPermission": "ፈቃድ ስጥ",
+  "grantPermissions": "ፈቃዶችን ስጥ",
+  "grid": "ግሪድ",
+  "gridSize": "የግሪድ መጠን",
+  "gridView": "የግሪድ እይታ",
+  "guest": "እንግዳ",
+  "happySnacking": "መልካም መክሰስ",
+  "hardwareDisplayModeSwitchingIsNot": "የሃርድዌር ማሳያ ሁኔታ መቀየር በመሣሪያዎ አይደገፍም።",
+  "helpSupport": "እsዳ & ድጋፍ",
+  "hexColorCode": "የሄክስ ቀለም ኮድ",
+  "hey": "ሰላም ",
+  "hidden": "የተደበቀ",
+  "hiddenFromYourPublicProfile": "ከሕዝብ መገለጫዎ የተደበቀ",
+  "hiddenTabs": "የተደበቁ ትሮች",
+  "hideAdultContent": "ትልቅ ሰው የሚሆን ይዘት ደብቅ",
+  "hideButton": "አዝራር ደብቅ",
+  "hideByListStatus": "በዝርዝር ሁኔታ ደብቅ",
+  "hideCompleted": "የተጠናቀቁትን ደብቅ",
+  "hideDropped": "የተተዉትን ደብቅ",
+  "hideEntriesThatAreInYour": "በዕቅድ ዝርዝርዎ ውስጥ ያሉ መግቢያዎችን ደብቅ።",
+  "hideEntriesThatAreMarkedAs": "በዝርዝርዎ ውስጥ እንደተጠናቀቁ ምልክት የተደረገባቸውን መግቢያዎች ደብቅ።",
+  "hideEntriesThatYouAreCurrently": "አሁን እየመለከቱት ወይም እያነበቡት ያሉትን መግቢያዎች ደብቅ።",
+  "hideEntriesThatYouAreRewatching": "ሁለተኛ እየተመለከቱት ያሉትን መግቢያዎች ደብቅ።",
+  "hideEntriesThatYouHaveDropped": "የተዉትን መግቢያዎች ደብቅ።",
+  "hideEntriesThatYouHavePut": "በመጠባበቂያ ላይ ያስቀመጧቸውን መግቢያዎች ደብቅ።",
+  "hideNsfw": "NSFW ደብቅ",
+  "hideNsfw18Content": "NSFW / 18+ ይዘት ደብቅ",
+  "hideNsfwContent": "የNSFW ይዘት ደብቅ",
+  "hideNsfwRecommendations": "የNSFW ምክሮችን ደብቅ",
+  "hideOnHoldPaused": "በመጠባበቂያ/ባለበት የቆመውን ደብቅ",
+  "hidePlanning": "ዕቅድን ደብቅ",
+  "hideRewatching": "እንደገና መመልከትን ደብቅ",
+  "hideSystemStatusAndNavigationBars": "የስርዓት ሁኔታን እና የዳር አሰሳ አሞሌዎችን ደብቅ",
+  "hideWatchingReading": "መመልከት/ማንበብ ደብቅ",
+  "history": "ታሪክ",
+  "historyStatistics": "ታሪክ እና ስታቲስቲክስ",
+  "historyCardStyle": "የታሪክ ካርድ ዘይቤ",
+  "historyItemDeleted": "የታሪክ ንጥል ተሰርዟል",
+  "hlsParallelSegments": "HLS ትይዩ ክፍሎች",
+  "holdAndDragAnyItemTo": "አስተካክሎ ለማስቀመጥ ማንኛውንም ንጥል ይያዙ እና ይጎትቱ",
+  "holdToAccessHistoryEditor": "የታሪክ ማስተካከያውን ለመጠቀም ይያዙ",
+  "holdToDelete": "ለመሰረዝ ይያዙ",
+  "holdToSpeedUp": "ፍጥነት ለመጨመር ይያዙ",
+  "home": "መነሻ",
+  "horizontal": "አግድም",
+  "hostEG12700": "አስተናጋጅ (ለምሳሌ 127.0.0.1)",
+  "hours": "ሰዓታት",
+  "howItWorksCompatibilityRanks": "እንዴት እንደሚሰራ እና የተስማሚነት ደረጃዎች",
+  "howMuchInPercentageToMark": "ክፍሉ እንደታየ በምን ያህል መቶኛ ምልክት ይደረግ",
+  "howToUseTheCommentSystem": "የአስተያየት ስርዓቱን እንዴት መጠቀም እንደሚቻል:",
+  "hue": "ቀለም",
+  "ifEnabledAContinueWatchingBar": "ይህ ከነቃ፣ በመነሻ ገጹ ላይ ከታችኛው የ ዳሰሳ አሞሌ በላይ መቀጠል የሚችሉበት አሞሌ ይታያል።",
+  "ifEnabledAllLibraryItemsWill": "ይህ ከነቃ፣ ሁሉም የቤተ-መጽሐፍት ንጥሎች በሁሉም የመከታተያ አገልግሎቶች መካከል ይጋራሉ።",
+  "ifEnabledAnymexWillAskFor": "ይህ ከነቃ AnymeX የመከታተያ ፈቃድ ይጠይቃል ካልሆነ ግን በነባሪነት ይከታተላል።",
+  "ifEnabledYouWillNotGet": "ይህ ከነቃ፣ በ AniList/MyAnimeList ላይ አዋቂዎች የሚመለከቱትን ይዘት ለማንቃት ጥያቄ አይደርስዎትም።",
+  "ifTemporaryAppCacheReachesThis": "ጊዜያዊ የመተግበሪያ መሸጎጫ ይህ መጠን ሲደርስ በራስ-ሰር ይጸዳል።",
+  "ifYouAreUsingAJson": "የ JSON ገጽታ እየተጠቀሙ ከሆነ፣ እዚህ የሚደረጉ ለውጦች የተጫዋች መቆጣጠሪያዎችን አይነኩም። እነዚህን ቅንብሮች ለመተግበር ወደ አብሮ የተሰራ ገጽታ ይቀይሩ።",
+  "ifYouCantDonateWatchThis": "መዋጮ ማድረግ ካልቻሉ፣ ለመደገፍ ይህንን ማስታወቂያ ይመልከቱ",
+  "image": "ምስል",
+  "imageShowsThumbnail": "ምስል (ጥቃቅን ምስል ያሳያል)",
+  "imageFilterQuality": "የምስል ማጣሪያ ጥራት",
+  "imageSharedFromAnymex": "ከ AnymeX የተጋራ ምስል",
+  "imagesWillBeDownloadedInFull": "ምስሎች ሙሉ ጥራት ያላቸው ይወርዳሉ። እያንዳንዱ ምዕራፍ በራሱ አቃፊ ውስጥ ይቀመጣል።",
+  "immersiveMode": "Immersive Mode",
+  "importLabel": "አስገባ",
+  "importLabel2": "አስገባ",
+  "importManageCustomJsonThemes": "ብጁ የ JSON ገጽታዎችን አስገባ እና አስተዳድር",
+  "importBackup": "ምትኬ አስገባ",
+  "importCustomFont": "ብጁ 폰ት አስገባ",
+  "importFromUrl": "ከ URL አስገባ",
+  "includeAdultNsfwSuggestions": "አዋቂ እና NSFW ጥቆማዎችን አካትት",
+  "incognito": "የስም ማጥፋት (Incognito)",
+  "incognitoActive": "የስም ማጥፋት (ንቁ)",
+  "incognitoMode2": "የስም ማጥፋት ሁኔታ",
+  "indiaUpi": "ህንድ (UPI)",
+  "info": "መረጃ",
+  "inlineCode": "የውስጥ መስመር ኮድ",
+  "insert": "አስገባ",
+  "installPermission": "የመጫኛ ፍቃድ",
+  "installPermissionIsRequiredToUpdate": "መተግበሪያውን ለማዘመን የመጫኛ ፍቃድ ያስፈልጋል",
+  "installedPackages": "የተጫኑ ፓኬጆች",
+  "installedThemes": "የተጫኑ ገጽታዎች",
+  "interfaceStyling": "የበይነገጽ ቅርጽ",
+  "internalBrowser": "የውስጥ አሳሽ",
+  "international": "ዓለም አቀፍ",
+  "invalidBackupFileOrIncorrectPassword": "ልክ ያልሆነ ምትኬ ፋይል ወይም የተሳሳተ የይለፍ ቃል",
+  "invertVolumeKeys": "የድምጽ ቁልፎችን ቀልብስ",
+  "italic": "ማጋደል (Italic)",
+  "joinDiscordCommunity": "የ Discord ማህበረሰብን ይቀላቀሉ",
+  "joinNewDiscord": "አዲሱን Discord ይቀላቀሉ",
+  "joinTelegramChannel": "የ Telegram ቻናል ይቀላቀሉ",
+  "joinUsForDroppingFeedbackOr": "ለአስተያየት ወይም ለባህሪ ጥያቄዎች ይቀላቀሉን",
+  "jsonThemeManager": "JSON የገጽታ አስተዳዳሪ",
+  "judgment": "ፍርድ",
+  "keepEditing": "ማስተካከል ይቀጥሉ",
+  "keepItChill": "ቀዝቃዛ አድርገው ያቆዩት",
+  "keepScreenOn": "ማስተካከያ ማያ ገጽ በርቶ ይቆይ",
+  "keepVoicePitchStableAtHigher": "በከፍተኛ ፍጥነት የድምፅ ከፍታን የተረጋጋ ያድርጉ",
+  "koFiSupport": "የKo-fi ድጋፍ",
+  "languageVariant": "የቋንቋ ዓይነት",
+  "lastAdded": "በመጨረሻ የታከለው",
+  "lastChapter": "የመጨረሻ ምዕራፍ",
+  "later": "በ후",
+  "latest": "አዳዲስ",
+  "latestManga": "አዳዲስ ማንጋ",
+  "layout": "ዕቅድ",
+  "layoutStyle": "የዕቅድ ዘይቤ",
+  "leaderboard": "የመሪዎች ሰንጠረዥ",
+  "learnHowToFormatYourComments": "አስተያየቶችን እንዴት መቅረጽ እንደሚችሉ ይወቁ",
+  "leftSide": "ግራ በኩል",
+  "letterSpacing": "የፊደላት ክፍተት",
+  "levelProgress": "የደረጃ እድገት",
+  "libraryLabel": "ቤተ መጻሕፍት",
+  "librarySettings": "የቤተ መጻሕፍት ቅንብሮች",
+  "libraryStatistics": "የቤተ መጻሕፍት ስታቲስቲክስ",
+  "lightness": "ብሩህነት",
+  "likedBy": "የተወደደው በ",
+  "lineHeight": "የመስመር ከፍታ",
+  "linkAutoDetected": "ሊንክ (በራሱ የተገኘ)",
+  "linkCopiedToClipboard": "ሊንኩ ወደ ክሊፕቦርድ ተገልብጧል!",
+  "linkHasExpiredAndEpisodeUrl": "ሊንኩ ጊዜው አልፎበታል እና የክፍሉ ዩአርኤል የለም።",
+  "linkHasExpiredAndNoAlternative": "ሊንኩ ጊዜው አልፎበታል እና ሌላ አማራጭ ዥረት አልተገኘም።",
+  "linotteDefault": "ሊኖት (ነባሪ)",
+  "liquidBackground": "ፈሳሽ ዳራ",
+  "liquidMode": "ፈሳሽ ሁኔታ",
+  "listEntryUpdatedSuccessfully": "የዝርዝር ግቤት በተሳካ ሁኔታ ተዘምኗል!",
+  "listExporter": "የዝርዝር ላኪ",
+  "listNameAlreadyExists": "የዝርዝር ስሙ ቀድሞውኑ አለ",
+  "listOptions": "የዝርዝር አማራጮች",
+  "liveBlurIsUnavailableWhenUsing": "ፍሉይድ ሜሽ (Fluid Mesh) በሚጠቀሙበት ጊዜ ቀጥታ ብዥታ (Live blur) አይገኝም።",
+  "livePreview": "ቀጥታ ቅድመ-እይታ",
+  "livePreview2": "ቀጥታ ቅድመ-እይታ",
+  "loadTemplate": "ቴምፕሌት ጫን",
+  "loadingMediaFiles": "የሚዲያ ፋይሎች በመጫን ላይ...",
+  "loadingMedia": "ሚዲያ በመጫን ላይ...",
+  "local": "የአካባቢ",
+  "localLibrary": "የአካባቢ لائብረሪ",
+  "localMedia": "የአካባቢ ሚዲያ",
+  "location": "መקום",
+  "logCapture": "ሎግ መቅረጫ",
+  "logDirectory": "የሎግ ማህደር",
+  "logIn": "ግባ",
+  "logInRequired": "መግባት ያስፈልጋል",
+  "logInToCustomizeYourPush": "የግፊት ማሳወቂያ ምርጫዎችዎን ለማስተካከል ይግቡ።",
+  "logInToJoinTheConversation": "ውይይቱን ለመቀላቀል እና አስተያየት ለመስጠት ይግቡ።",
+  "logOut": "ውጣ",
+  "loggedInTrackingServices": "የገቡባቸው የመከታተያ አገልግሎቶች",
+  "login": "ግባ",
+  "loginAuthTokens": "መግቢያ እና የማረጋገጫ  टोकኖች",
+  "loginInsideTheAppRecommended": "በመተግበሪያው ውስጥ ይግቡ (የሚመከር)",
+  "loginSessions": "የመግቢያ ክፍለ ጊዜዎች",
+  "loginUsingYourDefaultBrowser": "ነባሪ አሳሽዎን በመጠቀም ይግቡ",
+  "loginWithToken": "በቶከን ይግቡ",
+  "logoAnimation": "የአርማ እነማ",
+  "logoName": "የአርማ ስም:",
+  "logs": "ሎጎች",
+  "longPressPageActions": "የረጅም ጊዜ ተጭኖ የያዙት ገጽ እርምጃዎች",
+  "makeEverythingGlassyLiquidy": "ሁሉንም ነገር ብርጭቆ መሰል እና ፈሳሽ አድርግ...",
+  "manageAnilistLists": "የAniList ዝርዝሮችን አስተዳድር",
+  "manageCachedImagesThresholdsAndReset": "የተخزኑ ምስሎችን፣ ገደቦችን እና የመተግበሪያ ውሂብ ዳግም አስጀምር",
+  "manageDeviceStorageAndNotificationsTo": "ሚዲያዎን ከመስመር ውጭ ለማውረድ እና ለማስተዳደር የመሣሪያ ማከማቻን እና ማሳወቂያዎችን ያስተዳድሩ።",
+  "manageLogCaptureAndShareSaved": "የሎግ ቅጂዎችን ያስተዳድሩ እና የተቀመጡ ሎጎችን ያጋሩ",
+  "manageMyanimelistLists": "የMyAnimeList ዝርዝሮችን ያስተዳድሩ",
+  "managePluginsSources": "ተሰኪዎችን እና ምንጮችን ያስተዳድሩ",
+  "manageSimklLists": "የSimkl ዝርዝሮችን ያስተዳድሩ",
+  "manageSourcesAndRepositoriesToUse": "መተግበሪያውን ሙሉ አቅሙ ለመጠቀም ምንጮችን እና ማከማቻዎችን ያስተዳድሩ",
+  "manageYourMyanimelistAnilistSimklAccounts": "የMyAnimeList፣ AniList፣ Simkl መለያዎችዎን ያስተዳድሩ!",
+  "management": "ניהול",
+  "manga": "ማንጋ",
+  "mangaNovelReaderSettingsTapZones": "የማንጋ እና  novela አንባቢ ቅንብሮች፣ የመንካያ ዞኖች",
+  "mangaNovelViewerSettingsTapZones": "የማንጋ እና novela ተመልካች ቅንብሮች፣ የመንካያ ዞኖች",
+  "mangaAndNovelReaderStylesAnd": "የማንጋ እና የ novela አንባቢ ዘይቤዎች እና የመንካያ ዞኖች",
+  "mangaCustomLists": "ብጁ የማንጋ ዝርዝሮች",
+  "mangaDetailsPhrasing": "የማንጋ ዝርዝሮች አቀራረብ",
+  "mangaLibrary": "የማንጋ ቤተ-መጽሐፍት",
+  "mangaList": "የማንጋ ዝርዝር",
+  "mangaScore": "የማንጋ ውጤት",
+  "mangaSectionOrder": "የማንጋ ክፍል ቅደም ተከተል",
+  "manuallyPasteOauthAccessToken": "የOAuth መዳረሻ ቶከን በእጅ ለጥፍ",
+  "markAllRead": "ሁሉንም እንደተነበበ ምልክት አድርግ",
+  "markAsWatched": "እንደታየ ምልክት አድርግ",
+  "markdownGuide": "የማርክዳውን መመሪያ",
+  "maximumDemuxerBufferMb": "ከፍተኛው የዲሙክሰር ቡፈር (MB)",
+  "maybeLater": "ባለ ጊዜ",
+  "mean": "አማካኝ",
+  "meanScore": "አማካኝ ውጤት",
+  "mediaPlayback": "ሚዲያ እና መልሶ ማጫወት",
+  "mediaLibrary": "የሚዲያ ቤተ-መጽሐፍት",
+  "mediaSessionBluetoothSupport": "የሚዲያ ክፍለ ጊዜ (ብሉቱዝ ድጋፍ)",
+  "mediaTypeBreakdown": "የሚዲያ ዓይነት ዝርዝር",
+  "mediaYouDownloadWillAppearHere": "የምታወርዷቸው ሚዲያዎች እዚህ ይታያሉ።",
+  "megaskipDuration": "ሜጋ መዝለያ ቆይታ",
+  "mention": "ጠቀስ",
+  "mentions": "ጠቀሶች",
+  "merge": "አዋህድ",
+  "messageFriend": "ለጓደኛ ጻፍ",
+  "minutesWatched": "የተመለከቱት ደቂቃዎች",
+  "miscellaneous": "ልዩ ልዩ",
+  "missingRuntimeHost": "የማስኬጃ አስተናጋጅ ጠፍቷል",
+  "moderation": "ልከኝነት",
+  "moderationActions": "የልከኝነት እርምጃዎች",
+  "moderationPanel": "የልከኝነት ፓነል",
+  "moderator": "አልቃሽ/አስታራቂ",
+  "moreOptions": "ተጨማሪ አማራጮች",
+  "morePopularManga": "በጣም ተወዳጅ ማንጋ",
+  "moveToLeft": "ወደ ግራ ውሰድ",
+  "moveToRight": "ወደ ቀኝ ውሰድ",
+  "movie": "ፊልም",
+  "mpvConfiguration": "የ MPV ማዋቀሪያ",
+  "muteUser": "ተጠቃሚውን ዝም አሰኝ",
+  "mutualConnections": "የጋራ ግንኙነቶች",
+  "mutualFriends": "የጋራ ጓደኞች",
+  "nameplates": "የስም ሰሌዳዎች",
+  "navBarLayout": "የማሰሻ አሞሌ አቀማመጥ",
+  "navBarStyle": "የማሰሻ አሞሌ ዘይቤ",
+  "navigationLayout": "የማሰሻ አቀማመጥ",
+  "needHelp": "እርዳታ ይፈልጋሉ?",
+  "network": "ኔትወርክ",
+  "newLabel": "አዲስ",
+  "newCollection": "አዲስ ስብስብ",
+  "newCustomListName": "አዲስ የብጁ ዝርዝር ስም",
+  "newDownload": "አዲስ ማውረድ",
+  "newList": "አዲስ ዝርዝር",
+  "newestFirst": "አዲሱ መጀመሪያ",
+  "nextRelease": "ቀጣይ ልቀት",
+  "nextReleasePrediction": "የቀጣይ ልቀት ግምት",
+  "noActiveDownloads": "ንቁ ማውረዶች የሉም",
+  "noActiveSourceOrMediaFound": "ምንም ንቁ ምንጭ ወይም ሚዲያ አልተገኘም",
+  "noActiveSourceSelected": "ምንም ንቁ ምንጭ አልተመረጠም",
+  "noActivity": "ምንም እንቅስቃሴ የለም",
+  "noAnimeFound": "ምንም አኒሜ አልተገኘም",
+  "noAudioTracksAvailable": "ምንም የኦዲዮ ትራኮች የሉም",
+  "noChaptersFound": "ምንም ምዕራፎች አልተገኙም",
+  "noChaptersFound2": "ምንም ምዕራፎች አልተገኙም",
+  "noCommonGenres": "ምንም የተለመዱ ዘውጎች የሉም",
+  "noCommonTags": "ምንም የተለመዱ መለያዎች የሉም",
+  "noContributorsFound": "ምንም አስተዋጽዖ አበርካቾች አልተገኙም።",
+  "noCustomListsAvailable": "ምንም ብጁ ዝርዝሮች የሉም።",
+  "noCustomListsYet": "እስካሁን ምንም ብጁ ዝርዝሮች የሉም",
+  "noCustomListsYet2": "እስካሁን ምንም ብጁ ዝርዝሮች የሉም።",
+  "noDataAvailableForThisSection": "ለዚህ ክፍል ምንም ውሂብ የለም",
+  "noDataAvailable": "ምንም ውሂብ የለም።",
+  "noDecadeBreakdownAvailable": "ምንም የათርት ዓመት ስብጥር የለም",
+  "noDescriptionAvailable": "ምንም መግለጫ የለም",
+  "noDownloadedChaptersFoundForThis": "ለዚህ ማንጋ የወረዱ ምዕራፎች አልተገኙም",
+  "noDownloadedEpisodesFoundForThis": "ለዚህ አኒሜ የወረዱ ክፍሎች አልተገኙም",
+  "noEntriesFound": "ምንም ግቤቶች አልተገኙም",
+  "noEpisodesFound": "ምንም ክፍሎች አልተገኙም",
+  "noExtensionManagersFound": "ምንም የኤክስቴንሽን ማስተዳደሪያዎች አልተገኙም።",
+  "noExtensionsFound": "ምንም ኤክስቴንሽኖች አልተገኙም",
+  "noExtensionsInstalled": "ምንም ኤክስቴንሽኖች አልተጫኑም",
+  "noGenresAvailableAnilistApiMay": "ምንም ዘውጎች የሉም። የAniList ኤፒአይ (API) በጊዜያዊነት ላይሰራ ይችላል።",
+  "noHiddenTabs": "ምንም የተደበቁ ትሮች የሉም",
+  "noInsightsAvailableYetAddItems": "እስካሁን ምንም ግንዛቤዎች የሉም። እባክዎ ንጥሎችን ወደ ቤተ-መጽሐፍትዎ ያክሉ!",
+  "noItemsInThisLibrary": "በዚህ ቤተ-መጽሐፍት ውስጥ ምንም ንጥሎች የሉም።",
+  "noLoggedStatsYetStartWatching": "እስካሁን የተመዘገቡ ስታቲስቲክሶች የሉም። መመልከት/ማንበብ ይጀምሩ!",
+  "noMediaFilesFound": "ምንም የሚዲያ ፋይሎች አልተገኙም",
+  "noMediaFoundForThisStudio": "ለዚህ ስቱዲዮ ምንም ሚዲያ አልተገኘም",
+  "noMediaInThisList": "በዚህ ዝርዝር ውስጥ ምንም ሚዲያ የለም።",
+  "noMoreActivities": "ተጨማሪ እንቅስቃሴዎች የሉም",
+  "noMoreRecommendations": "ተጨማሪ የምክር ሃሳቦች የሉም",
+  "noMoreUsers": "ተጨማሪ ተጠቃሚዎች የሉም",
+  "noNotificationsYet": "እስካሁን ምንም ማሳወቂያዎች የሉም",
+  "noNovelExtensionsInstalledToRead": "ይህንን ራዕይ (Novel) ለማንበብ የተጫኑ የራዕይ ኤክስቴንሽኖች የሉም።",
+  "noPendingReports": "ምንም በመጠባበቅ ላይ ያሉ ሪፖርቶች የሉም",
+  "noPlayableStreamAvailableForThis": "ለዚህ ክፍል ሊጫወት የሚችል ስትሪም የለም።",
+  "noPlayableStreamWasReturnedBy": "በዚህ ምንጭ ምንም ሊጫወት የሚችል ስትሪም አልተመለሰም።",
+  "noRecentActivityFoundForSelected": "ለተመረጡት ማጣሪያዎች ምንም የቅርብ ጊዜ እንቅስቃሴ አልተገኘም",
+  "noRecommendationsFound": "ምንም የምክር ሃሳቦች አልተገኙም",
+  "noRecommendationsYet": "እስካሁን ምንም የምክር ሃሳቦች የሉም",
+  "noReleasesFound": "ምንም ልቀቶች አልተገኙም።",
+  "noRepliesYetBeTheFirst": "እስካሁን ምላሾች የሉም። የመጀመሪያው ይሁኑ!",
+  "noRepositoriesYet": "እስካሁን ማከማቻዎች (Repositories) የሉም",
+  "noResult": "ምንም ውጤት የለም",
+  "noResultsFound": "ምንም ውጤቶች አልተገኙም።",
+  "noResultsYet": "እስካሁን ምንም ውጤቶች የሉም",
+  "noResultsTrySearchingByTitle": "ምንም ውጤት የለም። በርዕስ ለመፈልግ ይሞክሩ።",
+  "noSearchResults": "ምንም የፍለጋ ውጤቶች የሉም",
+  "noServersAvailable": "ምום ሰርቨሮች የሉም",
+  "noServersFound": "ምንም ሰርቨሮች አልተገኙም።",
+  "noServicesAvailable": "ምንም አገልግሎቶች የሉም",
+  "noSourceInstalled": "ምንም ምንጭ አልተጫነም",
+  "noSourceSelected": "ምንም ምንጭ አልተመረጠም",
+  "noSourcesFound": "ምንም ምንጮች አልተገኙም",
+  "noStatsAvailable": "ምንም ስታቲስቲክስ የሉም",
+  "noSubtitleTracksAvailable": "ምንም የግርጌ ጽሁፍ ትራኮች የሉም",
+  "noTestsRunning": "ምንም ሙከራዎች እየሄዱ አይደሉም",
+  "noThemesYet": "እስካሁን ምንም ጭብጦች የሉም",
+  "noTrackingServiceConnected": "ምንም የመከታተያ አገልግሎት አልተገናኘም",
+  "noUsersFound": "ምንም ተጠቃሚዎች አልተገኙም",
+  "noVisibleTabs": "ምንም የሚታዩ ታቦች የሉም",
+  "noVisualsFoundForThisAnime": "ለዚህ አኒሜ ምንም ምስሎች አልተገኙም (╥﹏╥)",
+  "noWatchOrderFound": "ምንም የመመልከቻ ቅደም ተከተል አልተገኘም።",
+  "notNow": "አሁን አይደለም",
+  "notSupported": "የማይደገፍ",
+  "notTracked": "ያልተከታተለ",
+  "noteAddingKotatsuRepositoryWillTake": "ማስታወሻ፡ የKotatsu ማከማቻን ማከል ቢያንስ 1-2 ደቂቃ ይወስዳል ምክንያቱም በመጀመሪያ ጭነት ጊዜ የኤክስቴንሽን ተሰኪውን ማውረድ እና መለወጥ ስለሚያስፈልገው።",
+  "nothingDownloadedYet": "እስካሁን የወረደ ነገር የለም",
+  "nothingToPreview": "ቅድመ እይታ የሚታይ ነገር የለም",
+  "nothingToPreviewYet": "እስካሁን ቅድመ እይታ የሚታይ ነገር የለም።",
+  "notificationPreferences": "የማሳወቂያ ምርጫዎች",
+  "notifications": "ማሳወቂያዎች",
+  "notifyForOfficialAnnouncementsAndApp": "ለኦፊሴላዊ ማስታወቂያዎች እና የመተግበሪያ ማሻሻያዎች አሳውቅ",
+  "notifyIfYourCommentIsRemoved": "አስተያየትዎ በአወያይ ከተወገደ አሳውቅ",
+  "notifyOnNewCommentsForMedia": "ስለተወያዩበት ሚዲያ አዲስ አስተያየቶች ሲኖሩ አሳውቅ",
+  "notifyOnUpvotesAndDownvotes": "በላይ ድምጾች እና በታች ድምጾች ላይ አሳውቅ",
+  "notifyOnWarningsPinnedCommentsOr": "በማስጠንቀቂያዎች፣ በተሰኩ አስተያየቶች፣ ወይም በክር መቆለፊያዎች ላይ አሳውቅ",
+  "notifyWhenSomeoneMentionsYourUsername": "አንድ ሰው የተጠቃሚ ስምዎን ሲጠቅስ አሳውቅ",
+  "notifyWhenSomeoneRepliesToYour": "አs someone replies to your comment",
+  "novel": "ልቦለድ",
+  "novelCustomLists": "የልቦለድ ብጁ ዝርዝሮች",
+  "novelDetailsPhrasing": "የልቦለድ ዝርዝሮች አረፍተ ነገር",
+  "novelFontFamily": "የልቦለድ ጽሁፍ አይነት",
+  "novelLibrary": "የልቦለድ ቤተ-መጽሐፍት",
+  "novelSnapshots": "የልቦለድ ቅጽበታዊ ገጽ እይታዎች",
+  "novelTheme": "የልቦለድ ጭብጥ",
+  "novels": "ልቦለዶች",
+  "numberOfActiveDownloadTasks": "ንቁ የማውረድ ስራዎች ብዛት",
+  "numberOfParallelChunksPerDownload": "ለእያንዳንዱ ማውረድ ትይዩ ክፍሎች ብዛት",
+  "okay": "እሺ",
+  "oldestFirst": "ቀደምት መጀመሪያ",
+  "oledMode": "የኦሌድ ሁነታ",
+  "onMyList": "በዝርዝሬ ላይ",
+  "oneOptionPerLineLikeHwdec": "በእያንዳንዱ መስመር አንድ አማራጭ፣ ልክ እንደ hwdec=auto ወይም scale=ewa_lanczossharp። በ # የሚጀምሩ መስመሮች አስተያየቶች ናቸው። በ [ቅንፍ] ውስጥ ያሉ መገለጫዎች ችላ ተብለዋል።",
+  "online": "ኦንላይን",
+  "openCloset": "ክፍት መደርደሪያ",
+  "openInBrowser": "በአሳሽ ክፈት",
+  "openSettings": "ቅንብሮችን ክፈት",
+  "openSource": "ክፍት ምንጭ",
+  "openSupportedLinks": "የተደገፉ አገናኞችን ክፈት",
+  "openTheDownloadsScreenFromThe": "Downloads ማያ ገጽ ከምናሌው ክፈት",
+  "openVideoStreamInExternalPlayer": "የቪዲዮ 스트림ን በውጫዊ ማጫወቻ በነባሪ ክፈት",
+  "openWebview": "የድር ዕይታን ክፈት",
+  "openingsEndings": "መክፈቻዎች እና ማጠናቀቂያዎች",
+  "openslEsNativeAudioEngine": "OpenSL ES ቤተኛ የኦዲዮ ሞተር",
+  "options": "አማራጮች",
+  "order": "ቅደም ተከተል",
+  "originalSize": "ዋናው መጠን",
+  "otakuRankLevel": "የኦታኩ የደረጃ ደረጃ",
+  "other": "ሌላ",
+  "otherFeatures": "ሌሎች ገጽታዎች",
+  "otherRecommendations": "ሌሎች ምክሮች",
+  "otherStuffs": "ሌሎች ነገሮች",
+  "otherTemporaryFiles": "ሌሎች ጊዜያዊ ፋይሎች",
+  "otherWaysToSupport": "የሚደግፉበት ሌሎች መንገዶች",
+  "others": "ሌሎች",
+  "outlineType": "የቅርጽ ዓይነት",
+  "overscroll": "ከመጠን በላይ ማሸብለል",
+  "overscrollToPrevNextChapter": "ወደ ቀድሞው/ቀጣዩ ምዕራፍ ከመጠን በላይ ማሸብለል",
+  "overview": "አጠቃላይ እይታ",
+  "overwrite": "እንደገና ጻፍ",
+  "pageAnimationDemo": "የገጽ እነማ ማሳያ",
+  "pageReaderMode": "የገጽ አንባቢ ሁኔታ",
+  "paged": "በገጾች የተከፈለ",
+  "palette": "የቀለም ቅንብር",
+  "palettes": "የቀለም ቅንብሮች",
+  "paragraphSpacing": "የአንቀጽ ክፍተት",
+  "parallelSegmentsForVideoDownloader": "ለቪዲዮ ማውረጃ ትይዩ ክፍሎች",
+  "password": "የይለፍ ቃል",
+  "passwordProtectBackup": "የይለፍ ቃል የተጠበቀ ምትኬ",
+  "passwordRequired": "የይለፍ ቃል ያስፈልጋል",
+  "passwordsDontMatch": "የይለፍ ቃሎቹ አይዛመዱም!",
+  "pasteCustomImageUrl": "ብጁ የምስል ዩ አር ኤል ለጥፍ...",
+  "pasteUrlHere": "ዩ አር ኤል እዚህ ለጥፍ...",
+  "pathCopiedToClipboard": "መንገዱ ወደ ክሊፕቦርድ ተገለበጠ",
+  "payViaAnyUpiApp": "በማንኛውም የUPI መተግበሪያ ይክፈሉ",
+  "paypalDonation": "የፔይፓል ልገሳ",
+  "paypalRecipientNotice": "የፔይፓል ተቀባይ ማስታወቂያ",
+  "penaltyDuration": "የቅጣት ቆይታ",
+  "performance": "ክንውን",
+  "permissionsRequired": "ፈቃዶች ያስፈልጋሉ",
+  "persistentPageIndicator": "ቋሚ የገጽ አመልካች",
+  "personalizeTheLookAndMakeIt": "መልክን አስተካክለው የራስዎ ያድርጉት",
+  "personalizedRecommendations": "ግላዊ የሆኑ ምክረ ሀሳቦች",
+  "platform": "መድረክ",
+  "playAroundWithAppTheme": "የመተግበሪያውን ገጽታ ይሞክሩ",
+  "playAroundWithTheVideoPlayer": "የቪዲዮ ማጫወቻውን ይሞክሩ",
+  "playback": "መልሶ ማጫወት",
+  "playbackSpeed": "የማጫወቻ ፍጥነት",
+  "playbackSpeeds": "የማጫወቻ ፍጥነቶች",
+  "player": "ማጫወቻ",
+  "playerControlsSubtitlesAndPlaybackPreferences": "የማጫወቻ መቆጣጠሪያዎች፣ υπότιτλοι እና የማጫወቻ ምርጫዎች",
+  "playerSettings": "የማጫወቻ ማስተካከያዎች",
+  "playerTheme": "የማጫወቻ ገጽታ",
+  "playerThemes": "የማጫወቻ ገጽታዎች",
+  "pleaseChooseALogoFile": "እባክዎ הלוגۆ ፋይል ይምረጡ።",
+  "pleaseEnterAPasswordOrDisable": "እባክዎ የይለፍ ቃል ያስገቡ ወይም የይለፍ ቃል ጥበቃን ያሰናክሉ።",
+  "pleaseEnterASearchTerm": "እባክዎ የሚፈልጉትን ቃል ያስገቡ",
+  "pleaseEnterAUsernameToCompare": "እባክዎ ለማወዳደር የተጠቃሚ ስም ያስገቡ።",
+  "pleaseGrantStoragePermissionToBrowse": "የሚዲያ ፋይሎችዎን ለማሰስ እባክዎ የማከማቻ ፈቃድ ይስጡ",
+  "pleaseLoginFirst": "እባክዎ በመጀመሪያ ይግቡ",
+  "pleaseLoginFirstToExportYour": "ዝርዝርዎን ወደ ውጭ ለመላክ እባክዎ በመጀመሪያ ይግቡ።",
+  "pleaseLoginToFavorite": "ተወዳጅ ለማድረግ እባክዎ ይግቡ!",
+  "pleaseLoginToUseThisFilter": "ይህንን ማጣሪያ ለመጠቀም እባክዎ ይግቡ!",
+  "pleaseProvideAReasonForThis": "ለዚህ እርምጃ እባክዎ ምክንያት ይስጡ",
+  "pleaseRestartTheAppToApply": "ለውጦችን ተግባራዊ ለማድረግ እባክዎ መተግበሪያውን እንደገና ያስጀምሩ።",
+  "pleaseSelectABackupFileFirst": "እባክዎ በመጀመሪያ የመጠባበቂያ ፋይል ይምረጡ",
+  "pleaseSelectAValidApkFile": "እባክዎ ትክክለኛ የAPK ፋይል ይምረጡ።",
+  "pleaseSelectAValidJarFile": "אנא בחר קובץ JAR תקף.",
+  "pleaseSelectAtLeastOneItem": "אנא בחר לפחות פריט אחד גיבוי.",
+  "pleaseSelectAtLeastOneItemTo": "אנא בחר לפחות פריט אחד לשחזור.",
+  "pleaseWriteAtLeast30Characters": "אנא כתוב לפחות 30 תווים",
+  "pluginInstallationSync": "התקנת תוסף וסנכרון",
+  "pluginIsAlreadyUpToDate": "התוסף מעודכן כבר.",
+  "pluginJarCopiedPleaseRestartThe": "קובץ ה-JAR של התוסף הועתק. אנא הפעל מחדש את האפליקציה.",
+  "pluginNotInstalled": "התוסף אינו מותקן",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "התוסף הורד מחדש בהצלחה. אנא הפעל מחדש כדי להחיל.",
+  "pluginReDownloadedPleaseRestartThe": "התוסף הורד מחדש. אנא הפעל מחדש את האפליקציה כדי להחיל.",
+  "pluginSyncedFromLocalApk": "התוסף סונכרן מ-APK מקומי.",
+  "pngJpgWebpGifMax20mb": "PNG, JPG, WEBP, GIF (מקסימום 20MB)",
+  "popular": "פופולרי",
+  "popularAnime": "אנימה פופולרית",
+  "popularAnimes": "אנימות פופולריות",
+  "popularManga": "מנגה פופולרית",
+  "posterBlurMode": "מצב טשטוש פוסטר",
+  "posterBlurScope": "היקף טשטוש פוסטר",
+  "poweredByAnimatch16PointCompatibility": "מופעל על ידי ניתוח תאימות 16-נקודות של AniMatch ב-AnymeX",
+  "poweredByCommentumV2AdvancedComment": "מופעל על ידי Commentum v2 - מערכת תגובות מתקדמת עם ניהול",
+  "preferences": "העדפות",
+  "preferencesSystem": "העדפות ומערכת",
+  "preferredSubtitleLanguage": "שפת כתוביות מועדפת",
+  "preparingImageToShare": "מכין תמונה לשיתוף...",
+  "preparingStream": "מכין סטרימינג",
+  "presetProviders": "ספקים מוכנים מראש",
+  "preventScreenFromSleeping": "מנע מהמסך להיכנס למצב שינה",
+  "preview": "תצוגה מקדימה",
+  "previewUpper": "תצוגה מקדימה",
+  "privacySafety": "פרטיות ובטיחות",
+  "privacySettingsAndSafetyFeatures": "የግላዊነት ቅንብሮች እና የደህንነት ባህሪያት",
+  "private": "ግልጽ ያልሆነ",
+  "privateEntry": "ግልጽ ያልሆነ መግቢያ",
+  "profileEffects": "የመገለጫ ውጤቶች",
+  "profileIcon": "የመገለጫ ምልክት",
+  "progress": "ሂደት",
+  "progressHistory": "ሂደት እና ታሪክ",
+  "proposeNewFeaturesReportBugsAnd": "አዳዲስ ባህሪያትን ጠቁም፣ ጉድለቶችን ሪፖርት አድርግ፣ እና ከሌሎች አባላት ጋር ተወያይ",
+  "protocol": "ፕሮቶኮል",
+  "proxy": "ፕሮክሲ",
+  "proxyConfiguration": "የፕሮክሲ ማዋቀር",
+  "pulseaudioSoundServer": "የ PulseAudio የድምጽ ሰርቨር",
+  "queryRemoteRepositoryForAddOn": "ለተጨማሪዎች ዝማኔዎች የርቀት ማከማቻን ፈልግ",
+  "queuedForDownload": "ለማውረድ ተሰልፏል",
+  "quickSelectFollowing": "ፈጣን ምርጫ (የሚከተሏቸው)",
+  "radiusMultiplier": "የራዲየስ ማባዣ",
+  "random": "የዘፈቀደ",
+  "range": "ክልል",
+  "rank": "ደረጃ",
+  "rating": "ደረጃ መስጠት",
+  "reDownloadAndReinstallThePlugin": "ተሰኪውን ከመሠረቱ እንደገና ያውርዱ እና ይጫኑ",
+  "read": "አንብብ",
+  "readArticle": "ጽሁፉን አንብብ",
+  "readLatestUpdatesAboutThisAnime": "ስለዚህ አኒሜ የቅርብ ጊዜ ዝማኔዎችን አንብብ",
+  "readLatestUpdatesAboutThisManga": "ስለዚህ ማንጋ የቅርብ ጊዜ ዝማኔዎችን አንብብ",
+  "readOnePageAtATime": "በአንድ ጊዜ አንድ ገጽ አንብብ",
+  "readAheadDurationInMinutes": "ቀድሞ የማንበብ ቆይታ በደቃቃዎች",
+  "readaheadSeconds": "ቀድሞ የማንበብ ሰከንዶች",
+  "reader": "አንባቢ",
+  "readerBackgroundOpacity": "የአንባቢ ዳራ ግልጽነት",
+  "readerControlTheme": "የአንባቢ መቆጣጠሪያ ጭብጥ",
+  "readerPreferences": "የአንባቢ ምርጫዎች",
+  "readerSettings": "የአንባቢ ቅንብሮች",
+  "readingDirection": "የንባብ አቅጣጫ",
+  "readingLayout": "የንባብ አቀማመጥ",
+  "readingManga": "ማንጋ በማንበብ ላይ",
+  "readingMangaPhrasing": "ማንጋ በማንበብ ላይ",
+  "readingNovel": "ኖቭል በማንበብ ላይ",
+  "readingNovelPhrasing": "ኖቭል በማንበብ ላይ",
+  "realTime4kUpscalingForAnime": "ለአኒሜ ይዘት የእውነተኛ ጊዜ 4K ማሻሻያ",
+  "reason": "ምክንያት",
+  "reasonDeleted": "ምክንያቱ ተሰርዟል።",
+  "reasonUpdated": "ምክንያቱ ተዘምኗል!",
+  "recentActivity": "የቅርብ ጊዜ እንቅስቃሴ",
+  "recentMediaComments": "የቅርብ ጊዜ የሚዲያ አስተያየቶች",
+  "recentNews": "የቅርብ ጊዜ ዜናዎች",
+  "recentSearches": "የቅርብ ጊዜ ፍለጋዎች",
+  "recentlyCompleted": "በቅርቡ የተጠናቀቁ",
+  "recentlyUpdated": "በቅርቡ የተዘመኑ",
+  "recommend": "ምክር ይስጡ",
+  "recommendationSubmitted": "ምክሩ ተልኳል! 🎉",
+  "recommended": "የተመከረ",
+  "recommendedAnime": "የተመከሩ አኒሜዎች",
+  "recommendedBy": "የተመከረው በ",
+  "recommendedManga": "የተመከሩ ማንጋዎች",
+  "recommendedNovels": "የተመከሩ ኖቭሎች",
+  "reduceColorBandingArtifacts": "የቀለም መደበዘዝን ይቀንሱ",
+  "refreshComments": "አስተያየቶችን ያድሱ",
+  "refreshRate": "የማደስ ፍጥነት",
+  "relations": "ግንኙነቶች",
+  "releaseDate": "የထွက်በት ቀን",
+  "releaseYear": "የተለቀቀበት ዓመት",
+  "releaseYearStats": "የተለቀቀበት ዓመት ስታቲስቲክስ",
+  "rememberMyChoice": "ምርጫዬን አስታውስ",
+  "rememberServer": "ሰርቨር አስታውስ",
+  "removalRequestSentToAdminsFor": "የማስወገድ ጥያቄ ለአስተዳዳሪዎች ተልኳል።",
+  "remove": "አስወግድ",
+  "removeBanner": "ባነር አስወግድ",
+  "removeDecoration": "ማስጌጫ አስወግድ",
+  "removeEffect": "ውጤት አስወግድ",
+  "removeFromHistory": "ከታሪክ አስወግድ",
+  "removeItems": "እቃዎችን አስወግድ",
+  "removeNameplate": "የስም ሰሌዳ አስወግድ",
+  "removeTheme": "ገጽታ አስወግድ",
+  "removeWhiteBlackBorders": "ነጭ/ጥቁር ጠርዞችን አስወግድ",
+  "removeYourReason": "ምክንያትዎን ያስወግዱ?",
+  "rename": "እንደገና ሰይም",
+  "renameList": "ዝርዝር እንደገና ሰይም",
+  "reorderNavigationTabs": "የማሰሻ ትሮችን እንደገና አስተካክል",
+  "replaceExistingDataOnThisDevice": "በዚህ መሳሪያ ላይ ያለውን ነባር ውሂብ ምትኬ በመጠቀም ተካ",
+  "replay": "እንደገና አጫውት",
+  "reportsQueue": "የሪፖርቶች ረድፍ",
+  "repositories": "ማከማቻዎች",
+  "repositoryUrl": "የማከማቻ ዩአርኤል",
+  "repositoryUrlUpper": "የማከማቻ ዩአርኤል",
+  "requests": "ጥያቄዎች",
+  "requiredForCoreAndVisualTuning": "ለዋና እና ምስላዊ ማስተካከያ ያስፈልጋል። ዝቅተኛ አፈጻጸም ባላቸው መሳሪያዎች ላይ ያጥፉት።",
+  "reset": "ዳግም አስጀምር",
+  "resetUpper": "ዳግም አስጀምር",
+  "resetDownloadPath": "የማውረጃ መንገድ ዳግም አስጀምር",
+  "resetNovelReaderSettings": "የ ልብ ወለድ አንባቢ ማስተካከያዎችን ይመልሱ",
+  "resetToDefault": "ወደ ነባሪ ይመልሱ",
+  "resetToDefault2": "ወደ ነባሪ ይመልሱ",
+  "resetToDefaultPicture": "ወደ ነባሪ ምስል ይመልሱ",
+  "resetToDefaultWallpaper": "ወደ ነባሪ የግድግዳ ወረቀት ይመልሱ!",
+  "resizeMode": "መጠን መቀየሪያ ሁኔታ",
+  "resizeModes": "መጠን መቀየሪያ ሁኔታዎች",
+  "resolution": "ጥራት",
+  "resolve": "ፍታ",
+  "restartTheAppToApplyThe": "ማሻሻያው እንዲሠራ መተግበሪያውን እንደገና ያስጀምሩ።",
+  "restoreAllNovelReaderDefaults": "ሁሉንም የ ልብ ወለድ አንባቢ ነባሪዎች ወደ ነበሩበት ይመልሱ",
+  "restoreData": "መረጃን ይመልሱ",
+  "restorePreview": "ቅድመ እይታን ይመልሱ",
+  "restoreToDefaultInternalStorage": "ወደ ነባሪ የውስጥ ማከማቻ ይመልሱ",
+  "restoringWillOverwriteYourSelectedLocal": "መመለስ የተመረጡትን የአካባቢ ቤተ-መጽሐፍት ንጥሎች እና ማስተካከያዎች በዚህ ምትኬ ይተካቸዋል።",
+  "restrictMessagesToFollowing": "መልዕክቶችን ለሚከተሉት ይገድቡ",
+  "results": "ውጤቶች",
+  "resultsWillAppearGroupedByExtension": "ውጤቶች በቅጥያ ተጠቃለው ይታያሉ",
+  "retainOriginalColor": "ዋናውን ቀለም ይያዙ",
+  "retry": "እንደገና ይሞክሩ",
+  "rightSide": "ቀኝ ጎን",
+  "riseAndShine": "እንቅልፍ ይብቃህ",
+  "roleUpdatedSuccessfully": "ሚናው በተሳካ ሁኔታ ተዘምኗል",
+  "roleAll": "ሚና፡ ሁሉም",
+  "rollbackVersion": "ስሪት ይመልሱ",
+  "romajiTitle": "የሮማጂ ርዕስ",
+  "roundUpScores": "ውጤቶችን ወደ ላይ አጠጋጋ",
+  "runtimeHost": "የሩንታይም አስተናጋጅ",
+  "runtimeHostReleases": "የሩንታይም አስተናጋጅ ልቀቶች",
+  "runtimeHostRequired": "የሩንታይም አስተናጋጅ ያስፈልጋል",
+  "safetyFeatures": "የደህንነት ባህሪያት:",
+  "saturation": "ቀለም ሙሌት",
+  "sauceSearcher": "ምንጭ ፈላጊ",
+  "save": "አስቀምጥ",
+  "saveEquip": "አስቀምጥ እና አስታጥቅ",
+  "saveChanges": "ለውጦችን አስቀምጥ",
+  "saveChanges2": "ለውጦችን አስቀምጥ",
+  "saveLastFrame": "የመጨረሻውን ፍሬም አስቀምጥ",
+  "saveLogo": "ሎጎ አስቀምጥ",
+  "savedAnimeEntriesAndProgress": "የተቀመጡ አኒሜ ግቤቶች እና ሂደት",
+  "savedLightNovelsAndReadingState": "የተቀመጡ לייት ኖቨሎች እና የንባብ ሁኔታ",
+  "savedMangaEntriesAndChapters": "የተቀመጡ ማንጋ ግቤቶች እና ምዕራፎች",
+  "savedStreamLinkHasExpiredFetching": "የተቀመጠው የዥረት ሊንክ ጊዜው አልፎበታል። አዲስ ሊንክ በማምጣት ላይ...",
+  "savesAScreenshotOfTheLast": "ያየኸውን የመጨረሻ ፍሬም ስክሪንሾት ያስቀምጣል። ይህንን ማሰናከል የማከማቻ አጠቃቀምን በእጅጉ ይቀንሰዋል",
+  "scaleFactor": "የመጠን መጠን",
+  "scalingAlgorithm": "የመጠን ስልተ-ቀመር",
+  "scanningForMoreServers": "ተጨማሪ ሰርቨሮችን በመቃኘት ላይ...",
+  "scanningForVideoStreams": "የቪዲዮ ዥረቶችን በመቃኘት ላይ...",
+  "score": "ውጤት",
+  "scoreDistribution": "የውጤት ስርጭት",
+  "scoringSystem": "የውጤት አሰጣጥ ስርዓት",
+  "search": "ፈልግ",
+  "searchUpper": "ፈልግ",
+  "searchAcrossExtensions": "በኤክስቴንሽኖች ውስጥ ፈልግ...",
+  "searchAnimeMovies": "አኒሜ፣ ፊልሞችን ፈልግ...",
+  "searchAnime": "አኒሜ ፈልግ...",
+  "searchExtensions": "ኤክስቴንሽኖችን ፈልግ",
+  "searchExtensionsEllipsis": "ኤክስቴንሽኖችን ፈልግ...",
+  "searchFailed": "ፍለጋው አልተሳካም",
+  "searchForAnime": "አኒሜ ፈልግ",
+  "searchInHistory": "በታሪክ ውስጥ ፈልግ...",
+  "searchInLibrary": "በቤተ-መጽሐፍት ውስጥ ፈልግ...",
+  "searchItemsInList": "በዝርዝሩ ውስጥ ንጥሎችን ፈልግ...",
+  "searchManga": "ማንጋ ፈልግ...",
+  "searchQuery": "የፍለጋ ጥያቄ",
+  "searchSources": "ምንጮችን ፈልግ...",
+  "searchTags": "መለያዎችን ፈልግ...",
+  "searchUser": "ተጠቃሚ ፈልግ",
+  "searchingDatabase": "መረጃ ቋቱን በመፈለግ ላይ...",
+  "searching": "በመፈለግ ላይ...",
+  "season": "ክፍለ-ጊዜ",
+  "seasons": "ክፍለ-ጊዜዎች",
+  "secondsPerScreenLowerIsFaster": "ሰከንዶች በስክሪን (ዝቅተኛ ሲሆን ፈጣን ነው)",
+  "secondsPerScreenPageLowerIs": "ሰከንዶች በስክሪን/ገጽ (ዝቅተኛ ሲሆን ፈጣን ነው)",
+  "securityEncryption": "ደህንነት እና ምስጠራ",
+  "seePeopleWhoContributedToAnymex": "ለAnymeX አስተዋጽኦ ያደረጉ ሰዎችን ይመልከቱ",
+  "selectAFolderWhereAnymexWill": "AnymeX ያወረዷቸውን የአኒም ክፍሎች እና የማንጋ ምዕራፎች የሚያስቀምጥበትን አቃፊ ይምረጡ።",
+  "selectAnAnimeScreenshotToFind": "ምንጩን ለማግኘት የአኒም ቅጽበታዊ ገጽ እይታን ይምረጡ",
+  "selectAnilistMyanimelistSimklOrExtensions": "AniList፣ MyAnimeList፣ Simkl ወይም Extensions ሁነታን ይምረጡ",
+  "selectDataToIncludeInThis": "በዚህ ምትኬ ውስጥ ለማካተት መረጃ ይምረጡ",
+  "selectDirectory": "ማውጫ ይምረጡ",
+  "selectExtensions": "ኤክስቴንሽኖችን ይምረጡ",
+  "selectFolder": "አቃፊ ይምረጡ",
+  "selectLanguage": "ቋንቋ ይምረጡ",
+  "selectMediaDirectory": "የሚዲያ ማውጫ ይምረጡ",
+  "selectNovelSource": "የልብወለድ ምንጭ ይምረጡ",
+  "selectProfile": "መገለጫ ይምረጡ",
+  "selectRange": "ክልል ይምረጡ",
+  "selectServer": "አገልጋይ ይምረጡ",
+  "selectStatus": "ሁኔታ ይምረጡ",
+  "selectSubtitleFont": "የ υπόنامه 폰트 ይምረጡ",
+  "selectTags": "መለያዎችን ይምረጡ",
+  "selectTimezone": "የ ሰዓት ቀጠና ይምረጡ",
+  "selectVersionToRollback": "ወደ ኋላ የሚመለስበትን ስሪት ይምረጡ",
+  "selectVideoFile": "የ ቪዲዮ ፋይል ይምረጡ",
+  "selectYourPreferredContentSource": "የሚመርጡትን የ ይዘት ምንጭ ይምረጡ",
+  "selectedCacheCleared": "የ ተመረጠው መሸጎጫ ጸድቷል",
+  "selectedItemsRemoved": "የ ተመረጡት እቃዎች ተወግደዋል",
+  "sensitiveLoginTokensForMalSimkl": "ለ MAL፣ Simkl እና AniList ሚስጥራዊ የ መግቢያ  टोकኖች",
+  "sensitiveSessionTokensForMalSimkl": "ለ MAL፣ Simkl እና AniList ሚስጥራዊ የ ክፍለ ጊዜ टोकኖች",
+  "separateCompletedAnimeListIntoSections": "የ ተጠናቀቁ አኒሜ ዝርዝርን በ ቅርጸት ወደ ክፍሎች ይክፈሉት።",
+  "separateCompletedMangaListIntoSections": "የ ተጠናቀቁ ማንጋ ዝርዝርን በ ቅርጸት ወደ ክፍሎች ይክፈሉት።",
+  "serverDetails": "የ ሰርቨር ዝርዝሮች",
+  "serverChanIsTakingANap": "ሰርቨር-ቻን እረፍት ላይ ናት!",
+  "setUpYourPreferencesForThe": "ለ የተሻለ ተሞክሮ ምርጫዎችዎን ያዋቅሩ",
+  "settings": "ቅንብሮች",
+  "settingsAccount": "ቅንብሮች እና መለያ",
+  "settingsAuthentication": "ቅንብሮች እና ማረጋገጫ",
+  "settingsSavedSuccessfully": "ቅንብሮች በተሳካ ሁኔታ ተቀምጠዋል።",
+  "shaderProfilesInitialized": "የ ሼደር መገለጫዎች ተጀምረዋል",
+  "shadowBanUser": "ተጠቃሚን በ ድብቅ አግድ",
+  "shareLogs": "ምዝግብ ማስታወሻዎችን አጋራ",
+  "shareMatchCard": "የ ተዛማጅ ካርድ አጋራ",
+  "shareProfile": "መገለጫ አጋራ",
+  "shareTheSavedLogFileOr": "የ ተቀመጠውን የምዝግብ ማስታወሻ ፋይል ያጋሩ ወይም ይዘቱን ይቅዱ።",
+  "sharedFromAnymex": "ከ AnymeX ተጋርቷል",
+  "showAnimatedEffectOverlaysOnProfile": "በ መገለጫ ሰንደቆች ላይ አኒሜሽን ተፅዕኖ ተደራቢዎችን አሳይ",
+  "showAnimatedFramesAroundUserAvatars": "በ ተጠቃሚ አቫታሮች ዙሪያ አኒሜሽን ፍሬሞችን አሳይ",
+  "showBatteryTime": "ባትሪ እና ሰዓት አሳይ",
+  "showChapterTransitionEvenWithoutGaps": "ክፍተቶች ባይኖሩም እንኳ የ ምዕራፍ ሽግግር አሳይ",
+  "showCommunityRecommendations": "የማህበረሰብ ምክሮችን አሳይ",
+  "showContinueWatchingCard": "መመልከቱን ቀጥል ካርድ አሳይ",
+  "showContinueWatchingOnHome": "መነሻ ገጽ ላይ መመልከቱን ቀጥል አሳይ",
+  "showCustomProfileBannersFallsBack": "ብጁ የመገለጫ ሰንደቆችን አሳይ (ጠፍቶ ከሆነ የAniList ሽፋን ይጠቀማል)",
+  "showNameplateBackgroundsOnCommentCards": "በአስተያየት ካርዶች እና መሪዎች ሰሌዳ ላይ የስም ሰሌዳ ዳራዎችን አሳይ",
+  "showOnLeft": "ግራ ላይ አሳይ",
+  "showOnRight": "ቀኝ ላይ አሳይ",
+  "showReadingProgress": "የንባብ እድገትን አሳይ",
+  "showTimestamps": "የሰዓት ማህተሞችን አሳይ",
+  "simpleCompactListView": "ቀላል የታመቀ ዝርዝር እይታ",
+  "simpleDirectmediaLayerAudioOutput": "ቀላል DirectMedia Layer የኦዲዮ ውፅዓት",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "ምስል ሳይኖረው የክፍል ቁጥር፣ ርዕስ እና እድገት የሚያሳይ ቀላል አቀማመጥ",
+  "sizeMode": "የመጠን ሁኔታ፡",
+  "smartMangaSuggestions": "ብልጥ የማንጋ ምክሮች",
+  "smootherMotionCanIncreaseGpuUsage": "ለስላሳ እንቅስቃሴ፣ የGPU አጠቃቀምን ሊጨምር ይችላል",
+  "social": "ማህበራዊ",
+  "somethingWentWrong": "ስህተት ተፈጥሯል",
+  "sort": "ደርድር",
+  "sort2": "ደርድር",
+  "sortBy": "በዚህ ደርድር",
+  "sortBy2": "በዚህ ደርድር",
+  "sortComments": "አስተያየቶችን ደርድር",
+  "source": "ምንጭ",
+  "sourceAndPluginConfigurations": "የምንጭ እና ተሰኪ ውቅሮች",
+  "sourcePreferences": "የምንጭ ምርጫዎች",
+  "spaceBetweenLetters": "በፊደላት መካከል ያለው ክፍተት",
+  "spaceBetweenParagraphs": "በአንቀጾች መካከል ያለው ክፍተት",
+  "spaceBetweenWords": "በቃላት መካከል ያለው ክፍተት",
+  "spacedPages": "የተራራቁ ገጾች",
+  "splitCompletedAnimeList": "የተጠናቀቁ አኒሜዎች ዝርዝርን ለይ",
+  "splitCompletedMangaList": "የተጠናቀቁ ማንጋዎች ዝርዝርን ለይ",
+  "spoiler": "አጥፊ (ስፖይለር)",
+  "spoilerTapToReveal": "አጥፊ (ለማሳየት ይንኩ)",
+  "staff": "ሰራተኞች",
+  "staffCharacterNameLanguage": "የሰራተኞች እና የታዋቂ ገጸ-ባህሪያት ስም ቋንቋ",
+  "standardGpuRendering": "መደበኛ የጂፒዩ (GPU) አሰራር",
+  "starOnGithub": "በ GitHub ላይ ኮከብ ይስጡ",
+  "startANewDownloadFromThe": "አዲስ ማውረድ ከ \"አዲስ ማውረድ\" ትር ይጀምሩ",
+  "startChapter": "ምዕራፍ ጀምር",
+  "startDate": "የተጀመረበት ቀን",
+  "startMangaDownload": "የማንጋ ማውረድ ይጀምሩ",
+  "startTest": "ሙከራ ጀምር",
+  "startingExtensionRuntime": "የኤክስቴንሽን ማሻሻያ በመጀመር ላይ...",
+  "statistics": "ስታቲስቲክስ",
+  "stats": "ስታትስ",
+  "status": "ሁኔታ",
+  "statusDistribution": "የሁኔታ ስርጭት",
+  "statusPostedSuccessfully": "ሁኔታው በተሳካ ሁኔታ ተለጥፏል!",
+  "stayUpdatedWithTheLatestReleases": "የቅርብ ጊዜ ልቀቶችን፣ ማስታወቂያዎችን እና ውይይቶችን ይከታተሉ",
+  "storagePath": "ማከማቻ እና መንገድ",
+  "storageManager": "የማከማቻ አስተዳዳሪ",
+  "storageOptions": "የማከማቻ አማራጮች",
+  "storagePermission": "የማከማቻ ፈቃድ",
+  "storagePermissionIsRequiredToDownload": "ማሻሻያዎችን ለማውረድ የማከማቻ ፈቃድ ያስፈልጋል",
+  "storagePermissionRequired": "የማከማቻ ፈቃድ ያስፈልጋል",
+  "streakCurLong": "ቀጣይነት (ወቅታዊ/ረጅሙ)",
+  "stretchImagesToFitScreenWidth": "ምስሎችን የማያ ገጹን ስፋት እንዲመጥኑ ዘርጋ",
+  "strikethrough": "የተሰመረበት",
+  "studios": "ስቱዲዮዎች",
+  "style": "ዘይቤ",
+  "subtitleBackgroundColor": "የ υπόنامه የጀርባ ቀለም",
+  "subtitleColor": "የ υπόنامه ቀለም",
+  "subtitleFont": "የ υπόنامه ፊደል",
+  "subtitleOutlineColor": "የ υπόنامه ዙሪያ ቀለም",
+  "subtitleOutlineWidth": "የ υπόنامه ዙሪያ ውፍረት",
+  "subtitlePreview": "የ υπόنامه ቅድመ-እይታ",
+  "subtitlePreviewText": "የ υπόنامه ቅድመ-እይታ ጽሑፍ",
+  "subtitleSize": "የ υπόنامه መጠን",
+  "subtitleTransparency": "የ υπόنامه ግልጽነት",
+  "subtitles": "ምዕራፍ ጽሑፎች",
+  "summary": "ማጠቃለያ",
+  "superAdmin": "ዋና አስተዳዳሪ",
+  "supportTtfAndOtfFiles": ".ttf እና .otf ፋይሎችን ይደግፋል",
+  "supportAnymex": "AnymeXን ደግፍ",
+  "supportedModes": "የተደገፉ ሁነታዎች",
+  "supportedUpiApps": "የተደገፉ የ UPI መተግበሪያዎች",
+  "suppressActivityWhenWatchingOrReading": "NSFW ይዘት ሲመለከቱ ወይም ሲያነቡ እንቅስቃሴን ደብቅ",
+  "swapUpDownActions": "የላይ/ታች ተግባራትን ቀይር",
+  "swipeBetweenChapters": "በምዕራፎች መካከል ያንሸራትቱ",
+  "swipeIndicatorTheme": "የማንሸራተቻ አመልካች ገጽታ",
+  "swipeToSeek": "ለመፈለግ ያንሸራትቱ",
+  "switchBetweenDefaultTitleAndRomaji": "በቤተ-መጽሐፍት እና ካርዶች ላይ በነባሪ ርዕስ እና በሮማጂ/ሁለተኛ ርዕስ መካከል ይቀያይሩ",
+  "switchToOnline": "ወደ ኦንላይን ቀይር",
+  "syncCompletedButThePluginIs": "ማመሳሰል ተጠናቅቋል፣ ግን ተሰኪው ገና ዝግጁ አይደለም።",
+  "syncDetails": "የማመሳሰል ዝርዝሮች",
+  "syncFailed": "ማመሳሰል አልተሳካም",
+  "synonyms": "ተመሳሳይ ቃላት",
+  "synopsis": "ማጠቃለያ",
+  "tags": "መለያዎች",
+  "tags2": "መለያዎች",
+  "takeColorFromYourWallpaperA12": "ቀለም ከዎልፔፐርዎ ውሰድ (A12+)",
+  "tapToAddARepositoryUrl": "የመዘገቢያ (Repository) ዩአርኤል ለመጨመር + ንካ",
+  "tapAZoneToChangeIts": "እርምጃውን ለመቀየር ቀጠና ንካ",
+  "tapAction": "እርምጃ ንካ",
+  "tapToChooseASource": "ምንጭ ለመምረጥ ንካ",
+  "tapToLogin": "ለመግባት ንካ",
+  "tapToLogout": "ለመውጣት ንካ",
+  "tapToScroll": "ለማሸብለል ንካ",
+  "tapYourProfileIconInThe": "ከላይኛው የመተግበሪያ አሞሌ ላይ የመገለጫ ምልክትዎን ንካ",
+  "tapZones": "የንክኪ ቀጠናዎች",
+  "tellTheCommunityWhyThisDeserves": "ይህ ለምን የበለጠ ትኩረት እንደሚገባው ማህበረሰቡን ንገራቸው።",
+  "temporaryAppCache": "ጊዜያዊ የመተግበሪያ መሸጎጫ (Cache)",
+  "termsOfServicePrivacyPolicy": "የአገልግሎት ውሎች/የግል ሕይወት መመሪያ",
+  "test": "ፈትኑ",
+  "testExtensions": "ቅጥያዎችን ፈትን",
+  "testResults": "የፈተና ውጤቶች",
+  "testType": "የፈተና ዓይነት",
+  "textSize": "የጽሑፍ መጠን",
+  "theme": "ገጽታ",
+  "themeLayoutAndColors": "ገጽታ፣ ዕቅድ እና ቀለሞች",
+  "themes": "ገጽታዎች",
+  "thisBackupIsEncryptedPleaseEnter": "ይህ ምትኬ (Backup) የተመሰጠረ ነው። ለመቀጠል እባክዎ የይለፍ ቃል ያስገቡ።",
+  "thisDirectoryContainsNoSupportedMedia": "ይህ ማውጫ የሚደገፉ የሚዲያ ፋይሎች የሉትም",
+  "thisMayTakeAFewSeconds": "ይህ ጥቂት ሰኮንዶች ሊወስድ ይችላል",
+  "thisMayTakeUpTo30": "ይህ እስከ 30 ሰኮንዶች ሊወስድ ይችላል",
+  "thisMightTakeAFewSeconds": "ይህ ጥቂት ሰኮንዶች ሊወስድ ይችላል",
+  "thisReasonWillBeDeletedImmediately": "ይህ ምክንያት ወዲያውኑ ይጠፋል።",
+  "thisWillPermanentlyDeleteAllData": "ይህ በ AnymeX የተከማቹ መረጃዎችን ሁሉ ለዘላለም ያጠፋል። ይህ ሊቀለበስ አይችልም።",
+  "tipYouCanCombineTheseE": "ጥቆማ፡ እነዚህን ማጣመር ይችላሉ! ለምሳሌ **ደማቅ እና *ዝንባሌ* አብረው**",
+  "title": "ርዕስ",
+  "titleCopied": "ርዕስ ተገልብጧል",
+  "titleLanguage": "የርዕስ ቋንቋ",
+  "toDownloadForTheFirstTime": "ለመጀመሪያ ጊዜ ለማውረድ በመጀመሪያ የማውረጃዎች ገጽን በመጎብኘት ፈቃድ ይስጡ:",
+  "toggleBetweenGridAndDetailedList": "በក្រድ እና በዝርዝር እይታ መካከል ይቀያይሩ",
+  "toneMapping": "የድምፅ ማቀናበሪያ",
+  "topAnime": "ከፍተኛ አኒሜ",
+  "topComments": "ዋና ዋና አስተያየቶች",
+  "topGenres": "ታዋቂ ዘውጎች",
+  "topManga": "ከፍተኛ ማንጋ",
+  "topManhua": "ከፍተኛ ማኑዋ",
+  "topManhwa": "ከፍተኛ ማኑዋ",
+  "topStudios": "ዋና ዋና ስቱዲዮዎች",
+  "torrentServer": "የቶረንት ሰርቨር",
+  "torrentStreamCache": "የቶረንት ዥረት መሸጎጫ",
+  "torrserverStreamingAddOns": "TorrServer እና የዥረት ተጨማሪዎች",
+  "totalChapters": "አጠቃላይ ምዕራፎች",
+  "totalCost": "አጠቃላይ ወጪ:",
+  "totalItems": "አጠቃላይ ንጥሎች",
+  "track": "ተከታተል",
+  "trackAiringSchedules": "የስርጭት መርሃግብሮችን ይከታተሉ",
+  "trackYourProgress": "ሂደትዎን ይከታተሉ?",
+  "trackingServices": "የክትትል አገልግሎቶች",
+  "transitionSubtitle": "የሽግግር ንዑስ ጽሑፍ",
+  "translateTo": "ወደ ዚህ ተርጉም",
+  "translationLanguage": "የትርጉም ቋንቋ",
+  "translucentNav": "ግልጽ ዳሰሳ",
+  "trendingAnime": "በመታየት ላይ ያሉ አኒሜዎች",
+  "trendingAnimes": "በመታየት ላይ ያሉ አኒሜዎች",
+  "trendingManga": "በመታየት ላይ ያሉ ማንጋዎች",
+  "tryADifferentKeyword": "ሌላ ቁልፍ ቃል ይሞክሩ",
+  "tryAdjustingYourFilters": "ማຕົሪያዎችዎን ለማስተካከል ይሞክሩ",
+  "tryAgain": "እንደገና ይሞክሩ",
+  "tryDifferentAnimationStylesForPage": "ለገጽ መግቢያዎች የተለያዩ የእንቅስቃሴ (አኒሜሽን) ስልቶችን ይሞክሩ",
+  "ttsAutoAdvance": "የንግግር ማቀናበሪያ (TTS) ራሱ በራሱ ይራመድ",
+  "ttsPitch": "የንግግር ማቀናበሪያ (TTS) ድምፅ ከፍታ",
+  "ttsSpeed": "የንግግር ማቀናበሪያ (TTS) ፍጥነት",
+  "tweakGeneralAppSettings": "አጠቃላይ የመተግበሪያ ማስተካከያዎችን ይቀይሩ",
+  "typeLabel": "အမျိုးအစား",
+  "typeAtLeast2CharactersTo": "ለመፈለግ ቢያንስ 2 ፊደላትን ይጻፉ",
+  "ui": "የተጠቃሚ በይነገጽ",
+  "uiComponents": "የበይነገጽ አካላት",
+  "uiLayoutColorsAndThemes": "የበይነገጽ አቀማመጥ፣ ቀለሞች እና ገጽታዎች",
+  "uiLayoutColorsAndVisualStyles": "የበይነገጽ አቀማመጥ፣ ቀለሞች እና የእይታ ስልቶች",
+  "uiSettings": "የበይነገጽ ማስተካከያዎች",
+  "unableToPreparePlaybackRightNow": "አሁን መልሶ ማጫወት ማዘጋጀት አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
+  "unbanUser": "የታገደ ተጠቃሚ እገዳ አንሳ",
+  "unbind": "ማያያዣ ሰርዝ",
+  "unifiedLibrary": "የተዋሃደ ቤተ-መጽሐፍት",
+  "uninstall": "ያራግፉ",
+  "universal": "ሁለንተናዊ",
+  "unlock": "ክፈት",
+  "unlockCustomizations": "ማበጀቶችን ይክፈቱ",
+  "unmuteUser": "የተጠቃሚ ድምፅ መልስ",
+  "unreadOnly": "ያነበቡዋቸው ብቻ",
+  "upcomingAnime": "የሚመጡ አኒሜዎች",
+  "update": "አዘምን",
+  "updateAll": "ሁሉንም አዘምን",
+  "updateCheckComplete": "የዝማኔ ፍተሻ ተጠናቋል",
+  "updateOnImport": "ሲያስገቡ አዘምን",
+  "updateToLatestVersion": "ወደ አዲሱ ስሪት አዘምን",
+  "updateYourActivity": "活动ዎን 约...",
+  "updatesPending": "የሚጠብቁ ዝማኔዎች",
+  "upiDonation": "የ UPI ልገሳ",
+  "uploadAnImageToGetStarted": "ለመጀመር  ምስል ይስቀሉ",
+  "uploadImage": "ምስል ስቀል",
+  "urlCopiedToClipboard": "ዩአርኤል ወደ ቅንጥብ ሰሌዳ ተገለበጠ",
+  "usage": "አጠቃቀም:",
+  "useAiToTranslateSoftSubtitles": "ለስላሳ ንዑስ ጽሑፎችን በቀጥታ ለመተርጎም AI ይጠቀሙ",
+  "useAlternateTitle": "የተለዋጭ ርዕስ ተጠቀም",
+  "useBuffering": "መ缓冲 ተጠቀም",
+  "useCustomGesturesForReaderNavigation": "ለአንባቢ ዳሰሳ ብጁ የእጅ ምልክቶችን ይጠቀሙ",
+  "useEnhancedEpisodeMetadataAndCovers": "የተሻሻለ የክፍል ሜታዳታ እና ሽፋኖችን ይጠቀሙ",
+  "useExternalPlayer": "ውጫዊ ማጫወቻ ይጠቀሙ",
+  "useKeyboardShortcutsDuringPlaybackTo": "መገለጫዎችን ለመቀየር በድጋሚ ማጫወት ጊዜ የቁልፍ ሰሌዳ አቋራጮችን ይጠቀሙ",
+  "useLegacyHeader": "የቀድሞ ራስጌ ተጠቀም",
+  "useLibassForSubtitles": "ለአርዕስቶች Libass ይጠቀሙ",
+  "useLibmpvForPlayback": "ለማጫወት LibMpv ይጠቀሙ",
+  "useMpvConf": "mpv.conf ተጠቀም",
+  "usePosterColor": "የፖስተር ቀለም ተጠቀም",
+  "useVolumeKeysToChangePages": "ገጾችን ለመቀየር የድምጽ ቁልፎችን ይጠቀሙ",
+  "useYearRange": "የዓመት ክልል ይጠቀሙ",
+  "user": "ተጠቃሚ",
+  "userIdCopiedToClipboard": "የተጠቃሚ መታወቂያ ወደ ቅንጥብ ሰሌዳ ተገለበጠ",
+  "userList": "የተጠቃሚ ዝርዝር",
+  "userManagement": "የተጠቃሚ አስተዳደር",
+  "userCreatedCustomMediaCollections": "በተጠቃሚ የተፈጠሩ ብጁ የሚዲያ ስብስቦች",
+  "username": "የተጠቃሚ ስም",
+  "verifyTlsCertificates": "የ TLS ምስክር ወረቀቶችን አረጋግጥ",
+  "versionCopied": "ስሪት ተገለበጠ",
+  "vertical": "ቋሚ",
+  "videoPlayer": "ቪዲዮ ማጫወቻ",
+  "videoRenderer": "የቪዲዮ አቅራቢ",
+  "videoSync": "የቪዲዮ ማመሳሰል",
+  "viewAndFilterAllUsers": "ሁሉንም ተጠቃሚዎች ይመልከቱ እና ያጣሩ",
+  "viewOnAnilist": "በ AniList ላይ ይመልከቱ",
+  "viewOpeningAndEndingThemes": "መግቢያ እና ማጠናቀቂያ ጭብጦችን ይመልከቱ",
+  "viewProfile": "መገለጫ ይመልከቱ",
+  "viewSourceCodeOnGithub": "ምንጭ ኮዱን በ GitHub ላይ ይመልከቱ።",
+  "viewTheChronologicalWatchOrderOf": "የዚህን አኒሜ የጊዜ ቅደም ተከተል ይመልከቱ",
+  "viewUser": "ተጠቃሚን ይመልከቱ",
+  "viewUserRankingsTopContributorsReputation": "የተጠቃሚ ደረጃዎችን፣ ከፍተኛ አስተዋጽዖ አበርካቾችን እና நற்பெயர் ይመልከቱ",
+  "viewingAnimeDetails": "የአኒሜ ዝርዝሮችን በመመልከት ላይ",
+  "viewingMangaDetails": "የማንጋ ዝርዝሮችን በመመልከት ላይ",
+  "viewingNovelDetails": "የናቭል ዝርዝሮችን በመመልከት ላይ",
+  "visibleTabs": "የሚታዩ ትርቲዎች",
+  "visitGithubReleasesPageForChangelogs": "ለ ለውጦች እና በእጅ ለማውረድ የ GitHub ልቀቶች ገጽን ይጎብኙ",
+  "visualFromAnymex": "ከ AnymeX የጥበብ እይታ",
+  "voiceActors": "የድምጽ ተዋናዮች",
+  "voicedCharacters": "ድምጽ የተሰጣቸው ገጸ-ባህሪያት",
+  "volumeButtonScrolling": "የድምጽ አዝራር ማሸብለል",
+  "volumeKeysNavigation": "የድምጽ ቁልፎች አሰሳ",
+  "volumes": "ጥራዞች",
+  "volumesRead": "የተነበቡ ጥራዞች",
+  "votes": "ድምጾች",
+  "wWhatAreYouDoingStep": "ምን እያደረግክ ነው ወንድሜ፣ ከማድረግህ በፊት ግባ (●´⌓`●)",
+  "wallpaper": "የግድግዳ ወረቀት",
+  "warnUser": "ተጠቃሚን አስጠንቅቅ",
+  "warning": "ማስጠንቀቂያ",
+  "wasThisHelpful": "ይህ አጋዥ ነበረ?",
+  "watchAd": "ማስታወቂያ ይመልከቱ",
+  "watchAnAdToSupport": "Ad በመመልከት ይደግፉ",
+  "watchAnime": "አንይም ይመልከቱ",
+  "watchOrder": "የእይታ ቅደም ተከተል",
+  "watchTogether": "አብረን እንይ",
+  "watchTogetherPolicy": "የአብረን እንይ መመሪያ",
+  "watchingAnime": "አንይም በመመልከት ላይ",
+  "watchingAnimePhrasing": "አንይም የመመልከት አገላለጽ",
+  "welcomeToAnymex": "እንኳን ወደ AnymeX በደህና መጡ",
+  "whatsOnYourMind": "በአእምሮዎ ውስጥ ምን አለ?",
+  "whenEnabledAnymexSavesLogsLocally": "ሲነቃ AnymeX እስኪሰናከል ድረስ ምዝግብ ማስታወሻዎችን በአገር ውስጥ ያስቀምጣል።",
+  "whyAreYouRecommendingThisMin": "ይህን ለምን ይመክራሉ? (ቢያንስ 30 ፊደላት)",
+  "whyIsThisUnderratedMin30": "ይህ ለምን የተናቀ ይመስላል? (ቢያንስ 30 ፊደላት)",
+  "windowsAudioSessionApi": "የዊንዶውስ ኦዲዮ ክፍለ ጊዜ API",
+  "wordSpacing": "የቃላት ክፍተት",
+  "writeAMessage": "መልእክት ይጻፉ...",
+  "writeLogToAFile": "መዝገብ ወደ ፋይል ጻፍ",
+  "writeYourAnilistBio": "የ AniList ባዮግራፊዎን ይጻፉ...",
+  "wrongTitle": "ትክክለኛ ያልሆነ ርዕስ?",
+  "year": "ዓመት",
+  "yearUpper": "ዓመት",
+  "you": "እርስዎ",
+  "youCanUseDiscordStyleMarkdown": "አስተያየቶችዎን ለመቅረጽ የ Discord-ዘይቤ ማርክዳን መጠቀም ይችላሉ:",
+  "youHaveUnsentTextClosingNow": "ያልተላከ ጽሑፍ አለዎት። አሁን መዝጋት መልእክትዎን ያጣል።",
+  "youHaveUnsentTextClosingNowWill": "ያልተላከ ጽሑፍ አለዎት። አሁን መዝጋት ምላሽዎን ያጣል።",
+  "youHaveUnsentTextClosingNowWillLose": "ያልተላከ ጽሑፍ አለዎት። አሁን መዝጋት ሁኔታዎን ያጣል።",
+  "youNeedModeratorPermissionsToAccess": "ይህንን ፓነል ለመድረስ የአስተራዳሪ ፈቃዶች ያስፈልጉዎታል",
+  "youreUpLate": "ቆይተዋል",
+  "yourBalance": "የእርስዎ ቀሪ ሂሳብ:",
+  "yourPrivacyIsImportant": "የእርስዎ ግላዊነት አስፈላጊ ነው:",
+  "yourReasonHasBeenRemoved": "ምክንያትዎ ተወግዷል።",
+  "yourRecommendation": "የእርስዎ ምክር",
+  "yourRichPresenceActivityWillStop": "የእርስዎ የበለጸገ መገኘት እንቅስቃሴ ማዘመን ያቆማል።",
+  "yourRole": "የእርስዎ ሚና",
+  "yourWatchReadHistory": "የእርስዎ የመመልከት እና የማንበብ ታሪክ",
+  "yourWatchReadStatistics": "የእርስዎ የመመልከት እና የማንበብ ስታቲስቲክስ",
+  "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
+  "al": "AL",
+  "allYourLocalShi": "ሁሉም የአካባቢዎ መረጃ",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "Anilist",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "እርግጠኛ ነዎት?",
+  "aspectRatio": "የገጽታ ምጣኔ",
+  "attackOnTitan": "Attack on Titan",
+  "audio": "ኦዲዮ",
+  "audioSubtitles": "ኦዲዮ እና υπότιτλοι",
+  "audioTrack": "የኦዲዮ ትራክ",
+  "audioTracks": "የኦዲዮ ትራኮች",
+  "audiotrack": "AudioTrack",
+  "autoAudiotrack": "ራሱ (AudioTrack)",
+  "autoCoreaudio": "ራሱ (CoreAudio)",
+  "autoGpu": "ራሱ (GPU)",
+  "autoPulseaudio": "ራሱ (PulseAudio)",
+  "autoWasapi": "ራሱ (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "ብሎም",
+  "castToDevice": "ወደ መሳሪያ አስተላልፍ",
+  "colorFilter": "የቀለም ማጣሪያ",
+  "coreaudio": "ኮርኦዲዮ",
+  "demonSlayerKimetsuNoYaiba": "Demon Slayer: Kimetsu no Yaiba",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "ውጫዊ ማጫወቻ",
+  "files": "ፋይሎች",
+  "forward": "አስተላልፍ",
+  "forward30s": "30 ሰከንድ ፊት ለፊት",
+  "fullscreen": "ሙሉ ማያ ገጽ",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "ጂፒዩ",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "Jujutsu Kaisen",
+  "lockControls": "መቆጣጠሪያዎችን ቆልፍ",
+  "lockOrientation": "አቅጣጫ ቆልፍ",
+  "mal": "MAL",
+  "materialYou": "Material You",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "Necessary Murder",
+  "nextEp": "ቀጣይ ክፍል",
+  "nextEpisode": "ቀጣይ ክፍል",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "ከስክሪን ውጪ ማሳያ (PiP)",
+  "playlist": "የመጫወቻ ዝርዝር",
+  "previousEpisode": "ያለፈው ክፍል",
+  "pulseaudio": "PulseAudio",
+  "quality": "ጥራት",
+  "qualitySetting": "የጥራት ማስተካከያ",
+  "readingMode": "የንባብ ሁኔታ",
+  "reddit": "Reddit",
+  "replay30s": "30 ሰከንድ ራዕይ መልስ",
+  "ryanyuuki": "RyanYuuki",
+  "sabitoAndMakomo": "Sabito and Makomo",
+  "sdl": "SDL",
+  "server": "ሰርቨር",
+  "servers": "ሰርቨሮች",
+  "shadersColorProfiles": "ሼደሮች እና የቀለም መገለጫዎች",
+  "shadersColors": "ሼደሮች እና ቀለሞች",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "SOCKS5",
+  "soloLeveling": "Solo Leveling",
+  "speed": "ፍጥነት",
+  "sw": "SW",
+  "syncSubs": "ትርጉም አመሳስ",
+  "syncSubtitles": "የቪዲዮ ንዑስ ጽሁፍ አመሳስ",
+  "telegram": "Telegram",
+  "theQuickBrownFoxJumpsOver": "ፈጣኑ ቡናማ ቀበሮ ሰነፉን ውሻ ዘለለ",
+  "themeMode": "የገጽታ ሁነታ",
+  "thisIsFrustrating": "ይህ አስቆጣ ነው",
+  "toYouSomeday": "ለእርስዎ፣ አንድ ቀን",
+  "torrentFiles": "የቶረንት ፋይሎች",
+  "tracks": "ትራኮች",
+  "unlockOrientation": "ማዘንበልን ክፈት",
+  "userAgent": "የተጠቃሚ ወኪል",
+  "videoQuality": "የቪዲዮ ጥራት",
+  "videoServers": "የቪዲዮ ሰርቨሮች",
+  "vs": "vs",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "አብሮ ማየት (በክፍል ውስጥ)",
+  "webtoon": "ዌብቱን",
+  "n0MeansAutomaticThreadCount": "0 ማለት አውቶማቲክ የክር ብዛት ማለት ነው",
+  "n18Content": "18+ ይዘት",
+  "aboveAverageSimilarity": "ከአማካይ በላይ ተመሳሳይነት።",
+  "account": "መለያ",
+  "activityStats": "እንቅስቃሴ እና ስታቲስቲክስ",
+  "add": "አክል",
+  "additionalNotesOptional": "ተጨማሪ ማስታወሻዎች (አማራጭ)",
+  "adjustKeyVolumeScrollingSpeed": "ቁልፍ እና ድምጽ ማሸብለል ፍጥነት ያስተካክሉ",
+  "alpha": "አልፋ",
+  "alwaysChecksCurrentChapterNumberAnd": "ሁልጊዜ የአሁኑን ምዕራፍ ቁጥር ይፈትሻል እና ከቀጣይ/ቀድሞ ምዕራፍ ጋር ያወዳድረዋል፣ ቁጥሩ ሲለያይ ብቻ ያስሳል። የምዕራፍ አሰሳ ድግግሞሾች ቢኖሩም እንኳ ወደ ቀጣዩ ንጥል ይሄዳል።",
+  "animeCompleted": "አኒሜ ተጠናቋል",
+  "announcementMode": "የማስታወቂያ ሁነታ",
+  "appIsStillLoadingTryAgain": "መተግበሪያው አሁንም እየጫነ ነው፣ ትንሽ ቆይተው እንደገና ይሞክሩ።",
+  "applyAColorTintOverPages": "በገጾች ላይ የቀለም ጥላ ይተግብሩ",
+  "audioDelay": "የድምጽ መዘግየት",
+  "audioSettings": "የድምጽ ቅንብሮች",
+  "audioTrack2": "የድምጽ ནམ་",
+  "autoAdvance": "በራስ-ሰር ማራመጃ",
+  "autoDeleteCompletedEntries": "የተጠናቀቁ ግቤቶችን በራስ-ሰር ሰርዝ",
+  "autoSyncProgress": "እድገትን በራስ-ሰር አመሳስል",
+  "automaticallyMoveToNextText": "በራስ-ሰር ወደ ቀጣዩ ጽሑፍ ሂድ",
+  "automaticallyScrollAdvancePages": "ገጾችን በራስ-ሰር ሸብልል/አራመድ",
+  "automaticallySwitchToContinuousModeFor": "ለረጅም ማንጋ በራስ-ሰር ወደ ተከታታይ ሁኔታ ቀይር",
+  "averageOverlap": "មធ្យមភាគត្រួតស៊ីគ្នា።",
+  "background": "መደብ",
+  "basedOnYourFavouriteAnime": "በእርስዎ ተወዳጅ አኒሜ ላይ የተመሰረተ።",
+  "basedOnYourFavouriteManga": "በእርስዎ ተወዳጅ ማንጋ ላይ የተመሰረተ።",
+  "basedOnYourTop10Manga": "በእርስዎ ምርጥ 10 የማንጋ መለያዎች ላይ የተመሰረተ።",
+  "basedOnYourTop5Manga": "በእርስዎ ምርጥ 5 የማንጋ ዘውጎች ላይ የተመሰረተ።",
+  "blue": "ሰማያዊ",
+  "botL": "ቦት-L",
+  "botR": "ቦት-R",
+  "bridgeUpdateAvailable": "የድልድይ ማሻሻያ አለ",
+  "brightness": "ብሩህነት",
+  "bulletList": "የነጥብ ዝርዝር",
+  "calendarUpper": "የቀን መቁጠሪያ",
+  "canadianMovies": "የካናዳ ፊልሞች",
+  "canadianShows": "የካናዳ ትርኢቶች",
+  "cannotCompareTheSameProfileWith": "ተመሳሳይ መገለጫ ከራሱ ጋር ማወዳደር አይቻልም።",
+  "castToDevice2": "ወደ መሣሪያ ላክ",
+  "chatModeration": "የውይይት ልከኝነት",
+  "chooseASubtitleFileFromYour": "ከተንቀሳቃሽ ስልክዎ የትርጉም ጽሑፍ ፋይል ይምረጡ (.srt, .vtt, .ass, .ssa)",
+  "chooseHowToApplyTheSelected": "የተመረጠውን የ JSON ፋይል በእርስዎ AnymeX ደመና gist ላይ እንዴት እንደሚተገብሩ ይምረጡ።",
+  "chromaUpscaler": "ክሮማ አፕስኬለር",
+  "cloudTools": "የደመና መሳሪያዎች",
+  "code": "ኮድ",
+  "commonFavouriteAnime": "የተለመዱ ተወዳጅ አኒሜዎች",
+  "commonFavouriteCharacters": "የተለመዱ ተወዳጅ ገጸ-ባህሪያት",
+  "commonFavouriteManga": "የተለመዱ ተወዳጅ ማንጋዎች",
+  "commonPerfectAnime": "የተለመደ ፍጹም አኒሜ",
+  "commonPerfectManga": "የተለመደ ፍጹም ማንጋ",
+  "communityAdministratorOverseeingModerationAndPolicies": "መጠነኛ አወការሰ እና ፖሊሲዎችን የሚቆጣጠር የማህበረሰብ አስተዳዳሪ።",
+  "connectGithubFirstBeforeDeletingSync": "የማመሳሰል ውሂብ ከመሰረዝዎ በፊት መጀመሪያ GitHubን ያገናኙ።",
+  "connectGithubFirstToExportSync": "የማመሳሰል ውሂብን ወደ ውጭ ለመላክ መጀመሪያ GitHubን ያገናኙ።",
+  "connectGithubFirstToImportSync": "የማመሳሰል ውሂብን ከውስጥ ለማስገባት መጀመሪያ GitHubን ያገናኙ።",
+  "connectGithubFirstToSyncProgress": "እድገትን ለማመሳሰል መጀመሪያ GitHubን ያገናኙ።",
+  "connectGithubFirstToViewSync": "የማመሳሰል ጂስት ለማየት መጀመሪያ GitHubን ያገናኙ።",
+  "continuousModeOnly2": "ቀጣይነት ያለው ሁኔታ ብቻ",
+  "controls": "መቆጣጠሪያዎች",
+  "cookiesClearedSuccessfully": "ኩኪዎች በተሳካ ሁኔታ ተጽዳዋል",
+  "copied": "ተኮርጅቷል",
+  "copyUrl": "ዩአርኤል ቅዳ",
+  "correctDownscaling": "ትክክለኛ ዝቅተኛ ልኬት",
+  "couldNotLoadStreamingServicesFrom": "ከ AniList API የዥረት አገልግሎቶችን መጫን አልተቻለም።\nአገልግሎቱ ለጊዜው ላይገኝ ይችላል ወይም ፍጥነቱ ተገድቧል።",
+  "couldNotOpenGistInBrowser": "ጂስቱን በአሳሽ ውስጥ መክፈት አልተቻለም።",
+  "created": "ተፈጥሯል",
+  "creatorAndDeveloperOfAnymex": "የ AnymeX ፈጣሪ እና አልሚ።",
+  "customBrightness": "ብጁ ብሩህነት",
+  "customizeGestures": "ምልክቶችን አስተካክል",
+  "deband": "ዲባንድ",
+  "debandIterations": "የዲባንድ ድግግሞሾች",
+  "debandThreshold": "የዲባንድ ገደብ",
+  "decreaseAutoScrollSpeed": "አውቶማቲክ ማሸብለል ፍጥነት ይቀንሱ",
+  "decreaseFontSize": "የፊደል መጠን ይቀንሱ",
+  "deleteAnymexSyncGist": "የ AnymeX ማመሳሰል ጂስት ይሰረዝ?",
+  "deleteCloudGist": "የደመና ጂስት ይሰረዝ",
+  "deleteCommentMod": "تبصرہ حذف کریں (موڈ)",
+  "details": "تفصیلات",
+  "dictionary": "لغت",
+  "differenceFromOwnMeanScore": "اپنے اوسط سکور سے فرق",
+  "disableChat": "چیٹ غیر فعال کریں",
+  "disconnectThisGithubAccountFromAnymex": "اس GitHub اکاؤنٹ کو AnymeX سے منقطع کریں",
+  "displayPagesInBlackWhite": "صفحات سیاہ اور سفید میں دکھائیں",
+  "downloading": "ڈاؤن لوڈ ہو رہا ہے…",
+  "downscaler": "ڈاؤن سکیلر",
+  "dynamicWidget": "ڈائنامک विजेट",
+  "eInkDisplayRefresh": "E-ink ڈسپلے ریفریش",
+  "eGAbc123": "مثال کے طور پر ABC123",
+  "eGMyAnimeLogo": "مثال کے طور پر My Anime Logo",
+  "editYourComment": "اپنا تبصرہ تدوین کریں...",
+  "embeddedContent": "پوست کردہ مواد",
+  "enterTheRoomPassword": "روم کا پاس ورڈ درج کریں",
+  "enterTokenHere": "یہاں ٹوکن درج کریں",
+  "error": "خرابی",
+  "exitSyncNotifications": "مطابقت پذیر نوٹیفیکیشنز سے باہر نکلیں",
+  "exportGistJson": "Gist JSON برآمد کریں",
+  "exportedGistJson": "Gist JSON کامیابی سے برآمد ہو گیا۔",
+  "failedToExportGistJson": "Gist JSON برآمد کرنے میں ناکامی۔",
+  "failedToFetchDataFromSources": "ذرائع سے ڈیٹا حاصل کرنے میں ناکامی۔",
+  "failedToGetCloudGistLink": "کلاؤڈ Gist لنک حاصل کرنے میں ناکامی۔",
+  "failedToImportGistJson": "Gist JSON درآمد کرنے میں ناکامی۔",
+  "failedToLaunchExternalPlayer": "بیرونی پلیয়ার شروع کرنے میں ناکامی",
+  "failedToOpenGistInBrowser": "براؤزر میں Gist کھولنے میں ناکامی۔",
+  "flashDuration": "فلیش کا دورانیہ",
+  "flashEveryNPages": "ہر N صفحات پر فلیش کریں",
+  "flashFrequency": "فلیش کی فریکوئেন্সি",
+  "flashScreenOnPageTurnTo": "የገጽ ማዞሪያ ማያ ገጽ ብልጭታ (ghosting) ለማጥፋት",
+  "followHost": "አስተናጋጅ ተከተል",
+  "fontSettings": "የፊደል ቅርጸ-ቁምፊ ቅንብሮች",
+  "freedomSeek": "የነፃነት ፍለጋ",
+  "friendsNeedAPasswordToJoin": "ጓደኞች ለመቀላቀል የይለፍ ቃል ያስፈልጋቸዋል",
+  "githubClientIdNotConfigured": "የGitHub client ID አልተዋቀረም።",
+  "githubLoginFailedMissingAuthorizationCode": "የGitHub መግቢያ አልተሳካም፦ የማረጋገጫ ኮድ ጠፍቷል።",
+  "githubLoginWasCancelledOrFailed": "የGitHub መግቢያ ተሰርዟል ወይም አልተሳካም።",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • ፍቅርዎን ያሳዩ",
+  "goodChemistryAndSharedTaste": "ጥሩ ኬሚስትሪ እና የተጋራ ጣዕም።",
+  "grayscale": "ግራጫ ሚዛን",
+  "green": "አረንጓዴ",
+  "hdrToneMappingTargetPeak": "HDR tone mapping ዒላማ ፒክ",
+  "higherValueIncreasesDebandingStrength": "ከፍተኛ እሴት የdebating ጥንካሬን ይጨምራል",
+  "horizontalPadding": "አግድም ክፍተት (Padding)",
+  "hoursWatched": "የተመለከቱት ሰዓታት",
+  "howManyFriendsCanJoin": "ምን ያህል ጓደኞች መቀላቀል ይችላሉ",
+  "ifYouHaveAnIssueOr": "ግንኙነት ወይም ማንኛውም ሃሳብ ካሎት እባክዎ github ላይ ጉዳይ ይክፈቱ።",
+  "imageWidth": "የምስል ስፋት",
+  "importGistJson": "Gist JSON አስመጣ",
+  "importLocalSubtitle": "የአካባቢ υπότιτλοι (ትርጉም) አስመጣ",
+  "improveQualityWhenScalingDownVideo": "ቪዲዮን ወደ ታች ሲያሳንሱ ጥራትን ያሻሽሉ",
+  "increaseAutoScrollSpeed": "አውቶማቲክ የማሸብለል ፍጥነት ጨምር",
+  "increaseFontSize": "የፊደል መጠን ጨምር",
+  "invalidCompatibilityLinkMissingUsernames": "ልክ ያልሆነ የተኳኋኝነት አገናኝ፡ የተጠቃሚ ስሞች ጠፍተዋል።",
+  "invalidGistUrl": "ልክ ያልሆነ የgist URL።",
+  "invalidRoomCodeInLink": "በአገናኙ ውስጥ ልክ ያልሆነ የክፍል ኮድ",
+  "invalidWatchTogetherLink": "ልክ ያልሆነ የWatch Together አገናኝ",
+  "invertAllPageColors": "ሁሉንም የገጽ ቀለሞች ይቀይሩ",
+  "invertColors": "ቀለሞችን ገልብጥ",
+  "inviteLink": "የ邀请 አገናኝ",
+  "inviteLinkCopied": "የ邀请 አገናኝ ተገልብጧል!",
+  "jDramas": "የጃፓን ድራማዎች",
+  "joinNotifications": "ማሳወቂያዎችን ተቀላቀል",
+  "kDramas": "የኮሪያ ድራማዎች",
+  "keepBothUploadedAndCloudEntries": "የተሰቀሉ እና የደመና ግቤቶችን ሁለቱን ይያዙ። ተመሳሳይ ግቤት በሁለቱም ቦታዎች ካለ፣ አዲሱ ይቀመጣል። (מומלץ)",
+  "keyVolumeScrollingSpeed": "የቁልፍ እና የድምጽ ማሸብለል ፍጥነት",
+  "koreanMovies": "የኮሪያ ፊልሞች",
+  "leaveNotifications": "ማሳወቂያዎችንተው",
+  "liveComments": "የቀጥታ አስተያየቶች",
+  "lockScreen": "መቆለፊያ ማያ ገጽ",
+  "loginToAnilist": "ወደ AniList ይግቡ",
+  "loginToMyanimelist": "ወደ MyAnimeList ይግቡ",
+  "loginToSimkl": "ወደ Simkl ይግቡ",
+  "longPressForPageActions": "ለገጽ ድርጊቶች दिर्घ ተጭነው ይቆዩ",
+  "longPressAPageToSave": "ለማስቀመጥ፣ ለማጋራት ወይም ለመቅዳት ገጹን दिर्घ ተጭነው ይቆዩ",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "ማንጋ ተጠናቋል",
+  "mangaPage": "የማንጋ ገጽ",
+  "maxMembers": "ከፍተኛ አባላት",
+  "memberLeft": "አባል ወጥቷል",
+  "mergeUploadedEntriesOrReplaceCloud": "የተሰቀሉ ግቤቶችን ያዋህዱ ወይም የደመና ውሂብን ይተኩ",
+  "mergeWithCloud": "ከደመና ጋር አዋህድ",
+  "milliseconds": "ሚሊሰከንዶች",
+  "missingTypeQueryParameterUseType": "የ \"type\" መጠይቅ መለኪያ ጠፍቷል። type=player ይጠቀሙ።",
+  "missingUrlQueryParameterForThe": "ለጭብጡ JSON የ \"url\" መጠይቅ መለኪያ ጠፍቷል።",
+  "moreIterationsStrongerDebanding": "ተጨማሪ ድግግሞሾች = ጠንካራ debanding",
+  "movies": "ፊልሞች",
+  "moviesList": "የፊልሞች ዝርዝር",
+  "navigateByNumber": "በቁጥር ያስሱ",
+  "navigation": "ዳስሰሳ",
+  "newMember": "አዲስ አባል",
+  "nextChapter": "ቀጣይ ምዕራፍ",
+  "nextParagraph": "ቀጣይ አንቀጽ",
+  "noAudio": "ድምፅ የለም",
+  "noOneCanSendMessagesIn": "በውይይቱ ውስጥ ማንም ሰው መልእክት መላክ አይችልም",
+  "noStreamUrlAvailable": "ምንም የዥረት ዩአርኤል አይገኝም",
+  "noSubtitle": "የትርጉም ጽሑፍ የለም",
+  "noVideo": "ቪዲዮ የለም",
+  "notVeryCompatibleAtAll": "በጭራሽ ተስማሚ አይደለም።",
+  "numberedList": "ቁጥር ያለው ዝርዝር",
+  "onScreenOverlays": "በማያ ገጽ ላይ ያሉ መደራረቦች",
+  "onlyHostAndCoHostsCan": "አስተናጋጁ እና አብሮ-አስተናጋጆች ብቻ መልእክት መላክ ይችላሉ",
+  "opacity": "ግልጽነት",
+  "openInBrowser2": "በአሳሽ ክፈት",
+  "openYourAnymexSyncGistOn": "የእርስዎን AnymeX የማመሳሰል ጂስት በ GitHub ላይ ይክፈቱ",
+  "openingInExternalPlayer": "በውጭ ማጫወቻ ይከፈታል...",
+  "orTypeCustomTag": "ወይም ብጁ መለያ ይተይቡ...",
+  "otherUpper": "ሌላ",
+  "overlayPosition": "የመደራረብ ቦታ",
+  "overrideSystemScreenBrightness": "የስርዓቱን ማያ ገጽ ብሩህነትሽር",
+  "ownerAndCreatorOfTheCommentum": "የ Commentum ማህበረሰብ መድረክ ባለቤት እና ፈጣሪ።",
+  "padding": "ክፍተት",
+  "pagesAheadOfTimeForFaster": "ለፈጣን ጭነት ገጾች ቀድመው ተዘጋጅተዋል",
+  "partySettings": "የፓርቲ ቅንብሮች",
+  "passwordIfRequired": "የይለፍ ቃል (የሚያስፈልግ ከሆነ)",
+  "pasteDirectGifOrImageUrl": "ቀጥተኛ የጂአይኤፍ ወይም የምስል ዩአርኤል ይለጥፉ...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • ካርዶች እና የ PayPalሂሳብ",
+  "permanentlyRemoveAnymexSyncData": "የ AnymeX የማመሳሰል ውሂብን ለዘላለም አስወግድ",
+  "pictureShaders": "ሥዕል እና ሼደሮች",
+  "pitch": "ፒች",
+  "playbackIsLockedToTheHost": "መልሶ ማጫወት አስተናጋጅ ላይ ተቆልፏል",
+  "playbackSpeed2": "የማጫወት ፍጥነት",
+  "playerSettings2": "የማጫወቻ ቅንብሮች",
+  "pleaseLogInFirstThenTry": "እባክዎ መጀመሪያ ይግቡ፣ ከዚያ አገናኙን እንደገና ይሞክሩ።",
+  "pointsBreakdown": "የነጥቦች ዝርዝር",
+  "practicallyMadeForEachOther": "ለርስ በርስ የተፈጠሩ።",
+  "preloadPage": "ገጽ አስቀድሞ ጫን",
+  "preloadPages": "ገጾችን አስቀድሞ ጫን",
+  "preloadPagesAheadOfTimeFor": "ለፈጣን ጭነት ገጾችን አስቀድሞ ጫን (ኔትወርክ እና ራም ይጠቀማል)",
+  "preventScreenFromSleepingWhileReading": "በማንበብ ጊዜ ማያ ገጹ እንዳይጠፋ ይከላከሉ",
+  "previousChapter": "ቀደም ያለ ምዕራፍ",
+  "previousParagraph": "ቀደም ያለ አንቀጽ",
+  "privateRoom": "ግላዊ ክፍል",
+  "profileUpdated": "መገለጫ ተዘምኗል",
+  "proportionOfTotalTimeWatched": "ከአጠቃላይ የታየበት ጊዜ አንጻር",
+  "provideAReasonForThisAction": "ለዚህ እርምጃ ምክንያት ይስጡ...",
+  "qualitySettings": "የጥራት ቅንብሮች",
+  "quote": "ጥቅስ",
+  "range75DarkestTo100": "ክልል፦ -75 (ጨለማው) እስከ 100",
+  "rateLimited": "የፍጥነት ገደብ አልፏል",
+  "reactionOverlay": "የምላሽ επικαλυπ",
+  "readStats": "የንባብ ስታቲስቲክስ",
+  "readTextAloud": "ጽሁፉን ከፍ አድርጎ አንብብ",
+  "red": "ቀይ",
+  "reduceColorBandingInGradients": "በቀለማት ቅንጅት ላይ ያለውን የግርዶሽ መጠን ይቀንሱ",
+  "reduceHaloingWhileUpscaling": "ጥራት ሲያሳድጉ የሚፈጠረውን ብዥታ ይቀንሱ",
+  "refresh": "አድስ",
+  "removeCurrentCloudEntriesAndReplace": "የአሁኑን የደመና ግቤቶች አስወግድ እና በተሰቀለው ፋይል ተካ.",
+  "removeWhiteBlackBordersToMaximize": "ይዘቱን ለማስፋት ነጭ/ጥቁር ጠርዞችን አስወግድ",
+  "removesFinishedMediaFromCloudGist": "የተጠናቀቁ ሚዲያዎችን ከክላውድ ጊስት ያስወግዳል",
+  "replaceCloudGist": "ክላውድ ጊስት ይተኩ",
+  "report": "ሪፖርት ያድርጉ",
+  "resetReLogin": "ዳግም ያስጀምሩ እና እንደገና ይግቡ",
+  "resetTo1": "ወደ 1× ይመልሱ",
+  "restore": "መልሰው ፈልግ",
+  "roomAccess": "የክፍል መግቢያ",
+  "roomCode": "የክፍል ኮድ",
+  "roomCodeCopiedToClipboard": "የክፍል ኮዱ ተገልብጧል",
+  "roomDuration": "የክፍል ቆይታ",
+  "roomNotFoundOrExpired": "ክፍሉ አልተገኘም ወይም ጊዜው አልፎበታል",
+  "roomPassword": "የክፍል የይለፍ ቃል",
+  "roomPassword2": "የክፍል የይለፍ ቃል",
+  "roomSettings": "የክፍል ማስተካከያዎች",
+  "saveYourCurrentCloudProgressTo": "አሁን ያለዎትን የክላውድ ሂደት ፋይል ውስጥ ያስቀምጡ",
+  "scrollMultiplier": "የማሸብለል ማባዣ",
+  "scrollSpeed": "የማሸብለል ፍጥነት",
+  "searchAnimeEpisode": "አንዲም / ክፍል ይፈልጉ...",
+  "searchAnimeGifsReactions": "የአንዲም ጂነፎችን፣ ሪአክሽኖችን ይፈልጉ...",
+  "searchChapters": "ምዕራፎችን ይፈልጉ...",
+  "searchFiles": "ፋይሎችን ይፈልጉ...",
+  "secondsPerPageScreen": "ሰከንዶች በገጽ / ስክሪን",
+  "seekAndControlPlaybackFreely": "በነፃነት ቪዲዮ ይፈልጉ እና ያስተዳድሩ",
+  "selectedFileMustContainAJson": "የተመረጠው ፋይል JSON መያዝ አለበት።",
+  "selectedJsonHasNoValidSync": "የተመረጠው JSON የሚሰራ የማመሳሰል ግቤት የለውም።",
+  "seriesList": "የተከታታዮች ዝርዝር",
+  "setAPasswordForYourRoom": "ለክፍልዎ የይለፍ ቃል ያዘጋጁ",
+  "share": "ያጋሩ",
+  "showANotificationWhenSomeoneJoins": "አንድ ሰው ሲቀላቀል ማስታወቂያ አሳይ",
+  "showANotificationWhenSomeoneLeaves": "አንድ ሰው ሲወጣ ማስታወቂያ አሳይ",
+  "showAllStreams": "ሁሉንም ዥረቶች አሳይ",
+  "showChatMessagesOnThePlayer": "የውይይት መልዕክቶችን ሲመጡ በ ማጫወቻው ላይ አሳይ",
+  "showEmojiReactionsFloatingOnThe": "የኢሞጂ ምላሾችን በ ማጫወቻው ላይ እንዲንሳፈፉ አሳይ",
+  "showSyncResultWhenPlayerOr": "ማጫወቻው ወይም አንባቢው ሲዘጋ የማመሳሰል ውጤቱን አሳይ",
+  "showTransitionPageEvenWhenChapters": "ምዕራፎቹ ተከታታይ ቢሆኑም እንኳ የሽግግር ገጽ አሳይ",
+  "shows": "ትርኢቶች",
+  "sigmoidUpscaling": "ሲግሞይድ አፕስኬሊንግ",
+  "smootherGradientsWithSlightTemporalNoise": "ቀላል ጊዜያዊ ጩኸት ያላቸው ለስላሳ ቀልብሶች",
+  "spacing": "ክፍተት",
+  "speechSpeed": "የንግግር ፍጥነት",
+  "spoilers": "አጥፊዎች",
+  "stretchImagesToFitScreenWidthOn": "ሰፊ ማያ ገጾች ላይ ምስሎችን ከማያ ገጹ ስፋት ጋር እንዲጣጣሙ ዘርጋ",
+  "subtitleSettings": "የትርጉም ጽሑፍ ቅንብሮች",
+  "superAdministratorWithSystemWideManagement": "በስርዓት አቀፍ አስተዳደር ስልጣን ያለው ሱፐር አስተዳዳሪ።",
+  "swapUpDownActions2": "የላይ/ታች ተግባራትን ቀይር",
+  "syncMode": "የማመሳሰል ሁኔታ",
+  "syncPreferences": "የማመሳሰል ምርጫዎች",
+  "tapScrollAmount": "የመሸብለል መጠን መታ ያድርጉ",
+  "tapToOpen": "ለመክፈት መታ ያድርጉ",
+  "tapToOpenInBrowser": "በ አሳሽ ውስጥ ለመክፈት መታ ያድርጉ",
+  "tapToOpenInSpotify": "በ Spotify ውስጥ ለመክፈት መታ ያድርጉ",
+  "tapToViewInBrowser": "በ አሳሽ ውስጥ ለማየት መታ ያድርጉ",
+  "tapTopBottomToScroll": "ለመሸብለል ከላይ/ከታች መታ ያድርጉ",
+  "targetPeak": "ያነጣጠረ ፒክ",
+  "temporalDither": "ጊዜያዊ ዳይገር",
+  "textToSpeech": "ጽሑፍ ወደ ንግግር",
+  "theCreatorOfThisCommentDiscussion": "የዚህ አስተያየት ውይይት ፈጣሪ።",
+  "theresASmallSparkOfAgreement": "ትንሽ የስምምነት ብልጭታ አለ።",
+  "thisPermanentlyDeletesYourAnymexCloud": "ይህ የእርስዎን የ AnymeX የደመና እድገት ጊስት ከ GitHub በቋሚነት ይሰርዘዋል እና ሊቀለበስ አይችልም።",
+  "toPrevNextChapter": "ወደ ቀዳሚው/ቀጣዩ ምዕራፍ",
+  "topL": "ከፍተኛ-L",
+  "topR": "ከፍተኛ-R",
+  "totals": "ድምር",
+  "trendingMovies": "ታዋቂ ፊልሞች",
+  "trendingSeries": "ታዋቂ ተከታታዮች",
+  "tts": "TTS",
+  "ukMovies": "የዩኬ ፊልሞች",
+  "ukShows": "የዩኬ ትርኢቶች",
+  "unableToReadSelectedJsonFile": "የተመረጠውን የ JSON ፋይል ማንበብ አልተቻለም።",
+  "unsupportedExtension": "የማይደገፍ ቅጥያ",
+  "usMovies": "የአሜሪካ ፊልሞች",
+  "usShows": "የአሜሪካ ትርኢቶች",
+  "useVolumeButtonsToScroll": "ለማሸብለል የድምጽ ቁልፎችን ይጠቀሙ",
+  "userHistory": "የተጠቃሚ ታሪክ",
+  "userInfo": "የተጠቃሚ መረጃ",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "አስተያየቶችን አክብሮት በተሞላበት እና ደህንነቱ በተጠበቀ ሁኔታ የሚጠብቅ የተረጋገጠ መካከለኛ።",
+  "verticalPadding": "ቀጥ ያለ ንጣፍ",
+  "viewCloudGist": "የደመና Gist ይመልከቱ",
+  "viewUserHistory": "የተጠቃሚ ታሪክ ይመልከቱ",
+  "viewUserInfo": "የተጠቃሚ መረጃ ይመልከቱ",
+  "voice": "ድምጽ",
+  "watchParty": "የእይታ ድግስ",
+  "watchStats": "የእይታ ስታቲስቲክስ",
+  "watchingNow": "አሁን በመመልከት ላይ",
+  "webmVideo": "WebM ቪዲዮ",
+  "whereLiveCommentsAppearOnScreen": "ቀጥታ አስተያየቶች በስክሪኑ ላይ የሚታዩበት ቦታ",
+  "whileWatchingEpisodesOrReadingChapters": "ክፍሎችን ሲመለከቱ ወይም ምዕራፎችን ሲያነቡ",
+  "writeAReply": "ምላሽ ይጻፉ...",
+  "youAreBasicallyTheSamePerson": "እርስዎ በመሠረቱ ተመሳሳይ ሰው ነዎት።",
+  "youBothHaveVerySimilarTaste": "ሁለታችሁም በጣም ተመሳሳይ ጣዕም አላችሁ።",
+  "all2": "← ሁሉም",
+  "koFi": "Ko-fi",
+  "mpvConf": "mpv.conf",
+  "styling": "עיצוב",
+  "upscale": "ከፍተኛ ጥራት",
+  "appearanceStyle": "መልክ እና ስታይል",
+  "colorsLightDarkOledLogoAnimations": "ቀለማት፣ ብርሃን/ጨለማ፣ OLED እና የሎጎ እነማዎች",
+  "fontsTypography": "ፎንቶች እና ታይፖግራፊ",
+  "chooseTypographyCustomFontsGlobalText": "ታይፖግራፊ፣ ብጁ ፎንቶች እና አጠቃላይ የጽሁፍ ልኬት ይምረጡ",
+  "globalFontScaling": "አጠቃላይ የፎንት ልኬት",
+  "scaling": "ልኬት",
+  "typefaces": "የፊደል አይነቶች",
+  "interfaceLayout": "በይነገጽ እና አቀማመጥ",
+  "navBarCardStylesDetailsBlur": "የ π አሞሌ፣ የካርድ ስታይሎች፣ הפרטים ብሉር እና አቀማመጥ",
+  "navigationHomeLayout": "ዳግም አሰሳ እና የመነሻ ገጽ አቀማመጥ",
+  "playbackEngineSubtitlesGesturesDecoders": "የማጫወቻ ሞተር፣ υπότιτλοι፣ የእጅ ምልክቶች እና ዲኮደሮች",
+  "mangaNovelReader": "የማንጋ እና ኖቭል አንባቢ",
+  "readingModesDirectionColorsTapZones": "የማንበብ መንገዶች፣ አቅጣጫ፣ ቀለማት እና የመንካት ዞኖች",
+  "dataNetworkSystem": "ዳታ፣ ኔትወርክ እና ሲስተም",
+  "downloadDirectoryConcurrencyHlsSegments": "የማውረጃ ማህደር፣ ተጓዳኝነት እና HLS ክፍሎች",
+  "accountsSocial": "መለያዎች እና ማህበራዊ",
+  "trackingAccounts": "የክትትል መለያዎች",
+  "manageYourAnilistMyanimelistSimklAccounts": "የእርስዎን AniList፣ MyAnimeList እና Simkl መለያዎች ያስተዳድሩ",
+  "trackingBehavior": "የክትትል ባህሪ",
+  "communityComments": "ማህበረሰብ እና አስተያየቶች",
+  "commentumProfileBadgesMarkdownPrivacy": "የCommentum መገለጫ፣ ባጆች፣ ማርክዳውን እና ግላዊነት",
+  "contentPreferences": "የይዘት ምርጫዎች",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "የNSFW ማጣሪያ፣ የተዋሃደ ቤተ-መጽሐፍት፣ ምክሮች እና ዝርዝሮች",
+  "exportAndRestoreYourLibraryAnd": "ቤተ-መጽሐፍትዎን እና ቅንብሮችዎን ወደ ውጭ ይላኩ እና ይመልሱ",
+  "manageAnimeMangaNovelSourcesAnd": "የአኒሜ፣ ማንጋ እና ኖቭል ምንጮችን እና ሪፖዎችን ያስተዳድሩ",
+  "installAndUpdateCommunityAddOns": "የማህበረሰብ ተጨማሪዎችን ጫን እና አዘምን",
+  "storageCache": "ማከማቻ እና መሸጎጫ",
+  "manageCachedImagesThresholdsResetData": "የተሸጎጡ ምስሎችን፣ ገደቦችን እና ውሂብ ዳግም አስጀምር ያስተዳድሩ",
+  "networkProxy": "ኔትወርክ እና ፕሮክሲ",
+  "logsDiagnostics": "ምዝግብ ማስታወሻዎች እና ምርመራዎች",
+  "inspectExportAndShareApplicationLogs": "የመተግበሪያ ምዝግብ ማስታወሻዎችን ይመርምሩ፣ ይላኩ እና ያጋሩ",
+  "aboutSupport": "ስለ እና ድጋፍ",
+  "supportDevelopmentViaKoFiPaypal": "በ Ko-fi፣ PayPal እና UPI ልማትን ይደግፉ",
+  "versionUpdatesSocialLinksLegalPolicies": "កំណራ, ዝማኔዎች, የማህበራዊ ትስስር አገናኞች እና የህግ መመሪያዎች",
+  "cacheAndCookiesClearedFor": "መሸጎጫ እና ኩኪዎች ለ {name} ተጠርተዋል",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "ኩኪዎች ለ {name} ተጠርተዋል",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "መሸጎጫ ለ {name} ተጠርቷል",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "የማይደገፍ ዓይነት {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "የ {name} ቅንብሮች",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "የአካባቢ ፋይል አልተገኘም በ: {apkPath}",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "ማመሳሰል አልተሳካም: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "የአካባቢ APK አልተገኘም በ: {localPath}",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "ስህተት: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "የ ተሰኪ ጭነት አልተሳካም: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "ምንም ውጤት አልተገኘም ለ \"{query}\"",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "ክፍል {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "ክፍል {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "{title} ዜና",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "ማህበረሰብ",
+  "logInWithAnilist": "በ AniList ግባ",
+  "episode2": "ክፍል {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "ውርዱ ተጠናቋል",
+  "downloadFailedHasNoUrl": "ማውረድ አልተሳካም: {chapterDisplay} ምንም ዩአርኤል የለውም",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "ማውረድ አልተሳካም: ለ {chapterDisplay} ምንም ገጾች አልተገኙም",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "ማውረድ አልተሳካም: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "ክፍል {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ምዕ",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} ክፍሎች",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "ምንጭ \"{extensionName}\" አልተገኘም።",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "ቶሬንቱን ማዘጋጀት አልተቻለም፦ {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} ከውርዶችዎ ለዘላለም ይጠፋል።",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "ፍለጋ አልተሳካም፦ {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "{label}ን ለ \"{title}\" ፈልግ…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "{deletedCount} የታሪክ ንጥሎች ተሰርዘዋል",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "\"{itemName}\" ከ {_historyLabel}ዎ ይወገድ?",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" ተወግዷል",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "ቅደም ተከተል (ከታች ወደ ላይ)",
+  "descending": "ወራጅ (ከላይ ወደ ታች)",
+  "defaultTabOrder": "ነባሪ የመከለያ ቅደም ተከተል",
+  "reverseTabs": "የተገለበጡ መከለያዎች",
+  "id": "መለያ (ID)፦ {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "အမျိုးအစား፦ {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "ንጥሎች፦ {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "መጀመሪያ {sourceName}ን ይጫኑ፣ ከዚያ ይጫኑ",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "ገጽ {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "{value}ን ፈልግ...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "ተጠናቋል ({length} ተመርጠዋል)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "የሚነበብባቸው",
+  "streamingOn": "የሚለቀቁባቸው",
+  "freedom": "ነፃነት",
+  "shaderAdded": "ሼደር ተጨምሯል፦ {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "ሼደር በማስገባት ላይ ስህተት ተፈጥሯል፦ {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "ስካንላተሮች",
+  "chapterRange": "የምዕራፍ ክልል",
+  "downloadFailed2": "ማውረድ አልተሳካም፦ {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "ምዕራፍ {formattedNumber} ወርዷል",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "በመውረድ ላይ ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "{length} ምዕራፎች",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "ገጽ {pageNumber}{progressText} በመጫን ላይ...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "ገጹ ወደ Pictures/AnymeX ተቀምጧል",
+  "pageSavedToAnymex": "ገጹ ወደ {path}/AnymeX ተቀምጧል",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "ገጹን ማስቀመጥ አልተቻለም: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "ገጹን ማጋራት አልተቻለም: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "የገጹ ዩአርኤል ተገልብጧል",
+  "failedToCopy": "መቅዳት አልተቻለም: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "ገጾችን በመጫን ላይ...",
+  "goBack": "ተመለስ",
+  "loadingPage2": "ገጽ {value}{progressText} በመጫን ላይ...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "ብልጭታ ቀለም",
+  "black": "ጥቁር",
+  "white": "ነጭ",
+  "readerBackground": "የአንባቢ መደብ",
+  "gray": "ግራጫ",
+  "automatic": "ራሱን የቻለ",
+  "noneNearestNeighbor": "ምንም (Nearest-neighbor)",
+  "lowBilinear": "ዝቅተኛ (Bilinear)",
+  "mediumDefault": "መካከለኛ (ነባሪ)",
+  "highBicubic": "ከፍተኛ (Bicubic)",
+  "lanczosPreScaleBestQualitySlower": "Lanczos ቅድመ-ልኬት (ጥሩ ጥራት፣ ቀርፋፋ)",
+  "fullscreenPreview": "ሙሉ ማያ ገጽ ቅድመ እይታ",
+  "enhancementPreset": "የማሻሻያ ቅንብር",
+  "fineTuning": "ጥሩ ማስተካከያ",
+  "enhancementStrength": "የማሻሻያ ጥንካሬ",
+  "strength": "{value}% ጥንካሬ",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "የብልጭታ ማፈን",
+  "cleanJpegCompressionRingingAroundLinework": "በመስመር ዙሪያ ያለውን የJPEG መጨናነቅ ማጽዳት",
+  "cache": "መሸጎጫ",
+  "cacheSize": "የመሸጎጫ መጠን",
+  "mbStoredOnDisk": "በዲስክ ላይ {mb} ሜባ ተቀምጧል",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "እጅግ ከፍተኛ ጥራት (Super Resolution)",
+  "loadingChapter": "ምዕራፍ በመጫን ላይ...",
+  "noContentAvailable": "ምንም ይዘት የለም",
+  "recommendations": "{reasonCount} ምከሮች",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "የምክር ሃሳቦች",
+  "all3": "ሁሉም ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "መልዕክት መለጠፍ አልተቻለም፦ {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "አጠቃላይ ግቤቶች፦ {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "ክፍል {code} ተቀላቅለዋል!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "ንቁ ክፍሎች",
+  "joinWithCode": "በኮድ ተቀላቀል",
+  "leftRoom": "ክፍሉን ለቀዋል",
+  "leaveReset": "ውጣ /  ዳግም አስጀምር",
+  "inRoom": "በክፍል ውስጥ፦ {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - ክፍል {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "{username} ተባረዋል",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "{length}/{maxMembers} አባላት",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "ክፍሉን ለቀዋል",
+  "leave": "ውጣ",
+  "noActiveRooms": "ምንም ንቁ ክፍሎች የሉም",
+  "roomsWillAppearHereWhenSomeone": "ማንም ሰው ሲፈጥር ክፍሎች እዚህ ይታያሉ",
+  "created2": "ተፈጥሯል · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "ተቀላቀል →",
+  "full": "ሞልቷል",
+  "savedToPicturesAnymex": "Pictures/AnymeX/{fileName} ውስጥ ተቀምጧል",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "Downloads/AnymeX/{fileName} ውስጥ ተቀምጧል",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "ወደ {path}/AnymeX ተቀምጧል",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (መገለጫውን ለመክፈት ይንኩ)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "ምዕራፍ ",
+  "episode5": "ክፍል ",
+  "noData": "{title} (መረጃ የለም)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "{title} ኤክስቴንሽኖችን ፈልግ...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "ኤክስቴንሽኖችን ያስሱ",
+  "goToHome": "ወደ መነሻ ገጽ ሂድ",
+  "fetching": "{title} በመጫን ላይ...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "ፖሊሲውን ሲያመጣ ስגיድ ተፈጥሯል: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" በተሳካ ሁኔታ ተጨምሯል!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" በተሳካ ሁኔታ ተዘምኗል!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "\"{name}\"ን ማጥፋት እንደሚፈልጉ እርግጠኛ ነዎት?",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" ጠፍቷል",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "የእርስዎ ታሪክ ባዶ ነው",
+  "episode6": "ክፍል {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "ጥቂት አሳይ",
+  "readMore": "ተጨማሪ አንብብ",
+  "unpin": "አንጠልጥ",
+  "pinActivity": "እንቅስቃሴን ይሰኩ",
+  "n1Recommendation": "1 ምክር",
+  "recommendations2": "{count} ምክሮች",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "በማስረከብ ላይ...",
+  "addRecommendation": "ምክር አክል",
+  "submitRecommendation": "ምክር አስገባ",
+  "currentProvider": "የአሁን አቅራቢ",
+  "profileStatsUserActivities": "የመገለጫ ስታቲስቲክስ እና የተጠቃሚ እንቅስቃሴዎች",
+  "manageSourcesPlugins": "ምንጮችን እና ተሰኪዎችን ያስተዳድሩ",
+  "savedOfflineEpisodesChapters": "ከመስመር ውጭ የተቀመጡ ክፍሎች እና ምዕራፎች",
+  "watchVideoFilesFromDeviceStorage": "ከመሣሪያ ማከማቻ የቪዲዮ ፋይሎችን ይመልከቱ",
+  "syncWatchPartyWithFriends": "ከጓደኞች ጋር የእይታ ድግስ ያመሳስሉ",
+  "pauseWatchHistoryAndSync": "የእይታ ታሪክን እና ማመሳሰልን ለአፍታ አቁም",
+  "appearancePlayerNetwork": "መልክ፣ ማጫወቻ እና ኔትወርክ",
+  "joining": "ይቀላቀላል...",
+  "joinRoom": "ክፍል ይቀላቀሉ",
+  "shareTheCodeOrInviteLink": "ኮዱን ወይም የመጋበዣ አገናኙን ለጓደኞች ያጋሩ።",
+  "roomCreated": "ክፍል ተፈጥሯል!",
+  "shareThisCodeWithFriends": "ይህንን ኮድ ለጓደኞች ያጋሩ:",
+  "copyCode": "ኮድቅዳ",
+  "copyLink": "አገናኝ ቅዳ",
+  "leaveWatchTogether": "አብሮ መመልከትን ይውጡ?",
+  "removeMember": "አባል አስወግድ",
+  "transferHost": "አስተናጋጅ አስተላልፍ",
+  "transferHost2": "አስተናጋጅ ያስተላልፉ",
+  "transfer": "ያስተላልፉ",
+  "removeMember2": "አባል ያስወግዱ",
+  "removeFromThisWatchParty": "{username}ን ከዚህ የእይታ ድግስ ያስወግዱት?",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "{onlineCount} / {maxMembers} አባላት",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} ተገልብጧል",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "ለዚህ ክፍል የሚገኙ ሰርቨሮች የሉም",
+  "selectStreamingServerQualityToWatch": "ለማየት የዥረት ሰርቨር ጥራት ይምረጡ",
+  "thisServerHasNoPlayableUrl": "ይህ ሰርቨር ሊጫወት የሚችል URL የለውም",
+  "episode7": "ክፍል {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "ከምዕራፍ {start} እስከ {end} የተወሰደ",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} በ {releaseDate} ይጠበቃል",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "ክፍል {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "ክፍል {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "የMAL ዝርዝር ወደዚህ ወጥቷል:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "የAniList XML ወደዚህ ወጥቷል:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "መላክ አልተሳካም: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "የ{value} ዝርዝርዎን በመላክ ላይ...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "የ{value} XML ላክ",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "ሊጫወት የሚችል ሚዲያ የለም",
+  "noThemesFound": "ምንም ጭብጦች አልተገኙም",
+  "playAll": "ሁሉንም አጫወት",
+  "theDawnOfHumanity": "የሰው ልጅ መባቻ",
+  "orientationUnlocked": "ማዘንበያው ተከፍቷል",
+  "orientationLocked": "ማዘንበያው ተቆልፏል",
+  "skippedOpening": "መግቢያው ተዘሏል",
+  "skippedEnding": "መደምደሚያው ተዘሏል",
+  "skippedRecap": "ማጠቃለያው ተዘሏል",
+  "ifYouSeeBlackScreenUse": "ጥቁር ስክሪን ካዩ፣ ለመመልከት ውጫዊ ማጫወቻን ይጠቀሙ",
+  "failedToStartTorrentStream": "የቶረንት ዥረት መጀመር አልተሳካም፦ {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "ዥረቱን መክፈት አልተሳካም። እባክዎ ሌላ ሰርቨር ይሞክሩ",
+  "noServersFoundForThisEpisode": "ለዚህ ክፍል ምንም ሰርቨሮች አልተገኙም።",
+  "failedToLoadEpisodeCheckYour": "ክፍሉን መጫን አልተሳካም። ግንኙነትዎን ይፈትሹ።",
+  "playing": "{value} በመጫወት ላይ",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "የቶረንት ፋይል መቀየር አልተሳካም፦ {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "የትርጉም ጽሁፍ ተጭኗል፦ {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "የትርጉም ጽሁፍ ሲጫን ስגיህ ተፈጥሯል፦ {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "የተበላሸ የትርጉም ጽሁፍ!",
+  "preTranslatingSubtitles": "የትርጉም ጽሁፎችን አስቀድሞ በመተርጎም ላይ...",
+  "preTranslationFailedUsingRealTime": "ቅድመ-ትርጉም አልተሳካም፣ የቀጥታ ምትክ በመጠቀም ላይ",
+  "preTranslationErrorUsingRealTime": "የቅድመ-ትርጉም ስህተት፣ የቀጥታ ምትክ በመጠቀም ላይ",
+  "corruptedQuality": "የተበላሸ ጥራት!",
+  "colorProfilesOnlyAvailableWithMediakit": "የቀለም መገለጫዎች የሚገኙት በMediaKit ማጫወቻ ብቻ ነው",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "የቪዲዮ ዥረቶችን በነባሪ በውጭ ማጫወቻ ይክፈቱ",
+  "quickDefaults": "ፈጣን ነባሪዎች",
+  "orientationSpeedResizeModeExternalPlayer": "ማዘንበያ፣ ፍጥነት፣ የመጠን መቀየሪያ ሁነታ እና የውጭ ማጫወቻ",
+  "controlsGestures": "መቆጣጠሪያዎች እና ምልክቶች",
+  "subtitlesTranslation": "የከርሰ ጽሁፍ እና ትርጉም",
+  "languagesFontsStylingLibassTranslation": "ቋንቋዎች፣ ቅርደቦች፣ አቀማመጥ፣ libass እና ትርጉም",
+  "anime4kShaders": "Anime4K እና ሻደሮች",
+  "upscalingShadersPresetsProfiles": "የማሳደጊያ ሻደሮች፣ ቅድመ-ቅምጦች እና መገለጫዎች",
+  "engineAdvanced": "ሞተር እና የላቀ",
+  "addSpeed": "ፍጥነት ጨምር",
+  "speedPresets": "የፍጥነት ቅድመ-ቅምጦች",
+  "rememberAsDefaultSpeed": "እንደ ነባሪ ፍጥነት አስታውስ",
+  "loadedSubtitle": "የተጫነ ከርሰ ጽሁፍ፦ {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "ከርሰ ጽሁፍ ማውረድ አልተሳካም፦ {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "የክፍል ኮድ",
+  "episodeReleasesIn": "ክፍል {value} የሚለቀቅበት",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "ሀሳብ ለመስጠት መግባት ይኖርብዎታል",
+  "readFullRules": "ሙሉ ደንቦቹን አንብብ",
+  "acceptPost": "ተቀበል እና ለጥፍ",
+  "youNeedToBeLoggedIn2": "መልስ ለመስጠት መግባት ይኖርብዎታል",
+  "commentCopiedToClipboard": "ሀሳቡ ወደ መቅዳጫው ተገልብጧል",
+  "spam": "ስፓም",
+  "offensive": "አስጸያፊ",
+  "harassment": "እንግልት",
+  "offTopic": "ከርዕስ ውጪ",
+  "failedToLoadUserInfo": "የተጠቃሚ መረጃ መጫን አልተሳካም።",
+  "noUserDataFound": "ምንም የተጠቃሚ መረጃ አልተገኘም።",
+  "viewHistory": "ታሪክ ይመልከቱ",
+  "failedToLoadComments": "ሀሳቦችን መጫን አልተሳካም።",
+  "noCommentsFound": "ምንም ሀሳቦች አልተገኙም።",
+  "deleted2": "ተሰርዟል",
+  "comment": "ሀሳብ",
+  "failedToLoadUserHistory": "የተጠቃሚ ታሪክ መጫን አልተሳካም።",
+  "noHistoryFound": "ምንም ታሪክ አልተገኘም።",
+  "youNeedToBeLoggedIn3": "አስተያየቶችን ለማስተካከል መግባት አለብዎት",
+  "commentCannotBeEmpty": "አስተያየት ባዶ ሊሆን አይችልም",
+  "failedToLoadCommentsPleaseTry": "አስተያየቶችን መጫን አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "commentsLoaded": "{value} አስተያየቶች ተጭነዋል",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "አስተያየቶችን ማደስ አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "invalidParentCommentId": "ልክ ያልሆነ የወላጅ አስተያየት መታወቂያ",
+  "replyPostedSuccessfully": "ምላሹ በተሳካ ሁኔታ ተለጥፏል",
+  "failedToPostReply": "ምላሽ መለጠፍ አልተሳካም",
+  "failedToPostReplyPleaseTry": "ምላሽ መለጠፍ አልተሳካም. እባክዎ እንደገና ይሞክሩ።",
+  "commentPostedSuccessfully": "አስተያየቱ በተሳካ ሁኔታ ተለጥፏል",
+  "failedToAddCommentPleaseTry": "አስተያየት ማከል አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "failedToUpdateVotePleaseTry": "ምርጫውን ማሻሻል አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+  "invalidCommentId": "ልክ ያልሆነ አስተያየት መታወቂያ",
+  "commentEditedSuccessfully": "አስተያየቱ በተሳካ ሁኔታ ተስተካክሏል",
+  "failedToEditComment": "አስተያየቱን ማስተካከል አልተሳካም",
+  "commentDeletedSuccessfully": "አስተያየቱ በተሳካ ሁኔታ ተሰርዟል",
+  "failedToDeleteComment": "አስተያየቱን መሰረዝ አልተሳካም",
+  "failedToReportComment": "አስተያየቱን ሪፖርት ማድረግ አልተሳካም",
+  "failedToModerateComment": "አስተያየቱን መቆጣጠር አልተሳካም",
+  "failedToManageUser": "ተጠቃሚውን ማስተዳደር አልተሳካም",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ ነጥቦች). ደረጃ አሰጣጡ በእውነተኛ እንቅስቃሴ ላይ የተመሰረተ ነው ({realPoints} ነጥቦች)።",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} የተገኙ ነጥቦች + {text} የሚና ጉርሻ ({label}). ደረጃ አሰጣጡ በእውነተኛ እንቅስቃሴ ላይ የተመሰረተ ነው።",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "የክፍል ክልል",
+  "episodeIsDownloaded": "ክፍል {number} ወርዷል",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "{length} ክፍሎች",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "ክፍል {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Arise from the Shadow",
+  "frierenBeyondJourneySEnd": "Frieren: Beyond Journey's End",
+  "bleachThousandYearBloodWar": "BLEACH: Thousand-Year Blood War",
+  "cardCustomizer": "የካርድ ማበጀቻ",
+  "presetStyle": "ቅድመ-ዝግጅት ዘይቤ",
+  "chooseFrom5AuthenticBuiltIn": "ከ5 ትክክለኛ አብሮ የተሰሩ ዲዛይኖች ይምረጡ",
+  "sizingGeometry": "መጠን እና ጆሜትሪ",
+  "cardSize": "የካርድ መጠን",
+  "scaleCardsProportionallyWithoutDistortion": "ካርዶችን ሳይዛባ በተመጣጣኝ መጠን ያስተካክሉ",
+  "landscapeCards": "የመሬት ገጽታ ካርዶች",
+  "formatCardsIn169Widescreen": "ካርዶችን በ16:9 ሰፊ ማሳያ ቅርጸት ያዘጋጁ",
+  "selectPosterImageAspectRatio": "የፖስተር ምስል ምጥጥነ ገጽታ ይምረጡ",
+  "titleLines": "የአርእስት መስመሮች",
+  "maximumNumberOfTitleLinesDisplayed": "የሚታዩ ከፍተኛ የአርእስት መስመሮች ብዛት",
+  "gestureAreas": "የምልክት ቦታዎች",
+  "resetDefault": "ነባሪውን መልስ",
+  "overlay": "ተደራቢ",
+  "volume": "ድምጽ",
+  "brightnessArea": "የብሩህነት ቦታ",
+  "overlayAreaTap": "የተደራቢ ቦታ (ንካ)",
+  "volumeArea": "የድምጽ ቦታ",
+  "resetToDefaultLayout": "ወደ ነባሪው አቀማመጥ መልስ",
+  "moveToSlot": "ወደ ማስቀመጫ ውሰድ",
+  "topBar": "የላይኛው አሞሌ",
+  "bottomLeft": "ከታች ግራ",
+  "bottomRight": "ከታች ቀኝ",
+  "themesOverlay": "ገጽታዎች እና ተደራቢ",
+  "gesturesSeeking": "ምልክቶች እና መሻሻል",
+  "horizontalSwipeAcrossTheScreenTo": "ለመፈለግ በማያ ገጹ ላይ በአግድም ያንሸራትቱ",
+  "autoSkipCompletion": "በራሱ መخط እና ማጠናቀቂያ",
+  "percentageWatchedBeforeMarkingCompleted": "እንደተጠናቀቀ ከመ标记 በፊት የታየው መቶኛ",
+  "playerControls": "የማጫወቻ መቆጣጠሪያዎች",
+  "mpvConfSavedSuccessfully": "mpv.conf በተሳካ ሁኔታ ተቀምጧል",
+  "hardwareDrivers": "ሀርድዌር እና አሽከርካሪዎች",
+  "systemIntegrations": "የስርዓት ውህደቶች",
+  "experimentalMpvTuning": "የሙከራ MPV ማስተካከያ",
+  "editMpvConf": "mpv.confን ያርሙ",
+  "modeA": "ሁነታ A",
+  "modeB": "ሁነታ B",
+  "modeC": "ሁነታ C",
+  "modeAA": "ሁነታ A+A",
+  "modeBB": "ሁነታ B+B",
+  "modeCA": "ሁነታ C+A",
+  "natural": "இயற்கை",
+  "vivid": "ደማቅ",
+  "cinema": "ሲኒማ",
+  "soft": "ለስላሳ",
+  "warm": "ለስላሳ ሙቀት",
+  "cool": "ቀዝቃዛ",
+  "anime4k": "አኒሜ 4K",
+  "cinemaHdr": "ሲኒማ HDR",
+  "vividPop": "ደማቅ ፖፕ",
+  "dark": "ጨለማ",
+  "anime4kEngine": "Anime4K ሞተር",
+  "anime4kShaders2": "Anime4K ሼደሮች",
+  "devicePerformanceTier": "የመሣሪያ አፈጻጸም ደረጃ",
+  "midRange": "መካከለኛ ደረጃ",
+  "highEnd": "ከፍተኛ ደረጃ",
+  "shaderMode": "የሼደር ሁነታ",
+  "colorPreset": "የቀለም ቅንብር",
+  "desktopPlaybackKeybindings": "የዴስክቶፕ መልሶ ማጫወት ቁልፎች",
+  "customSubtitleFonts": "ብጁ የትርጉም ጽሑፍ ቅርደቶች",
+  "importedFont": "የገባ ፊደል \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "እርግጠኛ \"{font}\" ማጥፋት ይፈልጋሉ?",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "ቋንቋ እና ትርጉም",
+  "renderingBehavior": "አቀራረብ እና ባህሪ",
+  "disableToAvoidFadeTransitionsBetween": "በንዑስ ርዕሶች መካከል የደበዘዘ ሽግግር ለማስቀረት ያጥፉ",
+  "typographyOutline": "የፊደል ቅርጽ እና ገጽታ",
+  "adjustSubtitleFontSize": "የንዑስ ርዕስ የፊደል መጠን ያስተካክሉ",
+  "adjustSubtitleOutlineThickness": "የንዑስ ርዕስ ውጫዊ ገጽታ ውፍረት ያስተካክሉ",
+  "colorsPosition": "ቀለሞች እና ቦታ",
+  "changeSubtitleTextColor": "የንዑስ ርዕስ ጽሑፍ ቀለም ይቀይሩ",
+  "mangaReader": "ማንጋ አንባቢ",
+  "layoutDirection": "የአቀማመጥ አቅጣጫ",
+  "autoSwitchToVerticalModeFor": "ለዌብቱኖች በራስ-ሰር ወደ ቁልቁል ሁነታ ይቀይሩ",
+  "imageDisplay": "ምስል እና ማሳያ",
+  "interfaceSession": "በይነገጽ እና ክፍለ ጊዜ",
+  "mangaControlsGestures": "የማንጋ መቆጣጠሪያዎች እና እንቅስቃሴዎች",
+  "overscrollToPreviousNextChapter": "ወደ ቀድሞው/ቀጣዩ ምዕራፍ ማሸብለል",
+  "automaticallyScrollMangaPages": "የማንጋ ገጾችን በራስ-ሰር አሸብልል",
+  "swapVolumeUpDownActions": "የድምጽ መጨመር/መቀነስ ተግባራትን ቀይር",
+  "novelReader": "ልብ ወለድ አንባቢ",
+  "themeDisplay": "ገጽታ እና ማሳያ",
+  "displayChapterPercentageWhileReading": "በምታነብበት ጊዜ የምዕራፉን መቶኛ አሳይ",
+  "displayStatusInfoInTheNovel": "በልብ ወለድ አንባቢ ውስጥ የሁኔታ መረጃ አሳይ",
+  "typographySpacing": "የፊደል ቅርጽ እና ክፍተት",
+  "novelControlsGestures": "የልብ ወለድ መቆጣጠሪያዎች እና እንቅስቃሴዎች",
+  "tapScreenEdgesToScrollNovel": "የልብ ወለድ ገጾችን ለማሸብለል የስክሪኑን ጠርዞች ይንኩ",
+  "swipeGestures": "የማንሸራተት ምልክቶች",
+  "volumeKeyScrolling": "በድምጽ ቁልፍ ማሸብለል",
+  "useHardwareVolumeButtonsToScroll": "ልብ ወለዶችን ለማሸብለል የሃርድዌር ድምጽ ቁልፎችን ይጠቀሙ",
+  "automaticallyScrollNovelContent": "የልብ ወለድ ይዘትን በራስ-ሰር አሸብልል",
+  "textToSpeechTts": "ጽሁፍ-ወደ-ንግግር (TTS)",
+  "readNovelChaptersAloud": "የናቭል ምዕራፎችን ድምጽን በመጠቀም አንብብ",
+  "speechRate": "የንግግር ፍጥነት",
+  "voicePitch": "የድምጽ ከፍታ",
+  "areYouSureYouWantTo4": "ከ {title} መውጣት ይፈልጋሉ?",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "ማሻሻያዎችን ማረጋገጥ አልተቻለም፦ {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} በተሳካ ሁኔታ ተጭኗል",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} መጫን አልተቻለም፦ {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} በተሳካ ሁኔታ ተሻሽሏል",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} ማሻሻል አልተቻለም፦ {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "{name} አራግፍ",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} ተራግፏል",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} ማራገፍ አልተቻለም፦ {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "የ {title} ክፍል ቅደም ተከተል",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "ማሳወቂያዎች እና ማመሳሰል",
+  "enableNotifications": "ማሳወቂያዎችን አንቃ",
+  "syncAnilistNotificationsWithDeviceNotifications": "የ AniList ማሳወቂያዎችን ከመሣሪያ ማሳወቂያዎች ጋር አመሳስል",
+  "airingAlerts": "የመለቀቅ ማስጠንቀቂያዎች",
+  "socialAlerts": "ማህበራዊ ማስጠንቀቂያዎች",
+  "notifyOnNewFollowers": "አዲስ ተከታዮች ሲኖሩ አሳውቅ",
+  "activityAlerts": "የእንቅስቃሴ ማስጠንቀቂያዎች",
+  "syncInterval": "የማመሳሰል ክፍተት",
+  "regionTimezone": "ክልል እና የሰዓት ሰቅ",
+  "profileBio": "የመገለጫ ማጠቃለያ",
+  "backupFailed": "ምትኬ ማስቀመጥ አልተሳካም፦ {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "ፋይል በመምረጥ ላይ ስህተት ተፈጥሯል፦ {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "ምትኬ መጫን አልተቻለም፦ {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "ነባር ሁኔታን መመለስ አልተሳካም፦ {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "{animeCount} ርዕሶች እና ታሪክ",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "{mangaCount} ርዕሶች እና ምዕራፎች",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "{novelCount} ርዕሶች እና የንባብ ሁኔታ",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "በሚዲያ ላይ {totalLists} ብጁ ዝርዝሮች",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} የተመዘገቡ የኤክስቴንሽን ግቤቶች",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "{extFilesCount} የኤክስቴንሽን ዚፕ ጥቅሎች",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "እርዳታ እና መረጃ",
+  "libraryContentSafety": "የቤተ-መጽሐፍት እና የይዘት ደህንነት",
+  "homePageLists": "የመነሻ ገጽ ዝርዝሮች",
+  "chooseWhichListsToShowOn": "በመነሻ ገጹ ላይ የትኞቹ ዝርዝሮች እንደሚታዩ ይምረጡ",
+  "homePageCards": "የመነሻ ገጽ ካርዶች ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "$anime እየተመለከቱ ነው",
+  "viewingAnime": "$anime እያዩ ነው",
+  "readingManga2": "$manga እያነበቡ ነው",
+  "viewingManga": "$manga እያዩ ነው",
+  "readingNovel2": "$novel እያነበቡ ነው",
+  "viewingNovel": "$novel እያዩ ነው",
+  "browsingStatus": "$status እያስሱ ነው",
+  "upiIdCopied": "የ UPI ID ተገለበጠ: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "የ UPI ID ቅዳ ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • GPay፣ PhonePe፣ Paytm ወዘተ ለመክፈት ይንኩ።",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "የማውረድ ማሳወቂያዎች",
+  "reDownloadFailed": "እንደገና ማውረድ አልተሳካም: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "ወደነበረበት መመለስ አልተሳካም: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "ሪፖ ማከል አልተሳካም: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "\"{fontName}\" የፊደል ቅርጸ-ቁምፊ ተተግብሯል",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "\"{fontName}\" ማውረድ አልተሳካም",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" ገብቷል እና ተተግብሯል",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "የፊደል ቅርጸ-ቁምፊ ፋይል ማስገባት አልተሳካም",
+  "deleted3": "\"{fontName}\" ተሰርዟል",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "የፊደል ቅርጸ-ቁምፊ ቤተ-መጽሐፍት",
+  "linotte": "Linotte",
+  "defaultGeometricRoundedFontDesignedFor": "AnymeX የተnesደፈ ነባሪ ጂኦሜትሪ ራውንድድ ፊደል",
+  "systemFont": "የስርዓት ፊደል",
+  "useYourDeviceOsDefaultSystem": "የመሣሪያዎን ስርዓተ ክወና ነባሪ የፊደል ዓይነት ይጠቀሙ",
+  "loadYourOwnTtfOrOtf": "የእራስዎን .ttf ወይም .otf የፊደል ፋይሎች ይጫኑ",
+  "pendingReports": "{length} በመጠበቅ ላይ ያሉ ሪፖርቶች",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "ኩኪዎች እና ማከማቻ",
+  "monitoring": "ክትትል",
+  "fpsMeter": "የFPS መለኪያ",
+  "showDraggableRealTimeFpsOverlay": "በእውነተኛ ጊዜ የሚንቀሳቀስ የFPS ተደራቢ አሳይ",
+  "detectedModesDisplay": "የተገኙ ሁነታዎች እና ማሳያ",
+  "currentDisplayMode": "አሁን ያለው የማሳያ ሁነታ",
+  "modes": "{length} ሁነታዎች",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "አብጅ",
+  "stylingLibass": "{subLang} • {subFont} • ስታይል እና libass",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "አግድም",
+  "vert": "ቁልቁል",
+  "controlsTapZones": "መቆጣጠሪያዎች እና የመንካያ ቦታዎች",
+  "customizeTapZones": "የመንካያ ቦታዎችን አብጅ",
+  "configurePagedAndWebtoonTapRegions": "የገጽ እና የዌብቱን የመንካያ ክልሎችን ያዋቅሩ",
+  "fitBordersSpacing": "{value} • መጠን፣ ድንበሮች እና ክፍተት",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "የምዕራፍ ስታይል፣ የገጽ አመልካች እና የስክሪን መቆለፊያ",
+  "overscrollActionsAutoScrollVolume": "ከልክ በላይ ማሸብለል፣ ድርጊቶች፣ ራሱ የሚሸብልል እና ድምጽ",
+  "themeTypography": "ገጽታ እና ፊደል",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "የንባብ ሁነታ እና ማሳያ",
+  "pageModeProgressBatteryIndicator": "የገጽ ሁነታ፣ ሂደት እና የባትሪ አመልካች",
+  "readPageByPageInsteadOf": "ከማሸብለል ይልቅ ገጽ በገጽ ያንብቡ",
+  "displayPercentageInReadingBar": "በንባብ አሞሌው ላይ መቶኛ አሳይ",
+  "displayBatteryAndTimeInReader": "በንባብ አሞሌ ላይ ባትሪ እና ሰዓት አሳይ",
+  "gesturesNavigation": "እንቅስቃሴዎች እና ዳሰሳ",
+  "tapToScrollSwipeAutoScroll": "ለማሸብለል ይንኩ፣ ያንሸራትቱ፣ ራሱ ማሸብለል እና ድምጽ",
+  "tapEdgesOfScreenToScroll": "ወደላይ/ወደታች ለማሸብለል የማስተካከያ ጫፎችን ይንኩ",
+  "swipeHorizontallyToChangeChapters": "ምዕራፎችን ለመቀየር በአግድም ያንሸራትቱ",
+  "useVolumeKeysToScroll": "ለማሸብለል የድምጽ ቁልፎችን ይጠቀሙ",
+  "textToSpeechTts2": "ጽሑፍ ወደ ንግግር (TTS)",
+  "textToSpeechReadingSupport": "ጽሑፍ ወደ ንግግር የማንበብ ድጋፍ",
+  "speechRate2": "የንግግር ፍጥነት",
+  "voicePitch2": "የድምጽ ከፍታ",
+  "appPostersIconsAvatarsSize": "የመተግበሪያ ፖስተሮች፣ አዶዎች፣ መገለጫዎች። መጠን: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "ጊዜያዊ የቪዲዮ ክፍሎች። መጠን: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "የወረዱ የድር ኖቭል ገጾች። መጠን: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "ምዝግብ ማስታወሻዎች፣ ጊዜያዊ ውርዶች። መጠን: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "መሸጎጫውን ማጽዳት አልተሳካም: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "የፋብሪካ ዳግም ማስጀመር አልተሳካም: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 ወይም 3F51B5",
+  "motionDisplay": "እንቅስቃሴ እና ማሳያ",
+  "visualEffectsTuning": "የእይታ ውጤቶች እና ማስተካከያ",
+  "historyCard": "የታሪክ ካርድ",
+  "carousel": "ካሮሰል",
+  "navBar": "የዳሰሳ ማሰሪያ",
+  "themeDarkModeLayoutStyling": "ገጽታ፣ ጨለማ ሁነታ እና አቀማመጥ",
+  "gesturesSubtitlesVideoSettings": "እንቅስቃሴዎች፣ ንዑስ ርዕሶች እና የቪዲዮ ቅንብሮች",
+  "settingsTiles": "የቅንብሮች ንጣፎች",
+  "oledMode2": "OLED ሁነታ",
+  "primaryAccount": "ዋና መለያ ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "ከ {title} ጋር ተገናኝቷል",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "ከ {title} ጋር ይገናኙ",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "{value} ርዕሶች",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "\"{id}\"ን ማስወገድ ይፈልጋሉ? ይህ ሊቀለበስ አይችልም።",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "በማስገባት ላይ…",
+  "addJsonFiles": "የ JSON ፋይሎችን ጨምር",
+  "previousStyle": "ቀድሞ የነበረው ዘይቤ",
+  "nextStyle": "ቀጣይ ዘይቤ",
+  "currentStyle": "አሁን ያለው ዘይቤ",
+  "useThisStyle": "ይህን ዘይቤ ተጠቀም",
+  "pleaseLogInToGetRecommendations": "እባክዎ የዕይታ ምክሮችን ለማግኘት ይግቡ",
+  "chapter1": "ምዕራፍ 1",
+  "deletedSuccessfully": "{value} በተሳካ ሁኔታ ተሰርዟል",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "በ Simkl በተሳካ ሁኔታ ገብተዋል!",
+  "yepFailed": "አዎ፣ ሳይሳካ ቀርቷል",
+  "userInfoFetchingFailed": "የተጠቃሚ መረጃ ማምጣት አልተቻለም!",
+  "githubLoginFailed": "በ GitHub መግባት አልተሳካም: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "ማመሳሰል ቀድሞውኑ በሂደት ላይ ነው።",
+  "anotherSyncActionIsAlreadyIn": "ሌላ የማመሳሰል ተግባር ቀድሞውኑ በሂደት ላይ ነው።",
+  "noAnymexSyncGistFoundTo": "ሊሰረዝ የሚችል ምንም የ AnymeX ማመሳሰል ጂስት (gist) አልተገኘም።",
+  "noAnymexSyncGistFoundInitialize": "ምንም የ AnymeX ማመሳሰል ጂስት (gist) አልተገኘም። እባክዎ መጀመሪያ ይጀምሩ።",
+  "githubGistSync": "የ GitHub Gist ማመሳሰል",
+  "manage": "አስተዳድር",
+  "manageGithubGistSync": "የ GitHub Gist ማመሳሰልን አስተዳድር",
+  "joinedTheParty": "{username} ቡድኑን ተቀላቀለ",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} ቡድኑን ለቀቀ",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "አስተናጋጁ ወደ {title} ክፍል {episodeNumber} ቀይሯል",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "አስተያየቶችን በማምጣት ላይ ስህተት ተፈጥሯል",
+  "errorAddingComment": "አስተያየት በመጨመር ላይ ስህተት ተፈጥሯል",
+  "errorUpdatingVote": "ድምጽ በማሻሻል ላይ ስህተት ተፈጥሯል",
+  "errorEditingComment": "አስተያየት በማስተካከል ላይ ስህተት ተፈጥሯል",
+  "errorDeletingComment": "አስተያየት በመሰረዝ ላይ ስህተት ተፈጥሯል",
+  "commentReportedSuccessfully": "አስተያየቱ በተሳካ ሁኔታ ሪፖርት ተደርጓል",
+  "errorReportingComment": "አስተያየቱን ሪፖርት በማድረግ ላይ ስህተት ተፈጥሯል",
+  "errorFetchingReportsQueue": "የሪፖርቶች صف መረጃ ማምጣት አልተቻለም",
+  "reportResolvedSuccessfully": "ሪፖርቱ በተሳካ ሁኔታ ተፈቷል",
+  "failedToResolveReport": "ሪፖርቱን መፍታት አልተቻለም",
+  "errorResolvingReport": "ሪፖርቱን ሲፈታ ስህተት ተፈጥሯል",
+  "errorFetchingUserInfo": "የተጠቃሚ መረጃ ማምጣት አልተቻለም",
+  "errorFetchingUserHistory": "የተጠቃሚ ታሪክ ማምጣት አልተቻለም",
+  "errorFetchingUserStats": "የተጠቃሚ ስታቲስቲክስ ማምጣት አልተቻለም",
+  "errorListingUsers": "ተጠቃሚዎችን መዘርዘር አልተቻለም",
+  "errorSearchingUsers": "ተጠቃሚዎችን መፈለግ አልተቻለም",
+  "errorFetchingModerationQueue": "የመدራሻ صف መረጃ ማምጣት አልተቻለም",
+  "commentModeratedSuccessfully": "አስተያየቱ በተሳካ ሁኔታ ተመድሯል",
+  "errorModeratingComment": "አስተያየቱን ሲመድብ ስህተት ተፈጥሯል",
+  "userManagedSuccessfully": "ተጠቃሚው በተሳካ ሁኔታ ተስተናግዷል",
+  "errorManagingUser": "ተጠቃሚውን ሲያስተዳድር ስህተት ተፈጥሯል",
+  "errorGettingInitialDeepLink": "መነሻ ዲፕ ሊንክ ማግኘት አልተቻለም: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "ሊንኩን መክፈት አልተቻለም: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "የስህተት ዝርዝሮችን ቅዳ",
+  "whatSNew": "ምን አዲስ ነገር አለ",
+  "updatedToV": "ወደ v{current} ተዘምኗል",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "የማስታወቂያ ሊንክ መክፈት አልተቻለም",
+  "newAnilistUpdates": "{length} አዲስ የ AniList ዝመናዎች",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} ተጨማሪ",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "አልባሳትን አድስ",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "ማከማቻ እያከለ ነው... እባክዎ ይጠብቁ።",
+  "unsupportedThemeTypeSupportedPlayer": "የማይደገፍ የገጽታ አይነት \"{type}\"። የሚደገፉ: player።",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "የ ማጫወቻ ገጽታ ከሊንክ በማስገባት ላይ...",
+  "themeIsInvalid": "ገጽታው ትክክል አይደለም: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "የገጽታ JSON ትክክለኛ ነው። {imported} {label} ገብቷል።",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "ወደ ክፍል {code} በመቀላቀል ላይ...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "ክፍል መቀላቀል አልተቻለም፦ {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "የAniMatch ተኳኋኝነት ለ{user1} እና {user2} በመሰላት ላይ...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "በመረጡት የመከታተያ አገልግሎት ያጋሩ",
+  "shareAnymexLink": "የAnymeX አገናኝ ያጋሩ",
+  "opensDirectlyInAnymex": "በቀጥታ በAnymeX ይከፈታል",
+  "newCommentsRepliesAndEdits": "አዳዲስ አስተያየቶች፣ ምላሾች እና ማስተካከያዎች",
+  "upvotesAndDownvotesOnYourComments": "በአስተያየቶችዎ ላይ ያሉ ድምጾች",
+  "warningsMutesBansAndModerationActions": "ማስጠንቀቂያዎች፣ ድምፅ ማጥፋቶች፣ እገዳዎች እና የልኩ እርምጃዎች",
+  "reportFiledResolvedDismissed": "ሪፖርት ቀርቧል፣ ተፈትቷል፣ ተሰርዟል",
+  "officialAnnouncements": "ኦፊሴላዊ ማስታወቂያዎች",
+  "whenSomeoneMentionsYouInA": "አንድ ሰው በአስተያየት ውስጥ ሲጠቅስዎት (@)",
+  "notificationsForNewAnimeEpisodeReleases": "ለአዳዲስ Anime ክፍሎች መለቀቅ ማሳወቂያዎች",
+  "notificationsForFollowsMentionsAndLikes": "ለተከታዮች፣ መጠቀሶች እና መውደዶች ማሳወቂያዎች",
+  "notificationsForCompletedEpisodeAndChapter": "ለተጠናቀቁ ክፍሎች እና ምዕራፎች ማውረዶች ማሳወቂያዎች",
+  "signIn": "ግባ",
+  "failedToCheckForUpdates3": "ዝማኔዎችን ማረጋገጥ አልተቻለም",
+  "noUpdatesAvailable": "ምንም ዝማኔዎች የሉም",
+  "errorCheckingForUpdates": "ዝማኔዎችን ሲያረጋግጥ ስህተት ተፈጥሯል",
+  "installPermissionRequired": "የመጫኛ ፈቃድ ያስፈልጋል",
+  "downloadFailed3": "ማውረድ አልተሳካም",
+  "newVersionAvailable": "አዲስ ስሪት አለ",
+  "episodeMetadata": "የክፍል ሜታዳታ",
+  "sessionExpiredPleaseLoginAgain": "ክፍለ-ጊዜው አልቋል። እባክዎ እንደገና ይግቡ።",
+  "successfullyLoggedInAs": "እንደ {username} በተሳካ ሁኔታ ገብተዋል",
+  "loggedOutFromDiscord": "ከ Discord ወጥተዋል",
+  "clearStoredLogFiles": "የተከማቹ የሎግ ፋይሎችን አጽዳ",
+  "resetInMemoryAndDiskLogFiles": "በማህደረ ትውስታ እና ዲስክ ላይ ያሉ የሎግ ፋይሎችን ዳግም ያስጀምሩ",
+  "errorCopiedToClipboard": "ስህተት ወደ ቅንጥብ ሰሌዳ ተቀድቷል",
+  "autoScrollOn": "ራስ-ሰር ማንሸራተት በርቷል",
+  "autoScrollOff": "ራስ-ሰር ማንሸራተት ጠፍቷል",
+  "copyLogs": "ሎጎችን ቅዳ",
+  "clearLogs": "ሎጎችን አጽዳ",
+  "metadataFallbackStrategy": "የሜታዳታ ምትክ ስትራቴጂ",
+  "activeSourceMode": "ንቁ ምንጭ ሁነታ",
+  "chooseWhetherToMergeProviders": "አቅራቢዎችን ማዋሃድ ወይም የተወሰነ አገልግሎት ማስገደድ ይምረጡ",
+  "autoMerged": "ራስ-ሰር (የተዋሃደ)",
+  "providerPriorityToggles": "የአቅራቢ ቅድሚያ እና መቀየሪያዎች",
+  "dragHandlesToChangeFetchPriority": "ቅድሚያውን ለመቀየር እጀታዎችን ይጎትቱ። የክፍል አርእስቶች፣ ድንክዬዎች እና መግለጫዎችን ሲያመጡ ከፍተኛ ምንጮች ቅድሚያ ያገኛሉ።",
+  "maintenance": "ጥገና",
+  "clearMetadataCache": "የሜታዳታ መሸጎጫ አጽዳ",
+  "flushesInMemoryEpisodeThumbnails": "በማህደረ ትውስታ ውስጥ ያለውን የክፍል ድንክዬዎች እና የአርእስቶች መሸጎጫ ያጸዳል",
+  "metadataCacheCleared": "የሜታዳታ መሸጎጫ ጸድቷል",
+  "resetToDefaultOrder": "ወደ ነባሪ ቅደም ተከተል ዳግም አስጀምር",
+  "restoreFactoryPriorityOrder": "የፋብሪካውን ቅድሚያ ቅደም ተከተል ወደነበረበት ይመልሱ እና ሁሉንም አቅራቢዎች ያንቁ",
+  "resetEpisodeMetadataToDefaults": "የክፍል ሜታዳታ ወደ ነባሪዎች ዳግም ተጀምሯል",
+  "configureProvidersAndOrder": "አቅራቢዎችን እና ቅደም ተከተልን ያዋቅሩ",
+  "reorderSourcesToggleIndividual": "ምንጮችን እንደገና ይደርድሩ፣ ነጠላ አቅራቢዎችን ይቀያይሩ",
+  "autoMergedPriority": "ራስ-ሰር (የተዋሃደ ቅድሚያ)",
+  "mergesHighestPriorityAvailable": "ከፍተኛ ቅድሚያ የሚሰጣቸውን የሚገኙ መረጃዎችን ያዋህዳል",
+  "useRawProviderEpisodeTitlesOnly": "የአቅራቢውን የመጀመሪያ የክፍል አርእስቶች ብቻ ተጠቀም",
+  "progressSliderStyle": "የሂደት ተንሸራታች ዘይቤ",
+  "seekPreview": "የፍለጋ ቅድመ እይታ",
+  "showThumbnailScrubbingPreviewWhileSeeking": "በሚፈልጉበት ጊዜ የድንክዬ ቅድመ እይታን አሳይ",
+  "linearWavy": "መስመራዊ ሞገዳማ",
+  "defaultM3": "ነባሪ M3",
+  "capsule": "እንክብል",
+  "noLogsToCopy": "የሚገለበጡ ሎጎች የሉም",
+  "logsCopiedToClipboard": "ሎጎች ወደ ቅንጥብ ሰሌዳ ተቀድተዋል",
+  "noLogsAvailableToShare": "ለማጋራት የሚገኙ ሎጎች የሉም",
+  "decadeFormat": "የ{decade}ዎቹ",
+  "mediaWithId": "ሚዲያ #{id}",
+  "tileIconShapes": "የሰድር አዶ ቅርጾች",
+  "tilePrefixIconShape": "የሰድር ቅድመ ቅጥያ አዶ ቅርጽ",
+  "tileIconShapesLower": "የሰድር አዶ ቅርጾች",
+  "opening": "መክፈቻ",
+  "ending": "መጨረሻ",
+  "recap": "ማጠቃለያ",
+  "ifSubtitleNotShowingDisableLibass": "የትርጉም ጽሑፍ የማይታይ ከሆነ በቅንብሮች ውስጥ libass ን ያሰናክሉ እና እንደገና ያስጀምሩ",
+  "subtitlesTranslatedEntries": "የትርጉም ጽሑፎች ተተርጉመዋል! ({count} ግቤቶች)",
+  "skippedFillerEpisodesCount": "{count, plural, other{{count} የሙሌት ክፍሎች ተዘለዋል}}",
+  "unsubscribe": "ከደንበኝነት ምዝገባ ይውጡ",
+  "subscribeToThread": "ለክር ይመዝገቡ",
+  "downloadChaptersCount": "{count, plural, other{{count} ምዕራፎችን አውርድ}}",
+  "downloadingChaptersCount": "{count, plural, other{{count} ምዕራፎች እየወረዱ ነው...}}",
+  "moreRecommendationsCount": "{count, plural, other{+ {count} ተጨማሪ ምክሮች}}",
+  "charactersAndVoiceActors": "ገጸ-ባህሪያት እና የድምጽ ተዋንያን",
+  "unknownVa": "ያልታወቀ የድምጽ ተዋናይ",
+  "chaptersTimestamps": "ምዕራፎች እና የጊዜ ማህተሞች",
+  "contentSource": "የይዘት ምንጭ",
+  "selectPreferredTrackingAndMediaProvider": "የመረጡትን መከታተያ እና የሚዲያ አቅራቢ ይምረጡ",
+  "reducesColorRingingArtifacts": "የቀለም ቀለበት ቅርሶችን ይቀንሳል",
+  "downscalesInLinearLightSpace": "በመስመራዊ ብርሃን ቦታ ውስጥ ወደ ታች ይለካል",
+  "motionDithering": "እንቅስቃሴ እና ዲተሪንግ",
+  "smoothMotionBetweenVideoFrames": "በቪዲዮ ክፈፎች መካከል ለስላሳ እንቅስቃሴ",
+  "reducesColorBandingWithSubtle": "ቀጭን ጫጫታ ባለው የቀለም ባንዲንግ ይቀንሳል",
+  "unknown": "ያልታወቀ",
+  "anilistActivity": "የ AniList እንቅስቃሴ",
+  "failedToPostStory": "ታሪክ መለጠፍ አልተሳካም",
+  "likesCount": "{count} መውደዶች",
+  "newEpisodes": "አዳዲስ ክፍሎች",
+  "outNowFromShowsYouAreWatching": "ከሚመለከቷቸው ፕሮግራሞች አሁን ወጥቷል",
+  "planning": "ለማየት የታቀደ",
+  "postStory": "ታሪክ ለጥፍ",
+  "postToStory": "ወደ ታሪክ ለጥፍ",
+  "readChapter": "ምዕራፍ {chapter} አንብብ",
+  "repliesCount": "{count} ምላሾች",
+  "rewatching": "እንደገና በመመልከት ላይ",
+  "sendAReaction": "ስሜት ግለጽ",
+  "statusUpdate": "የሁኔታ ዝማኔ",
+  "storyPostedToAnilist": "ታሪክ ወደ AniList ተለጥፏል!",
+  "viewDiscussion": "ውይይት ተመልከት",
+  "viewInAnymex": "በ AnymeX ውስጥ ተመልከት",
+  "watched": "የታየ",
+  "watchedEpisode": "ክፍል {episode} ታይቷል",
+  "whatsOnYourMindAniList": "ምን እያሰቡ ነው? (በ AniList ላይ እንደ ጽሑፍ እንቅስቃሴ ይለጠፋል)",
+  "yourStory": "የእርስዎ ታሪክ",
+  "hostBadge": "አስተናጋጅ",
+  "basedOnAnimeScoredTen": "10/10 ደረጃ በሰጠሃቸው አኒሜዎች ላይ የተመሠረተ።",
+  "basedOnMangaScoredTen": "10/10 ደረጃ በሰጠሃቸው ማንጋዎች ላይ የተመሠረተ።"
 }

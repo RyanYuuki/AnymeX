@@ -8,6 +8,7 @@ import 'package:anymex/models/Anilist/anilist_notification.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class AnilistNotificationService extends GetxService {
   static AnilistNotificationService get instance =>
@@ -149,8 +150,8 @@ class AnilistNotificationService extends GetxService {
             eligible.take(3).map((e) => '• ${e.displayBody}').join('\n');
         NotificationService.instance.showRichNotification(
           id: 999001,
-          title: '${eligible.length} New AniList Updates',
-          body: '$summaryText\n+${eligible.length - 3} more',
+          title: Get.context!.l10n.newAnilistUpdates(eligible.length.toString()),
+          body: Get.context!.l10n.nMore(summaryText.toString(), (eligible.length - 3).toString()),
           channelId: 'anilist_social',
           payload: jsonEncode({
             'source': 'anilist',

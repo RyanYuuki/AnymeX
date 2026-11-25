@@ -3,6 +3,8 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:archive/archive.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 
 class KotatsuParseResult {
   final List<OfflineMedia> mangas;
@@ -160,7 +162,7 @@ class KotatsuBackupParser {
         targetChapter ??= media.chapters!.first;
       } else {
         targetChapter = Chapter(
-          title: 'Chapter 1',
+          title: Get.context!.l10n.chapter1,
           number: 1.0,
           pageNumber: page > 0 ? page : null,
           lastReadTime: updatedAt,

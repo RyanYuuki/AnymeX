@@ -403,7 +403,7 @@ class _LogoAnimationPreviewDialogState
                       _selectedCustomLogoId = newLogo.id;
                       _logoKey = UniqueKey();
                     });
-                    snackBar('Added "${newLogo.name}" successfully!');
+                    snackBar(context.l10n.addedSuccessfully(newLogo.name.toString()));
                   }
                 } catch (e) {
                   snackBar(e.toString().replaceAll('Exception: ', ''));
@@ -628,7 +628,7 @@ class _LogoAnimationPreviewDialogState
                       _customLogos = CustomLogoService.getCustomLogos();
                       _logoKey = UniqueKey();
                     });
-                    snackBar('Updated "${updated.name}" successfully!');
+                    snackBar(context.l10n.updatedSuccessfully(updated.name.toString()));
                   }
                 } catch (e) {
                   snackBar(e.toString().replaceAll('Exception: ', ''));
@@ -644,7 +644,7 @@ class _LogoAnimationPreviewDialogState
   void _confirmDeleteCustomLogo(CustomLogo logo) {
     AnymeXDialog(
       title: context.l10n.deleteCustomLogo,
-      message: 'Are you sure you want to delete "${logo.name}"?',
+      message: context.l10n.areYouSureYouWantTo2(logo.name.toString()),
       confirmText: context.l10n.delete,
       onConfirm: () async {
         await CustomLogoService.deleteCustomLogo(logo.id);
@@ -656,7 +656,7 @@ class _LogoAnimationPreviewDialogState
             }
             _logoKey = UniqueKey();
           });
-          snackBar('Deleted "${logo.name}"');
+          snackBar(context.l10n.deleted(logo.name.toString()));
         }
       },
     ).show(context);

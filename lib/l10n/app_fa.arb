@@ -176,5 +176,3922 @@
   "incognitoDisabled": "حالت ناشناس غیرفعال شد",
   "episodeCount": "{count} قسمت",
   "chapterCount": "{count} فصل",
-  "itemCount": "{count} مورد"
+  "itemCount": "{count} مورد",
+  "whatAreWeDoingToday": "، امروز چه کار می کنیم؟",
+  "aLogoWithThisNameAlready": "لوگویی با این نام از قبل وجود دارد.",
+  "about": "درباره",
+  "aboutCommentumV2": "درباره Commentum v2",
+  "aboutTheApp": "درباره برنامه",
+  "accessModerationToolsAndReports": "به ابزارها و گزارش های تعدیل دسترسی داشته باشید",
+  "accountTokensAnilistMalSimkl": "توکن‌های حساب (AniList، MAL، Simkl)",
+  "accounts": "حساب ها",
+  "accountsSync": "حساب ها و همگام سازی",
+  "actionAppliedSuccessfully": "اقدام با موفقیت اعمال شد",
+  "activeDownloads": "دانلودهای فعال",
+  "activity": "فعالیت",
+  "activityDeleted": "فعالیت حذف شد",
+  "activityHeatmap": "نقشه حرارتی فعالیت",
+  "activityMergeTime": "زمان ادغام فعالیت",
+  "activityPhrasing": "عبارت‌سازی فعالیت",
+  "activityRefreshed": "فعالیت تازه شد",
+  "adFreeApp": "برنامه بدون آگهی",
+  "addCustomLogo": "اضافه کردن لوگوی سفارشی",
+  "addCustomLogoGifWebp": "اضافه کردن نشان‌واره سفارشی (gif.، .webp)",
+  "addRepo": "Repo را اضافه کنید",
+  "addRepository": "افزودن مخزن",
+  "addYourRecommendation": "توصیه خود را اضافه کنید",
+  "addOnExtensions": "افزونه های افزودنی",
+  "addOns": "افزونه ها",
+  "addOnsPowerBackgroundServicesSuch": "افزونه‌ها به خدمات پس‌زمینه نیرو می‌دهند، مانند موتور جریان تورنت TorrServer برای پخش لینک آهنربای مستقیم.",
+  "addedToDownloads": "به دانلودها اضافه شد",
+  "addingKotatsuRepositoryThisWillTake": "افزودن مخزن Kotatsu این حداقل 1-2 دقیقه طول می کشد، لطفا صبر کنید...",
+  "addingRepositoryFetchingExtensions": "افزودن مخزن و واکشی برنامه‌های افزودنی...",
+  "adjustBottomBarMarginMediaDetails": "تنظیم حاشیه نوار پایین (فقط صفحه جزئیات رسانه)",
+  "adjustCardAnimationSpeed": "سرعت انیمیشن کارت را تنظیم کنید",
+  "adjustCornerRadiusOfElements": "شعاع گوشه عناصر را تنظیم کنید",
+  "adjustDoubleTapToSeekDuration": "برای جستجوی مدت زمان، دو ضربه سریع را تنظیم کنید",
+  "adjustElementGlowIntensity": "شدت درخشش عنصر را تنظیم کنید",
+  "adjustFrostedBlurIntensity": "شدت تاری مات را تنظیم کنید",
+  "adjustGlowBlurIntensity": "شدت تاری درخشش را تنظیم کنید",
+  "adjustHorizontalMarginOfBottomNavigation": "حاشیه افقی نوار پیمایش پایین را تنظیم کنید",
+  "adjustItemsPerRow": "موارد را در هر ردیف تنظیم کنید",
+  "adjustMediaBackdropExposure": "نوردهی پس زمینه رسانه را تنظیم کنید",
+  "adjustMegaskipDuration": "مدت زمان MegaSkip را تنظیم کنید",
+  "adjustRoundnessOfAllMediaCards": "گردی همه کارت های رسانه را تنظیم کنید",
+  "adjustSubSize": "سایز سایز را تنظیم کنید",
+  "adjustSubtitleOutlineWidth": "پهنای طرح زیرنویس را تنظیم کنید",
+  "adjustTextVisibility": "قابلیت مشاهده متن را تنظیم کنید",
+  "admin": "مدیر",
+  "adult": "بالغ",
+  "aiPicks": "انتخاب های هوش مصنوعی",
+  "airingAnimeNotifications": "پخش اعلان‌های انیمیشن",
+  "all": "همه",
+  "allClearNoReportsToReview": "همه روشن! گزارشی برای بررسی وجود ندارد.",
+  "allSources": "همه منابع",
+  "allowAnymexToAutomaticallyOpenAnime": "به AnymeX اجازه دهید به طور خودکار پیوندهای وب انیمه و مانگا را باز کند",
+  "allowInstallingUpdatesForExtensionsAnd": "اجازه نصب به‌روزرسانی‌ها برای برنامه‌های افزودنی و برنامه‌ها",
+  "allowOnlyUsersIFollowTo": "فقط به کاربرانی که آنها را دنبال می کنم اجازه دهید به من پیام دهند.",
+  "allowStorageAccessAndSelectDownload": "اجازه دسترسی به فضای ذخیره‌سازی را بدهید و پوشه دانلود را انتخاب کنید",
+  "allowStorageAccessToDownloadApp": "اجازه دسترسی به فضای ذخیره‌سازی برای دانلود به‌روزرسانی‌های برنامه و افزونه را بدهید",
+  "alreadyRecommended": "قبلا توصیه شده است",
+  "alternativeTitles": "عناوین جایگزین",
+  "alwaysShowChapterTransition": "همیشه انتقال فصل نشان داده شود",
+  "alwaysShowPageIndicator": "نشانگر صفحه همیشه نشان داده شود",
+  "amountOfFilmGrainApplied": "مقدار دانه فیلم اعمال شده",
+  "anifyKitsuArtwork": "آثار هنری Anify / Kitsu",
+  "anilistSettings": "تنظیمات AniList",
+  "anilistSettings2": "تنظیمات Anilist",
+  "animatchCompatibility": "سازگاری AniMatch",
+  "animatchLinkCopiedToClipboard": "پیوند AniMatch در کلیپ بورد کپی شد!",
+  "animateControlOverlay": "روکش کنترل متحرک",
+  "anime": "انیمه",
+  "animeUpper": "انیمه",
+  "animeManga": "انیمه و مانگا",
+  "anime4kEnhancement": "بهبود انیمیشن 4K",
+  "animeAdaptation": "انطباق انیمه",
+  "animeCustomLists": "لیست های سفارشی انیمه",
+  "animeDetailsPhrasing": "بیان جزئیات انیمه",
+  "animeLibrary": "کتابخانه انیمه",
+  "animeList": "لیست انیمه",
+  "animeScore": "امتیاز انیمه",
+  "animeSectionOrder": "سفارش بخش انیمه",
+  "announcement": "اعلامیه",
+  "announcementUnavailable": "اطلاعیه در دسترس نیست",
+  "announcements": "اطلاعیه ها",
+  "anymexForkOptimisedForTv": "چنگال AnymeX برای تلویزیون بهینه شده است",
+  "anymexIs100FreeOpenSource": "AnymeX 100٪ رایگان، منبع باز و بدون آگهی است. پشتیبانی شما به طور مستقیم به هزینه های سرور و توسعه ویژگی های فعال کمک می کند!",
+  "anymexIs100FreeOpenSourceAnd": "AnymeX 100٪ رایگان، منبع باز و بدون آگهی است. حمایت شما به من کمک می کند تا به طور مداوم برنامه را حفظ و بهبود بخشم!",
+  "appCacheExceededThresholdAndWas": "حافظه پنهان برنامه از آستانه فراتر رفت و پاک شد",
+  "appDataHasBeenCompletelyReset": "داده های برنامه به طور کامل بازنشانی شده است",
+  "appFonts": "فونت های برنامه",
+  "appSettingsSessions": "تنظیمات و جلسات برنامه",
+  "appearance": "ظاهر",
+  "appearanceInterface": "ظاهر و رابط",
+  "appearanceTheme": "ظاهر و تم",
+  "appliesAnimeMangaPosterColorOn": "رنگ پوستر انیمیشن/مانگا را در صفحه جزئیات اعمال می کند",
+  "apply": "درخواست کنید",
+  "applyASubtleFilmGrainTexture": "یک بافت دانه ظریف فیلم را روی سطح رابط اعمال کنید",
+  "applyFilters": "اعمال فیلترها",
+  "applyOptionsFromYourMpvConf": "هنگام شروع پخش، گزینه های mpv.conf خود را اعمال کنید",
+  "areYouSureYouWantTo": "آیا مطمئن هستید که می خواهید همه کوکی های ذخیره شده را حذف کنید؟",
+  "areYouSureYouWantToDelete": "آیا مطمئن هستید که می خواهید این نظر را حذف کنید؟ برای همیشه حذف خواهد شد و گزارش حل خواهد شد.",
+  "areYouSureYouWantToDeleteThis": "آیا مطمئن هستید که می خواهید این برنامه افزودنی را حذف کنید؟",
+  "areYouSureYouWantToDeleteThisReply": "آیا مطمئن هستید که می خواهید این پاسخ را حذف کنید؟",
+  "askForTrackingPermission": "درخواست مجوز ردیابی",
+  "atLeast2TabsMustRemain": "حداقل 2 برگه باید قابل مشاهده باقی بماند!",
+  "audioEngine": "موتور صوتی",
+  "audioPitchCorrection": "تصحیح زیر و بم صدا",
+  "authenticationOptional": "احراز هویت (اختیاری)",
+  "auto": "خودکار",
+  "autoPlay": "پخش خودکار",
+  "autoScroll": "اسکرول خودکار",
+  "autoScrollSpeed": "سرعت اسکرول خودکار",
+  "autoSkipEd": "پرش خودکار ED",
+  "autoSkipFiller": "پرکننده خودکار پرش",
+  "autoSkipOnceOnly": "پرش خودکار فقط یک بار",
+  "autoSkipOnlyOncePerWatch": "پرش خودکار فقط یک بار در هر ساعت",
+  "autoSkipOp": "خودکار پرش OP",
+  "autoSkipRecap": "بازنویسی پرش خودکار",
+  "autoSkipTheEndingSong": "رد شدن خودکار آهنگ پایانی",
+  "autoSkipTheOpeningSong": "رد شدن خودکار آهنگ افتتاحیه",
+  "autoSkipTheRecapSection": "رد شدن خودکار از بخش recap",
+  "autoSwitchToVerticalMode": "تغییر خودکار به حالت عمودی",
+  "autoTranslateSubtitles": "ترجمه خودکار زیرنویس",
+  "autoWebtoonMode": "حالت خودکار وبتون",
+  "autoClearThreshold": "آستانه پاکسازی خودکار",
+  "autoSelectDefault": "انتخاب خودکار (پیش‌فرض)",
+  "autoSelectThisServerQualityFor": "این کیفیت سرور را برای این انیمیشن به صورت خودکار انتخاب کنید",
+  "automaticallyMoveToNextTextSegment": "انتقال خودکار به بخش متن بعدی",
+  "automaticallyScrollContent": "پیمایش خودکار محتوا",
+  "automaticallyScrollPages": "به صورت خودکار صفحات را اسکرول کنید",
+  "automaticallySkipFillerEpisodesWhenGoing": "هنگام رفتن به قسمت بعدی، به‌طور خودکار از قسمت‌های پرکننده رد شوید",
+  "automaticallyUpdateEntriesWhenImportingThe": "به‌روزرسانی خودکار ورودی‌ها هنگام وارد کردن XML",
+  "availableAddOns": "افزونه های موجود",
+  "availableKeybindings": "کلیدهای موجود:",
+  "avatarDecorations": "تزئینات آواتار",
+  "avatarDecorationsNameplatesBannersProfileEffects": "تزئینات آواتار، پلاک نام، بنرها و جلوه های نمایه",
+  "avgChapters": "فصل های میانگین",
+  "avgEpisodes": "میانگین اپیزودها",
+  "back": "برگشت",
+  "backdropScope": "پس زمینه و دامنه",
+  "backdropBrightness": "روشنایی پس زمینه",
+  "backdropSource": "منبع پس زمینه",
+  "backgroundOpacity": "کدورت پس زمینه",
+  "backup": "پشتیبان گیری",
+  "backupRestore": "پشتیبان گیری و بازیابی",
+  "backupAndRestoreYourLibrary": "از کتابخانه خود نسخه پشتیبان تهیه و بازیابی کنید",
+  "backupArchive": "آرشیو پشتیبان",
+  "backupOwner": "مالک پشتیبان",
+  "backupRestoredSuccessfully": "پشتیبان گیری با موفقیت بازیابی شد!",
+  "backupSavedSuccessfully": "پشتیبان گیری با موفقیت ذخیره شد!",
+  "badge": "نشان",
+  "banUser": "ممنوع کردن کاربر",
+  "baseUrlNotAvailableForThis": "URL پایه برای این منبع در دسترس نیست",
+  "basedOnYourFavouriteCharacters": "بر اساس شخصیت های مورد علاقه شما.",
+  "basedOnYourFavouriteStaff": "بر اساس کارکنان مورد علاقه شما.",
+  "basedOnYourTop10Tags": "بر اساس 10 تگ برتر شما.",
+  "basedOnYourTop3Studios": "بر اساس 3 استودیو برتر شما.",
+  "basedOnYourTop5Genres": "بر اساس 5 ژانر برتر شما.",
+  "basedOnYourTop6Voice": "بر اساس 6 صداپیشه برتر شما.",
+  "batchDownload": "دانلود دسته ای",
+  "beTheFirstToRecommendThis": "اولین کسی باشید که این عنوان را توصیه می کند!",
+  "betterSubtitleRenderingUsingLibassLibrary": "رندر بهتر زیرنویس با استفاده از کتابخانه libass",
+  "blockquote": "بلوک نقل قول",
+  "blurBackdropTuning": "تاری و تنظیم پس زمینه",
+  "blurAmount": "مقدار تاری",
+  "blurColorTint": "تاری رنگ رنگ",
+  "blurMechanism": "مکانیسم تاری",
+  "blurMultiplier": "ضریب تاری",
+  "blurStyle": "سبک تاری",
+  "bold": "پررنگ",
+  "boldItalic": "پررنگ + مورب",
+  "botUrlNotConfigured": "URL ربات پیکربندی نشده است",
+  "bottomControls": "کنترل های پایین",
+  "bottomMargin": "حاشیه پایین",
+  "bottomNavBarMargin": "حاشیه نوار ناوبری پایین",
+  "broadcastYourActivityToDiscord": "فعالیت خود را به Discord پخش کنید",
+  "browsingIdle": "در حال مرور / بیکار",
+  "browsingPhrasing": "در حال مرور عبارت",
+  "bufferSize": "اندازه بافر",
+  "builtInStyles": "سبک های داخلی",
+  "byDisablingThisYouCanAvoid": "با غیرفعال کردن آن می توانید از انتقال بین زیرنویس ها جلوگیری کنید.",
+  "byIndex": "بر اساس شاخص",
+  "byUserId": "با شناسه کاربری",
+  "byUsername": "با نام کاربری",
+  "bypassCloudflare": "دور زدن Cloudflare",
+  "cacheStorage": "حافظه پنهان و ذخیره سازی",
+  "cacheMinutes": "Cache Minutes",
+  "cacheOverview": "نمای کلی حافظه پنهان",
+  "cachedImages": "تصاویر ذخیره شده در حافظه پنهان",
+  "calculateCompatibility": "محاسبه سازگاری",
+  "calculatedBasedOnWhichReleaseDecades": "بر اساس این که کدام دهه نسخه را بیشتر تماشا کرده اید و بالاترین امتیاز را کسب کرده اید، محاسبه می شود.",
+  "calendar": "تقویم",
+  "cancel": "لغو کنید",
+  "cannotCompareAUserWithThemselves": "نمی توان یک کاربر را با خودش مقایسه کرد! لطفا دو نام کاربری متفاوت وارد کنید.",
+  "cannotCompareYourProfileWithYourself": "نمی توانید پروفایل خود را با خودتان مقایسه کنید! لطفا نام کاربری دیگری وارد کنید.",
+  "cantPlaySinceUserClosedThe": "از زمانی که کاربر برنامه را به طور ناگهانی بسته است، نمی توان بازی کرد",
+  "cantReadSinceUserClosedThe": "نمی توانم بخوانم زیرا کاربر برنامه را به طور ناگهانی بسته است",
+  "cardAnimationDuration": "مدت زمان انیمیشن کارت",
+  "cardRoundness": "گرد بودن کارت",
+  "cardStyle": "سبک کارت",
+  "carouselStyle": "سبک چرخ فلک",
+  "changeFile": "تغییر فایل",
+  "changeRole": "تغییر نقش",
+  "changeService": "تغییر سرویس",
+  "changeSubtitleBackgroundColor": "تغییر رنگ پس زمینه زیرنویس",
+  "changeSubtitleColors": "رنگ زیرنویس را تغییر دهید",
+  "changeSubtitleOutlineColor": "رنگ طرح زیرنویس را تغییر دهید",
+  "changelog": "تغییر",
+  "chapterListSettings": "تنظیمات فهرست فصل",
+  "chapterNumber": "شماره فصل",
+  "chapterTileStyle": "فصل سبک کاشی",
+  "chapters": "فصل ها",
+  "chaptersUpper": "فصل ها",
+  "chaptersVolumes": "فصل ها و جلدها",
+  "chaptersRead": "فصول خوانده شده",
+  "characters": "شخصیت ها",
+  "checkCompatibility": "سازگاری را بررسی کنید",
+  "checkForAddOnUpdates": "به‌روزرسانی‌های افزونه را بررسی کنید",
+  "checkForUpdates": "به روز رسانی ها را بررسی کنید",
+  "checkUpdatesFromBetaChannel": "به روز رسانی های کانال بتا را بررسی کنید",
+  "checkingForUpdates": "در حال بررسی به روز رسانی!",
+  "chooseABackupFileAnymex": "انتخاب یک فایل پشتیبان (.anymex)",
+  "chooseACustomBackgroundForLiquid": "یک پس‌زمینه سفارشی برای حالت مایع انتخاب کنید.",
+  "chooseADirectoryToBrowseYour": "دایرکتوری را برای مرور فایل های رسانه ای خود انتخاب کنید",
+  "chooseDifferentImage": "تصویر متفاوت را انتخاب کنید",
+  "chooseDownloadFolder": "پوشه دانلود را انتخاب کنید",
+  "chooseImage": "تصویر را انتخاب کنید",
+  "chooseProvider": "ارائه دهنده را انتخاب کنید",
+  "chooseQuality": "کیفیت را انتخاب کنید",
+  "chooseServer": "سرور را انتخاب کنید",
+  "chooseServiceTracker": "Service / Tracker را انتخاب کنید",
+  "chooseShaderProfile": "Shader Profile را انتخاب کنید",
+  "chooseUpiApp": "برنامه UPI را انتخاب کنید",
+  "chooseWhichListToShowOn": "لیستی را انتخاب کنید که در صفحه اصلی نمایش داده شود",
+  "chooseYourFavouriteColor": "رنگ مورد علاقه خود را انتخاب کنید!",
+  "chooseYourFavouritePalette": "پالت مورد علاقه خود را انتخاب کنید!",
+  "chromaScaler": "کروما اسکالر",
+  "classicCarouselCardLayoutFeaturingVertical": "طرح بندی کارت چرخ فلک کلاسیک با کارت های پوستر عمودی.",
+  "clear": "پاک کردن",
+  "clearAll": "پاک کردن همه",
+  "clearAllHistory": "تمام تاریخچه را پاک کنید",
+  "clearAppCache": "کش برنامه را پاک کنید",
+  "clearAppCacheNow": "اکنون کش برنامه را پاک کنید",
+  "clearCache": "کش را پاک کنید",
+  "clearCacheCookies": "کش و کوکی ها را پاک کنید",
+  "clearCookies": "پاک کردن کوکی ها",
+  "clearCookies2": "پاک کردن کوکی ها",
+  "clearHistory": "پاک کردن تاریخچه",
+  "clearImageCacheNow": "اکنون کش تصویر را پاک کنید",
+  "clearProxy": "پاک کردن پروکسی",
+  "clearSelected": "پاک کردن انتخاب شده",
+  "clientAll": "مشتری: همه",
+  "close": "بستن",
+  "closetCommunity": "گنجه و انجمن",
+  "cloudflareChallengeSolved": "چالش Cloudflare حل شد!",
+  "collectionName": "نام مجموعه",
+  "collections": "مجموعه ها",
+  "combineBackupDataWithExistingData": "داده های پشتیبان را با داده های موجود در این دستگاه ترکیب کنید",
+  "commentDeleted": "نظر حذف شد",
+  "commentPolicy": "سیاست نظر",
+  "commentReplies": "نظرات پاسخ ها",
+  "commentRules": "قوانین نظر دادن",
+  "commentSystem": "سیستم نظرات",
+  "comments": "نظرات",
+  "commentumV2IsAnAdvancedComment": "Commentum v2 یک سیستم نظرات پیشرفته است که ارائه می دهد:",
+  "commentumV2SettingsModerationPreferences": "تنظیمات، تعدیل و ترجیحات Commentum v2",
+  "common": "مشترک",
+  "commonCharacters": "شخصیت های رایج",
+  "commonFavouriteStaff": "کارکنان مورد علاقه مشترک",
+  "commonGenres": "ژانرهای رایج",
+  "commonSettings": "تنظیمات مشترک",
+  "commonStudios": "استودیوهای مشترک",
+  "commonTags": "برچسب های رایج",
+  "commonVoiceActors": "صداپیشگان مشترک",
+  "communityDriven": "جامعه رانده",
+  "communityForksOfAnymex": "چنگال های جامعه AnymeX",
+  "communityLeaderboard": "انجمن مدیران",
+  "communityRecommendations": "توصیه های جامعه",
+  "compact": "فشرده",
+  "compactCardWithEpisodeThumbnailAnd": "کارت فشرده با تصویر کوچک قسمت و عنوان",
+  "compactGridOfChapterNumbers": "شبکه فشرده اعداد فصل",
+  "compatibility": "سازگاری",
+  "compatibilityRanks": "رتبه های سازگاری",
+  "compatibleWithGooglePayPhonepePaytm": "سازگار با Google Pay، PhonePe، Paytm، BHIM، Cred، Navi، Amazon Pay و همه برنامه‌های بانکی UPI.",
+  "completeAnyCloudflareChallengeThenTap": "هر چالش Cloudflare را کامل کنید، سپس روی «Sync Cookies» ضربه بزنید تا جلسه به برنامه‌های افزودنی منتقل شود.",
+  "compose": "نوشتن",
+  "concurrencyLimits": "همزمانی و محدودیت ها",
+  "configurationsRepos": "تنظیمات و مخازن",
+  "configureExport": "پیکربندی و صادرات",
+  "configureDiscordRichPresenceActivityStatus": "وضعیت حضور و فعالیت غنی Discord را پیکربندی کنید",
+  "configureDnsOverHttpsProxyTls": "تنظیمات DNS-over-HTTPS، پروکسی و TLS را پیکربندی کنید",
+  "configureMangaAndNovelReaderDefaults": "پیش‌فرض‌های مانگا و رمان‌خوان را پیکربندی کنید",
+  "configureParallelDownloadsAndDirectory": "دانلودهای موازی و دایرکتوری را پیکربندی کنید",
+  "configurePosterBlurScopeTintBackdrop": "تاری پوستر، محدوده، رنگ و منبع پس زمینه را پیکربندی کنید",
+  "confirm": "تایید کنید",
+  "confirmRestore": "تایید و بازیابی",
+  "confirmBackupPassword": "رمز عبور پشتیبان را تأیید کنید",
+  "conflictHandling": "مدیریت تعارض",
+  "connect": "اتصال",
+  "continueReading": "به خواندن ادامه دهید",
+  "continueWatching": "به تماشای ادامه دهید",
+  "continuousModeOnly": "فقط حالت پیوسته",
+  "contributors": "مشارکت کنندگان",
+  "controlTheme": "تم کنترل",
+  "controlsSubtitlesAndPlaybackPreferences": "کنترل‌ها، زیرنویس‌ها و تنظیمات برگزیده پخش",
+  "cookiesUserAgentSynced": "کوکی‌ها و عامل کاربر همگام‌سازی شدند!",
+  "copy": "کپی کنید",
+  "copyPath": "مسیر کپی",
+  "copyUpiId": "شناسه UPI را کپی کنید",
+  "copyUserId": "شناسه کاربری را کپی کنید",
+  "coreTeam": "تیم اصلی",
+  "couldNotCalculateCompatibility": "سازگاری محاسبه نشد.",
+  "couldNotFetchChaptersForThis": "نمی‌توان فصل‌هایی را برای این عنوان واکشی کرد",
+  "couldNotFetchEpisodesForThis": "قسمت‌های این عنوان واکشی نشد",
+  "couldNotOpenDonationLink": "پیوند کمک مالی باز نشد",
+  "couldNotOpenLink": "لینک باز نشد",
+  "couldNotOpenReleasesPage": "صفحه انتشار باز نشد",
+  "couldntOpenAppSettingsOpenIt": "تنظیمات برنامه باز نشد. آن را به صورت دستی باز کنید.",
+  "count": "بشمار",
+  "countryDistribution": "توزیع کشوری",
+  "countryOfOrigin": "کشور مبدا",
+  "create": "ایجاد کنید",
+  "createAFullAnymexArchiveOf": "یک بایگانی کامل .anymex از کتابخانه رسانه، تنظیمات، برنامه‌های افزودنی و زمان اجرا میزبان خود ایجاد کنید",
+  "createActivity": "ایجاد فعالیت",
+  "createBackup": "ایجاد پشتیبان",
+  "createNewList": "ایجاد لیست جدید",
+  "createStatus": "ایجاد وضعیت",
+  "cropBorders": "مرزهای محصول",
+  "current": "فعلی • ",
+  "custom": "سفارشی",
+  "customBanners": "بنرهای سفارشی",
+  "customColorPicker": "انتخابگر رنگ سفارشی",
+  "customDohUrl": "URL سفارشی DOH",
+  "customFonts": "فونت های سفارشی",
+  "customLists": "لیست های سفارشی",
+  "customLogos": "لوگوهای سفارشی",
+  "customPlayerFlagsParameters": "پرچم ها و پارامترهای پخش کننده سفارشی",
+  "customScale": "مقیاس سفارشی",
+  "customTheme": "تم سفارشی",
+  "customUserAgent": "عامل کاربر سفارشی",
+  "customValue": "ارزش سفارشی",
+  "customEllipsis": "سفارشی...",
+  "customizeCardHistoryCardCarouselNav": "سبک های کارت، کارت تاریخچه، چرخ فلک و نوار ناوبری را سفارشی کنید",
+  "customizeTheInterfaceToYourLiking": "رابط کاربری را مطابق میل خود سفارشی کنید",
+  "customizeYourLogoAnimationStyle": "سبک انیمیشن لوگوی خود را سفارشی کنید",
+  "dailyActivitiesWatchAndReadMetrics": "فعالیت های روزانه، معیارهای تماشا و خواندن",
+  "dailyActivityAndWatchReadProgress": "فعالیت روزانه و ردیابی پیشرفت تماشا/خواندن",
+  "dataCache": "داده و کش",
+  "dataToRestore": "داده ها برای بازیابی",
+  "days": "DAYS",
+  "days2": "روزها",
+  "daysActive": "روزهای فعال",
+  "debanding": "جدا کردن",
+  "debugStuffs": "اشکال زدایی مواد",
+  "decoder": "رمزگشا",
+  "decoderHwdec": "رمزگشا (HWDec)",
+  "decoderThreads": "رشته های رمزگشا",
+  "decorationCloset": "کمد دکوراسیون",
+  "defaultLabel": "پیش فرض",
+  "defaultAndroidAudiotrackApi": "API پیش‌فرض Android AudioTrack",
+  "defaultAppleCoreaudioApi": "پیش فرض Apple CoreAudio API",
+  "defaultListOrder": "ترتیب فهرست پیش‌فرض",
+  "defaultOrientation": "جهت پیش فرض",
+  "defaultPortrait": "پرتره پیش‌فرض",
+  "defaultPulseaudioApi": "API پیش‌فرض PulseAudio",
+  "defaultSize200px": "اندازه پیش فرض (200 پیکسل)",
+  "defaultSystemAudioDriver": "درایور پیش فرض سیستم صوتی",
+  "defaultTheme": "تم پیش فرض",
+  "defaultWindowsAudioDriver": "درایور صوتی پیش فرض ویندوز",
+  "delete": "حذف کنید",
+  "deleteActivity": "حذف فعالیت",
+  "deleteAll": "حذف همه",
+  "deleteAllCachedImagesTorrentStream": "تمام تصاویر کش شده، تکه های جریان تورنت و فایل های موقت را حذف کنید.",
+  "deleteAllStoredHttpCookiesAcross": "تمام کوکی های HTTP ذخیره شده در همه دامنه ها را حذف کنید.",
+  "deleteChapter": "حذف فصل",
+  "deleteChapterQuestion": "فصل حذف شود؟",
+  "deleteComment": "حذف نظر",
+  "deleteCustomLogo": "حذف لوگوی سفارشی",
+  "deleteEpisode": "حذف قسمت",
+  "deleteEpisodeQuestion": "قسمت حذف شود؟",
+  "deleteEverythingStoredOfAnymexPermanently": "تمام موارد ذخیره شده در AnymeX را به طور دائم حذف کنید.",
+  "deleteExtension": "حذف برنامه افزودنی",
+  "deleteFont": "حذف فونت",
+  "deleteHistoryItem": "حذف آیتم تاریخچه",
+  "deleteList": "حذف لیست",
+  "deleteLogo": "حذف لوگو",
+  "deleteReason": "دلیل حذف شود؟",
+  "deleteRecommendation": "توصیه حذف شود؟",
+  "deleteReply": "حذف پاسخ",
+  "deleteReportedComment": "حذف نظر گزارش شده",
+  "deleteSavedCookiesAndCloudflareTokens": "کوکی های ذخیره شده و توکن های Cloudflare را حذف کنید",
+  "deleteSavedCookiesCloudflareTokensAnd": "کوکی های ذخیره شده، توکن های Cloudflare و حافظه پنهان موقت را حذف کنید",
+  "deleteSelected": "حذف انتخاب شده",
+  "deleteTemporaryNetworkAndImageCache": "شبکه موقت و حافظه پنهان تصویر را حذف کنید",
+  "deletionRequestSentToAdminsFor": "درخواست حذف برای بررسی به مدیران ارسال شد.",
+  "demuxerMaxBuffer": "Demuxer Max Buffer",
+  "demuxerReadahead": "Demuxer Readahead",
+  "description": "توضیحات",
+  "detailedClassic": "تفصیلی (کلاسیک)",
+  "detailedInsights": "بینش تفصیلی",
+  "detailsPage": "صفحه جزئیات",
+  "developer": "توسعه دهنده",
+  "development": "توسعه",
+  "direct": "مستقیم",
+  "directSurfaceRenderingAndroidOnly": "رندر مستقیم سطح (فقط اندروید)",
+  "direction": "جهت",
+  "disableToShowAndHidePlayer": "غیرفعال کردن نمایش و پنهان کردن کنترل‌های پخش‌کننده فوراً",
+  "disablingMayBypassCaptivePortalsOr": "غیرفعال کردن ممکن است پورتال های محصور یا بازرسی SSL را دور بزند، اما امنیت را کاهش می دهد.",
+  "discard": "دور انداختن",
+  "discardMessage": "از پیام صرفنظر شود؟",
+  "discardReply": "از پاسخ صرفنظر شود؟",
+  "discardStatus": "وضعیت کنار گذاشته شود؟",
+  "disconnect": "قطع کن",
+  "disconnectDiscord": "Discord را قطع کنید؟",
+  "discordTakenDown": "Discord حذف شد",
+  "dismiss": "رد کردن",
+  "display": "نمایش",
+  "displayAnimeMangaMoviesAndShows": "انیمه، مانگا، فیلم ها و نمایش های توصیه شده توسط انجمن را در صفحه اصلی نمایش دهید.",
+  "displayMode": "حالت نمایش",
+  "displayModeTuningIsNotApplicable": "تنظیم حالت نمایش در سیستم عامل های دسکتاپ قابل اجرا نیست.",
+  "displayPlaybackOrReadingProgressTimestamps": "نمایش مُهرهای زمانی پیشرفت بازپخش یا خواندن",
+  "displayRefreshRateResolutionAndFrame": "نمایش نرخ تازه سازی، وضوح و تنظیم فریم",
+  "distanceBetweenLines": "فاصله بین خطوط",
+  "distanceFromBottomOfScreen": "فاصله از پایین صفحه",
+  "ditherDepth": "عمق دویدن",
+  "dnsProxy": "DNS و پروکسی",
+  "dontShowAgain": "دیگر نشان نده",
+  "donate": "اهدا کنید",
+  "donateSupport": "اهدا و حمایت",
+  "donateViaPaypal": "از طریق پی پال کمک مالی کنید",
+  "donateViaUpiOrPaypalTo": "برای حمایت از توسعه، از طریق UPI یا PayPal کمک مالی کنید",
+  "donateViaUpiPaypalSupportDevelopment": "کمک مالی از طریق UPI، PayPal و توسعه پشتیبانی",
+  "done": "انجام شد",
+  "done2": "انجام شد",
+  "doubletapToSeek": "برای جستجو دوبار ضربه بزنید",
+  "downgradeOrSwitchToASpecific": "تنزل یا جابجایی به یک نسخه افزونه خاص",
+  "download": "دانلود کنید",
+  "download4kShaders": "Shaders 4K را دانلود کنید",
+  "downloadAllChapters": "دانلود تمام فصل ها",
+  "downloadAllEpisodes": "دانلود تمام قسمت ها",
+  "downloadChapter": "دانلود فصل",
+  "downloadChunks": "دانلود قطعات",
+  "downloadCurrentSection": "دانلود بخش فعلی",
+  "downloadEpisode": "دانلود قسمت",
+  "downloadFailedTapToRetry": "دانلود انجام نشد. برای امتحان مجدد ضربه بزنید.",
+  "downloadPath": "دانلود مسیر",
+  "downloadPathsAndQualitySettings": "مسیرهای دانلود و تنظیمات کیفیت",
+  "downloadPathsAndStorageSettings": "مسیرها و تنظیمات ذخیره سازی را دانلود کنید",
+  "downloadPermissions": "مجوزهای دانلود",
+  "downloadQualityStoragePaths": "کیفیت دانلود، مسیرهای ذخیره سازی",
+  "downloadSettings": "دانلود تنظیمات",
+  "downloadSize4mb": "حجم دانلود: ~ 4 مگابایت",
+  "downloadStarted": "دانلود شروع شد",
+  "downloadUnreadChapters": "دانلود فصل های خوانده نشده",
+  "downloadUnwatchedEpisodes": "دانلود قسمت های دیده نشده",
+  "downloaded": "دانلود شد",
+  "downloaded2": "دانلود شد",
+  "downloadedMedia": "رسانه دانلود شده",
+  "downloadingImage": "در حال دانلود تصویر...",
+  "downloadingPackage": "در حال دانلود بسته...",
+  "downloads": "دانلودها",
+  "downloadsStorage": "دانلودها و ذخیره سازی",
+  "downloadsPage": "صفحه دانلودها",
+  "downscalingAlgorithm": "الگوریتم کاهش مقیاس",
+  "dragAndDropToReorderNavigation": "برای مرتب کردن مجدد برگه‌های نوار پیمایش، بکشید و رها کنید",
+  "dragToReorderStatusSections": "برای مرتب کردن مجدد بخش های وضعیت بکشید",
+  "dualPageMode": "حالت صفحه دوگانه",
+  "dynamicVariablesWillBeReplacedAutomatically": "متغیرهای پویا به طور خودکار جایگزین می شوند. همچنین می توانید از یک عبارت ثابت استفاده کنید.",
+  "edit": "ویرایش کنید",
+  "editActivity": "ویرایش فعالیت",
+  "editCustomMpvFlagsPropertiesAnd": "پرچم‌ها، ویژگی‌ها و فایل پیکربندی mpv سفارشی را ویرایش کنید",
+  "editLogoSettings": "تنظیمات لوگو را ویرایش کنید",
+  "editMediaEntry": "ویرایش مدخل",
+  "editReason": "ویرایش دلیل",
+  "editRecommendationReasonMin30Chars": "دلیل ویرایش توصیه (حداقل 30 نویسه)",
+  "edited": "ویرایش شد",
+  "enableAnimation": "فعال کردن انیمیشن",
+  "enableAnimationOnCarouselsForSmooth": "فعال کردن انیمیشن در چرخ فلک ها برای حرکت صاف",
+  "enableBackgroundMediaControlsForBluetooth": "کنترل‌های رسانه پس‌زمینه را برای هدست‌های بلوتوث و اعلان‌های رسانه سیستم فعال کنید. توجه: فعال کردن این مورد مصرف باتری را افزایش می دهد.",
+  "enableBetaUpdates": "به روز رسانی بتا را فعال کنید",
+  "enableClassicSimpleHeaderStyleOn": "سبک کلاسیک هدر ساده را در صفحه اصلی فعال کنید",
+  "enableDiscordRpc": "Discord RPC را فعال کنید",
+  "enableExperimentalSettings": "تنظیمات آزمایشی را فعال کنید",
+  "enableHoldingOnPlayerScreenTo": "برای افزایش موقت پخش ویدیو، نگه داشتن روی صفحه پخش را فعال کنید",
+  "enableHorizontalSwipingOnPlayerScreen": "برای جستجوی ویدیو، کشیدن انگشت به صورت افقی را روی صفحه پخش کننده فعال کنید",
+  "enableKenBurns": "کن برنز را فعال کنید",
+  "enableLongPressQuickActions": "فعال کردن اقدامات سریع با فشار طولانی",
+  "enableNotificationsForUpcomingAiringEpisodes": "اعلان‌ها را برای قسمت‌های پخش آتی فعال کنید.",
+  "enableNsfwAdultEntriesInAnilist": "ورودی‌های NSFW/ بزرگسالان را در محتوای AniList فعال کنید.",
+  "enableShaders": "Shaders را فعال کنید",
+  "enableSwipeControls": "Swipe Controls را فعال کنید",
+  "enableTapZones": "Tap Zones را فعال کنید",
+  "enableThisIfYouWantTo": "اگر می خواهید رنگ اصلی کاغذ دیواری خود را حفظ کنید، این را فعال کنید",
+  "enableTranslucentNavigationBar": "نوار ناوبری نیمه شفاف را فعال کنید",
+  "enableTts": "TTS را فعال کنید",
+  "enableVerticalSwipingOnTheLeft": "برای تنظیم روشنایی و صدا، کشیدن عمودی را در سمت چپ/راست صفحه پخش فعال کنید",
+  "enablesASoftGlowingGradientEffect": "یک اثر گرادیان نرم و درخشان را فعال می کند.",
+  "encryptWithAes256RecommendedFor": "رمزگذاری با AES-256 (برای توکن های احراز هویت توصیه می شود)",
+  "encrypted": "رمزگذاری شده • ",
+  "endChapter": "پایان فصل",
+  "enterAmount": "مقدار را وارد کنید ...",
+  "enterAnilistUsername": "نام کاربری AniList را وارد کنید",
+  "enterAtLeast2Characters": "حداقل 2 کاراکتر وارد کنید",
+  "enterBackupPassword": "رمز عبور پشتیبان را وارد کنید",
+  "enterFirstAnilistUsername": "ابتدا نام کاربری AniList را وارد کنید",
+  "enterGithubRepositoryUrl": "URL مخزن GitHub را وارد کنید",
+  "enterListName": "نام لیست را وارد کنید",
+  "enterPassword": "رمز عبور را وارد کنید",
+  "enterReasonOrDetailsForThis": "دلیل یا جزئیات این اقدام را وارد کنید...",
+  "enterSearchQuery": "عبارت جستجو را وارد کنید",
+  "enterUsername": "نام کاربری را وارد کنید",
+  "enterValue": "مقدار را وارد کنید",
+  "entryDeleted": "ورودی حذف شد.",
+  "episode1": "قسمت 1",
+  "episodeListSettings": "تنظیمات لیست اپیزود",
+  "episodes": "اپیزودها",
+  "episodesDuration": "اپیزودها و مدت زمان",
+  "episodesWatched": "قسمت های تماشا شده",
+  "errorOccured": "خطا رخ داد",
+  "errorOccurred": "خطا رخ داد",
+  "errorSavingImage": "خطا در ذخیره تصویر",
+  "errorSharingImage": "خطا در اشتراک‌گذاری تصویر",
+  "errorMissingRequiredDataItSeems": "خطا: داده های مورد نیاز وجود ندارد. به نظر می رسد شما برنامه را مستقیماً پس از خواندن فصل بسته اید!",
+  "errorMissingRequiredMediaItSeems": "خطا: رسانه مورد نیاز وجود ندارد. به نظر می رسد شما برنامه را مستقیماً پس از خواندن فصل بسته اید!",
+  "errorMissingRequiredMediaItSeemsYou": "خطا: رسانه مورد نیاز وجود ندارد. به نظر می رسد شما برنامه را مستقیماً پس از تماشای قسمت بسته اید!",
+  "everyScoreIsMappedToA": "هر امتیاز به یک رتبه ترسیم می شود. جدول زیر هر براکت، نشان آن و آنچه محدوده نشان می دهد را نشان می دهد.",
+  "experimental": "تجربی",
+  "experimentalHighPerformanceRenderer": "رندر آزمایشی با کارایی بالا",
+  "explore": "کاوش کنید",
+  "exploreTheProjectAndContribute": "پروژه را بررسی کنید و مشارکت کنید",
+  "exportLabel": "صادرات",
+  "exportBackup": "صادرات پشتیبان",
+  "exportCancelled": "صادرات لغو شد.",
+  "exportDeviceBackup": "صادرات پشتیبان‌گیری از دستگاه",
+  "exportSettings": "تنظیمات صادرات",
+  "exportYourAnimeList": "لیست انیمیشن خود را صادر کنید",
+  "exportYourMangaList": "لیست مانگا خود را صادر کنید",
+  "extensionConfigurations": "تنظیمات برنامه افزودنی",
+  "extensionConfigurationsRepos": "تنظیمات افزونه و مخازن",
+  "extensionManager": "مدیر برنامه های افزودنی",
+  "extensionPackages": "بسته های الحاقی",
+  "extensionPreferences": "تنظیمات پسوند",
+  "extensionSettings": "تنظیمات برنامه افزودنی",
+  "extensionSettingsAndSourceConfigurations": "تنظیمات برنامه افزودنی و پیکربندی منبع",
+  "extensionTesting": "تست پسوند",
+  "extensionType": "نوع پسوند",
+  "extensions": "برنامه های افزودنی",
+  "extensionsDiagnostics": "برنامه های افزودنی و تشخیصی",
+  "extensionsRepositories": "برنامه های افزودنی و مخازن",
+  "extensionsSources": "پسوندها و منابع",
+  "extensionsTailoredToYourNeeds": "برنامه های افزودنی متناسب با نیاز شما",
+  "externalStreamingLinks": "پیوندهای خارجی و جریانی",
+  "externalBackupsRestoreMetadataAndConfigurations": "پشتیبان‌گیری‌های خارجی، متادیتا و پیکربندی‌ها را با خیال راحت بازیابی می‌کنند.",
+  "externalBrowser": "مرورگر خارجی",
+  "extras": "موارد اضافی",
+  "factoryReset": "تنظیم مجدد کارخانه",
+  "factoryReset2": "تنظیم مجدد کارخانه",
+  "failedToCheckForUpdates": "بررسی به‌روزرسانی‌ها انجام نشد.",
+  "failedToCheckPluginUpdates": "بررسی به‌روزرسانی‌های افزونه انجام نشد.",
+  "failedToDeleteChapter": "فصل حذف نشد",
+  "failedToDeleteEpisode": "قسمت حذف نشد",
+  "failedToDeleteListEntry": "ورودی فهرست حذف نشد",
+  "failedToDeleteMedia": "رسانه حذف نشد",
+  "failedToDownloadImage": "تصویر دانلود نشد",
+  "failedToFetchChapters": "فصل‌ها واکشی نشد",
+  "failedToFetchDetails": "واکشی جزئیات انجام نشد",
+  "failedToFetchImageForSharing": "تصویر برای اشتراک‌گذاری واکشی نشد",
+  "failedToFetchPluginReleaseDetails": "جزئیات انتشار افزونه واکشی نشد.",
+  "failedToFetchPolicy": "واکشی خط‌مشی انجام نشد.",
+  "failedToFetchReleaseDetails": "جزئیات انتشار واکشی نشد.",
+  "failedToFetchServers": "واکشی سرورها انجام نشد",
+  "failedToLoadDetails": "جزئیات بارگیری نشد",
+  "failedToLoadFontFile": "فایل فونت بارگیری نشد",
+  "failedToLoadProfileAccountMay": "نمایه بارگیری نشد - ممکن است حساب خصوصی باشد یا پیدا نشود",
+  "failedToLoadTorrentMetadata": "ابرداده تورنت بارگیری نشد",
+  "failedToPerformAction": "عمل انجام نشد",
+  "failedToRemoveRepo": "مخزن حذف نشد",
+  "failedToStartExtensionRuntime": "زمان اجرا برنامه افزودنی شروع نشد",
+  "failedToUpdateAnilist": "AniList به روز نشد",
+  "failedToUpdateListEntry": "ورودی فهرست به‌روزرسانی نشد",
+  "failedToUpdatePreference": "تنظیمات برگزیده به‌روزرسانی نشد",
+  "failedToUpdateRole": "نقش به‌روزرسانی نشد",
+  "favoriteTitle": "عنوان مورد علاقه",
+  "favouriteAnime": "انیمه مورد علاقه",
+  "favouriteCharacters": "شخصیت های مورد علاقه",
+  "favouriteManga": "مانگا مورد علاقه",
+  "favouriteStaff": "کارکنان مورد علاقه",
+  "favouriteStudios": "استودیوهای مورد علاقه",
+  "featuresIssues": "ویژگی ها / مسائل",
+  "fetchingAvailableServers": "در حال واکشی سرورهای موجود...",
+  "fetchingLatestReleaseDetails": "در حال واکشی آخرین جزئیات نسخه...",
+  "fetchingTorrentFileList": "در حال واکشی لیست فایل های تورنت...",
+  "filler": "پرکننده",
+  "filter": "فیلتر کنید",
+  "filterActivities": "فیلتر فعالیت ها",
+  "filterActivity": "فعالیت فیلتر",
+  "filterByChapterCount": "فیلتر بر اساس تعداد فصل",
+  "filterByDurationMin": "فیلتر بر اساس مدت زمان (دقیقه)",
+  "filterByEpisodeCount": "فیلتر بر اساس تعداد قسمت",
+  "filterByGenre": "فیلتر بر اساس ژانر",
+  "filterByVolumeCount": "فیلتر بر اساس تعداد حجم",
+  "filterGenres": "ژانرها را فیلتر کنید",
+  "filterOutAdultNsfwEntriesFrom": "ورودی‌های بزرگسالان/NSFW را از توصیه‌های انجمن فیلتر کنید.",
+  "filterOutEntriesAlreadyInYour": "ورودی های موجود در لیست خود را فیلتر کنید",
+  "filterOutEntriesAlreadyInYourList": "ورودی های موجود در لیست خود را بر اساس وضعیت تماشا/خواندن فیلتر کنید.",
+  "filterSettings": "تنظیمات فیلتر",
+  "filters": "فیلترها",
+  "findAndManageSpecificUsers": "کاربران خاصی را پیدا و مدیریت کنید",
+  "findAnimeSauceByScreenshots": "سس انیمه را با تصاویر پیدا کنید",
+  "findSource": "منبع را پیدا کنید",
+  "findYourFavouriteAnimeOrManga": "انیمه یا مانگا، manhwa یا هر چیزی که دوست دارید مورد علاقه خود را پیدا کنید!",
+  "findYourFavouriteAnimeMangaManhwa": "انیمه، مانگا، منهوا یا هر چیزی که دوست دارید مورد علاقه خود را پیدا کنید!",
+  "finishDate": "تاریخ پایان",
+  "firstChapter": "فصل اول",
+  "firstUser": "کاربر اول",
+  "fitToScreenWidth": "متناسب با عرض صفحه نمایش",
+  "fontFamily": "خانواده فونت",
+  "fontSize": "اندازه فونت",
+  "forceReDownload": "بارگیری مجدد اجباری",
+  "forceSyncFromSdCard": "همگام سازی اجباری از کارت SD",
+  "forks": "چنگال",
+  "format": "قالب",
+  "formatDistribution": "توزیع فرمت",
+  "frameInterpolation": "درون یابی فریم",
+  "freeSupport": "پشتیبانی رایگان",
+  "frequentlyRevisited": "مکرر بازبینی شده است",
+  "fromUrl": "از URL",
+  "fullWidthDetailedCardWithLarge": "کارت دقیق با عرض کامل با تصویر کوچک بزرگ و فوق داده قسمت",
+  "fullWidthDetailedCardsWithProgress": "کارت های دقیق با عرض کامل با دکمه پیشرفت و خواندن",
+  "fullWidthHeroBannerWithCompact": "بنر قهرمان تمام عرض با جزئیات فشرده و خلاصه داستان.",
+  "general": "ژنرال",
+  "generalPrivacy": "عمومی و حریم خصوصی",
+  "generalSync": "عمومی و همگام سازی",
+  "generalAppPreferencesAndSyncServices": "تنظیمات عمومی برنامه و خدمات همگام سازی",
+  "generalAppSettingsAndSyncServices": "تنظیمات عمومی برنامه و خدمات همگام سازی",
+  "generalPreferences": "ترجیحات عمومی",
+  "genres": "ژانرها",
+  "genresUpper": "ژانرها",
+  "gestureForBrightnessVolume": "ژست برای روشنایی و صدا",
+  "getHelpWithTheCommentSystem": "از سیستم نظرات کمک بگیرید",
+  "getStarted": "شروع کنید",
+  "globalConcurrencyLimit": "محدودیت جهانی همزمانی",
+  "glowMultiplier": "چند برابر کننده درخشش",
+  "goSuperDarkMode": "به حالت سوپر تاریک بروید!",
+  "goToDownloads": "به دانلودها بروید",
+  "goToExtensionsToGetStarted": "برای شروع به برنامه افزودنی بروید",
+  "goToPluginDownloader": "به Plugin Downloader بروید",
+  "goToRuntimeManager": "به Runtime Manager بروید",
+  "goodAfternoon": "ظهر بخیر",
+  "goodEvening": "عصر بخیر",
+  "goodMorning": "صبح بخیر",
+  "goodnight": "شب بخیر",
+  "gotIt": "متوجه شدم",
+  "grainIntensity": "شدت دانه",
+  "grainTextureOverlay": "پوشش بافت دانه",
+  "grantPermission": "اعطای مجوز",
+  "grantPermissions": "اعطای مجوزها",
+  "grid": "شبکه",
+  "gridSize": "اندازه شبکه",
+  "gridView": "نمای شبکه",
+  "guest": "مهمان",
+  "happySnacking": "میان وعده شاد",
+  "hardwareDisplayModeSwitchingIsNot": "تغییر حالت نمایش سخت افزار توسط دستگاه شما پشتیبانی نمی شود.",
+  "helpSupport": "راهنما و پشتیبانی",
+  "hexColorCode": "کد رنگ هگز",
+  "hey": "هی ",
+  "hidden": "پنهان شده است",
+  "hiddenFromYourPublicProfile": "از نمایه عمومی شما پنهان شده است",
+  "hiddenTabs": "زبانه های مخفی",
+  "hideAdultContent": "پنهان کردن محتوای بزرگسالان",
+  "hideButton": "دکمه مخفی کردن",
+  "hideByListStatus": "پنهان کردن بر اساس وضعیت فهرست",
+  "hideCompleted": "پنهان کردن کامل شد",
+  "hideDropped": "پنهان کردن رها شده است",
+  "hideEntriesThatAreInYour": "ورودی هایی را که در لیست طرح شما هستند پنهان کنید.",
+  "hideEntriesThatAreMarkedAs": "ورودی هایی را که به عنوان تکمیل شده در لیست شما علامت گذاری شده اند مخفی کنید.",
+  "hideEntriesThatYouAreCurrently": "مدخل هایی را که در حال حاضر تماشا می کنید یا می خوانید پنهان کنید.",
+  "hideEntriesThatYouAreRewatching": "ورودی هایی را که دوباره تماشا می کنید پنهان کنید.",
+  "hideEntriesThatYouHaveDropped": "ورودی هایی را که رها کرده اید پنهان کنید.",
+  "hideEntriesThatYouHavePut": "ورودی هایی را که در حالت انتظار قرار داده اید پنهان کنید.",
+  "hideNsfw": "NSFW را مخفی کنید",
+  "hideNsfw18Content": "پنهان کردن محتوای NSFW / 18+",
+  "hideNsfwContent": "مخفی کردن محتوای NSFW",
+  "hideNsfwRecommendations": "پنهان کردن توصیه های NSFW",
+  "hideOnHoldPaused": "پنهان کردن در حالت انتظار / متوقف شد",
+  "hidePlanning": "پنهان کردن برنامه ریزی",
+  "hideRewatching": "پنهان کردن تماشای مجدد",
+  "hideSystemStatusAndNavigationBars": "وضعیت سیستم و نوارهای ناوبری را مخفی کنید",
+  "hideWatchingReading": "پنهان کردن تماشا / خواندن",
+  "history": "تاریخچه",
+  "historyStatistics": "تاریخچه و آمار",
+  "historyCardStyle": "سبک کارت تاریخچه",
+  "historyItemDeleted": "مورد تاریخچه حذف شد",
+  "hlsParallelSegments": "بخش های موازی HLS",
+  "holdAndDragAnyItemTo": "برای مرتب کردن مجدد هر موردی را نگه دارید و بکشید",
+  "holdToAccessHistoryEditor": "برای دسترسی به ویرایشگر تاریخ نگه دارید",
+  "holdToDelete": "برای حذف نگه دارید",
+  "holdToSpeedUp": "برای افزایش سرعت نگه دارید",
+  "home": "صفحه اصلی",
+  "horizontal": "افقی",
+  "hostEG12700": "میزبان (به عنوان مثال 127.0.0.1)",
+  "hours": "ساعت",
+  "howItWorksCompatibilityRanks": "نحوه کار و رتبه های سازگاری",
+  "howMuchInPercentageToMark": "چند درصد برای علامت گذاری قسمت به عنوان تماشا شده",
+  "howToUseTheCommentSystem": "نحوه استفاده از سیستم نظرات:",
+  "hue": "رنگ",
+  "ifEnabledAContinueWatchingBar": "اگر فعال باشد، نوار ادامه تماشا در بالای نوار پیمایش پایین در صفحه اصلی نشان داده می شود.",
+  "ifEnabledAllLibraryItemsWill": "اگر فعال باشد، همه موارد کتابخانه در همه خدمات ردیابی به اشتراک گذاشته خواهد شد.",
+  "ifEnabledAnymexWillAskFor": "اگر فعال باشد، Anymex مجوز ردیابی را درخواست می کند، در غیر این صورت، به طور پیش فرض ردیابی می کند.",
+  "ifEnabledYouWillNotGet": "اگر فعال باشد، درخواستی برای فعال کردن محتوای بزرگسالان در Anilist/MyAnimeList دریافت نمی کنید.",
+  "ifTemporaryAppCacheReachesThis": "اگر حافظه پنهان برنامه موقت به این اندازه برسد، به طور خودکار پاک می شود.",
+  "ifYouAreUsingAJson": "اگر از تم JSON استفاده می‌کنید، تغییرات در اینجا بر کنترل‌های پخش کننده تأثیری نخواهد داشت. برای اعمال این تنظیمات به یک تم داخلی بروید.",
+  "ifYouCantDonateWatchThis": "اگر نمی توانید کمک مالی کنید، این تبلیغ را برای حمایت تماشا کنید",
+  "image": "تصویر",
+  "imageShowsThumbnail": "تصویر (تصویر کوچک را نشان می دهد)",
+  "imageFilterQuality": "کیفیت فیلتر تصویر",
+  "imageSharedFromAnymex": "تصویر از AnymeX به اشتراک گذاشته شده است",
+  "imagesWillBeDownloadedInFull": "تصاویر با کیفیت کامل دانلود خواهند شد. هر فصل در پوشه مخصوص به خود ذخیره می شود.",
+  "immersiveMode": "حالت غوطه ور",
+  "importLabel": "واردات",
+  "importLabel2": "واردات",
+  "importManageCustomJsonThemes": "مضامین سفارشی JSON را وارد و مدیریت کنید",
+  "importBackup": "وارد کردن نسخه پشتیبان",
+  "importCustomFont": "وارد کردن فونت سفارشی",
+  "importFromUrl": "وارد کردن از URL",
+  "includeAdultNsfwSuggestions": "شامل پیشنهادات بزرگسالان و NSFW",
+  "incognito": "ناشناس",
+  "incognitoActive": "ناشناس (فعال)",
+  "incognitoMode2": "حالت ناشناس",
+  "indiaUpi": "هند (UPI)",
+  "info": "اطلاعات",
+  "inlineCode": "کد درون خطی",
+  "insert": "درج کنید",
+  "installPermission": "مجوز را نصب کنید",
+  "installPermissionIsRequiredToUpdate": "برای به‌روزرسانی برنامه، مجوز نصب لازم است",
+  "installedPackages": "بسته های نصب شده",
+  "installedThemes": "تم های نصب شده",
+  "interfaceStyling": "یک ظاهر طراحی شده رابط",
+  "internalBrowser": "مرورگر داخلی",
+  "international": "بین المللی",
+  "invalidBackupFileOrIncorrectPassword": "فایل پشتیبان نامعتبر یا رمز عبور نادرست",
+  "invertVolumeKeys": "کلیدهای ولوم را معکوس کنید",
+  "italic": "کج",
+  "joinDiscordCommunity": "به انجمن Discord بپیوندید",
+  "joinNewDiscord": "به جدید Discord بپیوندید",
+  "joinTelegramChannel": "به کانال تلگرام بپیوندید",
+  "joinUsForDroppingFeedbackOr": "برای ارسال بازخورد یا درخواست ویژگی به ما بپیوندید",
+  "jsonThemeManager": "مدیر تم JSON",
+  "judgment": "قضاوت",
+  "keepEditing": "به ویرایش ادامه دهید",
+  "keepItChill": "آن را خنک نگه دارید",
+  "keepScreenOn": "روشن نگه داشتن صفحه",
+  "keepVoicePitchStableAtHigher": "زیر و بم صدا را در سرعت های بالاتر ثابت نگه دارید",
+  "koFiSupport": "پشتیبانی Ko-fi",
+  "languageVariant": "نوع زبان",
+  "lastAdded": "آخرین اضافه شده",
+  "lastChapter": "فصل آخر",
+  "later": "بعدا",
+  "latest": "آخرین",
+  "latestManga": "جدیدترین مانگا",
+  "layout": "طرح بندی",
+  "layoutStyle": "سبک چیدمان",
+  "leaderboard": "تابلوی امتیازات",
+  "learnHowToFormatYourComments": "یاد بگیرید که چگونه نظرات خود را قالب بندی کنید",
+  "leftSide": "سمت چپ",
+  "letterSpacing": "فاصله حروف",
+  "levelProgress": "پیشرفت سطح",
+  "libraryLabel": "کتابخانه",
+  "librarySettings": "تنظیمات کتابخانه",
+  "libraryStatistics": "آمار کتابخانه",
+  "lightness": "سبکی",
+  "likedBy": "پسندیده شده توسط",
+  "lineHeight": "ارتفاع خط",
+  "linkAutoDetected": "پیوند (به طور خودکار شناسایی شد)",
+  "linkCopiedToClipboard": "پیوند در کلیپ بورد کپی شد!",
+  "linkHasExpiredAndEpisodeUrl": "پیوند منقضی شده است و URL قسمت در دسترس نیست.",
+  "linkHasExpiredAndNoAlternative": "پیوند منقضی شده است و هیچ جریان جایگزینی پیدا نشد.",
+  "linotteDefault": "Linotte (پیش‌فرض)",
+  "liquidBackground": "پس زمینه مایع",
+  "liquidMode": "حالت مایع",
+  "listEntryUpdatedSuccessfully": "ورودی فهرست با موفقیت به روز شد!",
+  "listExporter": "صادرکننده فهرست",
+  "listNameAlreadyExists": "نام فهرست از قبل وجود دارد",
+  "listOptions": "گزینه های لیست",
+  "liveBlurIsUnavailableWhenUsing": "هنگام استفاده از Fluid Mesh، تاری زنده در دسترس نیست.",
+  "livePreview": "پیش نمایش زنده",
+  "livePreview2": "پیش نمایش زنده",
+  "loadTemplate": "بارگذاری قالب",
+  "loadingMediaFiles": "در حال بارگیری فایل های رسانه ای...",
+  "loadingMedia": "در حال بارگیری رسانه...",
+  "local": "محلی",
+  "localLibrary": "کتابخانه محلی",
+  "localMedia": "رسانه های محلی",
+  "location": "مکان",
+  "logCapture": "ثبت ورود",
+  "logDirectory": "دایرکتوری ورود به سیستم",
+  "logIn": "وارد شوید",
+  "logInRequired": "ورود به سیستم الزامی است",
+  "logInToCustomizeYourPush": "برای سفارشی کردن تنظیمات برگزیده اعلان فشار خود وارد شوید.",
+  "logInToJoinTheConversation": "برای پیوستن به گفتگو و نظر دادن وارد شوید.",
+  "logOut": "از سیستم خارج شوید",
+  "loggedInTrackingServices": "خدمات ردیابی وارد شده",
+  "login": "وارد شوید",
+  "loginAuthTokens": "رمزهای ورود و تأیید اعتبار",
+  "loginInsideTheAppRecommended": "ورود به برنامه (توصیه می شود)",
+  "loginSessions": "جلسات ورود",
+  "loginUsingYourDefaultBrowser": "با استفاده از مرورگر پیش فرض خود وارد شوید",
+  "loginWithToken": "با توکن وارد شوید",
+  "logoAnimation": "انیمیشن لوگو",
+  "logoName": "نام لوگو:",
+  "logs": "سیاههها",
+  "longPressPageActions": "عملکردهای صفحه مطبوعات طولانی",
+  "makeEverythingGlassyLiquidy": "همه چیز را شیشه ای و مایع کنید...",
+  "manageAnilistLists": "لیست های Anilist را مدیریت کنید",
+  "manageCachedImagesThresholdsAndReset": "تصاویر ذخیره‌شده، آستانه‌ها و بازنشانی داده‌های برنامه را مدیریت کنید",
+  "manageDeviceStorageAndNotificationsTo": "ذخیره سازی دستگاه و اعلان ها را مدیریت کنید تا رسانه خود را به صورت آفلاین بارگیری و مدیریت کنید.",
+  "manageLogCaptureAndShareSaved": "ضبط گزارش را مدیریت کنید و گزارش های ذخیره شده را به اشتراک بگذارید",
+  "manageMyanimelistLists": "لیست های MyAnimeList را مدیریت کنید",
+  "managePluginsSources": "افزونه ها و منابع را مدیریت کنید",
+  "manageSimklLists": "لیست های Simkl را مدیریت کنید",
+  "manageSourcesAndRepositoriesToUse": "منابع و مخازن را مدیریت کنید تا از برنامه تا حد امکان استفاده کنید",
+  "manageYourMyanimelistAnilistSimklAccounts": "حساب های MyAnimeList، Anilist، Simkl خود را مدیریت کنید!",
+  "management": "مدیریت",
+  "manga": "مانگا",
+  "mangaNovelReaderSettingsTapZones": "تنظیمات مانگا و رمان خوان، مناطق ضربه بزنید",
+  "mangaNovelViewerSettingsTapZones": "تنظیمات نمایشگر مانگا و رمان، مناطق ضربه بزنید",
+  "mangaAndNovelReaderStylesAnd": "سبک‌های مانگا و رمان‌خوان و مناطق ضربه‌ای",
+  "mangaCustomLists": "لیست های سفارشی مانگا",
+  "mangaDetailsPhrasing": "عبارت جزئیات مانگا",
+  "mangaLibrary": "کتابخانه مانگا",
+  "mangaList": "لیست مانگا",
+  "mangaScore": "امتیاز مانگا",
+  "mangaSectionOrder": "سفارش بخش مانگا",
+  "manuallyPasteOauthAccessToken": "نشانه دسترسی OAuth را به صورت دستی جای‌گذاری کنید",
+  "markAllRead": "علامت گذاری به عنوان خوانده شده",
+  "markAsWatched": "علامت گذاری به عنوان تماشا شده",
+  "markdownGuide": "راهنمای Markdown",
+  "maximumDemuxerBufferMb": "حداکثر بافر demuxer (MB)",
+  "maybeLater": "شاید بعدا",
+  "mean": "معنی",
+  "meanScore": "میانگین امتیاز",
+  "mediaPlayback": "رسانه و پخش",
+  "mediaLibrary": "کتابخانه رسانه",
+  "mediaSessionBluetoothSupport": "جلسه رسانه (پشتیبانی بلوتوث)",
+  "mediaTypeBreakdown": "تفکیک نوع رسانه",
+  "mediaYouDownloadWillAppearHere": "رسانه ای که دانلود می کنید در اینجا ظاهر می شود.",
+  "megaskipDuration": "مدت زمان MegaSkip",
+  "mention": "ذکر کنید",
+  "mentions": "اشاره می کند",
+  "merge": "ادغام",
+  "messageFriend": "پیام دوست",
+  "minutesWatched": "دقیقه تماشا",
+  "miscellaneous": "متفرقه",
+  "missingRuntimeHost": "میزبان زمان اجرا از دست رفته است",
+  "moderation": "اعتدال",
+  "moderationActions": "اقدامات تعدیل",
+  "moderationPanel": "پنل تعدیل",
+  "moderator": "مجری",
+  "moreOptions": "گزینه های بیشتر",
+  "morePopularManga": "مانگا محبوب تر",
+  "moveToLeft": "به سمت چپ حرکت کنید",
+  "moveToRight": "به سمت راست حرکت کنید",
+  "movie": "فیلم",
+  "mpvConfiguration": "پیکربندی MPV",
+  "muteUser": "کاربر را نادیده بگیرید",
+  "mutualConnections": "ارتباطات متقابل",
+  "mutualFriends": "دوستان متقابل",
+  "nameplates": "پلاک های نام",
+  "navBarLayout": "طرح بندی نوار ناوبری",
+  "navBarStyle": "سبک نوار ناوبری",
+  "navigationLayout": "طرح بندی ناوبری",
+  "needHelp": "به کمک نیاز دارید؟",
+  "network": "شبکه",
+  "newLabel": "جدید",
+  "newCollection": "مجموعه جدید",
+  "newCustomListName": "نام لیست سفارشی جدید",
+  "newDownload": "دانلود جدید",
+  "newList": "لیست جدید",
+  "newestFirst": "اول جدیدترین",
+  "nextRelease": "نسخه بعدی",
+  "nextReleasePrediction": "پیش بینی انتشار بعدی",
+  "noActiveDownloads": "بدون دانلود فعال",
+  "noActiveSourceOrMediaFound": "منبع یا رسانه فعالی یافت نشد",
+  "noActiveSourceSelected": "منبع فعالی انتخاب نشده است",
+  "noActivity": "بدون فعالیت",
+  "noAnimeFound": "هیچ انیمیشنی پیدا نشد",
+  "noAudioTracksAvailable": "هیچ تراک صوتی در دسترس نیست",
+  "noChaptersFound": "هیچ فصلی یافت نشد",
+  "noChaptersFound2": "هیچ فصلی یافت نشد",
+  "noCommonGenres": "بدون ژانرهای رایج",
+  "noCommonTags": "بدون برچسب رایج",
+  "noContributorsFound": "هیچ مشارکت کننده ای یافت نشد.",
+  "noCustomListsAvailable": "هیچ لیست سفارشی موجود نیست.",
+  "noCustomListsYet": "هنوز لیست سفارشی وجود ندارد",
+  "noCustomListsYet2": "هنوز لیست سفارشی وجود ندارد.",
+  "noDataAvailableForThisSection": "هیچ داده ای برای این بخش موجود نیست",
+  "noDataAvailable": "هیچ داده ای در دسترس نیست.",
+  "noDecadeBreakdownAvailable": "تفکیک دهه در دسترس نیست",
+  "noDescriptionAvailable": "بدون شرح موجود",
+  "noDownloadedChaptersFoundForThis": "هیچ فصل دانلودی برای این مانگا یافت نشد",
+  "noDownloadedEpisodesFoundForThis": "هیچ قسمت دانلود شده ای برای این انیمه یافت نشد",
+  "noEntriesFound": "هیچ ورودی یافت نشد",
+  "noEpisodesFound": "هیچ قسمتی پیدا نشد",
+  "noExtensionManagersFound": "هیچ مدیر برنامه افزودنی پیدا نشد.",
+  "noExtensionsFound": "هیچ پسوندی یافت نشد",
+  "noExtensionsInstalled": "هیچ افزونه ای نصب نشده است",
+  "noGenresAvailableAnilistApiMay": "هیچ ژانری در دسترس نیست. AniList API ممکن است به طور موقت از کار افتاده باشد.",
+  "noHiddenTabs": "بدون تب پنهان",
+  "noInsightsAvailableYetAddItems": "هنوز اطلاعات آماری در دسترس نیست. موارد را به کتابخانه خود اضافه کنید!",
+  "noItemsInThisLibrary": "هیچ موردی در این کتابخانه وجود ندارد.",
+  "noLoggedStatsYetStartWatching": "هنوز آماری ثبت نشده است. شروع به تماشا/خواندن کنید!",
+  "noMediaFilesFound": "هیچ فایل رسانه ای یافت نشد",
+  "noMediaFoundForThisStudio": "هیچ رسانه ای برای این استودیو یافت نشد",
+  "noMediaInThisList": "هیچ رسانه ای در این لیست وجود ندارد.",
+  "noMoreActivities": "دیگر هیچ فعالیتی وجود ندارد",
+  "noMoreRecommendations": "دیگر توصیه ای وجود ندارد",
+  "noMoreUsers": "کاربر دیگری وجود ندارد",
+  "noNotificationsYet": "هنوز اطلاعیه ای وجود ندارد",
+  "noNovelExtensionsInstalledToRead": "هیچ پسوند رمانی برای خواندن این رمان نصب نشده است.",
+  "noPendingReports": "هیچ گزارش معلقی وجود ندارد",
+  "noPlayableStreamAvailableForThis": "هیچ جریان قابل پخشی برای این قسمت موجود نیست.",
+  "noPlayableStreamWasReturnedBy": "هیچ جریان قابل پخشی توسط این منبع برگردانده نشد.",
+  "noRecentActivityFoundForSelected": "هیچ فعالیت اخیری برای فیلترهای انتخابی یافت نشد",
+  "noRecommendationsFound": "هیچ توصیه ای یافت نشد",
+  "noRecommendationsYet": "هنوز هیچ توصیه ای وجود ندارد",
+  "noReleasesFound": "هیچ نسخه ای یافت نشد.",
+  "noRepliesYetBeTheFirst": "هنوز پاسخی داده نشده است. اولین باشید!",
+  "noRepositoriesYet": "هنوز هیچ مخزن وجود ندارد",
+  "noResult": "بدون نتیجه",
+  "noResultsFound": "هیچ نتیجه ای یافت نشد.",
+  "noResultsYet": "هنوز هیچ نتیجه ای وجود ندارد",
+  "noResultsTrySearchingByTitle": "هیچ نتیجه ای وجود ندارد. سعی کنید بر اساس عنوان جستجو کنید.",
+  "noSearchResults": "نتایج جستجو وجود ندارد",
+  "noServersAvailable": "هیچ سروری در دسترس نیست",
+  "noServersFound": "هیچ سروری پیدا نشد.",
+  "noServicesAvailable": "هیچ خدماتی در دسترس نیست",
+  "noSourceInstalled": "منبعی نصب نشده است",
+  "noSourceSelected": "منبعی انتخاب نشده است",
+  "noSourcesFound": "هیچ منبعی یافت نشد",
+  "noStatsAvailable": "هیچ آماری در دسترس نیست",
+  "noSubtitleTracksAvailable": "آهنگ زیرنویس موجود نیست",
+  "noTestsRunning": "هیچ آزمایشی در حال اجرا نیست",
+  "noThemesYet": "هنوز موضوعی وجود ندارد",
+  "noTrackingServiceConnected": "سرویس ردیابی متصل نیست",
+  "noUsersFound": "هیچ کاربری پیدا نشد",
+  "noVisibleTabs": "هیچ برگه قابل مشاهده ای وجود ندارد",
+  "noVisualsFoundForThisAnime": "هیچ تصویری برای این انیمه یافت نشد (╥﹏╥)",
+  "noWatchOrderFound": "سفارش ساعت پیدا نشد.",
+  "notNow": "الان نه",
+  "notSupported": "پشتیبانی نمی شود",
+  "notTracked": "پیگیری نشده است",
+  "noteAddingKotatsuRepositoryWillTake": "توجه: افزودن مخزن Kotatsu حداقل 1-2 دقیقه طول می کشد زیرا نیاز به دانلود و تبدیل افزونه افزونه در بارگذاری اول دارد.",
+  "nothingDownloadedYet": "هنوز چیزی دانلود نشده است",
+  "nothingToPreview": "چیزی برای پیش نمایش وجود ندارد",
+  "nothingToPreviewYet": "هنوز چیزی برای پیش نمایش وجود ندارد.",
+  "notificationPreferences": "تنظیمات برگزیده اعلان",
+  "notifications": "اطلاعیه ها",
+  "notifyForOfficialAnnouncementsAndApp": "برای اطلاعیه های رسمی و به روز رسانی برنامه ها اطلاع دهید",
+  "notifyIfYourCommentIsRemoved": "اگر نظر شما توسط ناظم حذف شد، اطلاع دهید",
+  "notifyOnNewCommentsForMedia": "در مورد نظرات جدید رسانه ای که در مورد آن صحبت کرده اید مطلع شوید",
+  "notifyOnUpvotesAndDownvotes": "در مورد رای موافق و مخالف اطلاع دهید",
+  "notifyOnWarningsPinnedCommentsOr": "در مورد اخطارها، نظرات پین شده یا قفل تاپیک اطلاع دهید",
+  "notifyWhenSomeoneMentionsYourUsername": "هنگامی که شخصی @ نام کاربری شما را ذکر می کند، اطلاع دهید",
+  "notifyWhenSomeoneRepliesToYour": "وقتی کسی به نظر شما پاسخ می دهد اطلاع دهید",
+  "novel": "رمان",
+  "novelCustomLists": "لیست های سفارشی رمان",
+  "novelDetailsPhrasing": "جمله بندی جزئیات رمان",
+  "novelFontFamily": "خانواده فونت رمان",
+  "novelLibrary": "کتابخانه رمان",
+  "novelSnapshots": "عکس های فوری رمان",
+  "novelTheme": "موضوع رمان",
+  "novels": "رمان ها",
+  "numberOfActiveDownloadTasks": "تعداد وظایف دانلود فعال",
+  "numberOfParallelChunksPerDownload": "تعداد تکه های موازی در هر دانلود",
+  "okay": "باشه",
+  "oldestFirst": "اول قدیمی ترین",
+  "oledMode": "حالت اولد",
+  "onMyList": "در فهرست من",
+  "oneOptionPerLineLikeHwdec": "یک گزینه در هر خط، مانند hwdec=auto یا scale=ewa_lanczossharp. خطوطی که با # شروع می شوند نظرات هستند. نمایه‌های داخل [پرانتز] نادیده گرفته می‌شوند.",
+  "online": "آنلاین",
+  "openCloset": "کمد را باز کنید",
+  "openInBrowser": "در مرورگر باز کنید",
+  "openSettings": "تنظیمات را باز کنید",
+  "openSource": "منبع باز",
+  "openSupportedLinks": "پیوندهای پشتیبانی شده را باز کنید",
+  "openTheDownloadsScreenFromThe": "صفحه Downloads را از منو باز کنید",
+  "openVideoStreamInExternalPlayer": "پخش جریانی ویدیو را به طور پیش فرض در پخش کننده خارجی باز کنید",
+  "openWebview": "Webview را باز کنید",
+  "openingsEndings": "افتتاحیه و پایان",
+  "openslEsNativeAudioEngine": "موتور صوتی بومی OpenSL ES",
+  "options": "گزینه ها",
+  "order": "سفارش دهید",
+  "originalSize": "اندازه اصلی",
+  "otakuRankLevel": "سطح رتبه اوتاکو",
+  "other": "دیگر",
+  "otherFeatures": "سایر ویژگی ها",
+  "otherRecommendations": "سایر توصیه ها",
+  "otherStuffs": "سایر موارد",
+  "otherTemporaryFiles": "سایر فایل های موقت",
+  "otherWaysToSupport": "راه های دیگر برای پشتیبانی",
+  "others": "دیگران",
+  "outlineType": "نوع طرح کلی",
+  "overscroll": "Overscroll",
+  "overscrollToPrevNextChapter": "به فصل قبلی/بعدی پیمایش کنید",
+  "overview": "نمای کلی",
+  "overwrite": "رونویسی کنید",
+  "pageAnimationDemo": "نمایش انیمیشن صفحه",
+  "pageReaderMode": "حالت صفحه خوان",
+  "paged": "صفحه شده",
+  "palette": "پالت",
+  "palettes": "پالت ها",
+  "paragraphSpacing": "فاصله پاراگراف ها",
+  "parallelSegmentsForVideoDownloader": "بخش های موازی برای دانلود کننده ویدیو",
+  "password": "رمز عبور",
+  "passwordProtectBackup": "پشتیبان گیری محافظت از رمز عبور",
+  "passwordRequired": "رمز عبور لازم است",
+  "passwordsDontMatch": "گذرواژه ها مطابقت ندارند!",
+  "pasteCustomImageUrl": "جای‌گذاری URL تصویر سفارشی...",
+  "pasteUrlHere": "آدرس اینترنتی را اینجا بچسبانید...",
+  "pathCopiedToClipboard": "مسیر در کلیپ بورد کپی شد",
+  "payViaAnyUpiApp": "از طریق هر برنامه UPI پرداخت کنید",
+  "paypalDonation": "اهدای پی پال",
+  "paypalRecipientNotice": "اطلاعیه دریافت کننده پی پال",
+  "penaltyDuration": "مدت زمان مجازات",
+  "performance": "عملکرد",
+  "permissionsRequired": "مجوزهای مورد نیاز",
+  "persistentPageIndicator": "نشانگر صفحه دائمی",
+  "personalizeTheLookAndMakeIt": "ظاهر را شخصی سازی کنید و آن را از آن خود کنید",
+  "personalizedRecommendations": "توصیه های شخصی",
+  "platform": "پلت فرم",
+  "playAroundWithAppTheme": "با تم برنامه بازی کنید",
+  "playAroundWithTheVideoPlayer": "با پخش کننده ویدیو بازی کنید",
+  "playback": "پخش",
+  "playbackSpeed": "سرعت پخش",
+  "playbackSpeeds": "سرعت پخش",
+  "player": "بازیکن",
+  "playerControlsSubtitlesAndPlaybackPreferences": "کنترل های پخش کننده، زیرنویس ها و تنظیمات برگزیده پخش",
+  "playerSettings": "تنظیمات پخش کننده",
+  "playerTheme": "تم پخش کننده",
+  "playerThemes": "تم های پخش کننده",
+  "pleaseChooseALogoFile": "لطفا یک فایل لوگو انتخاب کنید.",
+  "pleaseEnterAPasswordOrDisable": "لطفاً یک رمز عبور وارد کنید یا محافظت از رمز عبور را غیرفعال کنید.",
+  "pleaseEnterASearchTerm": "لطفا یک عبارت جستجو را وارد کنید",
+  "pleaseEnterAUsernameToCompare": "لطفا یک نام کاربری برای مقایسه وارد کنید.",
+  "pleaseGrantStoragePermissionToBrowse": "لطفاً برای مرور فایل‌های رسانه‌ای خود به فضای ذخیره‌سازی اجازه دهید",
+  "pleaseLoginFirst": "لطفا ابتدا وارد شوید",
+  "pleaseLoginFirstToExportYour": "لطفا ابتدا وارد شوید تا لیست خود را صادر کنید.",
+  "pleaseLoginToFavorite": "لطفا وارد شوید به مورد علاقه!",
+  "pleaseLoginToUseThisFilter": "لطفا برای استفاده از این فیلتر وارد شوید!",
+  "pleaseProvideAReasonForThis": "لطفا دلیل این اقدام را بیان کنید",
+  "pleaseRestartTheAppToApply": "لطفاً برنامه را مجدداً راه اندازی کنید تا تغییرات اعمال شود.",
+  "pleaseSelectABackupFileFirst": "لطفا ابتدا یک فایل پشتیبان انتخاب کنید",
+  "pleaseSelectAValidApkFile": "لطفاً یک فایل APK معتبر انتخاب کنید.",
+  "pleaseSelectAValidJarFile": "لطفاً یک فایل JAR معتبر انتخاب کنید.",
+  "pleaseSelectAtLeastOneItem": "لطفاً حداقل یک مورد را برای پشتیبان گیری انتخاب کنید.",
+  "pleaseSelectAtLeastOneItemTo": "لطفاً حداقل یک مورد را برای بازیابی انتخاب کنید.",
+  "pleaseWriteAtLeast30Characters": "لطفا حداقل 30 کاراکتر بنویسید",
+  "pluginInstallationSync": "نصب و همگام سازی پلاگین",
+  "pluginIsAlreadyUpToDate": "افزونه در حال حاضر به روز است.",
+  "pluginJarCopiedPleaseRestartThe": "ظرف پلاگین کپی شد. لطفاً برنامه را مجدداً راه اندازی کنید.",
+  "pluginNotInstalled": "افزونه نصب نشده است",
+  "pluginReDownloadedSuccessfullyPleaseRestart": "افزونه با موفقیت دوباره دانلود شد. لطفاً برای درخواست مجدد راه اندازی کنید.",
+  "pluginReDownloadedPleaseRestartThe": "افزونه دوباره دانلود شد. لطفاً برای درخواست، برنامه را مجدداً راه اندازی کنید.",
+  "pluginSyncedFromLocalApk": "افزونه از APK محلی همگام‌سازی شد.",
+  "pngJpgWebpGifMax20mb": "PNG، JPG، WEBP، GIF (حداکثر 20 مگابایت)",
+  "popular": "محبوب",
+  "popularAnime": "انیمه محبوب",
+  "popularAnimes": "انیمه های محبوب",
+  "popularManga": "مانگا محبوب",
+  "posterBlurMode": "حالت تاری پوستر",
+  "posterBlurScope": "محدوده تاری پوستر",
+  "poweredByAnimatch16PointCompatibility": "پشتیبانی شده توسط تجزیه و تحلیل سازگاری 16 نقطه ای AniMatch در AnymeX",
+  "poweredByCommentumV2AdvancedComment": "طراحی شده توسط Commentum v2 - سیستم نظرات پیشرفته با تعدیل",
+  "preferences": "ترجیحات",
+  "preferencesSystem": "تنظیمات و سیستم",
+  "preferredSubtitleLanguage": "زبان زیرنویس ترجیحی",
+  "preparingImageToShare": "در حال آماده سازی تصویر برای اشتراک گذاری...",
+  "preparingStream": "در حال آماده سازی جریان",
+  "presetProviders": "ارائه دهندگان از پیش تعیین شده",
+  "preventScreenFromSleeping": "جلوگیری از خوابیدن صفحه نمایش",
+  "preview": "پیش نمایش",
+  "previewUpper": "پیش نمایش",
+  "privacySafety": "حریم خصوصی و ایمنی",
+  "privacySettingsAndSafetyFeatures": "تنظیمات حریم خصوصی و ویژگی های ایمنی",
+  "private": "خصوصی",
+  "privateEntry": "ورودی خصوصی",
+  "profileEffects": "جلوه های نمایه",
+  "profileIcon": "نماد نمایه",
+  "progress": "پیشرفت",
+  "progressHistory": "پیشرفت و تاریخ",
+  "proposeNewFeaturesReportBugsAnd": "ویژگی های جدید را پیشنهاد دهید، اشکالات را گزارش دهید و با سایر اعضا چت کنید",
+  "protocol": "پروتکل",
+  "proxy": "پروکسی",
+  "proxyConfiguration": "پیکربندی پروکسی",
+  "pulseaudioSoundServer": "سرور صدای PulseAudio",
+  "queryRemoteRepositoryForAddOn": "پرس و جو از مخزن راه دور برای به روز رسانی افزونه",
+  "queuedForDownload": "برای دانلود در صف قرار گرفت",
+  "quickSelectFollowing": "انتخاب سریع (دنبال کردن)",
+  "radiusMultiplier": "ضرب شعاع",
+  "random": "تصادفی",
+  "range": "محدوده",
+  "rank": "رتبه",
+  "rating": "رتبه بندی",
+  "reDownloadAndReinstallThePlugin": "افزونه را دوباره از ابتدا دانلود و نصب کنید",
+  "read": "بخوانید",
+  "readArticle": "مقاله را بخوانید",
+  "readLatestUpdatesAboutThisAnime": "آخرین به روز رسانی های این انیمه را بخوانید",
+  "readLatestUpdatesAboutThisManga": "آخرین به روز رسانی های این مانگا را بخوانید",
+  "readOnePageAtATime": "هر بار یک صفحه را بخوانید",
+  "readAheadDurationInMinutes": "مدت زمان پیشخوان در دقیقه",
+  "readaheadSeconds": "چند ثانیه پیش رو بخوانید",
+  "reader": "خواننده",
+  "readerBackgroundOpacity": "کدورت پس زمینه خواننده",
+  "readerControlTheme": "تم کنترل خواننده",
+  "readerPreferences": "ترجیحات خواننده",
+  "readerSettings": "تنظیمات خواننده",
+  "readingDirection": "جهت خواندن",
+  "readingLayout": "خواندن چیدمان",
+  "readingManga": "خواندن مانگا",
+  "readingMangaPhrasing": "خواندن عبارت مانگا",
+  "readingNovel": "رمان خواندن",
+  "readingNovelPhrasing": "خواندن عبارت رمان",
+  "realTime4kUpscalingForAnime": "ارتقاء 4K بلادرنگ برای محتوای انیمه",
+  "reason": "دلیل",
+  "reasonDeleted": "دلیل حذف شد.",
+  "reasonUpdated": "دلیل به روز شد!",
+  "recentActivity": "فعالیت اخیر",
+  "recentMediaComments": "نظرات اخیر رسانه ها",
+  "recentNews": "اخبار اخیر",
+  "recentSearches": "جستجوهای اخیر",
+  "recentlyCompleted": "اخیرا تکمیل شده است",
+  "recentlyUpdated": "به تازگی به روز شده است",
+  "recommend": "توصیه کنید",
+  "recommendationSubmitted": "توصیه ارسال شد! 🎉",
+  "recommended": "توصیه می شود",
+  "recommendedAnime": "انیمه پیشنهادی",
+  "recommendedBy": "توصیه شده توسط",
+  "recommendedManga": "مانگای توصیه شده",
+  "recommendedNovels": "رمان های پیشنهادی",
+  "reduceColorBandingArtifacts": "آثار باند رنگی را کاهش دهید",
+  "refreshComments": "بازخوانی نظرات",
+  "refreshRate": "نرخ تازه سازی",
+  "relations": "روابط",
+  "releaseDate": "تاریخ انتشار",
+  "releaseYear": "سال انتشار",
+  "releaseYearStats": "آمار سال انتشار",
+  "rememberMyChoice": "انتخاب من را به خاطر بسپار",
+  "rememberServer": "سرور را به خاطر بسپار",
+  "removalRequestSentToAdminsFor": "درخواست حذف برای بررسی به مدیران ارسال شد.",
+  "remove": "حذف کنید",
+  "removeBanner": "حذف بنر",
+  "removeDecoration": "حذف دکوراسیون",
+  "removeEffect": "حذف افکت",
+  "removeFromHistory": "حذف از تاریخچه",
+  "removeItems": "موارد را حذف کنید",
+  "removeNameplate": "پلاک نام را بردارید",
+  "removeTheme": "حذف تم",
+  "removeWhiteBlackBorders": "حاشیه های سفید/سیاه را بردارید",
+  "removeYourReason": "دلیل خود را حذف کنید؟",
+  "rename": "تغییر نام دهید",
+  "renameList": "تغییر نام لیست",
+  "reorderNavigationTabs": "ترتیب مجدد برگه‌های پیمایش",
+  "replaceExistingDataOnThisDevice": "داده های موجود در این دستگاه را با نسخه پشتیبان جایگزین کنید",
+  "replay": "پخش مجدد",
+  "reportsQueue": "صف گزارش ها",
+  "repositories": "مخازن",
+  "repositoryUrl": "URL مخزن",
+  "repositoryUrlUpper": "آدرس مخزن",
+  "requests": "درخواست ها",
+  "requiredForCoreAndVisualTuning": "برای تنظیم Core و Visual مورد نیاز است. در دستگاه های ارزان قیمت خاموش باشید.",
+  "reset": "بازنشانی کنید",
+  "resetUpper": "تنظیم مجدد",
+  "resetDownloadPath": "بازنشانی مسیر دانلود",
+  "resetNovelReaderSettings": "تنظیمات Novel Reader را بازنشانی کنید",
+  "resetToDefault": "به حالت پیش فرض بازنشانی کنید",
+  "resetToDefault2": "به حالت پیش فرض بازنشانی کنید",
+  "resetToDefaultPicture": "بازنشانی به تصویر پیش فرض",
+  "resetToDefaultWallpaper": "بازنشانی به تصویر زمینه پیش فرض!",
+  "resizeMode": "حالت تغییر اندازه",
+  "resizeModes": "حالت های تغییر اندازه",
+  "resolution": "قطعنامه",
+  "resolve": "حل کند",
+  "restartTheAppToApplyThe": "برای اعمال به روز رسانی، برنامه را مجددا راه اندازی کنید.",
+  "restoreAllNovelReaderDefaults": "همه پیش‌فرض‌های رمان‌خوان را بازیابی کنید",
+  "restoreData": "بازیابی داده ها",
+  "restorePreview": "بازیابی پیش نمایش",
+  "restoreToDefaultInternalStorage": "بازیابی به حافظه داخلی پیش فرض",
+  "restoringWillOverwriteYourSelectedLocal": "بازیابی موارد و تنظیمات کتابخانه محلی انتخابی شما را با محتوای این نسخه پشتیبان بازنویسی می کند.",
+  "restrictMessagesToFollowing": "محدود کردن پیام ها به دنبال کردن",
+  "results": "نتایج",
+  "resultsWillAppearGroupedByExtension": "نتایج به صورت گروه بندی شده بر اساس پسوند ظاهر می شوند",
+  "retainOriginalColor": "رنگ اصلی را حفظ کنید",
+  "retry": "دوباره امتحان کنید",
+  "rightSide": "سمت راست",
+  "riseAndShine": "برخیز و بدرخش",
+  "roleUpdatedSuccessfully": "نقش با موفقیت به روز شد",
+  "roleAll": "نقش: همه",
+  "rollbackVersion": "نسخه بازگشتی",
+  "romajiTitle": "عنوان روماجی",
+  "roundUpScores": "گرد کردن نمرات",
+  "runtimeHost": "میزبان زمان اجرا",
+  "runtimeHostReleases": "انتشار هاست زمان اجرا",
+  "runtimeHostRequired": "میزبان زمان اجرا مورد نیاز است",
+  "safetyFeatures": "ویژگی های ایمنی:",
+  "saturation": "اشباع",
+  "sauceSearcher": "جستجوگر سس",
+  "save": "ذخیره کنید",
+  "saveEquip": "ذخیره و تجهیز",
+  "saveChanges": "ذخیره تغییرات",
+  "saveChanges2": "ذخیره تغییرات",
+  "saveLastFrame": "آخرین فریم را ذخیره کنید",
+  "saveLogo": "ذخیره لوگو",
+  "savedAnimeEntriesAndProgress": "ورودی های انیمه و پیشرفت ذخیره شده است",
+  "savedLightNovelsAndReadingState": "رمان های سبک و وضعیت خواندن ذخیره شده است",
+  "savedMangaEntriesAndChapters": "ورودی ها و فصل های مانگا ذخیره شده است",
+  "savedStreamLinkHasExpiredFetching": "پیوند جریان ذخیره شده منقضی شده است. در حال واکشی پیوند جدید...",
+  "savesAScreenshotOfTheLast": "اسکرین شات آخرین فریمی را که تماشا کرده اید ذخیره می کند. غیرفعال کردن این مورد مصرف فضای ذخیره سازی را به میزان قابل توجهی کاهش می دهد",
+  "scaleFactor": "ضریب مقیاس",
+  "scalingAlgorithm": "الگوریتم مقیاس بندی",
+  "scanningForMoreServers": "در حال اسکن برای سرورهای بیشتر...",
+  "scanningForVideoStreams": "در حال اسکن برای پخش جریانی ویدیو...",
+  "score": "امتیاز",
+  "scoreDistribution": "توزیع امتیاز",
+  "scoringSystem": "سیستم امتیازدهی",
+  "search": "جستجو کنید",
+  "searchUpper": "جستجو",
+  "searchAcrossExtensions": "جستجو در میان برنامه های افزودنی...",
+  "searchAnimeMovies": "جستجوی انیمیشن، فیلم...",
+  "searchAnime": "جستجوی انیمه ...",
+  "searchExtensions": "جستجوی برنامه های افزودنی",
+  "searchExtensionsEllipsis": "جستجوی پسوند...",
+  "searchFailed": "جستجو ناموفق بود",
+  "searchForAnime": "جستجو برای انیمه",
+  "searchInHistory": "جستجو در تاریخ...",
+  "searchInLibrary": "جستجو در کتابخانه...",
+  "searchItemsInList": "جستجوی موارد در لیست...",
+  "searchManga": "جستجوی مانگا...",
+  "searchQuery": "پرس و جو جستجو",
+  "searchSources": "جستجو در منابع...",
+  "searchTags": "جستجوی برچسب ها ...",
+  "searchUser": "جستجوی کاربر",
+  "searchingDatabase": "جستجو در پایگاه داده...",
+  "searching": "در حال جستجو...",
+  "season": "فصل",
+  "seasons": "فصل ها",
+  "secondsPerScreenLowerIsFaster": "ثانیه در هر صفحه (پایینتر سریعتر است)",
+  "secondsPerScreenPageLowerIs": "ثانیه در هر صفحه/صفحه (پایینتر سریعتر است)",
+  "securityEncryption": "امنیت و رمزگذاری",
+  "seePeopleWhoContributedToAnymex": "افرادی که به AnymeX کمک کردند را ببینید",
+  "selectAFolderWhereAnymexWill": "پوشه ای را انتخاب کنید که AnymeX قسمت های انیمه دانلود شده و فصل های مانگا شما را در آن ذخیره کند.",
+  "selectAnAnimeScreenshotToFind": "یک اسکرین شات انیمه را انتخاب کنید تا منبع آن را پیدا کنید",
+  "selectAnilistMyanimelistSimklOrExtensions": "حالت AniList، MyAnimeList، Simkl یا Extensions را انتخاب کنید",
+  "selectDataToIncludeInThis": "داده هایی را برای گنجاندن در این نسخه پشتیبان انتخاب کنید",
+  "selectDirectory": "دایرکتوری را انتخاب کنید",
+  "selectExtensions": "Extensions را انتخاب کنید",
+  "selectFolder": "پوشه را انتخاب کنید",
+  "selectLanguage": "زبان را انتخاب کنید",
+  "selectMediaDirectory": "فهرست مدیا را انتخاب کنید",
+  "selectNovelSource": "منبع رمان را انتخاب کنید",
+  "selectProfile": "نمایه را انتخاب کنید",
+  "selectRange": "Range را انتخاب کنید",
+  "selectServer": "سرور را انتخاب کنید",
+  "selectStatus": "وضعیت را انتخاب کنید",
+  "selectSubtitleFont": "فونت زیرنویس را انتخاب کنید",
+  "selectTags": "برچسب ها را انتخاب کنید",
+  "selectTimezone": "منطقه زمانی را انتخاب کنید",
+  "selectVersionToRollback": "Version to Rollback را انتخاب کنید",
+  "selectVideoFile": "فایل ویدیویی را انتخاب کنید",
+  "selectYourPreferredContentSource": "منبع محتوای دلخواه خود را انتخاب کنید",
+  "selectedCacheCleared": "حافظه پنهان انتخابی پاک شد",
+  "selectedItemsRemoved": "موارد انتخابی حذف شد",
+  "sensitiveLoginTokensForMalSimkl": "نشانه‌های ورود حساس برای MAL، Simkl، و AniList",
+  "sensitiveSessionTokensForMalSimkl": "نشانه‌های جلسه حساس برای MAL، Simkl، و AniList",
+  "separateCompletedAnimeListIntoSections": "لیست انیمه های تکمیل شده را به بخش ها بر اساس قالب جدا کنید.",
+  "separateCompletedMangaListIntoSections": "لیست مانگا تکمیل شده را به بخش ها بر اساس قالب جدا کنید.",
+  "serverDetails": "جزئیات سرور",
+  "serverChanIsTakingANap": "سرور چان در حال چرت زدن است!",
+  "setUpYourPreferencesForThe": "تنظیمات برگزیده خود را برای بهترین تجربه تنظیم کنید",
+  "settings": "تنظیمات",
+  "settingsAccount": "تنظیمات و حساب",
+  "settingsAuthentication": "تنظیمات و احراز هویت",
+  "settingsSavedSuccessfully": "تنظیمات با موفقیت ذخیره شد.",
+  "shaderProfilesInitialized": "نمایه های سایه بان اولیه شد",
+  "shadowBanUser": "کاربر Shadow Ban",
+  "shareLogs": "گزارش ها را به اشتراک بگذارید",
+  "shareMatchCard": "کارت مسابقه را به اشتراک بگذارید",
+  "shareProfile": "نمایه را به اشتراک بگذارید",
+  "shareTheSavedLogFileOr": "فایل گزارش ذخیره شده را به اشتراک بگذارید یا محتویات آن را کپی کنید.",
+  "sharedFromAnymex": "به اشتراک گذاشته شده از AnymeX",
+  "showAnimatedEffectOverlaysOnProfile": "نمایش همپوشانی افکت های متحرک روی بنرهای نمایه",
+  "showAnimatedFramesAroundUserAvatars": "نمایش فریم های متحرک در اطراف آواتارهای کاربر",
+  "showBatteryTime": "نمایش باتری و زمان",
+  "showChapterTransitionEvenWithoutGaps": "انتقال فصل را حتی بدون شکاف نشان دهید",
+  "showCommunityRecommendations": "نمایش توصیه های انجمن",
+  "showContinueWatchingCard": "نمایش کارت تماشای ادامه",
+  "showContinueWatchingOnHome": "نمایش ادامه تماشا در صفحه اصلی",
+  "showCustomProfileBannersFallsBack": "نمایش بنرهای پروفایل سفارشی (اگر خاموش باشد به جلد AniList برمی گردد)",
+  "showNameplateBackgroundsOnCommentCards": "نمایش پس زمینه پلاک نام در کارت های نظر و تابلوی امتیازات",
+  "showOnLeft": "نمایش در سمت چپ",
+  "showOnRight": "نمایش در سمت راست",
+  "showReadingProgress": "نمایش پیشرفت خواندن",
+  "showTimestamps": "نمایش مهرهای زمانی",
+  "simpleCompactListView": "نمای فهرست جمع و جور ساده",
+  "simpleDirectmediaLayerAudioOutput": "خروجی صدای ساده DirectMedia Layer",
+  "simpleLayoutDisplayingEpisodeNumberTitle": "طرح‌بندی ساده که شماره قسمت، عنوان و پیشرفت را بدون تصویر کوچک نمایش می‌دهد",
+  "sizeMode": "حالت اندازه:",
+  "smartMangaSuggestions": "پیشنهادات مانگا هوشمند",
+  "smootherMotionCanIncreaseGpuUsage": "حرکت نرم تر، می تواند استفاده از GPU را افزایش دهد",
+  "social": "اجتماعی",
+  "somethingWentWrong": "مشکلی پیش آمد",
+  "sort": "SORT",
+  "sort2": "مرتب کردن",
+  "sortBy": "مرتب سازی بر اساس",
+  "sortBy2": "مرتب سازی بر اساس",
+  "sortComments": "دسته بندی نظرات",
+  "source": "منبع",
+  "sourceAndPluginConfigurations": "پیکربندی منبع و افزونه",
+  "sourcePreferences": "تنظیمات منبع",
+  "spaceBetweenLetters": "فاصله بین حروف",
+  "spaceBetweenParagraphs": "فاصله بین پاراگراف ها",
+  "spaceBetweenWords": "فاصله بین کلمات",
+  "spacedPages": "صفحات فاصله دار",
+  "splitCompletedAnimeList": "تقسیم لیست انیمه های تکمیل شده",
+  "splitCompletedMangaList": "تقسیم لیست مانگا تکمیل شده",
+  "spoiler": "اسپویلر",
+  "spoilerTapToReveal": "اسپویلر (برای نمایش ضربه بزنید)",
+  "staff": "کارکنان",
+  "staffCharacterNameLanguage": "زبان نام کارکنان و شخصیت",
+  "standardGpuRendering": "رندر استاندارد GPU",
+  "starOnGithub": "ستاره در GitHub",
+  "startANewDownloadFromThe": "دانلود جدیدی را از برگه «دانلود جدید» شروع کنید",
+  "startChapter": "شروع فصل",
+  "startDate": "تاریخ شروع",
+  "startMangaDownload": "دانلود مانگا را شروع کنید",
+  "startTest": "شروع تست",
+  "startingExtensionRuntime": "شروع اجرای برنامه افزودنی...",
+  "statistics": "آمار",
+  "stats": "آمار",
+  "status": "وضعیت",
+  "statusDistribution": "توزیع وضعیت",
+  "statusPostedSuccessfully": "وضعیت با موفقیت پست شد!",
+  "stayUpdatedWithTheLatestReleases": "با آخرین نسخه ها، اطلاعیه ها و بحث ها به روز باشید",
+  "storagePath": "ذخیره سازی و مسیر",
+  "storageManager": "مدیر ذخیره سازی",
+  "storageOptions": "گزینه های ذخیره سازی",
+  "storagePermission": "مجوز ذخیره سازی",
+  "storagePermissionIsRequiredToDownload": "برای دانلود به‌روزرسانی‌ها، مجوز فضای ذخیره‌سازی لازم است",
+  "storagePermissionRequired": "مجوز ذخیره سازی مورد نیاز است",
+  "streakCurLong": "رگه (فرش/طولانی)",
+  "stretchImagesToFitScreenWidth": "تصاویر را متناسب با عرض صفحه نمایش بکشید",
+  "strikethrough": "ضربه زدن",
+  "studios": "استودیوها",
+  "style": "سبک",
+  "subtitleBackgroundColor": "رنگ پس‌زمینه زیرنویس",
+  "subtitleColor": "رنگ زیرنویس",
+  "subtitleFont": "فونت زیرنویس",
+  "subtitleOutlineColor": "رنگ طرح زیرنویس",
+  "subtitleOutlineWidth": "عرض طرح زیرنویس",
+  "subtitlePreview": "پیش نمایش زیرنویس",
+  "subtitlePreviewText": "متن پیش‌نمایش زیرنویس",
+  "subtitleSize": "اندازه زیرنویس",
+  "subtitleTransparency": "شفافیت زیرنویس",
+  "subtitles": "زیرنویس",
+  "summary": "خلاصه",
+  "superAdmin": "سوپر ادمین",
+  "supportTtfAndOtfFiles": "پشتیبانی از فایل های ttf و otf",
+  "supportAnymex": "پشتیبانی از AnymeX",
+  "supportedModes": "حالت های پشتیبانی شده",
+  "supportedUpiApps": "برنامه های UPI پشتیبانی می شود",
+  "suppressActivityWhenWatchingOrReading": "فعالیت را هنگام تماشا یا خواندن محتوای NSFW سرکوب کنید",
+  "swapUpDownActions": "کنش‌های بالا/پایین را تعویض کنید",
+  "swipeBetweenChapters": "انگشت خود را بین فصل ها بکشید",
+  "swipeIndicatorTheme": "تم نشانگر ضربه بزنید",
+  "swipeToSeek": "برای جستجو تند بکشید",
+  "switchBetweenDefaultTitleAndRomaji": "بین عنوان پیش‌فرض و عنوان روماجی/جایگزین در کتابخانه و کارت‌ها جابه‌جا شوید",
+  "switchToOnline": "به آنلاین تغییر دهید",
+  "syncCompletedButThePluginIs": "همگام سازی کامل شد، اما افزونه هنوز آماده نیست.",
+  "syncDetails": "همگام سازی جزئیات",
+  "syncFailed": "همگام سازی انجام نشد",
+  "synonyms": "مترادف ها",
+  "synopsis": "خلاصه داستان",
+  "tags": "برچسب ها",
+  "tags2": "برچسب ها",
+  "takeColorFromYourWallpaperA12": "از کاغذ دیواری خود رنگ بگیرید (A12+)",
+  "tapToAddARepositoryUrl": "برای افزودن URL مخزن روی + ضربه بزنید",
+  "tapAZoneToChangeIts": "روی یک منطقه ضربه بزنید تا عملکرد آن تغییر کند",
+  "tapAction": "روی Action ضربه بزنید",
+  "tapToChooseASource": "برای انتخاب منبع ضربه بزنید",
+  "tapToLogin": "برای ورود ضربه بزنید",
+  "tapToLogout": "برای خروج ضربه بزنید",
+  "tapToScroll": "برای پیمایش ضربه بزنید",
+  "tapYourProfileIconInThe": "روی نماد نمایه خود در نوار بالای برنامه ضربه بزنید",
+  "tapZones": "روی Zones ضربه بزنید",
+  "tellTheCommunityWhyThisDeserves": "به جامعه بگویید که چرا این سزاوار توجه بیشتر است.",
+  "temporaryAppCache": "حافظه پنهان برنامه موقت",
+  "termsOfServicePrivacyPolicy": "شرایط خدمات/خط مشی رازداری",
+  "test": "تست کنید",
+  "testExtensions": "برنامه های افزودنی تست",
+  "testResults": "نتایج آزمون",
+  "testType": "نوع تست",
+  "textSize": "اندازه متن",
+  "theme": "موضوع",
+  "themeLayoutAndColors": "تم، طرح‌بندی و رنگ‌ها",
+  "themes": "تم ها",
+  "thisBackupIsEncryptedPleaseEnter": "این پشتیبان رمزگذاری شده است. لطفا برای ادامه رمز عبور را وارد کنید.",
+  "thisDirectoryContainsNoSupportedMedia": "این فهرست شامل هیچ فایل رسانه ای پشتیبانی نمی شود",
+  "thisMayTakeAFewSeconds": "این ممکن است چند ثانیه طول بکشد",
+  "thisMayTakeUpTo30": "این ممکن است تا 30 ثانیه طول بکشد",
+  "thisMightTakeAFewSeconds": "این ممکن است چند ثانیه طول بکشد",
+  "thisReasonWillBeDeletedImmediately": "این دلیل بلافاصله حذف می شود.",
+  "thisWillPermanentlyDeleteAllData": "با این کار تمام داده های ذخیره شده AnymeX برای همیشه حذف می شود. این قابل واگرد نیست.",
+  "tipYouCanCombineTheseE": "نکته: می توانید اینها را با هم ترکیب کنید! به عنوان مثال **پررنگ و *مورب* با هم**",
+  "title": "عنوان",
+  "titleCopied": "عنوان کپی شد",
+  "titleLanguage": "زبان عنوان",
+  "toDownloadForTheFirstTime": "برای دانلود برای اولین بار، ابتدا با مراجعه به صفحه دانلودها، مجوزها را اعطا کنید:",
+  "toggleBetweenGridAndDetailedList": "جابجایی بین جدول و فهرست تفصیلی",
+  "toneMapping": "نقشه برداری تن",
+  "topAnime": "انیمه برتر",
+  "topComments": "نظرات برتر",
+  "topGenres": "ژانرهای برتر",
+  "topManga": "مانگا برتر",
+  "topManhua": "بالا Manhua",
+  "topManhwa": "بالا منهوا",
+  "topStudios": "استودیوهای برتر",
+  "torrentServer": "سرور تورنت",
+  "torrentStreamCache": "کش جریان تورنت",
+  "torrserverStreamingAddOns": "TorrServer و افزونه های پخش جریانی",
+  "totalChapters": "مجموع فصل ها",
+  "totalCost": "کل هزینه:",
+  "totalItems": "مجموع اقلام",
+  "track": "آهنگ",
+  "trackAiringSchedules": "برنامه های پخش را پیگیری کنید",
+  "trackYourProgress": "پیشرفت خود را پیگیری کنید؟",
+  "trackingServices": "خدمات ردیابی",
+  "transitionSubtitle": "زیرنویس انتقال",
+  "translateTo": "ترجمه به",
+  "translationLanguage": "زبان ترجمه",
+  "translucentNav": "ناوبری شفاف",
+  "trendingAnime": "انیمه پرطرفدار",
+  "trendingAnimes": "انیمه های پرطرفدار",
+  "trendingManga": "مانگا پرطرفدار",
+  "tryADifferentKeyword": "کلمه کلیدی دیگری را امتحان کنید",
+  "tryAdjustingYourFilters": "سعی کنید فیلترهای خود را تنظیم کنید",
+  "tryAgain": "دوباره امتحان کنید",
+  "tryDifferentAnimationStylesForPage": "سبک های مختلف انیمیشن را برای ورودی صفحه امتحان کنید",
+  "ttsAutoAdvance": "TTS Auto Advance",
+  "ttsPitch": "پیچ TTS",
+  "ttsSpeed": "سرعت TTS",
+  "tweakGeneralAppSettings": "تنظیمات کلی برنامه را تغییر دهید",
+  "typeLabel": "تایپ کنید",
+  "typeAtLeast2CharactersTo": "حداقل 2 کاراکتر برای جستجو تایپ کنید",
+  "ui": "UI",
+  "uiComponents": "اجزای رابط کاربری",
+  "uiLayoutColorsAndThemes": "طرح‌بندی رابط کاربری، رنگ‌ها و تم‌ها",
+  "uiLayoutColorsAndVisualStyles": "طرح UI، رنگ ها و سبک های بصری",
+  "uiSettings": "تنظیمات رابط کاربری",
+  "unableToPreparePlaybackRightNow": "در حال حاضر پخش آماده نمی شود. لطفا دوباره امتحان کنید.",
+  "unbanUser": "لغو ممنوعیت کاربر",
+  "unbind": "باز کردن",
+  "unifiedLibrary": "کتابخانه یکپارچه",
+  "uninstall": "حذف نصب کنید",
+  "universal": "جهانی",
+  "unlock": "باز کردن قفل",
+  "unlockCustomizations": "باز کردن قفل سفارشی سازی ها",
+  "unmuteUser": "لغو نادیده کاربر",
+  "unreadOnly": "فقط خوانده نشده",
+  "upcomingAnime": "انیمه آینده",
+  "update": "به روز رسانی",
+  "updateAll": "به روز رسانی همه",
+  "updateCheckComplete": "بررسی به روز رسانی کامل شد",
+  "updateOnImport": "به روز رسانی در مورد واردات",
+  "updateToLatestVersion": "به آخرین نسخه به روز رسانی کنید",
+  "updateYourActivity": "فعالیت خود را به روز کنید...",
+  "updatesPending": "به روز رسانی در انتظار",
+  "upiDonation": "اهدای UPI",
+  "uploadAnImageToGetStarted": "برای شروع یک تصویر آپلود کنید",
+  "uploadImage": "آپلود تصویر",
+  "urlCopiedToClipboard": "URL در کلیپ بورد کپی شد",
+  "usage": "استفاده:",
+  "useAiToTranslateSoftSubtitles": "برای ترجمه زنده زیرنویس‌های نرم‌افزار از هوش مصنوعی استفاده کنید",
+  "useAlternateTitle": "از عنوان جایگزین استفاده کنید",
+  "useBuffering": "از Buffering استفاده کنید",
+  "useCustomGesturesForReaderNavigation": "از حرکات سفارشی برای پیمایش خواننده استفاده کنید",
+  "useEnhancedEpisodeMetadataAndCovers": "از فراداده و جلدهای قسمت پیشرفته استفاده کنید",
+  "useExternalPlayer": "از پخش کننده خارجی استفاده کنید",
+  "useKeyboardShortcutsDuringPlaybackTo": "از میانبرهای صفحه کلید در حین پخش برای تغییر پروفایل استفاده کنید",
+  "useLegacyHeader": "از Legacy Header استفاده کنید",
+  "useLibassForSubtitles": "از Libass برای زیرنویس استفاده کنید",
+  "useLibmpvForPlayback": "از LibMpv برای پخش استفاده کنید",
+  "useMpvConf": "از mpv.conf استفاده کنید",
+  "usePosterColor": "از رنگ پوستر استفاده کنید",
+  "useVolumeKeysToChangePages": "از کلیدهای تنظیم صدا برای تغییر صفحات استفاده کنید",
+  "useYearRange": "از محدوده سال استفاده کنید",
+  "user": "کاربر",
+  "userIdCopiedToClipboard": "شناسه کاربری در کلیپ بورد کپی شد",
+  "userList": "لیست کاربر",
+  "userManagement": "مدیریت کاربر",
+  "userCreatedCustomMediaCollections": "مجموعه های رسانه ای سفارشی ایجاد شده توسط کاربر",
+  "username": "نام کاربری",
+  "verifyTlsCertificates": "گواهینامه های TLS را تأیید کنید",
+  "versionCopied": "نسخه کپی شد",
+  "vertical": "عمودی",
+  "videoPlayer": "پخش کننده ویدیو",
+  "videoRenderer": "رندر ویدیو",
+  "videoSync": "همگام سازی ویدیو",
+  "viewAndFilterAllUsers": "مشاهده و فیلتر کردن همه کاربران",
+  "viewOnAnilist": "مشاهده در AniList",
+  "viewOpeningAndEndingThemes": "تم های باز و پایانی را مشاهده کنید",
+  "viewProfile": "مشاهده نمایه",
+  "viewSourceCodeOnGithub": "کد منبع را در github مشاهده کنید.",
+  "viewTheChronologicalWatchOrderOf": "ترتیب زمانی تماشای این انیمه را مشاهده کنید",
+  "viewUser": "مشاهده کاربر",
+  "viewUserRankingsTopContributorsReputation": "مشاهده رتبه‌بندی کاربران، مشارکت‌کنندگان برتر و شهرت",
+  "viewingAnimeDetails": "مشاهده جزئیات انیمه",
+  "viewingMangaDetails": "مشاهده جزئیات مانگا",
+  "viewingNovelDetails": "مشاهده جزئیات رمان",
+  "visibleTabs": "برگه های قابل مشاهده",
+  "visitGithubReleasesPageForChangelogs": "برای تغییرات و دانلودهای دستی از صفحه انتشارات GitHub دیدن کنید",
+  "visualFromAnymex": "تصویری از AnymeX",
+  "voiceActors": "صداپیشه ها",
+  "voicedCharacters": "شخصیت های صدادار",
+  "volumeButtonScrolling": "پیمایش دکمه صدا",
+  "volumeKeysNavigation": "ناوبری کلیدهای میزان صدا",
+  "volumes": "VOLUMES",
+  "volumesRead": "جلدها خوانده شده",
+  "votes": "آرا",
+  "wWhatAreYouDoingStep": "W-چه کار می کنی، برادر، قبل از انجام آن وارد شوید (●´⌓`●)",
+  "wallpaper": "کاغذ دیواری",
+  "warnUser": "هشدار به کاربر",
+  "warning": "هشدار",
+  "wasThisHelpful": "آیا این مفید بود؟",
+  "watchAd": "تماشای آگهی",
+  "watchAnAdToSupport": "برای پشتیبانی آگهی را تماشا کنید",
+  "watchAnime": "انیمه تماشا کن",
+  "watchOrder": "سفارش ساعت",
+  "watchTogether": "با هم تماشا کنید",
+  "watchTogetherPolicy": "Watch Together Policy",
+  "watchingAnime": "تماشای انیمه",
+  "watchingAnimePhrasing": "تماشای عبارت انیمه",
+  "welcomeToAnymex": "به AnymeX خوش آمدید",
+  "whatsOnYourMind": "چه چیزی در ذهن شماست؟",
+  "whenEnabledAnymexSavesLogsLocally": "وقتی فعال باشد، AnymeX گزارش‌ها را به صورت محلی ذخیره می‌کند تا زمانی که غیرفعال شود.",
+  "whyAreYouRecommendingThisMin": "چرا این را توصیه می کنید؟ (حداقل 30 کاراکتر)",
+  "whyIsThisUnderratedMin30": "چرا این دست کم گرفته شده است؟ (حداقل 30 کاراکتر)",
+  "windowsAudioSessionApi": "Windows Audio Session API",
+  "wordSpacing": "فاصله بین کلمات",
+  "writeAMessage": "پیام بنویس...",
+  "writeLogToAFile": "نوشتن گزارش در یک فایل",
+  "writeYourAnilistBio": "بیوگرافی AniList خود را بنویسید...",
+  "wrongTitle": "عنوان اشتباه؟",
+  "year": "سال",
+  "yearUpper": "سال",
+  "you": "شما",
+  "youCanUseDiscordStyleMarkdown": "می توانید از علامت گذاری به سبک Discord برای قالب بندی نظرات خود استفاده کنید:",
+  "youHaveUnsentTextClosingNow": "شما متن ارسال نشده دارید. بستن اکنون پیام شما را از دست می دهد.",
+  "youHaveUnsentTextClosingNowWill": "شما متن ارسال نشده دارید. اکنون بسته شدن، پاسخ شما را از دست می دهد.",
+  "youHaveUnsentTextClosingNowWillLose": "شما متن ارسال نشده دارید. بستن اکنون وضعیت شما را از دست می دهد.",
+  "youNeedModeratorPermissionsToAccess": "برای دسترسی به این پانل به مجوزهای ناظر نیاز دارید",
+  "youreUpLate": "دیر بیدار شدی",
+  "yourBalance": "موجودی شما:",
+  "yourPrivacyIsImportant": "حریم خصوصی شما مهم است:",
+  "yourReasonHasBeenRemoved": "دلیل شما حذف شد.",
+  "yourRecommendation": "توصیه شما",
+  "yourRichPresenceActivityWillStop": "فعالیت حضور غنی شما به روز رسانی متوقف می شود.",
+  "yourRole": "نقش شما",
+  "yourWatchReadHistory": "تاریخچه تماشا و خواندن شما",
+  "yourWatchReadStatistics": "آمار ساعت و خواندن شما",
+  "advancedLinuxSoundArchitecture": "معماری صدای لینوکس پیشرفته",
+  "al": "AL",
+  "allYourLocalShi": "همه شی محلی شما",
+  "alsa": "ALSA",
+  "androidAudiotrackApi": "Android AudioTrack API",
+  "anilist": "AniList",
+  "anilist2": "آنیلیست",
+  "animatch": "AniMatch",
+  "anymex": "AnymeX",
+  "appleCoreaudioApi": "Apple CoreAudio API",
+  "areYouSure": "مطمئنی؟",
+  "aspectRatio": "نسبت تصویر",
+  "attackOnTitan": "حمله به تایتان",
+  "audio": "صوتی",
+  "audioSubtitles": "صوتی و زیرنویس",
+  "audioTrack": "آهنگ صوتی",
+  "audioTracks": "آهنگ های صوتی",
+  "audiotrack": "آهنگ صوتی",
+  "autoAudiotrack": "خودکار (تراک صوتی)",
+  "autoCoreaudio": "خودکار (CoreAudio)",
+  "autoGpu": "خودکار (GPU)",
+  "autoPulseaudio": "خودکار (PulseAudio)",
+  "autoWasapi": "خودکار (WASAPI)",
+  "bhimUpi": "BHIM UPI",
+  "bloom": "شکوفه دادن",
+  "castToDevice": "ارسال به دستگاه",
+  "colorFilter": "فیلتر رنگ",
+  "coreaudio": "CoreAudio",
+  "demonSlayerKimetsuNoYaiba": "شیطان کش: کیمتسو نو یایبا",
+  "discord": "Discord",
+  "discordRpc": "Discord RPC",
+  "dnsOverHttps": "DNS-over-HTTPS",
+  "externalPlayer": "پخش کننده خارجی",
+  "files": "فایل ها",
+  "forward": "به جلو",
+  "forward30s": "30 به جلو",
+  "fullscreen": "تمام صفحه",
+  "gif": "GIF",
+  "github": "GitHub",
+  "googlePay": "Google Pay",
+  "gpu": "پردازنده گرافیکی",
+  "gpuNextVulkan": "GPU Next (Vulkan)",
+  "hls": "HLS",
+  "http": "HTTP",
+  "hw": "HW",
+  "hwUpper": "HW+",
+  "jujutsuKaisen": "جوجوتسو کایزن",
+  "lockControls": "کنترل های قفل",
+  "lockOrientation": "جهت قفل",
+  "mal": "MAL",
+  "materialYou": "مادی شما",
+  "mediacodecEmbed": "MediaCodec Embed",
+  "myanimelist": "MyAnimeList",
+  "necessaryMurder": "قتل ضروری",
+  "nextEp": "قسمت بعدی",
+  "nextEpisode": "قسمت بعدی",
+  "nsfw": "NSFW",
+  "openslEs": "OpenSL ES",
+  "paytm": "Paytm",
+  "phonepe": "PhonePe",
+  "pictureInPicture": "تصویر در تصویر",
+  "playlist": "لیست پخش",
+  "previousEpisode": "قسمت قبلی",
+  "pulseaudio": "PulseAudio",
+  "quality": "کیفیت",
+  "qualitySetting": "تنظیم کیفیت",
+  "readingMode": "حالت خواندن",
+  "reddit": "Reddit",
+  "replay30s": "پخش مجدد 30s",
+  "ryanyuuki": "رایان یوکی",
+  "sabitoAndMakomo": "سابیتو و ماکومو",
+  "sdl": "SDL",
+  "server": "سرور",
+  "servers": "سرورها",
+  "shadersColorProfiles": "سایه بان ها و پروفایل های رنگی",
+  "shadersColors": "سایه بان ها و رنگ ها",
+  "simkl": "Simkl",
+  "simklUpper": "SIMKL",
+  "socks5": "جوراب 5",
+  "soloLeveling": "تسطیح انفرادی",
+  "speed": "سرعت",
+  "sw": "SW",
+  "syncSubs": "همگام سازی مشترکین",
+  "syncSubtitles": "همگام سازی زیرنویس ها",
+  "telegram": "تلگرام",
+  "theQuickBrownFoxJumpsOver": "روباه قهوه ای سریع از روی سگ تنبل می پرد",
+  "themeMode": "حالت تم",
+  "thisIsFrustrating": "این ناامید کننده است",
+  "toYouSomeday": "به تو، روزی",
+  "torrentFiles": "فایل های تورنت",
+  "tracks": "آهنگ ها",
+  "unlockOrientation": "جهت را باز کنید",
+  "userAgent": "کاربر-عامل",
+  "videoQuality": "کیفیت ویدیو",
+  "videoServers": "سرورهای ویدیویی",
+  "vs": "در مقابل",
+  "wasapi": "WASAPI",
+  "watchTogetherInRoom": "با هم تماشا کنید (در اتاق)",
+  "webtoon": "وبتون",
+  "n0MeansAutomaticThreadCount": "0 به معنای شمارش خودکار نخ ها است",
+  "n18Content": "18+ محتوا",
+  "aboveAverageSimilarity": "شباهت بالاتر از حد متوسط.",
+  "account": "حساب",
+  "activityStats": "فعالیت و آمار",
+  "add": "اضافه کنید",
+  "additionalNotesOptional": "نکات اضافی (اختیاری)",
+  "adjustKeyVolumeScrollingSpeed": "سرعت پیمایش کلید و صدا را تنظیم کنید",
+  "alpha": "آلفا",
+  "alwaysChecksCurrentChapterNumberAnd": "همیشه شماره فصل جاری را بررسی می‌کند و آن را با فصل بعدی/قبلی مقایسه می‌کند، فقط زمانی که شماره متفاوت است، پیمایش می‌کند. پیمایش بر اساس فصل فقط به آیتم بعدی در لیست منتقل می شود حتی اگر موارد تکراری وجود داشته باشد.",
+  "animeCompleted": "انیمه تکمیل شد",
+  "announcementMode": "حالت اعلامیه",
+  "appIsStillLoadingTryAgain": "برنامه همچنان در حال بارگیری است، به زودی دوباره امتحان کنید.",
+  "applyAColorTintOverPages": "یک ته رنگ روی صفحات اعمال کنید",
+  "audioDelay": "تاخیر صوتی",
+  "audioSettings": "تنظیمات صدا",
+  "audioTrack2": "آهنگ صوتی",
+  "autoAdvance": "پیشروی خودکار",
+  "autoDeleteCompletedEntries": "حذف خودکار ورودی های تکمیل شده",
+  "autoSyncProgress": "پیشرفت همگام سازی خودکار",
+  "automaticallyMoveToNextText": "انتقال خودکار به متن بعدی",
+  "automaticallyScrollAdvancePages": "پیمایش خودکار/پیشبرد صفحات",
+  "automaticallySwitchToContinuousModeFor": "برای مانگا با نوار طولانی، به طور خودکار به حالت پیوسته بروید",
+  "averageOverlap": "همپوشانی متوسط.",
+  "background": "پس زمینه",
+  "basedOnYourFavouriteAnime": "بر اساس انیمه مورد علاقه شما.",
+  "basedOnYourFavouriteManga": "بر اساس مانگا مورد علاقه شما.",
+  "basedOnYourTop10Manga": "بر اساس 10 تگ مانگای برتر شما.",
+  "basedOnYourTop5Manga": "بر اساس 5 ژانر برتر مانگای شما.",
+  "blue": "آبی",
+  "botL": "Bot-L",
+  "botR": "Bot-R",
+  "bridgeUpdateAvailable": "به روز رسانی پل موجود است",
+  "brightness": "روشنایی",
+  "bulletList": "لیست گلوله",
+  "calendarUpper": "تقویم",
+  "canadianMovies": "فیلم های کانادایی",
+  "canadianShows": "نمایش های کانادایی",
+  "cannotCompareTheSameProfileWith": "نمی توان نمایه مشابه را با خودش مقایسه کرد.",
+  "castToDevice2": "ارسال به دستگاه",
+  "chatModeration": "اعتدال چت",
+  "chooseASubtitleFileFromYour": "یک فایل زیرنویس را از دستگاه خود انتخاب کنید (.srt، .vtt، .ass، .ssa)",
+  "chooseHowToApplyTheSelected": "نحوه اعمال فایل JSON انتخاب شده را در خلاصه ابر AnymeX خود انتخاب کنید.",
+  "chromaUpscaler": "Chroma Upscaler",
+  "cloudTools": "ابزارهای ابری",
+  "code": "کد",
+  "commonFavouriteAnime": "انیمه محبوب رایج",
+  "commonFavouriteCharacters": "شخصیت های مورد علاقه رایج",
+  "commonFavouriteManga": "مانگا مورد علاقه رایج",
+  "commonPerfectAnime": "انیمه معمولی پرفکت",
+  "commonPerfectManga": "مانگا معمولی پرفکت",
+  "communityAdministratorOverseeingModerationAndPolicies": "سرپرست انجمن نظارت بر نظارت و سیاست‌ها.",
+  "connectGithubFirstBeforeDeletingSync": "قبل از حذف داده های همگام سازی ابتدا GitHub را وصل کنید.",
+  "connectGithubFirstToExportSync": "ابتدا GitHub را وصل کنید تا داده های همگام سازی صادر شود.",
+  "connectGithubFirstToImportSync": "ابتدا GitHub را برای وارد کردن داده های همگام سازی وصل کنید.",
+  "connectGithubFirstToSyncProgress": "برای همگام سازی پیشرفت، ابتدا GitHub را وصل کنید.",
+  "connectGithubFirstToViewSync": "ابتدا GitHub را وصل کنید تا خلاصه همگام سازی را مشاهده کنید.",
+  "continuousModeOnly2": "فقط حالت پیوسته",
+  "controls": "کنترل ها",
+  "cookiesClearedSuccessfully": "کوکی ها با موفقیت پاک شدند",
+  "copied": "کپی شده است",
+  "copyUrl": "URL را کپی کنید",
+  "correctDownscaling": "کاهش مقیاس را اصلاح کنید",
+  "couldNotLoadStreamingServicesFrom": "خدمات پخش جریانی از AniList API بارگیری نشد.\n ممکن است سرویس موقتاً در دسترس نباشد یا با نرخ محدود باشد.",
+  "couldNotOpenGistInBrowser": "Gist در مرورگر باز نشد.",
+  "created": "ایجاد شد",
+  "creatorAndDeveloperOfAnymex": "خالق و توسعه دهنده AnymeX.",
+  "customBrightness": "روشنایی سفارشی",
+  "customizeGestures": "حرکات را سفارشی کنید",
+  "deband": "دبند",
+  "debandIterations": "تکرارهای Deband",
+  "debandThreshold": "آستانه دبند",
+  "decreaseAutoScrollSpeed": "سرعت اسکرول خودکار را کاهش دهید",
+  "decreaseFontSize": "اندازه قلم را کاهش دهید",
+  "deleteAnymexSyncGist": "AnymeX Sync Gist حذف شود؟",
+  "deleteCloudGist": "Cloud Gist را حذف کنید",
+  "deleteCommentMod": "حذف نظر (Mod)",
+  "details": "جزئیات",
+  "dictionary": "فرهنگ لغت",
+  "differenceFromOwnMeanScore": "تفاوت با میانگین امتیاز خود",
+  "disableChat": "غیرفعال کردن چت",
+  "disconnectThisGithubAccountFromAnymex": "این حساب GitHub را از AnymeX قطع کنید",
+  "displayPagesInBlackWhite": "نمایش صفحات سیاه و سفید",
+  "downloading": "در حال دانلود…",
+  "downscaler": "کاهش مقیاس",
+  "dynamicWidget": "ویجت پویا",
+  "eInkDisplayRefresh": "بازخوانی نمایشگر جوهر الکترونیکی",
+  "eGAbc123": "به عنوان مثال ABC123",
+  "eGMyAnimeLogo": "به عنوان مثال لوگوی انیمه من",
+  "editYourComment": "نظر خود را ویرایش کنید...",
+  "embeddedContent": "محتوای تعبیه شده",
+  "enterTheRoomPassword": "رمز اتاق را وارد کنید",
+  "enterTokenHere": "رمز را در اینجا وارد کنید",
+  "error": "خطا",
+  "exitSyncNotifications": "از اعلان های همگام سازی خارج شوید",
+  "exportGistJson": "صادرات Gist JSON",
+  "exportedGistJson": "اصل صادرات JSON.",
+  "failedToExportGistJson": "اصل JSON صادر نشد.",
+  "failedToFetchDataFromSources": "داده‌ها از منابع واکشی نشد.",
+  "failedToGetCloudGistLink": "پیوند خلاصه ابر دریافت نشد.",
+  "failedToImportGistJson": "وارد کردن اصل JSON انجام نشد.",
+  "failedToLaunchExternalPlayer": "پخش کننده خارجی راه اندازی نشد",
+  "failedToOpenGistInBrowser": "Gist در مرورگر باز نشد.",
+  "flashDuration": "مدت زمان فلش",
+  "flashEveryNPages": "هر N صفحه را فلش کنید",
+  "flashFrequency": "فرکانس فلاش",
+  "flashScreenOnPageTurnTo": "صفحه فلش روی صفحه را برای پاک کردن شبح روشن کنید",
+  "followHost": "هاست را دنبال کنید",
+  "fontSettings": "تنظیمات فونت",
+  "freedomSeek": "آزادی خواهی",
+  "friendsNeedAPasswordToJoin": "دوستان برای عضویت نیاز به رمز عبور دارند",
+  "githubClientIdNotConfigured": "شناسه مشتری GitHub پیکربندی نشده است.",
+  "githubLoginFailedMissingAuthorizationCode": "ورود به سیستم GitHub انجام نشد: کد مجوز موجود نیست.",
+  "githubLoginWasCancelledOrFailed": "ورود به سیستم GitHub لغو شد یا ناموفق بود.",
+  "githubComRyanyuukiAnymexShowYour": "github.com/RyanYuuki/AnymeX • عشق خود را نشان دهید",
+  "goodChemistryAndSharedTaste": "شیمی خوب و طعم مشترک.",
+  "grayscale": "مقیاس خاکستری",
+  "green": "سبز",
+  "hdrToneMappingTargetPeak": "اوج هدف نقشه برداری تون HDR",
+  "higherValueIncreasesDebandingStrength": "مقدار بالاتر استحکام جداسازی باند را افزایش می دهد",
+  "horizontalPadding": "بالشتک افقی",
+  "hoursWatched": "ساعت تماشا",
+  "howManyFriendsCanJoin": "چند دوست می توانند بپیوندند",
+  "ifYouHaveAnIssueOr": "اگر مشکلی دارید یا پیشنهادی دارید، لطفاً در github مشکل را مطرح کنید.",
+  "imageWidth": "عرض تصویر",
+  "importGistJson": "واردات Gist JSON",
+  "importLocalSubtitle": "وارد کردن زیرنویس محلی",
+  "improveQualityWhenScalingDownVideo": "کیفیت را هنگام کاهش مقیاس ویدیو بهبود دهید",
+  "increaseAutoScrollSpeed": "سرعت اسکرول خودکار را افزایش دهید",
+  "increaseFontSize": "افزایش اندازه قلم",
+  "invalidCompatibilityLinkMissingUsernames": "پیوند سازگاری نامعتبر: نام کاربری موجود نیست.",
+  "invalidGistUrl": "URL اصلی نامعتبر است.",
+  "invalidRoomCodeInLink": "کد اتاق نامعتبر در پیوند",
+  "invalidWatchTogetherLink": "پیوند Watch Together نامعتبر است",
+  "invertAllPageColors": "همه رنگ های صفحه را معکوس کنید",
+  "invertColors": "رنگ ها را معکوس کنید",
+  "inviteLink": "پیوند دعوت",
+  "inviteLinkCopied": "پیوند دعوت کپی شد!",
+  "jDramas": "جی درام",
+  "joinNotifications": "به اطلاعیه ها بپیوندید",
+  "kDramas": "K-Dramas",
+  "keepBothUploadedAndCloudEntries": "هم ورودی های آپلود شده و هم ورودی های ابری را نگه دارید. اگر یک ورودی در هر دو مکان وجود داشته باشد، ورودی جدیدتر حفظ می شود. (توصیه می شود)",
+  "keyVolumeScrollingSpeed": "سرعت پیمایش کلید و حجم",
+  "koreanMovies": "فیلم های کره ای",
+  "leaveNotifications": "اعلان ها را بگذارید",
+  "liveComments": "نظرات زنده",
+  "lockScreen": "صفحه قفل",
+  "loginToAnilist": "وارد AniList شوید",
+  "loginToMyanimelist": "وارد MyAnimeList شوید",
+  "loginToSimkl": "وارد Simkl شوید",
+  "longPressForPageActions": "فشار طولانی برای اقدامات صفحه",
+  "longPressAPageToSave": "برای ذخیره، اشتراک گذاری یا کپی صفحه، آن را به مدت طولانی فشار دهید",
+  "lumaUpscaler": "Luma Upscaler",
+  "mangaCompleted": "مانگا تکمیل شد",
+  "mangaPage": "صفحه مانگا",
+  "maxMembers": "حداکثر اعضا",
+  "memberLeft": "عضو رفت",
+  "mergeUploadedEntriesOrReplaceCloud": "ورودی های آپلود شده را ادغام کنید یا داده های ابری را جایگزین کنید",
+  "mergeWithCloud": "ادغام با ابر",
+  "milliseconds": "میلی ثانیه",
+  "missingTypeQueryParameterUseType": "پارامتر پرس و جو \"نوع\" وجود ندارد. از type=player استفاده کنید.",
+  "missingUrlQueryParameterForThe": "پارامتر جستجوی \"url\" برای موضوع JSON وجود ندارد.",
+  "moreIterationsStrongerDebanding": "تکرار بیشتر = جداسازی قوی تر",
+  "movies": "فیلم ها",
+  "moviesList": "فهرست فیلم ها",
+  "navigateByNumber": "پیمایش بر اساس شماره",
+  "navigation": "ناوبری",
+  "newMember": "عضو جدید",
+  "nextChapter": "فصل بعدی",
+  "nextParagraph": "پاراگراف بعدی",
+  "noAudio": "بدون صدا",
+  "noOneCanSendMessagesIn": "هیچ کس نمی تواند در چت پیام ارسال کند",
+  "noStreamUrlAvailable": "هیچ URL جریانی در دسترس نیست",
+  "noSubtitle": "بدون زیرنویس",
+  "noVideo": "بدون ویدئو",
+  "notVeryCompatibleAtAll": "اصلا خیلی سازگار نیست",
+  "numberedList": "لیست شماره گذاری شده",
+  "onScreenOverlays": "پوشش های روی صفحه",
+  "onlyHostAndCoHostsCan": "فقط میزبان و میزبان مشترک می توانند پیام ارسال کنند",
+  "opacity": "کدورت",
+  "openInBrowser2": "در مرورگر باز کنید",
+  "openYourAnymexSyncGistOn": "خلاصه همگام سازی AnymeX خود را در GitHub باز کنید",
+  "openingInExternalPlayer": "باز کردن در پخش کننده خارجی ...",
+  "orTypeCustomTag": "یا برچسب سفارشی را تایپ کنید...",
+  "otherUpper": "دیگر",
+  "overlayPosition": "موقعیت روکش",
+  "overrideSystemScreenBrightness": "نادیده گرفتن روشنایی صفحه نمایش سیستم",
+  "ownerAndCreatorOfTheCommentum": "مالک و خالق پلتفرم انجمن Commentum.",
+  "padding": "بالشتک",
+  "pagesAheadOfTimeForFaster": "صفحات پیش از موعد برای بارگذاری سریعتر",
+  "partySettings": "تنظیمات مهمانی",
+  "passwordIfRequired": "رمز عبور (در صورت نیاز)",
+  "pasteDirectGifOrImageUrl": "جای‌گذاری مستقیم GIF یا URL تصویر...",
+  "paypalMeReyyuukiCardsPaypalBalance": "paypal.me/reyyuuki • کارت ها و موجودی پی پال",
+  "permanentlyRemoveAnymexSyncData": "داده های همگام سازی AnymeX را برای همیشه حذف کنید",
+  "pictureShaders": "تصویر و سایه زن",
+  "pitch": "زمین",
+  "playbackIsLockedToTheHost": "پخش برای میزبان قفل شده است",
+  "playbackSpeed2": "سرعت پخش",
+  "playerSettings2": "تنظیمات پلیر",
+  "pleaseLogInFirstThenTry": "لطفا ابتدا وارد شوید، سپس پیوند را دوباره امتحان کنید.",
+  "pointsBreakdown": "تفکیک امتیاز",
+  "practicallyMadeForEachOther": "عملا برای یکدیگر ساخته شده اند.",
+  "preloadPage": "پیش بارگذاری صفحه",
+  "preloadPages": "پیش بارگذاری صفحات",
+  "preloadPagesAheadOfTimeFor": "برای بارگذاری سریعتر صفحات را پیش از موعد بارگذاری کنید (شبکه و رم بیشتری مصرف می کند)",
+  "preventScreenFromSleepingWhileReading": "از خوابیدن صفحه هنگام مطالعه جلوگیری کنید",
+  "previousChapter": "فصل قبل",
+  "previousParagraph": "پاراگراف قبلی",
+  "privateRoom": "اتاق خصوصی",
+  "profileUpdated": "نمایه به روز شد",
+  "proportionOfTotalTimeWatched": "نسبت کل زمان تماشا",
+  "provideAReasonForThisAction": "دلیل این اقدام را بیاورید...",
+  "qualitySettings": "تنظیمات کیفیت",
+  "quote": "نقل قول",
+  "range75DarkestTo100": "محدوده: -75 (تاریک ترین) تا 100",
+  "rateLimited": "نرخ محدود",
+  "reactionOverlay": "پوشش واکنش",
+  "readStats": "آمار را بخوانید",
+  "readTextAloud": "متن را با صدای بلند بخوانید",
+  "red": "قرمز",
+  "reduceColorBandingInGradients": "باندهای رنگی را در شیب ها کاهش دهید",
+  "reduceHaloingWhileUpscaling": "کاهش هاله در حین افزایش مقیاس",
+  "refresh": "تازه کردن",
+  "removeCurrentCloudEntriesAndReplace": "ورودی های فعلی ابر را حذف کنید و آنها را با فایل آپلود شده جایگزین کنید.",
+  "removeWhiteBlackBordersToMaximize": "برای به حداکثر رساندن محتوا، حاشیه های سفید/سیاه را حذف کنید",
+  "removesFinishedMediaFromCloudGist": "رسانه های تمام شده را از خلاصه ابر حذف می کند",
+  "replaceCloudGist": "Cloud Gist را جایگزین کنید",
+  "report": "گزارش دهید",
+  "resetReLogin": "تنظیم مجدد و ورود مجدد",
+  "resetTo1": "بازنشانی به 1×",
+  "restore": "بازیابی کنید",
+  "roomAccess": "دسترسی به اتاق",
+  "roomCode": "کد اتاق",
+  "roomCodeCopiedToClipboard": "کد اتاق در کلیپ بورد کپی شد",
+  "roomDuration": "مدت زمان اتاق",
+  "roomNotFoundOrExpired": "اتاق پیدا نشد یا منقضی شده است",
+  "roomPassword": "رمز عبور اتاق",
+  "roomPassword2": "رمز اتاق",
+  "roomSettings": "تنظیمات اتاق",
+  "saveYourCurrentCloudProgressTo": "پیشرفت فعلی ابری خود را در یک فایل ذخیره کنید",
+  "scrollMultiplier": "Scroll Multiplier",
+  "scrollSpeed": "سرعت اسکرول",
+  "searchAnimeEpisode": "جستجوی انیمه / قسمت ...",
+  "searchAnimeGifsReactions": "جستجوی گیف های انیمه، واکنش ها...",
+  "searchChapters": "جستجوی فصول...",
+  "searchFiles": "جستجوی فایل ها...",
+  "secondsPerPageScreen": "ثانیه در هر صفحه / صفحه نمایش",
+  "seekAndControlPlaybackFreely": "پخش را آزادانه جستجو و کنترل کنید",
+  "selectedFileMustContainAJson": "فایل انتخابی باید حاوی یک شی JSON باشد.",
+  "selectedJsonHasNoValidSync": "JSON انتخابی هیچ ورودی همگام‌سازی معتبری ندارد.",
+  "seriesList": "لیست سری",
+  "setAPasswordForYourRoom": "برای اتاق خود رمز عبور تعیین کنید",
+  "share": "به اشتراک بگذارید",
+  "showANotificationWhenSomeoneJoins": "هنگامی که شخصی به مهمانی می‌پیوندد، یک اعلان نشان دهید",
+  "showANotificationWhenSomeoneLeaves": "هنگامی که شخصی مهمانی را ترک می کند، یک اعلان نشان دهید",
+  "showAllStreams": "نمایش همه جریان ها",
+  "showChatMessagesOnThePlayer": "پیام‌های چت را هنگام ورود به پخش‌کننده نشان دهید",
+  "showEmojiReactionsFloatingOnThe": "نشان دادن واکنش های ایموجی شناور روی پخش کننده",
+  "showSyncResultWhenPlayerOr": "نمایش نتیجه همگام‌سازی وقتی پخش‌کننده یا خواننده بسته می‌شود",
+  "showTransitionPageEvenWhenChapters": "نمایش صفحه انتقال حتی زمانی که فصل ها مجاور هستند",
+  "shows": "نشان می دهد",
+  "sigmoidUpscaling": "افزایش مقیاس سیگموئید",
+  "smootherGradientsWithSlightTemporalNoise": "شیب های صاف تر با نویز زمانی جزئی",
+  "spacing": "فاصله گذاری",
+  "speechSpeed": "سرعت گفتار",
+  "spoilers": "اسپویلرها",
+  "stretchImagesToFitScreenWidthOn": "تصاویر را به تناسب عرض صفحه در صفحات گسترده بکشید",
+  "subtitleSettings": "تنظیمات زیرنویس",
+  "superAdministratorWithSystemWideManagement": "Super Administrator با اختیار مدیریت در سراسر سیستم.",
+  "swapUpDownActions2": "تعویض کنش های بالا/پایین",
+  "syncMode": "حالت همگام سازی",
+  "syncPreferences": "همگام سازی تنظیمات برگزیده",
+  "tapScrollAmount": "روی Scroll Amount ضربه بزنید",
+  "tapToOpen": "برای باز کردن ضربه بزنید",
+  "tapToOpenInBrowser": "برای باز کردن در مرورگر ضربه بزنید",
+  "tapToOpenInSpotify": "برای باز کردن در Spotify ضربه بزنید",
+  "tapToViewInBrowser": "برای مشاهده در مرورگر ضربه بزنید",
+  "tapTopBottomToScroll": "برای پیمایش روی بالا/پایین ضربه بزنید",
+  "targetPeak": "قله هدف",
+  "temporalDither": "پریشانی زمانی",
+  "textToSpeech": "تبدیل متن به گفتار",
+  "theCreatorOfThisCommentDiscussion": "سازنده این موضوع بحث نظر.",
+  "theresASmallSparkOfAgreement": "یک جرقه کوچک توافق وجود دارد.",
+  "thisPermanentlyDeletesYourAnymexCloud": "با این کار خلاصه پیشرفت ابری AnymeX شما برای همیشه از GitHub حذف می‌شود و قابل بازگشت نیست.",
+  "toPrevNextChapter": "به فصل قبل/بعدی",
+  "topL": "Top-L",
+  "topR": "Top-R",
+  "totals": "مجموع",
+  "trendingMovies": "فیلم های پرطرفدار",
+  "trendingSeries": "سری پرطرفدار",
+  "tts": "TTS",
+  "ukMovies": "فیلم های بریتانیایی",
+  "ukShows": "نمایش های انگلستان",
+  "unableToReadSelectedJsonFile": "خواندن فایل JSON انتخابی ممکن نیست.",
+  "unsupportedExtension": "برنامه افزودنی پشتیبانی نشده",
+  "usMovies": "فیلم های آمریکایی",
+  "usShows": "نمایش های ایالات متحده",
+  "useVolumeButtonsToScroll": "برای پیمایش از دکمه های صدا استفاده کنید",
+  "userHistory": "تاریخچه کاربر",
+  "userInfo": "اطلاعات کاربر",
+  "verifiedModeratorKeepingCommentsRespectfulAnd": "ناظر تأیید شده نظرات را محترمانه و ایمن نگه می دارد.",
+  "verticalPadding": "بالشتک عمودی",
+  "viewCloudGist": "Cloud Gist را مشاهده کنید",
+  "viewUserHistory": "مشاهده تاریخچه کاربر",
+  "viewUserInfo": "مشاهده اطلاعات کاربر",
+  "voice": "صدا",
+  "watchParty": "Watch Party",
+  "watchStats": "تماشای آمار",
+  "watchingNow": "در حال تماشا",
+  "webmVideo": "ویدئوی وب ام",
+  "whereLiveCommentsAppearOnScreen": "جایی که نظرات زنده روی صفحه ظاهر می شود",
+  "whileWatchingEpisodesOrReadingChapters": "هنگام تماشای قسمت ها یا خواندن فصل ها",
+  "writeAReply": "پاسخ بنویسید...",
+  "youAreBasicallyTheSamePerson": "شما اساساً همان شخص هستید.",
+  "youBothHaveVerySimilarTaste": "سلیقه هر دوتون خیلی شبیه هم هست.",
+  "all2": "← همه",
+  "koFi": "کو-فی",
+  "mpvConf": "mpv.conf",
+  "styling": "یک ظاهر طراحی شده",
+  "upscale": "سطح بالا",
+  "appearanceStyle": "ظاهر و سبک",
+  "colorsLightDarkOledLogoAnimations": "رنگ‌ها، روشن/تاریک، OLED و انیمیشن‌های لوگو",
+  "fontsTypography": "فونت و تایپوگرافی",
+  "chooseTypographyCustomFontsGlobalText": "تایپوگرافی، فونت های سفارشی و مقیاس متن جهانی را انتخاب کنید",
+  "globalFontScaling": "مقیاس جهانی قلم",
+  "scaling": "مقیاس بندی",
+  "typefaces": "تایپ فیس ها",
+  "interfaceLayout": "رابط و چیدمان",
+  "navBarCardStylesDetailsBlur": "نوار پیمایش، سبک‌های کارت، تاری جزئیات و طرح‌بندی",
+  "navigationHomeLayout": "ناوبری و چیدمان خانه",
+  "playbackEngineSubtitlesGesturesDecoders": "موتور پخش، زیرنویس ها، حرکات و رمزگشاها",
+  "mangaNovelReader": "مانگا و رمان خوان",
+  "readingModesDirectionColorsTapZones": "حالت های خواندن، جهت، رنگ ها و نواحی ضربه",
+  "dataNetworkSystem": "داده، شبکه و سیستم",
+  "downloadDirectoryConcurrencyHlsSegments": "دانلود دایرکتوری، همزمانی و بخش های HLS",
+  "accountsSocial": "حساب ها و اجتماعی",
+  "trackingAccounts": "ردیابی حساب ها",
+  "manageYourAnilistMyanimelistSimklAccounts": "حساب های AniList، MyAnimeList و Simkl خود را مدیریت کنید",
+  "trackingBehavior": "ردیابی رفتار",
+  "communityComments": "انجمن و نظرات",
+  "commentumProfileBadgesMarkdownPrivacy": "نمایه نظر، نشان‌ها، علامت‌گذاری و حریم خصوصی",
+  "contentPreferences": "محتوا و ترجیحات",
+  "nsfwFilterUnifiedLibraryRecommendationsLists": "فیلتر NSFW، کتابخانه یکپارچه، توصیه‌ها و فهرست‌ها",
+  "exportAndRestoreYourLibraryAnd": "کتابخانه و تنظیمات خود را صادر و بازیابی کنید",
+  "manageAnimeMangaNovelSourcesAnd": "منابع و مخازن انیمه، مانگا و رمان را مدیریت کنید",
+  "installAndUpdateCommunityAddOns": "افزونه های انجمن را نصب و به روز کنید",
+  "storageCache": "ذخیره سازی و حافظه پنهان",
+  "manageCachedImagesThresholdsResetData": "تصاویر ذخیره‌شده، آستانه‌ها و بازنشانی داده‌ها را مدیریت کنید",
+  "networkProxy": "شبکه و پروکسی",
+  "logsDiagnostics": "گزارش‌ها و تشخیص",
+  "inspectExportAndShareApplicationLogs": "گزارش های برنامه را بازرسی، صادر و به اشتراک بگذارید",
+  "aboutSupport": "درباره و پشتیبانی",
+  "supportDevelopmentViaKoFiPaypal": "پشتیبانی از توسعه از طریق Ko-fi، PayPal و UPI",
+  "versionUpdatesSocialLinksLegalPolicies": "نسخه، به‌روزرسانی‌ها، پیوندهای اجتماعی و سیاست‌های قانونی",
+  "cacheAndCookiesClearedFor": "کش و کوکی ها برای {name} پاک شدند",
+  "@cacheAndCookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesClearedFor": "کوکی‌ها برای {name} پاک شدند",
+  "@cookiesClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cacheClearedFor": "حافظه پنهان برای {name} پاک شد",
+  "@cacheClearedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedType": "نوع پشتیبانی نشده {type}",
+  "@unsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "settings2": "تنظیمات {name}",
+  "@settings2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localFileNotFoundAt": "فایل محلی در: {apkPath} یافت نشد",
+  "@localFileNotFoundAt": {
+    "placeholders": {
+      "apkPath": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed2": "همگام سازی انجام نشد: {e}",
+  "@syncFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "localApkNotFoundAt": "APK محلی در: {localPath} یافت نشد",
+  "@localApkNotFoundAt": {
+    "placeholders": {
+      "localPath": {
+        "type": "String"
+      }
+    }
+  },
+  "error2": "خطا: {e}",
+  "@error2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginInstallationFailed": "نصب پلاگین انجام نشد: {error}",
+  "@pluginInstallationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFoundFor": "نتیجه ای برای \"{query}\" یافت نشد",
+  "@noResultsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "season2": "فصل {value}",
+  "@season2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode": "اپیزود {i}",
+  "@episode": {
+    "placeholders": {
+      "i": {
+        "type": "String"
+      }
+    }
+  },
+  "news": "اخبار {title}",
+  "@news": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "community": "جامعه",
+  "logInWithAnilist": "با AniList وارد شوید",
+  "episode2": "اپیزود {number}",
+  "@episode2": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadCompleted": "دانلود تکمیل شد",
+  "downloadFailedHasNoUrl": "دانلود انجام نشد: {chapterDisplay} URL ندارد",
+  "@downloadFailedHasNoUrl": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedNoPagesFoundFor": "دانلود انجام نشد: هیچ صفحه ای برای {chapterDisplay} یافت نشد",
+  "@downloadFailedNoPagesFoundFor": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailed": "دانلود انجام نشد: {chapterDisplay}",
+  "@downloadFailed": {
+    "placeholders": {
+      "chapterDisplay": {
+        "type": "String"
+      }
+    }
+  },
+  "episode3": "اپیزود {epNum}",
+  "@episode3": {
+    "placeholders": {
+      "epNum": {
+        "type": "String"
+      }
+    }
+  },
+  "ch": "{count} ch",
+  "@ch": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "eps": "{count} eps",
+  "@eps": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotFound": "منبع \"{extensionName}\" یافت نشد.",
+  "@sourceNotFound": {
+    "placeholders": {
+      "extensionName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPrepareTorrent": "تورنت آماده نشد: {e}",
+  "@failedToPrepareTorrent": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "willBePermanentlyRemovedFromYour": "{display} برای همیشه از دانلودهای شما حذف خواهد شد.",
+  "@willBePermanentlyRemovedFromYour": {
+    "placeholders": {
+      "display": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFailed2": "جستجو ناموفق بود: {e}",
+  "@searchFailed2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "جستجوی {label} برای \"{title}\"…",
+  "@searchFor": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "historyItemsDeleted": "موارد تاریخچه {deletedCount} حذف شد",
+  "@historyItemsDeleted": {
+    "placeholders": {
+      "deletedCount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromYour": "\"{itemName}\" را از {_historyLabel} خود حذف کنید؟",
+  "@removeFromYour": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      },
+      "_historyLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "removed": "\"{itemName}\" حذف شد",
+  "@removed": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "ascending": "صعودی",
+  "descending": "نزولی",
+  "defaultTabOrder": "ترتیب برگه پیش فرض",
+  "reverseTabs": "برگه های معکوس",
+  "id": "شناسه: {mediaId}",
+  "@id": {
+    "placeholders": {
+      "mediaId": {
+        "type": "String"
+      }
+    }
+  },
+  "type": "نوع: {type}",
+  "@type": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "items": "اقلام: {length}",
+  "@items": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "installFirstThenClick": "ابتدا {sourceName} را نصب کنید، سپس کلیک کنید",
+  "@installFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "page": "PAGE {value} / {value2}",
+  "@page": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "search2": "جستجوی {value}...",
+  "@search2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doneSelected": "انجام شد ({length} انتخاب شد)",
+  "@doneSelected": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "readableOn": "قابل خواندن در",
+  "streamingOn": "پخش جریانی روشن است",
+  "freedom": "آزادی",
+  "shaderAdded": "Shader افزود: {fileName}",
+  "@shaderAdded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorImportingShader": "خطا در وارد کردن سایه زن: {e}",
+  "@errorImportingShader": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "scanlators": "اسکنرها",
+  "chapterRange": "محدوده فصل",
+  "downloadFailed2": "دانلود انجام نشد: {errorMessage}",
+  "@downloadFailed2": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterIsDownloaded": "فصل {formattedNumber} دانلود شد",
+  "@chapterIsDownloaded": {
+    "placeholders": {
+      "formattedNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "downloading2": "در حال دانلود ({value}%)",
+  "@downloading2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapters2": "فصل های {length}",
+  "@chapters2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPage": "در حال بارگیری صفحه {pageNumber}{progressText}...",
+  "@loadingPage": {
+    "placeholders": {
+      "pageNumber": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "pageSavedToPicturesAnymex": "صفحه در Pictures/AnymeX ذخیره شد",
+  "pageSavedToAnymex": "صفحه در {path}/AnymeX ذخیره شد",
+  "@pageSavedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePage": "صفحه ذخیره نشد: {e}",
+  "@failedToSavePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSharePage": "اشتراک‌گذاری صفحه ناموفق بود: {e}",
+  "@failedToSharePage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "pageUrlCopiedToClipboard": "URL صفحه در کلیپ بورد کپی شد",
+  "failedToCopy": "کپی نشد: {e}",
+  "@failedToCopy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingPages": "در حال بارگیری صفحات...",
+  "goBack": "به عقب برگرد",
+  "loadingPage2": "در حال بارگیری صفحه {value}{progressText}...",
+  "@loadingPage2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "progressText": {
+        "type": "String"
+      }
+    }
+  },
+  "flashColor": "رنگ فلش",
+  "black": "مشکی",
+  "white": "سفید",
+  "readerBackground": "پس زمینه خواننده",
+  "gray": "خاکستری",
+  "automatic": "خودکار",
+  "noneNearestNeighbor": "هیچ (نزدیکترین همسایه)",
+  "lowBilinear": "کم (دو خطی)",
+  "mediumDefault": "متوسط (پیش‌فرض)",
+  "highBicubic": "بالا (دو مکعبی)",
+  "lanczosPreScaleBestQualitySlower": "پیش مقیاس Lanczos (بهترین کیفیت، کندتر)",
+  "fullscreenPreview": "پیش نمایش تمام صفحه",
+  "enhancementPreset": "پیش‌تنظیم افزایش",
+  "fineTuning": "تنظیم دقیق",
+  "enhancementStrength": "افزایش قدرت",
+  "strength": "استحکام {value}٪",
+  "@strength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "artifactSuppression": "سرکوب مصنوعات",
+  "cleanJpegCompressionRingingAroundLinework": "صدای فشرده سازی JPEG را در اطراف خط کشی تمیز کنید",
+  "cache": "حافظه پنهان",
+  "cacheSize": "اندازه کش",
+  "mbStoredOnDisk": "{mb} مگابایت روی دیسک ذخیره می شود",
+  "@mbStoredOnDisk": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "superResolution": "وضوح فوق العاده",
+  "loadingChapter": "در حال بارگیری فصل...",
+  "noContentAvailable": "هیچ محتوایی در دسترس نیست",
+  "recommendations": "توصیه های {reasonCount}",
+  "@recommendations": {
+    "placeholders": {
+      "reasonCount": {
+        "type": "String"
+      }
+    }
+  },
+  "sRecs": "ضبط ها",
+  "all3": "همه ({length})",
+  "@all3": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostMessage": "پیام ارسال نشد: {e}",
+  "@failedToPostMessage": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "totalEntries": "کل ورودی ها: {total}",
+  "@totalEntries": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "joinedRoom": "به اتاق {code} پیوست!",
+  "@joinedRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "activeRooms": "اتاق های فعال",
+  "joinWithCode": "با کد بپیوندید",
+  "leftRoom": "اتاق سمت چپ",
+  "leaveReset": "ترک / تنظیم مجدد",
+  "inRoom": "در اتاق: {code}",
+  "@inRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "episode4": "{value} - قسمت {value2}",
+  "@episode4": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "value2": {
+        "type": "String"
+      }
+    }
+  },
+  "kicked": "لگد زد {username}",
+  "@kicked": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members": "اعضای {length}/{maxMembers}",
+  "@members": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheRoom": "اتاق را ترک کرد",
+  "leave": "ترک کنید",
+  "noActiveRooms": "اتاق فعال وجود ندارد",
+  "roomsWillAppearHereWhenSomeone": "وقتی کسی اتاقی ایجاد کند، اتاق‌ها در اینجا ظاهر می‌شوند",
+  "created2": "ایجاد · {value}",
+  "@created2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "join": "بپیوندید →",
+  "full": "کامل",
+  "savedToPicturesAnymex": "در Pictures/AnymeX/{fileName} ذخیره شد",
+  "@savedToPicturesAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToDownloadsAnymex": "در Downloads/AnymeX/{fileName} ذخیره شد",
+  "@savedToDownloadsAnymex": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "savedToAnymex": "در {path}/AnymeX ذخیره شد",
+  "@savedToAnymex": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToOpenProfile": "{label}: @{username} (برای باز کردن نمایه ضربه بزنید)",
+  "@tapToOpenProfile": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "chapter": "فصل ",
+  "episode5": "اپیزود ",
+  "noData": "{title} (بدون داده)",
+  "@noData": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "searchExtensions2": "جستجوی افزونه های {title}...",
+  "@searchExtensions2": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "browseExtensions": "مرور برنامه های افزودنی",
+  "goToHome": "به خانه بروید",
+  "fetching": "در حال واکشی {title}...",
+  "@fetching": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingPolicy": "خطا در واکشی خط مشی: {e}",
+  "@errorFetchingPolicy": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "addedSuccessfully": "\"{name}\" با موفقیت اضافه شد!",
+  "@addedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully": "\"{name}\" با موفقیت به روز شد!",
+  "@updatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo2": "آیا مطمئن هستید که می خواهید \"{name}\" را حذف کنید؟",
+  "@areYouSureYouWantTo2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleted": "\"{name}\" حذف شد",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "yourHistoryIsEmpty": "سابقه شما خالی است",
+  "episode6": "اپیزود {value}",
+  "@episode6": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "showLess": "نمایش کمتر",
+  "readMore": "ادامه مطلب",
+  "unpin": "پین را بردارید",
+  "pinActivity": "پین کردن فعالیت",
+  "n1Recommendation": "1 توصیه",
+  "recommendations2": "توصیه های {count}",
+  "@recommendations2": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "در حال ارسال…",
+  "addRecommendation": "اضافه کردن توصیه",
+  "submitRecommendation": "ارائه توصیه",
+  "currentProvider": "ارائه دهنده فعلی",
+  "profileStatsUserActivities": "آمار نمایه و فعالیت های کاربر",
+  "manageSourcesPlugins": "مدیریت منابع و افزونه ها",
+  "savedOfflineEpisodesChapters": "قسمت ها و فصل های آفلاین ذخیره شده است",
+  "watchVideoFilesFromDeviceStorage": "فایل های ویدیویی را از حافظه دستگاه تماشا کنید",
+  "syncWatchPartyWithFriends": "مهمانی ساعت را با دوستان همگام کنید",
+  "pauseWatchHistoryAndSync": "تاریخچه تماشا و همگام سازی را متوقف کنید",
+  "appearancePlayerNetwork": "ظاهر، پخش کننده و شبکه",
+  "joining": "پیوستن...",
+  "joinRoom": "به اتاق بپیوندید",
+  "shareTheCodeOrInviteLink": "کد یا پیوند دعوت را با دوستان به اشتراک بگذارید.",
+  "roomCreated": "اتاق ایجاد شد!",
+  "shareThisCodeWithFriends": "این کد را با دوستان خود به اشتراک بگذارید:",
+  "copyCode": "کد را کپی کنید",
+  "copyLink": "لینک را کپی کنید",
+  "leaveWatchTogether": "Watch Together را ترک کنیم؟",
+  "removeMember": "حذف عضو",
+  "transferHost": "انتقال میزبان",
+  "transferHost2": "انتقال میزبان",
+  "transfer": "انتقال",
+  "removeMember2": "حذف عضو",
+  "removeFromThisWatchParty": "{username} از این مهمانی ساعت حذف شود؟",
+  "@removeFromThisWatchParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "members2": "اعضای {onlineCount} / {maxMembers}",
+  "@members2": {
+    "placeholders": {
+      "onlineCount": {
+        "type": "String"
+      },
+      "maxMembers": {
+        "type": "String"
+      }
+    }
+  },
+  "copied2": "{label} کپی شد",
+  "@copied2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noServersAvailableForThisRoom": "هیچ سروری برای این اتاق موجود نیست",
+  "selectStreamingServerQualityToWatch": "کیفیت سرور پخش را برای تماشا انتخاب کنید",
+  "thisServerHasNoPlayableUrl": "این سرور URL قابل پخش ندارد",
+  "episode7": "اپیزود {episodeNumber}",
+  "@episode7": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "adaptedFromChapterTo": "اقتباس شده از فصل {start} تا {end}",
+  "@adaptedFromChapterTo": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "predictedOn": "{nextCh} روی {releaseDate} پیش‌بینی شد",
+  "@predictedOn": {
+    "placeholders": {
+      "nextCh": {
+        "type": "String"
+      },
+      "releaseDate": {
+        "type": "String"
+      }
+    }
+  },
+  "ep": "EP {value}",
+  "@ep": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "episode8": "اپیزود {value}",
+  "@episode8": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "malListExportedToN": "لیست MAL صادر شده به:\n{savedPath}",
+  "@malListExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "anilistXmlExportedToN": "AniList XML صادر شده به:\n{savedPath}",
+  "@anilistXmlExportedToN": {
+    "placeholders": {
+      "savedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "صادرات انجام نشد: {value}",
+  "@exportFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingYourList": "در حال صادر کردن لیست {value} شما...",
+  "@exportingYourList": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exportXml": "{value} XML را صادر کنید",
+  "@exportXml": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlayableMediaAvailable": "رسانه قابل پخش موجود نیست",
+  "noThemesFound": "تم پیدا نشد",
+  "playAll": "پخش همه",
+  "theDawnOfHumanity": "طلوع بشریت",
+  "orientationUnlocked": "جهت باز شد",
+  "orientationLocked": "جهت قفل شده است",
+  "skippedOpening": "از باز شدن صرفنظر شد",
+  "skippedEnding": "پایان نادیده گرفته شد",
+  "skippedRecap": "از جمع بندی صرفنظر شد",
+  "ifYouSeeBlackScreenUse": "اگر صفحه سیاه می بینید، از پخش کننده خارجی برای تماشا استفاده کنید",
+  "failedToStartTorrentStream": "شروع جریان تورنت ناموفق بود: {e}",
+  "@failedToStartTorrentStream": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenStreamPleaseTry": "پخش جریانی باز نشد. لطفا سرور دیگری را امتحان کنید",
+  "noServersFoundForThisEpisode": "هیچ سروری برای این قسمت یافت نشد.",
+  "failedToLoadEpisodeCheckYour": "قسمت بارگیری نشد. اتصال خود را بررسی کنید.",
+  "playing": "پخش {value}",
+  "@playing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSwitchTorrentFile": "تغییر فایل تورنت انجام نشد: {e}",
+  "@failedToSwitchTorrentFile": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "subtitleLoaded": "زیرنویس بارگذاری شد: {fileName}",
+  "@subtitleLoaded": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingSubtitle": "خطا در بارگیری زیرنویس: {e}",
+  "@errorLoadingSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "corruptedSubtitle": "زیرنویس خراب شده!",
+  "preTranslatingSubtitles": "پیش ترجمه زیرنویس...",
+  "preTranslationFailedUsingRealTime": "پیش‌ترجمه با استفاده از بازگشت زمان واقعی انجام نشد",
+  "preTranslationErrorUsingRealTime": "خطای پیش از ترجمه، با استفاده از بازگشت زمان واقعی",
+  "corruptedQuality": "کیفیت خراب!",
+  "colorProfilesOnlyAvailableWithMediakit": "نمایه های رنگی فقط با پخش کننده MediaKit در دسترس هستند",
+  "x": "{value}x",
+  "@x": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "openVideoStreamsInAnExternal": "پخش جریانی ویدیو را به طور پیش فرض در یک پخش کننده خارجی باز کنید",
+  "quickDefaults": "پیش فرض های سریع",
+  "orientationSpeedResizeModeExternalPlayer": "جهت گیری، سرعت، حالت تغییر اندازه و پخش کننده خارجی",
+  "controlsGestures": "کنترل‌ها و حرکات",
+  "subtitlesTranslation": "زیرنویس و ترجمه",
+  "languagesFontsStylingLibassTranslation": "زبان ها، فونت ها، یک ظاهر طراحی شده، لیباس و ترجمه",
+  "anime4kShaders": "Anime4K و Shaders",
+  "upscalingShadersPresetsProfiles": "سایه‌زن‌ها، از پیش تنظیم‌ها و نمایه‌ها را ارتقاء می‌دهد",
+  "engineAdvanced": "موتور و پیشرفته",
+  "addSpeed": "اضافه کردن سرعت",
+  "speedPresets": "تنظیمات از پیش تعیین شده سرعت",
+  "rememberAsDefaultSpeed": "به عنوان سرعت پیش فرض به خاطر بسپارید",
+  "loadedSubtitle": "زیرنویس بارگذاری شده: {name}",
+  "@loadedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownloadSubtitle": "دانلود زیرنویس ناموفق بود: {e}",
+  "@failedToDownloadSubtitle": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCode2": "کد اتاق",
+  "episodeReleasesIn": "اپیزود {value} منتشر می شود",
+  "@episodeReleasesIn": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tba": "TBA ({length})",
+  "@tba": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedToBeLoggedIn": "برای نظر دادن باید وارد شوید",
+  "readFullRules": "قوانین کامل را بخوانید",
+  "acceptPost": "پذیرش و ارسال",
+  "youNeedToBeLoggedIn2": "برای پاسخ دادن باید وارد سیستم شوید",
+  "commentCopiedToClipboard": "نظر در کلیپ بورد کپی شد",
+  "spam": "هرزنامه",
+  "offensive": "توهین آمیز",
+  "harassment": "آزار و اذیت",
+  "offTopic": "خارج از موضوع",
+  "failedToLoadUserInfo": "اطلاعات کاربر بارگیری نشد.",
+  "noUserDataFound": "هیچ داده کاربری یافت نشد.",
+  "viewHistory": "مشاهده تاریخچه",
+  "failedToLoadComments": "نظرات بارگیری نشد.",
+  "noCommentsFound": "نظری یافت نشد.",
+  "deleted2": "حذف شد",
+  "comment": "نظر دهید",
+  "failedToLoadUserHistory": "سابقه کاربر بارگیری نشد.",
+  "noHistoryFound": "تاریخچه ای پیدا نشد.",
+  "youNeedToBeLoggedIn3": "برای ویرایش نظرات باید وارد سیستم شوید",
+  "commentCannotBeEmpty": "نظر نمی تواند خالی باشد",
+  "failedToLoadCommentsPleaseTry": "نظرات بارگیری نشد. لطفا دوباره امتحان کنید.",
+  "commentsLoaded": "نظرات {value} بارگیری شد",
+  "@commentsLoaded": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRefreshCommentsPleaseTry": "بازخوانی نظرات انجام نشد. لطفا دوباره امتحان کنید.",
+  "invalidParentCommentId": "شناسه نظر والدین نامعتبر است",
+  "replyPostedSuccessfully": "پاسخ با موفقیت ارسال شد",
+  "failedToPostReply": "پاسخ ارسال نشد",
+  "failedToPostReplyPleaseTry": "پاسخ ارسال نشد. لطفا دوباره امتحان کنید.",
+  "commentPostedSuccessfully": "نظر با موفقیت ارسال شد",
+  "failedToAddCommentPleaseTry": "نظر اضافه نشد. لطفا دوباره امتحان کنید.",
+  "failedToUpdateVotePleaseTry": "رأی به‌روزرسانی نشد. لطفا دوباره امتحان کنید.",
+  "invalidCommentId": "شناسه نظر نامعتبر است",
+  "commentEditedSuccessfully": "نظر با موفقیت ویرایش شد",
+  "failedToEditComment": "نظر ویرایش نشد",
+  "commentDeletedSuccessfully": "نظر با موفقیت حذف شد",
+  "failedToDeleteComment": "نظر حذف نشد",
+  "failedToReportComment": "نظر گزارش نشد",
+  "failedToModerateComment": "تعدیل نظر انجام نشد",
+  "failedToManageUser": "مدیریت کاربر ناموفق بود",
+  "pointsRankingIsBasedOnReal": "{username}: {label} (∞ امتیاز). رتبه بندی بر اساس فعالیت واقعی (امتیاز {realPoints}) است.",
+  "@pointsRankingIsBasedOnReal": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      }
+    }
+  },
+  "earnedPtsRoleBonusRankingIs": "{username}: {realPoints} امتیاز + جایزه نقش {text} ({label}) کسب کرد. رتبه بندی بر اساس فعالیت واقعی است.",
+  "@earnedPtsRoleBonusRankingIs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "realPoints": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeRange": "محدوده اپیزود",
+  "episodeIsDownloaded": "قسمت {number} دانلود شد",
+  "@episodeIsDownloaded": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodes2": "قسمت های {length}",
+  "@episodes2": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "ep2": "EP {formatted}",
+  "@ep2": {
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "soloLevelingSeason2AriseFrom": "Solo Leveling Season 2 – Aise from the Shadow",
+  "frierenBeyondJourneySEnd": "فریرن: فراتر از پایان سفر",
+  "bleachThousandYearBloodWar": "بلیچ: جنگ خون هزار ساله",
+  "cardCustomizer": "سفارشی ساز کارت",
+  "presetStyle": "سبک از پیش تعیین شده",
+  "chooseFrom5AuthenticBuiltIn": "از بین 5 طرح داخلی معتبر انتخاب کنید",
+  "sizingGeometry": "اندازه و هندسه",
+  "cardSize": "اندازه کارت",
+  "scaleCardsProportionallyWithoutDistortion": "مقیاس کارت ها به طور متناسب بدون تحریف",
+  "landscapeCards": "کارت های منظره",
+  "formatCardsIn169Widescreen": "فرمت کارت ها در جهت عریض 16:9",
+  "selectPosterImageAspectRatio": "نسبت تصویر پوستر را انتخاب کنید",
+  "titleLines": "خطوط عنوان",
+  "maximumNumberOfTitleLinesDisplayed": "حداکثر تعداد خطوط عنوان نمایش داده شده است",
+  "gestureAreas": "مناطق ژست",
+  "resetDefault": "تنظیم مجدد پیش فرض",
+  "overlay": "پوشش",
+  "volume": "حجم",
+  "brightnessArea": "ناحیه روشنایی",
+  "overlayAreaTap": "ناحیه همپوشانی (ضربه)",
+  "volumeArea": "منطقه حجم",
+  "resetToDefaultLayout": "تنظیم مجدد به طرح بندی پیش فرض",
+  "moveToSlot": "به اسلات حرکت کنید",
+  "topBar": "نوار بالا",
+  "bottomLeft": "پایین سمت چپ",
+  "bottomRight": "پایین سمت راست",
+  "themesOverlay": "تم و پوشش",
+  "gesturesSeeking": "حرکات و جستجو",
+  "horizontalSwipeAcrossTheScreenTo": "برای جستجو به صورت افقی روی صفحه بکشید",
+  "autoSkipCompletion": "پرش و تکمیل خودکار",
+  "percentageWatchedBeforeMarkingCompleted": "درصد تماشا قبل از علامت‌گذاری کامل شده است",
+  "playerControls": "کنترل های پخش کننده",
+  "mpvConfSavedSuccessfully": "mpv.conf با موفقیت ذخیره شد",
+  "hardwareDrivers": "سخت افزار و درایورها",
+  "systemIntegrations": "سیستم و ادغام",
+  "experimentalMpvTuning": "تنظیم آزمایشی MPV",
+  "editMpvConf": "mpv.conf را ویرایش کنید",
+  "modeA": "حالت A",
+  "modeB": "حالت B",
+  "modeC": "حالت C",
+  "modeAA": "حالت A+A",
+  "modeBB": "حالت B+B",
+  "modeCA": "حالت C+A",
+  "natural": "طبیعی",
+  "vivid": "زنده",
+  "cinema": "سینما",
+  "soft": "نرم",
+  "warm": "گرم",
+  "cool": "باحال",
+  "anime4k": "انیمه 4K",
+  "cinemaHdr": "سینما HDR",
+  "vividPop": "پاپ زنده",
+  "dark": "تاریک",
+  "anime4kEngine": "موتور Anime4K",
+  "anime4kShaders2": "سایه زن های Anime4K",
+  "devicePerformanceTier": "سطح عملکرد دستگاه",
+  "midRange": "میان رده",
+  "highEnd": "سطح بالا",
+  "shaderMode": "حالت سایه زن",
+  "colorPreset": "رنگ از پیش تعیین شده",
+  "desktopPlaybackKeybindings": "کلیدهای بازپخش دسکتاپ",
+  "customSubtitleFonts": "فونت های زیرنویس سفارشی",
+  "importedFont": "فونت وارد شده \"{fontName}\"",
+  "@importedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "areYouSureYouWantTo3": "آیا مطمئن هستید که می خواهید \"{font}\" را حذف کنید؟",
+  "@areYouSureYouWantTo3": {
+    "placeholders": {
+      "font": {
+        "type": "String"
+      }
+    }
+  },
+  "languageTranslation": "زبان و ترجمه",
+  "renderingBehavior": "ارائه و رفتار",
+  "disableToAvoidFadeTransitionsBetween": "برای جلوگیری از انتقال محو بین زیرنویس‌ها، غیرفعال کنید",
+  "typographyOutline": "تایپوگرافی و طرح کلی",
+  "adjustSubtitleFontSize": "اندازه فونت زیرنویس را تنظیم کنید",
+  "adjustSubtitleOutlineThickness": "ضخامت طرح زیرنویس را تنظیم کنید",
+  "colorsPosition": "رنگ ها و موقعیت",
+  "changeSubtitleTextColor": "تغییر رنگ متن زیرنویس",
+  "mangaReader": "مانگا خوان",
+  "layoutDirection": "طرح و جهت",
+  "autoSwitchToVerticalModeFor": "تغییر خودکار به حالت عمودی برای webtoons",
+  "imageDisplay": "تصویر و نمایشگر",
+  "interfaceSession": "رابط و جلسه",
+  "mangaControlsGestures": "کنترل‌ها و حرکات مانگا",
+  "overscrollToPreviousNextChapter": "به فصل قبلی/بعدی بروید",
+  "automaticallyScrollMangaPages": "پیمایش خودکار صفحات مانگا",
+  "swapVolumeUpDownActions": "اقدامات افزایش/کاهش صدا را تعویض کنید",
+  "novelReader": "رمان خوان",
+  "themeDisplay": "تم و نمایش",
+  "displayChapterPercentageWhileReading": "نمایش درصد فصل در حین خواندن",
+  "displayStatusInfoInTheNovel": "نمایش اطلاعات وضعیت در رمان خوان",
+  "typographySpacing": "تایپوگرافی و فاصله گذاری",
+  "novelControlsGestures": "کنترل‌ها و حرکات جدید",
+  "tapScreenEdgesToScrollNovel": "برای پیمایش صفحات جدید، روی لبه‌های صفحه ضربه بزنید",
+  "swipeGestures": "ژست های تند کشیدن",
+  "volumeKeyScrolling": "پیمایش کلید حجم",
+  "useHardwareVolumeButtonsToScroll": "برای پیمایش رمان ها از دکمه های صدا سخت افزاری استفاده کنید",
+  "automaticallyScrollNovelContent": "پیمایش خودکار محتوای جدید",
+  "textToSpeechTts": "تبدیل متن به گفتار (TTS)",
+  "readNovelChaptersAloud": "فصل های رمان را با صدای بلند بخوانید",
+  "speechRate": "نرخ گفتار",
+  "voicePitch": "زیر و بمی صدا",
+  "areYouSureYouWantTo4": "آیا مطمئنید که می خواهید از {title} خارج شوید؟",
+  "@areYouSureYouWantTo4": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCheckForUpdates2": "بررسی به‌روزرسانی‌ها انجام نشد: {e}",
+  "@failedToCheckForUpdates2": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "installedSuccessfully": "{name} با موفقیت نصب شد",
+  "@installedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToInstall": "{name} نصب نشد: {e}",
+  "@failedToInstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedSuccessfully2": "{name} با موفقیت به روز شد",
+  "@updatedSuccessfully2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdate": "{name} به روز نشد: {e}",
+  "@failedToUpdate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstall2": "{name} را حذف کنید",
+  "@uninstall2": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstalled": "{name} حذف نصب شد",
+  "@uninstalled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUninstall": "{name} حذف نصب نشد: {e}",
+  "@failedToUninstall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionOrder": "سفارش بخش {title}",
+  "@sectionOrder": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsSync": "اعلان ها و همگام سازی",
+  "enableNotifications": "اعلان ها را فعال کنید",
+  "syncAnilistNotificationsWithDeviceNotifications": "اعلان‌های AniList را با اعلان‌های دستگاه همگام‌سازی کنید",
+  "airingAlerts": "هشدارهای پخش",
+  "socialAlerts": "هشدارهای اجتماعی",
+  "notifyOnNewFollowers": "در مورد فالوورهای جدید اطلاع رسانی کنید",
+  "activityAlerts": "هشدارهای فعالیت",
+  "syncInterval": "فاصله همگام سازی",
+  "regionTimezone": "منطقه و منطقه زمانی",
+  "profileBio": "بیوگرافی پروفایل",
+  "backupFailed": "پشتیبان گیری انجام نشد: {value}",
+  "@backupFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "خطا در انتخاب فایل: {value}",
+  "@errorSelectingFile": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadBackup": "پشتیبان بارگیری نشد: {value}",
+  "@failedToLoadBackup": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreFailed": "بازیابی ناموفق بود: {value}",
+  "@restoreFailed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndHistory": "عناوین و تاریخچه {animeCount}",
+  "@titlesAndHistory": {
+    "placeholders": {
+      "animeCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndChapters": "عناوین و فصل های {mangaCount}",
+  "@titlesAndChapters": {
+    "placeholders": {
+      "mangaCount": {
+        "type": "String"
+      }
+    }
+  },
+  "titlesAndReadingState": "عنوان {novelCount} و وضعیت خواندن",
+  "@titlesAndReadingState": {
+    "placeholders": {
+      "novelCount": {
+        "type": "String"
+      }
+    }
+  },
+  "customListsAcrossMedia": "لیست های سفارشی {totalLists} در رسانه ها",
+  "@customListsAcrossMedia": {
+    "placeholders": {
+      "totalLists": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredExtensionEntries": "{extDataCount} ورودی های برنامه افزودنی را ثبت کرد",
+  "@registeredExtensionEntries": {
+    "placeholders": {
+      "extDataCount": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionZipBundles": "بسته‌های زیپ افزونه {extFilesCount}",
+  "@extensionZipBundles": {
+    "placeholders": {
+      "extFilesCount": {
+        "type": "String"
+      }
+    }
+  },
+  "helpInformation": "راهنما و اطلاعات",
+  "libraryContentSafety": "کتابخانه و ایمنی محتوا",
+  "homePageLists": "لیست های صفحه اصلی",
+  "chooseWhichListsToShowOn": "لیست هایی را انتخاب کنید که در صفحه اصلی نمایش داده شوند",
+  "homePageCards": "کارت‌های صفحه اصلی ({value})",
+  "@homePageCards": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchingAnime2": "در حال تماشای $anime",
+  "viewingAnime": "مشاهده $anime",
+  "readingManga2": "خواندن $manga",
+  "viewingManga": "مشاهده $manga",
+  "readingNovel2": "خواندن $novel",
+  "viewingNovel": "مشاهده $novel",
+  "browsingStatus": "در حال مرور $status",
+  "upiIdCopied": "شناسه UPI کپی شده: {_upiId}",
+  "@upiIdCopied": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "copyUpiId2": "کپی شناسه UPI ({_upiId})",
+  "@copyUpiId2": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "tapToLaunchGpayPhonepePaytm": "{_upiId} • برای راه اندازی GPay، PhonePe، Paytm، و غیره ضربه بزنید.",
+  "@tapToLaunchGpayPhonepePaytm": {
+    "placeholders": {
+      "_upiId": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotifications": "اعلان ها را دانلود کنید",
+  "reDownloadFailed": "دانلود مجدد انجام نشد: {error}",
+  "@reDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackFailed": "بازگشت ناموفق: {error}",
+  "@rollbackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToAddRepo": "Repo اضافه نشد: {_error}",
+  "@failedToAddRepo": {
+    "placeholders": {
+      "_error": {
+        "type": "String"
+      }
+    }
+  },
+  "appliedFont": "فونت اعمال شده \"{fontName}\"",
+  "@appliedFont": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDownload": "دانلود \"{fontName}\" انجام نشد",
+  "@failedToDownload": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "importedApplied": "\"{fontName}\" وارد و اعمال شد",
+  "@importedApplied": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportFontFile": "وارد کردن فایل فونت انجام نشد",
+  "deleted3": "\"{fontName}\" حذف شد",
+  "@deleted3": {
+    "placeholders": {
+      "fontName": {
+        "type": "String"
+      }
+    }
+  },
+  "fontLibrary": "کتابخانه فونت",
+  "linotte": "لینوت",
+  "defaultGeometricRoundedFontDesignedFor": "فونت گرد هندسی پیش فرض برای AnymeX طراحی شده است",
+  "systemFont": "فونت سیستم",
+  "useYourDeviceOsDefaultSystem": "از نوع سیستم پیش فرض سیستم عامل دستگاه خود استفاده کنید",
+  "loadYourOwnTtfOrOtf": "فایل های تایپوگرافی .ttf یا .otf خود را بارگیری کنید",
+  "pendingReports": "گزارشات در انتظار {length}",
+  "@pendingReports": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "cookiesStorage": "کوکی ها و ذخیره سازی",
+  "monitoring": "نظارت",
+  "fpsMeter": "FPS متر",
+  "showDraggableRealTimeFpsOverlay": "نمایش همپوشانی FPS بلادرنگ قابل کشیدن",
+  "detectedModesDisplay": "حالت ها و نمایشگر شناسایی شده",
+  "currentDisplayMode": "حالت نمایش فعلی",
+  "modes": "حالت های {length}",
+  "@modes": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "customize": "سفارشی کنید",
+  "stylingLibass": "{subLang} • {subFont} • استایل و لیباس",
+  "@stylingLibass": {
+    "placeholders": {
+      "subLang": {
+        "type": "String"
+      },
+      "subFont": {
+        "type": "String"
+      }
+    }
+  },
+  "horiz": "هوریز",
+  "vert": "Vert",
+  "controlsTapZones": "مناطق کنترل و ضربه بزنید",
+  "customizeTapZones": "Tap Zones را سفارشی کنید",
+  "configurePagedAndWebtoonTapRegions": "مناطق ضربه‌ای صفحه‌دار و webtoon را پیکربندی کنید",
+  "fitBordersSpacing": "{value} • تناسب، حاشیه و فاصله",
+  "@fitBordersSpacing": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStylePageIndicatorScreenLock": "سبک فصل، نشانگر صفحه و قفل صفحه",
+  "overscrollActionsAutoScrollVolume": "Overscroll، کنش‌ها، پیمایش خودکار و حجم صدا",
+  "themeTypography": "موضوع و تایپوگرافی",
+  "pt": "{value} pt",
+  "@pt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "px": "{value} px",
+  "@px": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "readingModeDisplay": "حالت خواندن و نمایش",
+  "pageModeProgressBatteryIndicator": "حالت صفحه، پیشرفت و نشانگر باتری",
+  "readPageByPageInsteadOf": "به جای پیمایش، صفحه به صفحه بخوانید",
+  "displayPercentageInReadingBar": "نمایش درصد در نوار خواندن",
+  "displayBatteryAndTimeInReader": "نمایش باتری و زمان در نوار خواننده",
+  "gesturesNavigation": "حرکات و ناوبری",
+  "tapToScrollSwipeAutoScroll": "برای پیمایش، تند کشیدن، پیمایش خودکار و صدا ضربه بزنید",
+  "tapEdgesOfScreenToScroll": "برای پیمایش به بالا/پایین روی لبه های صفحه ضربه بزنید",
+  "swipeHorizontallyToChangeChapters": "برای تغییر فصل، انگشت خود را به صورت افقی بکشید",
+  "useVolumeKeysToScroll": "برای پیمایش از کلیدهای صدا استفاده کنید",
+  "textToSpeechTts2": "متن به گفتار (TTS)",
+  "textToSpeechReadingSupport": "پشتیبانی از خواندن متن به گفتار",
+  "speechRate2": "نرخ گفتار",
+  "voicePitch2": "پیچ صدا",
+  "appPostersIconsAvatarsSize": "پوسترهای برنامه، نمادها، آواتارها. سایز: {value}",
+  "@appPostersIconsAvatarsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "temporaryVideoChunksSize": "تکه های ویدئویی موقت سایز: {value}",
+  "@temporaryVideoChunksSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedWebNovelPagesSize": "صفحات رمان وب دانلود شده. سایز: {value}",
+  "@downloadedWebNovelPagesSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "logsTempDownloadsSize": "گزارش‌ها، بارگیری‌های موقت. سایز: {value}",
+  "@logsTempDownloadsSize": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToClearCache": "حافظه پنهان پاک نشد: {e}",
+  "@failedToClearCache": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "factoryResetFailed": "بازنشانی کارخانه انجام نشد: {e}",
+  "@factoryResetFailed": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    }
+  },
+  "n3f51b5Or3f51b5": "#3F51B5 یا 3F51B5",
+  "motionDisplay": "حرکت و نمایشگر",
+  "visualEffectsTuning": "جلوه های بصری و تنظیم",
+  "historyCard": "کارت تاریخچه",
+  "carousel": "چرخ فلک",
+  "navBar": "نوار ناوبری",
+  "themeDarkModeLayoutStyling": "طرح زمینه، حالت تاریک و سبک چیدمان",
+  "gesturesSubtitlesVideoSettings": "حرکات، زیرنویس‌ها و تنظیمات ویدیو",
+  "settingsTiles": "کاشی های تنظیمات",
+  "oledMode2": "حالت OLED",
+  "primaryAccount": "حساب اصلی ({title})",
+  "@primaryAccount": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectedTo": "به {title} متصل است",
+  "@connectedTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "connectTo": "به {title} متصل شوید",
+  "@connectTo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "titles": "عناوین {value}",
+  "@titles": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "removeThisCannotBeUndone": "\"{id}\" حذف شود؟ این قابل واگرد نیست.",
+  "@removeThisCannotBeUndone": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "importing": "در حال واردات…",
+  "addJsonFiles": "فایل های JSON را اضافه کنید",
+  "previousStyle": "سبک قبلی",
+  "nextStyle": "سبک بعدی",
+  "currentStyle": "سبک فعلی",
+  "useThisStyle": "از این سبک استفاده کنید",
+  "pleaseLogInToGetRecommendations": "لطفا برای دریافت توصیه ها وارد شوید",
+  "chapter1": "فصل 1",
+  "deletedSuccessfully": "{value} با موفقیت حذف شد",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "simklLoginedSuccessfully": "Simkl با موفقیت وارد سیستم شد!",
+  "yepFailed": "بله، ناموفق",
+  "userInfoFetchingFailed": "واکشی اطلاعات کاربر انجام نشد!",
+  "githubLoginFailed": "ورود به سیستم GitHub انجام نشد: {ghError}",
+  "@githubLoginFailed": {
+    "placeholders": {
+      "ghError": {
+        "type": "String"
+      }
+    }
+  },
+  "syncAlreadyInProgress": "همگام سازی در حال انجام است.",
+  "anotherSyncActionIsAlreadyIn": "یک اقدام همگام‌سازی دیگر در حال انجام است.",
+  "noAnymexSyncGistFoundTo": "اصل همگام سازی AnymeX برای حذف یافت نشد.",
+  "noAnymexSyncGistFoundInitialize": "اصل همگام سازی AnymeX یافت نشد. ابتدا مقداردهی اولیه کنید.",
+  "githubGistSync": "همگام سازی GitHub Gist",
+  "manage": "مدیریت کنید",
+  "manageGithubGistSync": "همگام سازی GitHub Gist را مدیریت کنید",
+  "joinedTheParty": "{username} به حزب پیوست",
+  "@joinedTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "leftTheParty": "{username} مهمانی را ترک کرد",
+  "@leftTheParty": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "hostSwitchedToEpisodeOf": "میزبان به قسمت {episodeNumber} {title} تغییر مکان داد",
+  "@hostSwitchedToEpisodeOf": {
+    "placeholders": {
+      "episodeNumber": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFetchingComments": "خطا در واکشی نظرات",
+  "errorAddingComment": "خطا در افزودن نظر",
+  "errorUpdatingVote": "خطا در به‌روزرسانی رأی",
+  "errorEditingComment": "خطا در ویرایش نظر",
+  "errorDeletingComment": "خطا در حذف نظر",
+  "commentReportedSuccessfully": "نظر با موفقیت گزارش شد",
+  "errorReportingComment": "خطا در گزارش نظر",
+  "errorFetchingReportsQueue": "خطا در واکشی صف گزارش‌ها",
+  "reportResolvedSuccessfully": "گزارش با موفقیت حل شد",
+  "failedToResolveReport": "گزارش حل نشد",
+  "errorResolvingReport": "خطا در حل گزارش",
+  "errorFetchingUserInfo": "خطا در واکشی اطلاعات کاربر",
+  "errorFetchingUserHistory": "خطا در واکشی سابقه کاربر",
+  "errorFetchingUserStats": "خطا در واکشی آمار کاربر",
+  "errorListingUsers": "خطا در فهرست کاربران",
+  "errorSearchingUsers": "خطا در جستجوی کاربران",
+  "errorFetchingModerationQueue": "خطا در واکشی صف تعدیل",
+  "commentModeratedSuccessfully": "نظر با موفقیت تعدیل شد",
+  "errorModeratingComment": "خطا در تعدیل نظر",
+  "userManagedSuccessfully": "کاربر با موفقیت مدیریت شد",
+  "errorManagingUser": "خطا در مدیریت کاربر",
+  "errorGettingInitialDeepLink": "خطا در دریافت پیوند عمیق اولیه: {err}",
+  "@errorGettingInitialDeepLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningLink": "خطا در باز کردن لینک: {err}",
+  "@errorOpeningLink": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "copyErrorDetails": "کپی جزئیات خطا",
+  "whatSNew": "چه جدید است",
+  "updatedToV": "به v{current} به روز شد",
+  "@updatedToV": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenAdLink": "پیوند آگهی باز نشد",
+  "newAnilistUpdates": "به روز رسانی {length} جدید AniList",
+  "@newAnilistUpdates": {
+    "placeholders": {
+      "length": {
+        "type": "String"
+      }
+    }
+  },
+  "nMore": "{summaryText}\n+{value} بیشتر",
+  "@nMore": {
+    "placeholders": {
+      "summaryText": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshDevices": "دستگاه ها را به روز کنید",
+  "spotify": "Spotify",
+  "addingRepoPleaseWait": "در حال افزودن مخزن... لطفاً صبر کنید.",
+  "unsupportedThemeTypeSupportedPlayer": "نوع طرح زمینه پشتیبانی نشده \"{type}\". پشتیبانی شده: پخش کننده.",
+  "@unsupportedThemeTypeSupportedPlayer": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "importingPlayerThemeFromLink": "در حال وارد کردن تم پخش کننده از پیوند...",
+  "themeIsInvalid": "طرح زمینه نامعتبر است: {first}{extra}",
+  "@themeIsInvalid": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "themeJsonIsValidImported": "طرح زمینه JSON معتبر است. {imported} {label} وارداتی.",
+  "@themeJsonIsValidImported": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "joiningRoom": "پیوستن به اتاق {code}...",
+  "@joiningRoom": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoom": "به اتاق ملحق نشد: {err}",
+  "@failedToJoinRoom": {
+    "placeholders": {
+      "err": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatingAnimatchCompatibilityFor": "محاسبه سازگاری AniMatch برای {user1} و {user2}...",
+  "@calculatingAnimatchCompatibilityFor": {
+    "placeholders": {
+      "user1": {
+        "type": "String"
+      },
+      "user2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareWithYourSelectedTrackingService": "با سرویس ردیابی انتخابی خود به اشتراک بگذارید",
+  "shareAnymexLink": "لینک AnymeX را به اشتراک بگذارید",
+  "opensDirectlyInAnymex": "مستقیماً در AnymeX باز می شود",
+  "newCommentsRepliesAndEdits": "نظرات، پاسخ ها و ویرایش های جدید",
+  "upvotesAndDownvotesOnYourComments": "رای موافق و مخالف به نظرات شما",
+  "warningsMutesBansAndModerationActions": "هشدارها، نادیده گرفتن، ممنوعیت ها، و اقدامات تعدیل",
+  "reportFiledResolvedDismissed": "گزارش ثبت شد، حل شد، رد شد",
+  "officialAnnouncements": "اطلاعیه های رسمی",
+  "whenSomeoneMentionsYouInA": "وقتی شخصی @ در یک نظر از شما نام می برد",
+  "notificationsForNewAnimeEpisodeReleases": "اعلان‌هایی برای انتشار قسمت‌های جدید انیمیشن",
+  "notificationsForFollowsMentionsAndLikes": "اعلان‌هایی برای دنبال کردن، منشن‌ها و لایک‌ها",
+  "notificationsForCompletedEpisodeAndChapter": "اعلان‌ها برای دانلود کامل قسمت‌ها و فصل‌ها",
+  "signIn": "وارد شوید",
+  "failedToCheckForUpdates3": "بررسی به‌روزرسانی‌ها انجام نشد",
+  "noUpdatesAvailable": "به روز رسانی در دسترس نیست",
+  "errorCheckingForUpdates": "خطا در بررسی به‌روزرسانی‌ها",
+  "installPermissionRequired": "مجوز نصب مورد نیاز است",
+  "downloadFailed3": "دانلود انجام نشد",
+  "newVersionAvailable": "نسخه جدید موجود است",
+  "episodeMetadata": "فراداده قسمت",
+  "sessionExpiredPleaseLoginAgain": "جلسه منقضی شد. لطفاً دوباره وارد شوید.",
+  "successfullyLoggedInAs": "با موفقیت با عنوان {username} وارد شدید",
+  "loggedOutFromDiscord": "از Discord خارج شدید",
+  "clearStoredLogFiles": "پاک کردن پرونده‌های گزارش ذخیره شده",
+  "resetInMemoryAndDiskLogFiles": "بازنشانی پرونده‌های گزارش حافظه و دیسک",
+  "errorCopiedToClipboard": "خطا در بریده‌دان کپی شد",
+  "autoScrollOn": "پیمایش خودکار روشن",
+  "autoScrollOff": "پیمایش خودکار خاموش",
+  "copyLogs": "کپی گزارش‌ها",
+  "clearLogs": "پاک کردن گزارش‌ها",
+  "metadataFallbackStrategy": "استراتژی بازگشت متادیتا",
+  "activeSourceMode": "حالت منبع فعال",
+  "chooseWhetherToMergeProviders": "انتخاب کنید که ارائه‌دهندگان ادغام شوند یا یک سرویس خاص اجباری شود",
+  "autoMerged": "خودکار (ادغام شده)",
+  "providerPriorityToggles": "اولویت ارائه‌دهنده و کلیدها",
+  "dragHandlesToChangeFetchPriority": "دسته‌ها را بکشید تا اولویت تغییر کند. منابع بالا هنگام دریافت عناوین، بندانگشتی‌ها و توضیحات اولویت دارند.",
+  "maintenance": "نگهداری",
+  "clearMetadataCache": "پاک کردن حافظه پنهان متادیتا",
+  "flushesInMemoryEpisodeThumbnails": "حافظه پنهان عناوین و بندانگشتی‌های قسمت در حافظه را خالی می‌کند",
+  "metadataCacheCleared": "حافظه پنهان متادیتا پاک شد",
+  "resetToDefaultOrder": "بازنشانی به ترتیب پیش‌فرض",
+  "restoreFactoryPriorityOrder": "ترتیب اولویت کارخانه را بازیابی کرده و همه ارائه‌دهندگان را فعال کنید",
+  "resetEpisodeMetadataToDefaults": "متادیتای قسمت به حالت پیش‌فرض بازنشانی شد",
+  "configureProvidersAndOrder": "پیکربندی ارائه‌دهندگان و ترتیب",
+  "reorderSourcesToggleIndividual": "تغییر ترتیب منابع، جابجایی ارائه‌دهندگان جداگانه",
+  "autoMergedPriority": "خودکار (اولویت ادغام شده)",
+  "mergesHighestPriorityAvailable": "داده‌های موجود با بالاترین اولویت را ادغام می‌کند",
+  "useRawProviderEpisodeTitlesOnly": "فقط از عناوین خام قسمت ارائه‌دهنده استفاده کنید",
+  "progressSliderStyle": "سبک نوار لغزنده پیشرفت",
+  "seekPreview": "پیش‌نمایش پیمایش",
+  "showThumbnailScrubbingPreviewWhileSeeking": "نمایش بندانگشتی پیش‌نمایش در هنگام پیمایش",
+  "linearWavy": "موج‌دار خطی",
+  "defaultM3": "پیش‌فرض M3",
+  "capsule": "کپسول",
+  "noLogsToCopy": "گزارشی برای کپی وجود ندارد",
+  "logsCopiedToClipboard": "گزارش‌ها در بریده‌دان کپی شدند",
+  "noLogsAvailableToShare": "گزارشی برای اشتراک‌گذاری در دسترس نیست",
+  "decadeFormat": "دهه {decade}",
+  "mediaWithId": "رسانه #{id}",
+  "tileIconShapes": "شکل‌های نماد کاشی",
+  "tilePrefixIconShape": "شکل نماد پیشوند کاشی",
+  "tileIconShapesLower": "شکل‌های نماد کاشی",
+  "opening": "تیتراژ آغازین",
+  "ending": "تیتراژ پایانی",
+  "recap": "خلاصه",
+  "ifSubtitleNotShowingDisableLibass": "اگر زیرنویس نمایش داده نمی‌شود، libass را در تنظیمات غیرفعال کرده و مجدداً راه‌اندازی کنید",
+  "subtitlesTranslatedEntries": "زیرنویس‌ها ترجمه شدند! ({count} ورودی)",
+  "skippedFillerEpisodesCount": "{count, plural, =1{۱ قسمت فیلر رد شد} other{{count} قسمت فیلر رد شد}}",
+  "unsubscribe": "لغو اشتراک",
+  "subscribeToThread": "اشتراک در موضوع",
+  "downloadChaptersCount": "{count, plural, =1{دانلود ۱ فصل} other{دانلود {count} فصل}}",
+  "downloadingChaptersCount": "{count, plural, =1{در حال دانلود ۱ فصل...} other{در حال دانلود {count} فصل...}}",
+  "moreRecommendationsCount": "{count, plural, =1{+ ۱ پیشنهاد دیگر} other{+ {count} پیشنهاد دیگر}}",
+  "charactersAndVoiceActors": "شخصیت‌ها و صداپیشگان",
+  "unknownVa": "صداپیشه نامشخص",
+  "chaptersTimestamps": "فصل‌ها و برچسب‌های زمانی",
+  "contentSource": "منبع محتوا",
+  "selectPreferredTrackingAndMediaProvider": "ارائه‌دهنده ردیابی و رسانه مورد نظر خود را انتخاب کنید",
+  "reducesColorRingingArtifacts": "آرتیفکت‌های زنگ‌زدگی رنگ را کاهش می‌دهد",
+  "downscalesInLinearLightSpace": "در فضای نور خطی کاهش مقیاس می‌دهد",
+  "motionDithering": "حرکت و لرزش",
+  "smoothMotionBetweenVideoFrames": "حرکت روان بین فریم‌های ویدیو",
+  "reducesColorBandingWithSubtle": "نوارهای رنگی را با نویز نامحسوس کاهش می‌دهد",
+  "unknown": "نامشخص",
+  "anilistActivity": "فعالیت AniList",
+  "failedToPostStory": "ارسال استوری ناموفق بود",
+  "likesCount": "{count} لایک",
+  "newEpisodes": "قسمت‌های جدید",
+  "outNowFromShowsYouAreWatching": "هم‌اکنون از برنامه‌هایی که تماشا می‌کنید منتشر شد",
+  "planning": "در حال برنامه‌ریزی",
+  "postStory": "ارسال استوری",
+  "postToStory": "اشتراک در استوری",
+  "readChapter": "خواندن فصل {chapter}",
+  "repliesCount": "{count} پاسخ",
+  "rewatching": "تماشای دوباره",
+  "sendAReaction": "ارسال واکنش",
+  "statusUpdate": "به‌روزرسانی وضعیت",
+  "storyPostedToAnilist": "استوری در AniList منتشر شد!",
+  "viewDiscussion": "مشاهده بحث",
+  "viewInAnymex": "مشاهده در AnymeX",
+  "watched": "تماشا شده",
+  "watchedEpisode": "قسمت {episode} تماشا شد",
+  "whatsOnYourMindAniList": "به چه چیزی فکر می‌کنید؟ (به عنوان فعالیت متنی در AniList ارسال می‌شود)",
+  "yourStory": "استوری شما",
+  "hostBadge": "میزبان",
+  "basedOnAnimeScoredTen": "بر اساس انیمیه‌هایی که ۱۰/۱۰ امتیاز داده‌اید.",
+  "basedOnMangaScoredTen": "بر اساس مانگاهایی که ۱۰/۱۰ امتیاز داده‌اید."
 }

@@ -7,6 +7,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -244,7 +245,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
       } else if (response.statusCode == 401) {
         print('Invalid token, logging out');
         await logout();
-        snackBar('Session expired. Please login again.');
+        snackBar(Get.context!.l10n.sessionExpiredPleaseLoginAgain);
       } else {
         print('Failed to fetch profile: ${response.statusCode}');
       }
@@ -259,8 +260,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     await _saveToken(token);
     await fetchUserProfile();
     await connect();
-    snackBar(
-        'Successfully logged in as ${profile.value?.displayName ?? "User"}');
+    snackBar(Get.context!.l10n
+        .successfullyLoggedInAs(profile.value?.displayName ?? "User"));
   }
 
   Future<void> connect() async {
@@ -1217,7 +1218,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     _token.value = '';
     profile.value = null;
 
-    snackBar('Logged out from Discord');
+    snackBar(Get.context!.l10n.loggedOutFromDiscord);
   }
 
   @override

@@ -196,7 +196,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       onConfirm: () async {
         await _clearCookiesForSource();
         await _clearCacheForSource();
-        snackBar('Cache and cookies cleared for ${widget.source.name}');
+        snackBar(Get.context!.l10n.cacheAndCookiesClearedFor(widget.source.name.toString()));
       },
     ).show(context);
   }
@@ -209,7 +209,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCookiesForSource();
-        snackBar('Cookies cleared for ${widget.source.name}');
+        snackBar(Get.context!.l10n.cookiesClearedFor(widget.source.name.toString()));
       },
     ).show(context);
   }
@@ -222,7 +222,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCacheForSource();
-        snackBar('Cache cleared for ${widget.source.name}');
+        snackBar(Get.context!.l10n.cacheClearedFor(widget.source.name.toString()));
       },
     ).show(context);
   }
@@ -430,7 +430,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       default:
         return AnymeXTile(
           title: pref.key ?? 'Unknown Preference',
-          subtitle: 'Unsupported type ${pref.type}',
+          subtitle: context.l10n.unsupportedType(pref.type.toString()),
           showChevron: false,
           onTap: () {},
         );
@@ -444,7 +444,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       body: Column(
         children: [
           NestedHeader(
-            title: "${widget.source.name} Settings",
+            title: context.l10n.settings2(widget.source.name.toString()),
           ),
           Expanded(
             child: Obx(

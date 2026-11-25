@@ -96,8 +96,8 @@ class _GistSyncCard extends StatelessWidget {
                         colors: colors,
                       ),
                       const SizedBox(width: 14),
-                      const Expanded(
-                        child: AnymeXText('GitHub Gist Sync',
+                      Expanded(
+                        child: AnymeXText(Get.context!.l10n.githubGistSync,
                           variant: TextVariant.semiBold,
                           size: 16,
                         ),
@@ -179,7 +179,7 @@ class _GistSyncCard extends StatelessWidget {
                                       _showManageSheet(context, ctrl);
                                     },
                               icon: const Icon(Icons.tune_rounded),
-                              label: const AnymeXText('Manage'),
+                              label: AnymeXText(Get.context!.l10n.manage),
                             ),
                           ),
                         ],
@@ -433,7 +433,7 @@ class _GistSyncCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const AnymeXText('Manage GitHub Gist Sync',
+                  AnymeXText(Get.context!.l10n.manageGithubGistSync,
                     variant: TextVariant.bold,
                     size: 18,
                   ),
@@ -769,7 +769,7 @@ class _GistSyncCard extends StatelessWidget {
             title: context.l10n.importGistJson,
             message:
                 context.l10n.chooseHowToApplyTheSelected,
-            confirmText: 'Import',
+            confirmText: Get.context!.l10n.importLabel2,
             onConfirm: () {},
             confirmResultGetter: () => selectedMode.value,
             contentWidget: Column(

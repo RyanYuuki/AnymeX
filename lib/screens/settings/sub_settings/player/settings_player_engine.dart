@@ -15,6 +15,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class _DecoderOption {
   final String value;
@@ -84,60 +85,60 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
 
   List<_DecoderOption> get _decoderOptions {
     if (Platform.isAndroid) {
-      return const [
+      return [
         _DecoderOption(
-            value: 'hw+', title: 'HW+', description: 'mediacodec-copy'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'mediacodec'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+            value: 'hw+', title: context.l10n.hwUpper, description: 'mediacodec-copy'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'mediacodec'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isIOS || Platform.isMacOS) {
-      return const [
-        _DecoderOption(value: 'hw+', title: 'HW+', description: 'videotoolbox'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'videotoolbox'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+      return [
+        _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'videotoolbox'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'videotoolbox'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isWindows) {
-      return const [
-        _DecoderOption(value: 'hw+', title: 'HW+', description: 'd3d11va-copy'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'd3d11va'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+      return [
+        _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'd3d11va-copy'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'd3d11va'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isLinux) {
-      return const [
-        _DecoderOption(value: 'hw+', title: 'HW+', description: 'vaapi-copy'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'vaapi'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+      return [
+        _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'vaapi-copy'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'vaapi'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
-    return const [
-      _DecoderOption(value: 'hw+', title: 'HW+', description: 'auto-copy'),
-      _DecoderOption(value: 'hw', title: 'HW', description: 'auto'),
-      _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+    return [
+      _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'auto-copy'),
+      _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'auto'),
+      _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
     ];
   }
 
   List<_RendererOption> get _rendererOptions {
     final list = [
-      const _RendererOption(
+      _RendererOption(
           value: 'auto',
-          title: 'Auto (GPU)',
-          description: 'Auto-select (default)'),
-      const _RendererOption(
-          value: 'gpu', title: 'GPU', description: 'Standard GPU rendering'),
-      const _RendererOption(
+          title: context.l10n.autoGpu,
+          description: context.l10n.autoSelectDefault),
+      _RendererOption(
+          value: 'gpu', title: 'GPU', description: context.l10n.standardGpuRendering),
+      _RendererOption(
           value: 'gpu-next',
-          title: 'GPU Next (Vulkan)',
-          description: 'Experimental high-performance renderer'),
+          title: context.l10n.gpuNextVulkan,
+          description: context.l10n.experimentalHighPerformanceRenderer),
     ];
     if (Platform.isAndroid) {
       list.add(
-        const _RendererOption(
+        _RendererOption(
           value: 'mediacodec_embed',
-          title: 'MediaCodec Embed',
-          description: 'Direct surface rendering (Android only)',
+          title: context.l10n.mediacodecEmbed,
+          description: context.l10n.directSurfaceRenderingAndroidOnly,
         ),
       );
     }
@@ -146,74 +147,74 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
 
   List<_AudioOption> get _audioOptions {
     if (Platform.isAndroid) {
-      return const [
+      return [
         _AudioOption(
             value: 'auto',
-            title: 'Auto (AudioTrack)',
-            description: 'Default Android AudioTrack API'),
+            title: context.l10n.autoAudiotrack,
+            description: context.l10n.defaultAndroidAudiotrackApi),
         _AudioOption(
             value: 'audiotrack',
-            title: 'AudioTrack',
-            description: 'Android AudioTrack API'),
+            title: context.l10n.audiotrack,
+            description: context.l10n.androidAudiotrackApi),
         _AudioOption(
             value: 'opensles',
-            title: 'OpenSL ES',
-            description: 'OpenSL ES native audio engine'),
+            title: context.l10n.openslEs,
+            description: context.l10n.openslEsNativeAudioEngine),
       ];
     }
     if (Platform.isWindows) {
-      return const [
+      return [
         _AudioOption(
             value: 'auto',
-            title: 'Auto (WASAPI)',
-            description: 'Default Windows audio driver'),
+            title: context.l10n.autoWasapi,
+            description: context.l10n.defaultWindowsAudioDriver),
         _AudioOption(
             value: 'wasapi',
             title: 'WASAPI',
-            description: 'Windows Audio Session API'),
+            description: context.l10n.windowsAudioSessionApi),
         _AudioOption(
             value: 'sdl',
             title: 'SDL',
-            description: 'Simple DirectMedia Layer audio output'),
+            description: context.l10n.simpleDirectmediaLayerAudioOutput),
       ];
     }
     if (Platform.isIOS || Platform.isMacOS) {
-      return const [
+      return [
         _AudioOption(
             value: 'auto',
-            title: 'Auto (CoreAudio)',
-            description: 'Default Apple CoreAudio API'),
+            title: context.l10n.autoCoreaudio,
+            description: context.l10n.defaultAppleCoreaudioApi),
         _AudioOption(
             value: 'coreaudio',
-            title: 'CoreAudio',
-            description: 'Apple CoreAudio API'),
+            title: context.l10n.coreaudio,
+            description: context.l10n.appleCoreaudioApi),
       ];
     }
     if (Platform.isLinux) {
-      return const [
+      return [
         _AudioOption(
             value: 'auto',
-            title: 'Auto (PulseAudio)',
-            description: 'Default PulseAudio API'),
+            title: context.l10n.autoPulseaudio,
+            description: context.l10n.defaultPulseaudioApi),
         _AudioOption(
             value: 'pulse',
-            title: 'PulseAudio',
-            description: 'PulseAudio sound server'),
+            title: context.l10n.pulseaudio,
+            description: context.l10n.pulseaudioSoundServer),
         _AudioOption(
             value: 'alsa',
             title: 'ALSA',
-            description: 'Advanced Linux Sound Architecture'),
+            description: context.l10n.advancedLinuxSoundArchitecture),
         _AudioOption(
             value: 'sdl',
             title: 'SDL',
-            description: 'Simple DirectMedia Layer audio output'),
+            description: context.l10n.simpleDirectmediaLayerAudioOutput),
       ];
     }
-    return const [
+    return [
       _AudioOption(
           value: 'auto',
-          title: 'Auto',
-          description: 'Default system audio driver'),
+          title: context.l10n.auto,
+          description: context.l10n.defaultSystemAudioDriver),
     ];
   }
 
@@ -243,7 +244,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
 
   void _showDecoderModeDialog() {
     showSelectionDialog<String>(
-      title: 'Decoder',
+      title: context.l10n.decoder,
       items: _decoderOptions.map((o) => o.value).toList(),
       selectedItem: settings.hardwareDecoder.obs,
       getTitle: _decoderTitle,
@@ -257,7 +258,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
 
   void _showRendererSelectionDialog() {
     showSelectionDialog<String>(
-      title: 'Video Renderer',
+      title: context.l10n.videoRenderer,
       items: _rendererOptions.map((o) => o.value).toList(),
       selectedItem: settings.videoOutput.obs,
       getTitle: _rendererTitle,
@@ -271,7 +272,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
 
   void _showAudioSelectionDialog() {
     showSelectionDialog<String>(
-      title: 'Audio Engine',
+      title: context.l10n.audioEngine,
       items: _audioOptions.map((o) => o.value).toList(),
       selectedItem: settings.audioOutput.obs,
       getTitle: _audioTitle,
@@ -364,7 +365,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                             size: 18,
                           ),
                           AnymeXText(
-                            'Custom player flags & parameters',
+                            context.l10n.customPlayerFlagsParameters,
                             variant: TextVariant.semiBold,
                             color: colors.onSurface.withValues(alpha: 0.6),
                             size: 12,
@@ -383,10 +384,10 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         }
                         await file.writeAsString(controller.text);
                         if (ctx.mounted) Navigator.pop(ctx);
-                        snackBar('mpv.conf saved successfully');
+                        snackBar(Get.context!.l10n.mpvConfSavedSuccessfully);
                       },
                       icon: const Icon(Icons.save_rounded, size: 18),
-                      label: const AnymeXText('Save', variant: TextVariant.bold),
+                      label: AnymeXText(context.l10n.actionSave, variant: TextVariant.bold),
                     ),
                   ],
                 ),
@@ -421,10 +422,10 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         icon: const Icon(Icons.copy_rounded, size: 16),
-                        tooltip: 'Copy path',
+                        tooltip: context.l10n.copyPath,
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: configPath));
-                          snackBar('Path copied to clipboard');
+                          snackBar(context.l10n.pathCopiedToClipboard);
                         },
                       ),
                     ],
@@ -432,7 +433,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                 ),
                 const SizedBox(height: 8),
                 AnymeXText(
-                  'One option per line, like hwdec=auto or scale=ewa_lanczossharp. Lines starting with # are comments. Profiles in [brackets] are ignored.',
+                  context.l10n.oneOptionPerLineLikeHwdec,
                   variant: TextVariant.regular,
                   color: colors.onSurface.withValues(alpha: 0.6),
                   size: 11,
@@ -484,7 +485,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         setSheetState(() {});
                       },
                       icon: const Icon(Icons.auto_fix_high_rounded, size: 16),
-                      label: const AnymeXText('Load Template',
+                      label: AnymeXText(context.l10n.loadTemplate,
                           variant: TextVariant.semiBold, size: 12),
                     ),
                     const SizedBox(width: 8),
@@ -498,7 +499,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                         setSheetState(() {});
                       },
                       icon: const Icon(Icons.clear_all_rounded, size: 16),
-                      label: const AnymeXText('Clear',
+                      label: AnymeXText(context.l10n.actionClear,
                           variant: TextVariant.semiBold, size: 12),
                     ),
                   ],
@@ -560,34 +561,34 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
         children: [
           if (_supportsDecoderSelection)
             AnymeXSectionBuilder(
-              title: 'Hardware & Drivers',
+              title: context.l10n.hardwareDrivers,
                     children: [
                       AnymeXTile(
                         icon: Icons.memory_rounded,
-                        title: 'Decoder',
+                        title: context.l10n.decoder,
                         subtitle: _decoderDescription(settings.hardwareDecoder),
                         onTap: _showDecoderModeDialog,
                       ),
                       AnymeXTile(
                         icon: Icons.settings_system_daydream_rounded,
-                        title: 'Video Renderer',
+                        title: context.l10n.videoRenderer,
                         subtitle: _rendererDescription(settings.videoOutput),
                         onTap: _showRendererSelectionDialog,
                       ),
                       AnymeXTile(
                         icon: Icons.audiotrack_rounded,
-                        title: 'Audio Engine',
+                        title: context.l10n.audioEngine,
                         subtitle: _audioDescription(settings.audioOutput),
                         onTap: _showAudioSelectionDialog,
                       ),
                     ],
                   ),
                 AnymeXSectionBuilder(
-                  title: 'System & Integrations',
+                  title: context.l10n.systemIntegrations,
                   children: [
                     AnymeXTile.toggle(
                       icon: Icons.screenshot_rounded,
-                      title: 'Save Last Frame',
+                      title: context.l10n.saveLastFrame,
                       subtitle:
                           'Save a screenshot of the last frame watched (uses extra storage)',
                       value: settings.enableScreenshot,
@@ -595,7 +596,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                     ),
                     AnymeXTile.toggle(
                       icon: Icons.bluetooth_audio_rounded,
-                      title: 'Media Session (Bluetooth Support)',
+                      title: context.l10n.mediaSessionBluetoothSupport,
                       subtitle:
                           'Enable background media controls for Bluetooth headsets and system notifications',
                       value: settings.useMediaSession,
@@ -604,11 +605,11 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                   ],
                 ),
                 AnymeXSectionBuilder(
-                  title: 'Experimental MPV Tuning',
+                  title: context.l10n.experimentalMpvTuning,
                   children: [
                     AnymeXTile.toggle(
                       icon: Icons.science_outlined,
-                      title: 'Enable Experimental Settings',
+                      title: context.l10n.enableExperimentalSettings,
                       subtitle:
                           'Required for Core and Visual tuning. Keep off on low-end devices.',
                       value: experimentalEnabled,
@@ -624,10 +625,10 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                     if (experimentalEnabled) ...[
                       AnymeXTile(
                         icon: Icons.sync_rounded,
-                        title: 'Video Sync',
+                        title: context.l10n.videoSync,
                         subtitle: (mpvCore['videoSync'] as String?) ?? 'audio',
                         onTap: () => _showMpvCoreSelectionDialog(
-                          title: 'Video Sync',
+                          title: context.l10n.videoSync,
                           items: const [
                             'audio',
                             'display-resample',
@@ -642,8 +643,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.toggle(
                         icon: Icons.movie_filter_rounded,
-                        title: 'Frame Interpolation',
-                        subtitle: 'Smoother motion, can increase GPU usage',
+                        title: context.l10n.frameInterpolation,
+                        subtitle: context.l10n.smootherMotionCanIncreaseGpuUsage,
                         value: (mpvCore['interpolation'] as bool?) ?? false,
                         onChanged: (val) {
                           PlayerCoreVisualSettings.setMpvCoreSetting(
@@ -653,8 +654,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.toggle(
                         icon: Icons.graphic_eq_rounded,
-                        title: 'Audio Pitch Correction',
-                        subtitle: 'Keep voice pitch stable at higher speeds',
+                        title: context.l10n.audioPitchCorrection,
+                        subtitle: context.l10n.keepVoicePitchStableAtHigher,
                         value:
                             (mpvCore['audioPitchCorrection'] as bool?) ?? true,
                         onChanged: (val) {
@@ -665,8 +666,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.slider(
                         icon: Icons.timer_outlined,
-                        title: 'Cache Minutes',
-                        subtitle: 'Read-ahead duration in Minutes',
+                        title: context.l10n.cacheMinutes,
+                        subtitle: context.l10n.readAheadDurationInMinutes,
                         value:
                             ((mpvCore['cacheMinutes'] as num?) ?? 2).toDouble(),
                         min: 0,
@@ -680,8 +681,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.slider(
                         icon: Icons.downloading_rounded,
-                        title: 'Demuxer Readahead',
-                        subtitle: 'Readahead seconds',
+                        title: context.l10n.demuxerReadahead,
+                        subtitle: context.l10n.readaheadSeconds,
                         value:
                             ((mpvCore['demuxerReadaheadSeconds'] as num?) ?? 20)
                                 .toDouble(),
@@ -696,8 +697,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.slider(
                         icon: Icons.storage_rounded,
-                        title: 'Demuxer Max Buffer',
-                        subtitle: 'Maximum demuxer buffer (MB)',
+                        title: context.l10n.demuxerMaxBuffer,
+                        subtitle: context.l10n.maximumDemuxerBufferMb,
                         value: ((mpvCore['demuxerMaxBytesMb'] as num?) ?? 32)
                             .toDouble(),
                         min: 16,
@@ -711,8 +712,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.slider(
                         icon: Icons.developer_board_rounded,
-                        title: 'Decoder Threads',
-                        subtitle: '0 means automatic thread count',
+                        title: context.l10n.decoderThreads,
+                        subtitle: context.l10n.n0MeansAutomaticThreadCount,
                         value: ((mpvCore['vdLavcThreads'] as num?) ?? 4)
                             .toDouble(),
                         min: 0,
@@ -726,10 +727,10 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile(
                         icon: Icons.aspect_ratio_rounded,
-                        title: 'Scaling Algorithm',
+                        title: context.l10n.scalingAlgorithm,
                         subtitle: (mpvVisual['scale'] as String?) ?? 'spline36',
                         onTap: () => _showMpvVisualSelectionDialog(
-                          title: 'Scaling Algorithm',
+                          title: context.l10n.scalingAlgorithm,
                           items: const [
                             'spline36',
                             'ewa_lanczossharp',
@@ -745,11 +746,11 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile(
                         icon: Icons.palette_outlined,
-                        title: 'Chroma Scaler',
+                        title: context.l10n.chromaScaler,
                         subtitle:
                             (mpvVisual['cscale'] as String?) ?? 'spline36',
                         onTap: () => _showMpvVisualSelectionDialog(
-                          title: 'Chroma Scaler',
+                          title: context.l10n.chromaScaler,
                           items: const [
                             'spline36',
                             'ewa_lanczossharp',
@@ -764,11 +765,11 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile(
                         icon: Icons.photo_size_select_small_rounded,
-                        title: 'Downscaling Algorithm',
+                        title: context.l10n.downscalingAlgorithm,
                         subtitle:
                             (mpvVisual['dscale'] as String?) ?? 'mitchell',
                         onTap: () => _showMpvVisualSelectionDialog(
-                          title: 'Downscaling Algorithm',
+                          title: context.l10n.downscalingAlgorithm,
                           items: const [
                             'mitchell',
                             'bicubic',
@@ -783,8 +784,8 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile.toggle(
                         icon: Icons.blur_linear_rounded,
-                        title: 'Debanding',
-                        subtitle: 'Reduce color banding artifacts',
+                        title: context.l10n.debanding,
+                        subtitle: context.l10n.reduceColorBandingArtifacts,
                         value: (mpvVisual['deband'] as bool?) ?? true,
                         onChanged: (val) {
                           PlayerCoreVisualSettings.setMpvVisualSetting(
@@ -794,11 +795,11 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile(
                         icon: Icons.hdr_auto_rounded,
-                        title: 'Tone Mapping',
+                        title: context.l10n.toneMapping,
                         subtitle:
                             (mpvVisual['toneMapping'] as String?) ?? 'auto',
                         onTap: () => _showMpvVisualSelectionDialog(
-                          title: 'Tone Mapping',
+                          title: context.l10n.toneMapping,
                           items: const [
                             'auto',
                             'clip',
@@ -816,11 +817,11 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       ),
                       AnymeXTile(
                         icon: Icons.grain_rounded,
-                        title: 'Dither Depth',
+                        title: context.l10n.ditherDepth,
                         subtitle:
                             (mpvVisual['ditherDepth'] as String?) ?? 'auto',
                         onTap: () => _showMpvVisualSelectionDialog(
-                          title: 'Dither Depth',
+                          title: context.l10n.ditherDepth,
                           items: const ['auto', '8', '10', 'no'],
                           selected:
                               (mpvVisual['ditherDepth'] as String?) ?? 'auto',
@@ -832,11 +833,11 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                   ],
                 ),
                 AnymeXSectionBuilder(
-                  title: 'MPV Configuration',
+                  title: context.l10n.mpvConfiguration,
                   children: [
                     AnymeXTile.toggle(
                       icon: Icons.description_rounded,
-                      title: 'Use mpv.conf',
+                      title: context.l10n.useMpvConf,
                       subtitle:
                           'Apply options from your mpv.conf when playback starts',
                       value: _useMpvConf,
@@ -848,7 +849,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                     ),
                     AnymeXTile(
                       icon: Icons.edit_note_rounded,
-                      title: 'Edit mpv.conf',
+                      title: context.l10n.editMpvConf,
                       subtitle:
                           'Edit custom mpv flags, properties, and configuration file',
                       onTap: () => _showMpvConfEditorSheet(context),
@@ -865,7 +866,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
 
     return AnymeXScaffold(
       showHeader: !widget.isModal,
-      headerTitle: 'Engine & Advanced',
+      headerTitle: context.l10n.engineAdvanced,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(

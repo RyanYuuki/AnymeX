@@ -9,6 +9,7 @@ import 'package:anymex/widgets/common/cards/media_card_registry.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class MinimalExoticCardStyle implements MediaCardStyle {
   @override
@@ -140,7 +141,7 @@ class MinimalExoticCard extends CarouselCard {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (variant == DataVariant.library) ...[
-            AnymeXText(!type.isAnime ? 'Chapter ' : 'Episode ',
+            AnymeXText(!type.isAnime ? context.l10n.chapter : context.l10n.episode5,
               size: 12,
               color: context.colors.onPrimary,
               variant: TextVariant.bold,

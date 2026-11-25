@@ -694,7 +694,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                   Icon(Icons.schedule,
                       color: context.colors.primary, size: 14),
                   const SizedBox(width: 4),
-                  AnymeXText('EP ${widget.dubInfo!.episode}',
+                  AnymeXText(context.l10n.ep((widget.dubInfo!.episode).toString()),
                     size: 11,
                     variant: TextVariant.bold,
                     color: context.colors.primary,
@@ -827,7 +827,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 ),
                 if (isAnilist && widget.data.nextAiringEpisode?.episode != null) ...[
                   const SizedBox(width: 5),
-                  AnymeXText('EPISODE ${widget.data.nextAiringEpisode!.episode}',
+                  AnymeXText(context.l10n.episode8((widget.data.nextAiringEpisode!.episode).toString()),
                     maxLines: 1,
                     variant: TextVariant.regular,
                     fontStyle: FontStyle.italic,
@@ -1020,7 +1020,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
                         if (isAnilist && widget.data.nextAiringEpisode != null) ...[
-                          AnymeXText("Episode ${widget.data.nextAiringEpisode!.episode}",
+                          AnymeXText(context.l10n.episode6((widget.data.nextAiringEpisode!.episode).toString()),
                             size: 14,
                             maxLines: 2,
                             color: context.colors.primary,

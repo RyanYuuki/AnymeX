@@ -6,6 +6,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class ReaderBottomControls extends StatelessWidget {
   final ReaderController controller;
@@ -97,7 +98,7 @@ class ReaderBottomControls extends StatelessWidget {
   Widget _buildSliderSection() {
     return Obx(() => controller.loadingState.value != LoadingState.loaded ||
             controller.pageList.isEmpty
-        ? const SizedBox(height: 32, child: Center(child: AnymeXText('Loading...')))
+        ? SizedBox(height: 32, child: Center(child: AnymeXText(Get.context!.l10n.labelLoading)))
         : Expanded(
             child: AnymeXSliderM3(
               value: controller.currentPageIndex.value.toDouble(),

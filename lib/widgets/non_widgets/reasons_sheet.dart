@@ -482,7 +482,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
-              AnymeXText(count == 1 ? '1 Recommendation' : '$count Recommendations',
+              AnymeXText(count == 1 ? context.l10n.n1Recommendation : context.l10n.recommendations2(count.toString()),
                 size: 12,
                 color: colors.onSurfaceVariant,
                 variant: TextVariant.semiBold,

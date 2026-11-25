@@ -240,7 +240,7 @@ class Matchmaker {
       HeuristicDetail(
         key: 'perfectAnime',
         title: Get.context!.l10n.commonPerfectAnime,
-        description: 'Based on anime you\'ve scored as 10/10.',
+        description: Get.context!.l10n.basedOnAnimeScoredTen,
         score: perfectScore,
         weight: _perfectAnimeWeight,
         mediaItems: commonPerfectAnime,
@@ -422,7 +422,7 @@ class Matchmaker {
       HeuristicDetail(
         key: 'perfectManga',
         title: Get.context!.l10n.commonPerfectManga,
-        description: 'Based on manga you\'ve scored as 10/10.',
+        description: Get.context!.l10n.basedOnMangaScoredTen,
         score: perfectScore,
         weight: _perfectMangaWeight,
         mediaItems: commonPerfectManga,
@@ -623,7 +623,7 @@ class Matchmaker {
         final deltaStrB = hasDataB ? '${deltaB >= 0 ? '+' : ''}${deltaB.toStringAsFixed(2)}' : '-';
 
         cards.add(HeuristicCardData(
-          title: '${decade}s',
+          title: Get.context!.l10n.decadeFormat(decade),
           rows: [
             StatComparisonRow(user1Value: propStrA, label: Get.context!.l10n.proportionOfTotalTimeWatched, user2Value: propStrB),
             StatComparisonRow(user1Value: deltaStrA, label: Get.context!.l10n.differenceFromOwnMeanScore, user2Value: deltaStrB),
@@ -1043,7 +1043,7 @@ class Matchmaker {
         if (commonIds.contains(id) && !map.containsKey(id)) map[id] = m;
       }
     }
-    return commonIds.map((id) => map[id] ?? FavouriteMedia(id: '$id', title: 'Media #$id')).toList();
+    return commonIds.map((id) => map[id] ?? FavouriteMedia(id: '$id', title: Get.context!.l10n.mediaWithId(id.toString()))).toList();
   }
 
   static Map<int, _DecadeData> _stackYearsIntoDecades(List<YearStat> years) {

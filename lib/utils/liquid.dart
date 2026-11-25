@@ -22,6 +22,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/utils/mesh_blur_helper.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class ProgressController extends GetxController {
   var currentStep = ''.obs;
@@ -808,7 +809,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: const AnymeXText("Cancel"),
+                                child: AnymeXText(Get.context!.l10n.actionCancel),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -829,7 +830,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: const AnymeXText("Apply"),
+                                child: AnymeXText(Get.context!.l10n.actionApply),
                               ),
                             ),
                           ],

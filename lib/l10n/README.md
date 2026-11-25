@@ -138,4 +138,4 @@ Add the language option to `supportedLanguages`:
     ),
 ```
 
-The language will automatically appear in **Settings > Common Settings > App Language** and update the UI across mobile and desktop layouts in real-time.
+The language will automatically appear in **Settings > Content & Preferences > Language** and update the UI across mobile and desktop layouts in real-time.

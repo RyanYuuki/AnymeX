@@ -20,6 +20,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class CommentsRepliesSheet extends StatefulWidget {
   final Comment rootComment;
@@ -626,7 +627,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                 rootComment: latestParent,
                                 onReplyTap: () {
                                   if (!controller.isLoggedIn) {
-                                    snackBar('You need to be logged in to reply');
+                                    snackBar(context.l10n.youNeedToBeLoggedIn2);
                                     return;
                                   }
                                   controller.setReplyTarget(latestParent);
@@ -667,7 +668,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                               rootComment: latestParent,
                               onReplyTap: () {
                                 if (!controller.isLoggedIn) {
-                                  snackBar('You need to be logged in to reply');
+                                  snackBar(context.l10n.youNeedToBeLoggedIn2);
                                   return;
                                 }
                                 controller.setReplyTarget(reply);

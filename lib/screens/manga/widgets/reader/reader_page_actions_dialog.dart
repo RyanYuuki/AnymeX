@@ -124,7 +124,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
             'bytes': bytes,
             'name': fileName,
           });
-          snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+          snackBar(Get.context!.l10n.pageSavedToPicturesAnymex, duration: 2500);
         } catch (_) {
           Future<bool> check(Permission p) async {
             var status = await p.status;
@@ -148,7 +148,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
             await platform.invokeMethod('scanFile', {'path': file.path});
           } catch (_) {}
 
-          snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+          snackBar(Get.context!.l10n.pageSavedToPicturesAnymex, duration: 2500);
         }
       } else if (Platform.isIOS) {
         final dir = await getTemporaryDirectory();
@@ -182,10 +182,10 @@ class _ReaderPageActionsSheet extends StatelessWidget {
         }
         final file = File('${saveDir.path}/$fileName');
         await file.writeAsBytes(bytes);
-        snackBar('Page saved to $path/AnymeX', duration: 2500);
+        snackBar(Get.context!.l10n.pageSavedToAnymex(path.toString()), duration: 2500);
       }
     } catch (e) {
-      snackBar('Failed to save page: $e', duration: 2500);
+      snackBar(Get.context!.l10n.failedToSavePage(e.toString()), duration: 2500);
     }
   }
 
@@ -200,7 +200,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
       await file.writeAsBytes(bytes);
       await Share.shareXFiles([XFile(file.path)], text: Get.context!.l10n.mangaPage);
     } catch (e) {
-      snackBar('Failed to share page: $e', duration: 2500);
+      snackBar(Get.context!.l10n.failedToSharePage(e.toString()), duration: 2500);
     }
   }
 
@@ -208,9 +208,9 @@ class _ReaderPageActionsSheet extends StatelessWidget {
     Navigator.pop(context);
     try {
       await Clipboard.setData(ClipboardData(text: pageUrl));
-      snackBar('Page URL copied to clipboard', duration: 1500);
+      snackBar(Get.context!.l10n.pageUrlCopiedToClipboard, duration: 1500);
     } catch (e) {
-      snackBar('Failed to copy: $e', duration: 2500);
+      snackBar(Get.context!.l10n.failedToCopy(e.toString()), duration: 2500);
     }
   }
 }

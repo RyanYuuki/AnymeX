@@ -10,6 +10,7 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class InstalledExtensionsGridView extends StatefulWidget {
   final List<Source> sources;
@@ -94,7 +95,7 @@ class _InstalledExtensionsGridViewState
                           source: exactSource,
                         ));
                   },
-                  hintText: "Search $title extensions...",
+                  hintText: context.l10n.searchExtensions2(title.toString()),
                 ),
               ),
               const SizedBox(width: 10),

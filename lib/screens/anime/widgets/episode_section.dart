@@ -118,7 +118,7 @@ class EpisodeSection extends StatelessWidget {
                         IconButton(
                           visualDensity: VisualDensity.compact,
                           icon: const Icon(Icons.tune_rounded, size: 20),
-                          tooltip: 'Configure Providers & Order',
+                          tooltip: context.l10n.configureProvidersAndOrder,
                           onPressed: () {
                             Navigator.pop(dialogContext);
                             navigate(() => const SettingsEpisodeMetadata());
@@ -128,8 +128,8 @@ class EpisodeSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     _ProviderOptionTile(
-                      title: 'Configure Providers & Order',
-                      subtitle: 'Reorder sources, toggle individual providers',
+                      title: context.l10n.configureProvidersAndOrder,
+                      subtitle: context.l10n.reorderSourcesToggleIndividual,
                       isSelected: false,
                       trailing: const Icon(Icons.tune_rounded, size: 18),
                       onTap: () {
@@ -139,8 +139,8 @@ class EpisodeSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     _ProviderOptionTile(
-                      title: 'Auto (Merged Priority)',
-                      subtitle: 'Merges highest-priority available data',
+                      title: context.l10n.autoMergedPriority,
+                      subtitle: context.l10n.mergesHighestPriorityAvailable,
                       isSelected: isAnify.value &&
                           metaService.selectedSource.value == 'auto',
                       onTap: () {
@@ -168,8 +168,8 @@ class EpisodeSection extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: _ProviderOptionTile(
-                        title: 'Off',
-                        subtitle: 'Use raw provider episode titles only',
+                        title: context.l10n.labelOff,
+                        subtitle: context.l10n.useRawProviderEpisodeTitlesOnly,
                         isSelected: !isAnify.value ||
                             metaService.selectedSource.value == 'none',
                         onTap: () {

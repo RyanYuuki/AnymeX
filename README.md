@@ -123,9 +123,8 @@ Join our communities to stay updated and contribute to the discussion:
 <a href="https://www.reddit.com/r/AnymeX_/" style="display: inline-block;"><img src="https://cdn3.iconfinder.com/data/icons/2018-social-media-black-and-white-logos/1000/2018_social_media_popular_app_logo_reddit-1024.png" alt="Reddit" height="40" style="vertical-align: middle;"></a>
 
 ## Languages
-
-AnymeX is available in English, Español, Deutsch, 繁體中文, Português (Brasil) and Bahasa Indonesia, on every platform.
-Change it in **Settings > Common Settings > App Language**. Want to add or improve a language? See the [localization guide](./lib/l10n/README.md).
+AnymeX is available in over 40 languages, on every platform. English, Español, Bahasa Indonesia, العربية, 简体中文 and 繁體中文 are fully translated; the rest are translated by the community on Weblate.
+Change it in **Settings > Content & Preferences > Language**. Want to add or improve a language? See the [localization guide](./lib/l10n/README.md).
 
 ## Contribute
 

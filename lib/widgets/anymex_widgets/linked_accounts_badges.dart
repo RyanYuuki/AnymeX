@@ -111,7 +111,7 @@ class LinkedAccountsBadges extends StatelessWidget {
     if (!interactive) return badge;
 
     return Tooltip(
-      message: '$label: @$username (Tap to open profile)',
+      message: Get.context!.l10n.tapToOpenProfile(label.toString(), username.toString()),
       child: InkWell(
         onTap: () async {
           final uri = Uri.parse(url);

@@ -50,7 +50,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return StylePickerSection(
       icon: Iconsax.clock,
-      title: 'History card',
+      title: context.l10n.historyCard,
       itemCount: HistoryCardStyle.values.length,
       appliedIndex: settings.historyCardStyle,
       labelFor: (i) => HistoryCardStyle.values[i].displayName,
@@ -81,7 +81,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   Widget _buildCarouselStyleSection(BuildContext context) {
     return StylePickerSection(
       icon: Icons.view_carousel_rounded,
-      title: 'Carousel',
+      title: context.l10n.carousel,
       itemCount: CarouselStyleRegistry.styles.length,
       appliedIndex:
           CarouselStyleRegistry.normalizeIndex(settings.carouselStyle),
@@ -102,7 +102,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   Widget _buildNavBarStyleSection(BuildContext context) {
     return StylePickerSection(
       icon: Icons.navigation_rounded,
-      title: 'Nav bar',
+      title: context.l10n.navBar,
       itemCount: NavStyleVariant.values.length,
       appliedIndex: settings.navBarStyle,
       labelFor: (i) =>
@@ -130,13 +130,13 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   Widget _buildTileStyleSection(BuildContext context) {
     final sampleItems = [
       (
-        title: 'Appearance',
-        subtitle: 'Theme, dark mode & layout styling',
+        title: context.l10n.labelAppearance,
+        subtitle: context.l10n.themeDarkModeLayoutStyling,
         icon: Icons.palette_outlined,
       ),
       (
-        title: 'Player Controls',
-        subtitle: 'Gestures, subtitles & video settings',
+        title: context.l10n.playerControls,
+        subtitle: context.l10n.gesturesSubtitlesVideoSettings,
         icon: Icons.play_circle_outline_rounded,
       ),
     ];
@@ -149,7 +149,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return StylePickerSection(
       icon: Icons.view_agenda_rounded,
-      title: 'Settings tiles',
+      title: context.l10n.settingsTiles,
       itemCount: 2,
       appliedIndex: settings.tileStyle,
       labelFor: (i) => labels[i],
@@ -172,9 +172,9 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     final desktop = MediaQuery.sizeOf(context).width > 600;
 
     AnymeXDialog(
-      title: 'Tile Icon Shapes',
+      title: context.l10n.tileIconShapes,
       showCancelButton: false,
-      confirmText: 'Done',
+      confirmText: context.l10n.done,
       width: desktop ? 520.0 : MediaQuery.sizeOf(context).width * 0.92,
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       onConfirm: () {},
@@ -215,13 +215,13 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: AnymeXSectionBuilder(
-        title: 'Tile prefix icon shape',
+        title: context.l10n.tilePrefixIconShape,
         style: currentTileStyle,
         children: [
           AnymeXTile(
             icon: getTileIconShapeIcon(settings.tileIconShape),
             iconShape: getTileIconShapeKind(settings.tileIconShape),
-            title: 'Tile icon shapes',
+            title: context.l10n.tileIconShapesLower,
             subtitle: getTileIconShapeName(settings.tileIconShape),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

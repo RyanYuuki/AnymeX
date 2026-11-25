@@ -107,7 +107,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
       headerTitle: context.l10n.tapZones,
       headerAction: IconButton(
         icon: const Icon(Icons.refresh_rounded),
-        tooltip: 'Reset to default',
+        tooltip: context.l10n.resetToDefault,
         onPressed: _resetDefaults,
       ),
       body: Builder(

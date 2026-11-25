@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class ProfileTile extends StatelessWidget {
   final String serviceIcon;
@@ -37,7 +38,7 @@ class ProfileTile extends StatelessWidget {
 
       if (isPrimary && isLoggedIn) {
         return AnymeXSectionBuilder(
-          title: 'Primary Account ($title)',
+          title: context.l10n.primaryAccount(title.toString()),
           children: [
             Center(
               child: Container(
@@ -101,7 +102,7 @@ class ProfileTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: AnymeXText('Connected to $title',
+                    child: AnymeXText(context.l10n.connectedTo(title.toString()),
                     ),
                   ),
                   InkWell(
@@ -191,14 +192,14 @@ class ProfileTile extends StatelessWidget {
                           const SizedBox(height: 5),
                           SizedBox(
                             width: 130,
-                            child: AnymeXText('Connected to $title',
+                            child: AnymeXText(context.l10n.connectedTo(title.toString()),
                               color: context.colors.primary,
                               maxLines: 2,
                             ),
                           )
                         ],
                       )
-                    : AnymeXText('Connect to $title',
+                    : AnymeXText(context.l10n.connectTo(title.toString()),
                       ),
                 const Spacer(),
                 InkWell(

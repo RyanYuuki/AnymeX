@@ -114,9 +114,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
         SubtitleTrack.uri(filePath, title: sub.name),
       );
       _activeOnlineSubtitleId.value = sub.id;
-      snackBar('Loaded subtitle: ${sub.name}');
+      snackBar(Get.context!.l10n.loadedSubtitle(sub.name.toString()));
     } catch (e) {
-      errorSnackBar('Failed to download subtitle: $e');
+      errorSnackBar(Get.context!.l10n.failedToDownloadSubtitle(e.toString()));
     } finally {
       _downloadingSubtitleId.value = '';
     }
