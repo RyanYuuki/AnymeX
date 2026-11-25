@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "检查更新出错",
   "installPermissionRequired": "需要安装权限",
   "downloadFailed3": "下载失败",
-  "newVersionAvailable": "有新版本可用"
+  "newVersionAvailable": "有新版本可用",
+  "episodeMetadata": "剧集元数据"
 }

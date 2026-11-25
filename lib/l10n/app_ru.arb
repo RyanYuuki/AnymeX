@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Ошибка при проверке наличия обновлений",
   "installPermissionRequired": "Требуется разрешение на установку",
   "downloadFailed3": "Ошибка при загрузке",
-  "newVersionAvailable": "Доступна новая версия"
+  "newVersionAvailable": "Доступна новая версия",
+  "episodeMetadata": "Метаданные эпизодов"
 }

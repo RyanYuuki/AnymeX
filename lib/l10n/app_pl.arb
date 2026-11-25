@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Wystąpił błąd podczas sprawdzania dostępności aktualizacji",
   "installPermissionRequired": "Wymagane uprawnienia do instalacji",
   "downloadFailed3": "Pobieranie nie powiodło się",
-  "newVersionAvailable": "Dostępna jest nowa wersja"
+  "newVersionAvailable": "Dostępna jest nowa wersja",
+  "episodeMetadata": "Metadane odcinków"
 }

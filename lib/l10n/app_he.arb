@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "שגיאה בבדיקת עדכונים",
   "installPermissionRequired": "נדרשת הרשאת התקנה",
   "downloadFailed3": "ההורדה נכשלה",
-  "newVersionAvailable": "גרסה חדשה זמינה"
+  "newVersionAvailable": "גרסה חדשה זמינה",
+  "episodeMetadata": "מטא נתונים של הפרק"
 }

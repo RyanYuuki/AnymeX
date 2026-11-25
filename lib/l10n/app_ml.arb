@@ -2744,5 +2744,6 @@
   "errorCheckingForUpdates": "അപ്ഡേറ്റുകൾക്കായുള്ള പിശക് പരിശോധന",
   "installPermissionRequired": "ഇൻസ്റ്റാൾ ചെയ്യാൻ അനുമതി ആവശ്യമാണ്",
   "downloadFailed3": "ഡൗൺലോഡ് പരാജയപ്പെട്ടു",
-  "newVersionAvailable": "പുതിയ പതിപ്പ് ലഭ്യമാണ്"
+  "newVersionAvailable": "പുതിയ പതിപ്പ് ലഭ്യമാണ്",
+  "episodeMetadata": "എപ്പിസോഡ് മെറ്റാഡാറ്റ"
 }

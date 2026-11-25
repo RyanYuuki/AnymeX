@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "Error sa pagsuri para sa mga update",
   "installPermissionRequired": "Kinakailangan ang pahintulot sa pag-install",
   "downloadFailed3": "Nabigo ang pag-download",
-  "newVersionAvailable": "Available ang Bagong Bersyon"
+  "newVersionAvailable": "Available ang Bagong Bersyon",
+  "episodeMetadata": "Metadata ng Episode"
 }

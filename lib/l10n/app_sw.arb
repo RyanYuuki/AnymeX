@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Hitilafu wakati wa kuangalia masasisho",
   "installPermissionRequired": "Ruhusa ya kusakinisha inahitajika",
   "downloadFailed3": "Upakuaji Umeshindikana",
-  "newVersionAvailable": "Toleo Jipya Linapatikana"
+  "newVersionAvailable": "Toleo Jipya Linapatikana",
+  "episodeMetadata": "Metadata ya Kipindi"
 }

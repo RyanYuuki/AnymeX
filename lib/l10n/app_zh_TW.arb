@@ -2767,5 +2767,6 @@
   "watchedEpisode": "已看第 {episode} 集",
   "watched": "已看",
   "planning": "計劃中",
-  "rewatching": "重看中"
+  "rewatching": "重看中",
+  "episodeMetadata": "集數資訊"
 }

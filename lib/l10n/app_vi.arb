@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Lỗi khi kiểm tra các bản cập nhật",
   "installPermissionRequired": "Yêu cầu quyền cài đặt",
   "downloadFailed3": "Tải xuống không thành công",
-  "newVersionAvailable": "Phiên bản mới đã có sẵn"
+  "newVersionAvailable": "Phiên bản mới đã có sẵn",
+  "episodeMetadata": "Siêu dữ liệu tập phim"
 }

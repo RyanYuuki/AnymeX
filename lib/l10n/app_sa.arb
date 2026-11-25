@@ -4002,5 +4002,6 @@
   "failedToLoadComments": "टिप्पण्यः भारयितुं विफलाः।",
   "noCommentsFound": "टिप्पण्यः न लब्धाः।",
   "deleted2": "लुप्तम्",
-  "comment": "टिप्पणी"
+  "comment": "टिप्पणी",
+  "episodeMetadata": "प्रकरण-मेटाडेटा"
 }

@@ -4005,5 +4005,6 @@
   "installPermissionRequired": "インストール権限が必要です",
   "downloadFailed3": "ダウンロードに失敗しました",
   "newVersionAvailable": "新バージョンがリリースされました",
-  "browsingStatus": "$status を閲覧中"
+  "browsingStatus": "$status を閲覧中",
+  "episodeMetadata": "エピソードのメタデータ"
 }

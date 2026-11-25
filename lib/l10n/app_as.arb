@@ -3989,5 +3989,6 @@
   "errorCheckingForUpdates": "আপডেইটসমূহৰ বাবে পৰীক্ষা কৰাত ত্ৰুটি",
   "installPermissionRequired": "সংস্থাপনৰ অনুমতিৰ প্ৰয়োজন",
   "downloadFailed3": "ডাউনলোড বিফল",
-  "newVersionAvailable": "নতুন সংস্কৰণ উপলব্ধ"
+  "newVersionAvailable": "নতুন সংস্কৰণ উপলব্ধ",
+  "episodeMetadata": "এপিচ'ড মেটাডাটা"
 }

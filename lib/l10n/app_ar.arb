@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "خطأ في التحقق من التحديثات",
   "installPermissionRequired": "إذن التثبيت مطلوب",
   "downloadFailed3": "فشل التنزيل",
-  "newVersionAvailable": "يتوفر إصدار جديد"
+  "newVersionAvailable": "يتوفر إصدار جديد",
+  "episodeMetadata": "البيانات الوصفية للحلقة"
 }

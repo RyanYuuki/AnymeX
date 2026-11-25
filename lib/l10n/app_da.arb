@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "Der opstod en fejl under søgningen efter opdateringer",
   "installPermissionRequired": "Der kræves installationsrettigheder",
   "downloadFailed3": "Download mislykkedes",
-  "newVersionAvailable": "Ny version tilgængelig"
+  "newVersionAvailable": "Ny version tilgængelig",
+  "episodeMetadata": "Episodemetadata"
 }

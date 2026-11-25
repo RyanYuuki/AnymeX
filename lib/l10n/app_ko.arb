@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "업데이트 확인 중 오류가 발생했습니다.",
   "installPermissionRequired": "설치 권한 필요",
   "downloadFailed3": "다운로드 실패",
-  "newVersionAvailable": "새 버전이 출시되었습니다"
+  "newVersionAvailable": "새 버전이 출시되었습니다",
+  "episodeMetadata": "에피소드 메타데이터"
 }

@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Erro ao verificar se existem atualizações",
   "installPermissionRequired": "É necessária autorização para a instalação",
   "downloadFailed3": "Falha no download",
-  "newVersionAvailable": "Nova versão disponível"
+  "newVersionAvailable": "Nova versão disponível",
+  "episodeMetadata": "Metadados dos episódios"
 }

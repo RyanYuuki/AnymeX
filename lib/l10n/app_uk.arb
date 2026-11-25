@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Помилка під час перевірки наявності оновлень",
   "installPermissionRequired": "Потрібно право на встановлення",
   "downloadFailed3": "Помилка під час завантаження",
-  "newVersionAvailable": "Доступна нова версія"
+  "newVersionAvailable": "Доступна нова версія",
+  "episodeMetadata": "Метадані епізодів"
 }

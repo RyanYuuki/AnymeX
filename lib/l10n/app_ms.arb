@@ -2745,5 +2745,6 @@
   "errorCheckingForUpdates": "Semakan ralat untuk kemas kini",
   "installPermissionRequired": "Kebenaran pemasangan diperlukan",
   "downloadFailed3": "Muat turun gagal",
-  "newVersionAvailable": "Versi baharu tersedia"
+  "newVersionAvailable": "Versi baharu tersedia",
+  "episodeMetadata": "Metadata Episod"
 }

@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "خطا در بررسی به‌روزرسانی‌ها",
   "installPermissionRequired": "مجوز نصب مورد نیاز است",
   "downloadFailed3": "دانلود انجام نشد",
-  "newVersionAvailable": "نسخه جدید موجود است"
+  "newVersionAvailable": "نسخه جدید موجود است",
+  "episodeMetadata": "فراداده قسمت"
 }

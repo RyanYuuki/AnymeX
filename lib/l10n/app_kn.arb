@@ -2746,5 +2746,6 @@
   "errorCheckingForUpdates": "ಅಪ್‌ಡೇಟ್‌ಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸುವಲ್ಲಿ ದೋಷ",
   "installPermissionRequired": "ಇನ್‌ಸ್ಟಾಲ್ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ",
   "downloadFailed3": "ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ",
-  "newVersionAvailable": "ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆ"
+  "newVersionAvailable": "ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆ",
+  "episodeMetadata": "ಸಂಚಿಕೆ ಮೆಟಡೇಟಾ"
 }

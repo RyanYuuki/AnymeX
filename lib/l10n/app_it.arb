@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Errore durante la verifica degli aggiornamenti",
   "installPermissionRequired": "È richiesta l'autorizzazione all'installazione",
   "downloadFailed3": "Download non riuscito",
-  "newVersionAvailable": "È disponibile una nuova versione"
+  "newVersionAvailable": "È disponibile una nuova versione",
+  "episodeMetadata": "Metadati degli episodi"
 }

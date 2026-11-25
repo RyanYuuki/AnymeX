@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "अद्यतनों की जाँच करने में त्रुटि",
   "installPermissionRequired": "स्थापित करने की अनुमति आवश्यक है",
   "downloadFailed3": "डाउनलोड विफल",
-  "newVersionAvailable": "नया संस्करण उपलब्ध है"
+  "newVersionAvailable": "नया संस्करण उपलब्ध है",
+  "episodeMetadata": "एपिसोड मेटाडेटा"
 }

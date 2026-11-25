@@ -2767,5 +2767,6 @@
   "watchedEpisode": "Visto Ep. {episode}",
   "watched": "Visto",
   "planning": "Planeando",
-  "rewatching": "Volviendo a ver"
+  "rewatching": "Volviendo a ver",
+  "episodeMetadata": "Metadatos del episodio"
 }

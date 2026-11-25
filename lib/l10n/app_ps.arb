@@ -4003,5 +4003,6 @@
   "failedToLoadComments": "تبصرې بار نشول.",
   "noCommentsFound": "هیڅ تبصره ونه موندل شوه.",
   "deleted2": "ړنگ شوی",
-  "comment": "تبصره"
+  "comment": "تبصره",
+  "episodeMetadata": "د قسط میټاډیټا"
 }

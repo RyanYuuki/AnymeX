@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "ዝማኔዎችን ሲያረጋግጥ ስህተት ተፈጥሯል",
   "installPermissionRequired": "የመጫኛ ፈቃድ ያስፈልጋል",
   "downloadFailed3": "ማውረድ አልተሳካም",
-  "newVersionAvailable": "አዲስ ስሪት አለ"
+  "newVersionAvailable": "አዲስ ስሪት አለ",
+  "episodeMetadata": "የክፍል ሜታዳታ"
 }

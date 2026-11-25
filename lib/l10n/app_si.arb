@@ -2747,5 +2747,6 @@
   "failedToLoadComments": "අදහස් පූරණය කිරීමට අසමත් විය.",
   "noCommentsFound": "අදහස් කිසිවක් හමු නොවීය.",
   "deleted2": "මකා දමන ලදී",
-  "comment": "අදහස"
+  "comment": "අදහස",
+  "episodeMetadata": "කථාංග පාරදත්ත"
 }

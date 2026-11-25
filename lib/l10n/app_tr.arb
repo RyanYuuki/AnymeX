@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Güncelleme kontrolü sırasında hata oluştu",
   "installPermissionRequired": "Yükleme izni gerekiyor",
   "downloadFailed3": "İndirme Başarısız",
-  "newVersionAvailable": "Yeni Sürüm Çıktı"
+  "newVersionAvailable": "Yeni Sürüm Çıktı",
+  "episodeMetadata": "Bölüm Meta Verileri"
 }

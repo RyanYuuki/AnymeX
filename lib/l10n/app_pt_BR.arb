@@ -2767,5 +2767,6 @@
   "watchedEpisode": "Assistido Ep. {episode}",
   "watched": "Assistido",
   "planning": "Planejando",
-  "rewatching": "Reassistindo"
+  "rewatching": "Reassistindo",
+  "episodeMetadata": "Metadados de episódios"
 }

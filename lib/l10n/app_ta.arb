@@ -2747,5 +2747,6 @@
   "everyScoreIsMappedToA": "ஒவ்வொரு மதிப்பீடும் ஒரு தரவரிசையுடன் இணைக்கப்பட்டுள்ளது. கீழே உள்ள அட்டவணை ஒவ்வொரு அடைப்புக்குறi, அதன் சின்னம் மற்றும் வரம்பைக் காட்டுகிறது.",
   "willBePermanentlyRemovedFromYour": "{display} உங்கள் பதிவிறக்கங்களிலிருந்து நிரந்தரமாக நீக்கப்படும்.",
   "ifYouSeeBlackScreenUse": "கருப்பு திரை தோன்றினால், பார்க்க வெளிப்புற பிளேயரைப் பயன்படுத்தவும்",
-  "customListsAcrossMedia": "ஊடகங்களில் {totalLists} தனிப்பயன் பட்டியல்கள்"
+  "customListsAcrossMedia": "ஊடகங்களில் {totalLists} தனிப்பயன் பட்டியல்கள்",
+  "episodeMetadata": "எபிசோடு மெடாடேட்டா"
 }

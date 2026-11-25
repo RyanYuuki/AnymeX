@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "Erreur lors de la vérification des mises à jour",
   "installPermissionRequired": "Autorisation d'installation requise",
   "downloadFailed3": "Échec du téléchargement",
-  "newVersionAvailable": "Nouvelle version disponible"
+  "newVersionAvailable": "Nouvelle version disponible",
+  "episodeMetadata": "Métadonnées des épisodes"
 }

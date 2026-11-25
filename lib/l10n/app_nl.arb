@@ -2747,5 +2747,6 @@
   "errorCheckingForUpdates": "Fout bij het controleren op updates",
   "installPermissionRequired": "Installatierechten vereist",
   "downloadFailed3": "Download mislukt",
-  "newVersionAvailable": "Nieuwe versie beschikbaar"
+  "newVersionAvailable": "Nieuwe versie beschikbaar",
+  "episodeMetadata": "Metadata van afleveringen"
 }

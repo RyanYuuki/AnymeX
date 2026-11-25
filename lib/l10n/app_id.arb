@@ -2767,5 +2767,6 @@
   "watchedEpisode": "Tonton Ep. {episode}",
   "watched": "Ditonton",
   "planning": "Direncanakan",
-  "rewatching": "Menonton ulang"
+  "rewatching": "Menonton ulang",
+  "episodeMetadata": "Metadata Episode"
 }

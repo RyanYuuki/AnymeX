@@ -4074,5 +4074,6 @@
   },
   "watched": "Watched",
   "planning": "Planning",
-  "rewatching": "Rewatching"
+  "rewatching": "Rewatching",
+  "episodeMetadata": "Episode Metadata"
 }

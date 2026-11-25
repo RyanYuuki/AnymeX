@@ -2746,5 +2746,6 @@
   "errorCheckingForUpdates": "กำลังตรวจสอบข้อผิดพลาดในการอัปเดต",
   "installPermissionRequired": "ต้องได้รับสิทธิ์การติดตั้ง",
   "downloadFailed3": "การดาวน์โหลดไม่สำเร็จ",
-  "newVersionAvailable": "มีเวอร์ชันใหม่แล้ว"
+  "newVersionAvailable": "มีเวอร์ชันใหม่แล้ว",
+  "episodeMetadata": "ข้อมูลเมตาดาต้าของตอน"
 }

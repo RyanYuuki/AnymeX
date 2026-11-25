@@ -2746,5 +2746,6 @@
   "installPermissionRequired": "ఇన్‌స్టాల్ అనుమతి అవసరం",
   "downloadFailed3": "డౌన్‌లోడ్ విఫలమైంది",
   "newVersionAvailable": "కొత్త వెర్షన్ అందుబాటులో ఉంది",
-  "pagesAheadOfTimeForFaster": "వేగంగా లోడ్ కావడానికి ముందుగానే పేజీలు"
+  "pagesAheadOfTimeForFaster": "వేగంగా లోడ్ కావడానికి ముందుగానే పేజీలు",
+  "episodeMetadata": "ఎపిసోడ్ మెటాడేటా"
 }

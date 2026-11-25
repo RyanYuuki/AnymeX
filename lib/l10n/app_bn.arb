@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "আপডেটের জন্য পরীক্ষা করা ত্রুটি৷",
   "installPermissionRequired": "অনুমতি প্রয়োজন ইনস্টল",
   "downloadFailed3": "ডাউনলোড ব্যর্থ হয়েছে৷",
-  "newVersionAvailable": "নতুন সংস্করণ উপলব্ধ"
+  "newVersionAvailable": "নতুন সংস্করণ উপলব্ধ",
+  "episodeMetadata": "পর্বের মেটাডেটা"
 }

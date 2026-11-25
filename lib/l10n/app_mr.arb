@@ -2745,5 +2745,6 @@
   "errorCheckingForUpdates": "अपडेटसाठी त्रुटी तपासणी",
   "installPermissionRequired": "स्थापना करण्यासाठी परवानगी आवश्यक आहे",
   "downloadFailed3": "डाउनलोड अयशस्वी",
-  "newVersionAvailable": "नवीन आवृत्ती उपलब्ध"
+  "newVersionAvailable": "नवीन आवृत्ती उपलब्ध",
+  "episodeMetadata": "एपिसोड मेटाडेटा"
 }

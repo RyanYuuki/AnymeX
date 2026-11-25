@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "Σφάλμα κατά τον έλεγχο για ενημερώσεις",
   "installPermissionRequired": "Απαιτείται άδεια εγκατάστασης",
   "downloadFailed3": "Η λήψη απέτυχε",
-  "newVersionAvailable": "Διατίθεται νέα έκδοση"
+  "newVersionAvailable": "Διατίθεται νέα έκδοση",
+  "episodeMetadata": "Μεταδεδομένα επεισοδίων"
 }

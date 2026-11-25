@@ -4005,5 +4005,6 @@
   "failedToLoadComments": "ମନ୍ତବ୍ୟ ଲୋଡ୍ କରିବାରେ ବିଫଳ।",
   "noCommentsFound": "କୌଣସି ମନ୍ତବ୍ୟ ମିଳିଲା ନାହିଁ।",
   "deleted2": "ବିଲୋପ ହେଲା",
-  "comment": "ମନ୍ତବ୍ୟ"
+  "comment": "ମନ୍ତବ୍ୟ",
+  "episodeMetadata": "ଏପିସୋଡ୍ ମେଟାଡାଟା"
 }

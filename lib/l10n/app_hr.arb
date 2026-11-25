@@ -4005,5 +4005,6 @@
   "errorCheckingForUpdates": "Pogreška pri provjeri ažuriranja",
   "installPermissionRequired": "Potrebna je dozvola za instalaciju",
   "downloadFailed3": "Preuzimanje nije uspjelo",
-  "newVersionAvailable": "Nova verzija dostupna"
+  "newVersionAvailable": "Nova verzija dostupna",
+  "episodeMetadata": "Metapodaci epizoda"
 }

@@ -4025,5 +4025,6 @@
   "watchedEpisode": "Gesehen Ep. {episode}",
   "watched": "Gesehen",
   "planning": "Geplant",
-  "rewatching": "Erneut schauen"
+  "rewatching": "Erneut schauen",
+  "episodeMetadata": "Folgen-Metadaten"
 }
