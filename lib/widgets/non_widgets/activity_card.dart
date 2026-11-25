@@ -26,6 +26,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
     show ItemType;
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
@@ -161,65 +162,75 @@ class _ActivityCardState extends State<ActivityCard> {
 
     AnymeXSheet.custom(
       Builder(builder: (sheetContext) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isOwner && widget.isOwnProfile)
-              AnymeXTile(
-                icon: activity.isPinned
-                    ? Icons.push_pin
-                    : Icons.push_pin_outlined,
-                title: activity.isPinned ? context.l10n.unpin : context.l10n.pinActivity,
-                onTap: () async {
-                  Navigator.of(sheetContext).pop();
-                  final auth = Get.find<AnilistAuth>();
-                  setState(() => activity.isPinned = !activity.isPinned);
-                  final error = await auth.toggleActivityPin(
-                      activity.id, activity.isPinned);
-                  if (error != null && mounted) {
-                    setState(() => activity.isPinned = !activity.isPinned);
-                    snackBar(error);
-                  }
-                },
-              ),
-            AnymeXTile(
-              icon: activity.isSubscribed
-                  ? Icons.notifications_off_outlined
-                  : Icons.notifications_active_outlined,
-              title: activity.isSubscribed
-                  ? context.l10n.unsubscribe
-                  : context.l10n.subscribeToThread,
+        final options = <({IconData icon, String title, VoidCallback onTap})>[
+          if (isOwner && widget.isOwnProfile)
+            (
+              icon: activity.isPinned
+                  ? Icons.push_pin
+                  : Icons.push_pin_outlined,
+              title: activity.isPinned
+                  ? context.l10n.unpin
+                  : context.l10n.pinActivity,
               onTap: () async {
                 Navigator.of(sheetContext).pop();
                 final auth = Get.find<AnilistAuth>();
-                setState(
-                    () => activity.isSubscribed = !activity.isSubscribed);
-                final success = await auth.toggleActivitySubscription(
-                    activity.id, activity.isSubscribed);
-                if (!success && mounted) {
-                  setState(
-                      () => activity.isSubscribed = !activity.isSubscribed);
+                setState(() => activity.isPinned = !activity.isPinned);
+                final error = await auth.toggleActivityPin(
+                    activity.id, activity.isPinned);
+                if (error != null && mounted) {
+                  setState(() => activity.isPinned = !activity.isPinned);
+                  snackBar(error);
                 }
               },
             ),
-            AnymeXTile(
-              icon: Icons.open_in_browser,
-              title: context.l10n.openInBrowser,
+          (
+            icon: activity.isSubscribed
+                ? Icons.notifications_off_outlined
+                : Icons.notifications_active_outlined,
+            title: activity.isSubscribed
+                ? context.l10n.unsubscribe
+                : context.l10n.subscribeToThread,
+            onTap: () async {
+              Navigator.of(sheetContext).pop();
+              final auth = Get.find<AnilistAuth>();
+              setState(
+                  () => activity.isSubscribed = !activity.isSubscribed);
+              final success = await auth.toggleActivitySubscription(
+                  activity.id, activity.isSubscribed);
+              if (!success && mounted) {
+                setState(
+                    () => activity.isSubscribed = !activity.isSubscribed);
+              }
+            },
+          ),
+          (
+            icon: Icons.open_in_browser,
+            title: context.l10n.openInBrowser,
+            onTap: () {
+              Navigator.of(sheetContext).pop();
+              launchUrlString('https://anilist.co/activity/${activity.id}');
+            },
+          ),
+          if (isOwner &&
+              (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
+            (
+              icon: Icons.edit_outlined,
+              title: context.l10n.editActivity,
               onTap: () {
                 Navigator.of(sheetContext).pop();
-                launchUrlString('https://anilist.co/activity/${activity.id}');
+                _showEditSheet();
               },
             ),
-            if (isOwner &&
-                (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
-              AnymeXTile(
-                icon: Icons.edit_outlined,
-                title: context.l10n.editActivity,
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  _showEditSheet();
-                },
-              ),
+        ];
+
+        return AnymeXTileBuilder<
+            ({IconData icon, String title, VoidCallback onTap})>(
+          items: options,
+          isSelection: false,
+          getIcon: (item) => item.icon,
+          getTitle: (item) => item.title,
+          onItemPressed: (item) => item.onTap(),
+          footerChildren: [
             if (isOwner)
               AnymeXTile(
                 icon: Icons.delete_outline,

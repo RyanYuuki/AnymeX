@@ -23,23 +23,38 @@ class AnymeXBadge extends StatelessWidget {
     this.visible = true,
   });
 
-  static Widget newBadge(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
+  static Widget newBadge(BuildContext context, {bool inverted = false}) {
+    final cs = Theme.of(context).colorScheme;
+    final bgColor = inverted
+        ? cs.onPrimary.opaque(0.22, iReallyMeanIt: true)
+        : cs.primary.opaque(0.16, iReallyMeanIt: true);
+    final borderColor = inverted
+        ? cs.onPrimary.opaque(0.45, iReallyMeanIt: true)
+        : cs.primary.opaque(0.35, iReallyMeanIt: true);
+    final fgColor = inverted ? cs.onPrimary : cs.primary;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
       decoration: BoxDecoration(
-        color: primary.opaque(0.15, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(6),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: primary.opaque(0.3, iReallyMeanIt: true),
+          color: borderColor,
           width: 1,
         ),
       ),
       child: AnymeXText(
-        context.l10n.newLabel,
-        size: 9.5,
+        context.l10n.newLabel.toUpperCase(),
+        size: 8.5,
         variant: TextVariant.bold,
-        color: primary,
+        color: fgColor,
+        style: TextStyle(
+          fontSize: 8.5,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.5,
+          height: 1.1,
+          color: fgColor,
+        ),
       ),
     );
   }
