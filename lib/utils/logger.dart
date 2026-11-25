@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 enum LogLevel { debug, info, warning, error }
 
@@ -180,7 +181,7 @@ class Logger {
     try {
       final documentsDirectory = customPath != null && customPath.isNotEmpty
           ? Directory(customPath)
-          : await getApplicationDocumentsDirectory();
+          : await getAppDocumentsDirectory();
 
       if (!await documentsDirectory.exists()) {
         await documentsDirectory.create(recursive: true);

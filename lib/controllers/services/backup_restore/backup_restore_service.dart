@@ -34,6 +34,7 @@ import 'backup_format_detector.dart';
 import 'parsers/kotatsu_backup_parser.dart';
 import 'parsers/tachiyomi_backup_parser.dart';
 import '../../../main.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 enum SettingCategory {
   appearance,
@@ -1046,7 +1047,7 @@ class BackupRestoreService extends GetxController {
       } else {
         if (Platform.isIOS) {
           try {
-            final directory = await getApplicationDocumentsDirectory();
+            final directory = await getAppDocumentsDirectory();
             final fallbackPath = '${directory.path}/$fileName';
             final fallbackFile = File(fallbackPath);
             await fallbackFile.writeAsBytes(zipBytes, flush: true);
@@ -1060,7 +1061,7 @@ class BackupRestoreService extends GetxController {
         } else {
           final directory = Platform.isAndroid
               ? Directory('/storage/emulated/0/Download')
-              : await getApplicationDocumentsDirectory();
+              : await getAppDocumentsDirectory();
 
           final fallbackPath = '${directory.path}/$fileName';
           final fallbackFile = File(fallbackPath);
@@ -1296,7 +1297,7 @@ class BackupRestoreService extends GetxController {
       } else {
         if (Platform.isIOS) {
           try {
-            final directory = await getApplicationDocumentsDirectory();
+            final directory = await getAppDocumentsDirectory();
             final sandboxFiles = directory
                 .listSync()
                 .where((f) {
