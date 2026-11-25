@@ -2335,7 +2335,7 @@
       }
     }
   },
-  "downloadFailed": "Bumagsak ang Download",
+  "downloadFailed": "Nabigo ang pag-download: {chapterDisplay}",
   "@downloadFailed": {
     "placeholders": {
       "chapterDisplay": {
@@ -2449,7 +2449,7 @@
       }
     }
   },
-  "type": "Uri",
+  "type": "Uri: {type}",
   "@type": {
     "placeholders": {
       "type": {
