@@ -258,15 +258,15 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
                       builder: (context, _) {
                         final pos = _indicatorPosition.value;
                         return Positioned(
-                          left: pos * itemWidth + 3,
-                          top: 3,
+                          left: pos * itemWidth + 4,
+                          top: 4,
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            width: itemWidth - 6,
-                            height: 52,
+                            width: itemWidth - 8,
+                            height: 50,
                             decoration: BoxDecoration(
                               borderRadius:
-                                  BorderRadius.circular(28.multiplyRadius()),
+                                  BorderRadius.circular(25.multiplyRadius()),
                               color: theme.colorScheme.primary
                                   .opaque(0.14, iReallyMeanIt: true),
                               border: Border.all(
