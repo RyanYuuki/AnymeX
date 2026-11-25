@@ -161,7 +161,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                   Icon(HugeIcons.strokeRoundedDownload04,
                       size: 20, color: theme.onPrimary),
                   const SizedBox(width: 8),
-                  AnymeXText('Download $count Chapter${count != 1 ? 's' : ''}',
+                  AnymeXText(context.l10n.downloadChaptersCount(count),
                     size: 15,
                     variant: TextVariant.semiBold,
                     color: theme.onPrimary,
@@ -190,7 +190,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
       isFromMetadataPage: isFromMetadataPage,
     );
 
-    snackBar('Downloading ${chapters.length} chapter${chapters.length != 1 ? 's' : ''}...');
+    snackBar(context.l10n.downloadingChaptersCount(chapters.length));
   }
 
   Widget _buildInfoRow({

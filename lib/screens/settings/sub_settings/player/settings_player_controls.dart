@@ -434,33 +434,33 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
     if (mounted) setState(() {});
   }
 
-  String _getSliderStyleLabel(String style) {
+  String _getSliderStyleLabel(BuildContext context, String style) {
     switch (style.toLowerCase()) {
       case 'wavy':
-        return 'Linear Wavy';
+        return context.l10n.linearWavy;
       case 'capsule':
-        return 'Capsule';
+        return context.l10n.capsule;
       case 'ios':
         return 'iOS';
       case 'defaultm3':
       default:
-        return 'Default M3';
+        return context.l10n.defaultM3;
     }
   }
 
   Future<void> _showSliderStyleDialog(BuildContext context) async {
     final styles = [
-      {'id': 'wavy', 'name': 'Linear Wavy'},
-      {'id': 'defaultm3', 'name': 'Default M3'},
-      {'id': 'capsule', 'name': 'Capsule'},
+      {'id': 'wavy', 'name': context.l10n.linearWavy},
+      {'id': 'defaultm3', 'name': context.l10n.defaultM3},
+      {'id': 'capsule', 'name': context.l10n.capsule},
       {'id': 'ios', 'name': 'iOS'},
     ];
     String selectedId = settings.progressSliderStyle;
 
     await AnymeXDialog(
-      title: 'Progress Slider Style',
+      title: context.l10n.progressSliderStyle,
       showCancelButton: false,
-      confirmText: 'Done',
+      confirmText: context.l10n.done,
       padding: const EdgeInsets.all(20),
       width: getResponsiveValue(
         context,
@@ -996,7 +996,7 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             shrinkWrap: true,
             buildDefaultDragHandles: false,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: currentList.length,
             itemBuilder: (context, index) {
               final id = currentList[index];
@@ -1249,8 +1249,8 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
               ),
               AnymeXTile.toggle(
                 icon: Icons.preview_rounded,
-                title: 'Seek Preview',
-                subtitle: 'Show thumbnail scrubbing preview while seeking',
+                title: context.l10n.seekPreview,
+                subtitle: context.l10n.showThumbnailScrubbingPreviewWhileSeeking,
                 value: settings.enableSeekPreview.value,
                 onChanged: (val) {
                   setState(() {
@@ -1260,8 +1260,8 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
               ),
               AnymeXTile(
                 icon: Icons.linear_scale_rounded,
-                title: 'Progress Slider Style',
-                subtitle: _getSliderStyleLabel(settings.progressSliderStyle),
+                title: context.l10n.progressSliderStyle,
+                subtitle: _getSliderStyleLabel(context, settings.progressSliderStyle),
                 onTap: () => _showSliderStyleDialog(context),
               ),
             ],

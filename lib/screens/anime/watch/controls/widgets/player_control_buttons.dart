@@ -161,7 +161,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
           builder: (_) => const ChaptersBottomSheet(),
         );
       },
-      tooltip: 'Chapters & Timestamps',
+      tooltip: context.l10n.chaptersTimestamps,
       compact: true,
     ),
     'playlist': ControlButton(
@@ -240,7 +240,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
             ? Icons.screen_lock_rotation_rounded
             : Icons.screen_rotation_rounded,
         onPressed: () => controller.toggleOrientation(),
-        tooltip: isLocked ? 'Unlock Orientation' : 'Lock Orientation',
+        tooltip: isLocked ? context.l10n.unlockOrientation : context.l10n.lockOrientation,
         compact: true,
       );
     }),
@@ -284,7 +284,7 @@ Map<String, Widget> buildPlayerControlButtonMap(
                     !controller.isWatchTogetherPaneOpened.value;
               }
             },
-            tooltip: inRoom ? 'Watch Together (In Room)' : 'Watch Together',
+            tooltip: inRoom ? context.l10n.watchTogetherInRoom : context.l10n.watchTogether,
             compact: true,
           ),
           if (inRoom)

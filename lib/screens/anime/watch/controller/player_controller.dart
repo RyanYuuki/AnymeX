@@ -466,7 +466,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (PlayerKeys.useLibass.get(false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         snackBar(
-            "if subtitle is not showing up then disable libass in settings and restart",
+            Get.context!.l10n.ifSubtitleNotShowingDisableLibass,
             duration: 3000);
       });
     }
@@ -1230,7 +1230,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (skipTimeResult != null) {
         if (skipTimeResult.op != null) {
           parsedSegments.add(PlaybackSkipSegment(
-            title: 'Opening',
+            title: Get.context!.l10n.opening,
             kind: PlaybackSegmentKind.opening,
             startSeconds: skipTimeResult.op!.start.toDouble(),
             endSeconds: skipTimeResult.op!.end.toDouble(),
@@ -1239,7 +1239,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         }
         if (skipTimeResult.ed != null) {
           parsedSegments.add(PlaybackSkipSegment(
-            title: 'Ending',
+            title: Get.context!.l10n.ending,
             kind: PlaybackSegmentKind.ending,
             startSeconds: skipTimeResult.ed!.start.toDouble(),
             endSeconds: skipTimeResult.ed!.end.toDouble(),
@@ -1248,7 +1248,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         }
         if (skipTimeResult.recap != null) {
           parsedSegments.add(PlaybackSkipSegment(
-            title: 'Recap',
+            title: Get.context!.l10n.recap,
             kind: PlaybackSegmentKind.recap,
             startSeconds: skipTimeResult.recap!.start.toDouble(),
             endSeconds: skipTimeResult.recap!.end.toDouble(),
@@ -2697,7 +2697,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       if (success) {
         snackBar(
-            'Subtitles translated! (${SubtitlePreTranslator.totalEntries} entries)');
+            Get.context!.l10n.subtitlesTranslatedEntries(SubtitlePreTranslator.totalEntries));
       } else {
         snackBar(Get.context!.l10n.preTranslationFailedUsingRealTime);
       }
@@ -2953,7 +2953,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       if (episode.filler != true) {
         if (skippedCount > 0) {
           snackBar(
-              'Skipped $skippedCount filler episode${skippedCount > 1 ? 's' : ''}');
+              Get.context!.l10n.skippedFillerEpisodesCount(skippedCount));
         }
         return episode;
       }

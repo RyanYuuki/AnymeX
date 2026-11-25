@@ -87,36 +87,36 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
     if (Platform.isAndroid) {
       return [
         _DecoderOption(
-            value: 'hw+', title: 'HW+', description: 'mediacodec-copy'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'mediacodec'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+            value: 'hw+', title: context.l10n.hwUpper, description: 'mediacodec-copy'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'mediacodec'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isIOS || Platform.isMacOS) {
       return [
-        _DecoderOption(value: 'hw+', title: 'HW+', description: 'videotoolbox'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'videotoolbox'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+        _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'videotoolbox'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'videotoolbox'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isWindows) {
       return [
-        _DecoderOption(value: 'hw+', title: 'HW+', description: 'd3d11va-copy'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'd3d11va'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+        _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'd3d11va-copy'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'd3d11va'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isLinux) {
       return [
-        _DecoderOption(value: 'hw+', title: 'HW+', description: 'vaapi-copy'),
-        _DecoderOption(value: 'hw', title: 'HW', description: 'vaapi'),
-        _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+        _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'vaapi-copy'),
+        _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'vaapi'),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     return [
-      _DecoderOption(value: 'hw+', title: 'HW+', description: 'auto-copy'),
-      _DecoderOption(value: 'hw', title: 'HW', description: 'auto'),
-      _DecoderOption(value: 'sw', title: 'SW', description: 'no'),
+      _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'auto-copy'),
+      _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'auto'),
+      _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
     ];
   }
 
@@ -365,7 +365,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                             size: 18,
                           ),
                           AnymeXText(
-                            'Custom player flags & parameters',
+                            context.l10n.customPlayerFlagsParameters,
                             variant: TextVariant.semiBold,
                             color: colors.onSurface.withValues(alpha: 0.6),
                             size: 12,
@@ -433,7 +433,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                 ),
                 const SizedBox(height: 8),
                 AnymeXText(
-                  'One option per line, like hwdec=auto or scale=ewa_lanczossharp. Lines starting with # are comments. Profiles in [brackets] are ignored.',
+                  context.l10n.oneOptionPerLineLikeHwdec,
                   variant: TextVariant.regular,
                   color: colors.onSurface.withValues(alpha: 0.6),
                   size: 11,

@@ -4075,5 +4075,128 @@
   "watched": "Watched",
   "planning": "Planning",
   "rewatching": "Rewatching",
-  "episodeMetadata": "Episode Metadata"
+  "episodeMetadata": "Episode Metadata",
+  "sessionExpiredPleaseLoginAgain": "Session expired. Please login again.",
+  "successfullyLoggedInAs": "Successfully logged in as {username}",
+  "@successfullyLoggedInAs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "loggedOutFromDiscord": "Logged out from Discord",
+  "clearStoredLogFiles": "Clear Stored Log Files",
+  "resetInMemoryAndDiskLogFiles": "Reset in-memory and disk log files",
+  "errorCopiedToClipboard": "Error copied to clipboard",
+  "autoScrollOn": "Auto-scroll On",
+  "autoScrollOff": "Auto-scroll Off",
+  "copyLogs": "Copy Logs",
+  "clearLogs": "Clear Logs",
+  "metadataFallbackStrategy": "Metadata Fallback Strategy",
+  "activeSourceMode": "Active Source Mode",
+  "chooseWhetherToMergeProviders": "Choose whether to merge providers or force a specific service",
+  "autoMerged": "Auto (Merged)",
+  "providerPriorityToggles": "Provider Priority & Toggles",
+  "dragHandlesToChangeFetchPriority": "Drag handles to change fetch priority. Top sources take precedence when resolving episode titles, thumbnails, and descriptions.",
+  "maintenance": "Maintenance",
+  "clearMetadataCache": "Clear Metadata Cache",
+  "flushesInMemoryEpisodeThumbnails": "Flushes in-memory episode thumbnails and titles cache",
+  "metadataCacheCleared": "Metadata cache cleared",
+  "resetToDefaultOrder": "Reset to Default Order",
+  "restoreFactoryPriorityOrder": "Restore factory priority order and enable all providers",
+  "resetEpisodeMetadataToDefaults": "Reset episode metadata to defaults",
+  "configureProvidersAndOrder": "Configure Providers & Order",
+  "reorderSourcesToggleIndividual": "Reorder sources, toggle individual providers",
+  "autoMergedPriority": "Auto (Merged Priority)",
+  "mergesHighestPriorityAvailable": "Merges highest-priority available data",
+  "useRawProviderEpisodeTitlesOnly": "Use raw provider episode titles only",
+  "progressSliderStyle": "Progress Slider Style",
+  "seekPreview": "Seek Preview",
+  "showThumbnailScrubbingPreviewWhileSeeking": "Show thumbnail scrubbing preview while seeking",
+  "linearWavy": "Linear Wavy",
+  "defaultM3": "Default M3",
+  "capsule": "Capsule",
+  "noLogsToCopy": "No logs to copy",
+  "logsCopiedToClipboard": "Logs copied to clipboard",
+  "noLogsAvailableToShare": "No logs available to share",
+  "decadeFormat": "{decade}s",
+  "@decadeFormat": {
+    "placeholders": {
+      "decade": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaWithId": "Media #{id}",
+  "@mediaWithId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tileIconShapes": "Tile Icon Shapes",
+  "tilePrefixIconShape": "Tile prefix icon shape",
+  "tileIconShapesLower": "Tile icon shapes",
+  "opening": "Opening",
+  "ending": "Ending",
+  "recap": "Recap",
+  "ifSubtitleNotShowingDisableLibass": "If subtitle is not showing up then disable libass in settings and restart",
+  "subtitlesTranslatedEntries": "Subtitles translated! ({count} entries)",
+  "@subtitlesTranslatedEntries": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skippedFillerEpisodesCount": "{count, plural, =1{Skipped 1 filler episode} other{Skipped {count} filler episodes}}",
+  "@skippedFillerEpisodesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsubscribe": "Unsubscribe",
+  "subscribeToThread": "Subscribe to thread",
+  "downloadChaptersCount": "{count, plural, =1{Download 1 Chapter} other{Download {count} Chapters}}",
+  "@downloadChaptersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadingChaptersCount": "{count, plural, =1{Downloading 1 chapter...} other{Downloading {count} chapters...}}",
+  "@downloadingChaptersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreRecommendationsCount": "{count, plural, =1{+ 1 more recommendation} other{+ {count} more recommendations}}",
+  "@moreRecommendationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "charactersAndVoiceActors": "Characters & Voice Actors",
+  "unknownVa": "Unknown VA",
+  "chaptersTimestamps": "Chapters & Timestamps",
+  "contentSource": "Content Source",
+  "selectPreferredTrackingAndMediaProvider": "Select your preferred tracking and media provider",
+  "reducesColorRingingArtifacts": "Reduces color ringing artifacts",
+  "downscalesInLinearLightSpace": "Downscales in linear light space",
+  "motionDithering": "Motion & Dithering",
+  "smoothMotionBetweenVideoFrames": "Smooth motion between video frames",
+  "reducesColorBandingWithSubtle": "Reduces color banding with subtle noise",
+  "unknown": "Unknown",
+  "@unknown": {
+    "description": "Fallback text for unknown character or entity"
+  }
 }

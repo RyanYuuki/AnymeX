@@ -89,8 +89,8 @@ class SettingsSheet extends StatelessWidget {
           ),
         ),
       ),
-      heroTitle: "Content Source",
-      heroSubtitle: "Select your preferred tracking and media provider",
+      heroTitle: context.l10n.contentSource,
+      heroSubtitle: context.l10n.selectPreferredTrackingAndMediaProvider,
       customWidget: Column(
         mainAxisSize: MainAxisSize.min,
         children: services.asMap().entries.map((entry) {

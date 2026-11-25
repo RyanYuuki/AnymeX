@@ -172,9 +172,9 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     final desktop = MediaQuery.sizeOf(context).width > 600;
 
     AnymeXDialog(
-      title: 'Tile Icon Shapes',
+      title: context.l10n.tileIconShapes,
       showCancelButton: false,
-      confirmText: 'Done',
+      confirmText: context.l10n.done,
       width: desktop ? 520.0 : MediaQuery.sizeOf(context).width * 0.92,
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       onConfirm: () {},
@@ -215,13 +215,13 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: AnymeXSectionBuilder(
-        title: 'Tile prefix icon shape',
+        title: context.l10n.tilePrefixIconShape,
         style: currentTileStyle,
         children: [
           AnymeXTile(
             icon: getTileIconShapeIcon(settings.tileIconShape),
             iconShape: getTileIconShapeKind(settings.tileIconShape),
-            title: 'Tile icon shapes',
+            title: context.l10n.tileIconShapesLower,
             subtitle: getTileIconShapeName(settings.tileIconShape),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

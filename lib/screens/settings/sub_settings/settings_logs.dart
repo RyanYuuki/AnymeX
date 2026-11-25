@@ -189,8 +189,8 @@ class _SettingsLogsState extends State<SettingsLogs> {
               ),
               AnymeXTile(
                 icon: HugeIcons.strokeRoundedDelete02,
-                title: 'Clear Stored Log Files',
-                subtitle: 'Reset in-memory and disk log files',
+                title: context.l10n.clearStoredLogFiles,
+                subtitle: context.l10n.resetInMemoryAndDiskLogFiles,
                 onTap: () async {
                   await Logger.clearLogs();
                   Get.back();
@@ -461,9 +461,9 @@ class _SettingsLogsState extends State<SettingsLogs> {
                               }
                               Clipboard.setData(ClipboardData(text: text.toString()));
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Error copied to clipboard'),
-                                  duration: Duration(seconds: 1),
+                                SnackBar(
+                                  content: Text(context.l10n.errorCopiedToClipboard),
+                                  duration: const Duration(seconds: 1),
                                 ),
                               );
                             },
@@ -570,7 +570,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: _autoScroll ? 'Auto-scroll On' : 'Auto-scroll Off',
+            tooltip: _autoScroll ? context.l10n.autoScrollOn : context.l10n.autoScrollOff,
             icon: Icon(
               Icons.vertical_align_bottom_rounded,
               color: _autoScroll
@@ -584,7 +584,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
             },
           ),
           IconButton(
-            tooltip: 'Copy Logs',
+            tooltip: context.l10n.copyLogs,
             icon: const Icon(HugeIcons.strokeRoundedCopy01, size: 20),
             onPressed: () => Logger.copyLogs(
               filterLevel: _selectedLevel,
@@ -592,17 +592,17 @@ class _SettingsLogsState extends State<SettingsLogs> {
             ),
           ),
           IconButton(
-            tooltip: 'Share Logs',
+            tooltip: context.l10n.shareLogs,
             icon: const Icon(HugeIcons.strokeRoundedShare08, size: 20),
             onPressed: () => Logger.share(),
           ),
           IconButton(
-            tooltip: 'Clear Logs',
+            tooltip: context.l10n.clearLogs,
             icon: const Icon(HugeIcons.strokeRoundedDelete02, size: 20),
             onPressed: () async => await Logger.clearLogs(),
           ),
           IconButton(
-            tooltip: 'Settings',
+            tooltip: context.l10n.settings,
             icon: const Icon(HugeIcons.strokeRoundedSettings01, size: 20),
             onPressed: _showSettingsSheet,
           ),

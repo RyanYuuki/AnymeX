@@ -187,8 +187,8 @@ class _ActivityCardState extends State<ActivityCard> {
                   ? Icons.notifications_off_outlined
                   : Icons.notifications_active_outlined,
               title: activity.isSubscribed
-                  ? "Unsubscribe"
-                  : "Subscribe to thread",
+                  ? context.l10n.unsubscribe
+                  : context.l10n.subscribeToThread,
               onTap: () async {
                 Navigator.of(sheetContext).pop();
                 final auth = Get.find<AnilistAuth>();

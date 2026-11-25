@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:developer' as developer;
 import 'dart:io';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -310,11 +312,11 @@ class Logger {
     final text =
         getFormattedLogs(filterLevel: filterLevel, searchQuery: searchQuery);
     if (text.isEmpty) {
-      snackBar('No logs to copy');
+      snackBar(Get.context!.l10n.noLogsToCopy);
       return;
     }
     await Clipboard.setData(ClipboardData(text: text));
-    snackBar('Logs copied to clipboard');
+    snackBar(Get.context!.l10n.logsCopiedToClipboard);
   }
 
   static Future<void> clearLogs() async {
@@ -351,7 +353,7 @@ class Logger {
         final tempFile = File('${tempDir.path}/app_logs.txt');
         final logs = getFormattedLogs();
         if (logs.isEmpty) {
-          snackBar('No logs available to share');
+          snackBar(Get.context!.l10n.noLogsAvailableToShare);
           return;
         }
         await tempFile.writeAsString(logs);
@@ -369,7 +371,7 @@ class Logger {
         ));
       } else {
         await Clipboard.setData(ClipboardData(text: await fileToShare.readAsString()));
-        snackBar('Logs copied to clipboard');
+        snackBar(Get.context!.l10n.logsCopiedToClipboard);
       }
     } else {
       await copyLogs();
