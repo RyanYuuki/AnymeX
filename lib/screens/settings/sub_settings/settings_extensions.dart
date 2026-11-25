@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/services/crash_detector.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -638,6 +641,52 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     }
 
     return Obx(() {
+      if (Platform.isAndroid && CrashDetector.isBridgeBlocked.value) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.shield_outlined, size: 18, color: colors.error),
+                  const SizedBox(width: 8),
+                  AnymeXText(
+                    'Runtime Host Disabled (Crash Detected)',
+                    variant: TextVariant.bold,
+                    size: 13,
+                    color: colors.onSurface,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              AnymeXText(
+                'The extension runtime host crashed on the previous launch and was stopped to protect the app.',
+                variant: TextVariant.regular,
+                size: 12,
+                color: colors.onSurfaceVariant,
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () => CrashDetector.restoreAndRetryRuntimeHost(),
+                icon: const Icon(Icons.refresh_rounded, size: 16),
+                label: const AnymeXText('Enable & Retry',
+                    variant: TextVariant.bold, size: 12),
+                style: FilledButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.multiplyRoundness()),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
       if (AnymeXRuntimeBridge.controller.error.value.isNotEmpty) {
         return Padding(
           padding: const EdgeInsets.all(16),

@@ -89,34 +89,34 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
         _DecoderOption(
             value: 'hw+', title: context.l10n.hwUpper, description: 'mediacodec-copy'),
         _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'mediacodec'),
-        _DecoderOption(value: 'sw', title: context.l10n.sw, description: context.l10n.labelNo),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isIOS || Platform.isMacOS) {
       return [
         _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'videotoolbox'),
         _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'videotoolbox'),
-        _DecoderOption(value: 'sw', title: context.l10n.sw, description: context.l10n.labelNo),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isWindows) {
       return [
         _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'd3d11va-copy'),
         _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'd3d11va'),
-        _DecoderOption(value: 'sw', title: context.l10n.sw, description: context.l10n.labelNo),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     if (Platform.isLinux) {
       return [
         _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'vaapi-copy'),
         _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'vaapi'),
-        _DecoderOption(value: 'sw', title: context.l10n.sw, description: context.l10n.labelNo),
+        _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
       ];
     }
     return [
       _DecoderOption(value: 'hw+', title: context.l10n.hwUpper, description: 'auto-copy'),
-      _DecoderOption(value: 'hw', title: context.l10n.hw, description: context.l10n.auto),
-      _DecoderOption(value: 'sw', title: context.l10n.sw, description: context.l10n.labelNo),
+      _DecoderOption(value: 'hw', title: context.l10n.hw, description: 'auto'),
+      _DecoderOption(value: 'sw', title: context.l10n.sw, description: 'no'),
     ];
   }
 

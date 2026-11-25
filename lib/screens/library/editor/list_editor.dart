@@ -111,9 +111,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           .where((e) => e.hasRequiredHistoryMedia(ItemType.manga))
           .toList());
     }
-    return offlineStorage.watchNovelLibrary().map((items) => items
-        .where((e) => e.hasRequiredHistoryMedia(ItemType.novel))
-        .toList());
+    return offlineStorage.watchNovelLibrary().map((items) =>
+        items.where((e) => e.hasRequiredHistoryMedia(ItemType.novel)).toList());
   }
 
   void _confirmClearHistory(List<OfflineMedia> items) {
@@ -445,8 +444,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             .opaque(0.45, iReallyMeanIt: true),
         borderRadius: radius,
         border: Border.all(
-          color: theme.colorScheme.onSurface
-              .opaque(0.08, iReallyMeanIt: true),
+          color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
           width: 0.8,
         ),
       ),
@@ -899,9 +897,9 @@ class __ListMediaEditorBottomSheetState
                       height: 46,
                       decoration: BoxDecoration(
                         color: colors.surfaceContainer.withOpacity(0.4),
-                            borderRadius: const BorderRadius.horizontal(
-                                left: Radius.circular(12),
-                                right: Radius.circular(5)),
+                        borderRadius: const BorderRadius.horizontal(
+                            left: Radius.circular(12),
+                            right: Radius.circular(5)),
                         border:
                             Border.all(color: colors.outline.withOpacity(0.1)),
                       ),
@@ -955,8 +953,8 @@ class __ListMediaEditorBottomSheetState
                           width: 46,
                           height: 46,
                           decoration: BoxDecoration(
-                                                    border:
-                            Border.all(color: colors.outline.withOpacity(0.1)),
+                            border: Border.all(
+                                color: colors.outline.withOpacity(0.1)),
                             color: colors.surfaceContainer.withOpacity(0.4),
                             borderRadius: const BorderRadius.horizontal(
                                 right: Radius.circular(12),

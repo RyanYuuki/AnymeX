@@ -31,18 +31,21 @@ class _SettingsLogsState extends State<SettingsLogs> {
   String _searchQuery = '';
   bool _autoScroll = true;
   bool _isUserScrolling = false;
+  bool _isLoadingLogs = true;
+  int _loadedSequenceCutoff = 0;
 
   @override
   void initState() {
     super.initState();
-    _allLogs.addAll(Logger.recentLogs);
+    _loadInitialLogs();
     _logSubscription = Logger.liveStream.listen((entry) {
       if (!mounted) return;
+      if (_isLoadingLogs) return;
+      if (entry.sequenceId != null && entry.sequenceId! <= _loadedSequenceCutoff) {
+        return;
+      }
       setState(() {
         _allLogs.add(entry);
-        if (_allLogs.length > Logger.maxMemoryLogs) {
-          _allLogs.removeAt(0);
-        }
       });
       if (_autoScroll && !_isUserScrolling) {
         _scrollToBottom();
@@ -58,6 +61,26 @@ class _SettingsLogsState extends State<SettingsLogs> {
     });
 
     _scrollController.addListener(_onScroll);
+  }
+
+  Future<void> _loadInitialLogs() async {
+    final snapshotSeq = Logger.totalLoggedCount;
+    final fileLogs = await Logger.readAllFileLogs();
+    if (!mounted) return;
+    final postReadLive = Logger.recentLogs
+        .where((e) => e.sequenceId != null && e.sequenceId! > snapshotSeq)
+        .toList();
+    setState(() {
+      _allLogs
+        ..clear()
+        ..addAll(fileLogs)
+        ..addAll(postReadLive);
+      _loadedSequenceCutoff = Logger.totalLoggedCount;
+      _isLoadingLogs = false;
+    });
+    if (_autoScroll) {
+      _scrollToBottom();
+    }
   }
 
   @override
@@ -611,6 +634,13 @@ class _SettingsLogsState extends State<SettingsLogs> {
       body: Builder(
         builder: (ctx) {
           final topPadding = AnymeXHeaderScope.of(ctx);
+
+          if (_isLoadingLogs) {
+            return Padding(
+              padding: EdgeInsets.only(top: topPadding),
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          }
 
           if (logs.isEmpty) {
             return Padding(

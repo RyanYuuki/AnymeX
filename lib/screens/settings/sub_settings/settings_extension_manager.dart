@@ -2,6 +2,7 @@ import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
+import 'package:anymex/services/crash_detector.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -416,6 +417,16 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                   )
                                 : null,
                           ),
+                          if (Platform.isAndroid &&
+                              CrashDetector.isBridgeBlocked.value)
+                            AnymeXTile(
+                              icon: Icons.shield_outlined,
+                              title: 'Enable & Retry Runtime Host',
+                              subtitle:
+                                  'Auto-load was stopped after a crash on previous launch',
+                              onTap: () =>
+                                  CrashDetector.restoreAndRetryRuntimeHost(),
+                            ),
                           if (hasInstalled || bridge.error.value.isNotEmpty)
                             AnymeXTile(
                               icon: Icons.refresh_rounded,

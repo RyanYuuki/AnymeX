@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/models/Anilist/anilist_notification.dart';
+import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:get/get.dart';
@@ -72,6 +73,15 @@ class AnilistNotificationService extends GetxService {
       final enabled =
           KvHelper.get<bool>('anilist_notifications_enabled', defaultVal: true);
       if (!enabled) return;
+
+      if (Get.isRegistered<NotificationController>()) {
+        final notifController = Get.find<NotificationController>();
+        final lastFetch = notifController.lastAnilistFetchTime;
+        if (lastFetch != null &&
+            DateTime.now().difference(lastFetch).inSeconds < 90) {
+          return;
+        }
+      }
 
       final items = await anilistAuth.getNotifications(
         page: 1,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:anymex/database/isar_models/custom_list.dart';
@@ -5,6 +6,7 @@ import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
+import 'package:anymex/services/crash_detector.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide isar;
@@ -23,11 +25,7 @@ class Database {
   Isar _openIsar(Directory dir) {
     return Isar.openSync(
       [
-        // BS START
         ...AnymeXExtensionBridge.isarSchema,
-        // BS END
-
-        // ANYMEX STUFFS
         KeyValueSchema,
         OfflineMediaSchema,
         CustomListSchema,
@@ -73,10 +71,6 @@ class Database {
               'AnymeX.isar.corrupted_bak_${DateTime.now().millisecondsSinceEpoch}',
             );
             try {
-              // Move rather than copy. Copying leaves the unreadable database
-              // exactly where it was, so the _openIsar below fails for the same
-              // reason and this branch can never actually recover -- while a
-              // full-size backup piles up on every single launch.
               await dbFile.rename(backupPath);
             } catch (_) {}
           }
@@ -89,6 +83,19 @@ class Database {
     }
 
     try {
+      final isBridgeBlocked = await CrashDetector.checkBridgeBlocked();
+      if (isBridgeBlocked) {
+        await CrashDetector.quarantineRuntimeHostApkIfBlocked();
+        Logger.w(
+          'Skipped Runtime Host auto-initialization because the previous session crashed during bridge loading.',
+          'BRIDGE_GUARD',
+        );
+        await Logger.flush();
+      } else {
+        await CrashDetector.markBridgeLoadStart();
+        Logger.i('Initializing AnymeXExtensionBridge...', 'BRIDGE_INIT');
+        await Logger.flush();
+      }
       final networkManager = Get.put(NetworkManager());
       await AnymeXExtensionBridge.init(
         isarInstance: isar,
@@ -107,6 +114,9 @@ class Database {
           return d;
         },
       );
+      if (!isBridgeBlocked) {
+        _scheduleBridgeLoadCompletion();
+      }
       AnymeXExtensionBridge.onLog = (log, show) {
         if (show) {
           snackBar(log);
@@ -122,14 +132,34 @@ class Database {
         return solved ?? false;
       };
     } catch (e) {
-      Logger.e(e.toString());
+      await CrashDetector.markBridgeLoadComplete();
+      Logger.e(e.toString(), loggerName: 'BRIDGE_INIT');
+      await Logger.flush();
     }
   }
 
-  /// Removes whichever lock file the bundled Isar build left behind. Isar 3
-  /// writes `<name>.isar.lock`; the libmdbx backend used by isar_community
-  /// writes `<name>.isar-lck`. Clearing only one of them leaves a stale lock
-  /// that keeps the retry failing.
+  void _scheduleBridgeLoadCompletion() {
+    if (!Platform.isAndroid) return;
+    if (AnymeXRuntimeBridge.controller.isReady.value) {
+      CrashDetector.markBridgeLoadComplete();
+      return;
+    }
+    Worker? readyWorker;
+    Timer? fallbackTimer;
+    void complete() {
+      readyWorker?.dispose();
+      readyWorker = null;
+      fallbackTimer?.cancel();
+      fallbackTimer = null;
+      CrashDetector.markBridgeLoadComplete();
+    }
+
+    readyWorker = ever<bool>(AnymeXRuntimeBridge.controller.isReady, (ready) {
+      if (ready) complete();
+    });
+    fallbackTimer = Timer(const Duration(seconds: 6), complete);
+  }
+
   Future<void> _deleteLockFiles(Directory dir) async {
     for (final name in const ['AnymeX.isar.lock', 'AnymeX.isar-lck']) {
       final lockFile = File(path.join(dir.path, name));

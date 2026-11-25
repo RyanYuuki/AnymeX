@@ -111,7 +111,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
     _triggerPreview();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -393,7 +393,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
 
       return AnymeXSectionBuilder(
         title: context.l10n.enhancementPreset,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
         children: superResolutionPresets.map((preset) {
           final isSelected = currentShader == preset.id;
           final IconData icon = switch (preset.id) {
@@ -424,7 +424,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
 
       return AnymeXSectionBuilder(
         title: context.l10n.fineTuning,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
         children: [
           AnymeXTile.slider(
             icon: Icons.tune_rounded,
@@ -457,7 +457,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
   Widget _buildCacheSection(BuildContext context) {
     return AnymeXSectionBuilder(
       title: context.l10n.cache,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
       children: [
         FutureBuilder<int>(
           future: PageUpscaleService.instance.cacheBytes(),
@@ -495,7 +495,7 @@ class _UpscaleSettingsPageState extends State<UpscaleSettingsPage> {
             _buildPreview(context),
             const SizedBox(height: 4),
             AnymeXSectionBuilder(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.auto_awesome_rounded,

@@ -272,6 +272,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
 
   void _release() {
     _isHeld = false;
+    if (!mounted) return;
     if (widget.isActive && !_timer.isCompleted) {
       _timer.forward();
     }
@@ -322,8 +323,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
             tag: 'story_${activity.id}',
           )).then((_) => _release());
     } else {
-      showActivityDetailsSheet(context, activity);
-      _release();
+      showActivityDetailsSheet(context, activity).then((_) => _release());
     }
   }
 
@@ -456,8 +456,8 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   ),
                   onPressed: () {
                     _hold();
-                    showActivityDetailsSheet(context, activity);
-                    _release();
+                    showActivityDetailsSheet(context, activity)
+                        .then((_) => _release());
                   },
                 ),
                 IconButton(
@@ -733,8 +733,8 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                 child: GestureDetector(
                   onTap: () {
                     _hold();
-                    showActivityDetailsSheet(context, activity);
-                    _release();
+                    showActivityDetailsSheet(context, activity)
+                        .then((_) => _release());
                   },
                   child: Container(
                     height: 48,

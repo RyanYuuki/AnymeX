@@ -103,6 +103,8 @@ enum ReaderKeys {
   colorFilterEnabled,
   colorFilterValue,
   colorFilterMode,
+  enhanceColorsEnabled,
+  enhanceColorsProfile,
   grayscaleEnabled,
   invertColorsEnabled,
   readerTheme,

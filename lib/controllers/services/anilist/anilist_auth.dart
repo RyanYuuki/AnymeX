@@ -172,8 +172,7 @@ class AnilistAuth extends GetxController {
     final token = AuthKeys.authToken.get<String?>();
     if (token != null) {
       await fetchUserProfile();
-      await fetchUserAnimeList();
-      await fetchUserMangaList();
+      await fetchUserListsBatched();
       prefetchSettings();
 
       try {
@@ -428,6 +427,7 @@ class AnilistAuth extends GetxController {
         final userProfile = Profile.fromJson(cached);
         userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
+        cachedSettings = AnilistUserSettings.fromJson(cached);
         unreadAnilistCount.value =
             cached['unreadNotificationCount'] as int? ?? 0;
         isLoggedIn.value = true;
@@ -538,32 +538,69 @@ class AnilistAuth extends GetxController {
           level
         }
       }
+      options {
+        titleLanguage
+        staffNameLanguage
+        activityMergeTime
+        displayAdultContent
+        airingNotifications
+        restrictMessagesToFollowing
+        timezone
+      }
       mediaListOptions {
-        animeList { splitCompletedSectionByFormat sectionOrder }
-        mangaList { splitCompletedSectionByFormat sectionOrder }
+        scoreFormat
+        rowOrder
+        animeList {
+          splitCompletedSectionByFormat
+          sectionOrder
+          theme
+          customLists
+          advancedScoring
+          advancedScoringEnabled
+        }
+        mangaList {
+          splitCompletedSectionByFormat
+          sectionOrder
+          theme
+          customLists
+        }
       }
     }
   }
   ''';
 
     try {
-      final response = await _client.post(
-        Uri.parse('https://graphql.anilist.co'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+      final viewerData = await AnilistCache.instance.deduplicate(
+        'user_profile',
+        () async {
+          final response = await _client.post(
+            Uri.parse('https://graphql.anilist.co'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode({'query': query}),
+          );
+
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            return data['data']['Viewer'] as Map<String, dynamic>?;
+          } else if (response.statusCode == 403) {
+            _handle403(response);
+          } else {
+            Logger.i('Failed to load user profile: ${response.statusCode}');
+            throw Exception('Failed to load user profile');
+          }
+          return null;
         },
-        body: json.encode({'query': query}),
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final viewerData = data['data']['Viewer'];
-
+      if (viewerData != null) {
         final userProfile = Profile.fromJson(viewerData);
         userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
+        cachedSettings = AnilistUserSettings.fromJson(viewerData);
         unreadAnilistCount.value =
             viewerData['unreadNotificationCount'] as int? ?? 0;
         isLoggedIn.value = true;
@@ -582,11 +619,6 @@ class AnilistAuth extends GetxController {
         if (Get.isRegistered<NotificationController>()) {
           Get.find<NotificationController>().loadAnilistNotifications();
         }
-      } else if (response.statusCode == 403) {
-        _handle403(response);
-      } else {
-        Logger.i('Failed to load user profile: ${response.statusCode}');
-        throw Exception('Failed to load user profile');
       }
     } catch (e) {
       Logger.i('Error fetching user profile: $e');
@@ -594,8 +626,16 @@ class AnilistAuth extends GetxController {
   }
 
   void prefetchSettings() {
-    fetchUserSettings().then((s) => cachedSettings = s).catchError((_) => null);
-    fetchSettingsMetadata().then((m) => cachedMetadata = m).catchError((_) => null);
+    if (cachedSettings == null) {
+      fetchUserSettings()
+          .then((s) => cachedSettings = s)
+          .catchError((_) => null);
+    }
+    if (cachedMetadata == null) {
+      fetchSettingsMetadata()
+          .then((m) => cachedMetadata = m)
+          .catchError((_) => null);
+    }
   }
 
   Future<AnilistUserSettings?> fetchUserSettings() async {
@@ -682,27 +722,47 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final token = _requireAuthToken();
-      final response = await _anilistPost(
-        headers: _anilistAuthHeaders(token),
-        body: {'query': query},
+      final cached = await AnilistCache.instance.get('settings_metadata');
+      if (cached != null) {
+        return AnilistSettingsMetadata.fromJson(cached);
+      }
+
+      final payload = await AnilistCache.instance.deduplicate(
+        'settings_metadata',
+        () async {
+          final token = _requireAuthToken();
+          final response = await _anilistPost(
+            headers: _anilistAuthHeaders(token),
+            body: {'query': query},
+          );
+
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body) as Map<String, dynamic>;
+            _throwIfGraphQlErrors(data, 'Failed to fetch settings metadata');
+
+            final result = data['data'] as Map<String, dynamic>?;
+            if (result != null && result.isNotEmpty) {
+              AnilistCache.instance.put(
+                'settings_metadata',
+                result,
+                ttl: const Duration(days: 7),
+                persist: true,
+              );
+            }
+            return result;
+          }
+
+          if (response.statusCode == 403) {
+            _handle403(response);
+          }
+
+          throw Exception(
+              'Failed to fetch AniList settings metadata (${response.statusCode})');
+        },
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body) as Map<String, dynamic>;
-        _throwIfGraphQlErrors(data, 'Failed to fetch settings metadata');
-
-        final payload = data['data'] as Map<String, dynamic>?;
-        if (payload == null || payload.isEmpty) return null;
-        return AnilistSettingsMetadata.fromJson(payload);
-      }
-
-      if (response.statusCode == 403) {
-        _handle403(response);
-      }
-
-      throw Exception(
-          'Failed to fetch AniList settings metadata (${response.statusCode})');
+      if (payload == null || payload.isEmpty) return null;
+      return AnilistSettingsMetadata.fromJson(payload);
     } catch (e) {
       Logger.e('Error fetching AniList settings metadata: $e');
       return null;
@@ -2026,6 +2086,194 @@ class AnilistAuth extends GetxController {
           .toList()
           .removeDupes();
       Logger.i("Anime List Fetched Successfully!");
+    }
+  }
+
+  Future<void> fetchUserListsBatched({bool force = false}) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null) return;
+
+    if (profileData.value.id == null) {
+      await fetchUserProfile();
+    }
+    final userId = profileData.value.id;
+    if (userId == null) return;
+
+    final animeCacheKey = 'user_anime_list_$userId';
+    final mangaCacheKey = 'user_manga_list_$userId';
+
+    if (!force) {
+      final cachedAnime = await AnilistCache.instance.get(animeCacheKey);
+      final cachedManga = await AnilistCache.instance.get(mangaCacheKey);
+
+      if (cachedAnime != null && cachedManga != null) {
+        _setAnimeListData(cachedAnime);
+        _setMangaListData(cachedManga);
+        return;
+      }
+      if (cachedAnime != null) {
+        _setAnimeListData(cachedAnime);
+        await fetchUserMangaList();
+        return;
+      }
+      if (cachedManga != null) {
+        _setMangaListData(cachedManga);
+        await fetchUserAnimeList();
+        return;
+      }
+    }
+
+    const query = '''
+  query GetUserLists(\$userId: Int) {
+    animeList: MediaListCollection(userId: \$userId, type: ANIME, sort: UPDATED_TIME) {
+      lists {
+        name
+        entries {
+          id
+          media {
+            id
+            idMal
+            title {
+              userPreferred
+              romaji
+              english
+              native
+            }
+            mediaListEntry {
+              id
+            }
+            format
+            episodes
+            nextAiringEpisode {
+              episode
+              airingAt
+              timeUntilAiring
+            }
+            averageScore
+            type
+            genres
+            startDate {
+              year
+              month
+              day
+            }
+            endDate {
+              year
+              month
+              day
+            }
+            coverImage {
+              large
+            }
+          }
+          progress
+          status
+          score(format: POINT_100)
+          updatedAt
+          startedAt { year month day }
+          completedAt { year month day }
+        }
+      }
+    }
+    mangaList: MediaListCollection(userId: \$userId, type: MANGA, sort: UPDATED_TIME) {
+      lists {
+        name
+        entries {
+          id
+          media {
+            id
+            idMal
+            title {
+              userPreferred
+              romaji
+              english
+              native
+            }
+            mediaListEntry {
+              id
+            }
+            chapters
+            format
+            status
+            type
+            averageScore
+            genres
+            startDate {
+              year
+            }
+            coverImage {
+              large
+            }
+          }
+          progress
+          status
+          score(format: POINT_100)
+          updatedAt
+        }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final data = await AnilistCache.instance.deduplicate(
+        'user_lists_$userId',
+        () async {
+          final response = await _client.post(
+            Uri.parse('https://graphql.anilist.co'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode({
+              'query': query,
+              'variables': {'userId': userId},
+            }),
+          );
+          if (response.statusCode == 200) {
+            return json.decode(response.body) as Map<String, dynamic>?;
+          } else if (response.statusCode == 403) {
+            _handle403(response);
+          } else {
+            throw Exception(
+                'Failed to load batched user lists (${response.statusCode})');
+          }
+          return null;
+        },
+      );
+
+      final root = data?['data'] as Map<String, dynamic>?;
+      if (root != null) {
+        if (root['animeList'] != null) {
+          final animePayload = {
+            'data': {'MediaListCollection': root['animeList']}
+          };
+          _setAnimeListData(animePayload);
+          AnilistCache.instance.put(
+            animeCacheKey,
+            animePayload,
+            ttl: const Duration(minutes: 15),
+            persist: true,
+          );
+        }
+        if (root['mangaList'] != null) {
+          final mangaPayload = {
+            'data': {'MediaListCollection': root['mangaList']}
+          };
+          _setMangaListData(mangaPayload);
+          AnilistCache.instance.put(
+            mangaCacheKey,
+            mangaPayload,
+            ttl: const Duration(minutes: 15),
+            persist: true,
+          );
+        }
+      }
+    } catch (e) {
+      Logger.i('Batched user lists failed, falling back: $e');
+      await fetchUserAnimeList(force: force);
+      await fetchUserMangaList(force: force);
     }
   }
 

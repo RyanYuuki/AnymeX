@@ -193,6 +193,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxBool colorFilterEnabled = false.obs;
   final RxInt colorFilterValue = 0x00000000.obs;
   final RxInt colorFilterMode = 0.obs;
+  final RxBool enhanceColorsEnabled = false.obs;
+  final RxString enhanceColorsProfile = 'manhwa'.obs;
   final RxBool grayscaleEnabled = false.obs;
   final RxBool invertColorsEnabled = false.obs;
   final RxInt readerTheme = 1.obs;
@@ -1037,6 +1039,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     colorFilterEnabled.value = ReaderKeys.colorFilterEnabled.get<bool>(false);
     colorFilterValue.value = ReaderKeys.colorFilterValue.get<int>(0);
     colorFilterMode.value = ReaderKeys.colorFilterMode.get<int>(0);
+    enhanceColorsEnabled.value =
+        ReaderKeys.enhanceColorsEnabled.get<bool>(false);
+    enhanceColorsProfile.value =
+        ReaderKeys.enhanceColorsProfile.get<String>('manhwa');
     grayscaleEnabled.value = ReaderKeys.grayscaleEnabled.get<bool>(false);
     invertColorsEnabled.value = ReaderKeys.invertColorsEnabled.get<bool>(false);
     readerTheme.value = ReaderKeys.readerTheme.get<int>(1);
@@ -1104,6 +1110,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     ReaderKeys.colorFilterEnabled.set(colorFilterEnabled.value);
     ReaderKeys.colorFilterValue.set(colorFilterValue.value);
     ReaderKeys.colorFilterMode.set(colorFilterMode.value);
+    ReaderKeys.enhanceColorsEnabled.set(enhanceColorsEnabled.value);
+    ReaderKeys.enhanceColorsProfile.set(enhanceColorsProfile.value);
     ReaderKeys.grayscaleEnabled.set(grayscaleEnabled.value);
     ReaderKeys.invertColorsEnabled.set(invertColorsEnabled.value);
     ReaderKeys.readerTheme.set(readerTheme.value);
@@ -1728,6 +1736,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void toggleColorFilter() {
     colorFilterEnabled.value = !colorFilterEnabled.value;
+    savePreferences();
+  }
+
+  void toggleEnhanceColors() {
+    enhanceColorsEnabled.value = !enhanceColorsEnabled.value;
+    savePreferences();
+  }
+
+  void setEnhanceColorsProfile(String profile) {
+    enhanceColorsProfile.value = profile;
     savePreferences();
   }
 

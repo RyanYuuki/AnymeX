@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_cache.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
@@ -71,15 +72,37 @@ class StoriesController extends GetxController {
     hasError.value = false;
 
     try {
-      final followingActivities = await _fetchFollowingActivities(token);
-      final myActivities = await _fetchMyActivities(token);
-
       final cutoff = DateTime.now()
               .subtract(const Duration(days: 3))
               .millisecondsSinceEpoch ~/
           1000;
-
       final currentUserId = int.tryParse(_auth.profileData.value.id ?? '0') ?? 0;
+
+      Map<String, dynamic>? payload;
+      if (!forceRefresh) {
+        payload = await AnilistCache.instance.get('anilist_stories');
+      }
+
+      payload ??= await AnilistCache.instance.deduplicate(
+        'anilist_stories',
+        () => _fetchStoriesBatched(token, currentUserId, cutoff),
+      );
+
+      final rawFollowing =
+          (payload?['following'] as List<dynamic>?) ?? const [];
+      final rawMine = (payload?['mine'] as List<dynamic>?) ?? const [];
+
+      final followingActivities = rawFollowing
+          .whereType<Map<String, dynamic>>()
+          .where((e) => e['id'] != null)
+          .map((e) => AnilistActivity.fromJson(e))
+          .toList();
+      final myActivities = rawMine
+          .whereType<Map<String, dynamic>>()
+          .where((e) => e['id'] != null)
+          .map((e) => AnilistActivity.fromJson(e))
+          .toList();
+
       final currentUserName = _auth.profileData.value.name ?? 'Your Story';
 
       final grouped = <int, List<AnilistActivity>>{};
@@ -142,10 +165,14 @@ class StoriesController extends GetxController {
     }
   }
 
-  Future<List<AnilistActivity>> _fetchFollowingActivities(String token) async {
-    const query = r'''
-    query ($page: Int) {
-      Page(page: $page, perPage: 50) {
+  Future<Map<String, dynamic>?> _fetchStoriesBatched(
+    String token,
+    int currentUserId,
+    int cutoff,
+  ) async {
+    const batchedQuery = r'''
+    query ($userId: Int) {
+      following: Page(page: 1, perPage: 50) {
         activities(
           isFollowing: true,
           type_in: [TEXT, ANIME_LIST, MANGA_LIST, MEDIA_LIST],
@@ -203,54 +230,7 @@ class StoriesController extends GetxController {
           }
         }
       }
-    }
-    ''';
-
-    final activities = <AnilistActivity>[];
-
-    for (final page in [1, 2]) {
-      try {
-        final response = await _client.post(
-          Uri.parse('https://graphql.anilist.co'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: json.encode({
-            'query': query,
-            'variables': {'page': page},
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          final data = json.decode(response.body);
-          final rawList =
-              data?['data']?['Page']?['activities'] as List<dynamic>? ?? [];
-          for (final raw in rawList) {
-            if (raw is Map<String, dynamic> && raw['id'] != null) {
-              activities.add(AnilistActivity.fromJson(raw));
-            }
-          }
-        } else {
-          break;
-        }
-      } catch (e) {
-        Logger.e('Error querying page $page for stories: $e');
-        break;
-      }
-    }
-
-    return activities;
-  }
-
-  Future<List<AnilistActivity>> _fetchMyActivities(String token) async {
-    final currentUserId = int.tryParse(_auth.profileData.value.id ?? '0') ?? 0;
-    if (currentUserId <= 0) return const [];
-
-    const query = r'''
-    query ($userId: Int) {
-      Page(page: 1, perPage: 25) {
+      mine: Page(page: 1, perPage: 25) {
         activities(
           userId: $userId,
           type_in: [TEXT, ANIME_LIST, MANGA_LIST, MEDIA_LIST],
@@ -321,6 +301,122 @@ class StoriesController extends GetxController {
     }
     ''';
 
+    final followingRaw = <dynamic>[];
+    var mineRaw = <dynamic>[];
+
+    if (currentUserId <= 0) {
+      final page1 = await _fetchFollowingPage(token, 1);
+      followingRaw.addAll(page1);
+    } else {
+      final response = await _client.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': batchedQuery,
+          'variables': {'userId': currentUserId},
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>?;
+        final root = data?['data'] as Map<String, dynamic>?;
+        followingRaw.addAll(
+            (root?['following']?['activities'] as List<dynamic>?) ?? const []);
+        mineRaw =
+            (root?['mine']?['activities'] as List<dynamic>?) ?? const [];
+      }
+    }
+
+    if (followingRaw.length >= 50) {
+      final lastCreatedAt =
+          (followingRaw.last as Map<String, dynamic>?)?['createdAt'] as int?;
+      if (lastCreatedAt != null && lastCreatedAt >= cutoff) {
+        final page2 = await _fetchFollowingPage(token, 2);
+        followingRaw.addAll(page2);
+      }
+    }
+
+    final payload = <String, dynamic>{
+      'following': followingRaw,
+      'mine': mineRaw,
+    };
+    AnilistCache.instance.put(
+      'anilist_stories',
+      payload,
+      ttl: const Duration(minutes: 5),
+      persist: true,
+    );
+    return payload;
+  }
+
+  Future<List<dynamic>> _fetchFollowingPage(String token, int page) async {
+    const query = r'''
+    query ($page: Int) {
+      Page(page: $page, perPage: 50) {
+        activities(
+          isFollowing: true,
+          type_in: [TEXT, ANIME_LIST, MANGA_LIST, MEDIA_LIST],
+          sort: ID_DESC
+        ) {
+          __typename
+          ... on TextActivity {
+            id
+            userId
+            type
+            replyCount
+            text(asHtml: false)
+            siteUrl
+            isLocked
+            isSubscribed
+            likeCount
+            isLiked
+            isPinned
+            createdAt
+            user {
+              id
+              name
+              avatar { large }
+              bannerImage
+            }
+          }
+          ... on ListActivity {
+            id
+            userId
+            type
+            replyCount
+            status
+            progress
+            siteUrl
+            isLocked
+            isSubscribed
+            likeCount
+            isLiked
+            isPinned
+            createdAt
+            user {
+              id
+              name
+              avatar { large }
+              bannerImage
+            }
+            media {
+              id
+              type
+              isAdult
+              title { userPreferred }
+              coverImage { large }
+              bannerImage
+            }
+          }
+        }
+      }
+    }
+    ''';
+
     try {
       final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
@@ -331,24 +427,18 @@ class StoriesController extends GetxController {
         },
         body: json.encode({
           'query': query,
-          'variables': {'userId': currentUserId},
+          'variables': {'page': page},
         }),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final rawList =
-            data?['data']?['Page']?['activities'] as List<dynamic>? ?? [];
-        return rawList
-            .whereType<Map<String, dynamic>>()
-            .where((e) => e['id'] != null)
-            .map((e) => AnilistActivity.fromJson(e))
-            .toList();
+        return (data?['data']?['Page']?['activities'] as List<dynamic>?) ??
+            const [];
       }
     } catch (e) {
-      Logger.e('Error fetching own activities for stories: $e');
+      Logger.e('Error querying page $page for stories: $e');
     }
-
     return const [];
   }
 

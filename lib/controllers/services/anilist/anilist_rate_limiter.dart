@@ -9,10 +9,12 @@ class AnilistRateLimiter {
   bool _isProcessing = false;
   DateTime? _rateLimitUntil;
   int _remaining = 90;
+  int _limit = 90;
   DateTime? _rateLimitReset;
   DateTime _lastDispatched = DateTime.fromMillisecondsSinceEpoch(0);
 
-  static const int _baseSpacingMs = 450;
+  static const int _baseSpacingMs = 700;
+  static const int _degradedSpacingMs = 1200;
   static const int _lowQuotaThreshold = 15;
   static const int _criticalQuotaThreshold = 5;
 
@@ -41,7 +43,7 @@ class AnilistRateLimiter {
         }
       }
 
-      int delayMs = _baseSpacingMs;
+      int delayMs = _limit <= 35 ? _degradedSpacingMs : _baseSpacingMs;
       if (_remaining <= _criticalQuotaThreshold) {
         if (_rateLimitReset != null && DateTime.now().isBefore(_rateLimitReset!)) {
           final untilReset = _rateLimitReset!.difference(DateTime.now()).inMilliseconds;
@@ -74,6 +76,14 @@ class AnilistRateLimiter {
     required int statusCode,
     required Map<String, String> headers,
   }) {
+    final limitStr = _findHeader(headers, 'x-ratelimit-limit');
+    if (limitStr != null) {
+      final parsed = int.tryParse(limitStr);
+      if (parsed != null && parsed > 0) {
+        _limit = parsed;
+      }
+    }
+
     final remStr = _findHeader(headers, 'x-ratelimit-remaining');
     if (remStr != null) {
       final parsed = int.tryParse(remStr);

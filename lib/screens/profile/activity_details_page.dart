@@ -16,8 +16,9 @@ import 'package:anymex/screens/profile/widgets/profile_common.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 
-void showActivityDetailsSheet(BuildContext context, AnilistActivity activity) {
-  showModalBottomSheet(
+Future<void> showActivityDetailsSheet(
+    BuildContext context, AnilistActivity activity) {
+  return showModalBottomSheet<void>(
     context: context,
     useRootNavigator: true,
     isScrollControlled: true,

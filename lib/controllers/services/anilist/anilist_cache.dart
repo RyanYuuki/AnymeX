@@ -20,6 +20,7 @@ class AnilistCache {
   AnilistCache._();
 
   final Map<String, _AnilistCacheEntry> _memoryCache = {};
+  final Map<String, Future<Map<String, dynamic>?>> _inFlight = {};
   Directory? _cacheDir;
 
   Future<Directory> _getDir() async {
@@ -145,6 +146,19 @@ class AnilistCache {
         }
       }
     } catch (_) {}
+  }
+
+  Future<Map<String, dynamic>?> deduplicate(
+    String key,
+    Future<Map<String, dynamic>?> Function() fetcher,
+  ) {
+    final existing = _inFlight[key];
+    if (existing != null) return existing;
+    final future = fetcher().whenComplete(() {
+      _inFlight.remove(key);
+    });
+    _inFlight[key] = future;
+    return future;
   }
 
   void clear() {
