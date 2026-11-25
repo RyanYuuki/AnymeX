@@ -410,7 +410,7 @@
   "chooseWhichListToShowOn": "Choisir quelle liste afficher sur la page d'accueil",
   "chooseYourFavouriteColor": "Choisissez votre couleur préférée !",
   "chooseYourFavouritePalette": "Choisissez votre palette préférée !",
-  "chromaScaler": "Mise à l'échelle Chroma",
+  "chromaScaler": "Redimensionneur chromatique",
   "classicCarouselCardLayoutFeaturingVertical": "Disposition classique en carrousel avec des cartes de posters verticales.",
   "clear": "Effacer",
   "clearAll": "Tout effacer",
@@ -445,7 +445,7 @@
   "commonFavouriteStaff": "Personnel favori en commun",
   "commonGenres": "Genres communs",
   "commonSettings": "Paramètres généraux",
-  "commonStudios": "Studios communs",
+  "commonStudios": "Studios courants",
   "commonTags": "Tags communs",
   "commonVoiceActors": "Doubleurs communs",
   "communityDriven": "Piloté par la communauté",
@@ -1744,7 +1744,7 @@
   "yourWatchReadStatistics": "Vos statistiques de visionnage et de lecture",
   "advancedLinuxSoundArchitecture": "Advanced Linux Sound Architecture",
   "al": "AL",
-  "allYourLocalShi": "Tous vos contenus locaux",
+  "allYourLocalShi": "Tout votre contenu local",
   "alsa": "ALSA",
   "androidAudiotrackApi": "API AudioTrack Android",
   "anilist": "AniList",
@@ -1795,7 +1795,7 @@
   "materialYou": "Material You",
   "mediacodecEmbed": "MediaCodec Intégré",
   "myanimelist": "MyAnimeList",
-  "necessaryMurder": "Necessary Murder",
+  "necessaryMurder": "Meurtre nécessaire",
   "nextEp": "Ép. suivant",
   "nextEpisode": "Épisode suivant",
   "nsfw": "NSFW",
@@ -2473,7 +2473,7 @@
       }
     }
   },
-  "page": "PAGE {value} / {value2}",
+  "page": "Page {value} / {value2}",
   "@page": {
     "placeholders": {
       "value": {
