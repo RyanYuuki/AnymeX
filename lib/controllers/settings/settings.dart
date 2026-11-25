@@ -34,6 +34,7 @@ class Settings extends GetxController {
 
   final canShowUpdate = true.obs;
   final playerControlThemeRx = 'default'.obs;
+  final progressSliderStyleRx = 'wavy'.obs;
   final mediaIndicatorThemeRx = 'default'.obs;
   final readerControlThemeRx = 'default'.obs;
   final chapterStyleRx = 'compact'.obs;
@@ -72,6 +73,7 @@ class Settings extends GetxController {
   RxBool enableJxlCompression = false.obs;
 
   RxBool isTV = false.obs;
+  RxBool enableSeekPreview = true.obs;
   final _selectedShader = ''.obs;
   final _selectedProfile = 'MID-END'.obs;
   final mpvPath = ''.obs;
@@ -117,6 +119,8 @@ class Settings extends GetxController {
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
     chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
+    progressSliderStyleRx.value =
+        PlayerUiKeys.progressSliderStyle.get<String>('wavy');
 
     final savedCardStyleJson =
         UISettingsKeys.customCardStyleJson.get<String>('');
@@ -160,6 +164,25 @@ class Settings extends GetxController {
     if (Platform.isAndroid) {
       _initDisplayModes();
     }
+
+    _initSeekPreviewSetting();
+  }
+
+  void _initSeekPreviewSetting() {
+    final hasDetected = UISettingsKeys.seekPreviewFirstBootDetected.get<bool>(false);
+    if (!hasDetected) {
+      final isCapable = !isTV.value;
+      enableSeekPreview.value = isCapable;
+      UISettingsKeys.enableSeekPreview.set(isCapable);
+      UISettingsKeys.seekPreviewFirstBootDetected.set(true);
+    } else {
+      enableSeekPreview.value = UISettingsKeys.enableSeekPreview.get<bool>(true);
+    }
+  }
+
+  void setSeekPreviewEnabled(bool enabled) {
+    enableSeekPreview.value = enabled;
+    UISettingsKeys.enableSeekPreview.set(enabled);
   }
 
   void toggleIncognito([bool? value]) {
@@ -807,6 +830,12 @@ class Settings extends GetxController {
   set playerControlTheme(String value) {
     playerControlThemeRx.value = value;
     PlayerUiKeys.playerControlTheme.set(value);
+  }
+
+  String get progressSliderStyle => progressSliderStyleRx.value;
+  set progressSliderStyle(String value) {
+    progressSliderStyleRx.value = value;
+    PlayerUiKeys.progressSliderStyle.set(value);
   }
 
   String get mediaIndicatorTheme => mediaIndicatorThemeRx.value;

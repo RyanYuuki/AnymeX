@@ -1,16 +1,35 @@
+import 'package:anymex/screens/anime/watch/controls/widgets/seek_preview_card.dart';
+import 'package:anymex/screens/anime/watch/chapters/models/playback_chapter.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
-enum SliderStyle { defaultM3, capsule, ios }
+enum SliderStyle { defaultM3, capsule, ios, wavy }
+
+SliderStyle parseSliderStyle(String value) {
+  switch (value.toLowerCase()) {
+    case 'wavy':
+      return SliderStyle.wavy;
+    case 'capsule':
+      return SliderStyle.capsule;
+    case 'ios':
+      return SliderStyle.ios;
+    case 'defaultm3':
+    case 'default':
+    default:
+      return SliderStyle.defaultM3;
+  }
+}
 
 class ProgressSlider extends StatefulWidget {
-  final SliderStyle style;
+  final SliderStyle? style;
   final Color? activeTrackColor;
   final Color? inactiveTrackColor;
   final Color? secondaryActiveTrackColor;
@@ -21,7 +40,7 @@ class ProgressSlider extends StatefulWidget {
 
   const ProgressSlider({
     super.key,
-    this.style = SliderStyle.defaultM3,
+    this.style,
     this.activeTrackColor,
     this.inactiveTrackColor,
     this.secondaryActiveTrackColor,
@@ -36,14 +55,41 @@ class ProgressSlider extends StatefulWidget {
 }
 
 class _ProgressSliderState extends State<ProgressSlider> {
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(canRequestFocus: false, skipTraversal: true);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _scheduleScrubbingEndCheck(PlayerController controller) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          (controller.isSeeking.value ||
+              controller.scrubbingPosition.value != null)) {
+        controller.onScrubbingEnd();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
+    final settings = Get.find<Settings>();
     final colorScheme = context.colors;
 
     return Obx(() {
       final duration = controller.episodeDuration.value.inMilliseconds;
-      final position = controller.currentPosition.value.inMilliseconds;
+      final scrubPos = controller.scrubbingPosition.value;
+      final position = scrubPos?.inMilliseconds ??
+          controller.currentPosition.value.inMilliseconds;
       final buffer = controller.bufferred.value.inMilliseconds;
 
       final maxValue = duration > 0 ? duration.toDouble() : 1.0;
@@ -53,14 +99,19 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final skipTimes = controller.skipTimes;
       final totalDuration = controller.episodeDuration.value;
 
-      final isDefaultStyle = widget.style == SliderStyle.defaultM3;
-      final containerHeight = isDefaultStyle ? 27.0 : 27.0;
+      final effectiveStyle =
+          widget.style ?? parseSliderStyle(settings.progressSliderStyle);
+      final isDefaultStyle = effectiveStyle == SliderStyle.defaultM3;
+      final isWavyStyle = effectiveStyle == SliderStyle.wavy;
+      final containerHeight = isWavyStyle ? 44.0 : 27.0;
       final markerSize = isDefaultStyle ? 15.0 : 4.0;
 
       bool isFollowMode() {
         try {
           final watchium = Get.find<WatchiumService>();
-          return watchium.inRoom.value && watchium.followHost.value && !watchium.isHost.value;
+          return watchium.inRoom.value &&
+              watchium.followHost.value &&
+              !watchium.isHost.value;
         } catch (_) {
           return false;
         }
@@ -68,80 +119,177 @@ class _ProgressSliderState extends State<ProgressSlider> {
 
       return IgnorePointer(
         ignoring: isFollowMode(),
-        child: SizedBox(
-          height: containerHeight,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-            if (isDefaultStyle)
-              AnymeXSliderM3(
-                theme: AnymeXSliderM3Theme(
-                  trackHeight: 15,
-                  thumbHeight: 20,
-                  activeColor: widget.activeTrackColor,
-                  inactiveColor: widget.inactiveTrackColor,
-                  secondaryActiveColor: widget.secondaryActiveTrackColor,
-                ),
-                label: PlayerUtils.formatDuration(
-                    Duration(milliseconds: position)),
-                divisions: null,
-                focusNode:
-                    FocusNode(canRequestFocus: false, skipTraversal: true),
-                min: 0,
-                value: clampedPosition,
-                max: maxValue,
-                secondaryTrackValue: clampedBuffer,
-                onChangeStart: (v) => controller.isSeeking.value = true,
-                onChanged: (v) =>
-                    controller.seekTo(Duration(milliseconds: v.toInt())),
-                onChangeEnd: (v) {
-                  controller.isSeeking.value = false;
-                },
-              )
-            else
-              SliderTheme(
-                data: _getSliderTheme(colorScheme, widget.style),
-                child: Slider(
-                  focusNode:
-                      FocusNode(canRequestFocus: false, skipTraversal: true),
-                  min: 0,
-                  value: clampedPosition,
-                  max: maxValue,
-                  secondaryTrackValue: clampedBuffer,
-                  onChangeStart: (v) => controller.isSeeking.value = true,
-                  onChanged: (v) =>
-                      controller.seekTo(Duration(milliseconds: v.toInt())),
-                  onChangeEnd: (v) {
-                    controller.isSeeking.value = false;
-                  },
-                ),
-              ),
-            if (skipTimes != null && totalDuration.inMilliseconds > 0)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: CustomPaint(
-                    painter: SkipTimelinePainter(
-                      skipTimes: skipTimes,
-                      totalDuration: totalDuration,
-                      currentPosition: Duration(
-                        milliseconds: clampedPosition.toInt(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final scrubPos = controller.scrubbingPosition.value;
+            final engine = controller.seekPreviewEngine;
+            const previewCardWidth = 160.0;
+            final totalDurationMs = totalDuration.inMilliseconds;
+
+            double? previewLeft;
+            if (scrubPos != null &&
+                totalDurationMs > 0 &&
+                constraints.maxWidth > previewCardWidth) {
+              final ratio =
+                  (scrubPos.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
+              final desiredCenter = ratio * constraints.maxWidth;
+              previewLeft = (desiredCenter - (previewCardWidth / 2.0))
+                  .clamp(0.0, constraints.maxWidth - previewCardWidth);
+            }
+
+            final isScrubbing = scrubPos != null;
+
+            return Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) {
+                controller.isSeeking.value = true;
+              },
+              onPointerUp: (_) => _scheduleScrubbingEndCheck(controller),
+              onPointerCancel: (_) => _scheduleScrubbingEndCheck(controller),
+              child: SizedBox(
+                height: containerHeight,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  if (isWavyStyle)
+                    M3ETheme(
+                      data: M3ETheme.of(context).copyWith(
+                        colorScheme: M3ETheme.of(context).colorScheme.copyWith(
+                              primary: widget.activeTrackColor ??
+                                  colorScheme.primary,
+                              secondaryContainer: widget.inactiveTrackColor ??
+                                  colorScheme.surfaceContainerHighest
+                                      .opaque(0.5, iReallyMeanIt: true),
+                            ),
                       ),
-                      markerHeight: markerSize,
-                      hideUnderThumb: widget.style != SliderStyle.ios,
-                      segmentColor: widget.segmentColor,
-                      recapSegmentColor: widget.recapSegmentColor,
+                      child: M3ESlider.wavy(
+                        value: clampedPosition,
+                        min: 0,
+                        max: maxValue,
+                        size: M3ESliderSize.xs,
+                        wavelength: 40,
+                        trackThickness: 8,
+                        thumbLength: 30,
+                        amplitude: 1,
+                        enabled: true,
+                        semanticLabel: 'Playback',
+                        focusNode: _focusNode,
+                        onChanged: (double value) {
+                          controller.onScrubbingUpdate(
+                              Duration(milliseconds: value.toInt()));
+                        },
+                        onChangeEnd: (double value) {
+                          controller.onScrubbingEnd();
+                        },
+                      ),
+                    )
+                  else if (isDefaultStyle)
+                    AnymeXSliderM3(
+                      theme: AnymeXSliderM3Theme(
+                        trackHeight: 15,
+                        thumbHeight: 20,
+                        activeColor: widget.activeTrackColor,
+                        inactiveColor: widget.inactiveTrackColor,
+                        secondaryActiveColor: widget.secondaryActiveTrackColor,
+                      ),
+                      label: isScrubbing
+                          ? null
+                          : PlayerUtils.formatDuration(
+                              Duration(milliseconds: position)),
+                      showValueIndicator: !isScrubbing,
+                      divisions: null,
+                      focusNode: _focusNode,
+                      min: 0,
+                      value: clampedPosition,
+                      max: maxValue,
+                      secondaryTrackValue: clampedBuffer,
+                      onChangeStart: (v) {
+                        controller.onScrubbingUpdate(
+                            Duration(milliseconds: v.toInt()));
+                      },
+                      onChanged: (v) => controller
+                          .onScrubbingUpdate(Duration(milliseconds: v.toInt())),
+                      onChangeEnd: (v) {
+                        controller.onScrubbingEnd();
+                      },
+                    )
+                  else
+                    SliderTheme(
+                      data: _getSliderTheme(colorScheme, effectiveStyle,
+                          isScrubbing: isScrubbing),
+                      child: Slider(
+                        focusNode: _focusNode,
+                        min: 0,
+                        value: clampedPosition,
+                        max: maxValue,
+                        secondaryTrackValue: clampedBuffer,
+                        label: isScrubbing
+                            ? null
+                            : PlayerUtils.formatDuration(
+                                Duration(milliseconds: position)),
+                        onChangeStart: (v) {
+                          controller.onScrubbingUpdate(
+                              Duration(milliseconds: v.toInt()));
+                        },
+                        onChanged: (v) => controller.onScrubbingUpdate(
+                            Duration(milliseconds: v.toInt())),
+                        onChangeEnd: (v) {
+                          controller.onScrubbingEnd();
+                        },
+                      ),
                     ),
-                  ),
-                ),
+                  if (totalDuration.inMilliseconds > 0)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: SkipTimelinePainter(
+                            skipTimes: skipTimes,
+                            skipSegments: controller.skipSegments.toList(),
+                            chapters: controller.chapters.toList(),
+                            totalDuration: totalDuration,
+                            currentPosition: Duration(
+                              milliseconds: clampedPosition.toInt(),
+                            ),
+                            markerHeight: markerSize,
+                            horizontalPadding: isWavyStyle ? 4.0 : 0.0,
+                            hideUnderThumb: effectiveStyle != SliderStyle.ios,
+                            segmentColor: widget.segmentColor,
+                            recapSegmentColor: widget.recapSegmentColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (previewLeft != null && scrubPos != null && engine != null)
+                    Positioned(
+                      left: previewLeft,
+                      bottom: containerHeight + 14.0,
+                      child: IgnorePointer(
+                        child: SeekPreviewCard(
+                          engine: engine,
+                          position: scrubPos,
+                          chapterTitle: controller.getChapterTitleAt(scrubPos),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-          ],
+            ),
+          );
+          },
         ),
-      ),
       );
     });
   }
 
-  SliderThemeData _getSliderTheme(ColorScheme colorScheme, SliderStyle style) {
+  SliderThemeData _getSliderTheme(
+    ColorScheme colorScheme,
+    SliderStyle style, {
+    bool isScrubbing = false,
+  }) {
+    final indicator =
+        isScrubbing ? ShowValueIndicator.never : ShowValueIndicator.always;
+
     switch (style) {
       case SliderStyle.ios:
         return SliderThemeData(
@@ -155,6 +303,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
               widget.secondaryActiveTrackColor ?? Colors.white.withOpacity(0.4),
           thumbColor: widget.thumbColor,
           overlayColor: widget.overlayColor ?? Colors.transparent,
+          showValueIndicator: indicator,
         );
       case SliderStyle.capsule:
         return SliderThemeData(
@@ -175,30 +324,40 @@ class _ProgressSliderState extends State<ProgressSlider> {
           overlayColor: widget.overlayColor ??
               colorScheme.primary.opaque(0.1, iReallyMeanIt: true),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
+          showValueIndicator: indicator,
         );
+      case SliderStyle.wavy:
       case SliderStyle.defaultM3:
-        return const SliderThemeData();
+        return SliderThemeData(
+          showValueIndicator: indicator,
+        );
     }
   }
 }
 
 class SkipTimelinePainter extends CustomPainter {
-  final aniskip.EpisodeSkipTimes skipTimes;
+  final aniskip.EpisodeSkipTimes? skipTimes;
+  final List<PlaybackSkipSegment> skipSegments;
+  final List<PlaybackChapter> chapters;
   final Duration totalDuration;
   final Duration currentPosition;
   final bool hideUnderThumb;
   final Color? segmentColor;
   final Color? recapSegmentColor;
   final double markerHeight;
+  final double horizontalPadding;
   static const Color _defaultSegmentColor = Color(0xFFEBC125);
   static const Color _defaultRecapColor = Color(0xFF4CAF50);
 
   const SkipTimelinePainter({
-    required this.skipTimes,
+    this.skipTimes,
+    this.skipSegments = const [],
+    this.chapters = const [],
     required this.totalDuration,
     required this.currentPosition,
     required this.hideUnderThumb,
     this.markerHeight = 4.0,
+    this.horizontalPadding = 0.0,
     this.segmentColor,
     this.recapSegmentColor,
   });
@@ -207,18 +366,23 @@ class SkipTimelinePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (totalDuration.inMilliseconds <= 0) return;
 
+    final double availableWidth =
+        (size.width - (horizontalPadding * 2)).clamp(0.0, double.infinity);
     final double totalSeconds = totalDuration.inMilliseconds / 1000.0;
     final Paint paint = Paint()..style = PaintingStyle.fill;
     const double thumbCutoutHalfWidth = 5.0;
     final double yOffset = (size.height - markerHeight) / 2;
     final double progressSeconds =
         (currentPosition.inMilliseconds / 1000.0).clamp(0.0, totalSeconds);
-    final double thumbX =
-        totalSeconds > 0 ? (progressSeconds / totalSeconds) * size.width : 0.0;
+    final double thumbX = totalSeconds > 0
+        ? horizontalPadding + (progressSeconds / totalSeconds) * availableWidth
+        : horizontalPadding;
 
     void drawSegment(double startX, double endX, Color color) {
-      final double clampedStart = startX.clamp(0.0, size.width);
-      final double clampedEnd = endX.clamp(0.0, size.width);
+      final double clampedStart =
+          startX.clamp(horizontalPadding, size.width - horizontalPadding);
+      final double clampedEnd =
+          endX.clamp(horizontalPadding, size.width - horizontalPadding);
       final double width = clampedEnd - clampedStart;
       if (width <= 0) return;
 
@@ -232,10 +396,11 @@ class SkipTimelinePainter extends CustomPainter {
       );
     }
 
-    void drawInterval(aniskip.SkipIntervals? interval, {Color? colorOverride}) {
-      if (interval == null) return;
-      final double startX = (interval.start / totalSeconds) * size.width;
-      final double endX = (interval.end / totalSeconds) * size.width;
+    void drawInterval(double startSec, double endSec, {Color? colorOverride}) {
+      final double startX =
+          horizontalPadding + (startSec / totalSeconds) * availableWidth;
+      final double endX =
+          horizontalPadding + (endSec / totalSeconds) * availableWidth;
       final Color color = colorOverride ?? segmentColor ?? _defaultSegmentColor;
 
       if (!hideUnderThumb) {
@@ -254,19 +419,66 @@ class SkipTimelinePainter extends CustomPainter {
       drawSegment(cutoutEnd, endX, color);
     }
 
-    drawInterval(skipTimes.recap,
-        colorOverride: recapSegmentColor ?? _defaultRecapColor);
-    drawInterval(skipTimes.op);
-    drawInterval(skipTimes.ed);
+    if (skipTimes != null) {
+      if (skipTimes!.recap != null) {
+        drawInterval(
+          skipTimes!.recap!.start.toDouble(),
+          skipTimes!.recap!.end.toDouble(),
+          colorOverride: recapSegmentColor ?? _defaultRecapColor,
+        );
+      }
+      if (skipTimes!.op != null) {
+        drawInterval(
+          skipTimes!.op!.start.toDouble(),
+          skipTimes!.op!.end.toDouble(),
+        );
+      }
+      if (skipTimes!.ed != null) {
+        drawInterval(
+          skipTimes!.ed!.start.toDouble(),
+          skipTimes!.ed!.end.toDouble(),
+        );
+      }
+    } else if (skipSegments.isNotEmpty) {
+      for (final seg in skipSegments) {
+        final color = seg.kind == PlaybackSegmentKind.recap
+            ? (recapSegmentColor ?? _defaultRecapColor)
+            : (segmentColor ?? _defaultSegmentColor);
+        drawInterval(seg.startSeconds, seg.endSeconds, colorOverride: color);
+      }
+    }
+
+    if (chapters.isNotEmpty) {
+      final tickPaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.85)
+        ..style = PaintingStyle.fill;
+      for (final ch in chapters) {
+        final tickX = horizontalPadding +
+            (ch.startSeconds / totalSeconds) * availableWidth;
+        if (tickX > horizontalPadding + 3 &&
+            tickX < size.width - horizontalPadding - 3) {
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(
+              Rect.fromLTWH(tickX - 1.0, yOffset - 1, 2.0, markerHeight + 2),
+              const Radius.circular(1),
+            ),
+            tickPaint,
+          );
+        }
+      }
+    }
   }
 
   @override
   bool shouldRepaint(covariant SkipTimelinePainter oldDelegate) {
     return oldDelegate.skipTimes != skipTimes ||
+        oldDelegate.skipSegments != skipSegments ||
+        oldDelegate.chapters != chapters ||
         oldDelegate.totalDuration != totalDuration ||
         oldDelegate.currentPosition != currentPosition ||
         oldDelegate.hideUnderThumb != hideUnderThumb ||
         oldDelegate.markerHeight != markerHeight ||
+        oldDelegate.horizontalPadding != horizontalPadding ||
         oldDelegate.segmentColor != segmentColor ||
         oldDelegate.recapSegmentColor != recapSegmentColor;
   }

@@ -277,9 +277,8 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderLogoButton(),
-        title: Get.context!.l10n.anymex,
-        titleColor: Get.theme.colorScheme.primary,
-        subtitleWidget: const HeaderGreetingSubtitle(),
+        titleWidget: const HeaderHomeTitle(),
+        subtitleWidget: const HeaderHomeSubtitle(),
         actions: const [HeaderProfileAvatar()],
         bottom: bottom,
       );
@@ -662,6 +661,63 @@ class HeaderGreetingSubtitle extends StatelessWidget {
   }
 }
 
+class HeaderHomeTitle extends StatelessWidget {
+  final Color? color;
+
+  const HeaderHomeTitle({super.key, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final serviceHandler = Get.find<ServiceHandler>();
+    return Obx(() {
+      final name = serviceHandler.isLoggedIn.value &&
+              (serviceHandler.profileData.value.name?.isNotEmpty ?? false)
+          ? serviceHandler.profileData.value.name!
+          : context.l10n.guest;
+      final greeting = context.l10n.hey.trim();
+      final titleText = context.l10n.hey.endsWith(' ') ||
+              context.l10n.hey.endsWith('，') ||
+              context.l10n.hey.endsWith(',')
+          ? '${context.l10n.hey}$name'
+          : '$greeting $name';
+      return HeaderTitle(
+        title: titleText,
+        color: color ?? Theme.of(context).colorScheme.primary,
+      );
+    });
+  }
+}
+
+class HeaderHomeSubtitle extends StatelessWidget {
+  final Color? color;
+
+  const HeaderHomeSubtitle({super.key, this.color});
+
+  String _formatSubtitle(String raw) {
+    var text = raw.trim();
+    while (text.isNotEmpty &&
+        (text.startsWith(',') ||
+            text.startsWith('，') ||
+            text.startsWith(' '))) {
+      text = text.substring(1).trim();
+    }
+    if (text.isEmpty) return text;
+    if (text.startsWith('¿') && text.length > 1) {
+      return '¿${text[1].toUpperCase()}${text.substring(2)}';
+    }
+    return '${text[0].toUpperCase()}${text.substring(1)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formatted = _formatSubtitle(context.l10n.whatAreWeDoingToday);
+    return HeaderSubtitle(
+      subtitle: formatted,
+      color: color,
+    );
+  }
+}
+
 void showLibrarySortSheet(BuildContext context, LibraryController controller) =>
     AnymeXSheet.custom(
       LibrarySettingsSheet(controller: controller),
@@ -728,7 +784,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
         children: [
           AnymeXText(
             context.l10n.librarySettings,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               fontFamily: 'Linotte',
@@ -898,8 +954,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
           return AnymeXTile.toggle(
             icon: Icons.translate_rounded,
             title: context.l10n.useAlternateTitle,
-            subtitle:
-                context.l10n.switchBetweenDefaultTitleAndRomaji,
+            subtitle: context.l10n.switchBetweenDefaultTitleAndRomaji,
             value: settings.useAlternateTitle.value,
             onChanged: (e) {
               settings.useAlternateTitle.value = e;
@@ -1070,7 +1125,7 @@ class _FloatingHeaderWrapper extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: isTranslucent
-                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.45)
+                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.20)
                     : theme.colorScheme.surfaceContainer
                         .withValues(alpha: 0.92),
                 borderRadius: borderRadius,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:anymex/screens/anime/watch/chapters/models/playback_chapter.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,8 @@ class MediaKitPlayer extends base.BasePlayer {
   final _subtitleController = StreamController<List<String>>.broadcast();
   final _heightController = StreamController<int?>.broadcast();
   final _completedController = StreamController<bool>.broadcast();
+  final _chaptersController = StreamController<List<PlaybackChapter>>.broadcast();
+  bool _chaptersWatched = false;
 
   base.PlayerState _state = base.PlayerState();
   final List<StreamSubscription> _subscriptions = [];
@@ -71,6 +74,9 @@ class MediaKitPlayer extends base.BasePlayer {
   Stream<bool> get completedStream => _completedController.stream;
 
   @override
+  Stream<List<PlaybackChapter>> get chaptersStream => _chaptersController.stream;
+
+  @override
   base.PlayerState get state => _state;
 
   @override
@@ -104,7 +110,6 @@ class MediaKitPlayer extends base.BasePlayer {
         hwdec: config.hwdec,
         enableHardwareAcceleration: config.hwdec != 'no',
         androidAttachSurfaceAfterVideoParameters: true,
-        // enableAndroidSurfaceProducer: false,
       ),
     );
 
@@ -235,6 +240,33 @@ class MediaKitPlayer extends base.BasePlayer {
     _subscriptions.add(_player.stream.completed.listen((completed) {
       _completedController.add(completed);
     }));
+
+    _watchContainerChapters();
+  }
+
+  void _watchContainerChapters() {
+    if (_chaptersWatched) return;
+    _chaptersWatched = true;
+    try {
+      final mpv = _player.platform as dynamic;
+      mpv.observeProperty('chapter-list/count', (value) async {
+        final count = int.tryParse('$value') ?? 0;
+        final list = <PlaybackChapter>[];
+        for (var i = 0; i < count; i++) {
+          try {
+            final title = await mpv.getProperty('chapter-list/$i/title');
+            final time = await mpv.getProperty('chapter-list/$i/time');
+            list.add(PlaybackChapter(
+              title: title?.toString() ?? 'Chapter ${i + 1}',
+              startSeconds: double.tryParse('$time') ?? 0.0,
+            ));
+          } catch (_) {}
+        }
+        if (!_isDisposed && !_chaptersController.isClosed) {
+          _chaptersController.add(list);
+        }
+      });
+    } catch (_) {}
   }
 
   @override
@@ -502,6 +534,7 @@ class MediaKitPlayer extends base.BasePlayer {
       _subtitleController.close(),
       _heightController.close(),
       _completedController.close(),
+      _chaptersController.close(),
     ]);
   }
 

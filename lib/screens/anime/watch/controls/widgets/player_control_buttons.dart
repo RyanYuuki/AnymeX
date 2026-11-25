@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/chapters_bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,12 @@ const List<PlayerControlItemMeta> playerControlCatalog = [
     name: 'Player Settings',
     icon: Icons.settings_rounded,
     defaultSlot: 'top',
+  ),
+  PlayerControlItemMeta(
+    id: 'chapters',
+    name: 'Chapters',
+    icon: Icons.bookmarks_rounded,
+    defaultSlot: 'left',
   ),
   PlayerControlItemMeta(
     id: 'playlist',
@@ -144,6 +151,19 @@ Map<String, Widget> buildPlayerControlButtonMap(
   PlayerController controller,
 ) {
   return {
+    'chapters': ControlButton(
+      icon: Icons.bookmarks_rounded,
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const ChaptersBottomSheet(),
+        );
+      },
+      tooltip: 'Chapters & Timestamps',
+      compact: true,
+    ),
     'playlist': ControlButton(
       icon: Icons.playlist_play_rounded,
       onPressed: () {
@@ -331,6 +351,9 @@ bool shouldDisplayPlayerControl(String id, PlayerController controller) {
     return false;
   }
   if (id == 'torrent' && !controller.isTorrentStream.value) {
+    return false;
+  }
+  if (id == 'chapters' && controller.chapters.isEmpty && controller.skipSegments.isEmpty) {
     return false;
   }
   return true;

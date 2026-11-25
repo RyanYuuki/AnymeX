@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_border.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -87,23 +86,26 @@ class AnymeXSheet extends StatelessWidget {
     BuildContext context, {
     bool showDragHandle = false,
     double borderRadius = 32.0,
+    bool useRootNavigator = true,
   }) =>
       AnymeXSheet(
         customWidget: widget,
         showDragHandle: showDragHandle,
         borderRadius: borderRadius,
-      ).show<T>(context);
+      ).show<T>(context, useRootNavigator: useRootNavigator);
 
   Future<T?> show<T>(
     BuildContext context, {
     bool isDismissible = true,
     bool enableDrag = true,
+    bool useRootNavigator = true,
   }) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
       isDismissible: isDismissible,
       showDragHandle: false,
+      useRootNavigator: useRootNavigator,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.55),
       enableDrag: enableDrag,
@@ -448,7 +450,7 @@ Widget loginSheetHelper({
                   children: [
                     AnymeXText(
                       context.l10n.internalBrowser,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
@@ -496,7 +498,7 @@ Widget loginSheetHelper({
                   children: [
                     AnymeXText(
                       context.l10n.externalBrowser,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
@@ -545,7 +547,7 @@ Widget loginSheetHelper({
                     children: [
                       AnymeXText(
                         context.l10n.loginWithToken,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),

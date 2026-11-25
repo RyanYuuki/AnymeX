@@ -20,6 +20,8 @@ import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/core/metadata/models/episode_metadata.dart';
+import 'package:anymex/core/metadata/episode_metadata_service.dart';
 import 'package:anymex/models/animethemes/anime_theme.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/utils/anime_themes_api.dart';
@@ -871,18 +873,55 @@ class MediaDetailsController extends GetxController {
     }
     try {
       final baseList = rawEpisodes.map((e) => e.clone()).toList();
-      final newEps = await AnilistData.fetchEpisodesFromAnify(
-        media.value.id,
-        baseList,
-      );
-      if (reqId != null && _isStaleSourceRequest(reqId)) return;
-      if (newEps.isNotEmpty) {
-        anifyEpisodes.assignAll(newEps);
+      final metaTargets = MetadataTargetIds.fromMedia(media.value);
+      final metaService = EpisodeMetadataService.instance;
+
+      if (!metaTargets.hasAnyId) {
+        final newEps = await AnilistData.fetchEpisodesFromAnify(
+          media.value.id,
+          baseList,
+        );
+        if (reqId != null && _isStaleSourceRequest(reqId)) return;
+        if (newEps.isNotEmpty) {
+          anifyEpisodes.assignAll(newEps);
+          if (isAnify.value) {
+            episodeList.assignAll(_renewEpisodeData(newEps));
+            _fetchFillerInfo();
+          }
+        }
+        return;
+      }
+
+      await for (final metaMap in metaService.streamMetadata(metaTargets)) {
+        if (reqId != null && _isStaleSourceRequest(reqId)) return;
+        if (!isAnify.value) break;
+
+        for (final ep in baseList) {
+          final epNum = ep.number.toString();
+          final meta = metaMap[epNum];
+          if (meta != null) {
+            if (meta.title != null && meta.title!.isNotEmpty) {
+              ep.title = meta.title!;
+            }
+            if (meta.thumbnail != null && meta.thumbnail!.isNotEmpty) {
+              ep.thumbnail = meta.thumbnail!;
+            }
+            if (meta.description != null && meta.description!.isNotEmpty) {
+              ep.desc = meta.description!;
+            }
+            if (meta.isFiller != null) {
+              ep.filler = meta.isFiller!;
+            }
+          }
+        }
+
+        anifyEpisodes.assignAll(baseList.map((e) => e.clone()).toList());
         if (isAnify.value) {
-          episodeList.assignAll(_renewEpisodeData(newEps));
-          _fetchFillerInfo();
+          episodeList.assignAll(_renewEpisodeData(baseList));
         }
       }
+
+      _fetchFillerInfo();
     } catch (_) {}
   }
 

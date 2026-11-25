@@ -11,9 +11,7 @@ import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/dialogs/donation_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/header/header.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -105,22 +103,53 @@ class _HomePageState extends State<HomePage> {
         return const SizedBox.shrink();
       }
 
+      final isDesktop = MediaQuery.sizeOf(context).width > 600;
+      final horizontalPadding = isDesktop ? 24.0 : 20.0;
+
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5.0),
-        child: SizedBox(
-          height: 110,
-          child: RepaintBoundary(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: entries.length,
-              itemBuilder: (context, i) => NewEpisodeReleaseCard(
-                media: entries[i].$1,
-                watchedEpisode: entries[i].$2,
-                latestReleasedEpisode: entries[i].$3,
-                releaseDate: entries[i].$4,
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymeXText(
+                    context.l10n.newEpisodes,
+                    variant: TextVariant.bold,
+                    size: 18,
+                    color: context.colors.primary,
+                  ),
+                  const SizedBox(height: 2),
+                  AnymeXText(
+                    context.l10n.outNowFromShowsYouAreWatching,
+                    size: 12,
+                    variant: TextVariant.semiBold,
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ],
               ),
             ),
-          ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 110,
+              child: RepaintBoundary(
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.only(right: 15),
+                  itemCount: entries.length,
+                  itemBuilder: (context, i) => NewEpisodeReleaseCard(
+                    media: entries[i].$1,
+                    watchedEpisode: entries[i].$2,
+                    latestReleasedEpisode: entries[i].$3,
+                    releaseDate: entries[i].$4,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     });
@@ -216,20 +245,12 @@ class _HomePageState extends State<HomePage> {
     final double bottomNavBarHeight =
         isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
 
-    bool isMobile =
-        getResponsiveValue(context, desktopValue: false, mobileValue: true);
-
-    final TextAlign textAlignment =
-        isMobile ? TextAlign.center : TextAlign.left;
-
     final List<dynamic> novelData = [];
 
     return RefreshIndicator(
       onRefresh: () {
         if (!serviceHandler.isLoggedIn.value) {
-          snackBar(
-              context.l10n.wWhatAreYouDoingStep,
-              duration: 1200);
+          snackBar(context.l10n.wWhatAreYouDoingStep, duration: 1200);
         }
         return serviceHandler.refresh();
       },
@@ -242,127 +263,65 @@ class _HomePageState extends State<HomePage> {
               child: CustomScrollView(
                 controller: _scrollController,
                 cacheExtent: 200.0,
-              slivers: [
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: isDesktop ? 24.0 : statusBarHeight + appBarHeight + 10,
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Obx(
-                    () => Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isDesktop ? 24.0 : 20.0,
-                      ),
-                      child: AnymeXTextSpans(
-                        fontSize: 27,
-                        spans: [
-                          AnymeXTextSpan(
-                              text: context.l10n.hey,
-                              size: 30,
-                              variant: TextVariant.bold),
-                          AnymeXTextSpan(
-                              text:
-                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : context.l10n.guest}',
-                              size: 30,
-                              color: context.colors.primary,
-                              variant: TextVariant.bold),
-                          AnymeXTextSpan(
-                              text: context.l10n.whatAreWeDoingToday,
-                              size: 30,
-                              variant: TextVariant.bold),
-                        ],
-                        textAlign: textAlignment,
-                      ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: isMobile
-                        ? CrossAxisAlignment.center
-                        : CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isDesktop ? 24.0 : 20.0,
-                        ),
-                        child: AnymeXText(
-                          context.l10n.findYourFavouriteAnimeOrManga,
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .inverseSurface
-                                .withOpacity(0.8),
-                          ),
-                          textAlign: textAlignment,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
-                () {
-                  final homeWidgets = _buildHomeWidgets(
-                    context: context,
-                    serviceHandler: serviceHandler,
-                    offlineStorageController: offlineStorageController,
-                    settings: settings,
-                  );
-                  return SliverList.builder(
-                    itemCount: homeWidgets.length,
-                    itemBuilder: (context, index) => RepaintBoundary(
-                      child: homeWidgets[index],
-                    ),
-                  );
-                }(),
-                if (novelData.isNotEmpty)
+                slivers: [
                   SliverToBoxAdapter(
-                    child: ReusableCarousel(
-                      title: context.l10n.recommendedNovels,
-                      data: novelData,
-                      type: ItemType.novel,
-                      source: sourceController.activeNovelSource.value,
+                    child: SizedBox(
+                      height: statusBarHeight + appBarHeight + 10,
                     ),
                   ),
-                SliverToBoxAdapter(
-                  child: SizedBox(height: bottomNavBarHeight + 150),
-                ),
-              ],
-            ),
-            ),
-            if (!isDesktop)
-              CustomAnimatedAppBar(
-                isVisible: _isAppBarVisibleExternally,
-                scrollController: _scrollController,
-                headerContent: Header(
-                  leading: const HeaderLogoButton(),
-                  title: context.l10n.anymex,
-                  titleColor: Theme.of(context).colorScheme.primary,
-                  subtitleWidget: const HeaderGreetingSubtitle(),
-                  actions: const [HeaderProfileAvatar()],
-                ),
-                visibleStatusBarStyle: SystemUiOverlayStyle(
-                  statusBarIconBrightness:
-                      Theme.of(context).brightness == Brightness.light
-                          ? Brightness.dark
-                          : Brightness.light,
-                  statusBarBrightness: Theme.of(context).brightness,
-                  statusBarColor: Colors.transparent,
-                ),
-                hiddenStatusBarStyle: SystemUiOverlayStyle(
-                  statusBarIconBrightness:
-                      Theme.of(context).brightness == Brightness.light
-                          ? Brightness.light
-                          : Brightness.dark,
-                  statusBarBrightness:
-                      Theme.of(context).brightness == Brightness.light
-                          ? Brightness.dark
-                          : Brightness.light,
-                  statusBarColor: Colors.transparent,
-                ),
+                  () {
+                    final homeWidgets = _buildHomeWidgets(
+                      context: context,
+                      serviceHandler: serviceHandler,
+                      offlineStorageController: offlineStorageController,
+                      settings: settings,
+                    );
+                    return SliverList.builder(
+                      itemCount: homeWidgets.length,
+                      itemBuilder: (context, index) => RepaintBoundary(
+                        child: homeWidgets[index],
+                      ),
+                    );
+                  }(),
+                  if (novelData.isNotEmpty)
+                    SliverToBoxAdapter(
+                      child: ReusableCarousel(
+                        title: context.l10n.recommendedNovels,
+                        data: novelData,
+                        type: ItemType.novel,
+                        source: sourceController.activeNovelSource.value,
+                      ),
+                    ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: bottomNavBarHeight + 150),
+                  ),
+                ],
               ),
+            ),
+            CustomAnimatedAppBar(
+              isVisible: _isAppBarVisibleExternally,
+              scrollController: _scrollController,
+              headerContent: Header.fromType(type: PageType.home),
+              visibleStatusBarStyle: SystemUiOverlayStyle(
+                statusBarIconBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.dark
+                        : Brightness.light,
+                statusBarBrightness: Theme.of(context).brightness,
+                statusBarColor: Colors.transparent,
+              ),
+              hiddenStatusBarStyle: SystemUiOverlayStyle(
+                statusBarIconBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.light
+                        : Brightness.dark,
+                statusBarBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.dark
+                        : Brightness.light,
+                statusBarColor: Colors.transparent,
+              ),
+            ),
           ],
         ),
       ),

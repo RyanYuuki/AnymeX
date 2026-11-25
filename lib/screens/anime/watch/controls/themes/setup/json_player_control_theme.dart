@@ -415,7 +415,6 @@ class ThemeRenderer {
       } else if (_badgeIds.contains(item.id)) {
         badgeItems.add(item);
       } else if (item.id == 'label_stack' || item.id == 'watching_label') {
-        // this thing wasted so much of my time
         stackItems.add(item);
       } else {
         otherItems.add(item);
@@ -498,8 +497,6 @@ class ThemeRenderer {
 
   Widget? _buildItem(ThemeItem item) {
     if (!_checkCondition(item.visibleWhen)) return null;
-
-    // witness my genius, the way i handle all this so ineffeciently
 
     switch (item.id) {
       case 'gap':
@@ -2666,8 +2663,11 @@ Curve _parseCurve(String? raw, Curve fallback) {
 }
 
 SliderStyle _toSliderStyle(String? raw, {required SliderStyle fallback}) {
-  switch (raw) {
+  switch (raw?.toLowerCase()) {
+    case 'wavy':
+      return SliderStyle.wavy;
     case 'default':
+    case 'defaultm3':
       return SliderStyle.defaultM3;
     case 'ios':
       return SliderStyle.ios;
