@@ -82,13 +82,11 @@ class _AnymeXDialogState extends State<AnymeXDialog> {
   Animation<double>? _routeAnimation;
   bool _isRouteAnimating = false;
   bool _isLayoutMoving = false;
-  bool _isScrolling = false;
   double? _lastBottomInset;
   Size? _lastScreenSize;
   Timer? _layoutSettleTimer;
-  Timer? _scrollSettleTimer;
 
-  bool get _isMoving => _isRouteAnimating || _isLayoutMoving || _isScrolling;
+  bool get _isMoving => _isRouteAnimating || _isLayoutMoving;
 
   @override
   void didChangeDependencies() {
@@ -138,31 +136,10 @@ class _AnymeXDialogState extends State<AnymeXDialog> {
     });
   }
 
-  void _onScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollStartNotification ||
-        notification is ScrollUpdateNotification) {
-      _scrollSettleTimer?.cancel();
-      if (!_isScrolling && mounted) {
-        setState(() => _isScrolling = true);
-      }
-      _scrollSettleTimer = Timer(const Duration(milliseconds: 150), () {
-        if (mounted && _isScrolling) {
-          setState(() => _isScrolling = false);
-        }
-      });
-    } else if (notification is ScrollEndNotification) {
-      _scrollSettleTimer?.cancel();
-      if (_isScrolling && mounted) {
-        setState(() => _isScrolling = false);
-      }
-    }
-  }
-
   @override
   void dispose() {
     _routeAnimation?.removeStatusListener(_onRouteStatusChanged);
     _layoutSettleTimer?.cancel();
-    _scrollSettleTimer?.cancel();
     super.dispose();
   }
 
@@ -196,26 +173,20 @@ class _AnymeXDialogState extends State<AnymeXDialog> {
             const SizedBox(height: 12),
           ],
           Flexible(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (notification) {
-                _onScrollNotification(notification);
-                return false;
-              },
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: widget.message != null
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: AnymeXText(
-                          widget.message!,
-                          size: 14,
-                          color: context.colors.onSurfaceVariant,
-                          textAlign: TextAlign.center,
-                          maxLines: 100,
-                        ),
-                      )
-                    : (widget.contentWidget ?? const SizedBox.shrink()),
-              ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: widget.message != null
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: AnymeXText(
+                        widget.message!,
+                        size: 14,
+                        color: context.colors.onSurfaceVariant,
+                        textAlign: TextAlign.center,
+                        maxLines: 100,
+                      ),
+                    )
+                  : (widget.contentWidget ?? const SizedBox.shrink()),
             ),
           ),
           const SizedBox(height: 24),
