@@ -197,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: AnymeXText(context.l10n.activityRefreshed),
-        duration: Duration(milliseconds: 1200),
+        duration: const Duration(milliseconds: 1200),
       ),
     );
   }
@@ -900,11 +900,11 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                   if (!_hasMoreActivities && _activities.isNotEmpty)
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: AnymeXText(
                           context.l10n.noMoreActivities,
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
                     ),
@@ -939,7 +939,7 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: AnymeXText(context.l10n.activityDeleted),
-        duration: Duration(milliseconds: 1200),
+        duration: const Duration(milliseconds: 1200),
       ),
     );
   }
@@ -1140,7 +1140,7 @@ class _ProfilePageState extends State<ProfilePage>
       children: [
         // Mobile stats ui
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: SectionHeader(title: context.l10n.stats, icon: IconlyLight.chart),
         ),
         const SizedBox(height: 8),

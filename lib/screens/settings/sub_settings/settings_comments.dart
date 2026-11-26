@@ -15,7 +15,6 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/l10n/ui_labels.dart';
 
 class SettingsComments extends StatefulWidget {
   const SettingsComments({super.key});

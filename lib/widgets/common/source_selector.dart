@@ -2,7 +2,6 @@ import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';

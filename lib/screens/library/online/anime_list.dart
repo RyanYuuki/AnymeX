@@ -460,7 +460,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
                       child:
-                          AnymeXText(context.l10n.clear, style: TextStyle(fontSize: 12)),
+                          AnymeXText(context.l10n.clear, style: const TextStyle(fontSize: 12)),
                     ),
                 ],
               ),

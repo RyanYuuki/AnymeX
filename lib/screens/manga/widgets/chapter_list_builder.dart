@@ -473,7 +473,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: AnymeXText(context.l10n.noChaptersFound2),
           ),
         ),

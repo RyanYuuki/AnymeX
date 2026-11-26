@@ -597,8 +597,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Iconsax.heart5, size: 20),
-                  SizedBox(width: 8),
+                  const Icon(Iconsax.heart5, size: 20),
+                  const SizedBox(width: 8),
                   AnymeXText(
                     context.l10n.calculateCompatibility,
                     variant: TextVariant.bold,

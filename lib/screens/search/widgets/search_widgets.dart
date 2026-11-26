@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/search/widgets/search_filter_selector.dart';
 import 'package:anymex/utils/theme_extensions.dart';

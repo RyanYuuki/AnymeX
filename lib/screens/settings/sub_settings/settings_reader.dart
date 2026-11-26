@@ -640,7 +640,7 @@ class _SettingsReaderState extends State<SettingsReader> {
       title: context.l10n.tapZones,
       confirmText: context.l10n.actionSave,
       cancelText: context.l10n.actionCancel,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       width: getResponsiveValue(
         context,
         mobileValue: Get.width * 0.94,
@@ -680,7 +680,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
@@ -699,7 +699,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                       },
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: SegmentedButton<bool>(
                       showSelectedIcon: false,

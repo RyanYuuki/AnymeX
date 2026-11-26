@@ -328,7 +328,7 @@ void showWelcomeDialogg(BuildContext context) {
                         },
                         label: AnymeXText(
                           context.l10n.getStarted,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Linotte',
                             fontSize: 15,
                           ),
@@ -402,8 +402,8 @@ void showDiscordJoinDialog(BuildContext context) {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
+                          const Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
+                          const SizedBox(width: 8),
                           AnymeXText(
                             context.l10n.joinNewDiscord,
                             color: Colors.white,
@@ -434,8 +434,8 @@ void showDiscordJoinDialog(BuildContext context) {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
+                          const Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
+                          const SizedBox(width: 8),
                           AnymeXText(
                             context.l10n.joinTelegramChannel,
                             color: Colors.white,

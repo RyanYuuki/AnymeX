@@ -65,7 +65,7 @@ class DiscordBadge {
     description: Get.context!.l10n.theCreatorOfThisCommentDiscussion,
     iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/special/original-poster.svg',
     isSvg: true,
-    badgeColor: Color(0xFF5865F2),
+    badgeColor: const Color(0xFF5865F2),
     priority: 0,
   );
 
@@ -79,7 +79,7 @@ class DiscordBadge {
           description: Get.context!.l10n.ownerAndCreatorOfTheCommentum,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
           isSvg: true,
-          badgeColor: Color(0xFFFFD700),
+          badgeColor: const Color(0xFFFFD700),
           priority: 1,
         );
       case 'app_owner':
@@ -90,7 +90,7 @@ class DiscordBadge {
           description: Get.context!.l10n.creatorAndDeveloperOfAnymex,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
           isSvg: true,
-          badgeColor: Color(0xFFFFD700),
+          badgeColor: const Color(0xFFFFD700),
           priority: 2,
         );
       case 'super_admin':
@@ -101,7 +101,7 @@ class DiscordBadge {
           description: Get.context!.l10n.superAdministratorWithSystemWideManagement,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
           isSvg: true,
-          badgeColor: Color(0xFF5865F2),
+          badgeColor: const Color(0xFF5865F2),
           priority: 3,
         );
       case 'admin':
@@ -111,7 +111,7 @@ class DiscordBadge {
           description: Get.context!.l10n.communityAdministratorOverseeingModerationAndPolicies,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
           isSvg: true,
-          badgeColor: Color(0xFFED4245),
+          badgeColor: const Color(0xFFED4245),
           priority: 4,
         );
       case 'moderator':
@@ -121,7 +121,7 @@ class DiscordBadge {
           description: Get.context!.l10n.verifiedModeratorKeepingCommentsRespectfulAnd,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-mod.svg',
           isSvg: true,
-          badgeColor: Color(0xFF57F287),
+          badgeColor: const Color(0xFF57F287),
           priority: 5,
         );
       default:

@@ -48,7 +48,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
-import 'package:anymex/widgets/animation/widget_animations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:anymex/widgets/common/sliver_slide_fade_transition.dart';
 import 'package:anymex/l10n/ui_labels.dart';

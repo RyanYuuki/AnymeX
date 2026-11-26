@@ -79,7 +79,7 @@ class WatchiumOverlay extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: AnymeXText(context.l10n.party,
-                          style: TextStyle(color: Colors.white, fontSize: 11),
+                          style: const TextStyle(color: Colors.white, fontSize: 11),
                         ),
                       ),
                     ),
@@ -125,11 +125,11 @@ class _SyncToHostButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.sync_problem, color: Colors.orange, size: 14),
-              SizedBox(width: 4),
+              const Icon(Icons.sync_problem, color: Colors.orange, size: 14),
+              const SizedBox(width: 4),
               AnymeXText(
                 context.l10n.sync,
-                style: TextStyle(color: Colors.orange, fontSize: 11),
+                style: const TextStyle(color: Colors.orange, fontSize: 11),
               ),
             ],
           ),

@@ -267,7 +267,7 @@ void main(List<String> args) async {
                 const SizedBox(height: 12),
                 Text(
                   Get.context!.l10n.errorGeneric,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextButton(

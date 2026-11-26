@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';

@@ -66,14 +66,14 @@ class NovelSettingsPanel extends StatelessWidget {
                               tabAlignment: TabAlignment.center,
                               tabs: [
                                 Tab(
-                                    icon: Icon(Icons.format_size),
+                                    icon: const Icon(Icons.format_size),
                                     text: context.l10n.display),
                                 Tab(icon: const Icon(Icons.palette), text: context.l10n.theme),
                                 Tab(
-                                    icon: Icon(Icons.gesture),
+                                    icon: const Icon(Icons.gesture),
                                     text: context.l10n.navigation),
                                 Tab(
-                                    icon: Icon(Icons.record_voice_over),
+                                    icon: const Icon(Icons.record_voice_over),
                                     text: context.l10n.tts),
                               ],
                               labelColor: context.colors.primary,
@@ -836,7 +836,7 @@ class NovelSettingsPanel extends StatelessWidget {
         ),
         child: AnymeXText(
           context.l10n.resetToDefault2,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),

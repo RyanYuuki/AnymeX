@@ -1,7 +1,6 @@
 library;
 
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 
 import 'dart:io';
 
@@ -281,7 +280,7 @@ class _LogoAnimationPreviewDialogState
                     const SizedBox(height: 12),
                     AnymeXText(
                       context.l10n.logoName,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
                     TextField(
@@ -326,7 +325,7 @@ class _LogoAnimationPreviewDialogState
                         children: [
                           AnymeXText(
                             context.l10n.sizeMode,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
                             ),
@@ -348,7 +347,7 @@ class _LogoAnimationPreviewDialogState
                               children: [
                                 AnymeXText(
                                   context.l10n.scaleFactor,
-                                  style: TextStyle(fontSize: 12),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                                 AnymeXText(
                                   '${(customScale * 100).toInt()}% (${(customScale * 200).toInt()}px)',
@@ -510,7 +509,7 @@ class _LogoAnimationPreviewDialogState
                     const SizedBox(height: 12),
                     AnymeXText(
                       context.l10n.logoName,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
                     TextField(
@@ -555,7 +554,7 @@ class _LogoAnimationPreviewDialogState
                         children: [
                           AnymeXText(
                             context.l10n.sizeMode,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
                             ),
@@ -577,7 +576,7 @@ class _LogoAnimationPreviewDialogState
                               children: [
                                 AnymeXText(
                                   context.l10n.scaleFactor,
-                                  style: TextStyle(fontSize: 12),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                                 AnymeXText(
                                   '${(customScale * 100).toInt()}% (${(customScale * 200).toInt()}px)',
@@ -824,7 +823,7 @@ class _LogoAnimationPreviewDialogState
             ),
             icon: const Icon(Icons.replay_rounded, size: 16),
             label: AnymeXText(context.l10n.replay,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             onPressed: _replayAnimation,
           ),
         ),
@@ -878,7 +877,7 @@ class _LogoAnimationPreviewDialogState
             const SizedBox(height: 16),
             AnymeXText(
               context.l10n.customLogos,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
             ...List.generate(_customLogos.length, (index) {
@@ -1018,7 +1017,7 @@ class _LogoAnimationPreviewDialogState
             const SizedBox(height: 8),
             AnymeXText(
               context.l10n.builtInStyles,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
           ],

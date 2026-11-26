@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';

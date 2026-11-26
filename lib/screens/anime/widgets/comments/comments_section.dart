@@ -2548,14 +2548,14 @@ class _CommentSectionState extends State<CommentSection>
       context: context,
       builder: (dialogCtx) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.symmetric(horizontal: 24),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
         child: AnymeXContainer(
           borderRadius: BorderRadius.circular(24),
           color: colorScheme.surfaceContainerHigh,
           border: Border.all(
             color: colorScheme.outlineVariant.withOpacity(0.2),
           ),
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2572,8 +2572,8 @@ class _CommentSectionState extends State<CommentSection>
                           color: colorScheme.error, size: 22),
                     ),
                   ),
-                  SizedBox(width: 12),
-                  Expanded(
+                  const SizedBox(width: 12),
+                  const Expanded(
                     child: AnymeXText(
                       'Report Comment',
                       size: 18,
@@ -2583,14 +2583,14 @@ class _CommentSectionState extends State<CommentSection>
                   ),
                 ],
               ),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               AnymeXText(
                 'Please select a reason for reporting this comment:',
                 color: colorScheme.onSurfaceVariant,
                 size: 14,
                 maxLines: null,
               ),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 value: reasonController.text.isEmpty
                     ? null
@@ -2613,7 +2613,7 @@ class _CommentSectionState extends State<CommentSection>
                   DropdownMenuItem(
                       value: 'spoiler',
                       child: AnymeXText(context.l10n.spoiler, maxLines: null)),
-                  DropdownMenuItem(
+                  const DropdownMenuItem(
                       value: 'nsfw', child: AnymeXText('NSFW', maxLines: null)),
                   DropdownMenuItem(
                       value: 'off_topic',
@@ -2862,7 +2862,7 @@ class _CommentSectionState extends State<CommentSection>
           decoration: InputDecoration(
             labelText: context.l10n.reason,
             hintText: context.l10n.provideAReasonForThisAction,
-            border: OutlineInputBorder(),
+            border: const OutlineInputBorder(),
           ),
         ),
         actions: [
@@ -3350,9 +3350,9 @@ class _CommentSectionState extends State<CommentSection>
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.error_outline,
+                                const Icon(Icons.error_outline,
                                     size: 40, color: Colors.grey),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 AnymeXText(context.l10n.failedToLoadComments,
                                     maxLines: null),
                               ],
@@ -3375,12 +3375,12 @@ class _CommentSectionState extends State<CommentSection>
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.comment_outlined,
+                                const Icon(Icons.comment_outlined,
                                     size: 40, color: Colors.grey),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 AnymeXText(context.l10n.noCommentsFound,
                                     style:
-                                        TextStyle(fontWeight: FontWeight.w500),
+                                        const TextStyle(fontWeight: FontWeight.w500),
                                     maxLines: null),
                               ],
                             ),
@@ -3568,11 +3568,11 @@ class _CommentSectionState extends State<CommentSection>
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(height: 16),
-                    Icon(Icons.history, size: 48, color: Colors.grey),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 16),
+                    const Icon(Icons.history, size: 48, color: Colors.grey),
+                    const SizedBox(height: 12),
                     AnymeXText(context.l10n.noHistoryFound,
-                        style: TextStyle(fontWeight: FontWeight.w500),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
                         maxLines: null),
                   ],
                 );
@@ -3819,10 +3819,7 @@ class _UserProfileSheet extends StatelessWidget {
 
   const _UserProfileSheet({
     required this.username,
-    this.avatarUrl,
-    this.decorationUrl,
-    this.userRole,
-  });
+  }) : avatarUrl = null : decorationUrl : userRole;
 
   Color _getRoleColor(BuildContext context, String role) {
     return CommentumRoleConfig.getRoleColor(context, role);

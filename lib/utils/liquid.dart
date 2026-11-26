@@ -708,7 +708,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
                             AnymeXText(Get.context!.l10n.blurRadius,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
@@ -739,7 +739,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
                             AnymeXText(Get.context!.l10n.brightness,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
@@ -770,7 +770,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
                             AnymeXText(Get.context!.l10n.contrast,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(

@@ -791,7 +791,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               labelText: context.l10n.enterValue,
             ),
           ),

@@ -43,7 +43,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
   final _defaultShader = 'Default'.obs;
   Dio? _dio;
 
-  static List<({String id, String title, String sub})> _modeDefs = [
+  static final List<({String id, String title, String sub})> _modeDefs = [
     (id: 'A', title: Get.context!.l10n.modeA, sub: 'Sharpen soft lines'),
     (id: 'B', title: Get.context!.l10n.modeB, sub: 'Gentle, keeps grain'),
     (id: 'C', title: Get.context!.l10n.modeC, sub: 'Denoise, upscale'),
@@ -52,84 +52,84 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
     (id: 'C+A', title: Get.context!.l10n.modeCA, sub: 'Clean, then sharpen'),
   ];
 
-  static List<({String key, String title, Color c1, Color c2, Color c3})>
+  static final List<({String key, String title, Color c1, Color c2, Color c3})>
       _presetDefs = [
     (
       key: 'natural',
       title: Get.context!.l10n.natural,
-      c1: Color(0xFF8FB1A3),
-      c2: Color(0xFFE7C9A1),
-      c3: Color(0xFF5E6F9A),
+      c1: const Color(0xFF8FB1A3),
+      c2: const Color(0xFFE7C9A1),
+      c3: const Color(0xFF5E6F9A),
     ),
     (
       key: 'vivid',
       title: Get.context!.l10n.vivid,
-      c1: Color(0xFFFF6B8B),
-      c2: Color(0xFFFFC857),
-      c3: Color(0xFF3DDBD9),
+      c1: const Color(0xFFFF6B8B),
+      c2: const Color(0xFFFFC857),
+      c3: const Color(0xFF3DDBD9),
     ),
     (
       key: 'cinema',
       title: Get.context!.l10n.cinema,
-      c1: Color(0xFF1F3A4D),
-      c2: Color(0xFFC98B4E),
-      c3: Color(0xFF0E0E14),
+      c1: const Color(0xFF1F3A4D),
+      c2: const Color(0xFFC98B4E),
+      c3: const Color(0xFF0E0E14),
     ),
     (
       key: 'anime_soft',
       title: Get.context!.l10n.soft,
-      c1: Color(0xFFC9B8E8),
-      c2: Color(0xFFF3D3D0),
-      c3: Color(0xFFA9D6CE),
+      c1: const Color(0xFFC9B8E8),
+      c2: const Color(0xFFF3D3D0),
+      c3: const Color(0xFFA9D6CE),
     ),
     (
       key: 'warm',
       title: Get.context!.l10n.warm,
-      c1: Color(0xFFE8895B),
-      c2: Color(0xFFF2C879),
-      c3: Color(0xFF8E4B3A),
+      c1: const Color(0xFFE8895B),
+      c2: const Color(0xFFF2C879),
+      c3: const Color(0xFF8E4B3A),
     ),
     (
       key: 'cool',
       title: Get.context!.l10n.cool,
-      c1: Color(0xFF5B8DEF),
-      c2: Color(0xFF9FD3F0),
-      c3: Color(0xFF2E3A6B),
+      c1: const Color(0xFF5B8DEF),
+      c2: const Color(0xFF9FD3F0),
+      c3: const Color(0xFF2E3A6B),
     ),
     (
       key: 'anime_4k',
       title: Get.context!.l10n.anime4k,
-      c1: Color(0xFF7B61FF),
-      c2: Color(0xFFFF6584),
-      c3: Color(0xFF43E6D5),
+      c1: const Color(0xFF7B61FF),
+      c2: const Color(0xFFFF6584),
+      c3: const Color(0xFF43E6D5),
     ),
     (
       key: 'cinema_hdr',
       title: Get.context!.l10n.cinemaHdr,
-      c1: Color(0xFF1A2A3A),
-      c2: Color(0xFFE5A93C),
-      c3: Color(0xFFFF5722),
+      c1: const Color(0xFF1A2A3A),
+      c2: const Color(0xFFE5A93C),
+      c3: const Color(0xFFFF5722),
     ),
     (
       key: 'vivid_pop',
       title: Get.context!.l10n.vividPop,
-      c1: Color(0xFFFF2A6D),
-      c2: Color(0xFF05D9E8),
-      c3: Color(0xFFF3E600),
+      c1: const Color(0xFFFF2A6D),
+      c2: const Color(0xFF05D9E8),
+      c3: const Color(0xFFF3E600),
     ),
     (
       key: 'dark',
       title: Get.context!.l10n.dark,
-      c1: Color(0xFF212121),
-      c2: Color(0xFF37474F),
-      c3: Color(0xFF121212),
+      c1: const Color(0xFF212121),
+      c2: const Color(0xFF37474F),
+      c3: const Color(0xFF121212),
     ),
     (
       key: 'grayscale',
       title: Get.context!.l10n.grayscale,
-      c1: Color(0xFF424242),
-      c2: Color(0xFF757575),
-      c3: Color(0xFFBDBDBD),
+      c1: const Color(0xFF424242),
+      c2: const Color(0xFF757575),
+      c3: const Color(0xFFBDBDBD),
     ),
   ];
 
@@ -441,7 +441,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: LinearProgressIndicator(
@@ -454,7 +454,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                       minHeight: 8,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: TextButton(
@@ -491,7 +491,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                   }),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               AnymeXSectionBuilder(
                 title: context.l10n.devicePerformanceTier,
                 children: [

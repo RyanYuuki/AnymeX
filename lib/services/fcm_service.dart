@@ -121,7 +121,7 @@ class FcmService {
     if (rawUrl != null && rawUrl.trim().isNotEmpty) {
       return rawUrl.trim();
     }
-    final clickAction = data['click_action']?.toString()?.trim();
+    final clickAction = data['click_action']?.toString().trim();
     if (clickAction != null &&
         clickAction.isNotEmpty &&
         clickAction != 'FLUTTER_NOTIFICATION_CLICK') {

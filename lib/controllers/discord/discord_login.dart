@@ -1,6 +1,5 @@
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
-import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
 import 'package:webview_all/webview_all.dart';
@@ -379,7 +378,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                       children: [
                         AnymeXText(
                           context.l10n.loginToDiscord,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -387,7 +386,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                         ),
                         AnymeXText(
                           context.l10n.signInToContinue,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color(0xFFB5BAC1),
                             fontSize: 12,
                           ),

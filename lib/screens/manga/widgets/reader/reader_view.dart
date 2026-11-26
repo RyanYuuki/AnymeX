@@ -107,8 +107,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnymeXProgressIndicator(),
-          SizedBox(height: 16),
+          const AnymeXProgressIndicator(),
+          const SizedBox(height: 16),
           AnymeXText(context.l10n.loadingPages),
         ],
       ),
