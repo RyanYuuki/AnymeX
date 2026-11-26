@@ -1,4 +1,5 @@
 import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'dart:async';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -849,6 +850,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
                           widget.media.serviceType.isAL ? _isPrivate : null,
                         );
                         if (mounted) Get.back();
+                      } catch (e) {
+                        if (mounted) {
+                          errorSnackBar(
+                              Get.context!.l10n.failedToUpdateListEntry);
+                        }
                       } finally {
                         if (mounted) {
                           setState(() => _isSaving = false);

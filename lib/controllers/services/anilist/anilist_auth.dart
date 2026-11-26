@@ -2589,25 +2589,33 @@ class AnilistAuth extends GetxController {
       final effectiveMalId = malId ?? matched?.idMal;
 
       if (effectiveMalId != null && effectiveMalId.isNotEmpty && serviceHandler.malService.isLoggedIn.value) {
-        serviceHandler.malService.updateListEntry(UpdateListEntryParams(
-            listId: effectiveMalId,
-            score: score != null ? score / 10.0 : null,
-            status: status,
-            progress: progress,
-            isAnime: isAnime,
-            startedAt: startedAt,
-            completedAt: completedAt));
+        try {
+          await serviceHandler.malService.updateListEntry(UpdateListEntryParams(
+              listId: effectiveMalId,
+              score: score,
+              status: status,
+              progress: progress,
+              isAnime: isAnime,
+              startedAt: startedAt,
+              completedAt: completedAt));
+        } catch (e) {
+          Logger.i('MAL cross-sync failed: $e');
+        }
       }
 
       if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
-        serviceHandler.simklService.updateListEntryFromExternalId(
-          anilistId: listId,
-          malId: effectiveMalId,
-          score: score != null ? score / 10.0 : null,
-          status: status,
-          progress: progress,
-          isAnime: isAnime,
-        );
+        try {
+          await serviceHandler.simklService.updateListEntryFromExternalId(
+            anilistId: listId,
+            malId: effectiveMalId,
+            score: score,
+            status: status,
+            progress: progress,
+            isAnime: isAnime,
+          );
+        } catch (e) {
+          Logger.i('Simkl cross-sync failed: $e');
+        }
       }
 
       if (response.statusCode == 200) {

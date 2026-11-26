@@ -29,6 +29,9 @@ class FetchDetailsParams {
 class UpdateListEntryParams {
   String listId;
   List<String>? syncIds;
+
+  /// Normalized 0-100 score. Each service converts it to its own format
+  /// (MAL/Simkl expect 1-10, AniList uses the user's score format).
   double? score;
   String? status;
   int? progress;
