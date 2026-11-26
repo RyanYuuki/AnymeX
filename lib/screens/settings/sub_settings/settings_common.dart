@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:anymex/l10n/locale_controller.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_episode_metadata.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/l10n/home_card_labels.dart';
 
 class SettingsCommon extends StatefulWidget {
   const SettingsCommon({super.key});
@@ -358,7 +359,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
               items: localState.keys.toList(),
               isSelected: (key) => localState[key] ?? true,
               isRadio: false,
-              getTitle: (key) => key,
+              getTitle: (key) => homeCardLabel(context.l10n, key),
               onItemPressed: (key) {
                 setDialogState(() {
                   localState[key] = !(localState[key] ?? true);

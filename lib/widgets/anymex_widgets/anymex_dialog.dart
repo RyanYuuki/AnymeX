@@ -7,6 +7,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class AnymeXDialog extends StatefulWidget {
   final String? title;
@@ -36,14 +37,14 @@ class AnymeXDialog extends StatefulWidget {
     this.enableV2 = false,
     this.padding = const EdgeInsets.all(24),
     this.showCancelButton = true,
-    this.confirmText = 'Confirm',
+    this.confirmText = '',
     this.translucent = true,
     this.confirmResultGetter,
     this.forceAction = false,
     this.isConfirmEnabled = true,
     this.onCancel,
     this.cancelResultGetter,
-    this.cancelText = 'Cancel',
+    this.cancelText = '',
     this.autoDismiss = true,
     this.width,
   });
@@ -216,7 +217,9 @@ class _AnymeXDialogState extends State<AnymeXDialog> {
                         ),
                       ),
                       child: AnymeXText(
-                        widget.cancelText,
+                        widget.cancelText.isEmpty
+                            ? context.l10n.cancel
+                            : widget.cancelText,
                         size: 14,
                         color: context.colors.onSurface,
                         variant: TextVariant.bold,
@@ -263,7 +266,9 @@ class _AnymeXDialogState extends State<AnymeXDialog> {
                           : null,
                     ),
                     child: AnymeXText(
-                      widget.confirmText,
+                      widget.confirmText.isEmpty
+                          ? context.l10n.confirm
+                          : widget.confirmText,
                       size: 14,
                       color: widget.isConfirmEnabled
                           ? context.colors.onPrimary
