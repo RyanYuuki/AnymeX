@@ -56,6 +56,9 @@ SettingCategory categorizeSettingKey(String key) {
       lower.contains('session')) {
     return SettingCategory.authTokens;
   }
+  if (key.startsWith('novel_')) {
+    return SettingCategory.reader;
+  }
   if (ThemeKeys.values.any((e) => e.name == key) ||
       UISettingsKeys.values.any((e) => e.name == key) ||
       key.startsWith('ThemeKeys_') ||
@@ -107,6 +110,36 @@ SettingCategory categorizeSettingKey(String key) {
     return SettingCategory.downloads;
   }
   return SettingCategory.general;
+}
+
+/// Expands a setting key from an older backup into the keys it should restore.
+///
+/// Novel reader settings used to be stored under their unprefixed enum name,
+/// sharing [ReaderKeys.keepScreenOn], [ReaderKeys.overscrollToChapter] and
+/// [ReaderKeys.autoScrollSpeed] with manga. The same legacy value therefore
+/// has to be written to both readers. If a backup already contains the
+/// prefixed novel key, the unprefixed value is treated as manga-only.
+List<String> _restoredSettingKeys(String key, Set<String> prefixedNovelKeys) {
+  if (key.startsWith('novel_')) return [key];
+
+  NovelReaderKeys? novelKey;
+  for (final candidate in NovelReaderKeys.values) {
+    if (candidate == NovelReaderKeys.themeMode) continue;
+    if (candidate.name == key) {
+      novelKey = candidate;
+      break;
+    }
+  }
+  if (novelKey == null) return [key];
+
+  final keys = <String>[];
+  if (!prefixedNovelKeys.contains(novelKey.storageKey)) {
+    keys.add(novelKey.storageKey);
+  }
+  if (ReaderKeys.values.any((candidate) => candidate.name == key)) {
+    keys.add(key);
+  }
+  return keys;
 }
 
 class SettingsOptions {
@@ -749,46 +782,22 @@ class BackupRestoreService extends GetxController {
       }
 
       if (settingsList.isNotEmpty) {
+        final prefixedNovelKeys = settingsList
+            .map((setting) => setting['key'])
+            .whereType<String>()
+            .where((key) => key.startsWith('novel_'))
+            .toSet();
+
         await isar.writeTxn(() async {
           for (var setting in settingsList) {
-            final key = setting['key'] as String?;
-            if (key == null) continue;
+            final settingKey = setting['key'] as String?;
+            if (settingKey == null) continue;
+
+            final targetKeys =
+                _restoredSettingKeys(settingKey, prefixedNovelKeys);
+            if (targetKeys.isEmpty) continue;
 
             final categoryName = setting['category'] as String?;
-            final category = categoryName != null
-                ? SettingCategory.values.firstWhere(
-                    (c) => c.name == categoryName,
-                    orElse: () => categorizeSettingKey(key),
-                  )
-                : categorizeSettingKey(key);
-
-            bool shouldRestore = false;
-            switch (category) {
-              case SettingCategory.appearance:
-                shouldRestore = options.settings.appearance;
-                break;
-              case SettingCategory.player:
-                shouldRestore = options.settings.player;
-                break;
-              case SettingCategory.reader:
-                shouldRestore = options.settings.reader;
-                break;
-              case SettingCategory.extensions:
-                shouldRestore = options.settings.extensions;
-                break;
-              case SettingCategory.downloads:
-                shouldRestore = options.settings.downloads;
-                break;
-              case SettingCategory.general:
-                shouldRestore = options.settings.general;
-                break;
-              case SettingCategory.authTokens:
-                shouldRestore = options.settings.authTokens;
-                break;
-            }
-
-            if (!shouldRestore) continue;
-
             final rawVal = setting['value'];
             final String? storedVal;
             if (rawVal == null) {
@@ -798,13 +807,53 @@ class BackupRestoreService extends GetxController {
             } else {
               storedVal = jsonEncode({'val': rawVal});
             }
-            final kv = KeyValue()
-              ..key = key
-              ..value = storedVal;
-            await isar.collection<KeyValue>().put(kv);
+
+            for (final key in targetKeys) {
+              final category = key.startsWith('novel_')
+                  ? SettingCategory.reader
+                  : categoryName != null
+                      ? SettingCategory.values.firstWhere(
+                          (c) => c.name == categoryName,
+                          orElse: () => categorizeSettingKey(key),
+                        )
+                      : categorizeSettingKey(key);
+
+              bool shouldRestore = false;
+              switch (category) {
+                case SettingCategory.appearance:
+                  shouldRestore = options.settings.appearance;
+                  break;
+                case SettingCategory.player:
+                  shouldRestore = options.settings.player;
+                  break;
+                case SettingCategory.reader:
+                  shouldRestore = options.settings.reader;
+                  break;
+                case SettingCategory.extensions:
+                  shouldRestore = options.settings.extensions;
+                  break;
+                case SettingCategory.downloads:
+                  shouldRestore = options.settings.downloads;
+                  break;
+                case SettingCategory.general:
+                  shouldRestore = options.settings.general;
+                  break;
+                case SettingCategory.authTokens:
+                  shouldRestore = options.settings.authTokens;
+                  break;
+              }
+
+              if (!shouldRestore) continue;
+
+              final kv = KeyValue()
+                ..key = key
+                ..value = storedVal;
+              await isar.collection<KeyValue>().put(kv);
+            }
           }
         });
       }
+      KvHelper.clearCache();
     }
 
     final hasStatsInData =

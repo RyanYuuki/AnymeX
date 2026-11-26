@@ -158,6 +158,39 @@ enum NovelReaderKeys {
   overscrollToChapter,
 }
 
+/// Namespaces novel reader preferences so they cannot collide with manga
+/// reader keys or other settings that share the same enum value name.
+extension NovelReaderKeyStorage on NovelReaderKeys {
+  String get storageKey => 'novel_$name';
+
+  T get<T>([T? defaultValue]) =>
+      KvHelper.get<T>(storageKey, defaultVal: defaultValue);
+
+  void set<T>(T value) => KvHelper.set(storageKey, value);
+
+  Future<void> setAsync<T>(T value) => KvHelper.setAsync(storageKey, value);
+
+  void delete() => KvHelper.remove(storageKey);
+
+  Future<void> deleteAsync() => KvHelper.removeAsync(storageKey);
+}
+
+/// Moves novel reader preferences from the legacy unprefixed keys to the
+/// novel-prefixed keys. Legacy values are only copied while the prefixed key
+/// is still absent, so user changes made after the upgrade are preserved.
+Future<void> migrateNovelReaderKeys() async {
+  for (final key in NovelReaderKeys.values) {
+    // Novel theme mode has always used its own prefixed key.
+    if (key == NovelReaderKeys.themeMode) continue;
+    if (KvHelper.containsKey(key.storageKey)) continue;
+    if (!KvHelper.containsKey(key.name)) continue;
+
+    final value = KvHelper.get<dynamic>(key.name);
+    if (value == null) continue;
+    await KvHelper.setAsync<dynamic>(key.storageKey, value);
+  }
+}
+
 enum LocalSourceKeys {
   watchOfflinePath,
   watchOfflinePathHistory,

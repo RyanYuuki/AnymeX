@@ -6,12 +6,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:isar_community/isar.dart';
 
 extension KvExtensions on Enum {
-  String get _storageKey {
-    if (runtimeType.toString() == 'NovelReaderKeys' && name == 'themeMode') {
-      return 'novel_themeMode';
-    }
-    return name;
-  }
+  String get _storageKey => name;
 
   T get<T>([T? defaultValue]) =>
       KvHelper.get<T>(_storageKey, defaultVal: defaultValue);
@@ -28,6 +23,23 @@ extension KvExtensions on Enum {
 class KvHelper {
   static final Map<String, dynamic> _cache = {};
   static final Set<String> _missingKeys = {};
+
+  /// Drops cached values so subsequent reads come from Isar.
+  static void clearCache() {
+    _cache.clear();
+    _missingKeys.clear();
+  }
+
+  static bool containsKey(String key) {
+    if (_cache.containsKey(key)) return true;
+
+    final result = isar
+        .collection<KeyValue>()
+        .filter()
+        .keyEqualTo(key)
+        .findFirstSync();
+    return result?.value != null;
+  }
 
   static T get<T>(String key, {T? defaultVal}) {
     if (_cache.containsKey(key)) {
