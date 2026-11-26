@@ -36,6 +36,14 @@ class ThemeController extends GetxController {
     _applyTheme();
   }
 
+  @override
+  void onInit() {
+    super.onInit();
+    if (currentThemeMode == "material") {
+      loadDynamicTheme();
+    }
+  }
+
   ThemeData get lightTheme => _lightTheme;
   ThemeData get darkTheme => _darkTheme;
   Color get seedColor => _seedColor;
@@ -121,10 +129,16 @@ class ThemeController extends GetxController {
   Future<void> loadDynamicTheme() async {
     currentThemeMode = "material";
     ThemeKeys.themeMode.set("material");
-    final corePalette = await DynamicColorPlugin.getCorePalette();
-    _seedColor = corePalette != null
-        ? Color(corePalette.primary.get(40))
-        : Colors.deepPurple;
+    Color? dynamicSeed;
+    try {
+      final corePalette = await DynamicColorPlugin.getCorePalette();
+      if (corePalette != null) {
+        dynamicSeed = Color(corePalette.primary.get(40));
+      } else {
+        dynamicSeed = await DynamicColorPlugin.getAccentColor();
+      }
+    } catch (_) {}
+    _seedColor = dynamicSeed ?? Colors.deepPurple;
     _updateThemeImmediately();
   }
 
@@ -150,6 +164,8 @@ class ThemeController extends GetxController {
 
   void setLightMode() {
     isLightMode = true;
+    isSystemMode = false;
+    ThemeKeys.isSystemMode.set(isSystemMode);
     ThemeKeys.isLightMode.set(true);
     _updateThemeImmediately();
   }
