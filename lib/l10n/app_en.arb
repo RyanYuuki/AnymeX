@@ -298,6 +298,7 @@
   "areYouSureYouWantTo": "Are you sure you want to delete all saved cookies?",
   "areYouSureYouWantToDelete": "Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.",
   "areYouSureYouWantToDeleteThis": "Are you sure you want to delete this extension?",
+  "areYouSureYouWantToDeleteThisEntry": "Are you sure you want to remove this entry from your list? Its progress, score and dates will be lost.",
   "areYouSureYouWantToDeleteThisReply": "Are you sure you want to delete this reply?",
   "askForTrackingPermission": "Ask for tracking permission",
   "atLeast2TabsMustRemain": "At least 2 tabs must remain visible!",

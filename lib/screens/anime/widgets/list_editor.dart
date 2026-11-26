@@ -54,6 +54,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
   DateTime? _completedAt;
   bool _isPrivate = false;
 
+  // Status/date to restore if progress drops back below the total after the
+  // editor auto-marked the entry as completed.
+  String? _statusBeforeAutoComplete;
+  DateTime? _completedAtBeforeAutoComplete;
+
   Map<int, int> _simklSeasons = {};
   bool _isLoadingSeasons = false;
   bool _isSaving = false;
@@ -357,6 +362,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
     setState(() {
       _localProgress =
           max != null ? value.clamp(0, max) : value.clamp(0, 99999);
+      _syncCompletionWithProgress(max);
     });
     if (updateController) {
       _progressController.text = _localProgress.toString();
@@ -396,6 +402,28 @@ class _ListEditorModalState extends State<ListEditorModal> {
     }
   }
 
+  /// Marks the entry as completed when progress reaches the final
+  /// episode/chapter, and undoes that if progress is lowered again.
+  /// Must be called inside setState.
+  void _syncCompletionWithProgress(int? max) {
+    final isLastSeason = _simklSeasons.isEmpty ||
+        _simklSeasons.keys.where((k) => k > 0).every((k) => k <= _localSeason);
+    final reachedEnd =
+        max != null && max > 0 && _localProgress >= max && isLastSeason;
+
+    if (reachedEnd && _localStatus != 'COMPLETED') {
+      _statusBeforeAutoComplete = _localStatus;
+      _completedAtBeforeAutoComplete = _completedAt;
+      _localStatus = 'COMPLETED';
+      _applyStatusSideEffects(_localStatus);
+    } else if (!reachedEnd && _statusBeforeAutoComplete != null) {
+      _localStatus = _statusBeforeAutoComplete!;
+      _completedAt = _completedAtBeforeAutoComplete;
+      _statusBeforeAutoComplete = null;
+      _completedAtBeforeAutoComplete = null;
+    }
+  }
+
   void _showStatusSelectionDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -418,6 +446,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
             onItemPressed: (item) {
               setDialogState(() {
                 _localStatus = item.$1;
+                // A manual choice overrides any automatic completion.
+                _statusBeforeAutoComplete = null;
+                _completedAtBeforeAutoComplete = null;
                 _applyStatusSideEffects(_localStatus);
               });
               setState(() {});
@@ -810,10 +841,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           child: SizedBox(
             height: 46,
             child: AnymeXContainerButton(
-              onTap: actionsDisabled ? null : () {
-                Navigator.pop(context);
-                widget.onDelete(widget.media.id);
-              },
+              onTap: actionsDisabled ? null : () => _confirmDelete(context),
               color: colors.surfaceContainerHighest,
               border: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
@@ -897,6 +925,20 @@ class _ListEditorModalState extends State<ListEditorModal> {
         ),
       ],
     );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    AnymeXDialog(
+      title: context.l10n.delete,
+      message: context.l10n.areYouSureYouWantToDeleteThisEntry,
+      confirmText: context.l10n.delete,
+      cancelText: context.l10n.cancel,
+      onConfirm: () {
+        if (!mounted) return;
+        Navigator.pop(this.context);
+        widget.onDelete(widget.media.id);
+      },
+    ).show(context);
   }
 
   String _formatDate(DateTime date) =>
