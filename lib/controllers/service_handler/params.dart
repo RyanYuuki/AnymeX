@@ -41,6 +41,10 @@ class UpdateListEntryParams {
   bool? isPrivate;
   int? season;
 
+  /// Whether a successful update should also be mirrored to other connected
+  /// services. Set to false when this update is itself a cross-service sync.
+  bool crossSync;
+
   UpdateListEntryParams({
     required this.listId,
     this.syncIds,
@@ -52,5 +56,6 @@ class UpdateListEntryParams {
     this.completedAt,
     this.isPrivate,
     this.season,
+    this.crossSync = true,
   });
 }
