@@ -49,6 +49,13 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   double _currentSpeed = 1.0;
   double _previousSpeed = 1.0;
   double _pendingSpeed = 1.0;
+
+  // Speed range used while holding: the hold starts at [_holdMinSpeed] and
+  // swiping up raises it towards [_holdMaxSpeed].
+  static const double _fixedHoldSpeed = 2.0;
+  static const double _defaultMaxHoldSpeed = 5.0;
+  double _holdMinSpeed = _fixedHoldSpeed;
+  double _holdMaxSpeed = _defaultMaxHoldSpeed;
   bool _hadControlsBeforeHold = false;
   Timer? _holdStartTimer;
 
@@ -234,12 +241,13 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
     _previousSpeed = widget.controller.playbackSpeed.value;
     _hadControlsBeforeHold = widget.controller.showControls.value;
+    _computeHoldSpeedRange();
 
     _holdStartTimer = Timer(const Duration(milliseconds: 150), () {
       if (mounted && !_isDragging && _longPressStarted) {
         setState(() {
           _isHolding = true;
-          _currentSpeed = 2.0;
+          _currentSpeed = _holdMinSpeed;
         });
 
         widget.controller.toggleControls(val: false);
@@ -385,19 +393,35 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     }
   }
 
+  /// Fixed 2x by default; with "Double Current Speed on Hold" the hold
+  /// starts at twice the current speed (e.g. 1.5x -> 3x), capped at 5x unless
+  /// the user is already playing faster than that.
+  void _computeHoldSpeedRange() {
+    if (Get.find<Settings>().relativeHoldSpeed) {
+      _holdMaxSpeed = _previousSpeed > _defaultMaxHoldSpeed
+          ? _previousSpeed
+          : _defaultMaxHoldSpeed;
+      _holdMinSpeed = (_previousSpeed * 2).clamp(0.25, _holdMaxSpeed);
+    } else {
+      _holdMinSpeed = _fixedHoldSpeed;
+      _holdMaxSpeed = _defaultMaxHoldSpeed;
+    }
+  }
+
   void _updateSpeedFromSwipe(double deltaY) {
     if (widget.controller.isLocked.value) return;
     if (!_isHolding) return;
 
     const double maxSwipeDistance = 100.0;
-    const double minSpeed = 2.0;
-    const double maxSpeed = 5.0;
+    final double minSpeed = _holdMinSpeed;
+    final double maxSpeed = _holdMaxSpeed;
+    if (maxSpeed <= minSpeed) return;
 
     double normalizedDelta = (-deltaY / maxSwipeDistance).clamp(0.0, 1.0);
     double newSpeed = minSpeed + (normalizedDelta * (maxSpeed - minSpeed));
 
     newSpeed = (newSpeed * 2).round() / 2;
-    newSpeed = newSpeed.clamp(minSpeed, maxSpeed);
+    newSpeed = newSpeed.clamp(minSpeed, maxSpeed).toDouble();
 
     if (newSpeed != _currentSpeed) {
       setState(() {
@@ -479,7 +503,11 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                       child: FractionallySizedBox(
                         alignment: Alignment.centerLeft,
                         widthFactor:
-                            ((_currentSpeed - 2.0) / 3.0).clamp(0.0, 1.0),
+                            _holdMaxSpeed > _holdMinSpeed
+                                ? ((_currentSpeed - _holdMinSpeed) /
+                                        (_holdMaxSpeed - _holdMinSpeed))
+                                    .clamp(0.0, 1.0)
+                                : 1.0,
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),

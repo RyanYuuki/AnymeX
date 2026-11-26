@@ -629,6 +629,8 @@
   "donateViaUpiPaypalSupportDevelopment": "Donate via UPI, PayPal & support development",
   "done": "DONE",
   "done2": "Done",
+  "doubleCurrentSpeedOnHold": "Double Current Speed on Hold",
+  "doubleCurrentSpeedOnHoldDescription": "Hold speeds up to twice your current playback speed instead of a fixed 2x",
   "doubletapToSeek": "DoubleTap to Seek",
   "downgradeOrSwitchToASpecific": "Downgrade or switch to a specific plugin version",
   "download": "Download",
