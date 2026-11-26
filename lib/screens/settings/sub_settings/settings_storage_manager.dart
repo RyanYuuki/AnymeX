@@ -233,7 +233,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                       ),
                                       const SizedBox(height: 8),
                                       AnymeXText(
-                                        'Threshold: ${_thresholdGb.toStringAsFixed(1)} GB',
+                                        context.l10n.thresholdGb(_thresholdGb.toStringAsFixed(1)),
                                         style: TextStyle(
                                           color: context.colors.onSurfaceVariant,
                                         ),

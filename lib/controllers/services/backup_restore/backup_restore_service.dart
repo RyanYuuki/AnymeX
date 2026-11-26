@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -34,6 +35,7 @@ import 'backup_format_detector.dart';
 import 'parsers/kotatsu_backup_parser.dart';
 import 'parsers/tachiyomi_backup_parser.dart';
 import '../../../main.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 enum SettingCategory {
   appearance,
@@ -1011,7 +1013,7 @@ class BackupRestoreService extends GetxController {
       if (requestPath) {
         if (Platform.isIOS || Platform.isAndroid) {
           outputPath = await FilePicker.platform.saveFile(
-            dialogTitle: 'Save Backup File',
+            dialogTitle: Get.context!.l10n.saveBackupFile,
             fileName: fileName,
             bytes: Uint8List.fromList(zipBytes),
             type: FileType.custom,
@@ -1019,7 +1021,7 @@ class BackupRestoreService extends GetxController {
           );
         } else {
           outputPath = await FilePicker.platform.saveFile(
-            dialogTitle: 'Save Backup File',
+            dialogTitle: Get.context!.l10n.saveBackupFile,
             fileName: fileName,
             type: FileType.custom,
             allowedExtensions: ['anymex'],
@@ -1046,7 +1048,7 @@ class BackupRestoreService extends GetxController {
       } else {
         if (Platform.isIOS) {
           try {
-            final directory = await getApplicationDocumentsDirectory();
+            final directory = await getAppDocumentsDirectory();
             final fallbackPath = '${directory.path}/$fileName';
             final fallbackFile = File(fallbackPath);
             await fallbackFile.writeAsBytes(zipBytes, flush: true);
@@ -1060,7 +1062,7 @@ class BackupRestoreService extends GetxController {
         } else {
           final directory = Platform.isAndroid
               ? Directory('/storage/emulated/0/Download')
-              : await getApplicationDocumentsDirectory();
+              : await getAppDocumentsDirectory();
 
           final fallbackPath = '${directory.path}/$fileName';
           final fallbackFile = File(fallbackPath);
@@ -1264,7 +1266,7 @@ class BackupRestoreService extends GetxController {
 
       final result = await FilePicker.platform.pickFiles(
         type: FileType.any,
-        dialogTitle: 'Select Anymex Backup File',
+        dialogTitle: Get.context!.l10n.selectAnymexBackupFile,
         allowMultiple: false,
       );
 
@@ -1282,7 +1284,7 @@ class BackupRestoreService extends GetxController {
               fileName.endsWith('.zip');
           if (!isSupported) {
             snackBar(
-                'Unsupported format. Please select an AnymeX, Aniyomi, Mihon, or Kotatsu backup');
+                Get.context!.l10n.unsupportedFormatPleaseSelectAn);
             return "";
           }
 
@@ -1296,7 +1298,7 @@ class BackupRestoreService extends GetxController {
       } else {
         if (Platform.isIOS) {
           try {
-            final directory = await getApplicationDocumentsDirectory();
+            final directory = await getAppDocumentsDirectory();
             final sandboxFiles = directory
                 .listSync()
                 .where((f) {

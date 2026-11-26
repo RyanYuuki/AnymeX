@@ -908,7 +908,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final body = {
       if (status != null)
         'status': getMALStatusEquivalent(status, isAnime: isAnime),
-      if (score != null) 'score': score.toInt().toString(),
+      if (score != null)
+        'score': (score / 10.0).round().clamp(0, 10).toString(),
       if (progress != null && isAnime)
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
@@ -940,49 +941,58 @@ class MalService extends GetxController implements BaseService, OnlineService {
       }
     }
 
+    if (req.statusCode < 200 || req.statusCode >= 300) {
+      Logger.i('MAL list update failed (${req.statusCode}): ${req.body}');
+      Logger.i('$isAnime: $body');
+      throw Exception('MAL list update failed (${req.statusCode})');
+    }
+
+    final newMedia = currentMedia.value
+      ..episodeCount = progress.toString()
+      ..watchingStatus = status
+      ..score = score.toString();
+    currentMedia.value = newMedia;
+    Logger.i('$isAnime: $body');
+    if (isAnime) {
+      fetchUserAnimeList();
+    } else {
+      fetchUserMangaList();
+    }
+
     if ((params.syncIds?.isNotEmpty ?? false) && params.syncIds?[0] != null) {
       if (serviceHandler.anilistService.isLoggedIn.value) {
-        await serviceHandler.anilistService.updateListEntry(
-            UpdateListEntryParams(
-                listId: params.syncIds![0],
-                score: score != null ? score * 10.0 : null,
-                status: status,
-                progress: progress,
-                isAnime: isAnime,
-                startedAt: startedAt,
-                completedAt: completedAt));
+        try {
+          await serviceHandler.anilistService.updateListEntry(
+              UpdateListEntryParams(
+                  listId: params.syncIds![0],
+                  score: score,
+                  status: status,
+                  progress: progress,
+                  isAnime: isAnime,
+                  startedAt: startedAt,
+                  completedAt: completedAt));
+        } catch (e) {
+          Logger.i('AniList cross-sync failed: $e');
+        }
       }
     }
 
     if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
       final anilistId =
           (params.syncIds?.isNotEmpty ?? false) ? params.syncIds![0] : null;
-      serviceHandler.simklService.updateListEntryFromExternalId(
-        malId: listId,
-        anilistId: anilistId,
-        score: score,
-        status: status,
-        progress: progress,
-        season: params.season,
-        isAnime: isAnime,
-      );
-    }
-
-    if (req.statusCode == 200) {
-      final newMedia = currentMedia.value
-        ..episodeCount = progress.toString()
-        ..watchingStatus = status
-        ..score = score.toString();
-      currentMedia.value = newMedia;
-      Logger.i('$isAnime: $body');
-      if (isAnime) {
-        fetchUserAnimeList();
-      } else {
-        fetchUserMangaList();
+      try {
+        await serviceHandler.simklService.updateListEntryFromExternalId(
+          malId: listId,
+          anilistId: anilistId,
+          score: score,
+          status: status,
+          progress: progress,
+          season: params.season,
+          isAnime: isAnime,
+        );
+      } catch (e) {
+        Logger.i('Simkl cross-sync failed: $e');
       }
-    } else {
-      Logger.i('Error: ${req.body}');
-      Logger.i('$isAnime: $body');
     }
   }
 

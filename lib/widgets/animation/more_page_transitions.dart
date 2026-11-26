@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -376,7 +375,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                       ),
                       const SizedBox(height: 8),
                       AnymeXText(
-                        'Wrap your Scaffold or main page widget:\n\nSmoothPageEntrance(\n  style: PageEntranceStyle.slideUpGentle,\n  child: YourPageContent(),\n)',
+                        context.l10n.wrapYourScaffoldOrMain,
                         style: TextStyle(
                           fontFamily: 'monospace',
                           color: Colors.grey[600],

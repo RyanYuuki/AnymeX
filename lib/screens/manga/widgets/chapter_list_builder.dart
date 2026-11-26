@@ -392,7 +392,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: AnymeXText(
-                  'Online $onlineCount',
+                  context.l10n.onlineCount(onlineCount),
                   size: 12,
                   variant:
                       !isDownloadedTab ? TextVariant.bold : TextVariant.regular,
@@ -416,7 +416,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: AnymeXText(
-                  'Downloaded $downloadedCount',
+                  context.l10n.downloadedCount(downloadedCount),
                   size: 12,
                   variant:
                       isDownloadedTab ? TextVariant.bold : TextVariant.regular,
@@ -473,7 +473,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: AnymeXText(context.l10n.noChaptersFound2),
           ),
         ),
@@ -636,7 +636,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                         ),
                         const SizedBox(width: 8),
                         AnymeXText(
-                          '${filtered.length} chapters',
+                          context.l10n.chaptersCount(filtered.length),
                           size: 12,
                           variant: TextVariant.regular,
                           color: context.colors.primary

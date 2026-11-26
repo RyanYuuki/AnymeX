@@ -149,7 +149,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                       else
                         Center(
                           child: AnymeXText(
-                            'Stats unavailable',
+                            context.l10n.statsUnavailable,
                             size: 12,
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -245,7 +245,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                                 size: 18, color: colorScheme.onPrimary),
                             const SizedBox(width: 8),
                             AnymeXText(
-                              'View Full Profile',
+                              context.l10n.viewFullProfile,
                               variant: TextVariant.bold,
                               size: 14,
                               color: colorScheme.onPrimary,
@@ -738,7 +738,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
           ),
           const SizedBox(height: 2),
           AnymeXText(
-            'Member since',
+            context.l10n.memberSince,
             size: 11,
             color: colorScheme.onSurfaceVariant,
             maxLines: 1,

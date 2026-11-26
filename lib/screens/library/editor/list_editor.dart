@@ -122,7 +122,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     AnymeXDialog(
       title: context.l10n.clearHistory,
       message:
-          'Are you sure you want to clear all $label? This action cannot be undone.',
+          context.l10n.areYouSureYouWant2(label),
       confirmText: context.l10n.clearAll,
       onConfirm: () async {
         final ids = items
@@ -484,7 +484,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        '${listData.listData.length} items',
+                        context.l10n.itemsCount(listData.listData.length),
                         size: 12,
                         color: theme.colorScheme.onSurface
                             .opaque(0.45, iReallyMeanIt: true),
@@ -557,7 +557,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            'Create your first custom list to organize\nyour favorite content',
+            context.l10n.createYourFirstCustomList,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: theme.colorScheme.onSurface.opaque(0.6),
@@ -668,7 +668,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     AnymeXDialog(
       title: context.l10n.deleteList,
       message:
-          'Are you sure you want to delete "${_lists[index].listName}"? This action cannot be undone.',
+          context.l10n.areYouSureYouWant3(_lists[index].listName),
       confirmText: context.l10n.delete,
       onConfirm: () {
         setState(() {
@@ -867,7 +867,7 @@ class __ListMediaEditorBottomSheetState
                         ),
                         const SizedBox(height: 2),
                         AnymeXText(
-                          '${allItems.length} items total',
+                          context.l10n.itemsTotal(allItems.length),
                           style: TextStyle(
                             color: colors.onSurface.withOpacity(0.5),
                             fontSize: 13,

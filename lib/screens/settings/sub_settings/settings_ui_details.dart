@@ -254,7 +254,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       icon: Icons.color_lens_outlined,
                       title: context.l10n.usePosterColor,
                       subtitle:
-                          'Applies anime/manga poster color scheme on the details page',
+                          context.l10n.appliesAnimeMangaPosterColor,
                       value: settings.usePosterColor,
                       onChanged: (val) {
                         settings.usePosterColor = val;
@@ -266,7 +266,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       icon: Icons.brightness_2_outlined,
                       title: context.l10n.oledMode2,
                       subtitle:
-                          'Pure black background on details page without gradients',
+                          context.l10n.pureBlackBackgroundOnDetails,
                       value: settings.detailsOledMode,
                       onChanged: (val) {
                         settings.detailsOledMode = val;
@@ -550,7 +550,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: AnymeXText(
-                                      'ADD TO LIST',
+                                      context.l10n.addToList,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -594,7 +594,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: AnymeXText(
-                                      'CUSTOM LIST',
+                                      context.l10n.customList,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -630,8 +630,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const AnymeXText(
-                                'Synopsis',
+                              AnymeXText(context.l10n.detailsSynopsis,
                                 size: 15,
                                 variant: TextVariant.bold,
                                 isMarquee: true,

@@ -560,6 +560,13 @@ abstract final class SettingsRegistry {
           searchTags: ['box color', 'shading'],
         ),
         SettingItem(
+          title: 'Subtitle Background Transparency',
+          category: 'Video Player',
+          section: 'Subtitles',
+          icon: Icons.opacity,
+          searchTags: ['background opacity', 'box alpha', 'shading'],
+        ),
+        SettingItem(
           title: 'Subtitle Outline Color',
           category: 'Video Player',
           section: 'Subtitles',

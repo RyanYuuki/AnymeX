@@ -134,8 +134,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                       child: _ElegantSegmentedControl(
                         options: [
-                          (title: context.l10n.horizontal, icon: Icon(Icons.swap_horiz_rounded, size: 18)),
-                          (title: context.l10n.vertical, icon: Icon(Icons.swap_vert_rounded, size: 18)),
+                          (title: context.l10n.horizontal, icon: const Icon(Icons.swap_horiz_rounded, size: 18)),
+                          (title: context.l10n.vertical, icon: const Icon(Icons.swap_vert_rounded, size: 18)),
                         ],
                         selectedIndex: _isVertical ? 1 : 0,
                         onChanged: (index) {

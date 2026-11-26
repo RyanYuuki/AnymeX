@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'dart:ui';
 
@@ -319,7 +320,7 @@ class _SliderSection extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Obx(() => AnymeXText(
-                        'Page ${controller.currentPageIndex.value}',
+                        context.l10n.pageNumber((controller.currentPageIndex.value).toString()),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.75),
                           fontSize: 11,
@@ -328,7 +329,7 @@ class _SliderSection extends StatelessWidget {
                         ),
                       )),
                   AnymeXText(
-                    '${controller.pageList.length} pages',
+                    context.l10n.pages2((controller.pageList.length).toString()),
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.45),
                       fontSize: 11,
@@ -404,10 +405,7 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
-    this.blurSigma = 24,
-    this.tintAlpha = 0.28,
-    this.edgeAlpha = 0.34,
-  });
+  }) : blurSigma = 24 : tintAlpha = 0.28 : edgeAlpha = 0.34;
 
   final Widget child;
   final double? width;

@@ -370,7 +370,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: AnymeXText(
-                  '${points.toFormattedNumber()} XP',
+                  context.l10n.xp(points.toFormattedNumber()),
                   size: 11,
                   variant: TextVariant.bold,
                   color: context.colors.primary,
@@ -474,7 +474,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             context.l10n.favoriteTitle,
             size: 16,
@@ -855,7 +855,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                 )
               else
                 AnymeXText(
-                  '${watchMins + readMins} mins total',
+                  context.l10n.minsTotal((watchMins + readMins).toString()),
                   size: 11,
                   color: context.colors.primary,
                   variant: TextVariant.bold,
@@ -871,7 +871,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       size: 12, color: context.colors.primary),
                   const SizedBox(width: 4),
                   AnymeXText(
-                    '$watchMins min watch ($eps eps)',
+                    context.l10n.minWatchEps(watchMins.toString(), eps.toString()),
                     size: 11,
                   ),
                   const SizedBox(width: 16),
@@ -881,7 +881,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       size: 12, color: context.colors.secondary),
                   const SizedBox(width: 4),
                   AnymeXText(
-                    '$readMins min read ($chs chs)',
+                    context.l10n.minReadChs(readMins.toString(), chs.toString()),
                     size: 11,
                   ),
                 ],
@@ -900,7 +900,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             context.l10n.frequentlyRevisited,
             size: 16,
@@ -1007,7 +1007,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                   ),
                                   const SizedBox(height: 6),
                                   AnymeXText(
-                                    '${item.type.capitalizeFirst} • Interacted: ${item.interactionCount} times',
+                                    context.l10n.interactedTimes(item.type.capitalizeFirst ?? '', item.interactionCount.toString()),
                                     size: 11,
                                     color: context.colors.onSurfaceVariant
                                         .withOpacity(0.6),
@@ -1047,7 +1047,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             context.l10n.detailedInsights,
             size: 16,

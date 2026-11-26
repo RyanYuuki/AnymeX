@@ -28,7 +28,7 @@ class StatisticsPage extends StatelessWidget {
             // Anime Library Section
             AnymeXText(
               context.l10n.animeLibrary,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             StreamBuilder<List<OfflineMedia>>(
@@ -47,7 +47,7 @@ class StatisticsPage extends StatelessWidget {
             // Manga Library Section
             AnymeXText(
               context.l10n.mangaLibrary,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             StreamBuilder<List<OfflineMedia>>(
@@ -66,7 +66,7 @@ class StatisticsPage extends StatelessWidget {
             // Novel Library Section
             AnymeXText(
               context.l10n.novelLibrary,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             StreamBuilder<List<OfflineMedia>>(
@@ -85,7 +85,7 @@ class StatisticsPage extends StatelessWidget {
             // Anime Custom Lists Section
             AnymeXText(
               context.l10n.animeCustomLists,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             StreamBuilder<List<CustomList>>(
@@ -103,7 +103,7 @@ class StatisticsPage extends StatelessWidget {
             // Manga Custom Lists Section
             AnymeXText(
               context.l10n.mangaCustomLists,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             StreamBuilder<List<CustomList>>(
@@ -121,7 +121,7 @@ class StatisticsPage extends StatelessWidget {
             // Novel Custom Lists Section
             AnymeXText(
               context.l10n.novelCustomLists,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             StreamBuilder<List<CustomList>>(
@@ -153,7 +153,7 @@ class StatisticsPage extends StatelessWidget {
         library.isEmpty
             ? AnymeXText(
                 context.l10n.noItemsInThisLibrary,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
                 shrinkWrap: true,
@@ -193,14 +193,14 @@ class StatisticsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Total Lists: ${customLists.length}',
+          context.l10n.totalLists((customLists.length).toString()),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         customLists.isEmpty
             ? AnymeXText(
                 context.l10n.noCustomListsAvailable,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
                 shrinkWrap: true,
@@ -224,7 +224,7 @@ class StatisticsPage extends StatelessWidget {
                           children: listData.isEmpty
                               ? [
                                   Padding(
-                                    padding: EdgeInsets.all(16.0),
+                                    padding: const EdgeInsets.all(16.0),
                                     child: AnymeXText(context.l10n.noMediaInThisList),
                                   )
                                 ]

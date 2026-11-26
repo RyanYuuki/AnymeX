@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'dart:convert';
 
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
@@ -506,7 +505,7 @@ class _EmptyState extends StatelessWidget {
               style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           AnymeXText(
-            'Add JSON files or paste a URL\nto install custom themes.',
+            context.l10n.addJsonFilesOrPaste,
             textAlign: TextAlign.center,
             style:
                 tt.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),

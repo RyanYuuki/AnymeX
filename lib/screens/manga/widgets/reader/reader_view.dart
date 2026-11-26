@@ -107,8 +107,8 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnymeXProgressIndicator(),
-          SizedBox(height: 16),
+          const AnymeXProgressIndicator(),
+          const SizedBox(height: 16),
           AnymeXText(context.l10n.loadingPages),
         ],
       ),
@@ -129,7 +129,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Failed to load chapter',
+              context.l10n.failedToLoadChapter,
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),

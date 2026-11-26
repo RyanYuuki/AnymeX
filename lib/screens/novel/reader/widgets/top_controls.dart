@@ -284,7 +284,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             AnymeXText(
-                              'Chapters (${_cachedChapters.length})',
+                              context.l10n.chaptersListCount(_cachedChapters.length),
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge

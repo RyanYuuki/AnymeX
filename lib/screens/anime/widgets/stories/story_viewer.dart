@@ -280,26 +280,33 @@ class _StoryGroupViewState extends State<_StoryGroupView>
   }
 
   void _toggleLike(AnilistActivity activity) {
-    final willBeLiked = !activity.isLiked;
+    final controller = Get.find<StoriesController>();
+    controller.toggleLike(activity);
+    final isNowLiked = activity.isLiked;
     setState(() {
-      activity.isLiked = willBeLiked;
-      activity.likeCount += willBeLiked ? 1 : -1;
-      if (willBeLiked) {
+      if (isNowLiked) {
         _showHeart = true;
       }
     });
     HapticFeedback.lightImpact();
-    if (willBeLiked) {
+    if (isNowLiked) {
       _heartTimer?.cancel();
       _heartTimer = Timer(const Duration(milliseconds: 700), () {
         if (mounted) setState(() => _showHeart = false);
       });
     }
-    final controller = Get.find<StoriesController>();
-    controller.toggleLike(activity);
   }
 
   void _onDoubleTap() {
+    if (_currentActivity.isLiked) {
+      setState(() => _showHeart = true);
+      HapticFeedback.lightImpact();
+      _heartTimer?.cancel();
+      _heartTimer = Timer(const Duration(milliseconds: 700), () {
+        if (mounted) setState(() => _showHeart = false);
+      });
+      return;
+    }
     _toggleLike(_currentActivity);
   }
 
@@ -373,6 +380,8 @@ class _StoryGroupViewState extends State<_StoryGroupView>
   }
 
   Widget _buildHeader(AnilistActivity activity) {
+    final colors = context.colors;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -389,7 +398,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFCBB6FF),
+                  color: colors.primary,
                   width: 2,
                 ),
               ),
@@ -403,11 +412,11 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                         fit: BoxFit.cover,
                       )
                     : Container(
-                        color: Colors.grey.shade800,
-                        child: const Icon(
+                        color: colors.surfaceContainerHighest,
+                        child: Icon(
                           Icons.person_rounded,
                           size: 22,
-                          color: Colors.white,
+                          color: colors.onSurface,
                         ),
                       ),
               ),
@@ -429,14 +438,14 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                     widget.group.user.name,
                     size: 15,
                     variant: TextVariant.bold,
-                    color: const Color(0xFFEDE6FF),
+                    color: colors.onSurface,
                   ),
                   const SizedBox(height: 2),
                   AnymeXText(
                     '${formatTimeAgo(activity.createdAt)} · ${context.l10n.anilistActivity}',
                     size: 12,
                     variant: TextVariant.semiBold,
-                    color: const Color(0xFFC9BEE6),
+                    color: colors.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -449,9 +458,9 @@ class _StoryGroupViewState extends State<_StoryGroupView>
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.more_vert_rounded,
-                    color: Colors.white,
+                    color: colors.onSurface,
                     size: 22,
                   ),
                   onPressed: () {
@@ -461,9 +470,9 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   },
                 ),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.close_rounded,
-                    color: Colors.white,
+                    color: colors.onSurface,
                     size: 24,
                   ),
                   onPressed: widget.onClose,
@@ -477,6 +486,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
   }
 
   Widget _buildCenterCard(AnilistActivity activity) {
+    final colors = context.colors;
     final isMedia = activity.mediaId != null ||
         (activity.mediaCoverUrl != null && activity.mediaCoverUrl!.isNotEmpty);
     final statusInfo = _getStatusInfo(activity);
@@ -493,7 +503,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: context.colors.surfaceContainer.opaque(0.1),
+            color: colors.surfaceContainer.opaque(0.55, iReallyMeanIt: true),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(36),
               topRight: Radius.circular(16),
@@ -501,12 +511,12 @@ class _StoryGroupViewState extends State<_StoryGroupView>
               bottomLeft: Radius.circular(16),
             ),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: colors.outline.withValues(alpha: 0.14),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
+                color: colors.shadow.withValues(alpha: 0.25),
                 blurRadius: 28,
                 offset: const Offset(0, 10),
               ),
@@ -522,7 +532,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   height: 26,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFCBB6FF),
+                    color: colors.primaryContainer,
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: Row(
@@ -531,13 +541,13 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                       Icon(
                         statusInfo.$1,
                         size: 14,
-                        color: const Color(0xFF2A1259),
+                        color: colors.onPrimaryContainer,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         statusInfo.$2,
-                        style: const TextStyle(
-                          color: Color(0xFF2A1259),
+                        style: TextStyle(
+                          color: colors.onPrimaryContainer,
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                         ),
@@ -559,7 +569,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.45),
+                        color: colors.shadow.withValues(alpha: 0.35),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -589,7 +599,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                           : context.l10n.anime),
                   size: 18,
                   variant: TextVariant.bold,
-                  color: const Color(0xFFEDE6FF),
+                  color: colors.onSurface,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -602,7 +612,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                       height: 24,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF34267A),
+                        color: colors.secondaryContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
@@ -615,8 +625,8 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                               : (activity.type == 'MANGA_LIST'
                                   ? context.l10n.manga
                                   : context.l10n.anime),
-                          style: const TextStyle(
-                            color: Color(0xFFEADFFF),
+                          style: TextStyle(
+                            color: colors.onSecondaryContainer,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                           ),
@@ -628,7 +638,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                       height: 24,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4A2540),
+                        color: colors.tertiaryContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -639,7 +649,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                                 ? Icons.favorite_rounded
                                 : Icons.star_rounded,
                             size: 13,
-                            color: const Color(0xFFF5D3E4),
+                            color: colors.onTertiaryContainer,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -648,8 +658,8 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                                 : (activity.type == 'MANGA_LIST'
                                     ? context.l10n.manga
                                     : context.l10n.anime),
-                            style: const TextStyle(
-                              color: Color(0xFFF5D3E4),
+                            style: TextStyle(
+                              color: colors.onTertiaryContainer,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                             ),
@@ -665,17 +675,17 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.format_quote_rounded,
                         size: 32,
-                        color: Color(0xFFCBB6FF),
+                        color: colors.primary,
                       ),
                       const SizedBox(height: 8),
                       SelectableText(
                         activity.displayText,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFFEDE6FF),
+                        style: TextStyle(
+                          color: colors.onSurface,
                           fontSize: 15,
                           height: 1.45,
                           fontWeight: FontWeight.w600,
@@ -693,6 +703,7 @@ class _StoryGroupViewState extends State<_StoryGroupView>
   }
 
   Widget _buildBottomActions(AnilistActivity activity) {
+    final colors = context.colors;
     final isMedia = activity.mediaId != null;
 
     return Padding(
@@ -706,22 +717,22 @@ class _StoryGroupViewState extends State<_StoryGroupView>
             child: FilledButton.icon(
               onPressed: () => _openDetails(activity),
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFCBB6FF),
-                foregroundColor: const Color(0xFF2A1259),
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
                 shape: const StadiumBorder(),
                 padding: EdgeInsets.zero,
               ),
               icon: Icon(
                 isMedia ? Icons.play_arrow_rounded : Icons.forum_rounded,
                 size: 20,
-                color: const Color(0xFF2A1259),
+                color: colors.onPrimary,
               ),
               label: Text(
                 isMedia ? context.l10n.viewInAnymex : context.l10n.viewDiscussion,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF2A1259),
+                  color: colors.onPrimary,
                 ),
               ),
             ),
@@ -740,19 +751,19 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                     height: 48,
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     decoration: BoxDecoration(
-                      color: const Color(0x80120C1F),
+                      color: colors.surfaceContainer.withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: const Color(0xFF6B5E8C),
+                        color: colors.outlineVariant,
                         width: 1.5,
                       ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.chat_bubble_outline_rounded,
                           size: 16,
-                          color: Color(0xFFC9BEE6),
+                          color: colors.onSurfaceVariant,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -760,8 +771,8 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                             activity.replyCount > 0
                                 ? context.l10n.repliesCount(activity.replyCount.toString())
                                 : context.l10n.sendAReaction,
-                            style: const TextStyle(
-                              color: Color(0xFFC9BEE6),
+                            style: TextStyle(
+                              color: colors.onSurfaceVariant,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -780,7 +791,9 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4A2540),
+                    color: activity.isLiked
+                        ? colors.errorContainer
+                        : colors.tertiaryContainer,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Center(
@@ -788,7 +801,9 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                       activity.isLiked
                           ? Icons.favorite_rounded
                           : Icons.favorite_border_rounded,
-                      color: const Color(0xFFFFB1D8),
+                      color: activity.isLiked
+                          ? colors.error
+                          : colors.onTertiaryContainer,
                       size: 22,
                     ),
                   ),
@@ -808,13 +823,13 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF34267A),
+                    color: colors.secondaryContainer,
                     borderRadius: BorderRadius.circular(24),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.send_rounded,
-                      color: Color(0xFFEADFFF),
+                      color: colors.onSecondaryContainer,
                       size: 18,
                     ),
                   ),
@@ -906,11 +921,11 @@ class _StoryGroupViewState extends State<_StoryGroupView>
                   scale: scale,
                   child: Icon(
                     Icons.favorite_rounded,
-                    color: Colors.redAccent.withValues(alpha: 0.9),
+                    color: context.colors.error.withValues(alpha: 0.9),
                     size: 96,
                     shadows: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.4),
+                        color: context.colors.shadow.withValues(alpha: 0.4),
                         blurRadius: 20,
                       ),
                     ],

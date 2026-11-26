@@ -368,14 +368,13 @@ class _SettingsReaderState extends State<SettingsReader> {
         children: [
           Row(
             children: [
-              const AnymeXText(
-                'Live Novel Preview',
+              AnymeXText(context.l10n.liveNovelPreview,
                 variant: TextVariant.bold,
                 size: 14,
               ),
               const Spacer(),
               AnymeXText(
-                '$_novelFontFamily • ${_novelFontSize.toInt()}pt',
+                context.l10n.ptDetails(_novelFontFamily, _novelFontSize.toInt().toString()),
                 size: 11,
                 color: colors.onSurfaceVariant,
               ),
@@ -453,7 +452,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    'Live Preview',
+                    context.l10n.livePreview,
                     size: 12,
                     color: colors.onSurfaceVariant,
                   ),
@@ -490,8 +489,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                                   child: Container(
                                     color: const Color(0xFF232732),
                                     alignment: Alignment.center,
-                                    child: const AnymeXText(
-                                      'MANGA PAGE',
+                                    child: AnymeXText(context.l10n.mangaPage,
                                       size: 8,
                                       variant: TextVariant.bold,
                                       color: Colors.white60,
@@ -642,7 +640,7 @@ class _SettingsReaderState extends State<SettingsReader> {
       title: context.l10n.tapZones,
       confirmText: context.l10n.actionSave,
       cancelText: context.l10n.actionCancel,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       width: getResponsiveValue(
         context,
         mobileValue: Get.width * 0.94,
@@ -671,7 +669,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                 children: [
                   Expanded(
                     child: AnymeXText(
-                      'Enable Tap Zones',
+                      context.l10n.enableTapZones,
                       variant: TextVariant.semiBold,
                       size: 14,
                     ),
@@ -682,7 +680,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
@@ -701,7 +699,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                       },
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: SegmentedButton<bool>(
                       showSelectedIcon: false,
@@ -725,7 +723,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    'Tap a region to select and edit',
+                    context.l10n.tapARegionToSelect,
                     size: 12,
                     color: colors.onSurfaceVariant,
                   ),
@@ -804,7 +802,7 @@ class _SettingsReaderState extends State<SettingsReader> {
               ),
               const SizedBox(height: 12),
               AnymeXText(
-                'Zone Action (${selectedZone.action.displayName})',
+                context.l10n.zoneAction(selectedZone.action.displayName),
                 size: 12,
                 variant: TextVariant.semiBold,
                 color: colors.onSurfaceVariant,
@@ -872,7 +870,7 @@ class _SettingsReaderState extends State<SettingsReader> {
         Padding(
           padding: const EdgeInsets.only(left: 16.0, bottom: 8.0, top: 4.0),
           child: AnymeXText(
-            'Manga Reader',
+            context.l10n.mangaReader,
             size: 13.5,
             variant: TextVariant.semiBold,
             color: context.colors.primary,
@@ -1127,7 +1125,7 @@ class _SettingsReaderState extends State<SettingsReader> {
         Padding(
           padding: const EdgeInsets.only(left: 16.0, bottom: 8.0, top: 4.0),
           child: AnymeXText(
-            'Novel Reader',
+            context.l10n.novelReader,
             size: 13.5,
             variant: TextVariant.semiBold,
             color: context.colors.primary,
@@ -1137,7 +1135,7 @@ class _SettingsReaderState extends State<SettingsReader> {
         AnymeXExpansionTile(
           title: context.l10n.themeTypography,
           subtitle:
-              '${_novelThemeLabel()} • $_novelFontFamily • ${_novelFontSize.toInt()}pt',
+              context.l10n.pt2(_novelThemeLabel(), _novelFontFamily, (_novelFontSize.toInt()).toString()),
           icon: Icons.palette_rounded,
           initialExpanded: true,
           useCard: true,

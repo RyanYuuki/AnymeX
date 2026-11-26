@@ -77,7 +77,10 @@ class SubtitleText extends StatelessWidget {
       final subtitleBox = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: colorOptions[controller.settings.subtitleBackgroundColor],
+          color: subtitleBackgroundColor(
+            controller.settings.subtitleBackgroundColor,
+            controller.playerSettings.subtitleBackgroundOpacity,
+          ),
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
         ),
         child: subtitleAnimation

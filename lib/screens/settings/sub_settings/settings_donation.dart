@@ -272,7 +272,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                         ),
                         const SizedBox(height: 4),
                         AnymeXText(
-                          "Can't donate money? Support AnymeX for free by watching a short ad! You will be rewarded points in the next update based on how many ads you've watched.",
+                          context.l10n.canTDonateMoneySupport,
                           variant: TextVariant.regular,
                           size: 12.5,
                           color: colors.onSurfaceVariant,
@@ -313,7 +313,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                           ),
                           const SizedBox(width: 6),
                           AnymeXText(
-                            'Ads Watched: $count',
+                            context.l10n.adsWatched(count),
                             variant: TextVariant.bold,
                             size: 13,
                             color: colors.onSurface,
@@ -446,7 +446,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                     icon: Icons.info_outline_rounded,
                     title: context.l10n.paypalRecipientNotice,
                     subtitle:
-                        'The name on PayPal may display as Rey Yuuki (friend\'s account), but all contributions directly support AnymeX.',
+                        context.l10n.theNameOnPaypalMay,
                     showChevron: false,
                   ),
                 ],

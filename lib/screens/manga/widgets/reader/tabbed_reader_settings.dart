@@ -380,7 +380,7 @@ class _ReadingModePage extends StatelessWidget {
                   icon: Icons.smartphone_rounded,
                   title: context.l10n.autoWebtoonMode,
                   subtitle:
-                      'Automatically switch to continuous mode for long-strip manga',
+                      context.l10n.automaticallySwitchToContinuousModeFor,
                   value: controller.autoWebtoonMode.value,
                   onChanged: (_) => controller.toggleAutoWebtoonMode(),
                 ),
@@ -483,7 +483,7 @@ class _GeneralPage extends StatelessWidget {
                   icon: Icons.compare_arrows_rounded,
                   title: context.l10n.alwaysShowChapterTransition,
                   subtitle:
-                      'Show transition page even when chapters are adjacent',
+                      context.l10n.showTransitionPageEvenWhenChapters,
                   value: controller.alwaysShowChapterTransition.value,
                   onChanged: (_) =>
                       controller.toggleAlwaysShowChapterTransition(),

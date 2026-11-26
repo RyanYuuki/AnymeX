@@ -398,7 +398,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
         return AlertDialog(
           backgroundColor: context.theme.colorScheme.surfaceContainer,
           title: AnymeXText(
-            'Insert $type',
+            context.l10n.insertValue(type),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           content: TextField(

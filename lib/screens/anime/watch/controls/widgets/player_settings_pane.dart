@@ -167,11 +167,11 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                   AnymeXExpansionTile(
                     title: context.l10n.controlsGestures,
                     subtitle:
-                        'Theme, indicators, gestures, auto-skip & button layout',
+                        context.l10n.themeIndicatorsGesturesAutoSkip,
                     icon: HugeIcons.strokeRoundedPlaySquare,
                     initialExpanded: false,
                     useContentContainer: false,
-                    content: Padding(
+                    content: const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: SettingsPlayerControls(isEmbedded: true),
                     ),
@@ -183,7 +183,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                     icon: Icons.subtitles_rounded,
                     initialExpanded: false,
                     useContentContainer: false,
-                    content: Padding(
+                    content: const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: SettingsPlayerSubtitles(isEmbedded: true),
                     ),
@@ -195,7 +195,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                     icon: Icons.auto_awesome_rounded,
                     initialExpanded: false,
                     useContentContainer: false,
-                    content: Padding(
+                    content: const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: SettingsPlayerShaders(isEmbedded: true),
                     ),
@@ -204,11 +204,11 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                   AnymeXExpansionTile(
                     title: context.l10n.engineAdvanced,
                     subtitle:
-                        'Hardware decoder, video renderer, audio & mpv config',
+                        context.l10n.hardwareDecoderVideoRendererAudio,
                     icon: Icons.memory_rounded,
                     initialExpanded: false,
                     useContentContainer: false,
-                    content: Padding(
+                    content: const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: SettingsPlayerEngine(isEmbedded: true),
                     ),

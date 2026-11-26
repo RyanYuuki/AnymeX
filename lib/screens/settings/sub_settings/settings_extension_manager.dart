@@ -326,7 +326,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       } else {
         if (mounted) {
           snackBar(
-              'Rollback to ${release.tagName} downloaded. Please restart the app to apply.');
+              context.l10n.rollbackToDownloadedPleaseRestart(release.tagName));
         }
       }
     } catch (error) {
@@ -791,7 +791,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               labelText: context.l10n.enterValue,
             ),
           ),

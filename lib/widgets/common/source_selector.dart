@@ -2,7 +2,6 @@ import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_chip.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
@@ -173,7 +172,7 @@ class SourceSelectorWidget extends StatelessWidget {
                           )
                         else
                           AnymeXText(
-                            'Tap to choose a source',
+                            context.l10n.tapToChooseASource,
                             style: TextStyle(
                               fontSize: 11,
                               fontFamily: 'Linotte',
@@ -585,7 +584,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: AnymeXText(
-                  '${widget.installedSources.length} installed',
+                  context.l10n.installed(widget.installedSources.length),
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'Linotte',

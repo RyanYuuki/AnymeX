@@ -388,7 +388,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
               size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
           AnymeXText(
-            'No subtitle cues loaded',
+            context.l10n.noSubtitleCuesLoaded,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),
             ),
@@ -397,7 +397,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: AnymeXText(
-              'Cues are only available for external subtitles. Use the delay controls above to sync embedded tracks.',
+              context.l10n.cuesAreOnlyAvailableFor,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: cs.onSurface.withOpacity(0.35),

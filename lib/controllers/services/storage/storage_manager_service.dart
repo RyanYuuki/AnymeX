@@ -5,6 +5,7 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:anymex/main.dart';
 import 'package:flutter/painting.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class StorageManagerService {
   static const double defaultThresholdGb = 5.0;
@@ -49,7 +50,7 @@ class StorageManagerService {
 
   Future<int> getTorrentCacheSize() async {
     int size = 0;
-    final docsDir = await getApplicationDocumentsDirectory();
+    final docsDir = await getAppDocumentsDirectory();
     final torrentDir = Directory('${docsDir.path}/torrent_cache');
     size += await _computeDirectorySize(torrentDir);
     final supportDir = await getApplicationSupportDirectory();
@@ -97,7 +98,7 @@ class StorageManagerService {
   }
 
   Future<void> clearTorrentCacheOnly() async {
-    final docsDir = await getApplicationDocumentsDirectory();
+    final docsDir = await getAppDocumentsDirectory();
     final torrentDir = Directory('${docsDir.path}/torrent_cache');
     await _clearDirectoryContents(torrentDir);
     final supportDir = await getApplicationSupportDirectory();
@@ -202,7 +203,7 @@ class StorageManagerService {
 
   Future<List<Directory>> _getAllKnownCacheDirectories() async {
     final tempDir = await getTemporaryDirectory();
-    final docsDir = await getApplicationDocumentsDirectory();
+    final docsDir = await getAppDocumentsDirectory();
     final torrentDir = Directory('${docsDir.path}/torrent_cache');
     return [
       tempDir,

@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';

@@ -29,6 +29,7 @@ class PlayerSettings {
   String translateTo;
   bool autoSkipFiller;
   double subtitleOpacity;
+  double subtitleBackgroundOpacity;
   double subtitleBottomMargin;
   String subtitleOutlineType;
   bool enableScreenshot;
@@ -40,6 +41,7 @@ class PlayerSettings {
   bool enableHoldToSeek;
   bool enableSlideToSeek;
   bool useMediaSession;
+  bool relativeHoldSpeed;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -69,6 +71,7 @@ class PlayerSettings {
     this.translateTo = 'en',
     this.transitionSubtitle = false,
     this.subtitleOpacity = 1.0,
+    this.subtitleBackgroundOpacity = 1.0,
     this.subtitleBottomMargin = 10.0,
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
@@ -81,6 +84,7 @@ class PlayerSettings {
     this.enableHoldToSeek = true,
     this.enableSlideToSeek = true,
     this.useMediaSession = false,
+    this.relativeHoldSpeed = false,
   });
 
   factory PlayerSettings.fromDB() {
@@ -142,6 +146,8 @@ class PlayerSettings {
           PlayerSettingsKeys.translateTo.get<String>(defaults.translateTo),
       subtitleOpacity: PlayerSettingsKeys.subtitleOpacity
           .get<double>(defaults.subtitleOpacity),
+      subtitleBackgroundOpacity: PlayerSettingsKeys.subtitleBackgroundOpacity
+          .get<double>(defaults.subtitleBackgroundOpacity),
       subtitleBottomMargin: PlayerSettingsKeys.subtitleBottomMargin
           .get<double>(defaults.subtitleBottomMargin),
       subtitleOutlineType: PlayerSettingsKeys.subtitleOutlineType
@@ -167,6 +173,8 @@ class PlayerSettings {
           .get<bool>(defaults.enableSlideToSeek),
       useMediaSession: PlayerSettingsKeys.useMediaSession
           .get<bool>(defaults.useMediaSession),
+      relativeHoldSpeed: PlayerSettingsKeys.relativeHoldSpeed
+          .get<bool>(defaults.relativeHoldSpeed),
     );
   }
 }

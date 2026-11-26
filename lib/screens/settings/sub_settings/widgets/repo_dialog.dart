@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'dart:io';
 
 import 'package:anymex/utils/extensions.dart';
@@ -156,7 +155,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Add ${widget.type.name.toUpperCase()} Repository',
+                          context.l10n.addTypeRepository(widget.type.name.toUpperCase()),
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: colorScheme.onSurface,

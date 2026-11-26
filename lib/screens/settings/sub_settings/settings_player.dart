@@ -145,7 +145,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             children: [
               Expanded(
                 child: AnymeXText(
-                  'Player Settings',
+                  context.l10n.playerSettings,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontFamily: 'Linotte',
                     fontWeight: FontWeight.bold,
@@ -234,7 +234,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       icon: Icons.launch_rounded,
                       title: context.l10n.useExternalPlayer,
                       subtitle:
-                          'Open video streams in an external player by default',
+                          context.l10n.openVideoStreamsInAnExternal,
                       value: _useExternalPlayer,
                       onChanged: (val) {
                         setState(() {
@@ -252,16 +252,16 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       icon: HugeIcons.strokeRoundedPlaySquare,
                       title: context.l10n.controlsGestures,
                       subtitle:
-                          '$controlTheme • $indicatorTheme • Bottom bar & seek',
+                          context.l10n.bottomBarSeek(controlTheme, indicatorTheme),
                       onTap: () =>
-                          _openSubPage(SettingsPlayerControls()),
+                          _openSubPage(const SettingsPlayerControls()),
                     ),
                     AnymeXTile(
                       icon: Icons.subtitles_rounded,
                       title: context.l10n.subtitlesTranslation,
                       subtitle: context.l10n.stylingLibass(subLang.toString(), subFont.toString()),
                       onTap: () =>
-                          _openSubPage(SettingsPlayerSubtitles()),
+                          _openSubPage(const SettingsPlayerSubtitles()),
                     ),
                     AnymeXTile(
                       icon: Icons.auto_awesome_rounded,
@@ -275,7 +275,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       icon: Icons.memory_rounded,
                       title: context.l10n.engineAdvanced,
                       subtitle:
-                          'Decoder (${settings.hardwareDecoder.toUpperCase()}) • Renderer • mpv.conf',
+                          context.l10n.decoderRendererMpvConf(settings.hardwareDecoder.toUpperCase()),
                       onTap: () => _openSubPage(const SettingsPlayerEngine()),
                     ),
                   ],

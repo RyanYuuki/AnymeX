@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -32,7 +33,7 @@ class ChaptersBottomSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AnymeXText(
-                  'Chapters & Timestamps',
+                  context.l10n.chaptersTimestamps,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -55,7 +56,7 @@ class ChaptersBottomSheet extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(32),
                     child: AnymeXText(
-                      'No chapters or timestamps detected for this stream',
+                      context.l10n.noChaptersOrTimestampsDetected,
                       color: cs.onSurfaceVariant,
                       variant: TextVariant.regular,
                       size: 14,
@@ -73,7 +74,7 @@ class ChaptersBottomSheet extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: AnymeXText(
-                        'Container Chapters',
+                        context.l10n.containerChapters,
                         color: cs.primary,
                         variant: TextVariant.bold,
                         size: 12,
@@ -112,7 +113,7 @@ class ChaptersBottomSheet extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: AnymeXText(
-                        'Skip Segments',
+                        context.l10n.skipSegments,
                         color: cs.primary,
                         variant: TextVariant.bold,
                         size: 12,

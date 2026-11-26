@@ -15,6 +15,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 class DecorationClosetSheet extends StatefulWidget {
   const DecorationClosetSheet({super.key});
@@ -187,7 +188,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       title: context.l10n.unlockCustomizations,
       showCancelButton: true,
       cancelText: context.l10n.cancel,
-      confirmText: canAfford ? 'Unlock & Equip' : 'Not Enough Points',
+      confirmText: canAfford
+          ? uiLabel(context.l10n, 'Unlock & Equip')
+          : uiLabel(context.l10n, 'Not Enough Points'),
       isConfirmEnabled: canAfford,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
@@ -230,7 +233,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: AnymeXText(
-                        '★ ${item['points']} pts',
+                        '★ ${context.l10n.pointsShort(item['points'].toString())}',
                         variant: TextVariant.bold,
                         size: 11,
                         color: colorScheme.primary,
@@ -252,7 +255,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 color: colorScheme.onSurfaceVariant,
               ),
               AnymeXText(
-                '★ $totalPointsNeeded pts',
+                '★ ${context.l10n.pointsShort(totalPointsNeeded.toString())}',
                 variant: TextVariant.bold,
                 size: 13,
                 color: colorScheme.primary,
@@ -270,7 +273,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 color: colorScheme.onSurfaceVariant,
               ),
               AnymeXText(
-                isInfinite ? '∞ pts' : '★ $currentPoints pts',
+                isInfinite ? '∞ ${context.l10n.pointsShort('').trim()}' : '★ ${context.l10n.pointsShort(currentPoints.toString())}',
                 variant: TextVariant.bold,
                 size: 13,
                 color: canAfford ? colorScheme.onSurface : colorScheme.error,
@@ -351,7 +354,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     final userAvatar = _commentumService.currentUserAvatar;
-    final userName = _commentumService.currentUsername ?? 'You';
+    final userName = _commentumService.currentUsername ?? context.l10n.you;
 
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.85,
@@ -378,11 +381,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: AnymeXTabBar(
-              selectTabs: const [
-                'Decorations',
-                'Nameplates',
-                'Banners',
-                'Effects',
+              selectTabs: [
+                uiLabel(context.l10n, 'Decorations'),
+                uiLabel(context.l10n, 'Nameplates'),
+                uiLabel(context.l10n, 'Banners'),
+                uiLabel(context.l10n, 'Effects'),
               ],
               selectedIndex: _tabController.index,
               height: 44,
@@ -626,7 +629,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                '${_decorations.length} Avatar Decorations',
+                context.l10n.avatarDecorationsCount(_decorations.length),
                 size: 12.5,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onSurfaceVariant,
@@ -749,7 +752,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                '${_nameplates.length} Collectible Nameplates',
+                context.l10n.collectibleNameplatesCount(_nameplates.length.toString()),
                 size: 12.5,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onSurfaceVariant,
@@ -926,7 +929,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(context.l10n.apply, style: TextStyle(fontSize: 12)),
+                child: Text(context.l10n.apply, style: const TextStyle(fontSize: 12)),
               ),
               if (_previewBannerUrl != null) ...[
                 const SizedBox(width: 4),
@@ -1089,7 +1092,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                '${_effects.length} Profile Effects',
+                context.l10n.profileEffectsCount(_effects.length),
                 size: 12.5,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onSurfaceVariant,

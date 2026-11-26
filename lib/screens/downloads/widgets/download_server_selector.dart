@@ -279,17 +279,17 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
     return Obx(() {
       if (_isLoading.value && _servers.isEmpty) {
         return Padding(
-          padding: EdgeInsets.all(40),
+          padding: const EdgeInsets.all(40),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ExpressiveLoadingIndicator(),
-              SizedBox(height: 16),
+              const ExpressiveLoadingIndicator(),
+              const SizedBox(height: 16),
               AnymeXText(context.l10n.fetchingAvailableServers,
-                  style: TextStyle(fontSize: 14, color: Colors.grey)),
-              SizedBox(height: 6),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey)),
+              const SizedBox(height: 6),
               AnymeXText(context.l10n.thisMayTakeUpTo30,
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
         );
@@ -526,7 +526,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                             color: Colors.orange.withOpacity(0.3)),
                                       ),
                                       child: AnymeXText(context.l10n.hls,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontSize: 10,
                                               color: Colors.orange,
                                               fontWeight: FontWeight.w600)),
@@ -542,7 +542,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                             color: Colors.green.withOpacity(0.3)),
                                       ),
                                       child: AnymeXText(context.l10n.direct,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontSize: 10,
                                               color: Colors.green,
                                               fontWeight: FontWeight.w600)),
@@ -650,7 +650,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Subtitles (${subtitles.length})',
+                        context.l10n.subtitlesCount(subtitles.length),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -691,7 +691,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                             )),
                       const SizedBox(height: 16),
                       AnymeXText(
-                        'Audio Tracks (${audios.length})',
+                        context.l10n.audioTracksCount(audios.length),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,

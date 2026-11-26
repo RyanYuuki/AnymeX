@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:get/get.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

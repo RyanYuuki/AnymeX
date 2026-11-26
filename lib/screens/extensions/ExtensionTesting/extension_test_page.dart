@@ -435,7 +435,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
             ),
             child: AnymeXText(
               context.l10n.startTest,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 fontSize: 16,

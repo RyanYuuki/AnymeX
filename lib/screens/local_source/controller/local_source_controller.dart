@@ -21,6 +21,7 @@ import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 enum ViewMode { local, download, search }
 
@@ -279,7 +280,7 @@ class LocalSourceController extends GetxController
         directory = await getExternalStorageDirectory();
         directory ??= Directory('/storage/emulated/0/Download');
       } else if (Platform.isIOS) {
-        directory = await getApplicationDocumentsDirectory();
+        directory = await getAppDocumentsDirectory();
 
         final downloadsDir = Directory('${directory.path}/Downloads');
         if (!await downloadsDir.exists()) {
@@ -294,7 +295,7 @@ class LocalSourceController extends GetxController
           directory = downloadsDir;
         }
       } else {
-        directory = await getApplicationDocumentsDirectory();
+        directory = await getAppDocumentsDirectory();
       }
 
       pathHistory.clear();
@@ -313,7 +314,7 @@ class LocalSourceController extends GetxController
     final List<String> paths = [];
 
     try {
-      final documentsDir = await getApplicationDocumentsDirectory();
+      final documentsDir = await getAppDocumentsDirectory();
       paths.add(documentsDir.path);
 
       final downloadsDir = Directory('${documentsDir.path}/Downloads');

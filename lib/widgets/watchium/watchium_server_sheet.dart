@@ -265,7 +265,7 @@ class _ServerTile extends StatelessWidget {
                           Border.all(color: Colors.green.withOpacity(0.3)),
                     ),
                     child: AnymeXText(context.l10n.direct,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 10,
                             color: Colors.green,
                             fontWeight: FontWeight.w600)),

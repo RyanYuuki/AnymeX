@@ -4,6 +4,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class PlayerShaders {
   static final shaderProfiles = {
@@ -137,7 +138,7 @@ class PlayerShaders {
         } catch (_) {}
       }
     }
-    final documentsDir = await getApplicationDocumentsDirectory();
+    final documentsDir = await getAppDocumentsDirectory();
     final dir = Directory('${documentsDir.path}/AnymeX');
     if (!await dir.exists()) {
       await dir.create(recursive: true);
@@ -211,7 +212,7 @@ class PlayerShaders {
 
       if (!await configFile.exists()) {
         try {
-          final oldDocsDir = await getApplicationDocumentsDirectory();
+          final oldDocsDir = await getAppDocumentsDirectory();
           final oldFile = File('${oldDocsDir.path}/AnymeX/mpv/mpv.conf');
           if (await oldFile.exists()) {
             final content = await oldFile.readAsString();

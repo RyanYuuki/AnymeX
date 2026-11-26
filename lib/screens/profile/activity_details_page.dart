@@ -428,7 +428,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0, vertical: 4.0),
                             child: AnymeXText(
-                              'reply',
+                              context.l10n.reply2,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: context.theme.colorScheme.primary,
@@ -445,7 +445,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
                               child: AnymeXText(
-                                'delete',
+                                context.l10n.actionDelete,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context.theme.colorScheme.error,
@@ -461,7 +461,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
                               child: AnymeXText(
-                                'edit',
+                                context.l10n.actionEdit,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context

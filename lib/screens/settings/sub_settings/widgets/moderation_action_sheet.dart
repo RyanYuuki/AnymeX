@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
@@ -323,7 +322,7 @@ class _AnymeXModerationActionSheetState
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'User ID: #${widget.targetUserId}',
+                        context.l10n.userId(widget.targetUserId),
                         size: 12,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -549,7 +548,7 @@ class _AnymeXModerationActionSheetState
                       child: ExpressiveLoadingIndicator(),
                     )
                   : AnymeXText(
-                      'Confirm ${_getActionTitle()}',
+                      context.l10n.confirmAction(_getActionTitle()),
                       variant: TextVariant.bold,
                       size: 15,
                     ),

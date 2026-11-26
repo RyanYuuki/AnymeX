@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -20,6 +21,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -170,7 +172,7 @@ class _UnderratedCarousel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AnymeXText(
-                  title,
+                  uiLabel(context.l10n, title),
                   style: TextStyle(
                     fontFamily: 'Linotte',
                     fontSize: 17,
@@ -184,7 +186,7 @@ class _UnderratedCarousel extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         AnymeXText(
-                          'See All',
+                          Get.context!.l10n.homeSeeAll,
                           style: TextStyle(
                             fontFamily: 'Linotte',
                             fontSize: 13,

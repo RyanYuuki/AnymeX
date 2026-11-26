@@ -1,6 +1,5 @@
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui' as ui;
-import 'package:get/get.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -476,7 +475,7 @@ class DiscordMarkdown extends StatelessWidget {
 
     double? width;
     final widthMatch = RegExp(
-      r'width=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      r'width=["'']{1,2}([^"''s>]+)["'']{1,2}',
       caseSensitive: false,
     ).firstMatch(tagAttributes);
     if (widthMatch != null) {
@@ -488,7 +487,7 @@ class DiscordMarkdown extends StatelessWidget {
 
     double? height;
     final heightMatch = RegExp(
-      r'height=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      r'height=["'']{1,2}([^"''s>]+)["'']{1,2}',
       caseSensitive: false,
     ).firstMatch(tagAttributes);
     if (heightMatch != null) {
@@ -629,9 +628,7 @@ class _ImageThumbnail extends StatelessWidget {
   const _ImageThumbnail({
     required this.image,
     required this.colorScheme,
-    this.defaultMaxHeight = 180.0,
-    this.defaultMaxWidth = 260.0,
-  });
+  }) : defaultMaxHeight = 180.0 : defaultMaxWidth = 260.0;
 
   final CommentMediaImage image;
   final ColorScheme colorScheme;
@@ -811,7 +808,7 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Failed to load image',
+                      context.l10n.failedToLoadImage,
                       style:
                           TextStyle(color: Colors.white.withValues(alpha: 0.6)),
                     ),

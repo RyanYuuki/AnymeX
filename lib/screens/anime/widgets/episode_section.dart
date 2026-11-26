@@ -114,8 +114,7 @@ class EpisodeSection extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const AnymeXText(
-                          'Episode Metadata',
+                        AnymeXText(context.l10n.episodeMetadata,
                           variant: TextVariant.bold,
                           size: 14,
                         ),

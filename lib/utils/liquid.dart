@@ -18,11 +18,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/utils/mesh_blur_helper.dart';
 import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class ProgressController extends GetxController {
   var currentStep = ''.obs;
@@ -474,7 +474,7 @@ class Liquid {
         baseDir = Directory(path.join(databaseDir.path, 'AnymeX'));
       }
     } else {
-      final docs = await getApplicationDocumentsDirectory();
+      final docs = await getAppDocumentsDirectory();
       baseDir = Directory(path.join(docs.path, 'AnymeX'));
     }
 
@@ -656,7 +656,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                   ),
                                   alignment: Alignment.center,
                                   child: AnymeXText(
-                                    "Gaussian Blur",
+                                    Get.context!.l10n.gaussianBlur,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: blurStyle == 0
@@ -688,7 +688,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                   ),
                                   alignment: Alignment.center,
                                   child: AnymeXText(
-                                    "Fluid Mesh",
+                                    Get.context!.l10n.fluidMesh,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: blurStyle == 1
@@ -707,13 +707,12 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                             Icon(Icons.blur_on,
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            const AnymeXText(
-                              "Blur Radius",
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                            AnymeXText(Get.context!.l10n.blurRadius,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
-                              "${blur.toInt()}px",
+                              Get.context!.l10n.pxValue((blur.toInt()).toString()),
                               style: TextStyle(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
@@ -739,9 +738,8 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                             Icon(Icons.brightness_medium,
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            const AnymeXText(
-                              "Brightness",
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                            AnymeXText(Get.context!.l10n.brightness,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
@@ -771,9 +769,8 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                             Icon(Icons.contrast,
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            const AnymeXText(
-                              "Contrast",
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                            AnymeXText(Get.context!.l10n.contrast,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(

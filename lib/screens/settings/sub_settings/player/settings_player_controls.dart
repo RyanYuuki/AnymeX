@@ -1237,6 +1237,13 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                 onChanged: (val) => settings.enableHoldToSeek = val,
               ),
               AnymeXTile.toggle(
+                icon: Icons.speed_rounded,
+                title: context.l10n.doubleCurrentSpeedOnHold,
+                subtitle: context.l10n.doubleCurrentSpeedOnHoldDescription,
+                value: settings.relativeHoldSpeed,
+                onChanged: (val) => settings.relativeHoldSpeed = val,
+              ),
+              AnymeXTile.toggle(
                 icon: Icons.swap_horiz_rounded,
                 title: context.l10n.swipeToSeek,
                 subtitle: context.l10n.horizontalSwipeAcrossTheScreenTo,

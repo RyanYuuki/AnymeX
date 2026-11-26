@@ -241,6 +241,7 @@
   "adjustRoundnessOfAllMediaCards": "Adjust roundness of all media cards",
   "adjustSubSize": "Adjust Sub Size",
   "adjustSubtitleOutlineWidth": "Adjust Subtitle Outline Width",
+  "adjustSubtitleBackgroundVisibility": "Adjust subtitle background visibility",
   "adjustTextVisibility": "Adjust text visibility",
   "admin": "Admin",
   "adult": "Adult",
@@ -297,6 +298,7 @@
   "areYouSureYouWantTo": "Are you sure you want to delete all saved cookies?",
   "areYouSureYouWantToDelete": "Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.",
   "areYouSureYouWantToDeleteThis": "Are you sure you want to delete this extension?",
+  "areYouSureYouWantToDeleteThisEntry": "Are you sure you want to remove this entry from your list? Its progress, score and dates will be lost.",
   "areYouSureYouWantToDeleteThisReply": "Are you sure you want to delete this reply?",
   "askForTrackingPermission": "Ask for tracking permission",
   "atLeast2TabsMustRemain": "At least 2 tabs must remain visible!",
@@ -629,6 +631,8 @@
   "donateViaUpiPaypalSupportDevelopment": "Donate via UPI, PayPal & support development",
   "done": "DONE",
   "done2": "Done",
+  "doubleCurrentSpeedOnHold": "Double Current Speed on Hold",
+  "doubleCurrentSpeedOnHoldDescription": "Hold speeds up to twice your current playback speed instead of a fixed 2x",
   "doubletapToSeek": "DoubleTap to Seek",
   "downgradeOrSwitchToASpecific": "Downgrade or switch to a specific plugin version",
   "download": "Download",
@@ -1549,6 +1553,7 @@
   "studios": "Studios",
   "style": "STYLE",
   "subtitleBackgroundColor": "Subtitle Background Color",
+  "subtitleBackgroundTransparency": "Subtitle Background Transparency",
   "subtitleColor": "Subtitle Color",
   "subtitleFont": "Subtitle Font",
   "subtitleOutlineColor": "Subtitle Outline Color",
@@ -4201,5 +4206,1334 @@
   },
   "hostBadge": "HOST",
   "basedOnAnimeScoredTen": "Based on anime you've scored as 10/10.",
-  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10."
+  "basedOnMangaScoredTen": "Based on manga you've scored as 10/10.",
+  "loginToDiscord": "Login to Discord",
+  "signInToContinue": "Sign in to continue",
+  "detectedCloudflareProtectionTapTo": "⚠️ Detected Cloudflare protection (Tap to solve)",
+  "pleasePasteTheTokenFrom": "Please paste the token from the browser",
+  "saveBackupFile": "Save Backup File",
+  "selectAnymexBackupFile": "Select Anymex Backup File",
+  "unsupportedFormatPleaseSelectAn": "Unsupported format. Please select an AnymeX, Aniyomi, Mihon, or Kotatsu backup",
+  "exportGithubGistJson": "Export GitHub Gist JSON",
+  "youWillLeaveTheRoom": "You will leave the room and stop watching with everyone.",
+  "openings": "Openings",
+  "endings": "Endings",
+  "saveExportXml": "Save Export XML",
+  "unableToLoadThemeVideo": "Unable to load theme video",
+  "tracksCount": "Tracks ({count})",
+  "@tracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "holdToUnlock": "Hold to Unlock",
+  "tapAgainToUnlock": "Tap again to unlock",
+  "audioChannelsLayout": "AUDIO CHANNELS / LAYOUT",
+  "takingLongerThanExpected": "Taking longer than expected...",
+  "noChaptersOrTimestampsDetected": "No chapters or timestamps detected for this stream",
+  "containerChapters": "Container Chapters",
+  "skipSegments": "Skip Segments",
+  "themeIndicatorsGesturesAutoSkip": "Theme, indicators, gestures, auto-skip & button layout",
+  "hardwareDecoderVideoRendererAudio": "Hardware decoder, video renderer, audio & mpv config",
+  "noSubtitleCuesLoaded": "No subtitle cues loaded",
+  "cuesAreOnlyAvailableFor": "Cues are only available for external subtitles. Use the delay controls above to sync embedded tracks.",
+  "shareTheCodeBelowWith": "Share the code below with friends to watch together",
+  "openPartyChat": "Open Party Chat",
+  "extensionNotSupportedForRooms": "Extension Not Supported for Rooms",
+  "thisExtensionRoutesVideoThrough": "This extension routes video through an internal device proxy or IP-locked stream that cannot be shared with friends.\\n\\n",
+  "toMaintainASafeAnd": "To maintain a safe and friendly community, please read and accept our comment policy before posting.\\n\\nWe do not tolerate spam, harassment, or offensive content.",
+  "tag": "Tag",
+  "loadingComments": "Loading comments...",
+  "noCommentsYet": "No comments yet",
+  "startTheConversationAndShare": "Start the conversation and share your thoughts!",
+  "loadingMoreComments": "Loading more comments...",
+  "youReAllCaughtUp": "You're all caught up",
+  "notificationTarget": "Notification Target",
+  "pinned": "Pinned",
+  "repliesCollapsed": "[+] {count} replies collapsed",
+  "@repliesCollapsed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showMoreReplies": "Show more replies ({count})",
+  "@showMoreReplies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collapse": "Collapse",
+  "editedLabel": "(edited)",
+  "reply": "Reply",
+  "replyingTo": "Replying to {username}",
+  "@replyingTo": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "threadIsLocked": "Thread is locked",
+  "thisCommentWasDeleted": "[This comment was deleted]",
+  "editComment": "Edit Comment",
+  "areYouSureYouWant": "Are you sure you want to delete this comment? This action cannot be undone.",
+  "reportComment": "Report Comment",
+  "moderateComment": "Moderate Comment",
+  "userActions": "User Actions",
+  "restoreActions": "Restore Actions",
+  "sComments": "{value}\\'s Comments",
+  "@sComments": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "on": "On: {title}",
+  "@on": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reasonDetails": "Reason: {reason}",
+  "@reasonDetails": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "by": "by {name}",
+  "@by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadImage": "Failed to load image",
+  "mentionUser": "Mention user",
+  "editingComment": "Editing comment",
+  "replyingTo2": "Replying to",
+  "thisCommentWasDeleted2": "This comment was deleted",
+  "replies": "Replies ({count})",
+  "@replies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "originalComment": "ORIGINAL COMMENT",
+  "noRepliesYetBeThe": "No replies yet. Be the first to reply!",
+  "spoilerDashTapToReveal": "Spoiler — tap to reveal",
+  "gifSearch": "GIF Search",
+  "noGifsFound": "No GIFs found",
+  "topCommentersPointsRanking": "Top commenters & points ranking",
+  "noRankingsAvailableYet": "No rankings available yet",
+  "youWithName": "You ({value})",
+  "@youWithName": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "pts": "{val1} {val2} • {val3} pts",
+  "@pts": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      },
+      "val3": {
+        "type": "String"
+      }
+    }
+  },
+  "statsUnavailable": "Stats unavailable",
+  "viewFullProfile": "View Full Profile",
+  "memberSince": "Member since",
+  "epNumber": "EP {number}",
+  "@epNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "fillerLabel": "[Filler]",
+  "onlineCount": "Online {count}",
+  "@onlineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadedCount": "Downloaded {count}",
+  "@downloadedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "episodesCount": "{count} episodes",
+  "@episodesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "episodeNumber": "Episode {number}",
+  "@episodeNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDetails": "Error Details",
+  "selected": "{count} selected",
+  "@selected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chaptersCount": "{count} chapters",
+  "@chaptersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "available": "{count} available",
+  "@available": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "{val1}% · {val2}/{val3} completed",
+  "@completed": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      },
+      "val3": {
+        "type": "String"
+      }
+    }
+  },
+  "step": "Step {number}",
+  "@step": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "subtitlesCount": "Subtitles ({count})",
+  "@subtitlesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audioTracksCount": "Audio Tracks ({count})",
+  "@audioTracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pages": "{value} PAGES",
+  "@pages": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "aSingleMediaCanBe": "A single media can be tracked on all logged-in services at once.",
+  "logInToAnilistMyanimelist": "Log in to AniList, MyAnimeList or Simkl from Settings → Accounts",
+  "areYouSureYouWant2": "Are you sure you want to clear all {label}? This action cannot be undone.",
+  "@areYouSureYouWant2": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteSelectedCount": "Delete Selected ({count})",
+  "@deleteSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lists": "{count} lists",
+  "@lists": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsCount": "{count} items",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createYourFirstCustomList": "Create your first custom list to organize\\nyour favorite content",
+  "areYouSureYouWant3": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@areYouSureYouWant3": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "itemsTotal": "{count} items total",
+  "@itemsTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalLists": "Total Lists: {value}",
+  "@totalLists": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "install": "Install {name}",
+  "@install": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blendMode": "Blend Mode",
+  "upscaleComparison": "Upscale Comparison",
+  "original": "Original",
+  "superRes": "Super Res • {preset}",
+  "@superRes": {
+    "placeholders": {
+      "preset": {
+        "type": "String"
+      }
+    }
+  },
+  "pageActions": "Page Actions",
+  "failedToLoadChapter": "Failed to load chapter",
+  "pageNumber": "Page {value}",
+  "@pageNumber": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "pages2": "{value} pages",
+  "@pages2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "interactivePreview": "Interactive Preview",
+  "page2": "Page {val1} / {val2}",
+  "@page2": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "highDefinitionEdgeSharpeningDetail": "High-definition edge sharpening & detail enhancement",
+  "anilistAccountRequired": "AniList Account Required",
+  "logInToAnilistTo": "Log in to AniList to sync episode airing alerts, activity notifications, and social updates.",
+  "noNotificationsFound": "No notifications found",
+  "youAreAllCaughtUp": "You are all caught up!",
+  "unread": "{count} unread",
+  "@unread": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "whenSomeoneInteractsWithYour": "When someone interacts with your comments,\\nyou\\'ll see it here",
+  "readingSettings": "Reading Settings",
+  "textAlignment": "Text Alignment",
+  "chaptersListCount": "Chapters ({count})",
+  "@chaptersListCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reply2": "reply",
+  "animatchCalculatesRealTimeOverlap": "AniMatch calculates real-time overlap across:\\n",
+  "shared": "{value} Shared",
+  "@shared": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "commonInBothUserProfiles": "Common {type} in both user profiles",
+  "@commonInBothUserProfiles": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "noMutualIn": "No Mutual {val1} in {val2}",
+  "@noMutualIn": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "bothUsersEnjoyThisBut": "Both users enjoy this {value}, but haven\\'t completed any of the same titles yet.",
+  "@bothUsersEnjoyThisBut": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "exploreAllOnAnilist": "Explore all {title} on AniList",
+  "@exploreAllOnAnilist": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedFollowing": "Shared Following ({count})",
+  "@sharedFollowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mutualFollowers": "Mutual Followers ({count})",
+  "@mutualFollowers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compatibilityIsCalculatedByComparing": "Compatibility is calculated by comparing signals from both users\\' AniList profiles across 16 heuristics in Anime and Manga.\\n",
+  "pts2": "★ {value} pts",
+  "@pts2": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "youNeedMorePointsTo": "You need {points} more points to unlock these items.",
+  "@youNeedMorePointsTo": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "pts3": "{value} pts",
+  "@pts3": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarDecorationsCount": "{count} Avatar Decorations",
+  "@avatarDecorationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collectibleNameplates": "{count} Collectible Nameplates",
+  "@collectibleNameplates": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileEffectsCount": "{count} Profile Effects",
+  "@profileEffectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joined": "Joined {year}",
+  "@joined": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "following": "Following ({count})",
+  "@following": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "followers": "Followers ({count})",
+  "@followers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sList": "{val1}'s {val2} List",
+  "@sList": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "pts4": "{val1} • {val2} pts",
+  "@pts4": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "notePlayerControlPlacementOnly": "Note: Player control placement only works on the Default controls theme.",
+  "noControlsInThisSlot": "No controls in this slot. Move a control here using its placement menu.",
+  "importedThemeS": "{value} imported theme(s)",
+  "@importedThemeS": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "brightnessOverlayVolume": "Brightness {val1}% • Overlay {val2}% • Volume {val3}%",
+  "@brightnessOverlayVolume": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      },
+      "val3": {
+        "type": "String"
+      }
+    }
+  },
+  "verticalSwipeOnBrightnessVolume": "Vertical swipe on brightness & volume areas to adjust levels",
+  "pressAndHoldOnPlayer": "Press and hold on player screen to temporarily speed up playback",
+  "saveAScreenshotOfThe": "Save a screenshot of the last frame watched (uses extra storage)",
+  "enableBackgroundMediaControlsFor": "Enable background media controls for Bluetooth headsets and system notifications",
+  "highQualityRealTimeUpscaling": "High-quality real-time upscaling & line reconstruction GLSL shaders (~1.2 MB).",
+  "enableRealTimeNeuralUpscaling": "Enable real-time neural upscaling during playback",
+  "midRangeOptimizedForMobile": "Mid-range: Optimized for mobile devices, integrated GPUs, and handhelds.\\nHigh-end: Full pass line reconstruction and sharpening for dedicated desktop GPUs.",
+  "nativeSourceWithoutUpscaling": "Native source without upscaling",
+  "liveSubtitlePreview": "Live Subtitle Preview",
+  "ptDetails": "{val1} • {val2}pt",
+  "@ptDetails": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "liveNovelPreview": "Live Novel Preview",
+  "enableHorizontalSwipeNavigationIn": "Enable horizontal swipe navigation in novel reader",
+  "ifEnabledAnymexWillAsk": "If enabled, AnymeX will ask before updating your tracking progress; otherwise it tracks automatically.",
+  "areYouSureYouWant4": "Are you sure you want to uninstall {name}? This will delete the downloaded binary.",
+  "@areYouSureYouWant4": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uninstallName": "Uninstall {name}",
+  "@uninstallName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notifyWhenAnimeOnYour": "Notify when anime on your watch list airs new episodes",
+  "notifyWhenSomeoneLikesOr": "Notify when someone likes or replies to your activity",
+  "dragToReorderItems": "Drag to reorder · {value} items",
+  "@dragToReorderItems": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionsHaveBeenRestoredTo": "Extensions have been restored to your app, but no runtime host is installed or active on this device.\\n\\nTo run your extensions properly, please install the runtime host in the Runtime Manager.",
+  "selectAnAnymexTachibkProto": "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
+  "titlesAnimeMangaNovel": "{val1} titles • {val2} anime · {val3} manga · {val4} novel",
+  "@titlesAnimeMangaNovel": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      },
+      "val3": {
+        "type": "String"
+      },
+      "val4": {
+        "type": "String"
+      }
+    }
+  },
+  "configurationsPackages": "{val1} configurations • {val2} packages",
+  "@configurationsPackages": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "themesPlaybackReader": "Themes, playback, reader{value}",
+  "@themesPlaybackReader": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "runtime": "{val1} runtime{val2}",
+  "@runtime": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "configureAnizipKitsuSimklAnilist": "Configure AniZip, Kitsu, Simkl, AniList, Tenrai & fallback order",
+  "canTDonateMoneySupport": "Can't donate money? Support AnymeX for free by watching a short ad! You will be rewarded points in the next update based on how many ads you've watched.",
+  "adsWatched": "Ads Watched: {count}",
+  "@adsWatched": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "theNameOnPaypalMay": "The name on PayPal may display as Rey Yuuki (friend\\'s account), but all contributions directly support AnymeX.",
+  "showRichNotificationWithPoster": "Show rich notification with poster art when download completes",
+  "rollbackToDownloadedPleaseRestart": "Rollback to {version} downloaded. Please restart the app to apply.",
+  "@rollbackToDownloadedPleaseRestart": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "noManagersAvailable": "No {type} Managers Available",
+  "@noManagersAvailable": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "noExtensionManagersCurrentlySupport": "No extension managers currently support {type} content.",
+  "@noExtensionManagersCurrentlySupport": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "pluginRequired": "Plugin Required",
+  "installed": "{count} installed",
+  "@installed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "runtimePluginRequired": "Runtime Plugin Required",
+  "toUseRepositoriesAndExtensions": "To use {name} repositories and extensions, please download and install the runtime plugin.",
+  "@toUseRepositoriesAndExtensions": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "openPluginDownloader": "Open Plugin Downloader",
+  "runtimeError": "Runtime Error",
+  "noRepositoriesAddedYet": "No repositories added yet",
+  "addRepositoryTo": "Add Repository to {name}",
+  "@addRepositoryTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterOneOrMoreRepository": "Enter one or more repository URLs",
+  "scale": "{value}% Scale",
+  "@scale": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "fontSizeScale": "Font Size Scale",
+  "resultS": "{value} result(s)",
+  "@resultS": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "failedTo": "Failed to {value}",
+  "@failedTo": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "ofUsers": "{val1} of {val2} users",
+  "@ofUsers": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "userNotFoundId": "User not found (ID: {id})",
+  "@userNotFoundId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bottomBarSeek": "{val1} • {val2} • Bottom bar & seek",
+  "@bottomBarSeek": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "decoderRendererMpvConf": "Decoder ({value}) • Renderer • mpv.conf",
+  "@decoderRendererMpvConf": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tapARegionToSelect": "Tap a region to select and edit",
+  "zoneAction": "Zone Action ({action})",
+  "@zoneAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "pt2": "{val1} • {val2} • {val3}pt",
+  "@pt2": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      },
+      "val3": {
+        "type": "String"
+      }
+    }
+  },
+  "thresholdGb": "Threshold: {value} GB",
+  "@thresholdGb": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "customizeHistoryCardCarouselNav": "Customize history card, carousel & nav bar styles",
+  "customizeCarouselCardStylesGeometry": "Customize carousel card styles, geometry, and layout",
+  "displayAContinueWatchingBar": "Display a continue watching bar above the bottom navigation bar on home",
+  "appliesAnimeMangaPosterColor": "Applies anime/manga poster color scheme on the details page",
+  "pureBlackBackgroundOnDetails": "Pure black background on details page without gradients",
+  "addToList": "ADD TO LIST",
+  "customList": "CUSTOM LIST",
+  "repositoriesAndSourceSettings": "{count} repositories and source settings",
+  "@repositoriesAndSourceSettings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "userId": "User ID: #{id}",
+  "@userId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmAction": "Confirm {action}",
+  "@confirmAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "addTypeRepository": "Add {type} Repository",
+  "@addTypeRepository": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "addJsonFilesOrPaste": "Add JSON files or paste a URL\\nto install custom themes.",
+  "currentLabel": "Current",
+  "xp": "{value} XP",
+  "@xp": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "minsTotal": "{value} mins total",
+  "@minsTotal": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "minWatchEps": "{val1} min watch ({val2} eps)",
+  "@minWatchEps": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "minReadChs": "{val1} min read ({val2} chs)",
+  "@minReadChs": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "interactedTimes": "{val1} • Interacted: {val2} times",
+  "@interactedTimes": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "room": "Room {code}",
+  "@room": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "enterA6CharacterRoom": "Enter a 6-character room code to join a watch party",
+  "adWatchVerifiedTotalPoints": "Ad watch verified ({count} total)! Points will be rewarded in the next update.",
+  "@adWatchVerifiedTotalPoints": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "returnedTooQuicklySWatch": "Returned too quickly ({elapsed}s). Watch for at least {min}s to verify.",
+  "@returnedTooQuicklySWatch": {
+    "placeholders": {
+      "elapsed": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "castingVia": "Casting via {protocol} ({host})",
+  "@castingVia": {
+    "placeholders": {
+      "protocol": {
+        "type": "String"
+      },
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "noCastingDevicesFoundOn": "No casting devices found on local network.",
+  "spoilerU2014TapToReveal": "Spoiler \\u2014 tap to reveal",
+  "contrast": "Contrast",
+  "gamma": "Gamma",
+  "colorShaders": "Color & Shaders",
+  "fullFrame": "Full frame",
+  "realTimeUpscalingLineReconstruction": "Real-time upscaling & line reconstruction",
+  "devicePerformance": "Device Performance",
+  "colorPresets": "Color Presets",
+  "customAdjustments": "Custom Adjustments",
+  "enableExperimentalTuning": "Enable Experimental Tuning",
+  "requiredForMpvVisualCore": "Required for MPV visual & core tuning. Keep off on low-end devices.",
+  "experimentalTuningIsCurrentlyDisabled": "Experimental tuning is currently disabled. Toggle it on above to adjust debanding, scaling algorithms, frame interpolation, dithering, and tone mapping directly.",
+  "debandingFilter": "Debanding filter",
+  "smoothsGradientLinesAndEliminates": "Smooths gradient lines and eliminates banding",
+  "passes": "Passes",
+  "sensitivity": "Sensitivity",
+  "scalingAlgorithms": "Scaling & Algorithms",
+  "scalingLuma": "Scaling (Luma)",
+  "failedToLoadPage": "Failed to load page",
+  "tapRetryToAttemptLoading": "Tap retry to attempt loading again",
+  "gaussianBlur": "Gaussian Blur",
+  "fluidMesh": "Fluid Mesh",
+  "blurRadius": "Blur Radius",
+  "pxValue": "{value}px",
+  "@pxValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "newStableUpdateAvailable": "New stable update available: {version}",
+  "@newStableUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "wrapYourScaffoldOrMain": "Wrap your Scaffold or main page widget:\\n\\nSmoothPageEntrance(\\n  style: PageEntranceStyle.slideUpGentle,\\n  child: YourPageContent(),\\n)",
+  "px2": "{val1}% ({val2}px)",
+  "@px2": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "behind": "{value} behind",
+  "@behind": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "watchedOf": "Watched {watched} of {total}",
+  "@watchedOf": {
+    "placeholders": {
+      "watched": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "insertValue": "Insert {value}",
+  "@insertValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recommendTitle": "Recommend \"{title}\"",
+  "@recommendTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "updates": "{value} Updates",
+  "@updates": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "outOfSyncWithHost": "Out of sync with host",
+  "sync": "Sync",
+  "party": "Party",
+  "quickReactions": "QUICK REACTIONS",
+  "chatHasBeenDisabledBy": "Chat has been disabled by the host",
+  "announcementModeOnlyHostAnd": "Announcement mode — only host and co-hosts can send messages",
+  "announcementModeActiveMembersCan": "Announcement mode active — members can only read",
+  "coHost": "CO-HOST",
+  "makeTheNewHostYou": "Make {username} the new host? You'll become a regular member.",
+  "@makeTheNewHostYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "sixteenFactorDeepComparison": "16-Factor Deep Comparison",
+  "itemOfTotal": "{val1} of {val2}",
+  "@itemOfTotal": {
+    "placeholders": {
+      "val1": {
+        "type": "String"
+      },
+      "val2": {
+        "type": "String"
+      }
+    }
+  },
+  "bottomFill": "Bottom Fill",
+  "fillsTheLogoFromBottomTo": "Fills the logo from bottom to top with gradient mask",
+  "smokeTrace": "Smoke Trace",
+  "luminousSmokeStreamsTraceAndReveal": "Luminous smoke streams trace and reveal the embossed logo",
+  "fadeIn": "Fade In",
+  "smoothlyFadesInWithSubtleScale": "Smoothly fades in with subtle scale",
+  "scale2": "Scale",
+  "elasticScaleUpFromCenter": "Elastic scale up from center",
+  "rotate": "Rotate",
+  "slideRight": "Slide Right",
+  "slidesInFromLeftWithMomentum": "Slides in from left with momentum",
+  "pulse": "Pulse",
+  "professionalPulseWithGlowEffect": "Professional pulse with glow effect",
+  "glitch": "Glitch",
+  "controlledChromaticAberrationGlitch": "Controlled chromatic aberration glitch",
+  "bounce": "Bounce",
+  "realisticPhysicsBasedBounce": "Realistic physics-based bounce",
+  "wave": "Wave",
+  "fluidWaveMotionWithRotation": "Fluid wave motion with rotation",
+  "spiral": "Spiral",
+  "spiralsIntoViewWith3dDepth": "Spirals into view with 3D depth",
+  "particleConvergence": "Particle Convergence",
+  "colorfulParticlesConvergeWithSpiralMotion": "Colorful particles converge with spiral motion",
+  "particleExplosion": "Particle Explosion",
+  "logoExplodesIntoRotatingParticlesThen": "Logo explodes into rotating particles then reforms",
+  "orbitalRings": "Orbital Rings",
+  "multipleRotatingRingsCollapseWithGlow": "Multiple rotating rings collapse with glow",
+  "pixelAssembly": "Pixel Assembly",
+  "dynamicPixelsRandomlyAssembleWithRotation": "Dynamic pixels randomly assemble with rotation",
+  "liquidMorph": "Liquid Morph",
+  "liquidDropsMergeWithRealisticPhysics": "Liquid drops merge with realistic physics",
+  "geometricUnfold": "Geometric Unfold",
+  "geometricShapesUnfoldWithTransformations": "Geometric shapes unfold with transformations",
+  "matrixRain": "Matrix Rain",
+  "digitalRainCodeFormsLogoCyberpunk": "Digital rain code forms logo cyberpunk-style",
+  "shatter": "Shatter",
+  "glassShardsExplodeOutwardThenReform": "Glass shards explode outward then reform dramatically",
+  "hologram": "Hologram",
+  "futuristicHolographicProjectionWithScanLines": "Futuristic holographic projection with scan lines and flicker",
+  "vortex": "Vortex",
+  "logoEmergesFromSpinningDimensionalVortex": "Logo emerges from spinning dimensional vortex with depth",
+  "realTimeCommentingWithNestedReplies": "Real-time commenting with nested replies",
+  "advancedModerationTools": "Advanced moderation tools",
+  "userRoleManagementUserModeratorAdmin": "User role management (User, Moderator, Admin, Super Admin)",
+  "contentReportingAndSafetyFeatures": "Content reporting and safety features",
+  "votingSystemWithUpvotesDownvotes": "Voting system with upvotes/downvotes",
+  "crossPlatformSupportAnilistMyanimelistSimkl": "Cross-platform support (AniList, MyAnimeList, SIMKL)",
+  "logInWithYourAnilistMyanimelist": "Log in with your AniList, MyAnimeList, or SIMKL account",
+  "commentsAreAutomaticallyLinkedToYour": "Comments are automatically linked to your account",
+  "youCanEditOrDeleteYour": "You can edit or delete your own comments",
+  "voteOnCommentsYouLikeOr": "Vote on comments you like or dislike",
+  "reportInappropriateContentToModerators": "Report inappropriate content to moderators",
+  "contactModeratorsForContentIssues": "Contact moderators for content issues",
+  "reportBugsThroughTheAppSettings": "Report bugs through the app settings",
+  "joinOurDiscordCommunityForSupport": "Join our Discord community for support",
+  "onlyYourUsernameAndAvatarAre": "Only your username and avatar are shown publicly",
+  "yourPersonalInformationIsNeverShared": "Your personal information is never shared",
+  "commentsCanBeDeletedButMay": "Comments can be deleted but may be retained for moderation",
+  "reportedContentIsReviewedByModerators": "Reported content is reviewed by moderators",
+  "contentFilteringAndModeration": "Content filtering and moderation",
+  "userReportingSystem": "User reporting system",
+  "banAndWarningSystemForViolations": "Ban and warning system for violations",
+  "shadowBanningForRepeatOffenders": "Shadow banning for repeat offenders",
+  "decorations": "Decorations",
+  "banners": "Banners",
+  "effects": "Effects",
+  "unlockEquip": "Unlock & Equip",
+  "notEnoughPoints": "Not Enough Points",
+  "recommendedAnimes": "Recommended Animes",
+  "popularNovels": "Popular Novels",
+  "trendingNovels": "Trending Novels",
+  "japan": "Japan",
+  "southKorea": "South Korea",
+  "china": "China",
+  "taiwan": "Taiwan",
+  "unitedStates": "United States",
+  "unitedKingdom": "United Kingdom",
+  "watchingProgress": "Watching progress",
+  "readingProgress": "Reading progress",
+  "masterpiece": "Masterpiece",
+  "excellent": "Excellent",
+  "veryGood": "Very Good",
+  "good": "Good",
+  "average": "Average",
+  "unrated": "Unrated",
+  "duration": "Duration",
+  "origin": "Origin",
+  "highestRated": "Highest Rated",
+  "mostPopular": "Most Popular",
+  "allTime": "All Time",
+  "showLess2": "Show less",
+  "readMore2": "Read more",
+  "less": "Less",
+  "alternativeTitles2": "Alternative titles",
+  "romaji": "Romaji",
+  "english": "English",
+  "native": "Native",
+  "readBefore": "Read before",
+  "watchBefore": "Watch before",
+  "readNext": "Read next",
+  "upNext": "Up next",
+  "watch": "Watch",
+  "customList2": "Custom List",
+  "inCustomList": "In Custom List",
+  "rated": "Rated",
+  "prequel": "Prequel",
+  "sequel": "Sequel",
+  "adaptation": "Adaptation",
+  "alternative": "Alternative",
+  "sideStory": "Side story",
+  "spinOff": "Spin off",
+  "character": "Character",
+  "sourceMaterial": "Source material",
+  "compilation": "Compilation",
+  "contains": "Contains",
+  "parent": "Parent",
+  "finished": "Finished",
+  "releasing": "Releasing",
+  "notYetReleased": "Not yet released",
+  "cancelled": "Cancelled",
+  "hiatus": "Hiatus",
+  "tv": "TV",
+  "tvShort": "TV Short",
+  "special": "Special",
+  "ova": "OVA",
+  "ona": "ONA",
+  "music": "Music",
+  "oneShot": "One Shot",
+  "lightNovel": "Light Novel",
+  "visualNovel": "Visual Novel",
+  "videoGame": "Video Game",
+  "doujinshi": "Doujinshi",
+  "webNovel": "Web Novel",
+  "liveAction": "Live Action",
+  "game": "Game",
+  "comic": "Comic",
+  "multimediaProject": "Multimedia Project",
+  "pictureBook": "Picture Book",
+  "winter": "Winter",
+  "spring": "Spring",
+  "summer": "Summer",
+  "fall": "Fall",
+  "originalCreator": "Original Creator",
+  "director": "Director",
+  "assistantDirector": "Assistant Director",
+  "script": "Script",
+  "seriesComposition": "Series Composition",
+  "characterDesign": "Character Design",
+  "soundDirector": "Sound Director",
+  "artDirector": "Art Director",
+  "chiefAnimationDirector": "Chief Animation Director",
+  "animationDirector": "Animation Director",
+  "producer": "Producer",
+  "editing": "Editing",
+  "originalCharacterDesign": "Original Character Design",
+  "storyboard": "Storyboard",
+  "episodeDirector": "Episode Director",
+  "keyAnimation": "Key Animation",
+  "executiveProducer": "Executive Producer",
+  "themeSongComposition": "Theme Song Composition",
+  "themeSongPerformance": "Theme Song Performance",
+  "main": "Main",
+  "supporting": "Supporting",
+  "collectibleNameplatesCount": "{count} Collectible Nameplates",
+  "@collectibleNameplatesCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "startWatchingEpisode": "Start watching: episode 1",
+  "startReadingChapter": "Start reading: chapter 1",
+  "nextUpEpisode": "Next up: episode {number}",
+  "@nextUpEpisode": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "nextUpChapter": "Next up: chapter {number}",
+  "@nextUpChapter": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodesBehind": "{count} episodes behind",
+  "@episodesBehind": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "chaptersBehind": "{count} chapters behind",
+  "@chaptersBehind": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeAiringIn": "Episode {number} airing in",
+  "@episodeAiringIn": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "popularityCount": "{count} popularity",
+  "@popularityCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsShort": "{points} pts",
+  "@pointsShort": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "moreCount": "More ({count})",
+  "@moreCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "depthRotation3d": "3D rotation with depth perspective"
 }

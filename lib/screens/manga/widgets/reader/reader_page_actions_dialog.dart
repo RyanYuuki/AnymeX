@@ -64,7 +64,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
             ),
           ),
           AnymeXText(
-            'Page Actions',
+            context.l10n.pageActions,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
