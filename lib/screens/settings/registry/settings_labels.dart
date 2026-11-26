@@ -86,6 +86,8 @@ String settingsLabel(AppLocalizations l10n, String english) => switch (english) 
     'Subtitle Color' => l10n.subtitleColor,
     'Subtitle Transparency' => l10n.subtitleTransparency,
     'Subtitle Background Color' => l10n.subtitleBackgroundColor,
+    'Subtitle Background Transparency' =>
+        l10n.subtitleBackgroundTransparency,
     'Subtitle Outline Color' => l10n.subtitleOutlineColor,
     'Subtitle Outline Width' => l10n.subtitleOutlineWidth,
     'Bottom Margin' => l10n.bottomMargin,

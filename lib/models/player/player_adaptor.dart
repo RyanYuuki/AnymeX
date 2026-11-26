@@ -29,6 +29,7 @@ class PlayerSettings {
   String translateTo;
   bool autoSkipFiller;
   double subtitleOpacity;
+  double subtitleBackgroundOpacity;
   double subtitleBottomMargin;
   String subtitleOutlineType;
   bool enableScreenshot;
@@ -70,6 +71,7 @@ class PlayerSettings {
     this.translateTo = 'en',
     this.transitionSubtitle = false,
     this.subtitleOpacity = 1.0,
+    this.subtitleBackgroundOpacity = 1.0,
     this.subtitleBottomMargin = 10.0,
     this.subtitleOutlineType = "Outline",
     this.autoSkipFiller = false,
@@ -144,6 +146,8 @@ class PlayerSettings {
           PlayerSettingsKeys.translateTo.get<String>(defaults.translateTo),
       subtitleOpacity: PlayerSettingsKeys.subtitleOpacity
           .get<double>(defaults.subtitleOpacity),
+      subtitleBackgroundOpacity: PlayerSettingsKeys.subtitleBackgroundOpacity
+          .get<double>(defaults.subtitleBackgroundOpacity),
       subtitleBottomMargin: PlayerSettingsKeys.subtitleBottomMargin
           .get<double>(defaults.subtitleBottomMargin),
       subtitleOutlineType: PlayerSettingsKeys.subtitleOutlineType
