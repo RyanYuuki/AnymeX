@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 
 import 'package:anymex/controllers/settings/methods.dart';
@@ -289,7 +290,7 @@ class _AnimeThemePlayerDialogState extends State<AnimeThemePlayerDialog> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: AnymeXText(
-                                    'Unable to load theme video',
+                                    context.l10n.unableToLoadThemeVideo,
                                     color: colors.error,
                                     size: 13,
                                   ),

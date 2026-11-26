@@ -533,7 +533,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
             ),
             title: AnymeXText(
-              "${widget.userName}'s $typeLabel List",
+              context.l10n.sList(widget.userName, typeLabel),
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
@@ -549,7 +549,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
             ),
             title: AnymeXText(
-              "${widget.userName}'s $typeLabel List",
+              context.l10n.sList(widget.userName, typeLabel),
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
@@ -572,7 +572,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
             icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
           ),
           title: AnymeXText(
-            "${widget.userName}'s $typeLabel List",
+            context.l10n.sList(widget.userName, typeLabel),
             style: TextStyle(fontSize: 16, color: colors.primary),
           ),
           actions: [

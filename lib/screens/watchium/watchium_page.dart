@@ -313,8 +313,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const AnymeXText(
-                              'Password Required',
+                            AnymeXText(context.l10n.passwordRequired,
                               variant: TextVariant.semiBold,
                               size: 15,
                             ),
@@ -601,7 +600,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Enter a 6-character room code to join a watch party',
+                      context.l10n.enterA6CharacterRoom,
                       size: 12,
                       color: cs.onSurface.opaque(0.6),
                     ),

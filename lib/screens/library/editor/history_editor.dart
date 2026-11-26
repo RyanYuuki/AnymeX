@@ -738,7 +738,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     ),
                     const SizedBox(width: 10),
                     AnymeXText(
-                      'Delete Selected (${_selectedMediaIds.length})',
+                      context.l10n.deleteSelectedCount(_selectedMediaIds.length),
                       size: 14,
                       variant: TextVariant.bold,
                       color: context.colors.onError,

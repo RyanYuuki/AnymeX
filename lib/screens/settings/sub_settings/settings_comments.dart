@@ -15,6 +15,7 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 class SettingsComments extends StatefulWidget {
   const SettingsComments({super.key});
@@ -95,14 +96,14 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     icon: Icons.checkroom_rounded,
                     title: context.l10n.openCloset,
                     subtitle:
-                        'Avatar decorations, nameplates, banners & profile effects',
+                        context.l10n.avatarDecorationsNameplatesBannersProfileEffects,
                     onTap: () => DecorationClosetSheet.show(context),
                   ),
                   AnymeXTile(
                     icon: Icons.emoji_events_rounded,
                     title: context.l10n.leaderboard,
                     subtitle:
-                        'View user rankings, top contributors & reputation',
+                        context.l10n.viewUserRankingsTopContributorsReputation,
                     onTap: () => LeaderboardSheet.show(context),
                   ),
                 ],
@@ -262,7 +263,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     icon: Icons.info_outline_rounded,
                     title: context.l10n.aboutCommentumV2,
                     subtitle:
-                        'Powered by Commentum v2 - Advanced comment system with moderation',
+                        context.l10n.poweredByCommentumV2AdvancedComment,
                     onTap: _showAboutDialog,
                   ),
                   AnymeXTile(

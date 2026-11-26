@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/mention_autocomplete.dart';
@@ -209,7 +210,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             AnymeXText(
-                              'Editing comment',
+                              context.l10n.editingComment,
                               size: 12,
                               variant: TextVariant.bold,
                               color: colorScheme.primary,

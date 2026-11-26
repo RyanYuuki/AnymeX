@@ -11,6 +11,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 class CharactersCarousel extends StatelessWidget {
   final List<Character> characters;
@@ -366,7 +367,7 @@ class StaffCarousel extends StatelessWidget {
                                   child: SizedBox(
                                     width: isDesktop ? 110 : 74,
                                     child: MarqueeText(
-                                      itemData.role!,
+                                      uiLabel(context.l10n, itemData.role!),
                                       style: TextStyle(
                                           fontSize: 10,
                                           fontFamily: 'Linotte',

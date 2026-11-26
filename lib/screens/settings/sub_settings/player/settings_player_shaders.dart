@@ -384,7 +384,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                       ),
                                       const SizedBox(height: 4),
                                       AnymeXText(
-                                        'High-quality real-time upscaling & line reconstruction GLSL shaders (~1.2 MB).',
+                                        context.l10n.highQualityRealTimeUpscaling,
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: colors.onSurfaceVariant,
@@ -478,7 +478,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                     return AnymeXTile.toggle(
                       title: context.l10n.anime4kShaders2,
                       subtitle:
-                          'Enable real-time neural upscaling during playback',
+                          context.l10n.enableRealTimeNeuralUpscaling,
                       value: _enableShaders.value,
                       onChanged: (val) {
                         _enableShaders.value = val;
@@ -514,7 +514,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                       ),
                     ),
                     child: AnymeXText(
-                      'Mid-range: Optimized for mobile devices, integrated GPUs, and handhelds.\nHigh-end: Full pass line reconstruction and sharpening for dedicated desktop GPUs.',
+                      context.l10n.midRangeOptimizedForMobile,
                       style: TextStyle(
                         color: colors.onSurfaceVariant,
                         fontSize: 12,
@@ -588,7 +588,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                         ),
                                       ),
                                       AnymeXText(
-                                        'Native source without upscaling',
+                                        context.l10n.nativeSourceWithoutUpscaling,
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: isDefault

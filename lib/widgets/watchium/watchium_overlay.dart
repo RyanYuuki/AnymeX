@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/watchium/watchium_service.dart';
@@ -77,8 +78,7 @@ class WatchiumOverlay extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const AnymeXText(
-                          'Party',
+                        child: AnymeXText(context.l10n.party,
                           style: TextStyle(color: Colors.white, fontSize: 11),
                         ),
                       ),
@@ -122,13 +122,13 @@ class _SyncToHostButton extends StatelessWidget {
             border: Border.all(
                 color: Colors.orange.withValues(alpha: 0.6), width: 1),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.sync_problem, color: Colors.orange, size: 14),
               SizedBox(width: 4),
               AnymeXText(
-                'Sync',
+                context.l10n.sync,
                 style: TextStyle(color: Colors.orange, fontSize: 11),
               ),
             ],

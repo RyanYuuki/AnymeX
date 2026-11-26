@@ -373,12 +373,12 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Login to Discord',
+                          context.l10n.loginToDiscord,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -386,7 +386,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                           ),
                         ),
                         AnymeXText(
-                          'Sign in to continue',
+                          context.l10n.signInToContinue,
                           style: TextStyle(
                             color: Color(0xFFB5BAC1),
                             fontSize: 12,

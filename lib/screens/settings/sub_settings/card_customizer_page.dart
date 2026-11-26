@@ -165,7 +165,7 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
                       size: 16, color: context.colors.primary),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    'Live Preview',
+                    context.l10n.livePreview,
                     size: 13,
                     variant: TextVariant.bold,
                     color: context.colors.primary,

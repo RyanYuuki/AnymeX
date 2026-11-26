@@ -326,7 +326,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       } else {
         if (mounted) {
           snackBar(
-              'Rollback to ${release.tagName} downloaded. Please restart the app to apply.');
+              context.l10n.rollbackToDownloadedPleaseRestart(release.tagName));
         }
       }
     } catch (error) {

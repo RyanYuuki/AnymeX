@@ -134,7 +134,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
               ),
               const Spacer(),
               AnymeXText(
-                '${(currentScale * 100).round()}% Scale',
+                context.l10n.scale(((currentScale * 100).round()).toString()),
                 size: 11,
                 color: colors.onSurface.withValues(alpha: 0.6),
               ),
@@ -199,7 +199,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AnymeXText(
-                    'Font Size Scale',
+                    context.l10n.fontSizeScale,
                     size: 14,
                     color: colors.onSurface,
                   ),
@@ -306,7 +306,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
 
           return AnymeXTile(
             title: font.label,
-            subtitle: 'The quick brown fox jumps over the lazy dog',
+            subtitle: context.l10n.theQuickBrownFoxJumpsOver,
             titleStyle: TextStyle(
               fontFamily: isDownloaded ? font.name : 'Linotte',
               fontWeight: FontWeight.w600,
@@ -346,7 +346,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
         for (final fontName in _customFonts)
           AnymeXTile(
             title: fontName,
-            subtitle: 'The quick brown fox jumps over the lazy dog',
+            subtitle: context.l10n.theQuickBrownFoxJumpsOver,
             titleStyle: TextStyle(
               fontFamily: fontName,
               fontWeight: FontWeight.w600,

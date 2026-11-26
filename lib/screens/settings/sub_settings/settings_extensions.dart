@@ -453,14 +453,14 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No ${tabInfo.label} Managers Available',
+              context.l10n.noManagersAvailable(tabInfo.label),
               variant: TextVariant.bold,
               size: 15,
               color: colors.onSurface,
             ),
             const SizedBox(height: 6),
             AnymeXText(
-              'No extension managers currently support ${tabInfo.label.toLowerCase()} content.',
+              context.l10n.noExtensionManagersCurrentlySupport(tabInfo.label.toLowerCase()),
               variant: TextVariant.regular,
               size: 12.5,
               textAlign: TextAlign.center,
@@ -510,7 +510,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                             Border.all(color: colors.error.withOpacity(0.25)),
                       ),
                       child: AnymeXText(
-                        'Plugin Required',
+                        context.l10n.pluginRequired,
                         variant: TextVariant.bold,
                         size: 10,
                         color: colors.error,
@@ -613,7 +613,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     size: 18, color: colors.error),
                 const SizedBox(width: 8),
                 AnymeXText(
-                  'Runtime Plugin Required',
+                  context.l10n.runtimePluginRequired,
                   variant: TextVariant.bold,
                   size: 13,
                   color: colors.onSurface,
@@ -622,7 +622,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             const SizedBox(height: 6),
             AnymeXText(
-              'To use $name repositories and extensions, please download and install the runtime plugin.',
+              context.l10n.toUseRepositoriesAndExtensions(name),
               variant: TextVariant.regular,
               size: 12,
               color: colors.onSurfaceVariant,
@@ -631,8 +631,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             FilledButton.icon(
               onPressed: () => navigate(() => const SettingsExtensionManager()),
               icon: const Icon(Icons.download_rounded, size: 16),
-              label: const AnymeXText(
-                'Open Plugin Downloader',
+              label: AnymeXText(context.l10n.openPluginDownloader,
                 variant: TextVariant.bold,
                 size: 12,
               ),
@@ -710,7 +709,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                       size: 18, color: colors.error),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    'Runtime Error',
+                    context.l10n.runtimeError,
                     variant: TextVariant.bold,
                     size: 13,
                     color: colors.onSurface,
@@ -758,7 +757,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             const SizedBox(width: 10),
             AnymeXText(
-              'Starting extension runtime...',
+              context.l10n.startingExtensionRuntime,
               variant: TextVariant.regular,
               size: 12.5,
               color: colors.onSurfaceVariant,
@@ -787,7 +786,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                 ),
                 const SizedBox(width: 8),
                 AnymeXText(
-                  'No repositories added yet',
+                  context.l10n.noRepositoriesAddedYet,
                   variant: TextVariant.regular,
                   size: 12.5,
                   color: colors.onSurfaceVariant,
@@ -840,7 +839,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   ),
                   const SizedBox(width: 6),
                   AnymeXText(
-                    'Add Repository to ${manager.name}',
+                    context.l10n.addRepositoryTo(manager.name),
                     variant: TextVariant.bold,
                     size: 12.5,
                     color: colors.primary,
@@ -1071,7 +1070,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Enter one or more repository URLs',
+                      context.l10n.enterOneOrMoreRepository,
                       variant: TextVariant.regular,
                       size: 11,
                       color: c.onSurfaceVariant,

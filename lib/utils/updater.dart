@@ -109,7 +109,7 @@ class UpdateManager {
               _shouldUpdate(currentVersion, stableRelease['tag_name'] ?? '',
                   isBeta: false)) {
             snackBar(
-                'New stable update available: ${stableRelease['tag_name'] ?? ''}');
+                Get.context!.l10n.newStableUpdateAvailable(stableRelease['tag_name'] ?? ''));
             return;
           }
 
@@ -498,7 +498,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const AnymeXText('OK'),
+            child: AnymeXText(Get.context!.l10n.actionOk),
           )
         ],
       ),
@@ -527,7 +527,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const AnymeXText('OK'),
+            child: AnymeXText(Get.context!.l10n.actionOk),
           )
         ],
       ),
@@ -729,7 +729,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                 border: BorderSide(color: colorScheme.outline.opaque(0.2)),
                 child: Center(
                   child: AnymeXText(
-                    "Later",
+                    Get.context!.l10n.later,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: colorScheme.onSurface,

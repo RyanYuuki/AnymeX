@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 Widget buildMediaStatsSection(
     BuildContext context, MediaDetailsController controller) {
@@ -150,18 +151,18 @@ String _formatCountry(String? code) {
   if (code == null || code.trim().isEmpty || code == '?') return '';
   switch (code.trim().toUpperCase()) {
     case 'JP':
-      return 'Japan';
+      return uiLabel(Get.context!.l10n, 'Japan');
     case 'KR':
-      return 'South Korea';
+      return uiLabel(Get.context!.l10n, 'South Korea');
     case 'CN':
-      return 'China';
+      return uiLabel(Get.context!.l10n, 'China');
     case 'TW':
-      return 'Taiwan';
+      return uiLabel(Get.context!.l10n, 'Taiwan');
     case 'US':
-      return 'United States';
+      return uiLabel(Get.context!.l10n, 'United States');
     case 'GB':
     case 'UK':
-      return 'United Kingdom';
+      return uiLabel(Get.context!.l10n, 'United Kingdom');
     default:
       return code.trim();
   }
@@ -175,7 +176,8 @@ double _estimateStatsHeight(Media media, MediaDetailsController? controller) {
   final isAnime = media.mediaType == ItemType.anime;
   final yearStr = media.seasonYear?.toString() ?? '';
   final seasonText = [
-    if (media.season.isNotEmpty && media.season != '?') media.season,
+    if (media.season.isNotEmpty && media.season != '?')
+      uiLabel(Get.context!.l10n, media.season),
     if (yearStr.isNotEmpty) yearStr,
   ].join(' ');
   final totalChaptersStr = (media.totalChapters ?? '').isNotEmpty &&
@@ -307,7 +309,7 @@ BoxDecoration _cardDecoration(ColorScheme colors) {
 
 Widget _cardTitle(ColorScheme colors, String text) {
   return AnymeXText(
-    text,
+    uiLabel(Get.context!.l10n, text),
     size: 18,
     variant: TextVariant.bold,
     color: colors.onSurface,
@@ -393,15 +395,19 @@ Widget buildProgressContainer(
     final behind = (relEp > currentProgress) ? relEp - currentProgress : 0;
     final String statusSubtitle;
     if (currentProgress == 0) {
-      statusSubtitle =
-          'Start ${controller.isAnime ? "watching" : "reading"}: ${controller.isAnime ? "episode" : "chapter"} 1';
+      statusSubtitle = controller.isAnime
+          ? Get.context!.l10n.startWatchingEpisode
+          : Get.context!.l10n.startReadingChapter;
     } else if (totalFromMedia > 0 && currentProgress >= totalFromMedia) {
-      statusSubtitle = 'Completed';
+      statusSubtitle = uiLabel(Get.context!.l10n, 'Completed');
     } else {
-      final unit = controller.isAnime ? 'episode' : 'chapter';
-      final units = controller.isAnime ? 'episodes' : 'chapters';
-      final behindText = behind > 0 ? ' • $behind $units behind' : '';
-      statusSubtitle = 'Next up: $unit $nextNumber$behindText';
+      final behindText = behind > 0
+          ? ' • ${controller.isAnime ? Get.context!.l10n.episodesBehind('$behind') : Get.context!.l10n.chaptersBehind('$behind')}'
+          : '';
+      statusSubtitle = (controller.isAnime
+              ? Get.context!.l10n.nextUpEpisode('$nextNumber')
+              : Get.context!.l10n.nextUpChapter('$nextNumber')) +
+          behindText;
     }
 
     return Container(
@@ -418,7 +424,7 @@ Widget buildProgressContainer(
             children: [
               _cardTitle(
                 colors,
-                controller.isAnime ? 'Watching progress' : 'Reading progress',
+                uiLabel(Get.context!.l10n, controller.isAnime ? 'Watching progress' : 'Reading progress'),
               ),
               AnymeXTextSpans(
                 spans: [
@@ -486,7 +492,7 @@ Widget buildAiringCountdownCard(
                 size: 20,
               ),
               const SizedBox(width: 8),
-              _cardTitle(colors, 'Episode ${airing.episode} airing in'),
+              _cardTitle(colors, Get.context!.l10n.episodeAiringIn(airing.episode.toString())),
             ],
           ),
           const SizedBox(height: 12),
@@ -559,7 +565,8 @@ Widget buildStatsGrid(BuildContext context, Media media,
   final yearStr = media.seasonYear?.toString() ?? '';
 
   final seasonText = [
-    if (media.season.isNotEmpty && media.season != '?') media.season,
+    if (media.season.isNotEmpty && media.season != '?')
+      uiLabel(Get.context!.l10n, media.season),
     if (yearStr.isNotEmpty) yearStr,
   ].join(' ');
 
@@ -578,14 +585,14 @@ Widget buildStatsGrid(BuildContext context, Media media,
       (scoreDouble > 10 ? scoreDouble / 100.0 : scoreDouble / 10.0)
           .clamp(0.0, 1.0);
   final ratingAdjective = scoreDouble >= 8.5
-      ? 'Masterpiece'
+      ? uiLabel(Get.context!.l10n, 'Masterpiece')
       : (scoreDouble >= 8.0
-          ? 'Excellent'
+          ? uiLabel(Get.context!.l10n, 'Excellent')
           : (scoreDouble >= 7.0
-              ? 'Very Good'
+              ? uiLabel(Get.context!.l10n, 'Very Good')
               : (scoreDouble >= 6.0
-                  ? 'Good'
-                  : (scoreDouble > 0 ? 'Average' : 'Unrated'))));
+                  ? uiLabel(Get.context!.l10n, 'Good')
+                  : (scoreDouble > 0 ? uiLabel(Get.context!.l10n, 'Average') : uiLabel(Get.context!.l10n, 'Unrated')))));
 
   String formatPop(String pop) {
     final clean = pop.replaceAll(RegExp(r'[^0-9]'), '');
@@ -601,22 +608,22 @@ Widget buildStatsGrid(BuildContext context, Media media,
   }
 
   final popFormatted = media.popularity.isNotEmpty && media.popularity != '?'
-      ? '${formatPop(media.popularity)} popularity'
-      : 'Popular';
+      ? Get.context!.l10n.popularityCount(formatPop(media.popularity))
+      : uiLabel(Get.context!.l10n, 'Popular');
 
   final durationVal =
       (isAnime && media.duration.isNotEmpty && media.duration != '?')
           ? media.duration
           : '';
   final formatVal = media.format.isNotEmpty && media.format != '?'
-      ? media.format
+      ? uiLabel(Get.context!.l10n, media.format)
       : (media.type.isNotEmpty && media.type != '?'
           ? media.type
           : media.mediaType.name.toUpperCase());
   final sourceVal = media.sourceMaterial != null &&
           media.sourceMaterial!.isNotEmpty &&
           media.sourceMaterial != '?'
-      ? formatSourceMaterial(media.sourceMaterial)
+      ? uiLabel(Get.context!.l10n, formatSourceMaterial(media.sourceMaterial))
       : '';
 
   final epVal = (isAnime &&
@@ -628,14 +635,14 @@ Widget buildStatsGrid(BuildContext context, Media media,
   final countryVal = _formatCountry(media.countryOfOrigin);
 
   final stats = <MapEntry<String, String>>[
-    if (durationVal.isNotEmpty) MapEntry('DURATION', durationVal),
-    if (seasonText.trim().isNotEmpty) MapEntry('SEASON', seasonText.trim()),
-    if (countryVal.isNotEmpty) MapEntry('ORIGIN', countryVal),
-    if (formatVal.isNotEmpty) MapEntry('FORMAT', formatVal),
-    if (sourceVal.isNotEmpty) MapEntry('SOURCE', sourceVal),
-    if (epVal.isNotEmpty) MapEntry('EPISODES', epVal),
+    if (durationVal.isNotEmpty) MapEntry(uiLabel(Get.context!.l10n, 'DURATION'), durationVal),
+    if (seasonText.trim().isNotEmpty) MapEntry(uiLabel(Get.context!.l10n, 'SEASON'), seasonText.trim()),
+    if (countryVal.isNotEmpty) MapEntry(uiLabel(Get.context!.l10n, 'ORIGIN'), countryVal),
+    if (formatVal.isNotEmpty) MapEntry(uiLabel(Get.context!.l10n, 'FORMAT'), formatVal),
+    if (sourceVal.isNotEmpty) MapEntry(uiLabel(Get.context!.l10n, 'SOURCE'), sourceVal),
+    if (epVal.isNotEmpty) MapEntry(uiLabel(Get.context!.l10n, 'EPISODES'), epVal),
     if (!isAnime && totalChaptersStr.isNotEmpty)
-      MapEntry('CHAPTERS', totalChaptersStr),
+      MapEntry(uiLabel(Get.context!.l10n, 'CHAPTERS'), totalChaptersStr),
   ];
 
   final statRows = <Widget>[];
@@ -704,9 +711,11 @@ Widget buildStatsGrid(BuildContext context, Media media,
     statusDotColor = colors.secondary;
   }
   final statusLabel = media.status.isNotEmpty && media.status != '?'
-      ? (media.status[0].toUpperCase() +
-          media.status.substring(1).toLowerCase())
-      : 'Unknown';
+      ? uiLabel(
+          Get.context!.l10n,
+          media.status[0].toUpperCase() +
+              media.status.substring(1).toLowerCase())
+      : uiLabel(Get.context!.l10n, 'Unknown');
 
   return Container(
     width: double.infinity,
@@ -748,7 +757,7 @@ Widget buildStatsGrid(BuildContext context, Media media,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    'SCORE',
+                    context.l10n.detailsScore,
                     size: 11,
                     variant: TextVariant.bold,
                     color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -791,7 +800,7 @@ Widget buildStatsGrid(BuildContext context, Media media,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'STATUS',
+                context.l10n.detailsStatus,
                 size: 11,
                 variant: TextVariant.bold,
                 color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -844,10 +853,11 @@ Widget _buildRankingItem(ColorScheme colors, Ranking ranking) {
     rankColor = colors.secondary;
   }
 
-  final String typeLabel = isRated ? 'HIGHEST RATED' : 'MOST POPULAR';
+  final String typeLabel =
+      uiLabel(Get.context!.l10n, isRated ? 'HIGHEST RATED' : 'MOST POPULAR');
   final String title = ranking.year != null && ranking.year! > 0
       ? '${ranking.year}'
-      : 'All Time';
+      : uiLabel(Get.context!.l10n, 'All Time');
   final String subtitle = ranking.context != null && ranking.context!.isNotEmpty
       ? ranking.context!
       : (ranking.year != null && ranking.year! > 0
@@ -930,7 +940,7 @@ Widget _buildStatItem(ColorScheme colors, String label, String value) {
       mainAxisSize: MainAxisSize.min,
       children: [
         AnymeXText(
-          label,
+          uiLabel(Get.context!.l10n, label),
           size: 11,
           variant: TextVariant.bold,
           color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -996,7 +1006,7 @@ Widget buildSynopsisCard(BuildContext context, Media media) {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: AnymeXText(
-                        expanded ? 'Show less' : 'Read more',
+                        expanded ? uiLabel(Get.context!.l10n, 'Show less') : uiLabel(Get.context!.l10n, 'Read more'),
                         size: 14,
                         variant: TextVariant.bold,
                         color: colors.primary,
@@ -1063,7 +1073,9 @@ Widget buildGenresAndTagsCard(BuildContext context, Media media) {
                         (tag) => buildTagChip(context, tag, media.mediaType)),
                     _moreChip(
                       colors,
-                      expanded ? 'Less' : 'More (${media.tags.length - 10})',
+                      expanded
+                          ? uiLabel(Get.context!.l10n, 'Less')
+                          : Get.context!.l10n.moreCount('${media.tags.length - 10}'),
                       () => isTagsExpanded.value = !expanded,
                     ),
                   ],
@@ -1160,7 +1172,9 @@ Widget? buildStudiosCard(BuildContext context, Media media) {
                       .map((entry) => buildStudioChip(entry.key, entry.value)),
                   _moreChip(
                     colors,
-                    expanded ? 'Less' : 'More (${studios.length - 4})',
+                    expanded
+                        ? uiLabel(Get.context!.l10n, 'Less')
+                        : Get.context!.l10n.moreCount('${studios.length - 4}'),
                     () => isStudiosExpanded.value = !expanded,
                   ),
                 ],
@@ -1176,17 +1190,17 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
   final colors = context.colors;
   final titles = [
     if (media.romajiTitle.isNotEmpty && media.romajiTitle != '?')
-      MapEntry('Romaji', media.romajiTitle),
+      MapEntry(uiLabel(Get.context!.l10n, 'Romaji'), media.romajiTitle),
     if (media.englishTitle != null &&
         media.englishTitle!.isNotEmpty &&
         media.englishTitle != '?')
-      MapEntry('English', media.englishTitle!)
+      MapEntry(uiLabel(Get.context!.l10n, 'English'), media.englishTitle!)
     else if (media.title.isNotEmpty && media.title != media.romajiTitle)
-      MapEntry('English', media.title),
+      MapEntry(uiLabel(Get.context!.l10n, 'English'), media.title),
     if (media.nativeTitle != null &&
         media.nativeTitle!.isNotEmpty &&
         media.nativeTitle != '?')
-      MapEntry('Native', media.nativeTitle!),
+      MapEntry(uiLabel(Get.context!.l10n, 'Native'), media.nativeTitle!),
   ];
 
   final hasSynonyms = media.synonyms.isNotEmpty;
@@ -1248,7 +1262,7 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
                 SizedBox(
                   width: 76,
                   child: AnymeXText(
-                    'Synonyms',
+                    context.l10n.synonyms,
                     size: 13,
                     color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
                   ),
@@ -1275,8 +1289,8 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
                                 _moreChip(
                                   colors,
                                   expanded
-                                      ? 'Less'
-                                      : 'More (${media.synonyms.length - 5})',
+                                      ? uiLabel(Get.context!.l10n, 'Less')
+                                      : Get.context!.l10n.moreCount('${media.synonyms.length - 5}'),
                                   () => isSynonymsExpanded.value = !expanded,
                                 ),
                               ],
@@ -1317,7 +1331,7 @@ Widget buildThemesSection(
   return Obx(() {
     if (controller.isThemesLoading.value) {
       return _buildSection(
-        'Openings & Endings',
+        uiLabel(Get.context!.l10n, 'Openings & Endings'),
         [
           Center(
             child: Padding(
@@ -1431,7 +1445,7 @@ Widget buildThemesSection(
         Padding(
           padding: const EdgeInsets.only(bottom: 4, top: 2),
           child: AnymeXText(
-            'Openings',
+            context.l10n.openings,
             size: 12.5,
             variant: TextVariant.bold,
             color: colors.primary,
@@ -1450,7 +1464,7 @@ Widget buildThemesSection(
         Padding(
           padding: const EdgeInsets.only(bottom: 4, top: 4),
           child: AnymeXText(
-            'Endings',
+            context.l10n.endings,
             size: 12.5,
             variant: TextVariant.bold,
             color: colors.secondary,
@@ -1473,7 +1487,7 @@ Widget buildThemesSection(
       }
     }
 
-    return _buildSection('Openings & Endings', items, colors);
+    return _buildSection(uiLabel(Get.context!.l10n, 'Openings & Endings'), items, colors);
   });
 }
 
@@ -1513,10 +1527,16 @@ Widget? buildSeasonsSection(BuildContext context, Media mediaData) {
     final rawLabel = relation.relationType.toString();
     final label = rawLabel.isEmpty
         ? rawLabel
-        : '${rawLabel[0]}${rawLabel.substring(1).toLowerCase()}';
+        : uiLabel(
+            Get.context!.l10n,
+            '${rawLabel[0]}${rawLabel.substring(1).toLowerCase()}');
     final hint = isPrequel
-        ? (isMangaRelation ? 'Read before' : 'Watch before')
-        : (isMangaRelation ? 'Read next' : 'Up next');
+        ? (isMangaRelation
+            ? uiLabel(Get.context!.l10n, 'Read before')
+            : uiLabel(Get.context!.l10n, 'Watch before'))
+        : (isMangaRelation
+            ? uiLabel(Get.context!.l10n, 'Read next')
+            : uiLabel(Get.context!.l10n, 'Up next'));
 
     return GestureDetector(
       onTap: () {
@@ -1566,7 +1586,7 @@ Widget? buildSeasonsSection(BuildContext context, Media mediaData) {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       AnymeXText(
-                        label,
+                        uiLabel(Get.context!.l10n, label),
                         size: 13,
                         variant: TextVariant.semiBold,
                         color: Colors.white,
@@ -1679,7 +1699,7 @@ Widget? buildSeasonsSection(BuildContext context, Media mediaData) {
     );
   }
 
-  return _buildSection('Seasons', [cards], colors);
+  return _buildSection(uiLabel(Get.context!.l10n, 'Seasons'), [cards], colors);
 }
 
 Widget buildExtrasSection(
@@ -1687,7 +1707,7 @@ Widget buildExtrasSection(
   final isAnime = mediaData.mediaType == ItemType.anime;
 
   return _buildSection(
-      "Extras",
+      uiLabel(Get.context!.l10n, 'Extras'),
       [
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
@@ -1762,8 +1782,8 @@ Widget buildExtrasSection(
                       !snapshot.data!.hasAdaptation) {
                     return const SizedBox.shrink();
                   }
-                  final start = snapshot.data!.animeStart ?? 'Unknown';
-                  final end = snapshot.data!.animeEnd ?? 'Unknown';
+                  final start = snapshot.data!.animeStart ?? uiLabel(Get.context!.l10n, 'Unknown');
+                  final end = snapshot.data!.animeEnd ?? uiLabel(Get.context!.l10n, 'Unknown');
                   return AnymeXTile(
                     icon: Icons.tv_rounded,
                     title: context.l10n.animeAdaptation,
@@ -1787,7 +1807,7 @@ Widget buildExtrasSection(
                           .toString()
                           .split(' ')
                           .first
-                      : 'Unknown';
+                      : uiLabel(Get.context!.l10n, 'Unknown');
                   return AnymeXTile(
                     icon: Icons.calendar_month_rounded,
                     title: context.l10n.nextReleasePrediction,

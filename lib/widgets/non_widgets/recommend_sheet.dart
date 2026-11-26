@@ -1144,7 +1144,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             const SizedBox(width: 8),
             Expanded(
               child: AnymeXText(
-                'Recommend "${widget.media.title}"',
+                context.l10n.recommendTitle(widget.media.title),
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,

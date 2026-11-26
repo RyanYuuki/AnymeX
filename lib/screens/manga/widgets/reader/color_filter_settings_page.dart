@@ -147,7 +147,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                   ),
                   AnymeXTile.pills<int>(
                     icon: Icons.layers_rounded,
-                    title: 'Blend Mode',
+                    title: context.l10n.blendMode,
                     value: blendMode,
                     options: List.generate(_blendModeLabels.length, (i) => i),
                     optionLabelTransformer: (i) => _blendModeLabels[i],

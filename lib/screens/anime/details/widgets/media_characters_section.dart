@@ -8,6 +8,7 @@ import 'package:anymex/utils/ui_extensions/sizing.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 Widget buildCharactersSection(BuildContext context, Media media) {
   final characters = media.characters ?? [];
@@ -129,7 +130,7 @@ Widget buildCharacterCard(BuildContext context, Character character) {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
-                AnymeXText(character.role ?? 'Main',
+                AnymeXText(uiLabel(context.l10n, character.role ?? 'Main'),
                   size: 11,
                   color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                 ),

@@ -265,8 +265,8 @@ void main(List<String> args) async {
                 const Icon(Icons.error_outline_rounded,
                     size: 36, color: Colors.redAccent),
                 const SizedBox(height: 12),
-                const Text(
-                  'Something went wrong',
+                Text(
+                  Get.context!.l10n.errorGeneric,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 8),

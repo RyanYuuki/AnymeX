@@ -79,8 +79,7 @@ class WatchiumService extends GetxController {
           context: context,
           builder: (ctx) => AlertDialog(
             title: AnymeXText(Get.context!.l10n.leaveWatchTogether),
-            content: const AnymeXText(
-                'You will leave the room and stop watching with everyone.'),
+            content: AnymeXText(Get.context!.l10n.youWillLeaveTheRoom),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),

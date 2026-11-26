@@ -88,7 +88,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
       builder: (ctx) => AnymeXDialog(
         title: context.l10n.uninstall2(addon.name.toString()),
         message:
-            'Are you sure you want to uninstall ${addon.name}? This will delete the downloaded binary.',
+            context.l10n.areYouSureYouWant4(addon.name),
         confirmText: context.l10n.uninstall,
         onConfirm: () async {
           try {
@@ -346,7 +346,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                           color: theme.onPrimary, size: 20),
                       const SizedBox(width: 8),
                       AnymeXText(
-                        'Install ${addon.name}',
+                        context.l10n.install(addon.name),
                         variant: TextVariant.bold,
                         color: theme.onPrimary,
                         size: 15,
@@ -457,7 +457,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                           color: theme.onPrimary, size: 20),
                       const SizedBox(width: 8),
                       AnymeXText(
-                        'Install ${addon.name}',
+                        context.l10n.install(addon.name),
                         variant: TextVariant.bold,
                         color: theme.onPrimary,
                         size: 15,
@@ -487,7 +487,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                           color: theme.error, size: 20),
                       const SizedBox(width: 8),
                       AnymeXText(
-                        'Uninstall ${addon.name}',
+                        context.l10n.uninstallName(addon.name),
                         variant: TextVariant.bold,
                         color: theme.error,
                         size: 15,

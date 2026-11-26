@@ -255,8 +255,7 @@ class _NFUnlockButtonState extends State<NFUnlockButton> {
                 color: NFColors.white, size: 22),
             if (_confirm) ...[
               const SizedBox(width: 12),
-              const AnymeXText(
-                'Tap again to unlock',
+              AnymeXText(context.l10n.tapAgainToUnlock,
                 style: TextStyle(
                   color: NFColors.white,
                   fontSize: 15,

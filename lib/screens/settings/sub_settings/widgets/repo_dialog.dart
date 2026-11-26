@@ -156,7 +156,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Add ${widget.type.name.toUpperCase()} Repository',
+                          context.l10n.addTypeRepository(widget.type.name.toUpperCase()),
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: colorScheme.onSurface,

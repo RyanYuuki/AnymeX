@@ -72,7 +72,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           title: context.l10n.episodeMetadata,
                           badge: AnymeXBadge.newBadge(context),
                           subtitle:
-                              'Configure AniZip, Kitsu, Simkl, AniList, Tenrai & fallback order',
+                              context.l10n.configureAnizipKitsuSimklAnilist,
                           onTap: () =>
                               navigate(() => const SettingsEpisodeMetadata()),
                         ),

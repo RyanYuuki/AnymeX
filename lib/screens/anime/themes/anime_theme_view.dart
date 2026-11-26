@@ -396,7 +396,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           AnymeXText(
-            "Tracks (${themes.length})",
+            context.l10n.tracksCount(themes.length),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

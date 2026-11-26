@@ -656,7 +656,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                   ),
                                   alignment: Alignment.center,
                                   child: AnymeXText(
-                                    "Gaussian Blur",
+                                    Get.context!.l10n.gaussianBlur,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: blurStyle == 0
@@ -688,7 +688,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                   ),
                                   alignment: Alignment.center,
                                   child: AnymeXText(
-                                    "Fluid Mesh",
+                                    Get.context!.l10n.fluidMesh,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: blurStyle == 1
@@ -707,13 +707,12 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                             Icon(Icons.blur_on,
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            const AnymeXText(
-                              "Blur Radius",
+                            AnymeXText(Get.context!.l10n.blurRadius,
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
-                              "${blur.toInt()}px",
+                              Get.context!.l10n.pxValue((blur.toInt()).toString()),
                               style: TextStyle(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
@@ -739,8 +738,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                             Icon(Icons.brightness_medium,
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            const AnymeXText(
-                              "Brightness",
+                            AnymeXText(Get.context!.l10n.brightness,
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
@@ -771,8 +769,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                             Icon(Icons.contrast,
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            const AnymeXText(
-                              "Contrast",
+                            AnymeXText(Get.context!.l10n.contrast,
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),

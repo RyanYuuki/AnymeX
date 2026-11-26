@@ -409,7 +409,7 @@ class SettingsSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: AnymeXText(
-                      '$extensionCount Updates',
+                      context.l10n.updates(extensionCount.toString()),
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onError,

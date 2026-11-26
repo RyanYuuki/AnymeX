@@ -894,7 +894,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: AnymeXText(
-                  'Online $onlineCount',
+                  context.l10n.onlineCount(onlineCount),
                   size: 12,
                   variant:
                       !isDownloadedTab ? TextVariant.bold : TextVariant.regular,
@@ -918,7 +918,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: AnymeXText(
-                  'Downloaded $downloadedCount',
+                  context.l10n.downloadedCount(downloadedCount),
                   size: 12,
                   variant:
                       isDownloadedTab ? TextVariant.bold : TextVariant.regular,

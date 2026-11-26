@@ -263,7 +263,7 @@ class AnilistAuth extends GetxController {
           borderRadius: BorderRadius.circular(20),
         ),
         title: AnymeXText(
-          'Login with Token',
+          context.l10n.loginWithToken,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -275,7 +275,7 @@ class AnilistAuth extends GetxController {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnymeXText(
-              'Please paste the token from the browser',
+              context.l10n.pleasePasteTheTokenFrom,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
@@ -313,7 +313,7 @@ class AnilistAuth extends GetxController {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: AnymeXText(
-              'Cancel',
+              context.l10n.actionCancel,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
@@ -351,7 +351,7 @@ class AnilistAuth extends GetxController {
               ),
             ),
             child: AnymeXText(
-              'Login',
+              context.l10n.login,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
