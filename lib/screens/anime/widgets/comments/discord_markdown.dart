@@ -125,9 +125,10 @@ class DiscordMarkdown extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: collectedImages
-                .map((img) => _ImageThumbnail(
-                      image: img,
-                      colorScheme: colorScheme,
+                .map((img) => _buildImageThumbnail(
+                      context,
+                      img,
+                      colorScheme,
                     ))
                 .toList(),
           ),
@@ -620,97 +621,85 @@ class CommentMediaImage {
   });
 }
 
-// ---------------------------------------------------------------------------
-// _ImageThumbnail – inline image preview with auto-sizing & full-size viewer
-// ---------------------------------------------------------------------------
+Widget _buildImageThumbnail(
+  BuildContext context,
+  CommentMediaImage image,
+  ColorScheme colorScheme,
+) {
+  const double defaultMaxHeight = 180.0;
+  const double defaultMaxWidth = 260.0;
+  final targetWidth = image.width?.clamp(40.0, defaultMaxWidth);
+  final targetHeight = image.height?.clamp(40.0, defaultMaxHeight);
 
-class _ImageThumbnail extends StatelessWidget {
-  const _ImageThumbnail({
-    required this.image,
-    required this.colorScheme,
-  }) : defaultMaxHeight = 180.0 : defaultMaxWidth = 260.0;
-
-  final CommentMediaImage image;
-  final ColorScheme colorScheme;
-  final double defaultMaxHeight;
-  final double defaultMaxWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    final targetWidth = image.width?.clamp(40.0, defaultMaxWidth);
-    final targetHeight = image.height?.clamp(40.0, defaultMaxHeight);
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.15),
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.25),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(10),
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(10),
+    child: Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.15),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+          width: 1,
         ),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: targetWidth ?? defaultMaxWidth,
-            maxHeight: targetHeight ?? defaultMaxHeight,
-          ),
-          child: GestureDetector(
-            onTap: () => _openFullSizeViewer(context),
-            child: CachedNetworkImage(
-              imageUrl: image.url,
-              fit: BoxFit.contain,
-              placeholder: (context, url) => Container(
-                height: 90,
-                width: 130,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: targetWidth ?? defaultMaxWidth,
+          maxHeight: targetHeight ?? defaultMaxHeight,
+        ),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => _FullScreenImageViewer(
+                  imageUrls: [image.url],
+                  initialIndex: 0,
                 ),
-                child: Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                    ),
+              ),
+            );
+          },
+          child: CachedNetworkImage(
+            imageUrl: image.url,
+            fit: BoxFit.contain,
+            placeholder: (context, url) => Container(
+              height: 90,
+              width: 130,
+              decoration: BoxDecoration(
+                color:
+                    colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   ),
                 ),
               ),
-              errorWidget: (context, url, error) => Container(
-                height: 60,
-                width: 120,
-                decoration: BoxDecoration(
-                  color: colorScheme.errorContainer.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    color: colorScheme.error.withValues(alpha: 0.6),
-                    size: 22,
-                  ),
+            ),
+            errorWidget: (context, url, error) => Container(
+              height: 60,
+              width: 120,
+              decoration: BoxDecoration(
+                color: colorScheme.errorContainer.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.broken_image_outlined,
+                  color: colorScheme.error.withValues(alpha: 0.6),
+                  size: 22,
                 ),
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  void _openFullSizeViewer(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => _FullScreenImageViewer(
-          imageUrls: [image.url],
-          initialIndex: 0,
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -855,7 +844,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.bold,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('**', '**'),
@@ -869,7 +858,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.italic,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('*', '*'),
@@ -883,7 +872,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.strikethrough,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('~~', '~~'),
@@ -899,7 +888,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.code,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('`', '`'),
@@ -913,7 +902,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.spoiler,
               colorScheme: colorScheme,
               onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
@@ -927,7 +916,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.quote,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('> ', ''),
@@ -941,7 +930,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.bulletList,
               colorScheme: colorScheme,
               onTap: _insertBulletList,
@@ -952,7 +941,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            _ToolbarButton(
+            _buildToolbarButton(
               label: context.l10n.numberedList,
               colorScheme: colorScheme,
               onTap: _insertNumberedList,
@@ -964,7 +953,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             if (onGifTap != null) ...[
               const SizedBox(width: 4),
-              _ToolbarButton(
+              _buildToolbarButton(
                 label: context.l10n.gif,
                 colorScheme: colorScheme,
                 onTap: onGifTap!,
@@ -1101,47 +1090,32 @@ class MarkdownFormattingToolbar extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _ToolbarButton – individual formatting button
-// ---------------------------------------------------------------------------
-
-class _ToolbarButton extends StatelessWidget {
-  const _ToolbarButton({
-    required this.label,
-    required this.child,
-    required this.colorScheme,
-    required this.onTap,
-  });
-
-  final String label;
-  final Widget child;
-  final ColorScheme colorScheme;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: label,
-      waitDuration: const Duration(milliseconds: 400),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            HapticFeedback.selectionClick();
-            onTap();
-          },
-          borderRadius: BorderRadius.circular(6),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color:
-                  colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Center(child: child),
+Widget _buildToolbarButton({
+  required String label,
+  required Widget child,
+  required ColorScheme colorScheme,
+  required VoidCallback onTap,
+}) {
+  return Tooltip(
+    message: label,
+    waitDuration: const Duration(milliseconds: 400),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
+            borderRadius: BorderRadius.circular(6),
           ),
+          child: Center(child: child),
         ),
       ),
-    );
-  }
+    ),
+  );
 }

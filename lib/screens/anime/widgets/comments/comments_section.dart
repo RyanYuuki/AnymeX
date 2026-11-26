@@ -1505,7 +1505,7 @@ class _CommentSectionState extends State<CommentSection>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SpoilerText(
+                    _buildSpoilerText(
                       text: reply.commentText,
                       isSpoiler: isSpoiler,
                       theme: theme,
@@ -1839,7 +1839,7 @@ class _CommentSectionState extends State<CommentSection>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SpoilerText(
+                    _buildSpoilerText(
                       text: comment.commentText,
                       isSpoiler: isSpoiler,
                       theme: theme,
@@ -3781,121 +3781,100 @@ class _CommentSectionState extends State<CommentSection>
   }
 }
 
-class _SpoilerText extends StatelessWidget {
-  final String text;
-  final bool isSpoiler;
-  final ThemeData theme;
-  final ColorScheme colorScheme;
-  final double fontSize;
-
-  const _SpoilerText({
-    required this.text,
-    required this.isSpoiler,
-    required this.theme,
-    required this.colorScheme,
-    this.fontSize = 15,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpandableCommentText(
-      text: text,
-      isSpoiler: isSpoiler,
-      colorScheme: colorScheme,
+Widget _buildSpoilerText({
+  required String text,
+  required bool isSpoiler,
+  required ThemeData theme,
+  required ColorScheme colorScheme,
+  double fontSize = 15,
+}) {
+  return ExpandableCommentText(
+    text: text,
+    isSpoiler: isSpoiler,
+    colorScheme: colorScheme,
+    fontSize: fontSize,
+    baseStyle: theme.textTheme.bodyMedium?.copyWith(
       fontSize: fontSize,
-      baseStyle: theme.textTheme.bodyMedium?.copyWith(
-        fontSize: fontSize,
-        color: colorScheme.onSurface,
-      ),
-    );
-  }
+      color: colorScheme.onSurface,
+    ),
+  );
 }
 
-class _UserProfileSheet extends StatelessWidget {
-  final String username;
-  final String? avatarUrl;
-  final String? decorationUrl;
-  final String? userRole;
+Widget _buildUserProfileSheet(
+  BuildContext context, {
+  required String username,
+  String? avatarUrl,
+  String? decorationUrl,
+  String? userRole,
+}) {
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  final isMod = userRole != null && userRole != 'user';
 
-  const _UserProfileSheet({
-    required this.username,
-  }) : avatarUrl = null : decorationUrl : userRole;
-
-  Color _getRoleColor(BuildContext context, String role) {
-    return CommentumRoleConfig.getRoleColor(context, role);
-  }
-
-  String _getRoleLabel(String role) {
-    return CommentumRoleConfig.getRoleLabel(role);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isMod = userRole != null && userRole != 'user';
-
-    return AnymeXContainer(
-      color: colorScheme.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnymeXContainer(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            width: 40,
-            height: 4,
-            color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(2),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            child: Column(
-              children: [
-                AnymeXDecoratedAvatar(
-                  avatarUrl: avatarUrl,
-                  decorationUrl: decorationUrl,
-                  size: 72,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
+  return AnymeXContainer(
+    color: colorScheme.surface,
+    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnymeXContainer(
+          margin: const EdgeInsets.symmetric(vertical: 12),
+          width: 40,
+          height: 4,
+          color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(2),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          child: Column(
+            children: [
+              AnymeXDecoratedAvatar(
+                avatarUrl: avatarUrl,
+                decorationUrl: decorationUrl,
+                size: 72,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: AnymeXText(
+                      username,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: null,
+                    ),
+                  ),
+                  if (isMod)
+                    AnymeXContainer(
+                      margin: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      color: CommentumRoleConfig.getRoleColor(context, userRole)
+                          .withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color:
+                            CommentumRoleConfig.getRoleColor(context, userRole)
+                                .withOpacity(0.3),
+                      ),
                       child: AnymeXText(
-                        username,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                        CommentumRoleConfig.getRoleLabel(userRole),
+                        size: 12,
+                        variant: TextVariant.bold,
+                        color:
+                            CommentumRoleConfig.getRoleColor(context, userRole),
                         maxLines: null,
                       ),
                     ),
-                    if (isMod)
-                      AnymeXContainer(
-                        margin: const EdgeInsets.only(left: 8),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        color: _getRoleColor(context, userRole!).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _getRoleColor(context, userRole!).withOpacity(0.3),
-                        ),
-                        child: AnymeXText(
-                          _getRoleLabel(userRole!),
-                          size: 12,
-                          variant: TextVariant.bold,
-                          color: _getRoleColor(context, userRole!),
-                          maxLines: null,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
