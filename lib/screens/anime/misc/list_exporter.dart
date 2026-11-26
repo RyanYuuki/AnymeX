@@ -255,7 +255,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
     if (Platform.isAndroid || Platform.isIOS) {
       return await FilePicker.platform.saveFile(
-        dialogTitle: 'Save Export XML',
+        dialogTitle: context.l10n.saveExportXml,
         fileName: fileName,
         bytes: utf8.encode(xml),
         type: FileType.custom,
@@ -264,7 +264,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
     }
 
     final outputPath = await FilePicker.platform.saveFile(
-      dialogTitle: 'Save Export XML',
+      dialogTitle: context.l10n.saveExportXml,
       fileName: fileName,
       type: FileType.custom,
       allowedExtensions: ['xml'],

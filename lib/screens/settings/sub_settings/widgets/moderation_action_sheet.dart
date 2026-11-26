@@ -323,7 +323,7 @@ class _AnymeXModerationActionSheetState
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'User ID: #${widget.targetUserId}',
+                        context.l10n.userId(widget.targetUserId),
                         size: 12,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -549,7 +549,7 @@ class _AnymeXModerationActionSheetState
                       child: ExpressiveLoadingIndicator(),
                     )
                   : AnymeXText(
-                      'Confirm ${_getActionTitle()}',
+                      context.l10n.confirmAction(_getActionTitle()),
                       variant: TextVariant.bold,
                       size: 15,
                     ),

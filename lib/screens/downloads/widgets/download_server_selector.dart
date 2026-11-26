@@ -650,7 +650,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Subtitles (${subtitles.length})',
+                        context.l10n.subtitlesCount(subtitles.length),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -691,7 +691,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                             )),
                       const SizedBox(height: 16),
                       AnymeXText(
-                        'Audio Tracks (${audios.length})',
+                        context.l10n.audioTracksCount(audios.length),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,

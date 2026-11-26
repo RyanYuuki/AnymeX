@@ -920,6 +920,13 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableHoldToSeek.set(value);
   }
 
+  bool get relativeHoldSpeed =>
+      _getPlayerSetting((s) => s.relativeHoldSpeed);
+  set relativeHoldSpeed(bool value) {
+    playerSettings.update((s) => s?.relativeHoldSpeed = value);
+    PlayerSettingsKeys.relativeHoldSpeed.set(value);
+  }
+
   bool get enableSlideToSeek => _getPlayerSetting((s) => s.enableSlideToSeek);
   set enableSlideToSeek(bool value) {
     playerSettings.update((s) => s?.enableSlideToSeek = value);

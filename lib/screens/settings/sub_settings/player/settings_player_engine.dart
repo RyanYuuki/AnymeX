@@ -590,7 +590,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       icon: Icons.screenshot_rounded,
                       title: context.l10n.saveLastFrame,
                       subtitle:
-                          'Save a screenshot of the last frame watched (uses extra storage)',
+                          context.l10n.saveAScreenshotOfThe,
                       value: settings.enableScreenshot,
                       onChanged: (val) => settings.enableScreenshot = val,
                     ),
@@ -598,7 +598,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       icon: Icons.bluetooth_audio_rounded,
                       title: context.l10n.mediaSessionBluetoothSupport,
                       subtitle:
-                          'Enable background media controls for Bluetooth headsets and system notifications',
+                          context.l10n.enableBackgroundMediaControlsFor,
                       value: settings.useMediaSession,
                       onChanged: (val) => settings.useMediaSession = val,
                     ),
@@ -611,7 +611,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       icon: Icons.science_outlined,
                       title: context.l10n.enableExperimentalSettings,
                       subtitle:
-                          'Required for Core and Visual tuning. Keep off on low-end devices.',
+                          context.l10n.requiredForCoreAndVisualTuning,
                       value: experimentalEnabled,
                       onChanged: (val) {
                         PlayerUiKeys.playerExperimentalEnabled.set<bool>(val);
@@ -839,7 +839,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       icon: Icons.description_rounded,
                       title: context.l10n.useMpvConf,
                       subtitle:
-                          'Apply options from your mpv.conf when playback starts',
+                          context.l10n.applyOptionsFromYourMpvConf,
                       value: _useMpvConf,
                       onChanged: (val) {
                         _useMpvConf = val;
@@ -851,7 +851,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                       icon: Icons.edit_note_rounded,
                       title: context.l10n.editMpvConf,
                       subtitle:
-                          'Edit custom mpv flags, properties, and configuration file',
+                          context.l10n.editCustomMpvFlagsPropertiesAnd,
                       onTap: () => _showMpvConfEditorSheet(context),
                     ),
                   ],

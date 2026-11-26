@@ -7,6 +7,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/l10n/ui_labels.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 Widget buildMediaQuickActions(
   BuildContext context,
@@ -84,7 +86,7 @@ Widget buildMediaQuickActions(
                 icon: inList
                     ? Icons.bookmark_added_rounded
                     : Icons.bookmark_add_outlined,
-                label: inList ? 'In Custom List' : 'Custom List',
+                label: uiLabel(context.l10n, inList ? 'In Custom List' : 'Custom List'),
                 isPrimary: inList,
                 radius: BorderRadius.circular(16),
                 height: height,

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 
 import 'package:anymex/services/commentum_service.dart';
@@ -238,7 +239,7 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  'Mention user',
+                  context.l10n.mentionUser,
                   size: 11,
                   variant: TextVariant.bold,
                   color: colorScheme.primary,
@@ -267,7 +268,7 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                     padding: const EdgeInsets.all(16),
                     child: Center(
                       child: AnymeXText(
-                        'No users found',
+                        context.l10n.noUsersFound,
                         size: 13,
                         color:
                             colorScheme.onSurfaceVariant.withValues(alpha: 0.7),

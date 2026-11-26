@@ -41,6 +41,7 @@ class PlayerSettings {
   bool enableHoldToSeek;
   bool enableSlideToSeek;
   bool useMediaSession;
+  bool relativeHoldSpeed;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -83,6 +84,7 @@ class PlayerSettings {
     this.enableHoldToSeek = true,
     this.enableSlideToSeek = true,
     this.useMediaSession = false,
+    this.relativeHoldSpeed = false,
   });
 
   factory PlayerSettings.fromDB() {
@@ -171,6 +173,8 @@ class PlayerSettings {
           .get<bool>(defaults.enableSlideToSeek),
       useMediaSession: PlayerSettingsKeys.useMediaSession
           .get<bool>(defaults.useMediaSession),
+      relativeHoldSpeed: PlayerSettingsKeys.relativeHoldSpeed
+          .get<bool>(defaults.relativeHoldSpeed),
     );
   }
 }

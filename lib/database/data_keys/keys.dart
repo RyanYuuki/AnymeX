@@ -287,6 +287,7 @@ enum PlayerSettingsKeys {
   enableSlideToSeek,
   useMediaSession,
   subtitleBackgroundOpacity,
+  relativeHoldSpeed,
 }
 
 enum UISettingsKeys {

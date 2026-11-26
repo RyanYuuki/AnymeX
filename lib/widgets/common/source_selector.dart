@@ -173,7 +173,7 @@ class SourceSelectorWidget extends StatelessWidget {
                           )
                         else
                           AnymeXText(
-                            'Tap to choose a source',
+                            context.l10n.tapToChooseASource,
                             style: TextStyle(
                               fontSize: 11,
                               fontFamily: 'Linotte',
@@ -585,7 +585,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: AnymeXText(
-                  '${widget.installedSources.length} installed',
+                  context.l10n.installed(widget.installedSources.length),
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'Linotte',

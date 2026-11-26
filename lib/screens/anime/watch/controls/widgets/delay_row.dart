@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -90,7 +91,7 @@ class DelayRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: AnymeXText(
-                  'Reset',
+                  context.l10n.actionReset,
                   size: 11,
                   color: colors.primary,
                   variant: TextVariant.semiBold,

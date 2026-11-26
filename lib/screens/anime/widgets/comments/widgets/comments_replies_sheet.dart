@@ -198,7 +198,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
             ),
             const SizedBox(width: 6),
             AnymeXText(
-              'This comment was deleted',
+              context.l10n.thisCommentWasDeleted2,
               size: 12,
               fontStyle: FontStyle.italic,
               color: colorScheme.onSurfaceVariant.opaque(0.6),
@@ -363,7 +363,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                           onReplyTap();
                         },
                         child: AnymeXText(
-                          'Reply',
+                          context.l10n.reply,
                           size: 12,
                           variant: TextVariant.semiBold,
                           color: colorScheme.onSurfaceVariant,
@@ -551,7 +551,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                 widget.rootComment;
                             final count = _countReplies(currentParent);
                             return AnymeXText(
-                              'Replies ($count)',
+                              context.l10n.replies(count),
                               size: 16,
                               variant: TextVariant.bold,
                               color: colorScheme.onSurface,
@@ -607,7 +607,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                   ),
                                   const SizedBox(width: 5),
                                   AnymeXText(
-                                    'ORIGINAL COMMENT',
+                                    context.l10n.originalComment,
                                     size: 10,
                                     color: colorScheme.primary,
                                     style: const TextStyle(
@@ -645,7 +645,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             padding: const EdgeInsets.symmetric(vertical: 40),
                             child: Center(
                               child: AnymeXText(
-                                'No replies yet. Be the first to reply!',
+                                context.l10n.noRepliesYetBeThe,
                                 size: 13,
                                 color: colorScheme.onSurfaceVariant.opaque(0.6),
                                 maxLines: null,
@@ -702,7 +702,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                           ),
                         ),
                         child: AnymeXText(
-                          'You need to be logged in to reply.',
+                          context.l10n.youNeedToBeLoggedIn2,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,

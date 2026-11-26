@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -1011,7 +1012,7 @@ class BackupRestoreService extends GetxController {
       if (requestPath) {
         if (Platform.isIOS || Platform.isAndroid) {
           outputPath = await FilePicker.platform.saveFile(
-            dialogTitle: 'Save Backup File',
+            dialogTitle: Get.context!.l10n.saveBackupFile,
             fileName: fileName,
             bytes: Uint8List.fromList(zipBytes),
             type: FileType.custom,
@@ -1019,7 +1020,7 @@ class BackupRestoreService extends GetxController {
           );
         } else {
           outputPath = await FilePicker.platform.saveFile(
-            dialogTitle: 'Save Backup File',
+            dialogTitle: Get.context!.l10n.saveBackupFile,
             fileName: fileName,
             type: FileType.custom,
             allowedExtensions: ['anymex'],
@@ -1264,7 +1265,7 @@ class BackupRestoreService extends GetxController {
 
       final result = await FilePicker.platform.pickFiles(
         type: FileType.any,
-        dialogTitle: 'Select Anymex Backup File',
+        dialogTitle: Get.context!.l10n.selectAnymexBackupFile,
         allowMultiple: false,
       );
 
@@ -1282,7 +1283,7 @@ class BackupRestoreService extends GetxController {
               fileName.endsWith('.zip');
           if (!isSupported) {
             snackBar(
-                'Unsupported format. Please select an AnymeX, Aniyomi, Mihon, or Kotatsu backup');
+                Get.context!.l10n.unsupportedFormatPleaseSelectAn);
             return "";
           }
 

@@ -118,7 +118,7 @@ class NovelSettingsPanel extends StatelessWidget {
       child: Row(
         children: [
           AnymeXText(
-            'Reading Settings',
+            context.l10n.readingSettings,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -731,7 +731,7 @@ class NovelSettingsPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnymeXText(
-          'Text Alignment',
+          context.l10n.textAlignment,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,

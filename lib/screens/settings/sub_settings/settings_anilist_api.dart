@@ -695,7 +695,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.play_circle_outline_rounded,
             title: context.l10n.airingAlerts,
             subtitle:
-                'Notify when anime on your watch list airs new episodes',
+                context.l10n.notifyWhenAnimeOnYour,
             value: airing,
             onChanged: (v) {
               KvHelper.set('anilist_notif_airing', v);
@@ -716,7 +716,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.favorite_border_rounded,
             title: context.l10n.activityAlerts,
             subtitle:
-                'Notify when someone likes or replies to your activity',
+                context.l10n.notifyWhenSomeoneLikesOr,
             value: activity,
             onChanged: (v) {
               KvHelper.set('anilist_notif_activity', v);
@@ -850,7 +850,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.reorder_rounded,
             title: context.l10n.mangaSectionOrder,
             subtitle:
-                'Drag to reorder · ${_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length} items',
+                context.l10n.dragToReorderItems((_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length).toString()),
             onTap: () => _editSectionOrder(
                 title: context.l10n.manga,
                 current: s.mangaSectionOrder,

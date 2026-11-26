@@ -52,7 +52,7 @@ class _AnilistSpoilerWidgetState extends State<AnilistSpoilerWidget> {
                     .withOpacity(0.7)),
             const SizedBox(width: 8),
             AnymeXText(
-              'Spoiler \u2014 tap to reveal',
+              context.l10n.spoilerU2014TapToReveal,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,

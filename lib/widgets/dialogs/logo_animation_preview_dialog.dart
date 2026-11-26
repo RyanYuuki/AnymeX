@@ -19,6 +19,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/l10n/ui_labels.dart';
 
 class LogoAnimationPreviewDialog extends StatefulWidget {
   final LogoAnimationType initialAnimation;
@@ -1027,8 +1028,8 @@ class _LogoAnimationPreviewDialogState
                     _selectedCustomLogoId!.isEmpty)
                 ? _selectedAnimation
                 : null,
-            getTitle: (type) => type.displayName,
-            getSubtitle: (type) => type.description,
+            getTitle: (type) => uiLabel(context.l10n, type.displayName),
+            getSubtitle: (type) => uiLabel(context.l10n, type.description),
             onItemPressed: (type) {
               setState(() {
                 _selectedAnimation = type;

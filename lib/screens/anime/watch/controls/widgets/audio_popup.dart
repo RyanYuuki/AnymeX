@@ -234,7 +234,7 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 10, left: 4),
               child: AnymeXText(
-                'AUDIO CHANNELS / LAYOUT',
+                context.l10n.audioChannelsLayout,
                 style: theme.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,

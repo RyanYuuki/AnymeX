@@ -127,7 +127,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Community Leaderboard',
+                        context.l10n.communityLeaderboard,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -135,7 +135,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                         ),
                       ),
                       AnymeXText(
-                        'Top commenters & points ranking',
+                        context.l10n.topCommentersPointsRanking,
                         size: 11.5,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -173,7 +173,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                     .withValues(alpha: 0.4)),
                             const SizedBox(height: 10),
                             AnymeXText(
-                              'No rankings available yet',
+                              context.l10n.noRankingsAvailableYet,
                               color: colorScheme.onSurfaceVariant,
                               size: 14,
                             ),
@@ -272,7 +272,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                 children: [
                                   Flexible(
                                     child: AnymeXText(
-                                      'You (${_currentUserEntry!.username})',
+                                      context.l10n.youWithName(_currentUserEntry!.username),
                                       variant: TextVariant.bold,
                                       size: 13,
                                       maxLines: 1,
@@ -286,7 +286,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                                 ],
                               ),
                               AnymeXText(
-                                '${_currentUserEntry!.tierEmoji} ${_currentUserEntry!.tierLabel} • ${_currentUserEntry!.displayPoints} pts',
+                                context.l10n.pts(_currentUserEntry!.tierEmoji, _currentUserEntry!.tierLabel, _currentUserEntry!.displayPoints),
                                 size: 11,
                                 color: colorScheme.onSurfaceVariant,
                               ),

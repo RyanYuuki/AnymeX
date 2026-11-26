@@ -506,7 +506,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           AnymeXText(
-                            'Error Details',
+                            context.l10n.errorDetails,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -541,7 +541,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
                                   ),
                                   const SizedBox(width: 4),
                                   AnymeXText(
-                                    'Copy',
+                                    context.l10n.actionCopy,
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Colors.redAccent.shade100,

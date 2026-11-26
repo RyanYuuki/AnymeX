@@ -22,6 +22,8 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/l10n/ui_labels.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 
 class ReusableCarousel extends StatefulWidget {
   final List<dynamic> data;
@@ -77,7 +79,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, bottom: 2.0),
-      child: AnymeXText(widget.title,
+      child: AnymeXText(uiLabel(context.l10n, widget.title),
         variant: TextVariant.semiBold,
         size: 17,
         color: context.colors.primary,

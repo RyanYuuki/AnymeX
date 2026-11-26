@@ -167,7 +167,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                   AnymeXExpansionTile(
                     title: context.l10n.controlsGestures,
                     subtitle:
-                        'Theme, indicators, gestures, auto-skip & button layout',
+                        context.l10n.themeIndicatorsGesturesAutoSkip,
                     icon: HugeIcons.strokeRoundedPlaySquare,
                     initialExpanded: false,
                     useContentContainer: false,
@@ -204,7 +204,7 @@ class _PlayerSettingsPaneState extends State<PlayerSettingsPane> {
                   AnymeXExpansionTile(
                     title: context.l10n.engineAdvanced,
                     subtitle:
-                        'Hardware decoder, video renderer, audio & mpv config',
+                        context.l10n.hardwareDecoderVideoRendererAudio,
                     icon: Icons.memory_rounded,
                     initialExpanded: false,
                     useContentContainer: false,

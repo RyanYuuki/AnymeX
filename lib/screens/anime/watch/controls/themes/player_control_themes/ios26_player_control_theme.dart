@@ -1001,8 +1001,7 @@ class _Ios26UnlockButtonState extends State<_Ios26UnlockButton>
                     },
                   ),
                   const SizedBox(width: 10),
-                  const AnymeXText(
-                    'Hold to Unlock',
+                  AnymeXText(context.l10n.holdToUnlock,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,

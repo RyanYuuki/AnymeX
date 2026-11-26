@@ -110,7 +110,7 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                               icon: Icons.notifications_active_outlined,
                               title: context.l10n.downloadNotifications,
                               subtitle:
-                                  'Show rich notification with poster art when download completes',
+                                  context.l10n.showRichNotificationWithPoster,
                               value: KvHelper.get<bool>(
                                   'download_notifications_enabled',
                                   defaultVal: true),

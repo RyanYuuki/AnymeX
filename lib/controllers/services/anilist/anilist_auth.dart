@@ -263,7 +263,7 @@ class AnilistAuth extends GetxController {
           borderRadius: BorderRadius.circular(20),
         ),
         title: AnymeXText(
-          'Login with Token',
+          context.l10n.loginWithToken,
           style: TextStyle(
             fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
@@ -275,7 +275,7 @@ class AnilistAuth extends GetxController {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnymeXText(
-              'Please paste the token from the browser',
+              context.l10n.pleasePasteTheTokenFrom,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
@@ -313,7 +313,7 @@ class AnilistAuth extends GetxController {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: AnymeXText(
-              'Cancel',
+              context.l10n.actionCancel,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
@@ -351,7 +351,7 @@ class AnilistAuth extends GetxController {
               ),
             ),
             child: AnymeXText(
-              'Login',
+              context.l10n.login,
               style: TextStyle(
                 fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
@@ -2589,25 +2589,33 @@ class AnilistAuth extends GetxController {
       final effectiveMalId = malId ?? matched?.idMal;
 
       if (effectiveMalId != null && effectiveMalId.isNotEmpty && serviceHandler.malService.isLoggedIn.value) {
-        serviceHandler.malService.updateListEntry(UpdateListEntryParams(
-            listId: effectiveMalId,
-            score: score != null ? score / 10.0 : null,
-            status: status,
-            progress: progress,
-            isAnime: isAnime,
-            startedAt: startedAt,
-            completedAt: completedAt));
+        try {
+          await serviceHandler.malService.updateListEntry(UpdateListEntryParams(
+              listId: effectiveMalId,
+              score: score,
+              status: status,
+              progress: progress,
+              isAnime: isAnime,
+              startedAt: startedAt,
+              completedAt: completedAt));
+        } catch (e) {
+          Logger.i('MAL cross-sync failed: $e');
+        }
       }
 
       if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
-        serviceHandler.simklService.updateListEntryFromExternalId(
-          anilistId: listId,
-          malId: effectiveMalId,
-          score: score != null ? score / 10.0 : null,
-          status: status,
-          progress: progress,
-          isAnime: isAnime,
-        );
+        try {
+          await serviceHandler.simklService.updateListEntryFromExternalId(
+            anilistId: listId,
+            malId: effectiveMalId,
+            score: score,
+            status: status,
+            progress: progress,
+            isAnime: isAnime,
+          );
+        } catch (e) {
+          Logger.i('Simkl cross-sync failed: $e');
+        }
       }
 
       if (response.statusCode == 200) {

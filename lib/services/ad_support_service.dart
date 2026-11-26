@@ -61,11 +61,11 @@ class AdSupportService with WidgetsBindingObserver {
             General.watchedAdsCount.set(newCount);
             watchedCount.value = newCount;
             snackBar(
-              'Ad watch verified ($newCount total)! Points will be rewarded in the next update.',
+              Get.context!.l10n.adWatchVerifiedTotalPoints(newCount),
             );
           } else {
             snackBar(
-              'Returned too quickly (${elapsed}s). Watch for at least ${minWatchSeconds}s to verify.',
+              Get.context!.l10n.returnedTooQuicklySWatch(elapsed, minWatchSeconds),
             );
           }
         }
