@@ -6,7 +6,7 @@ import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class CrashDetector {
   static const MethodChannel _channel =
@@ -62,12 +62,12 @@ class CrashDetector {
   }
 
   static Future<File> _defaultRuntimeApkFile() async {
-    final docsDir = await getApplicationDocumentsDirectory();
+    final docsDir = await getAppDocumentsDirectory();
     return File(p.join(docsDir.path, 'AnymeX', 'Runtime', 'anymex_runtime_host.apk'));
   }
 
   static Future<File> _quarantinedRuntimeApkFile() async {
-    final docsDir = await getApplicationDocumentsDirectory();
+    final docsDir = await getAppDocumentsDirectory();
     return File(p.join(
         docsDir.path, 'AnymeX', 'Runtime', 'anymex_runtime_host.apk.quarantined'));
   }

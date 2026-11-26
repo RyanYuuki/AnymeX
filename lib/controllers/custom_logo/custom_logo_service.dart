@@ -6,7 +6,7 @@ import 'package:anymex/models/custom_logo_model.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class CustomLogoService {
   static const int maxFileSizeBytes = 20 * 1024 * 1024; // 20 MB
@@ -136,7 +136,7 @@ class CustomLogoService {
       throw Exception('File path is invalid.');
     }
 
-    final appDocDir = await getApplicationDocumentsDirectory();
+    final appDocDir = await getAppDocumentsDirectory();
     final logosDir = Directory(p.join(appDocDir.path, 'custom_logos'));
     if (!await logosDir.exists()) {
       await logosDir.create(recursive: true);
