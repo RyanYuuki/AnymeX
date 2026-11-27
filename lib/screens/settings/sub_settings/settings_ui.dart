@@ -103,10 +103,10 @@ class _SettingsUiState extends State<SettingsUi> {
                             value: settings.useLegacyNavbar,
                             options: const [false, true],
                             optionLabelTransformer: (isLegacy) =>
-                                isLegacy ? 'Legacy' : 'Modern',
+                                isLegacy ? context.l10n.navLayoutLegacy : context.l10n.navLayoutModern,
                             optionDescriptionTransformer: (isLegacy) => isLegacy
-                                ? 'Simple direct tabs for Anime, Manga, and Novels.'
-                                : 'Floating category switcher with a dedicated History tab.',
+                                ? context.l10n.navLayoutLegacyDesc
+                                : context.l10n.navLayoutModernDesc,
                             onChanged: (isLegacy) {
                               settings.useLegacyNavbar = isLegacy;
                             },

@@ -67,7 +67,7 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
       try {
         raw = utf8.decode(bytes);
       } catch (_) {
-        allErrors.add('${file.name}: not valid UTF-8.');
+        allErrors.add(context.l10n.fileNotValidUtf8(file.name));
         continue;
       }
 
@@ -84,12 +84,12 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
       if (allErrors.isNotEmpty && totalAdded == 0 && totalUpdated == 0) {
         _importSuccess = false;
         _importStatus =
-            '✗  ${allErrors.first}${allErrors.length > 1 ? ' (+${allErrors.length - 1} more)' : ''}';
+            '✗  ${allErrors.first}${allErrors.length > 1 ? ' ${context.l10n.plusMoreCount(allErrors.length - 1)}' : ''}';
       } else {
         _importSuccess = true;
         _importStatus = totalAdded + totalUpdated == 0
-            ? 'No new themes found.'
-            : '✓  Added $totalAdded, updated $totalUpdated theme(s)';
+            ? context.l10n.noNewThemesFound
+            : context.l10n.themesAddedUpdated(totalAdded, totalUpdated);
       }
     });
 
@@ -113,14 +113,15 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
       if (importResult.hasErrors) {
         _importSuccess = false;
         _importStatus =
-            '✗  ${importResult.errors.first}${importResult.errors.length > 1 ? ' (+${importResult.errors.length - 1} more)' : ''}';
+            '✗  ${importResult.errors.first}${importResult.errors.length > 1 ? ' ${context.l10n.plusMoreCount(importResult.errors.length - 1)}' : ''}';
       } else if (!importResult.isSuccess) {
         _importSuccess = false;
-        _importStatus = '✗  No themes were imported.';
+        _importStatus = context.l10n.noThemesWereImported;
       } else {
         _importSuccess = true;
-        _importStatus =
-            '✓  Added ${importResult.addedThemeIds.length}, updated ${importResult.updatedThemeIds.length} theme(s)';
+        _importStatus = context.l10n.themesAddedUpdated(
+            importResult.addedThemeIds.length,
+            importResult.updatedThemeIds.length);
       }
     });
 
@@ -545,7 +546,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
               },
               onSubmitted: (v) {
                 if (v.trim().isEmpty) {
-                  setState(() => error = 'URL is empty gang.');
+                  setState(() => error = context.l10n.urlIsEmptyGang);
                   return;
                 }
                 Navigator.pop(ctx, v.trim());
@@ -560,7 +561,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
             onPressed: () {
               final v = controller.text.trim();
               if (v.isEmpty) {
-                setState(() => error = 'URL is empty gang.');
+                setState(() => error = context.l10n.urlIsEmptyGang);
                 return;
               }
               Navigator.pop(ctx, v);

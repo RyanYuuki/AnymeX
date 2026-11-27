@@ -31,7 +31,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
   String get _currentDnsLabel {
     final customUrl = NetworkKeys.customDnsUrl.get<String>('');
     if (customUrl.isEmpty) {
-      return 'Cloudflare (Default)';
+      return context.l10n.cloudflareDefault;
     }
     final match = DohProvider.forUrl(customUrl);
     return match?.displayName ?? customUrl;
@@ -444,7 +444,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                                       : DohProvider.cloudflare.url;
                                   setSheetState(() {
                                     isTesting = true;
-                                    testStatus = 'Testing...';
+                                    testStatus = context.l10n.testingEllipsis;
                                   });
                                   final result = await _testDns(url);
                                   setSheetState(() {
@@ -496,7 +496,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                           child: AnymeXText(
                             testStatus.isNotEmpty
                                 ? testStatus
-                                : 'Tap to test DNS latency',
+                                : context.l10n.tapToTestDnsLatency,
                             size: 12,
                             color: testStatus.isNotEmpty
                                 ? colors.primary
@@ -761,12 +761,12 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                                   );
                                   if (pString.isEmpty) {
                                     setSheetState(
-                                        () => testStatus = 'Host is required');
+                                        () => testStatus = context.l10n.hostIsRequired);
                                     return;
                                   }
                                   setSheetState(() {
                                     isTesting = true;
-                                    testStatus = 'Connecting...';
+                                    testStatus = context.l10n.connectingEllipsis;
                                   });
                                   final result = await _testProxy(pString);
                                   setSheetState(() {
@@ -818,7 +818,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                           child: AnymeXText(
                             testStatus.isNotEmpty
                                 ? testStatus
-                                : 'Tap to test proxy latency',
+                                : context.l10n.tapToTestProxyLatency,
                             size: 12,
                             color: testStatus.isNotEmpty
                                 ? colors.primary
@@ -935,7 +935,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
       sw.stop();
       return addrs.isNotEmpty
           ? (true, '${addrs.first} · ${sw.elapsedMilliseconds} ms')
-          : (false, 'No records returned');
+          : (false, Get.context!.l10n.noRecordsReturned);
     } catch (e) {
       sw.stop();
       final msg = e.toString().split('\n').first;

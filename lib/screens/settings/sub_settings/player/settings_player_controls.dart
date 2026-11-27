@@ -1166,8 +1166,8 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                 onTap: () =>
                     showJsonPlayerThemesSheet(context, setState, settings),
                 title: context.l10n.jsonThemeManager,
-                subtitle:
-                    '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
+                subtitle: context.l10n.importedThemesCount(
+                    PlayerControlThemeRegistry.jsonThemes.length),
               ),
               AnymeXTile(
                 icon: Icons.tune_rounded,
@@ -1192,8 +1192,8 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
               AnymeXTile(
                 icon: Icons.aspect_ratio_rounded,
                 title: context.l10n.gestureAreas,
-                subtitle:
-                    'Brightness $brightnessPct% • Overlay $overlayPct% • Volume $volumePct%',
+                subtitle: context.l10n.gestureAreasSummary(
+                    brightnessPct, overlayPct, volumePct),
                 onTap: _showGestureAreasDialog,
               ),
               AnymeXTile.toggle(

@@ -510,10 +510,10 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
           TextField(
             controller: widget.searchController,
             decoration: InputDecoration(
-              labelText: _searchMode == 0 ? 'Enter User ID' : 'Enter Username',
+              labelText: _searchMode == 0 ? context.l10n.enterUserId : context.l10n.enterUsername,
               hintText: _searchMode == 0
-                  ? 'Enter the user ID'
-                  : 'Type a username to search',
+                  ? context.l10n.enterTheUserId
+                  : context.l10n.typeUsernameToSearch,
               hintStyle:
                   TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 13),
               prefixIcon: _isSearching && _searchMode == 1
@@ -1268,12 +1268,13 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
 
       if (success) {
         snackBar(deleteComment
-            ? 'Comment deleted and report resolved'
-            : 'Report $resolution successfully');
+            ? context.l10n.commentDeletedReportResolved
+            : context.l10n.reportResolvedSuccess(resolution));
         await _loadReports();
       } else {
-        snackBar(
-            'Failed to ${deleteComment ? "delete comment" : "resolve report"}');
+        snackBar(deleteComment
+            ? context.l10n.failedToDeleteComment
+            : context.l10n.failedToResolveReport);
       }
     } finally {
       resolvingReports.remove(commentId);
@@ -1442,7 +1443,7 @@ class _UserListPageState extends State<UserListPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${users.length} of $totalUsers users',
+                    context.l10n.usersOfTotalCount(users.length, totalUsers),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
@@ -1506,7 +1507,13 @@ class _UserListPageState extends State<UserListPage> {
   }
 
   Widget _buildStatusFilters(ColorScheme colorScheme, ThemeData theme) {
-    final statusFilters = ['All', 'Banned', 'Muted', 'Shadow Banned', 'Warned'];
+    final statusFilters = [
+      context.l10n.all,
+      context.l10n.statusBanned,
+      context.l10n.statusMuted,
+      context.l10n.statusShadowBanned,
+      context.l10n.statusWarned,
+    ];
 
     return AnymeXContainer(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -1847,7 +1854,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 : userInfo == null
                     ? Center(
                         child: Text(
-                          'User not found (ID: ${widget.targetUserId})',
+                          context.l10n.userNotFoundId(widget.targetUserId.toString()),
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -1935,12 +1942,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   const SizedBox(height: 16),
                                   const Divider(height: 1),
                                   const SizedBox(height: 12),
-                                  _buildInfoRow(context, 'User ID',
+                                  _buildInfoRow(context, context.l10n.userIdLabel,
                                       '#${widget.targetUserId}'),
                                   if (userInfo?['created_at'] != null)
                                     _buildInfoRow(
                                       context,
-                                      'Joined',
+                                      context.l10n.joinedLabel,
                                       _formatDate(userInfo!['created_at']),
                                     ),
                                   if (userInfo?['status'] != null)
@@ -1953,13 +1960,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   if (userInfo?['banned_until'] != null)
                                     _buildInfoRow(
                                       context,
-                                      'Banned Until',
+                                      context.l10n.bannedUntilLabel,
                                       _formatDate(userInfo!['banned_until']),
                                     ),
                                   if (userInfo?['muted_until'] != null)
                                     _buildInfoRow(
                                       context,
-                                      'Muted Until',
+                                      context.l10n.mutedUntilLabel,
                                       _formatDate(userInfo!['muted_until']),
                                     ),
                                 ],
@@ -2260,7 +2267,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       targetUserId: widget.targetUserId,
       targetUsername: userInfo?['username']?.toString() ??
           userInfo?['commentum_username']?.toString() ??
-          'User #${widget.targetUserId}',
+          context.l10n.userNumber(widget.targetUserId.toString()),
       targetAvatar: userInfo?['avatar']?.toString() ??
           userInfo?['commentum_user_avatar']?.toString(),
       targetDecoration: userInfo?['avatar_decoration']?.toString() ??

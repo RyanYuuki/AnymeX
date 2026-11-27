@@ -147,10 +147,10 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       value: settings.detailsBlurStyle,
                       options: const [0, 1],
                       optionLabelTransformer: (val) =>
-                          val == 1 ? 'Fluid Mesh' : 'Gaussian',
+                          val == 1 ? context.l10n.fluidMesh : context.l10n.blurStyleGaussian,
                       optionDescriptionTransformer: (val) => val == 1
-                          ? 'BitChord-style fluid ambient mesh with organic color blooming.'
-                          : 'Standard smooth frosted blur.',
+                          ? context.l10n.blurStyleFluidMeshDesc
+                          : context.l10n.blurStyleGaussianDesc,
                       onChanged: (val) {
                         settings.detailsBlurStyle = val;
                       },
@@ -164,16 +164,16 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       value: isMesh ? true : settings.useComputedBlur,
                       options: const [false, true],
                       optionLabelTransformer: (val) =>
-                          val ? 'Baked Blur' : 'Live Blur',
+                          val ? context.l10n.bakedBlur : context.l10n.liveBlur,
                       optionDescriptionTransformer: (val) {
                         if (isMesh) {
                           return val
-                              ? 'Fluid Mesh is computed off-thread for smooth performance.'
-                              : 'Live blur is unavailable for Fluid Mesh.';
+                              ? context.l10n.fluidMeshOffThreadDesc
+                              : context.l10n.liveBlurUnavailableFluidMesh;
                         }
                         return val
-                            ? 'Smooth off-thread Gaussian blur with zero stutter.'
-                            : 'Live real-time blur, but may lag on some phones.';
+                            ? context.l10n.gaussianOffThreadDesc
+                            : context.l10n.liveBlurLagDesc;
                       },
                       onChanged: (val) {
                         if (isMesh) {
@@ -196,21 +196,21 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       optionLabelTransformer: (val) {
                         switch (val) {
                           case 1:
-                            return 'Full Screen';
+                            return context.l10n.blurScopeFullScreen;
                           case 2:
-                            return 'Gradient';
+                            return context.l10n.blurScopeGradient;
                           default:
-                            return 'Header Only';
+                            return context.l10n.blurScopeHeaderOnly;
                         }
                       },
                       optionDescriptionTransformer: (val) {
                         switch (val) {
                           case 1:
-                            return 'Blurs the entire page background behind details.';
+                            return context.l10n.blurScopeFullScreenDesc;
                           case 2:
-                            return 'Blurs top banner and seamlessly dissolves into the artwork color below.';
+                            return context.l10n.blurScopeGradientDesc;
                           default:
-                            return 'Blurs only the top banner and fades smoothly into the page.';
+                            return context.l10n.blurScopeHeaderOnlyDesc;
                         }
                       },
                       onChanged: (val) {
@@ -224,10 +224,10 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       title: context.l10n.backdropSource,
                       value: settings.usePosterForBlur,
                       options: const [false, true],
-                      optionLabelTransformer: (val) => val ? 'Poster' : 'Cover',
+                      optionLabelTransformer: (val) => val ? context.l10n.backdropPoster : context.l10n.backdropCover,
                       optionDescriptionTransformer: (val) => val
-                          ? 'Uses the portrait poster cover for the blurred backdrop.'
-                          : 'Uses the landscape banner for a cinematic wide backdrop.',
+                          ? context.l10n.backdropPosterDesc
+                          : context.l10n.backdropCoverDesc,
                       onChanged: (val) {
                         settings.usePosterForBlur = val;
                       },
@@ -240,10 +240,10 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       value: settings.tintBlur,
                       options: const [false, true],
                       optionLabelTransformer: (val) =>
-                          val ? 'Tinted' : 'Natural',
+                          val ? context.l10n.blurTintTinted : context.l10n.natural,
                       optionDescriptionTransformer: (val) => val
-                          ? 'Blends your active theme accent color into the blur.'
-                          : 'Keeps the original, authentic colors of the artwork.',
+                          ? context.l10n.blurTintTintedDesc
+                          : context.l10n.blurTintNaturalDesc,
                       onChanged: (val) {
                         settings.tintBlur = val;
                       },

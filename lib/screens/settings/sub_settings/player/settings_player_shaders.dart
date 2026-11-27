@@ -36,7 +36,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
   final settings = Get.find<Settings>();
   final _isDownloading = false.obs;
   final _downloadProgress = 0.0.obs;
-  final _currentStatus = 'Connecting…'.obs;
+  final _currentStatus = Get.context!.l10n.connectingEllipsis.obs;
   final _shadersDownloaded = false.obs;
   final _enableShaders = false.obs;
   final _defaultColorProfile = 'natural'.obs;
@@ -44,12 +44,12 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
   Dio? _dio;
 
   static List<({String id, String title, String sub})> _modeDefs = [
-    (id: 'A', title: Get.context!.l10n.modeA, sub: 'Sharpen soft lines'),
-    (id: 'B', title: Get.context!.l10n.modeB, sub: 'Gentle, keeps grain'),
-    (id: 'C', title: Get.context!.l10n.modeC, sub: 'Denoise, upscale'),
-    (id: 'A+A', title: Get.context!.l10n.modeAA, sub: 'Sharper · heavier'),
-    (id: 'B+B', title: Get.context!.l10n.modeBB, sub: 'Gentle · heavier'),
-    (id: 'C+A', title: Get.context!.l10n.modeCA, sub: 'Clean, then sharpen'),
+    (id: 'A', title: Get.context!.l10n.modeA, sub: Get.context!.l10n.sharpenSoftLines),
+    (id: 'B', title: Get.context!.l10n.modeB, sub: Get.context!.l10n.gentleKeepsGrain),
+    (id: 'C', title: Get.context!.l10n.modeC, sub: Get.context!.l10n.denoiseUpscale),
+    (id: 'A+A', title: Get.context!.l10n.modeAA, sub: Get.context!.l10n.sharperHeavier),
+    (id: 'B+B', title: Get.context!.l10n.modeBB, sub: Get.context!.l10n.gentleHeavier),
+    (id: 'C+A', title: Get.context!.l10n.modeCA, sub: Get.context!.l10n.cleanThenSharpen),
   ];
 
   static List<({String key, String title, Color c1, Color c2, Color c3})>
@@ -162,11 +162,11 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
   Future<void> _downloadShaders() async {
     _isDownloading.value = true;
     _downloadProgress.value = 0.0;
-    _currentStatus.value = 'Connecting…';
+    _currentStatus.value = context.l10n.connectingEllipsis;
 
     try {
       await Future.delayed(const Duration(milliseconds: 200));
-      _currentStatus.value = 'Downloading shaders…';
+      _currentStatus.value = context.l10n.downloadingShaders;
       _downloadProgress.value = 0.10;
 
       final shadersPath = await PlayerShaders.getShaderBasePath();
@@ -188,7 +188,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
         },
       );
 
-      _currentStatus.value = 'Extracting files…';
+      _currentStatus.value = context.l10n.extractingFiles;
       _downloadProgress.value = 0.75;
 
       final bytes = await tempFile.readAsBytes();
@@ -206,7 +206,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
         await tempFile.delete();
       }
 
-      _currentStatus.value = 'Finishing up…';
+      _currentStatus.value = context.l10n.finishingUp;
       _downloadProgress.value = 1.0;
       _isDownloading.value = false;
       _shadersDownloaded.value = true;
@@ -222,7 +222,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
     _dio?.close(force: true);
     _isDownloading.value = false;
     _downloadProgress.value = 0.0;
-    _currentStatus.value = 'Connecting…';
+    _currentStatus.value = context.l10n.connectingEllipsis;
   }
 
   String _extractModeFromShader(String shader) {
@@ -409,7 +409,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                   ),
                                   alignment: Alignment.center,
                                   child: AnymeXText.semiBold(
-                                    'Download now',
+                                    context.l10n.downloadNow,
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: colors.onPrimary,
@@ -579,7 +579,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AnymeXText.semiBold(
-                                        'Default · no shader',
+                                        context.l10n.defaultNoShader,
                                         style: TextStyle(
                                           fontSize: 15,
                                           color: isDefault
@@ -793,7 +793,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                         _buildKeybindingItem('CTRL + 5', 'Anime4K: Mode B+B'),
                         _buildKeybindingItem('CTRL + 6', 'Anime4K: Mode C+A'),
                         _buildKeybindingItem(
-                            'CTRL + 0', 'Reset (Clear Shaders)'),
+                            'CTRL + 0', context.l10n.resetClearShaders),
                       ],
                     ),
                   ],

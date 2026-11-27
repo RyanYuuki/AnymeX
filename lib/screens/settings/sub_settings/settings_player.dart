@@ -56,18 +56,18 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   }
 
   void _showDefaultOrientationDialog() {
-    const orientations = {
-      'landscape': 'Auto (Landscape)',
-      'auto_full': 'Auto (Full)',
-      'landscape_left': 'Landscape Left',
-      'landscape_right': 'Landscape Right',
-      'portrait': 'Portrait',
+    final orientations = {
+      'landscape': context.l10n.orientationAutoLandscape,
+      'auto_full': context.l10n.orientationAutoFull,
+      'landscape_left': context.l10n.orientationLandscapeLeft,
+      'landscape_right': context.l10n.orientationLandscapeRight,
+      'portrait': context.l10n.orientationPortrait,
     };
     showSelectionDialog<String>(
       title: context.l10n.defaultOrientation,
       items: orientations.keys.toList(),
       selectedItem: settings.defaultOrientation.obs,
-      getTitle: (value) => orientations[value] ?? 'Auto (Landscape)',
+      getTitle: (value) => orientations[value] ?? context.l10n.orientationAutoLandscape,
       onItemSelected: (value) {
         settings.defaultOrientation = value;
         setState(() {});
@@ -208,14 +208,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       icon: Icons.screen_rotation_rounded,
                       onTap: _showDefaultOrientationDialog,
                       title: context.l10n.defaultOrientation,
-                      subtitle: const {
-                            'landscape': 'Auto (Landscape)',
-                            'auto_full': 'Auto (Full)',
-                            'landscape_left': 'Landscape Left',
-                            'landscape_right': 'Landscape Right',
-                            'portrait': 'Portrait',
+                      subtitle: {
+                            'landscape': context.l10n.orientationAutoLandscape,
+                            'auto_full': context.l10n.orientationAutoFull,
+                            'landscape_left': context.l10n.orientationLandscapeLeft,
+                            'landscape_right': context.l10n.orientationLandscapeRight,
+                            'portrait': context.l10n.orientationPortrait,
                           }[settings.defaultOrientation] ??
-                          'Auto (Landscape)',
+                          context.l10n.orientationAutoLandscape,
                     ),
                     AnymeXTile(
                       icon: Icons.speed_rounded,
@@ -267,8 +267,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       icon: Icons.auto_awesome_rounded,
                       title: context.l10n.anime4kShaders,
                       subtitle: shadersOn
-                          ? 'Enabled (${settings.selectedProfile})'
-                          : 'Upscaling shaders & keybindings',
+                          ? context.l10n.enabledProfile(settings.selectedProfile)
+                          : context.l10n.upscalingShadersKeybindings,
                       onTap: () => _openSubPage(const SettingsPlayerShaders()),
                     ),
                     AnymeXTile(

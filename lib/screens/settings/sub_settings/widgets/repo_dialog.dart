@@ -57,7 +57,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
 
   String? _validateUrl(String text) {
     if (text.trim().isEmpty) {
-      return 'Please enter at least one GitHub repository URL';
+      return context.l10n.enterAtLeastOneGithubRepoUrl;
     }
     return null;
   }
@@ -93,7 +93,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
         }
       } catch (e) {
         setState(() {
-          _errorMessage = 'Failed to add repositories: $e';
+          _errorMessage = context.l10n.failedToAddRepositories(e.toString());
           _isLoading = false;
         });
       }

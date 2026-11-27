@@ -321,7 +321,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             .onRuntimeBridgeInitialization(force: true);
         if (mounted) {
           successSnackBar(
-              'Rollback to ${release.tagName} successful. Restart app to apply.');
+              context.l10n.rollbackSuccessfulRestart(release.tagName));
         }
       } else {
         if (mounted) {
@@ -375,11 +375,11 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           AnymeXTile(
                             icon: Icons.cloud_download_rounded,
                             title: hasInstalled
-                                ? 'Update Plugin'
-                                : 'Download the Plugin',
+                                ? context.l10n.updatePlugin
+                                : context.l10n.downloadThePlugin,
                             subtitle: hasInstalled
-                                ? 'Check and install the latest plugin update from Github'
-                                : 'Automatically download and install the latest plugin version',
+                                ? context.l10n.checkInstallLatestPluginUpdate
+                                : context.l10n.autoDownloadInstallLatestPlugin,
                             onTap: hasInstalled
                                 ? (_isCheckingUpdate
                                     ? null
@@ -399,11 +399,11 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           AnymeXTile(
                             icon: Icons.install_mobile_rounded,
                             title: Platform.isAndroid
-                                ? 'Load Plugin APK from Storage'
-                                : 'Load Plugin JAR from Storage',
+                                ? context.l10n.loadPluginApkFromStorage
+                                : context.l10n.loadPluginJarFromStorage,
                             subtitle: Platform.isAndroid
-                                ? 'Select a runtime APK from local storage to manually install'
-                                : 'Select a runtime JAR from local storage to manually install',
+                                ? context.l10n.selectRuntimeApkFromStorage
+                                : context.l10n.selectRuntimeJarFromStorage,
                             onTap:
                                 _isSyncingLocalApk ? null : _syncLocalApk,
                             trailing: _isSyncingLocalApk
@@ -421,9 +421,9 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                               CrashDetector.isBridgeBlocked.value)
                             AnymeXTile(
                               icon: Icons.shield_outlined,
-                              title: 'Enable & Retry Runtime Host',
+                              title: context.l10n.enableRetryRuntimeHost,
                               subtitle:
-                                  'Auto-load was stopped after a crash on previous launch',
+                                  context.l10n.autoLoadStoppedAfterCrash,
                               onTap: () =>
                                   CrashDetector.restoreAndRetryRuntimeHost(),
                             ),
@@ -493,32 +493,32 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   : colors.onErrorContainer;
 
       final statusTitle = isBusy
-          ? 'Downloading Plugin...'
+          ? context.l10n.downloadingPluginEllipsis
           : hasError
-              ? 'Failed to Load Bridge'
+              ? context.l10n.failedToLoadBridge
               : isOperational
                   ? (_isLoadedFromStorage.value
-                      ? 'Loaded from Storage'
-                      : 'Plugin Installed')
+                      ? context.l10n.loadedFromStorage
+                      : context.l10n.pluginInstalled)
                   : _needsRestart
-                      ? 'Restart Required'
+                      ? context.l10n.restartRequired
                       : hasInstalledFiles
-                          ? 'Plugin Not Ready'
-                          : 'Plugin Not Installed';
+                          ? context.l10n.pluginNotReady
+                          : context.l10n.pluginNotInstalled;
 
       final statusSubtitle = isBusy
           ? status
           : hasError
-              ? 'Extension bridge encountered an error'
+              ? context.l10n.extensionBridgeError
               : isOperational
                   ? (_isLoadedFromStorage.value
-                      ? 'Using local storage APK'
-                      : 'Aniyomi & Cloudstream ready')
+                      ? context.l10n.usingLocalStorageApk
+                      : context.l10n.aniyomiCloudstreamReady)
                   : _needsRestart
-                      ? 'Restart the app to apply plugin changes'
+                      ? context.l10n.restartAppToApplyPluginChanges
                       : hasInstalledFiles
-                          ? 'Bridge is not running. Please restart or rollback'
-                          : 'Install runtime plugin to unlock Aniyomi & Cloudstream';
+                          ? context.l10n.bridgeNotRunningRestartRollback
+                          : context.l10n.installRuntimePluginUnlock;
 
       return Container(
         width: double.infinity,
@@ -643,7 +643,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                 const SizedBox(height: 8),
                 _buildMetaRow(
                     colors,
-                    'Release',
+                    context.l10n.releaseLabel,
                     _installedReleaseTitle.isNotEmpty
                         ? _installedReleaseTitle
                         : 'Unknown'),

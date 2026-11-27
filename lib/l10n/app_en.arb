@@ -5530,5 +5530,473 @@
       }
     }
   },
-  "depthRotation3d": "3D rotation with depth perspective"
+  "depthRotation3d": "3D rotation with depth perspective",
+  "connectedAs": "Connected as {username}",
+  "@connectedAs": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "notConnected": "Not connected",
+  "notInstalled": "Not Installed",
+  "addonRunning": "Running",
+  "addonStopped": "Stopped",
+  "preparingEllipsis": "Preparing...",
+  "defaultInternalStorage": "Default (Internal Storage)",
+  "reposAddedCount": "{count, plural, =1{1 repo added} other{{count} repos added}}",
+  "@reposAddedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "runtimeHostDisabledCrashDetected": "Runtime Host Disabled (Crash Detected)",
+  "runtimeHostCrashDesc": "The extension runtime host crashed on the previous launch and was stopped to protect the app.",
+  "enableAndRetry": "Enable & Retry",
+  "addingEllipsis": "Adding...",
+  "defaultLinotte": "Default (Linotte)",
+  "theQuickBrownFox": "The Quick Brown Fox",
+  "fontPreviewParagraph": "Jumped over the lazy dog. AnymeX gives you rich, adaptive typography with system-wide live text scaling and crisp rendering.",
+  "defaultAppDocuments": "Default (App Documents)",
+  "noLogsMatchQuery": "No logs match \"{query}\"",
+  "@noLogsMatchQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noLogsRecordedYet": "No logs recorded yet",
+  "searchLogsHint": "Search logs...",
+  "cloudflareDefault": "Cloudflare (Default)",
+  "testingEllipsis": "Testing...",
+  "tapToTestDnsLatency": "Tap to test DNS latency",
+  "hostIsRequired": "Host is required",
+  "connectingEllipsis": "Connecting...",
+  "tapToTestProxyLatency": "Tap to test proxy latency",
+  "noRecordsReturned": "No records returned",
+  "intensityLow": "Low",
+  "intensityMedium": "Medium",
+  "intensityHigh": "High",
+  "invalidHexColorCode": "Invalid Hex color code",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "navLayoutLegacy": "Legacy",
+  "navLayoutModern": "Modern",
+  "navLayoutLegacyDesc": "Simple direct tabs for Anime, Manga, and Novels.",
+  "navLayoutModernDesc": "Floating category switcher with a dedicated History tab.",
+  "tileStyleClassic": "Classic",
+  "tileStyleM3Expressive": "M3 Expressive",
+  "tileStyleM3ExpressiveDesc": "Material 3 Expressive rounded tiles with circular icons, bold type, and connected corners",
+  "enterAtLeastOneGithubRepoUrl": "Please enter at least one GitHub repository URL",
+  "failedToAddRepositories": "Failed to add repositories: {error}",
+  "@failedToAddRepositories": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fileNotValidUtf8": "{fileName}: not valid UTF-8.",
+  "@fileNotValidUtf8": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plusMoreCount": "(+{count} more)",
+  "@plusMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noNewThemesFound": "No new themes found.",
+  "themesAddedUpdated": "✓  Added {added}, updated {updated} theme(s)",
+  "@themesAddedUpdated": {
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "updated": {
+        "type": "int"
+      }
+    }
+  },
+  "noThemesWereImported": "✗  No themes were imported.",
+  "urlIsEmptyGang": "URL is empty gang.",
+  "failedToPickImage": "Failed to pick image: {error}",
+  "@failedToPickImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "percentMatch": "{similarity}% Match",
+  "@percentMatch": {
+    "placeholders": {
+      "similarity": {
+        "type": "String"
+      }
+    }
+  },
+  "importedThemesCount": "{count, plural, =1{1 imported theme} other{{count} imported themes}}",
+  "@importedThemesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "gestureAreasSummary": "Brightness {brightness}% • Overlay {overlay}% • Volume {volume}%",
+  "@gestureAreasSummary": {
+    "placeholders": {
+      "brightness": {
+        "type": "int"
+      },
+      "overlay": {
+        "type": "int"
+      },
+      "volume": {
+        "type": "int"
+      }
+    }
+  },
+  "coreVisualDisabledExperimental": "Core and Visual settings are disabled. Enable Experimental to use them.",
+  "sharpenSoftLines": "Sharpen soft lines",
+  "gentleKeepsGrain": "Gentle, keeps grain",
+  "denoiseUpscale": "Denoise, upscale",
+  "sharperHeavier": "Sharper · heavier",
+  "gentleHeavier": "Gentle · heavier",
+  "cleanThenSharpen": "Clean, then sharpen",
+  "downloadingShaders": "Downloading shaders…",
+  "extractingFiles": "Extracting files…",
+  "finishingUp": "Finishing up…",
+  "downloadNow": "Download now",
+  "defaultNoShader": "Default · no shader",
+  "resetClearShaders": "Reset (Clear Shaders)",
+  "noneDisabled": "None (Disabled)",
+  "selectSubtitleColor": "Select Subtitle Color",
+  "selectSubtitleOutlineColor": "Select Subtitle Outline Color",
+  "selectSubtitleBackgroundColor": "Select Subtitle Background Color",
+  "readingLayoutContinuous": "Continuous",
+  "directionBottomUp": "Bottom-Up",
+  "directionTopDown": "Top-Down",
+  "dualPageAuto": "Auto (Laptop/Tab)",
+  "dualPageForce": "Force (Dual)",
+  "dualPageStandard": "Standard (Single)",
+  "filterQualityNoneNearest": "None (Nearest)",
+  "filterQualityLanczos": "Lanczos Pre-scale (Best)",
+  "novelThemeSepia": "Sepia",
+  "novelPreviewLine1": "The wind swept quietly across the lantern-lit courtyard as the final bell echoed through the valley.",
+  "novelPreviewLine2": "He adjusted his coat and stepped forward into the mist.",
+  "orientationAutoLandscape": "Auto (Landscape)",
+  "orientationAutoFull": "Auto (Full)",
+  "orientationLandscapeLeft": "Landscape Left",
+  "orientationLandscapeRight": "Landscape Right",
+  "orientationPortrait": "Portrait",
+  "enabledProfile": "Enabled ({profile})",
+  "@enabledProfile": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    }
+  },
+  "upscalingShadersKeybindings": "Upscaling shaders & keybindings",
+  "enabledTtsSpeed": "Enabled • {speed}x speed",
+  "@enabledTtsSpeed": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "rollbackSuccessfulRestart": "Rollback to {tag} successful. Restart app to apply.",
+  "@rollbackSuccessfulRestart": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "updatePlugin": "Update Plugin",
+  "downloadThePlugin": "Download the Plugin",
+  "checkInstallLatestPluginUpdate": "Check and install the latest plugin update from Github",
+  "autoDownloadInstallLatestPlugin": "Automatically download and install the latest plugin version",
+  "loadPluginApkFromStorage": "Load Plugin APK from Storage",
+  "loadPluginJarFromStorage": "Load Plugin JAR from Storage",
+  "selectRuntimeApkFromStorage": "Select a runtime APK from local storage to manually install",
+  "selectRuntimeJarFromStorage": "Select a runtime JAR from local storage to manually install",
+  "enableRetryRuntimeHost": "Enable & Retry Runtime Host",
+  "autoLoadStoppedAfterCrash": "Auto-load was stopped after a crash on previous launch",
+  "downloadingPluginEllipsis": "Downloading Plugin...",
+  "failedToLoadBridge": "Failed to Load Bridge",
+  "loadedFromStorage": "Loaded from Storage",
+  "pluginInstalled": "Plugin Installed",
+  "restartRequired": "Restart Required",
+  "pluginNotReady": "Plugin Not Ready",
+  "extensionBridgeError": "Extension bridge encountered an error",
+  "usingLocalStorageApk": "Using local storage APK",
+  "aniyomiCloudstreamReady": "Aniyomi & Cloudstream ready",
+  "restartAppToApplyPluginChanges": "Restart the app to apply plugin changes",
+  "bridgeNotRunningRestartRollback": "Bridge is not running. Please restart or rollback",
+  "installRuntimePluginUnlock": "Install runtime plugin to unlock Aniyomi & Cloudstream",
+  "releaseLabel": "Release",
+  "romajiExample": "Romaji (Shingeki no Kyojin)",
+  "englishExample": "English (Attack on Titan)",
+  "nativeExample": "Native (進撃の巨人)",
+  "romajiWesternExample": "Romaji, Western Order (Killua Zoldyck)",
+  "romajiStaffExample": "Romaji (Zoldyck Killua)",
+  "nativeStaffExample": "Native (キルア=ゾルディック)",
+  "scoreFormat100": "100 Point (55/100)",
+  "scoreFormat10Decimal": "10 Point Decimal (5.5/10)",
+  "scoreFormat10": "10 Point (5/10)",
+  "scoreFormat5": "5 Star (3/5)",
+  "scoreFormat3": "3 Point Smiley :)",
+  "lastUpdated": "Last Updated",
+  "hoursCount": "{count, plural, =1{1 Hour} other{{count} Hours}}",
+  "@hoursCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysCount": "{count, plural, =1{1 Day} other{{count} Days}}",
+  "@daysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksCount": "{count, plural, =1{1 Week} other{{count} Weeks}}",
+  "@weeksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesCount": "{count, plural, =1{1 Minute} other{{count} Minutes}}",
+  "@minutesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alwaysLabel": "Always",
+  "unableToLoadAnilistSettings": "Unable to load AniList settings.",
+  "failedToSave": "Failed to save.",
+  "noListsAdded": "No lists added",
+  "collapseEditor": "Collapse editor",
+  "expandEditor": "Expand editor",
+  "collapsePreview": "Collapse preview",
+  "expandPreview": "Expand preview",
+  "mergeWithExistingDeviceData": "Merge with existing device data",
+  "overwriteExistingDeviceData": "Overwrite existing device data",
+  "backupLibrarySummary": "{total} titles • {anime} anime · {manga} manga · {novel} novel",
+  "@backupLibrarySummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "anime": {
+        "type": "int"
+      },
+      "manga": {
+        "type": "int"
+      },
+      "novel": {
+        "type": "int"
+      }
+    }
+  },
+  "episodeProgressReadingLogsStats": "Episode progress, reading logs, and activity stats",
+  "noProgressOrActivityDataInBackup": "No progress or activity data in backup",
+  "backupExtensionsSummary": "{configs} configurations • {packages} packages",
+  "@backupExtensionsSummary": {
+    "placeholders": {
+      "configs": {
+        "type": "int"
+      },
+      "packages": {
+        "type": "int"
+      }
+    }
+  },
+  "backupSettingsSummary": "Themes, playback, reader",
+  "authTokensLabel": "Auth tokens",
+  "variablesLabel": "Variables: {vars}",
+  "@variablesLabel": {
+    "placeholders": {
+      "vars": {
+        "type": "String"
+      }
+    }
+  },
+  "discordDesktop": "Discord Desktop",
+  "discordUser": "Discord User",
+  "connectDiscord": "Connect Discord",
+  "statusConnected": "Connected",
+  "statusDisconnected": "Disconnected",
+  "richPresenceActive": "Rich Presence Active",
+  "richPresenceDisabled": "Rich Presence Disabled",
+  "enterUserId": "Enter User ID",
+  "enterTheUserId": "Enter the user ID",
+  "typeUsernameToSearch": "Type a username to search",
+  "commentDeletedReportResolved": "Comment deleted and report resolved",
+  "reportResolvedSuccess": "Report {resolution} successfully",
+  "@reportResolvedSuccess": {
+    "placeholders": {
+      "resolution": {
+        "type": "String"
+      }
+    }
+  },
+  "usersOfTotalCount": "{shown} of {total} users",
+  "@usersOfTotalCount": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "statusBanned": "Banned",
+  "statusMuted": "Muted",
+  "statusShadowBanned": "Shadow Banned",
+  "statusWarned": "Warned",
+  "userIdLabel": "User ID",
+  "joinedLabel": "Joined",
+  "bannedUntilLabel": "Banned Until",
+  "mutedUntilLabel": "Muted Until",
+  "userNumber": "User #{id}",
+  "@userNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "blurStyleGaussian": "Gaussian",
+  "blurStyleFluidMeshDesc": "BitChord-style fluid ambient mesh with organic color blooming.",
+  "blurStyleGaussianDesc": "Standard smooth frosted blur.",
+  "bakedBlur": "Baked Blur",
+  "liveBlur": "Live Blur",
+  "fluidMeshOffThreadDesc": "Fluid Mesh is computed off-thread for smooth performance.",
+  "liveBlurUnavailableFluidMesh": "Live blur is unavailable for Fluid Mesh.",
+  "gaussianOffThreadDesc": "Smooth off-thread Gaussian blur with zero stutter.",
+  "liveBlurLagDesc": "Live real-time blur, but may lag on some phones.",
+  "blurScopeFullScreen": "Full Screen",
+  "blurScopeGradient": "Gradient",
+  "blurScopeHeaderOnly": "Header Only",
+  "blurScopeFullScreenDesc": "Blurs the entire page background behind details.",
+  "blurScopeGradientDesc": "Blurs top banner and seamlessly dissolves into the artwork color below.",
+  "blurScopeHeaderOnlyDesc": "Blurs only the top banner and fades smoothly into the page.",
+  "backdropPoster": "Poster",
+  "backdropCover": "Cover",
+  "backdropPosterDesc": "Uses the portrait poster cover for the blurred backdrop.",
+  "backdropCoverDesc": "Uses the landscape banner for a cinematic wide backdrop.",
+  "blurTintTinted": "Tinted",
+  "blurTintTintedDesc": "Blends your active theme accent color into the blur.",
+  "blurTintNaturalDesc": "Keeps the original, authentic colors of the artwork.",
+  "linesCount": "{count, plural, =1{1 Line} other{{count} Lines}}",
+  "@linesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "leadDeveloper": "Lead Developer",
+  "collaboratorDiscordAdmin": "Collaborator & Discord Admin",
+  "helpedWithUiDesigns": "Helped out with some UI designs",
+  "roleTester": "Tester",
+  "roleContributor": "Contributor",
+  "failedToLoadContributors": "Failed to load contributors",
+  "commitsCount": "{count, plural, =1{1 commit} other{{count} commits}}",
+  "@commitsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "prsCount": "{count, plural, =1{1 PR} other{{count} PRs}}",
+  "@prsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "communityContributors": "Community Contributors",
+  "unknownUser": "Unknown User",
+  "androidRuntimeHostApk": "Android Runtime Host (APK)",
+  "desktopRuntimeJar": "Desktop Runtime (JAR)",
+  "desktopRuntimeHostJar": "Desktop Runtime Host (JAR)",
+  "customListsCount": "{count, plural, =1{1 custom list} other{{count} custom lists}}",
+  "@customListsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reposAndSourceSettingsCount": "{count} repositories and source settings",
+  "@reposAndSourceSettingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "installedFilesCount": "{count} installed files",
+  "@installedFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bundledInBackup": "Bundled in backup",
+  "bundledRuntimeHost": "Bundled runtime host",
+  "unknownDate": "Unknown Date",
+  "actionDeselect": "Deselect",
+  "noDownloadedExtensionPackages": "No downloaded extension packages found",
+  "checkingInstalledRuntime": "Checking installed runtime...",
+  "notInstalledOnThisDevice": "Not installed on this device",
+  "oneMonth": "1 Month",
+  "permanentLabel": "Permanent",
+  "actionIsPermanentDesc": "Action is Permanent (lasts until manually removed)",
+  "expiresInOnAt": "Expires in {duration} on {date} at {time}",
+  "@expiresInOnAt": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "historyStyleRegular": "Regular",
+  "historyStyleRegularDesc": "Classic card layout showing media title, progress, and date details.",
+  "historyStyleFrostedGlass": "Frosted Glass",
+  "historyStyleFrostedGlassDesc": "Frosted glass container overlay with soft background color elements.",
+  "historyStyleBootifulDesc": "An immersive, premium poster-first card layout."
 }

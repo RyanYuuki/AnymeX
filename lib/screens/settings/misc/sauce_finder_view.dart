@@ -46,7 +46,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to pick image: ${e.toString()}';
+        _errorMessage = context.l10n.failedToPickImage(e.toString());
       });
     }
   }
@@ -671,7 +671,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                     ),
                     const SizedBox(width: 12),
                     _buildInfoTag(
-                      '$similarity% Match',
+                      context.l10n.percentMatch(similarity.toString()),
                       Icons.analytics_rounded,
                       colorScheme.secondaryContainer,
                       colorScheme.onSecondaryContainer,

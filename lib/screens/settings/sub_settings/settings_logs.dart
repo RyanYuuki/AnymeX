@@ -199,7 +199,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
                   icon: HugeIcons.strokeRoundedFolder01,
                   title: context.l10n.logDirectory,
                   subtitle: settings.customLogDirectory.value.isEmpty
-                      ? 'Default (App Documents)'
+                      ? context.l10n.defaultAppDocuments
                       : settings.customLogDirectory.value,
                   onTap: () async {
                     String? result =
@@ -562,8 +562,8 @@ class _SettingsLogsState extends State<SettingsLogs> {
             const SizedBox(height: 12),
             AnymeXText(
               _searchQuery.isNotEmpty
-                  ? 'No logs match "$_searchQuery"'
-                  : 'No logs recorded yet',
+                  ? context.l10n.noLogsMatchQuery(_searchQuery)
+                  : context.l10n.noLogsRecordedYet,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -584,7 +584,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
       headerTitle: context.l10n.logs,
       headerEnableSearch: true,
       headerSearchController: _searchController,
-      headerSearchHint: 'Search logs...',
+      headerSearchHint: context.l10n.searchLogsHint,
       onHeaderSearchChanged: (val) => setState(() => _searchQuery = val),
       onHeaderSearchClear: () => setState(() => _searchQuery = ''),
       headerBottom: _buildFilterChipsRow(),

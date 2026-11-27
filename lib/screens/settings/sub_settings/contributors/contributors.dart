@@ -87,6 +87,15 @@ final Map<String, ContributorModel> _curatedContributors = {
   ),
 };
 
+String _localizedRole(BuildContext context, String role) => switch (role) {
+      'Lead Developer' => context.l10n.leadDeveloper,
+      'Collaborator & Discord Admin' => context.l10n.collaboratorDiscordAdmin,
+      'Helped out with some UI designs' => context.l10n.helpedWithUiDesigns,
+      'Tester' => context.l10n.roleTester,
+      'Contributor' => context.l10n.roleContributor,
+      _ => role,
+    };
+
 Future<void> _openExternalLink(String url) async {
   final uri = Uri.parse(url);
   if (await canLaunchUrl(uri)) {
@@ -367,7 +376,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
       communityContributors.assignAll(communityList);
       staff.assignAll(staffList);
     } catch (error) {
-      errorMessage.value = 'Failed to load contributors';
+      errorMessage.value = Get.context!.l10n.failedToLoadContributors;
       debugPrint('Contributors fetch error: $error');
     } finally {
       isLoading.value = false;
@@ -596,7 +605,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        contributor.roleTitle,
+                        _localizedRole(context, contributor.roleTitle),
                         style: TextStyle(
                           fontSize: 11,
                           height: 1.4,
@@ -618,13 +627,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
                           child: AnymeXText(
                             [
                               if (contributor.commitCount > 0)
-                                contributor.commitCount == 1
-                                    ? '1 commit'
-                                    : '${contributor.commitCount} commits',
+                                context.l10n.commitsCount(contributor.commitCount),
                               if (contributor.prCount > 0)
-                                contributor.prCount == 1
-                                    ? '1 PR'
-                                    : '${contributor.prCount} PRs',
+                                context.l10n.prsCount(contributor.prCount),
                             ].join(' • '),
                             style: TextStyle(
                               fontSize: 10,
@@ -761,9 +766,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: AnymeXText(
-                        contributor.prCount == 1
-                            ? '1 PR'
-                            : '${contributor.prCount} PRs',
+                        context.l10n.prsCount(contributor.prCount),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -782,7 +785,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: AnymeXText(
-                        contributor.roleTitle,
+                        _localizedRole(context, contributor.roleTitle),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -930,7 +933,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   title: context.l10n.coreTeam,
                   contributors: coreTeam,
                 ),
-                _buildSectionHeader(context, 'Community Contributors'),
+                _buildSectionHeader(context, context.l10n.communityContributors),
                 _buildContributorsList(context, communityContributors),
                 _buildSectionHeader(context, 'Staff'),
                 _buildStaffSection(context),

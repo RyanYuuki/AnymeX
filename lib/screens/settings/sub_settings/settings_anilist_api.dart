@@ -18,37 +18,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
-const _titleLanguageLabels = <String, String>{
-  'ROMAJI': 'Romaji (Shingeki no Kyojin)',
-  'ENGLISH': 'English (Attack on Titan)',
-  'NATIVE': 'Native (進撃の巨人)',
-};
-const _staffNameLanguageLabels = <String, String>{
-  'ROMAJI_WESTERN': 'Romaji, Western Order (Killua Zoldyck)',
-  'ROMAJI': 'Romaji (Zoldyck Killua)',
-  'NATIVE': 'Native (キルア=ゾルディック)',
-};
-const _scoreFormatLabels = <String, String>{
-  'POINT_100': '100 Point (55/100)',
-  'POINT_10_DECIMAL': '10 Point Decimal (5.5/10)',
-  'POINT_10': '10 Point (5/10)',
-  'POINT_5': '5 Star (3/5)',
-  'POINT_3': '3 Point Smiley :)',
-};
-const _rowOrderLabels = <String, String>{
-  'score': 'Score', 'title': 'Title',
-  'updatedAt': 'Last Updated', 'id': 'Last Added',
-};
-const _activityMergeLabels = <int, String>{
-  360: '6 Hours', 720: '12 Hours', 1440: '1 Day', 2880: '2 Days',
-  4320: '3 Days', 10080: '1 Week', 20160: '2 Weeks', 29160: 'Always',
-};
-
-final _fallbackTitleLanguageValues = _titleLanguageLabels.keys.toList();
-final _fallbackStaffNameLanguageValues = _staffNameLanguageLabels.keys.toList();
-final _fallbackScoreFormatValues = _scoreFormatLabels.keys.toList();
-final _rowOrderValues = _rowOrderLabels.keys.toList();
-final _activityMergeTimeValues = _activityMergeLabels.keys.toList();
+const _fallbackTitleLanguageValues = ['ROMAJI', 'ENGLISH', 'NATIVE'];
+const _fallbackStaffNameLanguageValues = ['ROMAJI_WESTERN', 'ROMAJI', 'NATIVE'];
+const _fallbackScoreFormatValues = [
+  'POINT_100',
+  'POINT_10_DECIMAL',
+  'POINT_10',
+  'POINT_5',
+  'POINT_3',
+];
+const _rowOrderValues = ['score', 'title', 'updatedAt', 'id'];
+const _activityMergeTimeValues = [360, 720, 1440, 2880, 4320, 10080, 20160, 29160];
 
 String _pretty(String raw) => raw
     .split('_')
@@ -56,11 +36,63 @@ String _pretty(String raw) => raw
     .map((p) => p[0].toUpperCase() + p.substring(1).toLowerCase())
     .join(' ');
 
-String _activityMergeLabel(int m) => _activityMergeLabels[m] ?? '$m minutes';
-String _titleLanguageLabel(String v) => _titleLanguageLabels[v] ?? _pretty(v);
-String _staffNameLanguageLabel(String v) => _staffNameLanguageLabels[v] ?? _pretty(v);
-String _scoreFormatLabel(String v) => _scoreFormatLabels[v] ?? _pretty(v);
-String _rowOrderLabel(String v) => _rowOrderLabels[v] ?? _pretty(v);
+String _activityMergeLabel(int m) {
+  final l = Get.context!.l10n;
+  return switch (m) {
+    360 => l.hoursCount(6),
+    720 => l.hoursCount(12),
+    1440 => l.daysCount(1),
+    2880 => l.daysCount(2),
+    4320 => l.daysCount(3),
+    10080 => l.weeksCount(1),
+    20160 => l.weeksCount(2),
+    29160 => l.alwaysLabel,
+    _ => '$m minutes',
+  };
+}
+
+String _titleLanguageLabel(String v) {
+  final l = Get.context!.l10n;
+  return switch (v) {
+    'ROMAJI' => l.romajiExample,
+    'ENGLISH' => l.englishExample,
+    'NATIVE' => l.nativeExample,
+    _ => _pretty(v),
+  };
+}
+
+String _staffNameLanguageLabel(String v) {
+  final l = Get.context!.l10n;
+  return switch (v) {
+    'ROMAJI_WESTERN' => l.romajiWesternExample,
+    'ROMAJI' => l.romajiStaffExample,
+    'NATIVE' => l.nativeStaffExample,
+    _ => _pretty(v),
+  };
+}
+
+String _scoreFormatLabel(String v) {
+  final l = Get.context!.l10n;
+  return switch (v) {
+    'POINT_100' => l.scoreFormat100,
+    'POINT_10_DECIMAL' => l.scoreFormat10Decimal,
+    'POINT_10' => l.scoreFormat10,
+    'POINT_5' => l.scoreFormat5,
+    'POINT_3' => l.scoreFormat3,
+    _ => _pretty(v),
+  };
+}
+
+String _rowOrderLabel(String v) {
+  final l = Get.context!.l10n;
+  return switch (v) {
+    'score' => 'Score',
+    'title' => 'Title',
+    'updatedAt' => l.lastUpdated,
+    'id' => l.lastAdded,
+    _ => _pretty(v),
+  };
+}
 
 const _animeBaseSectionOrder = ['Watching', 'Planning', 'Completed', 'Dropped', 'Paused', 'Rewatching'];
 const _mangaBaseSectionOrder = ['Reading', 'Planning', 'Completed', 'Dropped', 'Paused', 'Rereading'];
@@ -237,7 +269,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       final fetched = await _auth.fetchUserSettings();
       final metadata = await _auth.fetchSettingsMetadata();
       if (fetched == null && cached == null) {
-        setState(() { _error = 'Unable to load AniList settings.'; _loading = false; });
+        setState(() { _error = context.l10n.unableToLoadAnilistSettings; _loading = false; });
         return;
       }
       if (fetched != null) {
@@ -325,7 +357,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
         _saving = false;
         _error = e.toString().replaceFirst('Exception: ', '');
       }
-      snackBar(_error ?? 'Failed to save.', snackPosition: SnackPosition.BOTTOM);
+      snackBar(_error ?? context.l10n.failedToSave, snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -670,10 +702,10 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
         KvHelper.get<int>('anilist_polling_interval_minutes', defaultVal: 30);
 
     final intervalLabels = {
-      15: '15 Minutes',
-      30: '30 Minutes',
-      60: '1 Hour',
-      180: '3 Hours',
+      15: context.l10n.minutesCount(15),
+      30: context.l10n.minutesCount(30),
+      60: context.l10n.hoursCount(1),
+      180: context.l10n.hoursCount(3),
     };
 
     return AnymeXSectionBuilder(
@@ -820,7 +852,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.list_alt_rounded,
             title: context.l10n.animeCustomLists,
             subtitle: s.animeCustomLists.isEmpty
-                ? 'No lists added'
+                ? context.l10n.noListsAdded
                 : s.animeCustomLists.join(', '),
             onTap: () => _editCustomLists(
                 title: context.l10n.animeCustomLists,
@@ -830,7 +862,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.menu_book_rounded,
             title: context.l10n.mangaCustomLists,
             subtitle: s.mangaCustomLists.isEmpty
-                ? 'No lists added'
+                ? context.l10n.noListsAdded
                 : s.mangaCustomLists.join(', '),
             onTap: () => _editCustomLists(
                 title: context.l10n.mangaCustomLists,
@@ -840,7 +872,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.reorder_rounded,
             title: context.l10n.animeSectionOrder,
             subtitle:
-                'Drag to reorder · ${_normalizeSectionOrder(s.animeSectionOrder, animeSections).length} items',
+                context.l10n.dragToReorderItems(_normalizeSectionOrder(s.animeSectionOrder, animeSections).length.toString()),
             onTap: () => _editSectionOrder(
                 title: context.l10n.anime,
                 current: s.animeSectionOrder,
@@ -947,7 +979,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             ),
             if (!_aboutPreview)
               IconButton(
-                tooltip: _aboutEditorExpanded ? 'Collapse editor' : 'Expand editor',
+                tooltip: _aboutEditorExpanded ? context.l10n.collapseEditor : context.l10n.expandEditor,
                 onPressed: () => setState(() => _aboutEditorExpanded = !_aboutEditorExpanded),
                 icon: Icon(_aboutEditorExpanded ? Icons.unfold_less_rounded : Icons.unfold_more_rounded, size: 20),
                 visualDensity: VisualDensity.compact,
@@ -1002,7 +1034,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 Row(children: [
                   const Spacer(),
                   IconButton(
-                    tooltip: _aboutPreviewExpanded ? 'Collapse preview' : 'Expand preview',
+                    tooltip: _aboutPreviewExpanded ? context.l10n.collapsePreview : context.l10n.expandPreview,
                     onPressed: () => setState(() => _aboutPreviewExpanded = !_aboutPreviewExpanded),
                     icon: Icon(_aboutPreviewExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, size: 22),
                     visualDensity: VisualDensity.compact,
