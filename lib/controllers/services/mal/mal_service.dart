@@ -717,7 +717,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (result != null) {
         final code = Uri.parse(result).queryParameters['code'];
         if (code != null) {
-          Logger.i("Authorization code: $code");
           await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
           await _fetchAndStoreMalSessionId();
         }
@@ -746,7 +745,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       if (response.headers.containsKey('set-cookie')) {
         final cookies = response.headers['set-cookie']!;
-        Logger.i('Raw cookie header: $cookies');
 
         final patterns = [
           RegExp(r'MALHLOGSESSID=([^;]+)'),
@@ -760,9 +758,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             final sessionId = match.group(1);
             if (sessionId != null && sessionId.isNotEmpty) {
               AuthKeys.malSessionId.set(sessionId);
-              Logger.i('MAL session ID stored successfully: $sessionId');
-              final verify = AuthKeys.malSessionId.get<String?>();
-              Logger.i('Verification - stored session: $verify');
+              Logger.i('MAL session ID stored successfully');
               return;
             }
           }
@@ -784,9 +780,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
           final sessionId = match.group(1);
           if (sessionId != null && sessionId.isNotEmpty) {
             AuthKeys.malSessionId.set(sessionId);
-            Logger.i('MAL session ID stored from export page: $sessionId');
-            final verify = AuthKeys.malSessionId.get<String?>();
-            Logger.i('Verification - stored session: $verify');
+            Logger.i('MAL session ID stored from export page');
           }
         }
       }
@@ -812,7 +806,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
             final sessionId = match.group(1);
             if (sessionId != null && sessionId.isNotEmpty) {
               AuthKeys.malSessionId.set(sessionId);
-              Logger.i('MAL session ID created via export: $sessionId');
+              Logger.i('MAL session ID created via export');
             }
           }
         }
@@ -845,7 +839,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
         AuthKeys.malRefreshToken.set(refreshToken);
       }
 
-      Logger.i("MAL Access token: $token");
       await fetchUserInfo();
       Logger.i("Login Succesfull!");
     } else {
