@@ -283,10 +283,10 @@ class _UserStatsPageState extends State<UserStatsPage> {
       BuildContext context, int hrs, int mins, int units) {
     final timeReadCard = _buildSmallInfoCard(
       title: activeFilter.value == 'Anime'
-          ? 'TIME WATCHED'
+          ? context.l10n.timeWatchedUpper
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
-              ? 'TIME READ'
-              : 'TIME SPENT'),
+              ? context.l10n.timeReadUpper
+              : context.l10n.timeSpentUpper),
       value: hrs > 0 ? "${hrs}h ${mins}m" : "${mins}m",
       icon: IconlyLight.timeCircle,
     );
@@ -296,7 +296,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           ? 'Episodes'
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
               ? 'Chapters'
-              : 'Items Consumed'),
+              : context.l10n.itemsConsumed),
       value:
           units >= 1000 ? "${(units / 1000.0).toStringAsFixed(1)}k" : "$units",
       icon: IconlyLight.paper,
@@ -486,7 +486,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           buttonText: favorite.title,
           backgroundColor:
               context.colors.surfaceContainerLowest.withOpacity(0.2),
-          subText: 'FAVORITE • $timeStr spent',
+          subText: context.l10n.favoriteTimeSpent(timeStr),
           tagIcon: IconlyLight.bookmark,
           backgroundImage: favorite.poster ?? '',
           width: double.infinity,
@@ -735,7 +735,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                     }
 
                                     final tooltipText =
-                                        '${_dayName(date.weekday)}, ${date.day} ${_monthLabel(date.month)} | $minutes mins active';
+                                        context.l10n.dayMinutesActive(_dayName(date.weekday), date.day, _monthLabel(date.month), minutes);
 
                                     final isSelected = selectedDate.value
                                             ?.isAtSameMomentAs(dateStrip) ??

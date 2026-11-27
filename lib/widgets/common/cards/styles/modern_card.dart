@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
@@ -13,7 +15,7 @@ class ModernCardStyle implements MediaCardStyle {
   @override
   String get displayName => 'Modern';
   @override
-  String get description => 'Full cover card with dark gradient title overlay at the bottom.';
+  String get description => Get.context!.l10n.cardModernDesc;
 
   @override
   double getHeight(bool isDesktop) =>

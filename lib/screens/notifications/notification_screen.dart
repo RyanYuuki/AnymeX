@@ -584,7 +584,7 @@ class NotificationScreen extends GetView<NotificationController> {
       ('comment', 'Comments', Icons.chat_bubble_outline_rounded),
       ('mention', 'Mentions', Icons.alternate_email_rounded),
       ('vote', 'Votes', Icons.thumb_up_alt_outlined),
-      ('report', 'Reports', Icons.flag_outlined),
+      ('report', context.l10n.reportsLabel, Icons.flag_outlined),
       ('moderation', 'Moderation', Icons.shield_outlined),
       ('announcement', 'Announcements', Icons.campaign_outlined),
     ];
@@ -1265,17 +1265,17 @@ class _NotificationCard extends StatelessWidget {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
-    if (difference.inSeconds < 60) return 'Just now';
-    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
-    if (difference.inHours < 24) return '${difference.inHours}h ago';
-    if (difference.inDays < 7) return '${difference.inDays}d ago';
+    if (difference.inSeconds < 60) return Get.context!.l10n.justNowLabel;
+    if (difference.inMinutes < 60) return Get.context!.l10n.minutesAgoShort((difference.inMinutes).toString());
+    if (difference.inHours < 24) return Get.context!.l10n.hoursAgoShort((difference.inHours).toString());
+    if (difference.inDays < 7) return Get.context!.l10n.daysAgoShort((difference.inDays).toString());
     if (difference.inDays < 30) {
-      return '${(difference.inDays / 7).floor()}w ago';
+      return Get.context!.l10n.weeksAgoShort(((difference.inDays / 7).floor()).toString());
     }
     if (difference.inDays < 365) {
-      return '${(difference.inDays / 30).floor()}mo ago';
+      return Get.context!.l10n.monthsAgoShort(((difference.inDays / 30).floor()).toString());
     }
-    return '${(difference.inDays / 365).floor()}y ago';
+    return Get.context!.l10n.yearsAgoShort(((difference.inDays / 365).floor()).toString());
   }
 }
 

@@ -144,8 +144,8 @@ class SourceSelectorWidget extends StatelessWidget {
                         AnymeXText(
                           hasSource
                               ? (activeSource!.name?.toUpperCase() ??
-                                  'UNKNOWN SOURCE')
-                              : 'SELECT SOURCE',
+                                  context.l10n.unknownSourceUpper)
+                              : context.l10n.selectSourceUpper,
                           style: TextStyle(
                             fontSize: 14,
                             fontFamily: 'Linotte',
@@ -410,8 +410,8 @@ class _EmptySourceState extends StatelessWidget {
                 AnymeXText(
                   label ??
                       (isManga
-                          ? 'No Manga Sources Installed'
-                          : 'No Anime Sources Installed'),
+                          ? context.l10n.noMangaSourcesInstalled
+                          : context.l10n.noAnimeSourcesInstalled),
                   style: TextStyle(
                     fontSize: 13,
                     fontFamily: 'Linotte',
@@ -571,8 +571,8 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
               AnymeXText(
                 widget.label ??
                     (widget.isManga
-                        ? 'Select Manga Source'
-                        : 'Select Anime Source'),
+                        ? context.l10n.selectMangaSource
+                        : context.l10n.selectAnimeSource),
                 size: 16,
                 variant: TextVariant.bold,
               ),

@@ -121,7 +121,7 @@ class WatchiumService extends GetxController {
       final activeService = serviceHandler.activeOrLoggedInOnlineService;
 
       if (activeService == null || !activeService.isLoggedIn.value) {
-        error.value = 'You must be logged in to use Watch Together';
+        error.value = Get.context!.l10n.mustBeLoggedInWatchTogether;
         Logger.w('Login failed: user not logged in', 'WATCHIUM');
         return false;
       }
@@ -151,7 +151,7 @@ class WatchiumService extends GetxController {
       );
 
       if (response.statusCode != 200) {
-        error.value = 'Login failed: ${response.statusCode}';
+        error.value = Get.context!.l10n.loginFailedDetail(response.statusCode.toString());
         Logger.w('Login failed: HTTP ${response.statusCode}', 'WATCHIUM');
         return false;
       }
@@ -163,7 +163,7 @@ class WatchiumService extends GetxController {
       Logger.i('Login successful, userId=$_userId', 'WATCHIUM');
       return true;
     } catch (e) {
-      error.value = 'Login failed: $e';
+      error.value = Get.context!.l10n.loginFailedDetail(e.toString());
       Logger.e('Login failed with exception', error: e, loggerName: 'WATCHIUM');
       return false;
     }
@@ -362,7 +362,7 @@ class WatchiumService extends GetxController {
     _socket!.on('party:error', (data) {
       final errData = data as Map<String, dynamic>;
       final errCode = errData['code'] as String? ?? '';
-      final errMsg = errData['message'] as String? ?? 'Unknown error';
+      final errMsg = errData['message'] as String? ?? Get.context!.l10n.unknownErrorShort;
       error.value = errMsg;
       Logger.w(
           'party:error received: code=$errCode, message=$errMsg', 'WATCHIUM');
@@ -490,8 +490,8 @@ class WatchiumService extends GetxController {
             (s.url?.contains('127.0.0.1') ?? false) ||
             (s.url?.contains('localhost') ?? false));
     if (hasOnlyLocalServers) {
-      const msg =
-          'This extension routes streams through a local proxy and cannot be shared with friends. Please switch to a different extension.';
+      final msg =
+          Get.context!.l10n.extensionLocalProxyCannotShare;
       Logger.w(msg, 'WATCHIUM');
       error.value = msg;
       return null;
@@ -531,7 +531,7 @@ class WatchiumService extends GetxController {
       );
 
       if (response.statusCode != 201 && response.statusCode != 200) {
-        error.value = 'Failed to create room';
+        error.value = Get.context!.l10n.failedToCreateRoom;
         Logger.w('Create room failed: HTTP ${response.statusCode}', 'WATCHIUM');
         return null;
       }
@@ -554,7 +554,7 @@ class WatchiumService extends GetxController {
       Logger.i('Joined room $code as host', 'WATCHIUM');
       return code;
     } catch (e) {
-      error.value = 'Failed to create room: $e';
+      error.value = Get.context!.l10n.failedToCreateRoomDetail(e.toString());
       Logger.e('Create room exception', error: e, loggerName: 'WATCHIUM');
       return null;
     }
@@ -588,7 +588,7 @@ class WatchiumService extends GetxController {
         Logger.i(
             'Already in room $_currentRoomCode, cannot join $normalizedCode',
             'WATCHIUM');
-        error.value = 'You are already in another room. Leave it first.';
+        error.value = Get.context!.l10n.alreadyInAnotherRoom;
         return false;
       }
 
@@ -605,7 +605,7 @@ class WatchiumService extends GetxController {
       Logger.i('Join room $normalizedCode successful', 'WATCHIUM');
       return true;
     } catch (e) {
-      error.value = 'Failed to join room: $e';
+      error.value = Get.context!.l10n.failedToJoinRoomDetail(e.toString());
       Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM');
       return false;
     }
@@ -623,12 +623,12 @@ class WatchiumService extends GetxController {
         await Future.delayed(const Duration(milliseconds: 200));
         if (_socket?.connected == true) break;
         if (error.value == 'Connection failed') {
-          error.value = 'Failed to connect to server';
+          error.value = Get.context!.l10n.failedToConnectToServer;
           return false;
         }
       }
       if (_socket?.connected != true) {
-        error.value = 'Failed to connect to server';
+        error.value = Get.context!.l10n.failedToConnectToServer;
         return false;
       }
     }
@@ -908,7 +908,7 @@ class WatchiumService extends GetxController {
       Logger.i('List rooms: ${rooms.length} rooms found', 'WATCHIUM');
       return rooms;
     } catch (e) {
-      error.value = 'Failed to list rooms: $e';
+      error.value = Get.context!.l10n.failedToListRooms(e.toString());
       Logger.e('List rooms exception', error: e, loggerName: 'WATCHIUM');
       return [];
     }

@@ -646,7 +646,7 @@ class SourceController extends GetxController implements BaseService {
         if (installed.isNotEmpty &&
             manager.isNewerVersion(installed, latestRelease.tagName)) {
           infoSnackBar(
-            "Extension Bridge has an update available (${latestRelease.tagName})",
+            Get.context!.l10n.extensionBridgeUpdateAvailable(latestRelease.tagName),
             title: Get.context!.l10n.bridgeUpdateAvailable,
             onTap: () {
               navigate(() => const SettingsExtensionManager());

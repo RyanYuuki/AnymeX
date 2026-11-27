@@ -69,8 +69,8 @@ class _TrackingDialogState extends State<TrackingDialog> {
           ),
           const SizedBox(height: 8),
           AnymeXText(widget.isManga
-                ? 'Sync your reading progress with AniList and MyAnimeList'
-                : 'Sync your watch progress with AniList and MyAnimeList',
+                ? context.l10n.syncReadingProgressTrackers
+                : context.l10n.syncWatchProgressTrackers,
             size: 13,
             color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
             textAlign: TextAlign.center,

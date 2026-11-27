@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -14,10 +15,10 @@ class FloatingPillNavBarStyle extends NavBarStyleDef {
   String get id => 'floatingPill';
 
   @override
-  String get displayName => 'Dynamic Pill';
+  String get displayName => Get.context!.l10n.navbarDynamicPill;
 
   @override
-  String get description => 'Selected tab expands with label, others shrink to icon only';
+  String get description => Get.context!.l10n.navbarDynamicPillDesc;
 
   @override
   Widget buildNavBar(BuildContext context, NavBarProps props) {

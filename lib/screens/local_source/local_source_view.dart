@@ -115,7 +115,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                 const SizedBox(height: 4),
                 Obx(() => AnymeXText(
                       controller.viewMode.value == ViewMode.search
-                          ? 'Search stuff you wanna download'
+                          ? context.l10n.searchStuffToDownload
                           : controller.viewMode.value == ViewMode.download
                               ? "AnymeX Downloads"
                               : controller.currentDirectoryName,
@@ -466,7 +466,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             const SizedBox(height: 16),
             AnymeXText(
               searchController.text.isEmpty
-                  ? 'Search Something...'
+                  ? context.l10n.searchSomething
                   : 'No results found',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -477,8 +477,8 @@ class _WatchOfflineState extends State<WatchOffline> {
             const SizedBox(height: 8),
             AnymeXText(
               searchController.text.isEmpty
-                  ? 'e.q. "Attack on Titan", "Breaking Bad", "Naruto"'
-                  : 'Try searching for different keywords',
+                  ? context.l10n.searchExamplesHint
+                  : context.l10n.trySearchingDifferentKeywords,
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.5),
                 fontSize: 12,

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -446,7 +447,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AnymeXText(
-                                widget.selectedItem?.text ?? "No item selected",
+                                widget.selectedItem?.text ?? context.l10n.noItemSelected,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,

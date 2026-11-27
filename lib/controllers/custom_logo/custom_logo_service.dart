@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -112,7 +114,7 @@ class CustomLogoService {
     if (file.path == null) return null;
     if (file.size > maxFileSizeBytes) {
       throw Exception(
-          'File size exceeds 20MB limit (${(file.size / (1024 * 1024)).toStringAsFixed(1)} MB)');
+          Get.context!.l10n.fileSizeExceedsLimit((file.size / (1024 * 1024)).toStringAsFixed(1)));
     }
     return file;
   }

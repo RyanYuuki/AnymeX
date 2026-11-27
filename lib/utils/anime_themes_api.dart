@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/models/animethemes/anime_theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -14,7 +16,7 @@ class AnimeThemesAPI {
     try {
       final int? aniId = int.tryParse(key);
       if (aniId == null) {
-        throw Exception('Please enter a valid AniList ID (numbers only)');
+        throw Exception(Get.context!.l10n.enterValidAnilistId);
       }
 
       // Build the API URL with parameters matching the JS implementation
@@ -73,7 +75,7 @@ class AnimeThemesAPI {
   static Future<String> getAnimeTitle(String aniListId) async {
     try {
       final int? aniId = int.tryParse(aniListId.trim());
-      if (aniId == null) return 'Unknown Anime';
+      if (aniId == null) return Get.context!.l10n.unknownAnime;
 
       final uri = Uri.parse('$baseUrl/anime').replace(queryParameters: {
         'filter[site]': 'AniList',
@@ -89,12 +91,12 @@ class AnimeThemesAPI {
           final animeList = data['anime'] as List;
           if (animeList.isNotEmpty && animeList[0] is Map) {
             final anime = animeList[0] as Map<String, dynamic>;
-            return anime['name']?.toString() ?? 'Unknown Anime';
+            return anime['name']?.toString() ?? Get.context!.l10n.unknownAnime;
           }
         }
       }
 
-      return 'AniList ID: $aniListId';
+      return Get.context!.l10n.anilistIdLabel(aniListId.toString());
     } catch (e) {
       //print('Error getting anime title: $e');
       return 'AniList ID: $aniListId';
@@ -107,7 +109,7 @@ class AnimeThemesAPI {
     try {
       final int? aniId = int.tryParse(aniListId.trim());
       if (aniId == null) {
-        throw Exception('Please enter a valid AniList ID (numbers only)');
+        throw Exception(Get.context!.l10n.enterValidAnilistId);
       }
 
       final uri = Uri.parse('$baseUrl/anime').replace(queryParameters: {
@@ -130,7 +132,7 @@ class AnimeThemesAPI {
 
       final data = json.decode(response.body);
 
-      String title = 'AniList ID: $aniListId';
+      String title = Get.context!.l10n.anilistIdLabel(aniListId.toString());
       List<AnimeTheme> themes = [];
 
       if (data['anime'] != null && data['anime'] is List) {

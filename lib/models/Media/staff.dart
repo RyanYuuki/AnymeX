@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/media.dart';
 
@@ -145,6 +147,6 @@ class Staff {
     if (years.length == 1) {
       return '${years[0]}-Present';
     }
-    return '${years[0]}-${years[1] ?? "Present"}';
+    return '${years[0]}-${years[1] ?? Get.context!.l10n.presentLabel}';
   }
 }

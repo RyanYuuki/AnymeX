@@ -44,15 +44,15 @@ class ContentErrorWidget extends StatelessWidget {
       case 'search':
         return 'Search Failed';
       case 'detail':
-        return 'Failed to Load $typeName';
+        return Get.context!.l10n.failedToLoadType(typeName);
       case 'no_match':
-        return 'No Match Found';
+        return Get.context!.l10n.noMatchFound;
       case 'empty':
-        return 'No $typeName Available';
+        return Get.context!.l10n.noTypeAvailable(typeName);
       case 'no_source':
         return 'No Source Selected';
       default:
-        return 'Failed to Load $typeName';
+        return Get.context!.l10n.failedToLoadType(typeName);
     }
   }
 
@@ -82,27 +82,27 @@ class ContentErrorWidget extends StatelessWidget {
     if (cleaned.isEmpty) {
       switch (type) {
         case 'search':
-          return 'An error occurred while searching this source for matches.';
+          return Get.context!.l10n.errorSearchingSourceMatches;
         case 'detail':
-          return 'Failed to retrieve media details from the source extension.';
+          return Get.context!.l10n.failedRetrieveMediaDetails;
         case 'no_match':
-          return 'Could not find a matching title in the selected source.';
+          return Get.context!.l10n.couldNotFindMatchingTitle;
         case 'empty':
           return isManga
-              ? 'The source returned no chapters for this manga.'
-              : 'The source returned no episodes for this anime.';
+              ? Get.context!.l10n.sourceReturnedNoChapters
+              : Get.context!.l10n.sourceReturnedNoEpisodes;
         case 'no_source':
-          return 'Please select or install a source extension to load content.';
+          return Get.context!.l10n.selectOrInstallSourceToLoad;
         default:
-          return 'An unexpected error occurred while loading content.';
+          return Get.context!.l10n.unexpectedErrorLoadingContent;
       }
     }
 
     switch (type) {
       case 'search':
-        return 'Search error: $cleaned';
+        return Get.context!.l10n.searchErrorDetail(cleaned);
       case 'detail':
-        return 'Details error: $cleaned';
+        return Get.context!.l10n.detailsErrorDetail(cleaned);
       default:
         return cleaned;
     }

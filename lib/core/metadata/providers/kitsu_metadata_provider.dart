@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
@@ -11,7 +13,7 @@ class KitsuMetadataProvider implements EpisodeMetadataProvider {
   String get name => 'Kitsu';
 
   @override
-  String get description => 'Canonical titles, descriptions, and high-res thumbnails via Kitsu GraphQL';
+  String get description => Get.context!.l10n.kitsuProviderDescription;
 
   @override
   bool supports(MetadataTargetIds ids) {

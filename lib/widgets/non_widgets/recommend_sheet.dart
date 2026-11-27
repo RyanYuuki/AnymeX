@@ -471,8 +471,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
         title: AnymeXText(context.l10n.deleteRecommendation),
         content: AnymeXText(
           _isAdmin
-              ? 'This entry will be deleted immediately.'
-              : 'Your deletion request will be sent to admins for review.',
+              ? context.l10n.entryDeletedImmediately
+              : context.l10n.deletionRequestSentToAdmins,
         ),
         actions: [
           TextButton(
@@ -518,8 +518,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
         title: AnymeXText(context.l10n.removeYourReason),
         content: AnymeXText(
           _isAdmin
-              ? 'This reason will be removed immediately.'
-              : 'Your removal request will be sent to admins for review.',
+              ? context.l10n.reasonRemovedImmediately
+              : context.l10n.removalRequestSentToAdmins,
         ),
         actions: [
           TextButton(

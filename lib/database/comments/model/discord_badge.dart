@@ -61,7 +61,7 @@ class DiscordBadge {
   // Dynamic context badge for reply threads (client-only thread context)
   static DiscordBadge get opBadge => DiscordBadge(
     id: 'op',
-    name: 'Original Poster',
+    name: Get.context!.l10n.badgeOriginalPoster,
     description: Get.context!.l10n.theCreatorOfThisCommentDiscussion,
     iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/special/original-poster.svg',
     isSvg: true,
@@ -75,7 +75,7 @@ class DiscordBadge {
       case 'owner':
         return DiscordBadge(
           id: 'owner',
-          name: 'Commentum Owner',
+          name: Get.context!.l10n.badgeCommentumOwner,
           description: Get.context!.l10n.ownerAndCreatorOfTheCommentum,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
           isSvg: true,
@@ -86,7 +86,7 @@ class DiscordBadge {
       case 'appowner':
         return DiscordBadge(
           id: 'app_owner',
-          name: 'App Creator',
+          name: Get.context!.l10n.badgeAppCreator,
           description: Get.context!.l10n.creatorAndDeveloperOfAnymex,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
           isSvg: true,
@@ -97,7 +97,7 @@ class DiscordBadge {
       case 'superadmin':
         return DiscordBadge(
           id: 'super_admin',
-          name: 'Super Administrator',
+          name: Get.context!.l10n.badgeSuperAdministrator,
           description: Get.context!.l10n.superAdministratorWithSystemWideManagement,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
           isSvg: true,
@@ -107,7 +107,7 @@ class DiscordBadge {
       case 'admin':
         return DiscordBadge(
           id: 'admin',
-          name: 'Administrator',
+          name: Get.context!.l10n.badgeAdministrator,
           description: Get.context!.l10n.communityAdministratorOverseeingModerationAndPolicies,
           iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
           isSvg: true,

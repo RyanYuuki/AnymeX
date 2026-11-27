@@ -116,8 +116,8 @@ class _LogoAnimationPreviewDialogState
               (l) => l.name.trim().toLowerCase() == trimmedName.toLowerCase(),
             );
             final String? errorText = isDuplicate
-                ? 'A logo with this name already exists'
-                : (isEmpty ? 'Name cannot be empty' : null);
+                ? context.l10n.logoNameExists
+                : (isEmpty ? context.l10n.nameCannotBeEmpty : null);
 
             return AnymeXDialog(
               title: context.l10n.addCustomLogo,
@@ -168,8 +168,8 @@ class _LogoAnimationPreviewDialogState
                                 const SizedBox(height: 8),
                                 AnymeXText(
                                   isPicking
-                                      ? 'Opening file picker...'
-                                      : 'Tap to Choose Logo File',
+                                      ? context.l10n.openingFilePicker
+                                      : context.l10n.tapToChooseLogoFile,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
@@ -435,8 +435,8 @@ class _LogoAnimationPreviewDialogState
                   l.name.trim().toLowerCase() == trimmedName.toLowerCase(),
             );
             final String? errorText = isDuplicate
-                ? 'A logo with this name already exists'
-                : (isEmpty ? 'Name cannot be empty' : null);
+                ? context.l10n.logoNameExists
+                : (isEmpty ? context.l10n.nameCannotBeEmpty : null);
 
             return AnymeXDialog(
               title: context.l10n.editLogoSettings,
@@ -963,7 +963,7 @@ class _LogoAnimationPreviewDialogState
                                     ? 'Original'
                                     : (logo.sizeMode ==
                                             CustomLogoSizeMode.customScale
-                                        ? 'Custom (${(logo.customScale * 100).toInt()}%)'
+                                        ? context.l10n.customScalePercent((logo.customScale * 100).toInt())
                                         : 'Default'),
                                 style: TextStyle(
                                   fontSize: 10,

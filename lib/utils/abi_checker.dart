@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -74,18 +76,18 @@ class AppAbiDetector {
   static String getArchitectureName(String abi) {
     switch (abi) {
       case 'arm64':
-        return '64-bit ARM (ARM64)';
+        return Get.context!.l10n.abiArm64;
       case 'arm32':
-        return '32-bit ARM (ARM32)';
+        return Get.context!.l10n.abiArm32;
       case 'x86_64':
-        return '64-bit Intel (x86_64)';
+        return Get.context!.l10n.abiX8664;
       case 'x86':
-        return '32-bit Intel (x86)';
+        return Get.context!.l10n.abiX86;
       case 'not_android':
-        return 'Not Android Platform';
+        return Get.context!.l10n.notAndroidPlatform;
       case 'unknown':
       default:
-        return 'Unknown Architecture';
+        return Get.context!.l10n.unknownArchitecture;
     }
   }
 

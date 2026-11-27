@@ -1,5 +1,4 @@
 {
-  "@@locale": "en",
   "navHome": "Home",
   "navDiscover": "Discover",
   "navSearch": "Search",
@@ -7649,5 +7648,1086 @@
       }
     }
   },
-  "downloadAndInstall": "Download & Install"
+  "downloadAndInstall": "Download & Install",
+  "someone": "Someone",
+  "fileSizeExceedsLimit": "File size exceeds 20MB limit ({size} MB)",
+  "@fileSizeExceedsLimit": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "forbiddenError403": "Forbidden (error 403)",
+  "failedToFetchSettings": "Failed to fetch settings",
+  "failedToFetchSettingsMetadata": "Failed to fetch settings metadata",
+  "failedToUpdateSettings": "Failed to update settings",
+  "pleaseLoginToAnilistFirst": "Please login to AniList first.",
+  "notLoggedIn": "Not logged in",
+  "failedToPinActivity": "Failed to pin activity",
+  "failedToPinActivityStatus": "Failed to pin activity (Status: {status})",
+  "@failedToPinActivityStatus": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaDeletedFromList": "{type, select, anime{Anime successfully deleted from your list!} other{Manga successfully deleted from your list!}}",
+  "@mediaDeletedFromList": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarAiPicksAndMore": "Calendar, AI Picks and more",
+  "rateLimitedChill": "Chill for a min, you got rate limited.",
+  "anilistRequestFailedStatus": "AniList request failed ({status})",
+  "@anilistRequestFailedStatus": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "anilistRequestFailed": "AniList request failed",
+  "couldNotLoadFirstUser": "Could not load first user.",
+  "userNotFoundOrPrivate": "User not found or profile is private.",
+  "cannotCompareUserWithThemselves": "Cannot compare a user with themselves! Please select two different AniList profiles.",
+  "failedToLoadStatus": "Failed to load: {status}",
+  "@failedToLoadStatus": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "reasonAlreadyExistsUseEdit": "You already have a reason on this entry. Use edit instead.",
+  "unknownErrorStatus": "Unknown error ({status})",
+  "@unknownErrorStatus": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToDeleteMediaFromList": "{type, select, anime{Failed to delete anime from your list.} other{Failed to delete manga from your list.}}",
+  "@failedToDeleteMediaFromList": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadingTorrentServer": "Downloading Torrent Server...",
+  "startingTorrentServer": "Starting Torrent Server...",
+  "failedToDownloadServer": "Failed to download server: {error}",
+  "@failedToDownloadServer": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToStartServer": "Failed to start server: {error}",
+  "@failedToStartServer": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingTorrentStream": "Preparing torrent stream...",
+  "resolvingTorrentStream": "Resolving torrent stream...",
+  "failedToStartTorrent": "Failed to start torrent: {error}",
+  "@failedToStartTorrent": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingTorrentDownload": "Preparing torrent download...",
+  "extensionBridgeUpdateAvailable": "Extension Bridge has an update available ({version})",
+  "@extensionBridgeUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownErrorShort": "Unknown error",
+  "cloudGistInitializedIn": "Cloud gist initialized in {time}{count}.",
+  "@cloudGistInitializedIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "progressSyncedIn": "Progress synced in {time}{count}.",
+  "@progressSyncedIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "initializationFailedAfter": "Initialization failed after {time}.",
+  "@initializationFailedAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailedAfter": "Sync failed after {time}.",
+  "@syncFailedAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "deletedSyncGistIn": "Deleted AnymeX sync gist in {time}.",
+  "@deletedSyncGistIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteSyncGistAfter": "Failed to delete sync gist after {time}.",
+  "@failedToDeleteSyncGistAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToFetchCloudGistAfter": "Failed to fetch cloud gist after {time}.",
+  "@failedToFetchCloudGistAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToImportSyncDataAfter": "Failed to import sync data after {time}.",
+  "@failedToImportSyncDataAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudEntryRemovedIn": "Cloud entry removed in {time}.",
+  "@cloudEntryRemovedIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "noCloudEntryToRemove": "No cloud entry found to remove ({time}).",
+  "@noCloudEntryToRemove": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudEntryRemovalFailedAfter": "Cloud entry removal failed after {time}.",
+  "@cloudEntryRemovalFailedAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudSyncSuccessfulIn": "Cloud sync successful in {time}.",
+  "@cloudSyncSuccessfulIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudSyncFailedAfter": "Cloud sync failed after {time}.",
+  "@cloudSyncFailedAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "checkingCloudGistStatus": "Checking cloud gist status. Sync now to create one if needed.",
+  "createCloudGistFirst": "Create your cloud gist first to unlock sync preferences.",
+  "syncConnecting": "Connecting",
+  "syncSyncing": "Syncing",
+  "syncNeedsSetup": "Needs Setup",
+  "syncAttention": "Attention",
+  "syncReady": "Ready",
+  "connectGithub": "Connect GitHub",
+  "initializingEllipsis": "Initializing...",
+  "syncingEllipsis": "Syncing...",
+  "initializeAction": "Initialize",
+  "syncNow": "Sync Now",
+  "statusNotConnected": "Status: Not connected",
+  "statusCheckingCloudGist": "Status: Checking cloud gist...",
+  "statusConnectedCheckingGist": "Status: Connected · checking cloud gist",
+  "statusInitializingCloudGist": "Status: Initializing cloud gist...",
+  "statusConnectedGistNotInitialized": "Status: Connected · gist not initialized",
+  "statusSyncInProgress": "Status: Sync in progress...",
+  "statusConnected2": "Status: Connected",
+  "statusLastSyncFailedDetail": "Status: Last sync failed · {detail}",
+  "@statusLastSyncFailedDetail": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "statusLastSyncFailed": "Status: Last sync failed",
+  "statusConnectedDetail": "Status: Connected · {detail}",
+  "@statusConnectedDetail": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "syncedJustNow": "synced just now{duration}",
+  "@syncedJustNow": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "syncedMinutesAgo": "synced {minutes}m ago{duration}",
+  "@syncedMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "syncedHoursAgo": "synced {hours}h ago{duration}",
+  "@syncedHoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "syncedDaysAgo": "synced {days}d ago{duration}",
+  "@syncedDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "syncedOnDate": "synced on {month}/{day}{duration}",
+  "@syncedOnDate": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "mergedImportedEntries": "Merged {imported} imported entries with {cloud} cloud entries.",
+  "@mergedImportedEntries": {
+    "placeholders": {
+      "imported": {
+        "type": "int"
+      },
+      "cloud": {
+        "type": "int"
+      }
+    }
+  },
+  "replacedCloudGistWithEntries": "Replaced cloud gist with {count} imported entries.",
+  "@replacedCloudGistWithEntries": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iUnderstandDelete": "I Understand, Delete",
+  "iUnderstandCountdown": "I Understand ({seconds})",
+  "@iUnderstandCountdown": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "mustBeLoggedInWatchTogether": "You must be logged in to use Watch Together",
+  "loginFailedDetail": "Login failed: {error}",
+  "@loginFailedDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionLocalProxyCannotShare": "This extension routes streams through a local proxy and cannot be shared with friends. Please switch to a different extension.",
+  "failedToCreateRoom": "Failed to create room",
+  "failedToCreateRoomDetail": "Failed to create room: {error}",
+  "@failedToCreateRoomDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "alreadyInAnotherRoom": "You are already in another room. Leave it first.",
+  "failedToJoinRoomDetail": "Failed to join room: {error}",
+  "@failedToJoinRoomDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToConnectToServer": "Failed to connect to server",
+  "failedToListRooms": "Failed to list rooms: {error}",
+  "@failedToListRooms": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "theAnimeFallback": "the anime",
+  "anifyProviderDescription": "Legacy Anify episode titles, descriptions, and thumbnails",
+  "anilistProviderDescription": "Streaming episode titles, thumbnails, and airing schedules directly from AniList",
+  "anizipProviderDescription": "Rich episode titles, overviews, thumbnails, and mappings from ani.zip",
+  "kitsuProviderDescription": "Canonical titles, descriptions, and high-res thumbnails via Kitsu GraphQL",
+  "simklProviderDescription": "Episode metadata, descriptions, air dates, and thumbnails via Simkl API",
+  "tenraiProviderDescription": "MyAnimeList episode titles, air dates, scores, and filler/recap flags",
+  "roleCreator": "Creator",
+  "roleOwner": "Owner",
+  "roleMod": "Mod",
+  "badgeOriginalPoster": "Original Poster",
+  "badgeCommentumOwner": "Commentum Owner",
+  "badgeAppCreator": "App Creator",
+  "badgeSuperAdministrator": "Super Administrator",
+  "badgeAdministrator": "Administrator",
+  "staffBonus": "Staff Bonus",
+  "roleSuperAdmin": "SuperAdmin",
+  "justNowLabel": "Just now",
+  "notifAnimeAiring": "Anime Airing",
+  "notifSocialAlert": "Social Alert",
+  "notifSystemNotification": "System Notification",
+  "notifEpisodeAired": "Episode {episode} of {title} has aired.",
+  "@notifEpisodeAired": {
+    "placeholders": {
+      "episode": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notifNewEpisodeAired": "New episode aired.",
+  "notifFollowedYou": "{user} followed you.",
+  "@notifFollowedYou": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "notifLikedActivity": "{user} liked your activity.",
+  "@notifLikedActivity": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "notifRepliedActivity": "{user} replied to your activity.",
+  "@notifRepliedActivity": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "notifMentionedYou": "{user} mentioned you.",
+  "@notifMentionedYou": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "notifSentMessage": "{user} sent you a message.",
+  "@notifSentMessage": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "notifNewUpdate": "New update on AniList.",
+  "unknownRelease": "Unknown release",
+  "noDescriptionAvailable2": "No description available.",
+  "presentLabel": "Present",
+  "tapNextPage": "Next Page",
+  "tapPreviousPage": "Previous Page",
+  "tapShowHideUi": "Show/Hide UI",
+  "tapScrollUp": "Scroll Up",
+  "tapScrollDown": "Scroll Down",
+  "aiPicksTitle": "AI Picks{count}",
+  "@aiPicksTitle": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "animeCountTab": "Anime ({count})",
+  "@animeCountTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mangaCountTab": "Manga ({count})",
+  "@mangaCountTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showsCountTab": "Shows ({count})",
+  "@showsCountTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moviesCountTab": "Movies ({count})",
+  "@moviesCountTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmDeleteCacheCookies": "Are you sure you want to delete cache and cookies for {source}?",
+  "@confirmDeleteCacheCookies": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteCookiesCloudflare": "Are you sure you want to delete saved cookies and Cloudflare tokens for {source}?",
+  "@confirmDeleteCookiesCloudflare": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteTempCache": "Are you sure you want to delete temporary cache for {source}?",
+  "@confirmDeleteTempCache": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "resultsInMs2": "{count} results in {ms}ms",
+  "@resultsInMs2": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsInMs2": "{count} {label} in {ms}ms",
+  "@itemsInMs2": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      },
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "notInstalledLower": "Not installed",
+  "noDirectorySelected": "No directory selected",
+  "searchStuffToDownload": "Search stuff you wanna download",
+  "searchSomething": "Search Something...",
+  "searchExamplesHint": "e.g. \"Attack on Titan\", \"Breaking Bad\", \"Naruto\"",
+  "trySearchingDifferentKeywords": "Try searching for different keywords",
+  "couldNotLoadAnnouncement": "Could not load this announcement. Check your connection and try again.",
+  "announcementNoLongerAvailable": "This announcement is no longer available.",
+  "failedToLoadAnilistNotifications": "Failed to load AniList notifications",
+  "failedToLoadNotifications": "Failed to load notifications",
+  "reportsLabel": "Reports",
+  "rankFilthyCasual": "Filthy Casual",
+  "rankAcademyStudent": "Academy Student",
+  "rankGenin": "Genin",
+  "rankChunin": "Chunin",
+  "rankJonin": "Jonin",
+  "rankSpecialJonin": "Special Jonin",
+  "rankHokage": "Hokage",
+  "rankOtakuSage": "Otaku Sage",
+  "timeWatchedUpper": "TIME WATCHED",
+  "timeReadUpper": "TIME READ",
+  "timeSpentUpper": "TIME SPENT",
+  "itemsConsumed": "Items Consumed",
+  "favoriteTimeSpent": "FAVORITE • {time} spent",
+  "@favoriteTimeSpent": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "roomCodeMustBe6": "Room code must be 6 characters",
+  "failedToJoinRoom2": "Failed to join room",
+  "pleaseEnterRoomPassword": "Please enter the room password",
+  "roomIsPrivate": "Room {code} is private",
+  "@roomIsPrivate": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "joinAction": "Join",
+  "joiningRoomCode": "Joining room {code}...",
+  "@joiningRoomCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJoinRoomCode": "Failed to join room {code}",
+  "@failedToJoinRoomCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "openLabel": "Open",
+  "dlnaSmartTv": "DLNA / SMART TV",
+  "notificationLabel": "Notification",
+  "upscaleMangaCrispLines": "Manga (Crisp Lines)",
+  "upscaleMangaCrispLinesDesc": "Contrast-adaptive ink & text sharpening that preserves screentones without moire",
+  "upscaleWebtoonClean": "Webtoon (Clean & Vibrant)",
+  "upscaleWebtoonCleanDesc": "Cleans JPEG compression ringing & enhances colors for digital manhwa",
+  "upscaleUltraSharp": "Ultra Sharp (CAS)",
+  "upscaleUltraSharpDesc": "High-fidelity adaptive edge sharpening for soft or low-res scanlations",
+  "abiArm64": "64-bit ARM (ARM64)",
+  "abiArm32": "32-bit ARM (ARM32)",
+  "abiX8664": "64-bit Intel (x86_64)",
+  "abiX86": "32-bit Intel (x86)",
+  "notAndroidPlatform": "Not Android Platform",
+  "unknownArchitecture": "Unknown Architecture",
+  "noSeriesFoundForMedia": "No series found for this media",
+  "seriesNotReleasing": "Series is not releasing",
+  "mangaUpdatesIdNotFound": "MangaUpdates ID not found",
+  "mangaUpdatesIdMissing": "MangaUpdates ID missing",
+  "insufficientData": "Insufficient data",
+  "irregularReleaseSchedule": "Irregular release schedule",
+  "enterValidAnilistId": "Please enter a valid AniList ID (numbers only)",
+  "unknownAnime": "Unknown Anime",
+  "anilistIdLabel": "AniList ID: {id}",
+  "@anilistIdLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "shadersOff": "Shaders off",
+  "originalShadersOff": "Original · shaders off",
+  "presetsLabel": "Presets",
+  "visualLabel": "Visual",
+  "resetTarget": "Reset {target}",
+  "@resetTarget": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "holdToCompare": "Hold to compare",
+  "compareLabel": "Compare",
+  "mangaPercent": "Manga {percent}%",
+  "@mangaPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "lightNovelPercent": "LN {percent}%",
+  "@lightNovelPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "novelPercent": "Novel {percent}%",
+  "@novelPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "noDataLabel": "No data",
+  "countVsCountAnime": "{a} vs {b} anime",
+  "@countVsCountAnime": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "decadesComparison": "Decades comparison",
+  "countVsCountEntries": "{a} vs {b} entries",
+  "@countVsCountEntries": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "addedRepoLinksSuccessfully": "Added Repo Links Successfully!",
+  "missingInvalidLinkParams": "Missing or invalid parameters in the link.",
+  "moreIssuesSuffix": "{count, plural, =1{ (+1 more issue)} other{ (+{count} more issues)}}",
+  "@moreIssuesSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreWarningsSuffix": "{count, plural, =1{ (+1 more warning)} other{ (+{count} more warnings)}}",
+  "@moreWarningsSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "themeImportedWithWarning": "Theme imported with warning: {warning}{more}",
+  "@themeImportedWithWarning": {
+    "placeholders": {
+      "warning": {
+        "type": "String"
+      },
+      "more": {
+        "type": "String"
+      }
+    }
+  },
+  "minutesAgoLong": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@minutesAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoLong": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@hoursAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoLong": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@daysAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "secondsAgoLong": "{count, plural, =1{1 second ago} other{{count} seconds ago}}",
+  "@secondsAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preparingToProcessImage": "Preparing to process image...",
+  "clearingPreviousBackground": "Clearing previous background...",
+  "initializingGpuAcceleration": "Initializing GPU acceleration...",
+  "savingGpuProcessedImage": "Saving GPU-processed image...",
+  "fallingBackToCpu": "Falling back to CPU optimization...",
+  "applyingNewBackground": "Applying new background...",
+  "backgroundAppliedSuccessfully": "Background applied successfully! ✓",
+  "failedToProcessImage": "Failed to process image",
+  "shareTrackingLink": "Share tracking link",
+  "shareServiceLink": "Share {service} link",
+  "@shareServiceLink": {
+    "placeholders": {
+      "service": {
+        "type": "String"
+      }
+    }
+  },
+  "trackingLinkUnavailable": "Tracking link unavailable for this media.",
+  "anymexLinkUnavailable": "AnymeX link unavailable for this media.",
+  "trackingLabel": "Tracking",
+  "airingAnime": "Airing Anime",
+  "socialAndActivity": "Social & Activity",
+  "preparingDownload": "Preparing download...",
+  "downloadFailedError": "Download failed: {error}",
+  "@downloadFailedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadingApk": "Downloading APK...",
+  "downloadedMbOfMb": "Downloaded {received} MB / {total} MB",
+  "@downloadedMbOfMb": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "installingEllipsis": "Installing...",
+  "downloadingInstaller": "Downloading installer...",
+  "installationStarted": "Installation Started",
+  "downloadComplete": "Download Complete",
+  "followInstallationPrompts": "Please follow installation prompts.",
+  "installerSavedTo": "Installer saved to:\\n{path}",
+  "@installerSavedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadingEllipsis": "Downloading...",
+  "noItemSelected": "No item selected",
+  "cardExoticDesc": "Bordered card with glowing shadow and vibrant action banner.",
+  "cardMinimalExoticDesc": "Bordered card with bottom gradient title and action banner.",
+  "cardModernDesc": "Full cover card with dark gradient title overlay at the bottom.",
+  "cardSaikouDesc": "Clean vertical poster card with bottom-right badge rating.",
+  "cardSimpleDesc": "Container card layout with poster, title, extension info, and progress count.",
+  "tapToReadDescription": "Tap to read description",
+  "syncedExclaim": "Synced!",
+  "syncCookies": "Sync Cookies",
+  "failedToLoadType": "Failed to Load {type}",
+  "@failedToLoadType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "noTypeAvailable": "No {type} Available",
+  "@noTypeAvailable": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSearchingSourceMatches": "An error occurred while searching this source for matches.",
+  "failedRetrieveMediaDetails": "Failed to retrieve media details from the source extension.",
+  "couldNotFindMatchingTitle": "Could not find a matching title in the selected source.",
+  "sourceReturnedNoChapters": "The source returned no chapters for this manga.",
+  "sourceReturnedNoEpisodes": "The source returned no episodes for this anime.",
+  "selectOrInstallSourceToLoad": "Please select or install a source extension to load content.",
+  "unexpectedErrorLoadingContent": "An unexpected error occurred while loading content.",
+  "searchErrorDetail": "Search error: {error}",
+  "@searchErrorDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "detailsErrorDetail": "Details error: {error}",
+  "@detailsErrorDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "continueNameEpTitle": "{name} • EP {episode} - {title}",
+  "@continueNameEpTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "episode": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "continueEpTitle": "EP {episode} - {title}",
+  "@continueEpTitle": {
+    "placeholders": {
+      "episode": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "continueNameEpisode": "{name} • Episode {episode}",
+  "@continueNameEpisode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "episode": {
+        "type": "String"
+      }
+    }
+  },
+  "noTypeExtensionsInstalled": "No {type} extensions installed",
+  "@noTypeExtensionsInstalled": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "noExtensionsFoundFor": "No extensions found for \"{query}\"",
+  "@noExtensionsFoundFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "navbarClassicDesc": "Pill indicator with icon and label",
+  "navbarDynamicPill": "Dynamic Pill",
+  "navbarDynamicPillDesc": "Selected tab expands with label, others shrink to icon only",
+  "installSourceToBrowse": "Install a source extension to start browsing content.",
+  "goBackHomeInstallSource": "Go back to the home page and install a source extension.",
+  "whyArentYouReadingYet": "For real, why aren't you reading yet? 📚",
+  "timeForBingeSesh": "Lowkey time for a binge sesh 🎬",
+  "unknownSourceUpper": "UNKNOWN SOURCE",
+  "selectSourceUpper": "SELECT SOURCE",
+  "noMangaSourcesInstalled": "No Manga Sources Installed",
+  "noAnimeSourcesInstalled": "No Anime Sources Installed",
+  "selectMangaSource": "Select Manga Source",
+  "selectAnimeSource": "Select Anime Source",
+  "shapeCircle": "Circle",
+  "shapeRoundedSquare": "Rounded Square",
+  "shapeSlantedSquare": "Slanted Square",
+  "shapeArch": "Arch",
+  "shapeSemiCircle": "Semi Circle",
+  "shapeOval": "Oval",
+  "shapePill": "Pill",
+  "shapeTriangle": "Triangle",
+  "shapeArrow": "Arrow",
+  "shapeFan": "Fan",
+  "shapeDiamond": "Diamond",
+  "shapeClamShell": "Clam Shell",
+  "shapePentagon": "Pentagon",
+  "shapeGem": "Gem",
+  "shapeSunny": "Sunny",
+  "shapeVerySunny": "Very Sunny",
+  "shapeCookie4": "Cookie (4-Sided)",
+  "shapeCookie6": "Cookie (6-Sided)",
+  "shapeCookie7": "Cookie (7-Sided)",
+  "shapeCookie9": "Cookie (9-Sided)",
+  "shapeCookie12": "Cookie (12-Sided)",
+  "shapeClover4": "Clover (4-Leaf)",
+  "shapeClover8": "Clover (8-Leaf)",
+  "shapeBurst": "Burst",
+  "shapeSoftBurst": "Soft Burst",
+  "shapeBoom": "Boom",
+  "shapeSoftBoom": "Soft Boom",
+  "shapeFlower": "Flower",
+  "shapePuffy": "Puffy",
+  "shapePuffyDiamond": "Puffy Diamond",
+  "shapeGhostish": "Ghostish",
+  "shapePixelCircle": "Pixel Circle",
+  "shapePixelTriangle": "Pixel Triangle",
+  "shapeBun": "Bun",
+  "shapeHeart": "Heart",
+  "tileShapeDefaultDesc": "Default tile icon shape (Circle for M3 Expressive, Rounded Square for Classic)",
+  "tileShapeDesc": "Material 3 Expressive {shape} prefix container",
+  "@tileShapeDesc": {
+    "placeholders": {
+      "shape": {
+        "type": "String"
+      }
+    }
+  },
+  "syncReadingProgressTrackers": "Sync your reading progress with AniList and MyAnimeList",
+  "syncWatchProgressTrackers": "Sync your watch progress with AniList and MyAnimeList",
+  "adsWatchedPointsNextUpdate": "Watched: {count} • Points rewarded next update",
+  "@adsWatchedPointsNextUpdate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "watchAdToSupport": "Watch a quick ad to support us for free",
+  "logoNameExists": "A logo with this name already exists",
+  "nameCannotBeEmpty": "Name cannot be empty",
+  "openingFilePicker": "Opening file picker...",
+  "tapToChooseLogoFile": "Tap to Choose Logo File",
+  "customScalePercent": "Custom ({percent}%)",
+  "@customScalePercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "lastWatched": "Last Watched",
+  "lastRead": "Last Read",
+  "watchProgress": "Watch Progress",
+  "readProgress": "Read Progress",
+  "weeksAgoLong": "{count, plural, =1{1 week ago} other{{count} weeks ago}}",
+  "@weeksAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthsAgoLong": "{count, plural, =1{1 month ago} other{{count} months ago}}",
+  "@monthsAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yearsAgoLong": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@yearsAgoLong": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "upcomingLabel": "Upcoming",
+  "onHiatus": "On Hiatus",
+  "viewRecommendation": "View recommendation",
+  "viewAllRecommendations": "View all {count} recommendations",
+  "@viewAllRecommendations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "codeBlock": "Code Block",
+  "headerLabel": "Header",
+  "publicLabel": "Public",
+  "deletionRequestSentToAdmins": "Your deletion request will be sent to admins for review.",
+  "entryDeletedImmediately": "This entry will be deleted immediately.",
+  "reasonRemovedImmediately": "This reason will be removed immediately.",
+  "removalRequestSentToAdmins": "Your removal request will be sent to admins for review.",
+  "logoutAction": "Logout",
+  "incognitoEnabled2": "Incognito mode enabled. History & sync paused.",
+  "incognitoDisabled2": "Incognito mode disabled.",
+  "roomRequiresPassword": "This room requires a password. Please enter it above.",
+  "roomCodeOnline": "Room {code}  ·  {online} online",
+  "@roomCodeOnline": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "online": {
+        "type": "int"
+      }
+    }
+  },
+  "noMessagesYet": "No messages yet",
+  "typeAMessage": "Type a message...",
+  "chatDisabledByHost": "Chat is disabled by host",
+  "announcementModeStaffOnly": "Announcement mode — only staff can chat",
+  "noMembersYet": "No members yet",
+  "removeCoHost": "Remove Co-host",
+  "makeCoHost": "Make Co-host",
+  "dayMinutesActive": "{weekday}, {day} {month} | {minutes} mins active",
+  "@dayMinutesActive": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }

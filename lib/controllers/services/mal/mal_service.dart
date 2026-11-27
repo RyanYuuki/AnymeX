@@ -1030,7 +1030,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
     if (req.statusCode == 200) {
       snackBar(
-          "${isAnime ? "Anime" : "Manga"} successfully deleted from your list!");
+          Get.context!.l10n.mediaDeletedFromList(isAnime ? 'anime' : 'manga'));
 
       currentMedia.value = TrackedMedia();
       if (isAnime) {
@@ -1054,7 +1054,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     } else {
       Logger.i('Error deleting entry: ${req.body}');
       snackBar(
-          "Failed to delete ${isAnime ? "anime" : "manga"} from your list.");
+          Get.context!.l10n.failedToDeleteMediaFromList(isAnime ? 'anime' : 'manga'));
     }
   }
 

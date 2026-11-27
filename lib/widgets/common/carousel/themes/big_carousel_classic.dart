@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -282,7 +284,7 @@ Widget buildCarouselCard({
                                     Expanded(
                                       child: AnymeXText(cleanDescription.isNotEmpty
                                             ? cleanDescription
-                                            : 'Tap to read description',
+                                            : Get.context!.l10n.tapToReadDescription,
                                         size: 12.5,
                                         maxLines: 3,
                                         color: colors.onSecondaryContainer

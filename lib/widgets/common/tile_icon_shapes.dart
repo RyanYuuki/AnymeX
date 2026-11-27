@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 
@@ -14,49 +16,49 @@ String getTileIconShapeName(int index) {
   }
   final kind = M3EShapeKind.values[index - 1];
   return switch (kind) {
-    M3EShapeKind.circle => 'Circle',
-    M3EShapeKind.square => 'Rounded Square',
-    M3EShapeKind.slanted => 'Slanted Square',
-    M3EShapeKind.arch => 'Arch',
-    M3EShapeKind.semiCircle => 'Semi Circle',
-    M3EShapeKind.oval => 'Oval',
-    M3EShapeKind.pill => 'Pill',
-    M3EShapeKind.triangle => 'Triangle',
-    M3EShapeKind.arrow => 'Arrow',
-    M3EShapeKind.fan => 'Fan',
-    M3EShapeKind.diamond => 'Diamond',
-    M3EShapeKind.clamShell => 'Clam Shell',
-    M3EShapeKind.pentagon => 'Pentagon',
-    M3EShapeKind.gem => 'Gem',
-    M3EShapeKind.sunny => 'Sunny',
-    M3EShapeKind.verySunny => 'Very Sunny',
-    M3EShapeKind.cookie4Sided => 'Cookie (4-Sided)',
-    M3EShapeKind.cookie6Sided => 'Cookie (6-Sided)',
-    M3EShapeKind.cookie7Sided => 'Cookie (7-Sided)',
-    M3EShapeKind.cookie9Sided => 'Cookie (9-Sided)',
-    M3EShapeKind.cookie12Sided => 'Cookie (12-Sided)',
-    M3EShapeKind.clover4Leaf => 'Clover (4-Leaf)',
-    M3EShapeKind.clover8Leaf => 'Clover (8-Leaf)',
-    M3EShapeKind.burst => 'Burst',
-    M3EShapeKind.softBurst => 'Soft Burst',
-    M3EShapeKind.boom => 'Boom',
-    M3EShapeKind.softBoom => 'Soft Boom',
-    M3EShapeKind.flower => 'Flower',
-    M3EShapeKind.puffy => 'Puffy',
-    M3EShapeKind.puffyDiamond => 'Puffy Diamond',
-    M3EShapeKind.ghostish => 'Ghostish',
-    M3EShapeKind.pixelCircle => 'Pixel Circle',
-    M3EShapeKind.pixelTriangle => 'Pixel Triangle',
-    M3EShapeKind.bun => 'Bun',
-    M3EShapeKind.heart => 'Heart',
+    M3EShapeKind.circle => Get.context!.l10n.shapeCircle,
+    M3EShapeKind.square => Get.context!.l10n.shapeRoundedSquare,
+    M3EShapeKind.slanted => Get.context!.l10n.shapeSlantedSquare,
+    M3EShapeKind.arch => Get.context!.l10n.shapeArch,
+    M3EShapeKind.semiCircle => Get.context!.l10n.shapeSemiCircle,
+    M3EShapeKind.oval => Get.context!.l10n.shapeOval,
+    M3EShapeKind.pill => Get.context!.l10n.shapePill,
+    M3EShapeKind.triangle => Get.context!.l10n.shapeTriangle,
+    M3EShapeKind.arrow => Get.context!.l10n.shapeArrow,
+    M3EShapeKind.fan => Get.context!.l10n.shapeFan,
+    M3EShapeKind.diamond => Get.context!.l10n.shapeDiamond,
+    M3EShapeKind.clamShell => Get.context!.l10n.shapeClamShell,
+    M3EShapeKind.pentagon => Get.context!.l10n.shapePentagon,
+    M3EShapeKind.gem => Get.context!.l10n.shapeGem,
+    M3EShapeKind.sunny => Get.context!.l10n.shapeSunny,
+    M3EShapeKind.verySunny => Get.context!.l10n.shapeVerySunny,
+    M3EShapeKind.cookie4Sided => Get.context!.l10n.shapeCookie4,
+    M3EShapeKind.cookie6Sided => Get.context!.l10n.shapeCookie6,
+    M3EShapeKind.cookie7Sided => Get.context!.l10n.shapeCookie7,
+    M3EShapeKind.cookie9Sided => Get.context!.l10n.shapeCookie9,
+    M3EShapeKind.cookie12Sided => Get.context!.l10n.shapeCookie12,
+    M3EShapeKind.clover4Leaf => Get.context!.l10n.shapeClover4,
+    M3EShapeKind.clover8Leaf => Get.context!.l10n.shapeClover8,
+    M3EShapeKind.burst => Get.context!.l10n.shapeBurst,
+    M3EShapeKind.softBurst => Get.context!.l10n.shapeSoftBurst,
+    M3EShapeKind.boom => Get.context!.l10n.shapeBoom,
+    M3EShapeKind.softBoom => Get.context!.l10n.shapeSoftBoom,
+    M3EShapeKind.flower => Get.context!.l10n.shapeFlower,
+    M3EShapeKind.puffy => Get.context!.l10n.shapePuffy,
+    M3EShapeKind.puffyDiamond => Get.context!.l10n.shapePuffyDiamond,
+    M3EShapeKind.ghostish => Get.context!.l10n.shapeGhostish,
+    M3EShapeKind.pixelCircle => Get.context!.l10n.shapePixelCircle,
+    M3EShapeKind.pixelTriangle => Get.context!.l10n.shapePixelTriangle,
+    M3EShapeKind.bun => Get.context!.l10n.shapeBun,
+    M3EShapeKind.heart => Get.context!.l10n.shapeHeart,
   };
 }
 
 String getTileIconShapeDescription(int index) {
   if (index <= 0 || index > M3EShapeKind.values.length) {
-    return 'Default tile icon shape (Circle for M3 Expressive, Rounded Square for Classic)';
+    return Get.context!.l10n.tileShapeDefaultDesc;
   }
-  return 'Material 3 Expressive ${getTileIconShapeName(index).toLowerCase()} prefix container';
+  return Get.context!.l10n.tileShapeDesc(getTileIconShapeName(index).toLowerCase());
 }
 
 IconData getTileIconShapeIcon(int index) {

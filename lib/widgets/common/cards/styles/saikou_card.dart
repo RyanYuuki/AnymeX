@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -13,7 +15,7 @@ class SaikouCardStyle implements MediaCardStyle {
   @override
   String get displayName => 'Saikou';
   @override
-  String get description => 'Clean vertical poster card with bottom-right badge rating.';
+  String get description => Get.context!.l10n.cardSaikouDesc;
 
   @override
   double getHeight(bool isDesktop) =>

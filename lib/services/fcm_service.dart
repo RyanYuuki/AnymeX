@@ -74,7 +74,7 @@ class FcmService {
 
     final title = message.data['title']?.toString() ??
         message.notification?.title ??
-        'Notification';
+        Get.context!.l10n.notificationLabel;
 
     final description = message.data['body']?.toString() ??
         message.data['description']?.toString() ??
@@ -145,7 +145,7 @@ class FcmService {
     final context = Get.key.currentContext ?? Get.context;
     if (context == null) return;
     AnymeXDialog(
-      title: data['title']?.toString() ?? 'Notification',
+      title: data['title']?.toString() ?? Get.context!.l10n.notificationLabel,
       message: data['body']?.toString() ?? '',
       confirmText: Get.context!.l10n.okay,
       showCancelButton: false,

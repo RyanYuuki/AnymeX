@@ -969,11 +969,11 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
   String _getLastReadTitle(LibraryController controller) {
     switch (controller.type.value) {
       case ItemType.anime:
-        return 'Last Watched';
+        return context.l10n.lastWatched;
       case ItemType.manga:
-        return 'Last Read';
+        return context.l10n.lastRead;
       case ItemType.novel:
-        return 'Last Read';
+        return context.l10n.lastRead;
     }
   }
 
@@ -990,8 +990,8 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
 
   String _getProgressTitle(LibraryController controller) {
     return controller.type.value == ItemType.anime
-        ? 'Watch Progress'
-        : 'Read Progress';
+        ? context.l10n.watchProgress
+        : context.l10n.readProgress;
   }
 }
 

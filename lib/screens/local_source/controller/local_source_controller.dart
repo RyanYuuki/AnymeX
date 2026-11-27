@@ -506,13 +506,13 @@ class LocalSourceController extends GetxController
     if (viewMode.value == ViewMode.local) {
       return currentPath.isNotEmpty
           ? path.basename(currentPath.value)
-          : 'No directory selected';
+          : Get.context!.l10n.noDirectorySelected;
     } else if (viewMode.value == ViewMode.download) {
       return downloadPath.isNotEmpty
           ? path.basename(downloadPath.value)
           : 'Downloads';
     }
-    return 'No directory selected';
+    return Get.context!.l10n.noDirectorySelected;
   }
 
   int get itemCount {

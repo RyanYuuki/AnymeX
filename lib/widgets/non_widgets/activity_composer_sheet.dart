@@ -529,7 +529,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                           '||', '||', Icons.visibility_off_rounded, 'Spoiler'),
                       _buildFormatButton('`', '`', Icons.code_rounded, 'Code'),
                       _buildFormatButton('```\n', '\n```',
-                          Icons.integration_instructions_rounded, 'Code Block'),
+                          Icons.integration_instructions_rounded, context.l10n.codeBlock),
                       _buildFormatButton('[', ']()', Icons.link_rounded, 'Link'),
                       _buildFormatButton('![', ']()', Icons.image_rounded, 'Image'),
                       _buildGifButton(),
@@ -539,7 +539,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                           'Bullet List'),
                       _buildFormatButton('1. ', '',
                           Icons.format_list_numbered_rounded, 'Numbered List'),
-                      _buildFormatButton('# ', '', Icons.title_rounded, 'Header'),
+                      _buildFormatButton('# ', '', Icons.title_rounded, context.l10n.headerLabel),
                     ]
                   : [
                       _buildFormatButton(
@@ -561,13 +561,13 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                       _buildFormatButton('1. ', '',
                           Icons.format_list_numbered_rounded, 'Numbered List'),
                       _buildFormatButton(
-                          '~~~', '~~~', Icons.format_align_center_rounded, 'Center'),
-                      _buildFormatButton('# ', '', Icons.title_rounded, 'Header'),
+                          '~~~', '~~~', Icons.format_align_center_rounded, context.l10n.alignCenter),
+                      _buildFormatButton('# ', '', Icons.title_rounded, context.l10n.headerLabel),
                       _buildFormatButton(
                           '> ', '', Icons.format_quote_rounded, 'Quote'),
                       _buildFormatButton('`', '`', Icons.code_rounded, 'Code'),
                       _buildFormatButton('```\n', '\n```',
-                          Icons.integration_instructions_rounded, 'Code Block'),
+                          Icons.integration_instructions_rounded, context.l10n.codeBlock),
                     ],
             ),
           ),
@@ -666,7 +666,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
               Container(
                 margin: EdgeInsets.only(bottom: _isExpanded ? 16 : 2),
                 child: IconButton(
-                  tooltip: _isPrivate ? 'Private' : 'Public',
+                  tooltip: _isPrivate ? context.l10n.private : context.l10n.publicLabel,
                   icon: Icon(
                     _isPrivate ? Icons.lock : Icons.public,
                     color: _isPrivate

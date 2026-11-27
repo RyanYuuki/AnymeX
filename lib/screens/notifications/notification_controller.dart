@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:get/get.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/notification/notification_item.dart';
@@ -171,7 +172,7 @@ class NotificationController extends GetxController {
       _anilistHasMore = true;
       hasFetchedAnilist.value = true;
     } catch (e) {
-      anilistError.value = 'Failed to load AniList notifications';
+      anilistError.value = Get.context!.l10n.failedToLoadAnilistNotifications;
     } finally {
       isAnilistLoading.value = false;
     }
@@ -269,7 +270,7 @@ class NotificationController extends GetxController {
       _commentumService.unreadNotificationCount.value = unreadCount.value;
       _hasMore = notifications.length >= _pageSize;
     } catch (e) {
-      error.value = 'Failed to load notifications';
+      error.value = Get.context!.l10n.failedToLoadNotifications;
     } finally {
       isLoading.value = false;
     }

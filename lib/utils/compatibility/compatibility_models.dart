@@ -131,12 +131,12 @@ class MangaFormatSplit {
 
   String get displayLabel {
     final parts = <String>[];
-    if (mangaPercent > 5) parts.add('Manga ${mangaPercent.toStringAsFixed(0)}%');
+    if (mangaPercent > 5) parts.add(Get.context!.l10n.mangaPercent(mangaPercent.toStringAsFixed(0)));
     if (lightNovelPercent > 5) {
-      parts.add('LN ${lightNovelPercent.toStringAsFixed(0)}%');
+      parts.add(Get.context!.l10n.lightNovelPercent(lightNovelPercent.toStringAsFixed(0)));
     }
-    if (novelPercent > 5) parts.add('Novel ${novelPercent.toStringAsFixed(0)}%');
-    return parts.isEmpty ? 'No data' : parts.join(' · ');
+    if (novelPercent > 5) parts.add(Get.context!.l10n.novelPercent(novelPercent.toStringAsFixed(0)));
+    return parts.isEmpty ? Get.context!.l10n.noDataLabel : parts.join(' · ');
   }
 }
 

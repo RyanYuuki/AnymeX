@@ -92,7 +92,7 @@ class DesktopProfileHeader extends StatelessWidget {
     final badgeText =
         (donatorTier > 0 && donatorBadge != null && donatorBadge.isNotEmpty)
             ? donatorBadge
-            : 'AniList Member';
+            : context.l10n.aniListMember;
 
     final isDesktop = getResponsiveValue(
       context,
