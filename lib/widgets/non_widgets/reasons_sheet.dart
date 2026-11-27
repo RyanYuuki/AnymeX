@@ -327,7 +327,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
         content: AnymeXText(
           _isAdmin
               ? 'This reason will be deleted immediately.'
-              : 'Your deletion request will be sent to admins for review.',
+              : context.l10n.deletionRequestSentToAdmins,
         ),
         actions: [
           TextButton(

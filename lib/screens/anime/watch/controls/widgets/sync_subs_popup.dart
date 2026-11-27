@@ -124,8 +124,10 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                   ),
                   child: AnymeXText(
                     seconds == 0
-                        ? 'In sync'
-                        : (seconds > 0 ? 'Delayed' : 'Earlier'),
+                        ? context.l10n.subtitlesInSync
+                        : (seconds > 0
+                            ? context.l10n.delayed
+                            : context.l10n.earlier),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: seconds == 0 ? cs.primary : cs.tertiary,
                       fontWeight: FontWeight.w600,

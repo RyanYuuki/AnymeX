@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
@@ -16,7 +18,7 @@ class AniListMetadataProvider implements EpisodeMetadataProvider {
   String get name => 'AniList';
 
   @override
-  String get description => 'Streaming episode titles, thumbnails, and airing schedules directly from AniList';
+  String get description => Get.context!.l10n.anilistProviderDescription;
 
   @override
   bool supports(MetadataTargetIds ids) {

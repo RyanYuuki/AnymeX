@@ -81,7 +81,7 @@ class HistoryCardSelector extends StatelessWidget {
     poster:
         'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg',
     sourceName: 'Vumeto',
-    formattedEpisodeTitle: 'Episode 3',
+    formattedEpisodeTitle: Get.context!.l10n.episodeNumber('3'),
     progress: 243034,
     totalProgress: 1420061,
     progressTitle: Get.context!.l10n.sabitoAndMakomo,
@@ -100,7 +100,7 @@ class HistoryCardSelector extends StatelessWidget {
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-bbBWj4pEFseh.jpg',
       sourceName: 'Hianime',
-      formattedEpisodeTitle: 'Episode 12',
+      formattedEpisodeTitle: Get.context!.l10n.episodeNumber('12'),
       progress: 1100000,
       totalProgress: 1420000,
       progressTitle: Get.context!.l10n.toYouSomeday,
@@ -116,7 +116,7 @@ class HistoryCardSelector extends StatelessWidget {
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx16498-73IhOXpJZiDY.png',
       sourceName: 'AnimePahe',
-      formattedEpisodeTitle: 'Episode 75',
+      formattedEpisodeTitle: Get.context!.l10n.episodeNumber('75'),
       progress: 640000,
       totalProgress: 1420000,
       progressTitle: Get.context!.l10n.judgment,
@@ -132,7 +132,7 @@ class HistoryCardSelector extends StatelessWidget {
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx151807-m1gmSHZvlUR4.jpg',
       sourceName: 'Gogoanime',
-      formattedEpisodeTitle: 'Episode 8',
+      formattedEpisodeTitle: Get.context!.l10n.episodeNumber('8'),
       progress: 1280000,
       totalProgress: 1420000,
       progressTitle: Get.context!.l10n.thisIsFrustrating,
@@ -148,7 +148,7 @@ class HistoryCardSelector extends StatelessWidget {
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx154587-n2222m.jpg',
       sourceName: 'Vumeto',
-      formattedEpisodeTitle: 'Episode 20',
+      formattedEpisodeTitle: Get.context!.l10n.episodeNumber('20'),
       progress: 70000,
       totalProgress: 1420000,
       progressTitle: Get.context!.l10n.necessaryMurder,
@@ -165,8 +165,16 @@ class HistoryCardSelector extends StatelessWidget {
     return DynamicStyleSelector<HistoryCardStyle>(
       values: HistoryCardStyle.values,
       selectedValue: initialStyle,
-      getTitle: (style) => style.displayName,
-      getDescription: (style) => style.description,
+      getTitle: (style) => switch (style) {
+        HistoryCardStyle.regular => context.l10n.historyStyleRegular,
+        HistoryCardStyle.blurred => context.l10n.historyStyleFrostedGlass,
+        HistoryCardStyle.bootiful => style.displayName,
+      },
+      getDescription: (style) => switch (style) {
+        HistoryCardStyle.regular => context.l10n.historyStyleRegularDesc,
+        HistoryCardStyle.blurred => context.l10n.historyStyleFrostedGlassDesc,
+        HistoryCardStyle.bootiful => context.l10n.historyStyleBootifulDesc,
+      },
       buildPreview: (style) => SizedBox(
         height: getHistoryCardHeight(style, context),
         child: HistoryCardGate(

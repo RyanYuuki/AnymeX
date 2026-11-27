@@ -82,7 +82,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
                         size: 14,
                       ),
                       AnymeXText(
-                        'Casting via ${_getProtocolLabel(active.protocol)} (${active.host})',
+                        Get.context!.l10n.castingVia(_getProtocolLabel(active.protocol), active.host),
                         size: 11,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -335,7 +335,7 @@ class _CastDevicePaneState extends State<CastDevicePane> {
       case CastProtocol.roku:
         return 'ROKU';
       case CastProtocol.dlna:
-        return 'DLNA / SMART TV';
+        return Get.context!.l10n.dlnaSmartTv;
     }
   }
 

@@ -397,7 +397,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
             child: AnymeXTileBuilder<String>(
               items: languages,
               selectedItem: tempLang,
-              getTitle: (lang) => lang == 'all' ? 'All Languages' : lang,
+              getTitle: (lang) => lang == 'all' ? context.l10n.allLanguages : lang,
               lazy: true,
               onItemPressed: (lang) {
                 setDialogState(() {

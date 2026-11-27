@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/database/comments/model/discord_badge.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
@@ -26,16 +28,16 @@ class CommentumRoleConfig {
     switch (role?.toLowerCase()) {
       case 'app_owner':
       case 'appowner':
-        return 'Creator';
+        return Get.context!.l10n.roleCreator;
       case 'owner':
-        return 'Owner';
+        return Get.context!.l10n.roleOwner;
       case 'super_admin':
       case 'superadmin':
         return 'Super Admin';
       case 'admin':
         return 'Admin';
       case 'moderator':
-        return 'Mod';
+        return Get.context!.l10n.roleMod;
       default:
         return role ?? 'User';
     }

@@ -137,7 +137,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
             AnymeXText(
               widget.controller.errorMessage.value.isNotEmpty
                   ? widget.controller.errorMessage.value
-                  : 'Something went wrong while loading the pages',
+                  : context.l10n.somethingWentWrongLoadingPages,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey,
                   ),

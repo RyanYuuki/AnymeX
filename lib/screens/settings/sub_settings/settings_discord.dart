@@ -121,7 +121,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     currentVal: animeWatching,
                     defaultVal: 'Watching \$anime',
                     hintText: context.l10n.watchingAnime2,
-                    variablesHelp: 'Variables: \$anime, \$episode, \$totalEpisodes',
+                    variablesHelp: context.l10n.variablesLabel('\$anime, \$episode, \$totalEpisodes'),
                     onSave: (val) {
                       setState(() {
                         animeWatching = val;
@@ -139,7 +139,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     currentVal: animeDetails,
                     defaultVal: 'Viewing \$anime',
                     hintText: context.l10n.viewingAnime,
-                    variablesHelp: 'Variables: \$anime',
+                    variablesHelp: context.l10n.variablesLabel('\$anime'),
                     onSave: (val) {
                       setState(() {
                         animeDetails = val;
@@ -158,7 +158,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     defaultVal: 'Reading \$manga',
                     hintText: context.l10n.readingManga2,
                     variablesHelp:
-                        'Variables: \$manga, \$chapter, \$page, \$totalPages',
+                        context.l10n.variablesLabel('\$manga, \$chapter, \$page, \$totalPages'),
                     onSave: (val) {
                       setState(() {
                         mangaReading = val;
@@ -176,7 +176,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     currentVal: mangaDetails,
                     defaultVal: 'Viewing \$manga',
                     hintText: context.l10n.viewingManga,
-                    variablesHelp: 'Variables: \$manga',
+                    variablesHelp: context.l10n.variablesLabel('\$manga'),
                     onSave: (val) {
                       setState(() {
                         mangaDetails = val;
@@ -194,7 +194,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     currentVal: novelReading,
                     defaultVal: 'Reading \$novel',
                     hintText: context.l10n.readingNovel2,
-                    variablesHelp: 'Variables: \$novel, \$chapter',
+                    variablesHelp: context.l10n.variablesLabel('\$novel, \$chapter'),
                     onSave: (val) {
                       setState(() {
                         novelReading = val;
@@ -212,7 +212,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     currentVal: novelDetails,
                     defaultVal: 'Viewing \$novel',
                     hintText: context.l10n.viewingNovel,
-                    variablesHelp: 'Variables: \$novel',
+                    variablesHelp: context.l10n.variablesLabel('\$novel'),
                     onSave: (val) {
                       setState(() {
                         novelDetails = val;
@@ -230,7 +230,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     currentVal: idleFormat,
                     defaultVal: 'Browsing \$status',
                     hintText: context.l10n.browsingStatus,
-                    variablesHelp: 'Variables: \$status, \$title',
+                    variablesHelp: context.l10n.variablesLabel('\$status, \$title'),
                     onSave: (val) {
                       setState(() {
                         idleFormat = val;
@@ -284,10 +284,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 children: [
                   AnymeXText(
                     isDesktop
-                        ? 'Discord Desktop'
+                        ? context.l10n.discordDesktop
                         : (isLoggedIn
-                            ? (userData?.displayName ?? 'Discord User')
-                            : 'Connect Discord'),
+                            ? (userData?.displayName ?? context.l10n.discordUser)
+                            : context.l10n.connectDiscord),
                     variant: TextVariant.bold,
                     size: 16,
                   ),
@@ -308,12 +308,12 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                       const SizedBox(width: 6),
                       AnymeXText(
                         isDesktop
-                            ? (rpc.isConnected ? 'Connected' : 'Disconnected')
+                            ? (rpc.isConnected ? context.l10n.statusConnected : context.l10n.statusDisconnected)
                             : (isLoggedIn
                                 ? (rpc.isEnabled
-                                    ? 'Rich Presence Active'
-                                    : 'Rich Presence Disabled')
-                                : 'Not Connected'),
+                                    ? context.l10n.richPresenceActive
+                                    : context.l10n.richPresenceDisabled)
+                                : context.l10n.notConnected),
                         color: isLoggedIn && rpc.isEnabled
                             ? const Color(0xFF43B581)
                             : colors.onSurfaceVariant,

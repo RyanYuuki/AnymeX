@@ -1293,8 +1293,8 @@ class _UserProfilePageState extends State<UserProfilePage>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: AnymeXText(isPrivate
-                                  ? 'Private message sent successfully!'
-                                  : 'Message posted successfully!'),
+                                  ? Get.context!.l10n.privateMessageSentSuccess
+                                  : Get.context!.l10n.messagePostedSuccess),
                               backgroundColor: Colors.green,
                             ),
                           );

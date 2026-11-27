@@ -372,7 +372,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               ..._MangaSortMode.values.map((mode) {
                 final selected = _sortMode == mode;
                 final label = {
-                  _MangaSortMode.lastUpdated: 'Last Updated',
+                  _MangaSortMode.lastUpdated: Get.context!.l10n.lastUpdated,
                   _MangaSortMode.score: 'Score',
                   _MangaSortMode.title: context.l10n.title,
                   _MangaSortMode.releaseDate: 'Release Date',
@@ -509,8 +509,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                           borderRadius: BorderRadius.circular(14))),
                   child: AnymeXText(
                     tempSelected.isEmpty
-                        ? 'Show All'
-                        : 'Apply (${tempSelected.length})',
+                        ? context.l10n.showAll
+                        : context.l10n.applyCount(tempSelected.length),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -723,8 +723,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
               AnymeXText(_selectedGenres.isNotEmpty
-                  ? 'Filter genres (${_selectedGenres.length})'
-                  : 'Filter genres'),
+                  ? context.l10n.filterGenresCount(_selectedGenres.length)
+                  : context.l10n.filterGenres),
             ],
           ),
         ),
@@ -747,7 +747,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
               AnymeXText(
-                  _isReversed ? 'Default tab order' : 'Reverse tabs'),
+                  _isReversed ? context.l10n.defaultTabOrder : context.l10n.reverseTabs),
             ],
           ),
         ),
@@ -775,7 +775,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
       showHeader: true,
       headerTitle: widget.title ?? 'Manga List',
       headerSubtitle: _selectedGenres.isNotEmpty
-          ? '${_selectedGenres.length} genre(s) filtered'
+          ? context.l10n.genresFilteredCount(_selectedGenres.length)
           : '${activeMediaList.length} Manga',
       headerEnableSearch: true,
       headerSearchController: _searchController,
@@ -812,8 +812,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                         const SizedBox(height: 12),
                         AnymeXText(
                           _searchQuery.isNotEmpty || _selectedGenres.isNotEmpty
-                              ? 'No matches found'
-                              : 'No entries in $tab',
+                              ? context.l10n.noMatchesFound
+                              : context.l10n.noEntriesInTab(tab),
                           style: TextStyle(
                               color: colors.onSurfaceVariant.withOpacity(0.6)),
                         ),

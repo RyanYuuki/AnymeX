@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:anymex/widgets/non_widgets/torrent_server_overlay.dart';
@@ -76,25 +77,25 @@ class TorrentService {
     if (!isInstalled) {
       TorrentServerOverlay.show(
         addon: torr,
-        status: 'Downloading Torrent Server...',
+        status: Get.context!.l10n.downloadingTorrentServer,
       );
 
       try {
         await torr.install();
-        TorrentServerOverlay.updateStatus('Starting Torrent Server...');
+        TorrentServerOverlay.updateStatus(Get.context!.l10n.startingTorrentServer);
       } catch (e) {
-        TorrentServerOverlay.showError('Failed to download server: $e');
+        TorrentServerOverlay.showError(Get.context!.l10n.failedToDownloadServer(e.toString()));
         rethrow;
       }
     }
 
     try {
       if (!torr.isRunning) {
-        TorrentServerOverlay.updateStatus('Starting Torrent Server...');
+        TorrentServerOverlay.updateStatus(Get.context!.l10n.startingTorrentServer);
         await torr.ensureStarted();
       }
     } catch (e) {
-      TorrentServerOverlay.showError('Failed to start server: $e');
+      TorrentServerOverlay.showError(Get.context!.l10n.failedToStartServer(e.toString()));
       rethrow;
     }
 
@@ -109,10 +110,10 @@ class TorrentService {
   }) async {
     _autoStopTimer?.cancel();
     final torr = await ensureTorrServerReady(
-      contextMessage: 'Preparing torrent stream...',
+      contextMessage: Get.context!.l10n.preparingTorrentStream,
     );
 
-    TorrentServerOverlay.updateStatus('Resolving torrent stream...');
+    TorrentServerOverlay.updateStatus(Get.context!.l10n.resolvingTorrentStream);
     _activeStreams++;
 
     try {
@@ -126,7 +127,7 @@ class TorrentService {
       return streamUrl;
     } catch (e) {
       _activeStreams = math.max(0, _activeStreams - 1);
-      TorrentServerOverlay.showError('Failed to start torrent: $e');
+      TorrentServerOverlay.showError(Get.context!.l10n.failedToStartTorrent(e.toString()));
       _scheduleAutoStop();
       rethrow;
     }
@@ -143,7 +144,7 @@ class TorrentService {
   Future<TorrServerAddon> acquireDownload() async {
     _autoStopTimer?.cancel();
     final torr = await ensureTorrServerReady(
-      contextMessage: 'Preparing torrent download...',
+      contextMessage: Get.context!.l10n.preparingTorrentDownload,
     );
     _activeDownloads++;
     TorrentServerOverlay.dismiss();

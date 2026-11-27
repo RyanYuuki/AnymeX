@@ -111,7 +111,7 @@ class Liquid {
                         const SizedBox(height: 20),
                         AnymeXText(
                           progressController.currentStep.value.isEmpty
-                              ? 'Initializing...'
+                              ? Get.context!.l10n.initializingEllipsis
                               : progressController.currentStep.value,
                           textAlign: TextAlign.center,
                           style:
@@ -142,7 +142,7 @@ class Liquid {
       );
 
       progressController.setProcessing(true);
-      progressController.updateProgress('Preparing to process image...', 0.05);
+      progressController.updateProgress(Get.context!.l10n.preparingToProcessImage, 0.05);
 
       await _processAndSaveBlurredImageCustom(
         imagePath: imagePath,
@@ -175,7 +175,7 @@ class Liquid {
     bool isMesh = false,
   }) async {
     try {
-      progressController.updateProgress('Clearing previous background...', 0.1);
+      progressController.updateProgress(Get.context!.l10n.clearingPreviousBackground, 0.1);
       await _clearLiquidBackground();
 
       final Directory targetDir = await getLiquidBackgroundDirectory();
@@ -183,7 +183,7 @@ class Liquid {
           'liquid_background_${DateTime.now().microsecondsSinceEpoch}.jpg');
 
       progressController.updateProgress(
-          'Initializing GPU acceleration...', 0.15);
+          Get.context!.l10n.initializingGpuAcceleration, 0.15);
 
       final File originalFile = File(imagePath);
       final Uint8List imageBytes = await originalFile.readAsBytes();
@@ -202,12 +202,12 @@ class Liquid {
 
       if (gpuResult != null) {
         progressController.updateProgress(
-            'Saving GPU-processed image...', 0.95);
+            Get.context!.l10n.savingGpuProcessedImage, 0.95);
         await File(savedPath).writeAsBytes(gpuResult);
         result = savedPath;
       } else {
         progressController.updateProgress(
-            'Falling back to CPU optimization...', 0.4);
+            Get.context!.l10n.fallingBackToCpu, 0.4);
 
         final ReceivePort progressPort = ReceivePort();
         progressPort.listen((data) {
@@ -236,16 +236,16 @@ class Liquid {
       }
 
       if (result != null) {
-        progressController.updateProgress('Applying new background...', 0.98);
+        progressController.updateProgress(Get.context!.l10n.applyingNewBackground, 0.98);
         final settings = Get.find<Settings>();
         settings.liquidBackgroundPath = result;
         Logger.i('Liquid background saved successfully: $result');
 
         progressController.updateProgress(
-            'Background applied successfully! ✓', 1.0);
+            Get.context!.l10n.backgroundAppliedSuccessfully, 1.0);
         await Future.delayed(const Duration(milliseconds: 800));
       } else {
-        progressController.updateProgress('Failed to process image', 0.0);
+        progressController.updateProgress(Get.context!.l10n.failedToProcessImage, 0.0);
         Logger.i('Failed to process image');
         await Future.delayed(const Duration(seconds: 2));
       }

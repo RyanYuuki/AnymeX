@@ -628,7 +628,9 @@ class _ImageThumbnail extends StatelessWidget {
   const _ImageThumbnail({
     required this.image,
     required this.colorScheme,
-  }) : defaultMaxHeight = 180.0 : defaultMaxWidth = 260.0;
+    this.defaultMaxHeight = 180.0,
+    this.defaultMaxWidth = 260.0,
+  });
 
   final CommentMediaImage image;
   final ColorScheme colorScheme;

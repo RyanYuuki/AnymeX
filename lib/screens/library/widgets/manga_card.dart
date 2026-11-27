@@ -22,7 +22,7 @@ class MangaHistoryCard extends StatelessWidget {
 
   String _formatEpisodeNumber() {
     final episode = data.currentChapter;
-    if (episode == null) return 'Chapter ??';
+    if (episode == null) return Get.context!.l10n.chapterUnknown;
     return 'Chapter ${episode.number}';
   }
 
@@ -62,7 +62,8 @@ class MangaHistoryCard extends StatelessWidget {
                 .getMangaExtensionByName(data.currentChapter!.sourceName!);
             if (source == null) {
               snackBar(
-                  "Install ${data.currentChapter?.sourceName} First, Then Click");
+                  Get.context!.l10n.installSourceFirstThenClick(
+            data.currentChapter?.sourceName ?? ''));
             } else {
               navigate(() => ReadingPage(
                     anilistData: convertOfflineToMedia(data),
@@ -208,7 +209,7 @@ class MangaHistoryCard extends StatelessWidget {
 
 //   String _formatEpisodeNumber() {
 //     final episode = data.currentChapter;
-//     if (episode == null) return 'Chapter ??';
+//     if (episode == null) return Get.context!.l10n.chapterUnknown;
 //     return 'Chapter ${episode.number}';
 //   }
 
@@ -244,7 +245,8 @@ class MangaHistoryCard extends StatelessWidget {
 //                 .getMangaExtensionByName(data.currentChapter!.sourceName!);
 //             if (source == null) {
 //               snackBar(
-//                   "Install ${data.currentChapter?.sourceName} First, Then Click");
+//                   Get.context!.l10n.installSourceFirstThenClick(
+//                       data.currentChapter?.sourceName ?? ''));
 //             } else {
 //               navigate(() => ReadingPage(
 //                     anilistData: convertOfflineToMedia(data),

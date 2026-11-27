@@ -188,8 +188,9 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: AnymeXText(controller.currentChapter.value.title ??
-                          'Unknown Chapter',
+                    child: AnymeXText(
+                      controller.currentChapter.value.title ??
+                          context.l10n.unknownChapter,
                       size: isDesktop ? 14 : 12,
                       variant: TextVariant.regular,
                       color: context.colors.onSurface.opaque(0.8),
@@ -269,8 +270,9 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: AnymeXText(controller.currentChapter.value.title ??
-                          'Unknown Chapter',
+                    child: AnymeXText(
+                      controller.currentChapter.value.title ??
+                          context.l10n.unknownChapter,
                       size: isDesktop ? 14 : 12,
                       variant: TextVariant.regular,
                       color: context.colors.onSurface.opaque(0.8),

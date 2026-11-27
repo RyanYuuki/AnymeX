@@ -32,8 +32,8 @@ class MediaShare {
                   leading: const Icon(Icons.public_rounded),
                   title: AnymeXText(
                     resolvedService == null
-                        ? 'Share tracking link'
-                        : 'Share ${_serviceLabel(resolvedService)} link',
+                        ? Get.context!.l10n.shareTrackingLink
+                        : Get.context!.l10n.shareServiceLink(_serviceLabel(resolvedService)),
                   ),
                   subtitle:
                       AnymeXText(Get.context!.l10n.shareWithYourSelectedTrackingService),
@@ -48,7 +48,7 @@ class MediaShare {
                     await _shareLink(
                       link: link,
                       fallbackMessage:
-                          'Tracking link unavailable for this media.',
+                          Get.context!.l10n.trackingLinkUnavailable,
                       title: hydratedMedia?.title ?? baseMedia.title,
                     );
                   },
@@ -68,7 +68,7 @@ class MediaShare {
                     await _shareLink(
                       link: link,
                       fallbackMessage:
-                          'AnymeX link unavailable for this media.',
+                          Get.context!.l10n.anymexLinkUnavailable,
                       title: hydratedMedia?.title ?? baseMedia.title,
                     );
                   },
@@ -117,7 +117,7 @@ class MediaShare {
       case ServicesType.simkl:
         return 'Simkl';
       case ServicesType.extensions:
-        return 'Tracking';
+        return Get.context!.l10n.trackingLabel;
     }
   }
 

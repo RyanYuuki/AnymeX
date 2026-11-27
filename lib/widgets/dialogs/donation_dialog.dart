@@ -198,8 +198,8 @@ class DonationDialog extends StatelessWidget {
                     final count = AdSupportService.instance.watchedCount.value;
                     return AnymeXText(
                       count > 0
-                          ? 'Watched: $count • Points rewarded next update'
-                          : 'Watch a quick ad to support us for free',
+                          ? context.l10n.adsWatchedPointsNextUpdate(count)
+                          : context.l10n.watchAdToSupport,
                       size: 11,
                       color: count > 0
                           ? context.colors.primary

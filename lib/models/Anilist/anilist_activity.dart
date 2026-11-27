@@ -1,15 +1,17 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 String formatTimeAgo(int unixSeconds) {
   final now = DateTime.now();
   final time = DateTime.fromMillisecondsSinceEpoch(unixSeconds * 1000);
   final diff = now.difference(time);
 
-  if (diff.inMinutes < 1) return 'Just now';
-  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-  if (diff.inHours < 24) return '${diff.inHours}h ago';
-  if (diff.inDays < 7) return '${diff.inDays}d ago';
-  if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
-  if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
-  return '${(diff.inDays / 365).floor()}y ago';
+  if (diff.inMinutes < 1) return Get.context!.l10n.justNowLabel;
+  if (diff.inMinutes < 60) return Get.context!.l10n.minutesAgoShort((diff.inMinutes).toString());
+  if (diff.inHours < 24) return Get.context!.l10n.hoursAgoShort((diff.inHours).toString());
+  if (diff.inDays < 7) return Get.context!.l10n.daysAgoShort((diff.inDays).toString());
+  if (diff.inDays < 30) return Get.context!.l10n.weeksAgoShort(((diff.inDays / 7).floor()).toString());
+  if (diff.inDays < 365) return Get.context!.l10n.monthsAgoShort(((diff.inDays / 30).floor()).toString());
+  return Get.context!.l10n.yearsAgoShort(((diff.inDays / 365).floor()).toString());
 }
 
 class ActivityLiker {

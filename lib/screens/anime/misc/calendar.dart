@@ -104,7 +104,7 @@ class _CalendarState extends State<Calendar>
           hasError = true;
           final raw = e.toString().replaceFirst('Exception: ', '').trim();
           errorMessage =
-              raw.isNotEmpty ? raw : 'Failed to load Simkl calendar data';
+              raw.isNotEmpty ? raw : context.l10n.failedToLoadSimklCalendar;
         });
       });
     } else {
@@ -124,7 +124,7 @@ class _CalendarState extends State<Calendar>
           hasError = true;
           final raw = e.toString().replaceFirst('Exception: ', '').trim();
           errorMessage =
-              raw.isNotEmpty ? raw : 'Failed to load AniList calendar data';
+              raw.isNotEmpty ? raw : context.l10n.failedToLoadAnilistCalendar;
         });
       });
     }
@@ -278,7 +278,7 @@ class _CalendarState extends State<Calendar>
           if (isAnilist)
             IconButton(
               onPressed: _toggleDub,
-              tooltip: isDubMode.value ? 'Show All Anime' : 'Dubbed Only',
+              tooltip: isDubMode.value ? context.l10n.showAllAnime : context.l10n.dubbedOnly,
               icon: Icon(
                 isDubMode.value
                     ? HugeIcons.strokeRoundedMicOff01
@@ -290,7 +290,7 @@ class _CalendarState extends State<Calendar>
           if (serviceHandler.isLoggedIn.value)
             IconButton(
               onPressed: changeListType,
-              tooltip: includeList ? 'In My List' : 'All Anime',
+              tooltip: includeList ? context.l10n.inMyList : context.l10n.allAnime,
               icon: Icon(
                 !includeList ? Icons.book_rounded : Icons.text_snippet_sharp,
                 size: 20,
@@ -298,7 +298,7 @@ class _CalendarState extends State<Calendar>
             ),
           IconButton(
             onPressed: changeLayout,
-            tooltip: isGrid ? 'List Layout' : 'Grid Layout',
+            tooltip: isGrid ? context.l10n.listLayout : context.l10n.gridLayout,
             icon: Icon(
               isGrid ? Icons.grid_view_rounded : Icons.view_list,
               size: 20,
@@ -324,7 +324,7 @@ class _CalendarState extends State<Calendar>
 
       final count = list.length;
       final dayLabel = index == 0
-          ? 'Today'
+          ? context.l10n.todayLabel
           : (index == 1 ? 'Tomorrow' : DateFormat('EEE').format(date));
       final dateLabel = DateFormat('MMM d').format(date);
 
@@ -438,11 +438,11 @@ class _CalendarState extends State<Calendar>
       String subtitleText;
       if (isDubMode.value && isAnilist) {
         subtitleText =
-            isFetching.value ? 'Fetching dubs...' : 'Dubbed Only';
+            isFetching.value ? context.l10n.fetchingDubsEllipsis : context.l10n.dubbedOnly;
       } else if (isSimkl) {
-        subtitleText = 'Simkl Schedule';
+        subtitleText = context.l10n.simklSchedule;
       } else {
-        subtitleText = 'AniList Schedule';
+        subtitleText = context.l10n.anilistSchedule;
       }
 
       return AnymeXScaffold(
@@ -554,13 +554,13 @@ class _CalendarState extends State<Calendar>
               ),
             ),
             const SizedBox(height: 24),
-            const AnymeXText.bold(
-              'Oops! Something went wrong',
+            AnymeXText.bold(
+              context.l10n.oopsSomethingWentWrong,
               size: 18,
             ),
             const SizedBox(height: 8),
             AnymeXText.regular(
-              errorMessage ?? 'Failed to load calendar data',
+              errorMessage ?? context.l10n.failedToLoadCalendarData,
               textAlign: TextAlign.center,
               size: 14,
               color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -622,7 +622,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
     final difference = airDateTime.difference(now);
 
     if (difference.isNegative) {
-      return 'Aired';
+      return context.l10n.airedLabel;
     }
 
     if (difference.inDays > 0) {
@@ -932,7 +932,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
 
   String formatTime(int seconds) {
     if (seconds <= 0) {
-      return 'Aired Already';
+      return context.l10n.airedAlready;
     } else {
       int days = seconds ~/ (24 * 3600);
       seconds %= 24 * 3600;

@@ -188,7 +188,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                         : itemWidth * 2 + 15,
                     child: ImageButton(
                       height: buttonHeight,
-                      subText: 'Calendar, AI Picks and more',
+                      subText: Get.context!.l10n.calendarAiPicksAndMore,
                       buttonText: context.l10n.otherUpper,
                       borderRadius: 16.multiplyRadius(),
                       backgroundImage: otherButtonMedia?.cover ?? '',

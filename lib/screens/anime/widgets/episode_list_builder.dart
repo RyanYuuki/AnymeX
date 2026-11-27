@@ -1080,7 +1080,16 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                                 .clamp(0, chunkedEpisodes.length - 1);
                             final chunkLabel = safeChunkIndex == 0
                                 ? 'All'
-                                : 'Ep ${formatEpisodeNumberLabel(chunkedEpisodes[safeChunkIndex].first.number)}–${formatEpisodeNumberLabel(chunkedEpisodes[safeChunkIndex].last.number)}';
+                                : context.l10n.epRange(
+                                    formatEpisodeNumberLabel(
+                                        chunkedEpisodes[safeChunkIndex]
+                                            .first
+                                            .number),
+                                    formatEpisodeNumberLabel(
+                                        chunkedEpisodes[safeChunkIndex]
+                                            .last
+                                            .number),
+                                  );
 
                             return AnymeXPopupMenuButton<int>(
                               title: context.l10n.episodeRange,
@@ -1089,8 +1098,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
                                   (index) {
                                 final isSelected = safeChunkIndex == index;
                                 final label = index == 0
-                                    ? 'All (${_cachedEpisodesToShow.length})'
-                                    : 'Ep ${formatEpisodeNumberLabel(chunkedEpisodes[index].first.number)}–${formatEpisodeNumberLabel(chunkedEpisodes[index].last.number)} (${chunkedEpisodes[index].length})';
+                                    ? context.l10n.allWithCount(
+                                        '${_cachedEpisodesToShow.length}')
+                                    : context.l10n.epRangeWithCount(
+                                        formatEpisodeNumberLabel(
+                                            chunkedEpisodes[index]
+                                                .first
+                                                .number),
+                                        formatEpisodeNumberLabel(
+                                            chunkedEpisodes[index].last.number),
+                                        '${chunkedEpisodes[index].length}',
+                                      );
                                 return AnymeXMenuItem<int>(
                                   title: label,
                                   value: index,
@@ -1444,7 +1462,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
       builder: (ctx) => AlertDialog(
         title: AnymeXText(context.l10n.deleteEpisode, variant: TextVariant.bold),
         content: AnymeXText(
-            'Are you sure you want to delete Episode ${epMeta.episode.number}?'),
+            context.l10n.confirmDeleteEpisode('${epMeta.episode.number}')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -1613,7 +1631,8 @@ class ContinueEpisodeButton extends StatelessWidget {
         final resolvedTitle = (isGenericMovie || isMovieMedia)
             ? (data.title.isNotEmpty ? data.title : "Episode ${episode.number}")
             : rawTitle;
-        final episodeLabel = 'Episode ${episode.number}: $resolvedTitle';
+        final episodeLabel = context.l10n
+            .episodeNumberTitle('${episode.number}', resolvedTitle);
         final double progressPercentage;
         if (progressEpisode.number != episode.number ||
             progressEpisode.timeStampInMilliseconds == null ||

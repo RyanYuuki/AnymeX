@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -17,7 +18,7 @@ class ClassicNavBarStyle extends NavBarStyleDef {
   String get displayName => 'Classic';
 
   @override
-  String get description => 'Pill indicator with icon and label';
+  String get description => Get.context!.l10n.navbarClassicDesc;
 
   @override
   Widget buildNavBar(BuildContext context, NavBarProps props) {

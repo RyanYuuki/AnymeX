@@ -108,7 +108,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
 
   @override
   Widget build(BuildContext context) {
-    final username = widget.user.displayName ?? 'Unknown User';
+    final username = widget.user.displayName ?? context.l10n.unknownUser;
     final avatarUrl = widget.user.displayAvatar;
     final isAdmin = widget.user.isAdmin;
 
@@ -205,16 +205,16 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
             Tab(text: context.l10n.all3(allItems.length.toString())),
             Tab(
                 text:
-                    'Anime (${allItems.where((i) => i.category == 'anime').length})'),
+                    context.l10n.animeCountTab(allItems.where((i) => i.category == 'anime').length)),
             Tab(
                 text:
-                    'Manga (${allItems.where((i) => i.category == 'manga').length})'),
+                    context.l10n.mangaCountTab(allItems.where((i) => i.category == 'manga').length)),
             Tab(
                 text:
-                    'Shows (${allItems.where((i) => i.category == 'shows').length})'),
+                    context.l10n.showsCountTab(allItems.where((i) => i.category == 'shows').length)),
             Tab(
                 text:
-                    'Movies (${allItems.where((i) => i.category == 'movies').length})'),
+                    context.l10n.moviesCountTab(allItems.where((i) => i.category == 'movies').length)),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,7 @@ class ShaderOsd extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 AnymeXText(
-                  isCleared ? 'Shaders Disabled' : shaderName,
+                  isCleared ? context.l10n.shadersDisabled : shaderName,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,

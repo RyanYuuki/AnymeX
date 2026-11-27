@@ -26,7 +26,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   final data = message.data;
-  final title = data['title'] as String? ?? 'Notification';
+  final title = data['title'] as String? ?? Get.context!.l10n.notificationLabel;
   final body = data['body'] as String? ?? '';
   final actorAvatar = data['actor_avatar'] as String?;
   final channelId = data['channel_id'] as String? ?? 'comments';
@@ -96,15 +96,15 @@ String _getChannelName(String channelId) {
     case 'moderation':
       return 'Moderation';
     case 'reports':
-      return 'Reports';
+      return Get.context!.l10n.reportsLabel;
     case 'announcements':
       return 'Announcements';
     case 'mentions':
       return 'Mentions';
     case 'anilist_airing':
-      return 'Airing Anime';
+      return Get.context!.l10n.airingAnime;
     case 'anilist_social':
-      return 'Social & Activity';
+      return Get.context!.l10n.socialAndActivity;
     case 'downloads':
       return 'Downloads';
     default:
@@ -209,7 +209,7 @@ class NotificationService extends GetxController {
       await androidPlugin
           .createNotificationChannel(AndroidNotificationChannel(
         'reports',
-        'Reports',
+        Get.context!.l10n.reportsLabel,
         description: Get.context!.l10n.reportFiledResolvedDismissed,
         importance: Importance.defaultImportance,
       ));
@@ -230,14 +230,14 @@ class NotificationService extends GetxController {
       await androidPlugin
           .createNotificationChannel(AndroidNotificationChannel(
         'anilist_airing',
-        'Airing Anime',
+        Get.context!.l10n.airingAnime,
         description: Get.context!.l10n.notificationsForNewAnimeEpisodeReleases,
         importance: Importance.high,
       ));
       await androidPlugin
           .createNotificationChannel(AndroidNotificationChannel(
         'anilist_social',
-        'Social & Activity',
+        Get.context!.l10n.socialAndActivity,
         description: Get.context!.l10n.notificationsForFollowsMentionsAndLikes,
         importance: Importance.defaultImportance,
       ));

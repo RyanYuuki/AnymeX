@@ -155,8 +155,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       size: 20,
                     ),
                     tooltip: _isCardView
-                        ? 'Switch to List View'
-                        : 'Switch to Card View',
+                        ? context.l10n.switchToListView
+                        : context.l10n.switchToCardView,
                   ),
                 ),
               ],

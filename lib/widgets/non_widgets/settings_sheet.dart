@@ -250,7 +250,7 @@ class SettingsSheet extends StatelessWidget {
                       ),
                       const SizedBox(width: 5),
                       AnymeXText(
-                        isLoggedIn ? 'Logout' : 'Login',
+                        isLoggedIn ? context.l10n.logoutAction : context.l10n.login,
                         size: 12,
                         variant: TextVariant.semiBold,
                         color: isLoggedIn ? colors.error : colors.primary,
@@ -459,8 +459,8 @@ class SettingsSheet extends StatelessWidget {
                 settingsController.toggleIncognito();
                 snackBar(
                   settingsController.isIncognito.value
-                      ? 'Incognito mode enabled. History & sync paused.'
-                      : 'Incognito mode disabled.',
+                      ? context.l10n.incognitoEnabled2
+                      : context.l10n.incognitoDisabled2,
                 );
               },
             )),

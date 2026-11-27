@@ -152,7 +152,7 @@ class _ChapterPill extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXText(
-                      chapter?.title ?? 'Unknown Chapter',
+                      chapter?.title ?? context.l10n.unknownChapter,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -163,7 +163,10 @@ class _ChapterPill extends StatelessWidget {
                       ),
                     ),
                     AnymeXText(
-                      'Ch. ${_fmt(chapter?.number)} · ${controller.chapterList.length} total',
+                      context.l10n.chTotalLabel(
+                        _fmt(chapter?.number),
+                        '${controller.chapterList.length}',
+                      ),
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.6),
                         fontSize: 10.5,
@@ -208,7 +211,7 @@ class _PagePill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final label = switch (controller.loadingState.value) {
-        LoadingState.loading => 'Loading…',
+        LoadingState.loading => context.l10n.loadingEllipsisUnicode,
         LoadingState.error => 'Error',
         LoadingState.loaded =>
           '${controller.currentPageIndex.value} / ${controller.pageList.length}',
@@ -405,7 +408,10 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
-  }) : blurSigma = 24 : tintAlpha = 0.28 : edgeAlpha = 0.34;
+    this.blurSigma = 24,
+    this.tintAlpha = 0.28,
+    this.edgeAlpha = 0.34,
+  });
 
   final Widget child;
   final double? width;

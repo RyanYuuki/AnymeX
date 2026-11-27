@@ -414,8 +414,8 @@ class _WatchTogetherPopupContentState
                       const SizedBox(height: 4),
                       AnymeXText(
                         'This extension routes video through an internal device proxy or IP-locked stream that cannot be shared with friends.\n\n'
-                        'Please switch to a different extension to host a Watch Together room. If you need help or recommendations for working extensions, feel free to ask in our Discord or Telegram support channels.\n\n'
-                        'We are working on a solution to support all extensions in an upcoming update.',
+                        '${context.l10n.watchTogetherUnsupportedExtensionBody}'
+                        '${context.l10n.watchTogetherUpcomingSupportNote}',
                         size: 11,
                         color: cs.onSurface.opaque(0.75),
                       ),
@@ -492,8 +492,10 @@ class _WatchTogetherPopupContentState
                   ),
             label: AnymeXText(
               _isCreating
-                  ? 'Creating...'
-                  : (isLocalProxy ? 'Extension Unsupported' : 'Create Room'),
+                  ? context.l10n.creatingEllipsis
+                  : (isLocalProxy
+                      ? context.l10n.extensionUnsupported
+                      : context.l10n.createRoom),
               variant: TextVariant.semiBold,
               size: 14,
               color: isLocalProxy ? cs.onSurface.opaque(0.4) : cs.onPrimary,
@@ -609,7 +611,7 @@ class _WatchTogetherPopupContentState
   Future<void> _createRoom() async {
     if (_hasLocalProxyStreams()) {
       warningSnackBar(
-        'This extension is not supported for rooms yet. Please switch to a different extension.',
+        context.l10n.extensionNotSupportedForRoomsYet,
         title: context.l10n.unsupportedExtension,
       );
       return;

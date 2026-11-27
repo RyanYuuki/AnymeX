@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/database/comments/model/discord_badge.dart';
 
 class LeaderboardBonusTag {
@@ -78,20 +80,20 @@ class LeaderboardEntry {
       bonusTag = LeaderboardBonusTag(
         text: '∞',
         color: '#FFD700',
-        label: role == 'app_owner' ? 'App Creator' : 'Commentum Owner',
+        label: role == 'app_owner' ? Get.context!.l10n.badgeAppCreator : Get.context!.l10n.badgeCommentumOwner,
       );
     } else if (roleBonus > 0) {
       String color = '#5865F2';
-      String label = 'Staff Bonus';
+      String label = Get.context!.l10n.staffBonus;
       if (role == 'super_admin') {
         color = '#ED4245';
-        label = 'SuperAdmin';
+        label = Get.context!.l10n.roleSuperAdmin;
       } else if (role == 'admin') {
         color = '#E67E22';
         label = 'Admin';
       } else if (role == 'moderator') {
         color = '#5865F2';
-        label = 'Mod';
+        label = Get.context!.l10n.roleMod;
       }
       bonusTag =
           LeaderboardBonusTag(text: '+$roleBonus', color: color, label: label);

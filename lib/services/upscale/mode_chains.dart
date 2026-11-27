@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'shader_registry.dart';
 
 const String defaultSuperResolutionMode = 'Manga: Crisp Lines';
@@ -14,24 +16,24 @@ class SuperResolutionPreset {
   });
 }
 
-const List<SuperResolutionPreset> superResolutionPresets = [
+List<SuperResolutionPreset> get superResolutionPresets => [
   SuperResolutionPreset(
     id: 'Manga: Crisp Lines',
-    title: 'Manga (Crisp Lines)',
+    title: Get.context!.l10n.upscaleMangaCrispLines,
     description:
-        'Contrast-adaptive ink & text sharpening that preserves screentones without moire',
+        Get.context!.l10n.upscaleMangaCrispLinesDesc,
   ),
   SuperResolutionPreset(
     id: 'Webtoon: Clean & Vibrant',
-    title: 'Webtoon (Clean & Vibrant)',
+    title: Get.context!.l10n.upscaleWebtoonClean,
     description:
-        'Cleans JPEG compression ringing & enhances colors for digital manhwa',
+        Get.context!.l10n.upscaleWebtoonCleanDesc,
   ),
   SuperResolutionPreset(
     id: 'Ultra: Adaptive Sharpness',
-    title: 'Ultra Sharp (CAS)',
+    title: Get.context!.l10n.upscaleUltraSharp,
     description:
-        'High-fidelity adaptive edge sharpening for soft or low-res scanlations',
+        Get.context!.l10n.upscaleUltraSharpDesc,
   ),
 ];
 

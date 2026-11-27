@@ -37,7 +37,7 @@ class StatisticsPage extends StatelessWidget {
                 final library = snapshot.data ?? [];
                 return _buildLibrarySection(
                   context,
-                  'Anime Count: ${library.length}',
+                  context.l10n.animeCountLabel(library.length),
                   library,
                 );
               },
@@ -56,7 +56,7 @@ class StatisticsPage extends StatelessWidget {
                 final library = snapshot.data ?? [];
                 return _buildLibrarySection(
                   context,
-                  'Manga Count: ${library.length}',
+                  context.l10n.mangaCountLabel(library.length),
                   library,
                 );
               },
@@ -75,7 +75,7 @@ class StatisticsPage extends StatelessWidget {
                 final library = snapshot.data ?? [];
                 return _buildLibrarySection(
                   context,
-                  'Novel Count: ${library.length}',
+                  context.l10n.novelCountLabel(library.length),
                   library,
                 );
               },
@@ -164,7 +164,7 @@ class StatisticsPage extends StatelessWidget {
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                      title: AnymeXText(media.name ?? 'Unnamed Media'),
+                      title: AnymeXText(media.name ?? context.l10n.unnamedMedia),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -230,7 +230,7 @@ class StatisticsPage extends StatelessWidget {
                                 ]
                               : listData.map((media) {
                                   return ListTile(
-                                    title: AnymeXText(media.name ?? 'Unnamed Media'),
+                                    title: AnymeXText(media.name ?? context.l10n.unnamedMedia),
                                     subtitle: AnymeXText(context.l10n.id(media.mediaId.toString())),
                                   );
                                 }).toList(),

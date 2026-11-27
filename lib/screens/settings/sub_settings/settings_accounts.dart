@@ -154,7 +154,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
       return AnymeXTile(
         leading: _buildServiceIcon(context, avatar, isLogged, serviceIcon),
         title: title,
-        subtitle: isLogged ? 'Connected as $username' : 'Not connected',
+        subtitle: isLogged ? context.l10n.connectedAs(username) : context.l10n.notConnected,
         subtitleStyle: isLogged
             ? TextStyle(
                 color: colors.primary,

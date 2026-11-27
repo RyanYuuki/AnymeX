@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
@@ -15,7 +17,7 @@ class SimklMetadataProvider implements EpisodeMetadataProvider {
 
   @override
   String get description =>
-      'Episode metadata, descriptions, air dates, and thumbnails via Simkl API';
+      Get.context!.l10n.simklProviderDescription;
 
   @override
   bool supports(MetadataTargetIds ids) {

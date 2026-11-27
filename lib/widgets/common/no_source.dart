@@ -50,8 +50,8 @@ class NoSourceSelectedWidget extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           AnymeXText(isMobile
-                ? 'Install a source extension to start browsing content.'
-                : 'Go back to the home page and install a source extension.',
+                ? context.l10n.installSourceToBrowse
+                : context.l10n.goBackHomeInstallSource,
             size: 13,
             color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
             textAlign: TextAlign.center,

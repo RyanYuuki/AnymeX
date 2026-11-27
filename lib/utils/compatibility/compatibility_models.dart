@@ -131,12 +131,12 @@ class MangaFormatSplit {
 
   String get displayLabel {
     final parts = <String>[];
-    if (mangaPercent > 5) parts.add('Manga ${mangaPercent.toStringAsFixed(0)}%');
+    if (mangaPercent > 5) parts.add(Get.context!.l10n.mangaPercent(mangaPercent.toStringAsFixed(0)));
     if (lightNovelPercent > 5) {
-      parts.add('LN ${lightNovelPercent.toStringAsFixed(0)}%');
+      parts.add(Get.context!.l10n.lightNovelPercent(lightNovelPercent.toStringAsFixed(0)));
     }
-    if (novelPercent > 5) parts.add('Novel ${novelPercent.toStringAsFixed(0)}%');
-    return parts.isEmpty ? 'No data' : parts.join(' · ');
+    if (novelPercent > 5) parts.add(Get.context!.l10n.novelPercent(novelPercent.toStringAsFixed(0)));
+    return parts.isEmpty ? Get.context!.l10n.noDataLabel : parts.join(' · ');
   }
 }
 
@@ -216,7 +216,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 100.01,
     description: Get.context!.l10n.youAreBasicallyTheSamePerson,
     colorHex: '#FBBF24',
-    template: 'Absolute soulmates in taste with {{RANGE}} overlap.',
+    template: Get.context!.l10n.compatTplSSS('{{RANGE}}'),
   ),
   RankInfo(
     name: 'SS',
@@ -224,7 +224,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 85,
     description: Get.context!.l10n.practicallyMadeForEachOther,
     colorHex: '#F59E0B',
-    template: 'Practically made for each other with {{RANGE}} overlap.',
+    template: Get.context!.l10n.compatTplSS('{{RANGE}}'),
   ),
   RankInfo(
     name: 'S',
@@ -232,7 +232,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 75,
     description: Get.context!.l10n.youBothHaveVerySimilarTaste,
     colorHex: '#EAB308',
-    template: 'You both have very similar taste—about {{RANGE}} agreement.',
+    template: Get.context!.l10n.compatTplS('{{RANGE}}'),
   ),
   RankInfo(
     name: 'A',
@@ -240,7 +240,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 65,
     description: Get.context!.l10n.goodChemistryAndSharedTaste,
     colorHex: '#8B5CF6',
-    template: 'Good chemistry and shared taste with around {{RANGE}} overlap.',
+    template: Get.context!.l10n.compatTplA('{{RANGE}}'),
   ),
   RankInfo(
     name: 'B',
@@ -248,7 +248,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 55,
     description: Get.context!.l10n.aboveAverageSimilarity,
     colorHex: '#10B981',
-    template: 'Above-average similarity at roughly {{RANGE}} overlap.',
+    template: Get.context!.l10n.compatTplB('{{RANGE}}'),
   ),
   RankInfo(
     name: 'C',
@@ -256,7 +256,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 40,
     description: Get.context!.l10n.averageOverlap,
     colorHex: '#22C55E',
-    template: 'Average overlap with around {{RANGE}} shared taste.',
+    template: Get.context!.l10n.compatTplC('{{RANGE}}'),
   ),
   RankInfo(
     name: 'D',
@@ -264,7 +264,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 20,
     description: Get.context!.l10n.theresASmallSparkOfAgreement,
     colorHex: '#F97316',
-    template: 'There’s a small spark of agreement: about {{RANGE}} overlap.',
+    template: Get.context!.l10n.compatTplD('{{RANGE}}'),
   ),
   RankInfo(
     name: 'F',
@@ -272,7 +272,7 @@ List<RankInfo> get kRanks => <RankInfo>[
     max: 10,
     description: Get.context!.l10n.notVeryCompatibleAtAll,
     colorHex: '#EF4444',
-    template: 'Not very compatible at all. Only {{RANGE}} of your taste overlaps.',
+    template: Get.context!.l10n.compatTplF('{{RANGE}}'),
   ),
 ];
 

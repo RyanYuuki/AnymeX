@@ -227,7 +227,7 @@ class _WatchiumPartyPopupContentState
             const SizedBox(width: 6),
             Flexible(
               child: AnymeXText(
-                'Room ${state.code}  ·  $online online',
+                context.l10n.roomCodeOnline(state.code, online),
                 size: 12,
                 color: cs.onSurface.opaque(0.5, iReallyMeanIt: true),
                 overflow: TextOverflow.ellipsis,
@@ -324,7 +324,7 @@ class _WatchiumPartyPopupContentState
               });
             if (items.isEmpty) {
               return _buildEmpty(
-                  cs, theme, Icons.chat_bubble_outline_rounded, 'No messages yet');
+                  cs, theme, Icons.chat_bubble_outline_rounded, context.l10n.noMessagesYet);
             }
             return Stack(
               children: [
@@ -674,11 +674,11 @@ class _WatchiumPartyPopupContentState
       final isModerator = widget.watchium.canModerateChat;
       final isMuted = chatDisabled || (announcementMode && !isModerator);
 
-      String hintText = 'Type a message...';
+      String hintText = context.l10n.typeAMessage;
       if (chatDisabled) {
-        hintText = 'Chat is disabled by host';
+        hintText = context.l10n.chatDisabledByHost;
       } else if (announcementMode && !isModerator) {
-        hintText = 'Announcement mode — only staff can chat';
+        hintText = context.l10n.announcementModeStaffOnly;
       }
 
       return Row(
@@ -828,7 +828,7 @@ class _WatchiumPartyPopupContentState
 
       if (state.members.isEmpty) {
         return _buildEmpty(
-            cs, theme, Icons.people_outline_rounded, 'No members yet');
+            cs, theme, Icons.people_outline_rounded, context.l10n.noMembersYet);
       }
 
       final isHost = widget.watchium.isHost.value;
@@ -842,7 +842,7 @@ class _WatchiumPartyPopupContentState
           final isSelf = member.userId == widget.watchium.currentUserId;
           final title =
               isSelf ? '${member.username} (You)' : member.username;
-          final subtitle = member.online ? 'Online' : 'Offline';
+          final subtitle = member.online ? context.l10n.online : context.l10n.offlineLabel;
 
           return Container(
             decoration: BoxDecoration(
@@ -985,8 +985,8 @@ class _WatchiumPartyPopupContentState
                 const SizedBox(width: 10),
                 AnymeXText(
                   member.role == 'cohost'
-                      ? 'Remove Co-host'
-                      : 'Make Co-host',
+                      ? context.l10n.removeCoHost
+                      : context.l10n.makeCoHost,
                 ),
               ],
             ),

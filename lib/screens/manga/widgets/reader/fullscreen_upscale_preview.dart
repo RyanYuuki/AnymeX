@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/services/upscale/mode_chains.dart';
@@ -339,7 +340,7 @@ class _FullscreenUpscalePreviewState extends State<FullscreenUpscalePreview> {
                       ],
                     ),
                     child: AnymeXText(
-                      'Super Res • ${preset.title}',
+                      context.l10n.superResPreset(preset.title),
                       size: 11,
                       variant: TextVariant.bold,
                       color: Colors.white,

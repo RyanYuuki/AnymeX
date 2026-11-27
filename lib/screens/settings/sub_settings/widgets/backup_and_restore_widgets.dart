@@ -276,7 +276,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
 
   Widget _buildUserInfoCard(BuildContext context) {
     final theme = Theme.of(context);
-    final username = widget.info['username'] ?? 'Unknown User';
+    final username = widget.info['username'] ?? context.l10n.unknownUser;
     final avatar = widget.info['avatar'] as String?;
     final rawVersion = (widget.info['appVersion'] as String? ?? '').trim();
     final appVersion = rawVersion.startsWith('v') || rawVersion.startsWith('V')
@@ -625,8 +625,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
         ? '${(runtimeSize / (1024 * 1024)).toStringAsFixed(1)} MB'
         : '';
     final runtimeTitle = runtimePlatform.toLowerCase() == 'android'
-        ? 'Android Runtime Host (APK)'
-        : 'Desktop Runtime (JAR)';
+        ? context.l10n.androidRuntimeHostApk
+        : context.l10n.desktopRuntimeJar;
 
     return Column(
       children: [
@@ -665,8 +665,10 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   AnymeXTile.checkbox(
                     icon: Icons.playlist_play_rounded,
                     title: context.l10n.customLists,
-                    subtitle:
-                        "${(widget.info['animeCustomListsCount'] ?? 0) + (widget.info['mangaCustomListsCount'] ?? 0) + (widget.info['novelCustomListsCount'] ?? 0)} custom lists",
+                    subtitle: context.l10n.customListsCount(
+                        (widget.info['animeCustomListsCount'] ?? 0) +
+                            (widget.info['mangaCustomListsCount'] ?? 0) +
+                            (widget.info['novelCustomListsCount'] ?? 0)),
                     value: _options.customLists,
                     onChanged: (v) =>
                         setState(() => _options.customLists = v),
@@ -769,8 +771,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   AnymeXTile.checkbox(
                     icon: Icons.settings_input_component_rounded,
                     title: context.l10n.extensionConfigurations,
-                    subtitle:
-                        "${widget.info['extensionsDataCount'] ?? 0} repositories and source settings",
+                    subtitle: context.l10n.reposAndSourceSettingsCount(
+                        widget.info['extensionsDataCount'] ?? 0),
                     value: _options.extensionsData,
                     onChanged: (v) =>
                         setState(() => _options.extensionsData = v),
@@ -780,7 +782,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                     icon: Icons.folder_zip_rounded,
                     title: context.l10n.extensionPackages,
                     subtitle:
-                        "${widget.info['extensionFilesCount'] ?? 0} installed files${widget.info['extensionFilesSize'] != null && (widget.info['extensionFilesSize'] as int) > 0 ? ' • ${((widget.info['extensionFilesSize'] as int) / (1024 * 1024)).toStringAsFixed(1)} MB' : ''}",
+                        "${context.l10n.installedFilesCount(widget.info['extensionFilesCount'] ?? 0)}${widget.info['extensionFilesSize'] != null && (widget.info['extensionFilesSize'] as int) > 0 ? ' • ${((widget.info['extensionFilesSize'] as int) / (1024 * 1024)).toStringAsFixed(1)} MB' : ''}",
                     value: _options.extensionFiles,
                     onChanged: (v) =>
                         setState(() => _options.extensionFiles = v),
@@ -802,8 +804,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                       : Icons.desktop_windows_rounded,
                   title: runtimeTitle,
                   subtitle: runtimeSizeStr.isNotEmpty
-                      ? "$runtimeSizeStr • Bundled in backup"
-                      : "Bundled runtime host",
+                      ? "$runtimeSizeStr • ${context.l10n.bundledInBackup}"
+                      : context.l10n.bundledRuntimeHost,
                   value: _options.runtimeHost,
                   onChanged: (v) =>
                       setState(() => _options.runtimeHost = v),
@@ -818,7 +820,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final date = widget.info['date'] as String? ?? 'Unknown Date';
+    final date = widget.info['date'] as String? ?? context.l10n.unknownDate;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
@@ -1055,7 +1057,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
         : '';
     final isDesktop = _runtimeHostInfo?.isDesktop ?? true;
     final runtimeTitle =
-        isDesktop ? "Desktop Runtime Host (JAR)" : "Android Runtime Host (APK)";
+        isDesktop ? context.l10n.desktopRuntimeHostJar : context.l10n.androidRuntimeHostApk;
     final rawVersion = (_runtimeHostInfo?.version ?? '').trim();
     final hostVersion = rawVersion.startsWith('v') || rawVersion.startsWith('V')
         ? rawVersion
@@ -1111,7 +1113,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     color: theme.colorScheme.primary,
                   ),
                   label: AnymeXText(
-                    _options.hasAnySelected ? "Deselect" : "Select All",
+                    _options.hasAnySelected ? context.l10n.actionDeselect : context.l10n.actionSelectAll,
                     variant: TextVariant.semiBold,
                     size: 12,
                     color: theme.colorScheme.primary,
@@ -1262,8 +1264,8 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                         icon: Icons.folder_zip_rounded,
                         title: context.l10n.extensionPackages,
                         subtitle: extCount > 0
-                            ? "$extCount installed files ($extSizeStr)"
-                            : "No downloaded extension packages found",
+                            ? "${context.l10n.installedFilesCount(extCount)} ($extSizeStr)"
+                            : context.l10n.noDownloadedExtensionPackages,
                         value: _options.extensionFiles,
                         onChanged: (v) =>
                             setState(() => _options.extensionFiles = v),
@@ -1284,10 +1286,10 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                             : Icons.android_rounded,
                         title: runtimeTitle,
                         subtitle: _isLoadingInfo
-                            ? "Checking installed runtime..."
+                            ? context.l10n.checkingInstalledRuntime
                             : hostInstalled
                                 ? "${hostVersion.isNotEmpty ? '$hostVersion • ' : ''}$hostSizeStr"
-                                : "Not installed on this device",
+                                : context.l10n.notInstalledOnThisDevice,
                         value: _options.runtimeHost,
                         onChanged: hostInstalled
                             ? (v) => setState(() => _options.runtimeHost = v)

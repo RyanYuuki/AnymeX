@@ -246,8 +246,8 @@ class _GistSyncCard extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: AnymeXText(hasCloudGist == null
-                                      ? 'Checking cloud gist status. Sync now to create one if needed.'
-                                      : 'Create your cloud gist first to unlock sync preferences.',
+                                      ? Get.context!.l10n.checkingCloudGistStatus
+                                      : Get.context!.l10n.createCloudGistFirst,
                                   size: 12,
                                   color: colors.onSurfaceVariant,
                                 ),
@@ -273,12 +273,12 @@ class _GistSyncCard extends StatelessWidget {
     required bool? hasCloudGist,
     required bool? lastSyncSuccessful,
   }) {
-    if (!isLogged) return isAuthenticating ? 'Connecting' : 'Disconnected';
-    if (isAuthenticating) return 'Connecting';
-    if (isSyncing) return 'Syncing';
-    if (hasCloudGist == false) return 'Needs Setup';
-    if (lastSyncSuccessful == false) return 'Attention';
-    return 'Ready';
+    if (!isLogged) return isAuthenticating ? Get.context!.l10n.syncConnecting : Get.context!.l10n.statusDisconnected;
+    if (isAuthenticating) return Get.context!.l10n.syncConnecting;
+    if (isSyncing) return Get.context!.l10n.syncSyncing;
+    if (hasCloudGist == false) return Get.context!.l10n.syncNeedsSetup;
+    if (lastSyncSuccessful == false) return Get.context!.l10n.syncAttention;
+    return Get.context!.l10n.syncReady;
   }
 
   String _primaryActionLabel({
@@ -288,13 +288,13 @@ class _GistSyncCard extends StatelessWidget {
     required bool needsInitialize,
   }) {
     if (!isLogged) {
-      return isAuthenticating ? 'Connecting...' : 'Connect GitHub';
+      return isAuthenticating ? Get.context!.l10n.connectingEllipsis : Get.context!.l10n.connectGithub;
     }
-    if (isAuthenticating) return 'Connecting...';
+    if (isAuthenticating) return Get.context!.l10n.connectingEllipsis;
     if (isSyncing) {
-      return needsInitialize ? 'Initializing...' : 'Syncing...';
+      return needsInitialize ? Get.context!.l10n.initializingEllipsis : Get.context!.l10n.syncingEllipsis;
     }
-    return needsInitialize ? 'Initialize' : 'Sync Now';
+    return needsInitialize ? Get.context!.l10n.initializeAction : Get.context!.l10n.syncNow;
   }
 
   Color _statusColor(
@@ -320,42 +320,42 @@ class _GistSyncCard extends StatelessWidget {
     required int? lastSyncDurationMs,
     required String? lastSyncError,
   }) {
-    if (!isLogged) return 'Status: Not connected';
+    if (!isLogged) return Get.context!.l10n.statusNotConnected;
     if (hasCloudGist == null) {
-      if (isSyncing) return 'Status: Checking cloud gist...';
-      return 'Status: Connected · checking cloud gist';
+      if (isSyncing) return Get.context!.l10n.statusCheckingCloudGist;
+      return Get.context!.l10n.statusConnectedCheckingGist;
     }
     if (hasCloudGist == false) {
-      if (isSyncing) return 'Status: Initializing cloud gist...';
-      return 'Status: Connected · gist not initialized';
+      if (isSyncing) return Get.context!.l10n.statusInitializingCloudGist;
+      return Get.context!.l10n.statusConnectedGistNotInitialized;
     }
-    if (isSyncing) return 'Status: Sync in progress...';
-    if (lastSync == null) return 'Status: Connected';
+    if (isSyncing) return Get.context!.l10n.statusSyncInProgress;
+    if (lastSync == null) return Get.context!.l10n.statusConnected2;
     final base = _formatLastSync(lastSync, durationMs: lastSyncDurationMs);
     if (lastSyncSuccessful == false) {
       if (lastSyncError != null && lastSyncError.isNotEmpty) {
-        return 'Status: Last sync failed · $base';
+        return Get.context!.l10n.statusLastSyncFailedDetail(base);
       }
-      return 'Status: Last sync failed';
+      return Get.context!.l10n.statusLastSyncFailed;
     }
-    return 'Status: Connected · $base';
+    return Get.context!.l10n.statusConnectedDetail(base);
   }
 
   String _formatLastSync(DateTime lastSync, {int? durationMs}) {
     final diff = DateTime.now().difference(lastSync);
     final durationPart =
         durationMs != null ? ' in ${_formatDuration(durationMs)}' : '';
-    if (diff.inSeconds < 60) return 'synced just now$durationPart';
+    if (diff.inSeconds < 60) return Get.context!.l10n.syncedJustNow(durationPart);
     if (diff.inMinutes < 60) {
-      return 'synced ${diff.inMinutes}m ago$durationPart';
+      return Get.context!.l10n.syncedMinutesAgo(diff.inMinutes, durationPart);
     }
     if (diff.inHours < 24) {
-      return 'synced ${diff.inHours}h ago$durationPart';
+      return Get.context!.l10n.syncedHoursAgo(diff.inHours, durationPart);
     }
     if (diff.inDays < 7) {
-      return 'synced ${diff.inDays}d ago$durationPart';
+      return Get.context!.l10n.syncedDaysAgo(diff.inDays, durationPart);
     }
-    return 'synced on ${lastSync.month}/${lastSync.day}$durationPart';
+    return Get.context!.l10n.syncedOnDate(lastSync.month, lastSync.day, durationPart);
   }
 
   String _formatDuration(int ms) {
@@ -748,11 +748,11 @@ class _GistSyncCard extends StatelessWidget {
 
       if (result.merged) {
         successSnackBar(
-          'Merged ${result.importedEntries} imported entries with ${result.cloudEntriesBefore} cloud entries.',
+          Get.context!.l10n.mergedImportedEntries(result.importedEntries, result.cloudEntriesBefore),
         );
       } else {
         successSnackBar(
-          'Replaced cloud gist with ${result.totalEntries} imported entries.',
+          Get.context!.l10n.replacedCloudGistWithEntries(result.totalEntries),
         );
       }
     } catch (e) {
@@ -903,8 +903,8 @@ class _DeleteGistConfirmDialogState extends State<_DeleteGistConfirmDialog> {
       message:
           context.l10n.thisPermanentlyDeletesYourAnymexCloud,
       confirmText: _secondsLeft == 0
-          ? 'I Understand, Delete'
-          : 'I Understand ($_secondsLeft)',
+          ? Get.context!.l10n.iUnderstandDelete
+          : Get.context!.l10n.iUnderstandCountdown(_secondsLeft),
       isConfirmEnabled: _secondsLeft == 0,
       onConfirm: () {},
       confirmResultGetter: () => true,

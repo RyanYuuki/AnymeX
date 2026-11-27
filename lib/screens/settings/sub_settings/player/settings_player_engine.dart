@@ -620,7 +620,7 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                     ),
                     if (!experimentalEnabled)
                       _buildExperimentalGateMessage(
-                        'Core and Visual settings are disabled. Enable Experimental to use them.',
+                        context.l10n.coreVisualDisabledExperimental,
                       ),
                     if (experimentalEnabled) ...[
                       AnymeXTile(

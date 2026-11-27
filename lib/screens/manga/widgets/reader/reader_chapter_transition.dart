@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
@@ -25,8 +26,10 @@ class ReaderChapterTransition extends StatelessWidget {
     final topChapter = isNext ? currentChapter : targetChapter;
     final bottomChapter = isNext ? targetChapter : currentChapter;
     final topLabel = isNext ? 'Finished' : 'Previous Chapter';
-    final bottomLabel = isNext ? 'Next Chapter' : 'Current Chapter';
-    final fallback = isNext ? 'No next chapter' : 'No previous chapter';
+    final bottomLabel =
+        isNext ? context.l10n.nextChapter : context.l10n.currentChapter;
+    final fallback =
+        isNext ? context.l10n.noNextChapter : context.l10n.noPreviousChapter;
     final gap = _calculateGap(currentChapter, targetChapter, isNext);
     final scheme = Theme.of(context).colorScheme;
 
@@ -266,7 +269,8 @@ class ReaderChapterTransition extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: AnymeXText.semiBold('$gap missing chapter${gap == 1 ? '' : 's'} between these',
+            child: AnymeXText.semiBold(
+              context.l10n.missingChaptersBetween(gap),
               color: context.colors.error,
               maxLines: 2,
             ),

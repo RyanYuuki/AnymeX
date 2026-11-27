@@ -72,7 +72,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
     final badgeText =
         (donatorTier > 0 && donatorBadge != null && donatorBadge.isNotEmpty)
             ? donatorBadge
-            : 'AniList Member';
+            : context.l10n.aniListMember;
 
     final double desktopTopPad = Platform.isWindows ? 40.0 : 0.0;
     final screenHeight = MediaQuery.sizeOf(context).height;

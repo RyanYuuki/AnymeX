@@ -173,11 +173,11 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         Obx(() => Row(
               children: [
                 Expanded(
-                  child: _buildTestButton('Ping', 'ping', theme),
+                  child: _buildTestButton(context.l10n.pingLabel, 'ping', theme),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _buildTestButton('Basic', 'basic', theme),
+                  child: _buildTestButton(context.l10n.basicLabel, 'basic', theme),
                 ),
                 const SizedBox(width: 8),
                 Expanded(

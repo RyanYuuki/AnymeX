@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -16,7 +18,7 @@ class DefaultCardStyle implements MediaCardStyle {
   String get displayName => 'Default';
   @override
   String get description =>
-      'Container card layout with poster, title, extension info, and progress count.';
+      Get.context!.l10n.cardSimpleDesc;
 
   @override
   double getHeight(bool isDesktop) =>

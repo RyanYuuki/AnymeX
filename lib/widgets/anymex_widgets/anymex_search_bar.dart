@@ -1,10 +1,11 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 class AnymeXSearchBar extends StatefulWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
-  final String hintText;
+  final String? hintText;
   final ValueChanged<String>? onSubmitted;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onClear;
@@ -25,7 +26,7 @@ class AnymeXSearchBar extends StatefulWidget {
     super.key,
     this.controller,
     this.focusNode,
-    this.hintText = 'Search...',
+    this.hintText,
     this.onSubmitted,
     this.onChanged,
     this.onClear,
@@ -136,7 +137,7 @@ class _AnymeXSearchBarState extends State<AnymeXSearchBar> {
                 filled: true,
                 fillColor: widget.backgroundColor ??
                     colors.surfaceContainerHighest.withOpacity(0.35),
-                hintText: widget.hintText,
+                hintText: widget.hintText ?? context.l10n.searchEllipsis,
                 hintStyle: TextStyle(
                   fontSize: 13,
                   fontFamily: 'Linotte',

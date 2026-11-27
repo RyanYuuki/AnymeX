@@ -289,7 +289,7 @@ class _CardCustomizerPageState extends State<CardCustomizerPage> {
             value: config.titleLines,
             options: const [1, 2, 3],
             optionLabelTransformer: (lines) =>
-                '$lines ${lines == 1 ? "Line" : "Lines"}',
+                context.l10n.linesCount(lines),
             onChanged: (val) {
               _update((c) => c.copyWith(titleLines: val));
             },

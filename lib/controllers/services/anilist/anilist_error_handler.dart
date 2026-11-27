@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:http/http.dart' as http;
@@ -51,7 +53,7 @@ class AnilistErrorHandler {
     }
 
     if (isRateLimit) {
-      final msg = apiMessage ?? 'Chill for a min, you got rate limited.';
+      final msg = apiMessage ?? Get.context!.l10n.rateLimitedChill;
       _showToast(msg, isRateLimit: true);
     } else if (apiMessage != null && apiMessage.isNotEmpty) {
       _showToast(apiMessage, isRateLimit: false);
@@ -59,7 +61,7 @@ class AnilistErrorHandler {
       _showToast(defaultMessage, isRateLimit: false);
     } else {
       _showToast(
-        'AniList request failed (${response.statusCode})',
+        Get.context!.l10n.anilistRequestFailedStatus(response.statusCode),
         isRateLimit: false,
       );
     }
@@ -72,7 +74,7 @@ class AnilistErrorHandler {
         errorStr.toLowerCase().contains('too many requests') ||
         errorStr.contains('429');
 
-    final message = errorStr.isNotEmpty ? errorStr : (defaultMessage ?? 'AniList request failed');
+    final message = errorStr.isNotEmpty ? errorStr : (defaultMessage ?? Get.context!.l10n.anilistRequestFailed);
     _showToast(message, isRateLimit: isRateLimit);
   }
 

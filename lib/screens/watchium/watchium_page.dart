@@ -138,7 +138,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
     final code = _joinCodeController.text.trim().toUpperCase();
     Logger.i('Join by code: $code', 'WATCHIUM_UI');
     if (code.length != 6) {
-      setState(() => _error = 'Room code must be 6 characters');
+      setState(() => _error = context.l10n.roomCodeMustBe6);
       Logger.w('Join by code: invalid length ${code.length}', 'WATCHIUM_UI');
       return;
     }
@@ -166,7 +166,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
           _showPasswordDialog(code, initialError: err);
         } else {
           setState(() => _error = err);
-          errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+          errorSnackBar(err.isEmpty ? context.l10n.failedToJoinRoom2 : err);
         }
       }
       return;
@@ -222,7 +222,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
         return;
       }
       setState(() => _error = err);
-      errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+      errorSnackBar(err.isEmpty ? context.l10n.failedToJoinRoom2 : err);
     }
   }
 
@@ -255,7 +255,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
               final pw = pwController.text.trim();
               if (pw.isEmpty) {
                 setDialogState(() =>
-                    dialogError = 'Please enter the room password');
+                    dialogError = context.l10n.pleaseEnterRoomPassword);
                 return;
               }
               setDialogState(() {
@@ -282,7 +282,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     'WATCHIUM_UI');
                 setDialogState(() {
                   joining = false;
-                  dialogError = err.isEmpty ? 'Failed to join room' : err;
+                  dialogError = err.isEmpty ? context.l10n.failedToJoinRoom2 : err;
                 });
               }
             }
@@ -319,7 +319,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             ),
                             const SizedBox(height: 2),
                             AnymeXText(
-                              'Room $code is private',
+                              context.l10n.roomIsPrivate(code),
                               size: 12,
                               color: cs.onSurface.opaque(0.6),
                             ),
@@ -449,7 +449,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                 )
                               : const Icon(Icons.login_rounded, size: 18),
                           label: AnymeXText(
-                            joining ? 'Joining...' : 'Join',
+                            joining ? context.l10n.joining : context.l10n.joinAction,
                             variant: TextVariant.semiBold,
                             size: 14,
                             color: cs.onPrimary,
@@ -811,8 +811,8 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: AnymeXText(isJoining
-                          ? 'Joining room $roomCode...'
-                          : 'Failed to join room $roomCode',
+                          ? context.l10n.joiningRoomCode(roomCode)
+                          : context.l10n.failedToJoinRoomCode(roomCode),
                       size: 14,
                       variant: TextVariant.semiBold,
                       color: theme.colorScheme.error,
@@ -1115,7 +1115,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
         return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
       }
       if (!fromDeepLink) {
-        errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+        errorSnackBar(err.isEmpty ? context.l10n.failedToJoinRoom2 : err);
       }
       return false;
     }
@@ -1124,14 +1124,14 @@ class _WatchiumPageState extends State<WatchiumPage> {
 
   String _timeAgo(int createdAtMs) {
     final diff = DateTime.now().millisecondsSinceEpoch - createdAtMs;
-    if (diff < 0) return 'Just now';
+    if (diff < 0) return context.l10n.justNowLabel;
     final mins = diff ~/ 60000;
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return '${mins}m ago';
+    if (mins < 1) return context.l10n.justNowLabel;
+    if (mins < 60) return context.l10n.minutesAgoShort((mins).toString());
     final hours = mins ~/ 60;
-    if (hours < 24) return '${hours}h ago';
+    if (hours < 24) return context.l10n.hoursAgoShort((hours).toString());
     final days = hours ~/ 24;
-    return '${days}d ago';
+    return context.l10n.daysAgoShort((days).toString());
   }
 
   Widget _buildRoomCard(ThemeData theme, WatchiumRoomState room) {
@@ -1228,7 +1228,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         ),
                         const SizedBox(width: 4),
                         AnymeXText(
-                          room.hasPassword ? 'Private' : 'Open',
+                          room.hasPassword ? context.l10n.private : context.l10n.openLabel,
                           style: TextStyle(
                             color: room.hasPassword
                                 ? Colors.orangeAccent

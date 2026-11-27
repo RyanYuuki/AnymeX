@@ -287,7 +287,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                     const SizedBox(height: 8),
                                     AnymeXText(
                                       widget.animeDetails.studios?.join(', ') ??
-                                          'Unknown Studio',
+                                          context.l10n.unknownStudio,
                                       style: TextStyle(
                                         color: Colors.white.opaque(0.7),
                                         fontSize: 14,
@@ -487,7 +487,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                         Expanded(
                           child: AnymeXText(theme.artist.isNotEmpty
                                 ? theme.artist
-                                : 'Unknown Artist',
+                                : context.l10n.unknownArtist,
                             size: 12,
                             color: colorScheme.onSurfaceVariant,
                             maxLines: 1,

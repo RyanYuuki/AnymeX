@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -84,7 +85,7 @@ class JsonPlayerControlTheme extends PlayerControlTheme {
         validRawThemes.add(rawTheme);
         warnings.addAll(_collectUnsupportedThemeItemWarnings(rawTheme, def.id));
       } catch (error) {
-        errors.add('Theme #${i + 1} is invalid: $error');
+        errors.add(Get.context!.l10n.themeIndexInvalid(i + 1, '$error'));
       }
     }
 
@@ -92,13 +93,13 @@ class JsonPlayerControlTheme extends PlayerControlTheme {
     for (final theme in parsed) {
       if (!seenIds.add(theme.id)) {
         warnings.add(
-          'Duplicate theme id "${theme.id}" in the same import payload. Last value will be used.',
+          Get.context!.l10n.duplicateThemeIdPayload(theme.id),
         );
       }
     }
 
     if (parsed.isEmpty && errors.isEmpty) {
-      errors.add('No themes found in payload.');
+      errors.add(Get.context!.l10n.noThemesFoundInPayload);
     }
 
     return JsonThemeParseResult(
@@ -652,7 +653,7 @@ class ThemeRenderer {
     final title = _getTitleText();
     if (title.isEmpty) return null;
 
-    final topText = item.grabString('topText') ?? "You're watching";
+    final topText = item.grabString('topText') ?? Get.context!.l10n.youreWatching;
     final topFontSize = item.grabDouble('topFontSize', 11);
     final topFontWeight =
         _parseFontWeight(item.grabString('topFontWeight'), FontWeight.w400);
@@ -776,7 +777,7 @@ class ThemeRenderer {
 
     return _makeButtonShell(
       style: style,
-      tooltip: item.grabString('tooltip') ?? 'Play / Pause',
+      tooltip: item.grabString('tooltip') ?? Get.context!.l10n.playSlashPause,
       enabled: enabled,
       onTap: enabled ? controller.togglePlayPause : null,
       guts: AnimatedSwitcher(
@@ -1475,11 +1476,13 @@ class ThemeRenderer {
   String _getTitleText() {
     return controller.currentEpisode.value.title ??
         controller.itemName ??
-        'Unknown Title';
+        Get.context!.l10n.unknownTitle;
   }
 
   String _getEpisodeLabel() {
-    if (controller.currentEpisode.value.number == 'Offline') return 'Offline';
+    if (controller.currentEpisode.value.number == 'Offline') {
+      return Get.context!.l10n.offlineLabel;
+    }
     return 'Episode ${controller.currentEpisode.value.number}';
   }
 
@@ -1533,7 +1536,7 @@ class ThemeRenderer {
       case 'lock_controls':
         return 'Lock Controls';
       case 'unlock_controls':
-        return 'Unlock Controls';
+        return Get.context!.l10n.unlockControls;
       case 'toggle_fullscreen':
         return 'Fullscreen';
       case 'open_settings':
@@ -1543,11 +1546,11 @@ class ThemeRenderer {
       case 'next_episode':
         return 'Next Episode';
       case 'seek_back':
-        return 'Seek Back';
+        return Get.context!.l10n.seekBack;
       case 'seek_forward':
-        return 'Seek Forward';
+        return Get.context!.l10n.seekForward;
       case 'play_pause':
-        return 'Play / Pause';
+        return Get.context!.l10n.playSlashPause;
       case 'playlist':
         return 'Playlist';
       case 'shaders':
@@ -1563,11 +1566,11 @@ class ThemeRenderer {
       case 'audio_track':
         return 'Audio Track';
       case 'orientation':
-        return 'Toggle Orientation';
+        return Get.context!.l10n.toggleOrientation;
       case 'aspect_ratio':
         return 'Aspect Ratio';
       case 'mega_seek':
-        return 'Mega Seek';
+        return Get.context!.l10n.megaSeek;
       default:
         return null;
     }
@@ -2413,7 +2416,7 @@ List<Map<String, dynamic>> _decodeRawThemeMaps(
     if (decoded is List) {
       return _normalizeRawThemeList(decoded, errors: errors);
     }
-    errors.add('Root JSON must be a theme object.');
+    errors.add(Get.context!.l10n.rootJsonMustBeThemeObject);
     return const [];
   }
 
@@ -2433,7 +2436,7 @@ List<Map<String, dynamic>> _decodeRawThemeMaps(
   }
 
   errors.add(
-    'Expected a single theme object (or wrapper like {"theme": {...}}).',
+    Get.context!.l10n.expectedSingleThemeObject,
   );
   return const [];
 }
@@ -2446,7 +2449,7 @@ List<Map<String, dynamic>> _normalizeRawThemeList(
   for (var i = 0; i < rawThemes.length; i++) {
     final rawTheme = rawThemes[i];
     if (rawTheme is! Map) {
-      errors.add('Theme #${i + 1} is not an object.');
+      errors.add(Get.context!.l10n.themeIndexNotObject(i + 1));
       continue;
     }
     out.add(_asMap(rawTheme));
@@ -2461,7 +2464,7 @@ List<String> _collectUnsupportedThemeItemWarnings(
   final ids = _collectItemIdsFromTheme(rawTheme);
   final unsupported = ids.where((id) => !_supportedThemeItemIds.contains(id));
   return unsupported
-      .map((id) => 'Theme "$themeId" uses unsupported item id "$id".')
+      .map((id) => Get.context!.l10n.themeUnsupportedItemId(themeId, id))
       .toList(growable: false);
 }
 

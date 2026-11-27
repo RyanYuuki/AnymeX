@@ -153,8 +153,8 @@ class _NovelReaderState extends State<NovelReader>
                                 ? Icons.pause_rounded
                                 : Icons.play_arrow_rounded,
                             tooltip: controller.ttsPlaying.value
-                                ? 'Pause TTS'
-                                : 'Play TTS',
+                                ? context.l10n.pauseTts
+                                : context.l10n.playTts,
                             isActive: controller.ttsPlaying.value,
                             onPressed: () {
                               HapticFeedback.lightImpact();
@@ -233,11 +233,11 @@ class _NovelReaderState extends State<NovelReader>
         displaySubtitle = subtitleText;
         displayTitle = titleText;
       } else if (targetIndex < 0) {
-        displaySubtitle = 'Reached Top';
-        displayTitle = 'This is the First Chapter';
+        displaySubtitle = context.l10n.reachedTop;
+        displayTitle = context.l10n.thisIsTheFirstChapterTitle;
       } else {
-        displaySubtitle = 'Reached End';
-        displayTitle = 'This is the Last Chapter';
+        displaySubtitle = context.l10n.reachedEnd;
+        displayTitle = context.l10n.thisIsTheLastChapterTitle;
       }
 
       Color progressColor;

@@ -234,7 +234,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
         onAdd: (urls) async {
           await _addRepos(_tab, urls, targetManager);
           if (mounted) {
-            snackBar('${urls.length} repo${urls.length > 1 ? 's' : ''} added');
+            snackBar(context.l10n.reposAddedCount(urls.length));
           }
         },
       ),
@@ -662,7 +662,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   Icon(Icons.shield_outlined, size: 18, color: colors.error),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    'Runtime Host Disabled (Crash Detected)',
+                    context.l10n.runtimeHostDisabledCrashDetected,
                     variant: TextVariant.bold,
                     size: 13,
                     color: colors.onSurface,
@@ -671,7 +671,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               ),
               const SizedBox(height: 6),
               AnymeXText(
-                'The extension runtime host crashed on the previous launch and was stopped to protect the app.',
+                context.l10n.runtimeHostCrashDesc,
                 variant: TextVariant.regular,
                 size: 12,
                 color: colors.onSurfaceVariant,
@@ -680,7 +680,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               FilledButton.icon(
                 onPressed: () => CrashDetector.restoreAndRetryRuntimeHost(),
                 icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: const AnymeXText('Enable & Retry',
+                label: AnymeXText(context.l10n.enableAndRetry,
                     variant: TextVariant.bold, size: 12),
                 style: FilledButton.styleFrom(
                   backgroundColor: colors.primary,
@@ -1036,7 +1036,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
 
     return AnymeXDialog(
       title: context.l10n.addRepository,
-      confirmText: _loading ? 'Adding...' : 'Add Repository',
+      confirmText: _loading ? context.l10n.addingEllipsis : context.l10n.addRepository,
       onConfirm: _loading ? () {} : _submit,
       isConfirmEnabled: !_loading,
       forceAction: _loading,

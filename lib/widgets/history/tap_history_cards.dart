@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -86,20 +87,20 @@ class NewEpisodeReleaseCard extends StatelessWidget {
     final diffDays = today.difference(aDate).inDays;
 
     if (diffDays <= 0) {
-      return 'Today';
+      return Get.context!.l10n.todayLabel;
     } else if (diffDays == 1) {
-      return 'Yesterday';
+      return Get.context!.l10n.yesterdayLabel;
     } else if (diffDays <= 7) {
-      return '$diffDays days ago';
+      return Get.context!.l10n.daysAgoLong(diffDays);
     } else if (diffDays < 30) {
       final weeks = diffDays ~/ 7;
-      return '$weeks week${weeks == 1 ? '' : 's'} ago';
+      return Get.context!.l10n.weeksAgoLong(weeks);
     } else if (diffDays < 365) {
       final months = diffDays ~/ 30;
-      return '$months month${months == 1 ? '' : 's'} ago';
+      return Get.context!.l10n.monthsAgoLong(months);
     } else {
       final years = diffDays ~/ 365;
-      return '$years year${years == 1 ? '' : 's'} ago';
+      return Get.context!.l10n.yearsAgoLong(years);
     }
   }
 

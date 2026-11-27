@@ -198,7 +198,8 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: AnymeXText.regular("Note: If the extension supports reset to load filters and it doesn't work, try searching something first or open WebView. If that doesn't work, then click the 'Reset' button to load filters.",
+                  child: AnymeXText.regular(
+                    context.l10n.extensionResetFiltersNote,
                     size: 11.5,
                     maxLines: 999,
                     color: theme.colorScheme.onSurface.withOpacity(0.8),
@@ -270,7 +271,11 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   }
 
   Widget _buildTriState(int i, TriStateFilter f) {
-    final labels = ['Off', 'Include', 'Exclude'];
+    final labels = [
+      context.l10n.labelOff,
+      context.l10n.includeLabel,
+      context.l10n.excludeLabel,
+    ];
     final theme = Theme.of(context);
     Color bgColor;
     Color borderColor;
@@ -639,7 +644,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
           if (!hasContent)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: AnymeXText.regular('No matches found',
+              child: AnymeXText.regular(context.l10n.noMatchesFound,
                 size: 12,
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
               ),

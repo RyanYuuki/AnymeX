@@ -74,26 +74,12 @@ class _UserStatsPageState extends State<UserStatsPage> {
   int _dayKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
 
   String _dayName(int weekday) {
-    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final names = [context.l10n.monShort, context.l10n.tueShort, context.l10n.wedShort, context.l10n.thuShort, context.l10n.friShort, context.l10n.satShort, context.l10n.sunShort];
     return names[(weekday - 1) % 7];
   }
 
   String _monthLabel(int month) {
-    const labels = [
-      '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
+    final labels = ['', context.l10n.janShort, context.l10n.febShort, context.l10n.marShort, context.l10n.aprShort, context.l10n.mayShort, context.l10n.junShort, context.l10n.julShort, context.l10n.augShort, context.l10n.sepShort, context.l10n.octShort, context.l10n.novShort, context.l10n.decShort];
     return labels[month];
   }
 
@@ -283,10 +269,10 @@ class _UserStatsPageState extends State<UserStatsPage> {
       BuildContext context, int hrs, int mins, int units) {
     final timeReadCard = _buildSmallInfoCard(
       title: activeFilter.value == 'Anime'
-          ? 'TIME WATCHED'
+          ? context.l10n.timeWatchedUpper
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
-              ? 'TIME READ'
-              : 'TIME SPENT'),
+              ? context.l10n.timeReadUpper
+              : context.l10n.timeSpentUpper),
       value: hrs > 0 ? "${hrs}h ${mins}m" : "${mins}m",
       icon: IconlyLight.timeCircle,
     );
@@ -296,7 +282,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           ? 'Episodes'
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
               ? 'Chapters'
-              : 'Items Consumed'),
+              : context.l10n.itemsConsumed),
       value:
           units >= 1000 ? "${(units / 1000.0).toStringAsFixed(1)}k" : "$units",
       icon: IconlyLight.paper,
@@ -486,7 +472,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           buttonText: favorite.title,
           backgroundColor:
               context.colors.surfaceContainerLowest.withOpacity(0.2),
-          subText: 'FAVORITE • $timeStr spent',
+          subText: context.l10n.favoriteTimeSpent(timeStr),
           tagIcon: IconlyLight.bookmark,
           backgroundImage: favorite.poster ?? '',
           width: double.infinity,
@@ -735,7 +721,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                     }
 
                                     final tooltipText =
-                                        '${_dayName(date.weekday)}, ${date.day} ${_monthLabel(date.month)} | $minutes mins active';
+                                        context.l10n.dayMinutesActive(_dayName(date.weekday), date.day, _monthLabel(date.month), minutes);
 
                                     final isSelected = selectedDate.value
                                             ?.isAtSameMomentAs(dateStrip) ??

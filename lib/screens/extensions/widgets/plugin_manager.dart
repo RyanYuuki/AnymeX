@@ -420,8 +420,8 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
           });
           successSnackBar(
             widget.mode == _PluginSheetMode.install
-                ? 'Plugin installed successfully.'
-                : 'Plugin updated successfully.',
+                ? context.l10n.pluginInstalledSuccess
+                : context.l10n.pluginUpdatedSuccess,
           );
         }
       }
@@ -513,7 +513,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 child: SingleChildScrollView(
                   child: MarkdownBody(
                     data: _release!.body.isEmpty
-                        ? 'No changelog provided for this release.'
+                        ? context.l10n.noChangelogProvided
                         : _release!.body,
                     selectable: true,
                   ),
@@ -571,8 +571,8 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             children: [
               AnymeXText(
                 widget.mode == _PluginSheetMode.install
-                    ? 'Plugin Setup'
-                    : 'Plugin Update Available',
+                    ? context.l10n.pluginSetup
+                    : context.l10n.pluginUpdateAvailable,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -612,21 +612,21 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         children: [
           _buildMetaRow(
             colors,
-            'Installed version',
+            context.l10n.installedVersion,
             widget.installedVersion.isEmpty
-                ? 'Not installed'
+                ? context.l10n.notInstalledLower
                 : widget.installedVersion,
           ),
           const SizedBox(height: 8),
           _buildMetaRow(
             colors,
-            'Latest version',
+            context.l10n.latestVersion,
             _release!.tagName,
           ),
           const SizedBox(height: 8),
           _buildMetaRow(
             colors,
-            'File size',
+            context.l10n.fileSizeLabel,
             Platform.isAndroid || Platform.isIOS
                 ? _formatBytes(_release!.asset.sizeBytes)
                 : (widget.mode == _PluginSheetMode.install
@@ -692,8 +692,8 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               isComplete
                   ? 'Done'
                   : (widget.mode == _PluginSheetMode.install
-                      ? 'Download & Install'
-                      : 'Update Plugin'),
+                      ? context.l10n.downloadAndInstall
+                      : context.l10n.updatePlugin),
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colors.onPrimary,
                 fontWeight: FontWeight.w600,

@@ -199,8 +199,8 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                         _buildSectionHeader(
                           icon: Icons.shield_outlined,
                           title: isSelf
-                              ? 'Your Moderation Record'
-                              : 'Moderation Record',
+                              ? context.l10n.yourModerationRecord
+                              : context.l10n.moderationRecord,
                           colorScheme: colorScheme,
                           iconColor: colorScheme.error,
                         ),
@@ -520,7 +520,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         if (points.currentStreak > 0)
           _chip(
             context,
-            '${points.currentStreak}d streak',
+            context.l10n.daysStreakShort('${points.currentStreak}'),
             Colors.orange,
             icon: Icons.local_fire_department_rounded,
           ),
@@ -556,28 +556,28 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
           context,
           Icons.reply_rounded,
           '${points.stats.totalReplies}',
-          'Replies',
+          context.l10n.repliesLabel,
           colorScheme.secondary,
         ),
         _statTile(
           context,
           Icons.thumb_up_alt_outlined,
           '${points.stats.totalUpvotesReceived}',
-          'Upvotes',
+          context.l10n.upvotesLabel,
           Colors.green,
         ),
         _statTile(
           context,
           Icons.how_to_vote_outlined,
           '${points.stats.totalVotesCast}',
-          'Votes cast',
+          context.l10n.votesCastLabel,
           Colors.amber.shade700,
         ),
         _statTile(
           context,
           Icons.local_fire_department_outlined,
           '${points.longestStreak}d',
-          'Best streak',
+          context.l10n.bestStreakLabel,
           Colors.orange,
         ),
         _memberSinceTile(context, profile),
@@ -757,12 +757,12 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
     final b = points.breakdown;
     final parts = <MapEntry<String, int>>[
       MapEntry('Comments', b.commentsPoints),
-      MapEntry('Replies', b.repliesPoints),
-      MapEntry('Upvotes', b.upvotesReceivedPoints),
-      MapEntry('Votes cast', b.votesCastPoints),
+      MapEntry(context.l10n.repliesLabel, b.repliesPoints),
+      MapEntry(context.l10n.upvotesLabel, b.upvotesReceivedPoints),
+      MapEntry(context.l10n.votesCastLabel, b.votesCastPoints),
       MapEntry('Pinned', b.pinnedPoints),
-      MapEntry('Streak bonus', b.streakBonus),
-      MapEntry('Role bonus', b.roleBonus),
+      MapEntry(context.l10n.streakBonus, b.streakBonus),
+      MapEntry(context.l10n.roleBonus, b.roleBonus),
     ];
 
     return [
@@ -814,7 +814,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.thumb_down_outlined,
-          'Downvotes received',
+          context.l10n.downvotesReceived,
           '${points.stats.totalDownvotesReceived}',
           Colors.grey,
         ));
@@ -823,7 +823,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.warning_amber_rounded,
-          'Warnings',
+          context.l10n.warningsLabel,
           '${points.breakdown.warningsPoints.abs()}',
           Colors.orange,
         ));
@@ -832,7 +832,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.delete_outline_rounded,
-          'Comments removed by mods',
+          context.l10n.commentsRemovedByMods,
           '${points.breakdown.deletedPoints.abs()}',
           Colors.red,
         ));
@@ -841,7 +841,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.block_rounded,
-          'Ban penalties',
+          context.l10n.banPenalties,
           '${points.breakdown.bannedPoints.abs()}',
           Colors.red,
         ));
@@ -852,7 +852,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.gavel_rounded,
-          'Banned',
+          context.l10n.statusBanned,
           _until(profile['banned_until']),
           Colors.red,
         ));
@@ -861,7 +861,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.volume_off_rounded,
-          'Muted',
+          context.l10n.statusMuted,
           _until(profile['muted_until']),
           Colors.orange,
         ));
@@ -870,7 +870,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.visibility_off_rounded,
-          'Shadow banned',
+          context.l10n.statusShadowBanned,
           '',
           Colors.purple,
         ));
@@ -880,7 +880,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
         rows.add(_infoRow(
           context,
           Icons.sticky_note_2_outlined,
-          'Mod notes',
+          context.l10n.modNotes,
           notes,
           Colors.teal,
         ));

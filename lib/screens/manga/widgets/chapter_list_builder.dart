@@ -595,7 +595,14 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                                         .clamp(0, chunks.length - 1);
                                     final chunkLabel = safeChunkIndex == 0
                                         ? 'All'
-                                        : 'Ch ${chunks[safeChunkIndex].first.formattedNumber}–${chunks[safeChunkIndex].last.formattedNumber}';
+                                        : context.l10n.chRange(
+                                            chunks[safeChunkIndex]
+                                                .first
+                                                .formattedNumber,
+                                            chunks[safeChunkIndex]
+                                                .last
+                                                .formattedNumber,
+                                          );
 
                                     return AnymeXPopupMenuButton<int>(
                                       title: context.l10n.chapterRange,
@@ -605,8 +612,17 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                                         final isSelected =
                                             safeChunkIndex == index;
                                         final label = index == 0
-                                            ? 'All (${filtered.length})'
-                                            : 'Ch ${chunks[index].first.formattedNumber}–${chunks[index].last.formattedNumber} (${chunks[index].length})';
+                                            ? context.l10n
+                                                .allWithCount('${filtered.length}')
+                                            : context.l10n.chRangeWithCount(
+                                                chunks[index]
+                                                    .first
+                                                    .formattedNumber,
+                                                chunks[index]
+                                                    .last
+                                                    .formattedNumber,
+                                                '${chunks[index].length}',
+                                              );
                                         return AnymeXMenuItem<int>(
                                           title: label,
                                           value: index,
@@ -1182,7 +1198,12 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
                 size: 20,
               ),
         title: AnymeXText(
-          'Chapter ${chapter.formattedNumber}: ${chapter.title?.isNotEmpty == true ? chapter.title : "Chapter ${chapter.formattedNumber}"}',
+          context.l10n.chapterNumberTitle(
+            chapter.formattedNumber,
+            chapter.title?.isNotEmpty == true
+                ? chapter.title!
+                : "Chapter ${chapter.formattedNumber}",
+          ),
           size: 13,
           variant: TextVariant.semiBold,
           maxLines: 1,
@@ -1269,7 +1290,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
               child: Tooltip(
                 message: state.errorMessage != null &&
                         state.errorMessage!.isNotEmpty
-                    ? 'Download failed: ${state.errorMessage}. Tap to retry.'
+                    ? context.l10n
+                        .downloadFailedMessageTapRetry(state.errorMessage!)
                     : 'Download failed. Tap to retry.',
                 child: Icon(
                   Icons.error_outline_rounded,
@@ -1406,7 +1428,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
           return Tooltip(
             message:
                 state.errorMessage != null && state.errorMessage!.isNotEmpty
-                    ? 'Download failed: ${state.errorMessage}. Tap to retry.'
+                    ? context.l10n
+                        .downloadFailedMessageTapRetry(state.errorMessage!)
                     : 'Download failed. Tap to retry.',
             child: Material(
               color: Colors.transparent,
@@ -1531,7 +1554,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder>
       builder: (ctx) => AlertDialog(
         title: AnymeXText(context.l10n.deleteChapter, variant: TextVariant.bold),
         content: AnymeXText(
-            'Are you sure you want to delete Chapter ${chMeta.chapter.formattedNumber}?'),
+            context.l10n.confirmDeleteChapter(chMeta.chapter.formattedNumber)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),

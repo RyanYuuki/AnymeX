@@ -76,7 +76,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
     final badgeText =
         (donatorTier > 0 && donatorBadge != null && donatorBadge.isNotEmpty)
             ? donatorBadge
-            : 'AniList Member';
+            : context.l10n.aniListMember;
 
     final isDesktop =
         getResponsiveValue(context, mobileValue: false, desktopValue: true);
@@ -622,7 +622,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           (_isFollowHovered &&
                                                   widget.isFollowingUser ==
                                                       true)
-                                              ? 'Unfollow'
+                                              ? context.l10n.unfollowAction
                                               : getFollowLabel(
                                                   isFollowing:
                                                       widget.isFollowingUser,

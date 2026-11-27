@@ -478,7 +478,7 @@ class _MangaStatsState extends State<MangaStats> {
         'icon': Icons.radio_button_checked_outlined
       },
       {
-        'label': 'Popularity',
+        'label': context.l10n.popularity,
         'value': widget.data.popularity,
         'icon': Icons.trending_up_rounded
       },

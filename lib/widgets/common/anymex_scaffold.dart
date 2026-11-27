@@ -64,7 +64,7 @@ class AnymeXScaffold extends StatelessWidget {
   final ValueChanged<String>? onHeaderSearchChanged;
   final ValueChanged<String>? onHeaderSearchSubmitted;
   final VoidCallback? onHeaderSearchClear;
-  final String headerSearchHint;
+  final String? headerSearchHint;
 
   const AnymeXScaffold({
     super.key,
@@ -106,7 +106,7 @@ class AnymeXScaffold extends StatelessWidget {
     this.onHeaderSearchChanged,
     this.onHeaderSearchSubmitted,
     this.onHeaderSearchClear,
-    this.headerSearchHint = 'Search...',
+    this.headerSearchHint,
     this.isOled,
   });
 
@@ -560,7 +560,7 @@ class _HeaderBodyShell extends StatefulWidget {
   final ValueChanged<String>? onSearchChanged;
   final ValueChanged<String>? onSearchSubmitted;
   final VoidCallback? onSearchClear;
-  final String searchHint;
+  final String? searchHint;
   final Widget child;
 
   const _HeaderBodyShell({
@@ -574,7 +574,7 @@ class _HeaderBodyShell extends StatefulWidget {
     this.onSearchChanged,
     this.onSearchSubmitted,
     this.onSearchClear,
-    this.searchHint = 'Search...',
+    this.searchHint,
     required this.child,
   });
 

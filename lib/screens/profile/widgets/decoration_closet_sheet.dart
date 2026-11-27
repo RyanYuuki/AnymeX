@@ -197,7 +197,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnymeXText(
-            'The following item${lockedItemsToUnlock.length > 1 ? "s require" : " requires"} unlocking before equipping:',
+            context.l10n.itemsRequireUnlocking(lockedItemsToUnlock.length),
             size: 13,
             color: colorScheme.onSurfaceVariant,
           ),
@@ -294,7 +294,8 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                   const SizedBox(width: 8),
                   Expanded(
                     child: AnymeXText(
-                      'You need ${totalPointsNeeded - currentPoints} more points to unlock these items.',
+                      context.l10n.needMorePointsToUnlock(
+                          totalPointsNeeded - currentPoints),
                       size: 11,
                       color: colorScheme.error,
                     ),
@@ -312,8 +313,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
               .unlockCustomization(item['id'].toString());
           if (res['success'] != true) {
             setState(() => _isSaving = false);
-            snackBar(
-                res['error']?.toString() ?? 'Failed to unlock ${item['title']}');
+            snackBar(res['error']?.toString() ??
+                Get.context!.l10n
+                    .failedToUnlockItem(item['title']?.toString() ?? ''));
             return;
           }
         }
@@ -335,7 +337,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       if (success) {
         Get.snackbar(
           context.l10n.profileUpdated,
-          'Your customizations have been saved and applied!',
+          Get.context!.l10n.customizationsSavedAndApplied,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: context.colors.surfaceContainerHighest,
           colorText: context.colors.onSurface,
@@ -343,7 +345,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       } else {
         Get.snackbar(
           context.l10n.error,
-          'Failed to update customizations. Please try again.',
+          Get.context!.l10n.failedToUpdateCustomizations,
           snackPosition: SnackPosition.BOTTOM,
         );
       }

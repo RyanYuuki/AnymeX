@@ -316,7 +316,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                     child: ActivityComposerSheet(
                       key: _composerKey,
                       hintText: _editingReplyId != null
-                          ? "Edit reply..."
+                          ? context.l10n.editReplyHint
                           : "Write a reply...",
                       showCancelButton: _editingReplyId != null || _isReplying,
                       onCancel: () {

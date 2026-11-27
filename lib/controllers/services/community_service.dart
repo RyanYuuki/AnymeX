@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -636,7 +637,7 @@ class CommunityService extends GetxController {
         _cachedServiceType = serviceType;
         Logger.i('Fetched ${communityAnimes.length} community anime');
       } else {
-        animeError.value = 'Failed to load: ${response.statusCode}';
+        animeError.value = Get.context!.l10n.failedToLoadStatus(response.statusCode);
         Logger.i('Failed to fetch community anime: ${response.statusCode}');
       }
     } catch (e) {
@@ -669,7 +670,7 @@ class CommunityService extends GetxController {
         _cachedServiceType = serviceType;
         Logger.i('Fetched ${communityMangas.length} community manga');
       } else {
-        mangaError.value = 'Failed to load: ${response.statusCode}';
+        mangaError.value = Get.context!.l10n.failedToLoadStatus(response.statusCode);
         Logger.i('Failed to fetch community manga: ${response.statusCode}');
       }
     } catch (e) {
@@ -700,7 +701,7 @@ class CommunityService extends GetxController {
             .toList();
         Logger.i('Fetched ${communityShows.length} community shows');
       } else {
-        showsError.value = 'Failed to load: ${response.statusCode}';
+        showsError.value = Get.context!.l10n.failedToLoadStatus(response.statusCode);
         Logger.i('Failed to fetch community shows: ${response.statusCode}');
       }
     } catch (e) {
@@ -731,7 +732,7 @@ class CommunityService extends GetxController {
             .toList();
         Logger.i('Fetched ${communityMovies.length} community movies');
       } else {
-        moviesError.value = 'Failed to load: ${response.statusCode}';
+        moviesError.value = Get.context!.l10n.failedToLoadStatus(response.statusCode);
         Logger.i('Failed to fetch community movies: ${response.statusCode}');
       }
     } catch (e) {
@@ -939,11 +940,11 @@ class CommunityService extends GetxController {
         return null; // reason appended to existing entry
       }
       if (resp.statusCode == 409) {
-        return 'You already have a reason on this entry. Use edit instead.';
+        return Get.context!.l10n.reasonAlreadyExistsUseEdit;
       }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ??
-          'Unknown error (${resp.statusCode})';
+          Get.context!.l10n.unknownErrorStatus(resp.statusCode);
     } catch (e) {
       Logger.i('CommunityService.submitRecommendation error: $e');
       return 'Network error: $e';
@@ -1013,7 +1014,7 @@ class CommunityService extends GetxController {
       if (resp.statusCode == 200) return null;
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ??
-          'Unknown error (${resp.statusCode})';
+          Get.context!.l10n.unknownErrorStatus(resp.statusCode);
     } catch (e) {
       Logger.i('CommunityService.editReason error: $e');
       return 'Network error: $e';
@@ -1044,7 +1045,7 @@ class CommunityService extends GetxController {
       }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ??
-          'Unknown error (${resp.statusCode})';
+          Get.context!.l10n.unknownErrorStatus(resp.statusCode);
     } catch (e) {
       Logger.i('CommunityService.deleteReason error: $e');
       return 'Network error: $e';
@@ -1073,7 +1074,7 @@ class CommunityService extends GetxController {
       }
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return (
-        decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})',
+        decoded['error']?.toString() ?? Get.context!.l10n.unknownErrorStatus(resp.statusCode),
         false
       );
     } catch (e) {
@@ -1099,7 +1100,7 @@ class CommunityService extends GetxController {
       if (resp.statusCode == 200 || resp.statusCode == 202) return null;
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return decoded['error']?.toString() ??
-          'Unknown error (${resp.statusCode})';
+          Get.context!.l10n.unknownErrorStatus(resp.statusCode);
     } catch (e) {
       Logger.i('CommunityService.deleteEntry error: $e');
       return 'Network error: $e';
@@ -1124,7 +1125,7 @@ class CommunityService extends GetxController {
       if (resp.statusCode == 202) return (null, true);
       final decoded = jsonDecode(resp.body) as Map<String, dynamic>;
       return (
-        decoded['error']?.toString() ?? 'Unknown error (${resp.statusCode})',
+        decoded['error']?.toString() ?? Get.context!.l10n.unknownErrorStatus(resp.statusCode),
         false
       );
     } catch (e) {

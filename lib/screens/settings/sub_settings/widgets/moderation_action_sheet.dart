@@ -98,14 +98,14 @@ class _AnymeXModerationActionSheetState
   String _customUnit = 'hours'; // 'hours' or 'days'
   bool _isSubmitting = false;
 
-  static const List<ModerationDurationOption> _durationPresets = [
-    ModerationDurationOption('1 Hour', 1),
-    ModerationDurationOption('12 Hours', 12),
-    ModerationDurationOption('1 Day', 24),
-    ModerationDurationOption('3 Days', 72),
-    ModerationDurationOption('1 Week', 168),
-    ModerationDurationOption('1 Month', 720),
-    ModerationDurationOption('Permanent', null),
+  List<ModerationDurationOption> get _durationPresets => [
+    ModerationDurationOption(context.l10n.hoursCount(1), 1),
+    ModerationDurationOption(context.l10n.hoursCount(12), 12),
+    ModerationDurationOption(context.l10n.daysCount(1), 24),
+    ModerationDurationOption(context.l10n.daysCount(3), 72),
+    ModerationDurationOption(context.l10n.weeksCount(1), 168),
+    ModerationDurationOption(context.l10n.oneMonth, 720),
+    ModerationDurationOption(context.l10n.permanentLabel, null),
   ];
 
   static const List<String> _quickReasons = [
@@ -204,7 +204,7 @@ class _AnymeXModerationActionSheetState
     if (!_requiresDuration) return '';
     final hours = _effectiveDurationHours;
     if (hours == null) {
-      return 'Action is Permanent (lasts until manually removed)';
+      return context.l10n.actionIsPermanentDesc;
     }
 
     final expiry = DateTime.now().add(Duration(hours: hours));
@@ -218,7 +218,11 @@ class _AnymeXModerationActionSheetState
       durationText += '$remainingHours hr${remainingHours > 1 ? "s" : ""}';
     }
 
-    return 'Expires in $durationText on ${expiry.day}/${expiry.month}/${expiry.year} at ${_formatTime(expiry)}';
+    return context.l10n.expiresInOnAt(
+      durationText,
+      '${expiry.day}/${expiry.month}/${expiry.year}',
+      _formatTime(expiry),
+    );
   }
 
   String _formatTime(DateTime dt) {
