@@ -797,7 +797,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             minimumSize: const Size(0, 34),
           ),
-          child: AnymeXText(context.l10n.track, style: TextStyle(fontSize: 12)),
+          child: AnymeXText(context.l10n.track, style: const TextStyle(fontSize: 12)),
         ),
       ),
     );

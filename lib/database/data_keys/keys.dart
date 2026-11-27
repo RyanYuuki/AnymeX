@@ -79,6 +79,7 @@ enum PlayerUiKeys {
   brightnessGestureWidth,
   volumeGestureWidth,
   progressSliderStyle,
+  overrideSliderTheme,
 }
 
 enum ReaderKeys {
@@ -266,6 +267,7 @@ enum PlayerSettingsKeys {
   autoSkipED,
   autoSkipOnce,
   autoSkipRecap,
+  enableAniSkip,
   enableSwipeControls,
   markAsCompleted,
   transitionSubtitle,
@@ -284,6 +286,8 @@ enum PlayerSettingsKeys {
   enableHoldToSeek,
   enableSlideToSeek,
   useMediaSession,
+  subtitleBackgroundOpacity,
+  relativeHoldSpeed,
 }
 
 enum UISettingsKeys {
@@ -372,6 +376,7 @@ enum CommentKeys {
 }
 
 enum NetworkKeys {
+  enableDoh,
   customDnsUrl,
   proxyUrl,
   verifyTls,

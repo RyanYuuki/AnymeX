@@ -262,19 +262,13 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
     (id: 'C+A', title: 'Mode C+A', sub: 'Clean, then sharpen'),
   ];
 
-  static const List<({String key, String title})> _presetDefs = [
-    (key: 'natural', title: 'Natural'),
-    (key: 'vivid', title: 'Vivid'),
-    (key: 'cinema', title: 'Cinema'),
-    (key: 'anime_soft', title: 'Soft'),
-    (key: 'warm', title: 'Warm'),
-    (key: 'cool', title: 'Cool'),
-    (key: 'anime_4k', title: 'Anime 4K'),
-    (key: 'cinema_hdr', title: 'Cinema HDR'),
-    (key: 'vivid_pop', title: 'Vivid Pop'),
-    (key: 'dark', title: 'Dark'),
-    (key: 'grayscale', title: 'Grayscale'),
-  ];
+  static final List<({String key, String title})> _presetDefs =
+      ColorProfileManager.profiles.entries
+          .map((entry) => (
+                key: entry.key,
+                title: entry.key.capitalize!.replaceAll('_', ' ')
+              ))
+          .toList();
 
   static const List<({String key, String label})> _adjustDefs = [
     (key: 'brightness', label: 'Brightness'),

@@ -4449,5 +4449,10 @@
   "transBouncyScale": "පනින පරිමාණය",
   "transBouncyScaleDesc": "පරිමාණය + ලිස්සීම, පැනීමේ බලපෑම සමඟ",
   "transProfessional": "වෘත්තීය",
-  "transProfessionalDesc": "ව්‍යාපාරික යෙදුම් සඳහා වේගවත්, පිරිසිදු සජීවිකරණය"
+  "transProfessionalDesc": "ව්‍යාපාරික යෙදුම් සඳහා වේගවත්, පිරිසිදු සජීවිකරණය",
+  "adjustSubtitleBackgroundVisibility": "උපසිරැසි පසුබිමේ දෘශ්‍යතාව සකසන්න",
+  "areYouSureYouWantToDeleteThisEntry": "මෙම ඇතුළත් කිරීම ලැයිස්තුවෙන් ඉවත් කිරීමට විශ්වාසද? එහි ප්‍රගතිය, ලකුණු සහ දින නැති වේ.",
+  "doubleCurrentSpeedOnHold": "ඔබාගෙන සිටින විට වත්මන් වේගය දෙගුණ කරන්න",
+  "doubleCurrentSpeedOnHoldDescription": "ඔබාගෙන සිටීමෙන් ස්ථිර 2x වෙනුවට වත්මන් වේගයේ දෙගුණයක් වේ",
+  "subtitleBackgroundTransparency": "උපසිරැසි පසුබිමේ විනිවිදභාවය"
 }

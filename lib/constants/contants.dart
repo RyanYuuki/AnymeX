@@ -59,6 +59,15 @@ final Map<String, Color> colorOptions = {
   'Cyan': Colors.cyan,
 };
 
+/// Background colour for the subtitle box, faded by [opacity] (0-1).
+/// Kept separate from the overall subtitle transparency so the box can be
+/// made see-through while the text stays fully visible.
+Color? subtitleBackgroundColor(String name, double opacity) {
+  final color = colorOptions[name];
+  if (color == null) return null;
+  return color.withValues(alpha: color.a * opacity.clamp(0.0, 1.0));
+}
+
 final Map<String, Color> fontColorOptions = {
   'Default': Colors.white70,
   'White': Colors.white,

@@ -18,11 +18,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/utils/mesh_blur_helper.dart';
 import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class ProgressController extends GetxController {
   var currentStep = ''.obs;
@@ -474,7 +474,7 @@ class Liquid {
         baseDir = Directory(path.join(databaseDir.path, 'AnymeX'));
       }
     } else {
-      final docs = await getApplicationDocumentsDirectory();
+      final docs = await getAppDocumentsDirectory();
       baseDir = Directory(path.join(docs.path, 'AnymeX'));
     }
 
@@ -708,7 +708,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
                             AnymeXText(Get.context!.l10n.blurRadius,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
@@ -739,7 +739,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
                             AnymeXText(Get.context!.l10n.brightness,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(
@@ -770,7 +770,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                 size: 20, color: colorScheme.primary),
                             const SizedBox(width: 8),
                             AnymeXText(Get.context!.l10n.contrast,
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             const Spacer(),
                             AnymeXText(

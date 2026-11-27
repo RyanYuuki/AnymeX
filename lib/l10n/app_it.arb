@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Scala rimbalzante",
   "transBouncyScaleDesc": "Scala + scorrimento con effetto rimbalzo",
   "transProfessional": "Professionale",
-  "transProfessionalDesc": "Animazione rapida e pulita per app aziendali"
+  "transProfessionalDesc": "Animazione rapida e pulita per app aziendali",
+  "adjustSubtitleBackgroundVisibility": "Regola la visibilità dello sfondo dei sottotitoli",
+  "areYouSureYouWantToDeleteThisEntry": "Vuoi davvero rimuovere questa voce dalla tua lista? Progressi, voto e date andranno persi.",
+  "doubleCurrentSpeedOnHold": "Raddoppia la velocità attuale tenendo premuto",
+  "doubleCurrentSpeedOnHoldDescription": "Tenendo premuto si accelera al doppio della velocità attuale invece di un 2x fisso",
+  "subtitleBackgroundTransparency": "Trasparenza dello sfondo dei sottotitoli"
 }

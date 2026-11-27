@@ -5693,5 +5693,10 @@
   "transBouncyScale": "জাঁপ মৰা স্কেল",
   "transBouncyScaleDesc": "স্কেল + স্লাইড, জাঁপৰ প্ৰভাৱসহ",
   "transProfessional": "পেছাদাৰী",
-  "transProfessionalDesc": "ব্যৱসায়িক এপৰ বাবে দ্ৰুত, পৰিষ্কাৰ এনিমেচন"
+  "transProfessionalDesc": "ব্যৱসায়িক এপৰ বাবে দ্ৰুত, পৰিষ্কাৰ এনিমেচন",
+  "adjustSubtitleBackgroundVisibility": "ছাবটাইটেলৰ পটভূমিৰ দৃশ্যমানতা মিলাওক",
+  "areYouSureYouWantToDeleteThisEntry": "এই এণ্ট্ৰি তালিকাৰ পৰা আঁতৰাব বিচাৰে নেকি? ইয়াৰ প্ৰগতি, স্ক'ৰ আৰু তাৰিখ হেৰাব।",
+  "doubleCurrentSpeedOnHold": "হেঁচি ধৰিলে বৰ্তমানৰ গতি দুগুণ কৰক",
+  "doubleCurrentSpeedOnHoldDescription": "হেঁচি ধৰিলে নিৰ্দিষ্ট 2x ৰ সলনি বৰ্তমান গতিৰ দুগুণ হয়",
+  "subtitleBackgroundTransparency": "ছাবটাইটেল পটভূমিৰ স্বচ্ছতা"
 }

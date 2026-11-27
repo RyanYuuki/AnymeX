@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Cabbir boodaya",
   "transBouncyScaleDesc": "Cabbir + simbiriirixasho leh saameyn bood",
   "transProfessional": "Xirfad leh",
-  "transProfessionalDesc": "Dhaqdhaqaaq degdeg ah oo nadiif ah oo loogu talagalay apps-ka ganacsiga"
+  "transProfessionalDesc": "Dhaqdhaqaaq degdeg ah oo nadiif ah oo loogu talagalay apps-ka ganacsiga",
+  "adjustSubtitleBackgroundVisibility": "Hagaaji muuqashada asalka qoraalka hoose",
+  "areYouSureYouWantToDeleteThisEntry": "Ma hubtaa inaad gelintan ka saarto liiskaaga? Horumarkeeda, dhibcaheeda iyo taariikhaheeda way lumi doonaan.",
+  "doubleCurrentSpeedOnHold": "Labanlaab xawaaraha hadda marka la hayo",
+  "doubleCurrentSpeedOnHoldDescription": "Haynta waxay labanlaabtaa xawaaraha hadda halkii 2x go'an",
+  "subtitleBackgroundTransparency": "Daah-furnaanta asalka qoraalka hoose"
 }

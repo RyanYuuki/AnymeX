@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Sprężyste skalowanie",
   "transBouncyScaleDesc": "Skalowanie + przesunięcie ze sprężystością",
   "transProfessional": "Profesjonalna",
-  "transProfessionalDesc": "Szybka, czysta animacja dla aplikacji biznesowych"
+  "transProfessionalDesc": "Szybka, czysta animacja dla aplikacji biznesowych",
+  "adjustSubtitleBackgroundVisibility": "Dostosuj widoczność tła napisów",
+  "areYouSureYouWantToDeleteThisEntry": "Czy na pewno chcesz usunąć ten wpis z listy? Postęp, ocena i daty zostaną utracone.",
+  "doubleCurrentSpeedOnHold": "Podwój bieżącą prędkość po przytrzymaniu",
+  "doubleCurrentSpeedOnHoldDescription": "Przytrzymanie przyspiesza do dwukrotności bieżącej prędkości zamiast stałego 2x",
+  "subtitleBackgroundTransparency": "Przezroczystość tła napisów"
 }

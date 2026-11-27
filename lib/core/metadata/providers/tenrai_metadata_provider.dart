@@ -55,10 +55,22 @@ class TenraiMetadataProvider implements EpisodeMetadataProvider {
               ? episodeNum.substring(0, episodeNum.length - 2)
               : episodeNum;
 
+          final rawDuration = (row['duration'] as num?)?.toInt();
+          final runtimeMinutes = rawDuration != null
+              ? (rawDuration >= 180 ? rawDuration ~/ 60 : rawDuration)
+              : null;
+          final images = row['images'];
+          final thumbnail = images is Map && images['jpg'] is Map
+              ? _cleanString(images['jpg']['image_url'])
+              : null;
+
           result[normalizedNumber] = EpisodeMetadataItem(
             number: normalizedNumber,
             title: _cleanString(row['title']),
+            description: _cleanString(row['synopsis']),
+            thumbnail: thumbnail,
             airDate: _cleanString(row['aired']),
+            runtimeMinutes: runtimeMinutes,
             rating: (row['score'] as num?)?.toDouble(),
             isFiller: row['filler'] as bool?,
             isRecap: row['recap'] as bool?,

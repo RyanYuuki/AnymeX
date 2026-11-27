@@ -48,7 +48,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
-import 'package:anymex/widgets/animation/widget_animations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:anymex/widgets/common/sliver_slide_fade_transition.dart';
 import 'package:anymex/l10n/ui_labels.dart';
@@ -187,14 +186,12 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
     _tabPositionAnimation = _slideOffsetTween.animate(curve);
 
     final usePoster = settingsController.usePosterForBlur;
-    _posterColor = (usePoster && widget.media.color.isNotEmpty
-            ? widget.media.color
-            : '')
-        .obs;
+    _posterColor =
+        (usePoster && widget.media.color.isNotEmpty ? widget.media.color : '')
+            .obs;
     _resolveDynamicColor(widget.media, allowExtract: false);
-    final initialPage = widget.scrollToCommentId != null
-        ? 2
-        : widget.initialTabIndex;
+    final initialPage =
+        widget.scrollToCommentId != null ? 2 : widget.initialTabIndex;
     _visitedTabs = {initialPage};
     controller = Get.put(
       MediaDetailsController(
@@ -489,10 +486,26 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                         )
                       : ColorFiltered(
                           colorFilter: ColorFilter.matrix([
-                            brightness, 0, 0, 0, 0,
-                            0, brightness, 0, 0, 0,
-                            0, 0, brightness, 0, 0,
-                            0, 0, 0, 1, 0,
+                            brightness,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            brightness,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            brightness,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            1,
+                            0,
                           ]),
                           child: ImageFiltered(
                             imageFilter: ImageFilter.blur(
@@ -522,8 +535,9 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
             }
 
             if (blurScope == 2) {
-              final washHeight = (MediaQuery.sizeOf(themedContext).height * 0.48)
-                  .clamp(320.0, 520.0);
+              final washHeight =
+                  (MediaQuery.sizeOf(themedContext).height * 0.48)
+                      .clamp(320.0, 520.0);
               return Stack(
                 fit: StackFit.expand,
                 children: [
@@ -951,7 +965,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                     .opaque(0.25, iReallyMeanIt: true),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+                  color:
+                      colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
                   width: 1,
                 ),
               ),
@@ -985,7 +1000,9 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          media.displayTitle.isNotEmpty ? media.displayTitle : 'Comments',
+                          media.displayTitle.isNotEmpty
+                              ? media.displayTitle
+                              : 'Comments',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           size: 15,
@@ -998,7 +1015,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             AnymeXContainer(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
-                              color: colorScheme.primary.withValues(alpha: 0.12),
+                              color:
+                                  colorScheme.primary.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(4),
                               child: AnymeXText(
                                 formatName,
@@ -1039,7 +1057,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            AnymeXText(context.l10n.topComments, maxLines: null),
+                            AnymeXText(context.l10n.topComments,
+                                maxLines: null),
                           ],
                         ),
                       ),
@@ -1053,7 +1072,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            AnymeXText(context.l10n.newestFirst, maxLines: null),
+                            AnymeXText(context.l10n.newestFirst,
+                                maxLines: null),
                           ],
                         ),
                       ),
@@ -1067,7 +1087,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                             else
                               const SizedBox(width: 18),
                             const SizedBox(width: 8),
-                            AnymeXText(context.l10n.oldestFirst, maxLines: null),
+                            AnymeXText(context.l10n.oldestFirst,
+                                maxLines: null),
                           ],
                         ),
                       ),
@@ -1137,7 +1158,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
     return AnymeXContainer(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      color: colorScheme.surfaceContainerHighest.opaque(0.25, iReallyMeanIt: true),
+      color:
+          colorScheme.surfaceContainerHighest.opaque(0.25, iReallyMeanIt: true),
       borderRadius: BorderRadius.circular(16),
       border: Border.all(
         color: colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
@@ -1329,7 +1351,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
             behavior: HitTestBehavior.opaque,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              height: 52,
+              height: 60,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
@@ -1377,7 +1399,6 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
                           overflow: TextOverflow.ellipsis,
                           isMarquee: true,
                         ),
-                        const SizedBox(height: 5),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(50),
                           child: AnymeXLinearIndicator(

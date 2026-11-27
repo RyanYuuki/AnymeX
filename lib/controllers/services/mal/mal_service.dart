@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'dart:math' show Random;
 import 'package:anymex/utils/oauth_helper.dart';
@@ -682,24 +681,12 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
-    final isDesktop =
-        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
-
-    String? selectedMethod;
-    if (isDesktop) {
-      selectedMethod = 'browser_internal';
-    } else {
-      selectedMethod = await AnymeXSheet.custom<String>(
-        loginSheetHelper(
-          context: context,
-          title: context.l10n.loginToMyanimelist,
-          serviceName: 'MyAnimeList',
-          showTokenOption: false,
-        ),
-        context,
-        showDragHandle: true,
-      );
-    }
+    final selectedMethod = await showLoginMethodSheet(
+      context: context,
+      title: context.l10n.loginToMyanimelist,
+      serviceName: 'MyAnimeList',
+      showTokenOption: false,
+    );
 
     if (selectedMethod == null || !context.mounted) return;
 
@@ -921,7 +908,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final body = {
       if (status != null)
         'status': getMALStatusEquivalent(status, isAnime: isAnime),
-      if (score != null) 'score': score.toInt().toString(),
+      if (score != null)
+        'score': (score / 10.0).round().clamp(0, 10).toString(),
       if (progress != null && isAnime)
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
@@ -953,49 +941,58 @@ class MalService extends GetxController implements BaseService, OnlineService {
       }
     }
 
+    if (req.statusCode < 200 || req.statusCode >= 300) {
+      Logger.i('MAL list update failed (${req.statusCode}): ${req.body}');
+      Logger.i('$isAnime: $body');
+      throw Exception('MAL list update failed (${req.statusCode})');
+    }
+
+    final newMedia = currentMedia.value
+      ..episodeCount = progress.toString()
+      ..watchingStatus = status
+      ..score = score.toString();
+    currentMedia.value = newMedia;
+    Logger.i('$isAnime: $body');
+    if (isAnime) {
+      fetchUserAnimeList();
+    } else {
+      fetchUserMangaList();
+    }
+
     if ((params.syncIds?.isNotEmpty ?? false) && params.syncIds?[0] != null) {
       if (serviceHandler.anilistService.isLoggedIn.value) {
-        await serviceHandler.anilistService.updateListEntry(
-            UpdateListEntryParams(
-                listId: params.syncIds![0],
-                score: score != null ? score * 10.0 : null,
-                status: status,
-                progress: progress,
-                isAnime: isAnime,
-                startedAt: startedAt,
-                completedAt: completedAt));
+        try {
+          await serviceHandler.anilistService.updateListEntry(
+              UpdateListEntryParams(
+                  listId: params.syncIds![0],
+                  score: score,
+                  status: status,
+                  progress: progress,
+                  isAnime: isAnime,
+                  startedAt: startedAt,
+                  completedAt: completedAt));
+        } catch (e) {
+          Logger.i('AniList cross-sync failed: $e');
+        }
       }
     }
 
     if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
       final anilistId =
           (params.syncIds?.isNotEmpty ?? false) ? params.syncIds![0] : null;
-      serviceHandler.simklService.updateListEntryFromExternalId(
-        malId: listId,
-        anilistId: anilistId,
-        score: score,
-        status: status,
-        progress: progress,
-        season: params.season,
-        isAnime: isAnime,
-      );
-    }
-
-    if (req.statusCode == 200) {
-      final newMedia = currentMedia.value
-        ..episodeCount = progress.toString()
-        ..watchingStatus = status
-        ..score = score.toString();
-      currentMedia.value = newMedia;
-      Logger.i('$isAnime: $body');
-      if (isAnime) {
-        fetchUserAnimeList();
-      } else {
-        fetchUserMangaList();
+      try {
+        await serviceHandler.simklService.updateListEntryFromExternalId(
+          malId: listId,
+          anilistId: anilistId,
+          score: score,
+          status: status,
+          progress: progress,
+          season: params.season,
+          isAnime: isAnime,
+        );
+      } catch (e) {
+        Logger.i('Simkl cross-sync failed: $e');
       }
-    } else {
-      Logger.i('Error: ${req.body}');
-      Logger.i('$isAnime: $body');
     }
   }
 

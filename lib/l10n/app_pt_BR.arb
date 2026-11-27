@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Escala com quique",
   "transBouncyScaleDesc": "Escala + deslize com efeito de quique",
   "transProfessional": "Profissional",
-  "transProfessionalDesc": "Animação rápida e limpa para apps corporativos"
+  "transProfessionalDesc": "Animação rápida e limpa para apps corporativos",
+  "adjustSubtitleBackgroundVisibility": "Ajustar a visibilidade do fundo das legendas",
+  "areYouSureYouWantToDeleteThisEntry": "Tem certeza de que deseja remover esta entrada da sua lista? Progresso, nota e datas serão perdidos.",
+  "doubleCurrentSpeedOnHold": "Dobrar a velocidade atual ao segurar",
+  "doubleCurrentSpeedOnHoldDescription": "Segurar acelera para o dobro da velocidade atual em vez de um 2x fixo",
+  "subtitleBackgroundTransparency": "Transparência do fundo das legendas"
 }

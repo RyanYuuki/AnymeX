@@ -4449,5 +4449,10 @@
   "transBouncyScale": "彈性縮放",
   "transBouncyScaleDesc": "縮放 + 滑動並帶回彈效果",
   "transProfessional": "專業",
-  "transProfessionalDesc": "適合商務應用程式的快速俐落動畫"
+  "transProfessionalDesc": "適合商務應用程式的快速俐落動畫",
+  "adjustSubtitleBackgroundVisibility": "調整字幕背景的可見度",
+  "areYouSureYouWantToDeleteThisEntry": "確定要從清單移除此項目嗎？其進度、評分與日期都會遺失。",
+  "doubleCurrentSpeedOnHold": "長按時將目前速度加倍",
+  "doubleCurrentSpeedOnHoldDescription": "長按時加速到目前播放速度的兩倍，而非固定 2 倍",
+  "subtitleBackgroundTransparency": "字幕背景透明度"
 }

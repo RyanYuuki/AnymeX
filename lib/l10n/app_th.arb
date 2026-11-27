@@ -4449,5 +4449,10 @@
   "transBouncyScale": "ขยายแบบเด้ง",
   "transBouncyScaleDesc": "ขยาย + เลื่อนพร้อมเอฟเฟกต์เด้ง",
   "transProfessional": "มืออาชีพ",
-  "transProfessionalDesc": "แอนิเมชันรวดเร็วและสะอาดตาสำหรับแอปธุรกิจ"
+  "transProfessionalDesc": "แอนิเมชันรวดเร็วและสะอาดตาสำหรับแอปธุรกิจ",
+  "adjustSubtitleBackgroundVisibility": "ปรับการมองเห็นพื้นหลังคำบรรยาย",
+  "areYouSureYouWantToDeleteThisEntry": "ต้องการนำรายการนี้ออกจากลิสต์ใช่ไหม ความคืบหน้า คะแนน และวันที่จะหายไป",
+  "doubleCurrentSpeedOnHold": "กดค้างเพื่อเพิ่มความเร็วปัจจุบันเป็นสองเท่า",
+  "doubleCurrentSpeedOnHoldDescription": "กดค้างจะเร่งเป็นสองเท่าของความเร็วปัจจุบัน แทนที่จะเป็น 2x คงที่",
+  "subtitleBackgroundTransparency": "ความโปร่งใสของพื้นหลังคำบรรยาย"
 }

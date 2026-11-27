@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Fjedrende skalering",
   "transBouncyScaleDesc": "Skalering + glid med fjedereffekt",
   "transProfessional": "Professionel",
-  "transProfessionalDesc": "Hurtig, ren animation til erhvervsapps"
+  "transProfessionalDesc": "Hurtig, ren animation til erhvervsapps",
+  "adjustSubtitleBackgroundVisibility": "Juster synligheden af undertekstbaggrunden",
+  "areYouSureYouWantToDeleteThisEntry": "Er du sikker på, at du vil fjerne denne post fra din liste? Fremskridt, score og datoer går tabt.",
+  "doubleCurrentSpeedOnHold": "Fordobl aktuel hastighed ved hold",
+  "doubleCurrentSpeedOnHoldDescription": "Hold øger til det dobbelte af din aktuelle hastighed i stedet for fast 2x",
+  "subtitleBackgroundTransparency": "Gennemsigtighed for undertekstbaggrund"
 }

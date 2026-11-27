@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Αναπηδητική κλίμακα",
   "transBouncyScaleDesc": "Κλίμακα + ολίσθηση με αναπήδηση",
   "transProfessional": "Επαγγελματικό",
-  "transProfessionalDesc": "Γρήγορο, καθαρό εφέ για επαγγελματικές εφαρμογές"
+  "transProfessionalDesc": "Γρήγορο, καθαρό εφέ για επαγγελματικές εφαρμογές",
+  "adjustSubtitleBackgroundVisibility": "Ρύθμιση ορατότητας φόντου υποτίτλων",
+  "areYouSureYouWantToDeleteThisEntry": "Θέλετε σίγουρα να αφαιρέσετε αυτή την καταχώριση από τη λίστα σας; Πρόοδος, βαθμολογία και ημερομηνίες θα χαθούν.",
+  "doubleCurrentSpeedOnHold": "Διπλασιασμός τρέχουσας ταχύτητας με παρατεταμένο πάτημα",
+  "doubleCurrentSpeedOnHoldDescription": "Το παρατεταμένο πάτημα διπλασιάζει την τρέχουσα ταχύτητα αντί για σταθερό 2x",
+  "subtitleBackgroundTransparency": "Διαφάνεια φόντου υποτίτλων"
 }

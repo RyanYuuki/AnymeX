@@ -77,6 +77,7 @@ class SimklMetadataProvider implements EpisodeMetadataProvider {
           description: _cleanString(ep['description']),
           thumbnail: thumbnail,
           airDate: airDate,
+          runtimeMinutes: (ep['runtime'] as num?)?.toInt(),
         );
       }
 

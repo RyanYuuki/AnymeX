@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Пружне масштабування",
   "transBouncyScaleDesc": "Масштаб + зсув із пружним ефектом",
   "transProfessional": "Професійна",
-  "transProfessionalDesc": "Швидка й охайна анімація для бізнес-застосунків"
+  "transProfessionalDesc": "Швидка й охайна анімація для бізнес-застосунків",
+  "adjustSubtitleBackgroundVisibility": "Налаштування видимості фону субтитрів",
+  "areYouSureYouWantToDeleteThisEntry": "Видалити цей запис зі списку? Прогрес, оцінку й дати буде втрачено.",
+  "doubleCurrentSpeedOnHold": "Подвоювати поточну швидкість при утриманні",
+  "doubleCurrentSpeedOnHoldDescription": "Під час утримання швидкість подвоюється від поточної, а не фіксовані 2x",
+  "subtitleBackgroundTransparency": "Прозорість фону субтитрів"
 }

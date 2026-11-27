@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Girma mai tsalle",
   "transBouncyScaleDesc": "Girma + zamewa da tasirin tsalle",
   "transProfessional": "Ƙwararru",
-  "transProfessionalDesc": "Rayarwa mai sauri da tsabta don manhajojin kasuwanci"
+  "transProfessionalDesc": "Rayarwa mai sauri da tsabta don manhajojin kasuwanci",
+  "adjustSubtitleBackgroundVisibility": "Daidaita ganuwar bangon fassara",
+  "areYouSureYouWantToDeleteThisEntry": "Ka tabbata kana son cire wannan shigarwa daga jerinka? Ci gabansa, maki da kwanakinsa za su ɓace.",
+  "doubleCurrentSpeedOnHold": "Ninka saurin yanzu idan an riƙe",
+  "doubleCurrentSpeedOnHoldDescription": "Riƙewa yana ninka saurin kunnawa na yanzu maimakon 2x tsayayye",
+  "subtitleBackgroundTransparency": "Bayyanar bangon fassara"
 }

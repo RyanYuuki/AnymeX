@@ -284,7 +284,8 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
     title: chapter.name,
     thumbnail: chapter.thumbnail,
     desc: chapter.description,
-    filler: chapter.filler,
+    filler: (chapter.filler ?? false) ||
+        (chapter.name?.toLowerCase().contains('[filler]') ?? false),
     dateUpload: chapter.dateUpload,
   );
 }

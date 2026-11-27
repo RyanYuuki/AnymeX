@@ -356,11 +356,11 @@ class _ExtensionListState extends State<ExtensionList>
                         SliverToBoxAdapter(
                           child: Center(
                             child: Padding(
-                              padding: EdgeInsets.all(20.0),
+                              padding: const EdgeInsets.all(20.0),
                               child: AnymeXText(
                                 context.l10n.noExtensionsFound,
                                 style:
-                                    TextStyle(fontSize: 16, color: Colors.grey),
+                                    const TextStyle(fontSize: 16, color: Colors.grey),
                               ),
                             ),
                           ),
@@ -387,10 +387,10 @@ class _ExtensionListState extends State<ExtensionList>
     if (!hasUpdates && !hasInstalled) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: AnymeXText(
             context.l10n.noExtensionsFound,
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ),
       );

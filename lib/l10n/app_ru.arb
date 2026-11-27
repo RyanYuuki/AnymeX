@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Пружинящее масштабирование",
   "transBouncyScaleDesc": "Масштаб + сдвиг с пружинящим эффектом",
   "transProfessional": "Профессиональная",
-  "transProfessionalDesc": "Быстрая и аккуратная анимация для бизнес-приложений"
+  "transProfessionalDesc": "Быстрая и аккуратная анимация для бизнес-приложений",
+  "adjustSubtitleBackgroundVisibility": "Настройка видимости фона субтитров",
+  "areYouSureYouWantToDeleteThisEntry": "Удалить эту запись из списка? Прогресс, оценка и даты будут потеряны.",
+  "doubleCurrentSpeedOnHold": "Удваивать текущую скорость при удержании",
+  "doubleCurrentSpeedOnHoldDescription": "При удержании скорость удваивается от текущей, а не фиксированные 2x",
+  "subtitleBackgroundTransparency": "Прозрачность фона субтитров"
 }

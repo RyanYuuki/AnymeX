@@ -4449,5 +4449,10 @@
   "transBouncyScale": "ಜಿಗಿಯುವ ಸ್ಕೇಲ್",
   "transBouncyScaleDesc": "ಸ್ಕೇಲ್ + ಸ್ಲೈಡ್, ಜಿಗಿತದ ಪರಿಣಾಮದೊಂದಿಗೆ",
   "transProfessional": "ವೃತ್ತಿಪರ",
-  "transProfessionalDesc": "ವ್ಯಾಪಾರ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ವೇಗದ, ಸ್ವಚ್ಛ ಅನಿಮೇಶನ್"
+  "transProfessionalDesc": "ವ್ಯಾಪಾರ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ವೇಗದ, ಸ್ವಚ್ಛ ಅನಿಮೇಶನ್",
+  "adjustSubtitleBackgroundVisibility": "ಉಪಶೀರ್ಷಿಕೆ ಹಿನ್ನೆಲೆಯ ಗೋಚರತೆಯನ್ನು ಹೊಂದಿಸಿ",
+  "areYouSureYouWantToDeleteThisEntry": "ಈ ನಮೂದನ್ನು ನಿಮ್ಮ ಪಟ್ಟಿಯಿಂದ ತೆಗೆದುಹಾಕಲು ಖಚಿತವೇ? ಅದರ ಪ್ರಗತಿ, ಸ್ಕೋರ್ ಮತ್ತು ದಿನಾಂಕಗಳು ಕಳೆದುಹೋಗುತ್ತವೆ.",
+  "doubleCurrentSpeedOnHold": "ಒತ್ತಿ ಹಿಡಿದಾಗ ಪ್ರಸ್ತುತ ವೇಗವನ್ನು ದ್ವಿಗುಣಗೊಳಿಸಿ",
+  "doubleCurrentSpeedOnHoldDescription": "ಒತ್ತಿ ಹಿಡಿದಾಗ ಸ್ಥಿರ 2x ಬದಲು ಪ್ರಸ್ತುತ ವೇಗದ ದ್ವಿಗುಣವಾಗುತ್ತದೆ",
+  "subtitleBackgroundTransparency": "ಉಪಶೀರ್ಷಿಕೆ ಹಿನ್ನೆಲೆಯ ಪಾರದರ್ಶಕತೆ"
 }

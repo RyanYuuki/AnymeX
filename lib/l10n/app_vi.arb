@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Phóng nảy",
   "transBouncyScaleDesc": "Phóng to + trượt với hiệu ứng nảy",
   "transProfessional": "Chuyên nghiệp",
-  "transProfessionalDesc": "Hiệu ứng nhanh, gọn cho ứng dụng doanh nghiệp"
+  "transProfessionalDesc": "Hiệu ứng nhanh, gọn cho ứng dụng doanh nghiệp",
+  "adjustSubtitleBackgroundVisibility": "Điều chỉnh độ hiển thị nền phụ đề",
+  "areYouSureYouWantToDeleteThisEntry": "Bạn có chắc muốn xóa mục này khỏi danh sách? Tiến độ, điểm và ngày tháng sẽ bị mất.",
+  "doubleCurrentSpeedOnHold": "Nhân đôi tốc độ hiện tại khi giữ",
+  "doubleCurrentSpeedOnHoldDescription": "Khi giữ sẽ tăng lên gấp đôi tốc độ hiện tại thay vì cố định 2x",
+  "subtitleBackgroundTransparency": "Độ trong suốt nền phụ đề"
 }

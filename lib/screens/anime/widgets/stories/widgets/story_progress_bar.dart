@@ -1,3 +1,4 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class StoryProgressBar extends StatelessWidget {
@@ -15,6 +16,7 @@ class StoryProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (count <= 0) return const SizedBox.shrink();
+    final colors = context.colors;
 
     return Row(
       children: List.generate(count, (index) {
@@ -25,9 +27,9 @@ class StoryProgressBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
               child: Container(
                 height: 4.0,
-                color: Colors.white.withValues(alpha: 0.35),
+                color: colors.onSurface.withValues(alpha: 0.25),
                 child: index < currentIndex
-                    ? Container(color: Colors.white)
+                    ? Container(color: colors.primary)
                     : (index == currentIndex
                         ? AnimatedBuilder(
                             animation: progress,
@@ -35,7 +37,7 @@ class StoryProgressBar extends StatelessWidget {
                               return FractionallySizedBox(
                                 alignment: Alignment.centerLeft,
                                 widthFactor: progress.value.clamp(0.0, 1.0),
-                                child: Container(color: Colors.white),
+                                child: Container(color: colors.primary),
                               );
                             },
                           )

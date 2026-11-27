@@ -5707,5 +5707,10 @@
   "transBouncyScale": "የሚዘል መጠን",
   "transBouncyScaleDesc": "መጠን + መንሸራተት ከዝላይ ውጤት ጋር",
   "transProfessional": "ሙያዊ",
-  "transProfessionalDesc": "ለንግድ መተግበሪያዎች ፈጣን እና ንጹህ እነማ"
+  "transProfessionalDesc": "ለንግድ መተግበሪያዎች ፈጣን እና ንጹህ እነማ",
+  "adjustSubtitleBackgroundVisibility": "የንዑስ ርዕስ ዳራ ታይነትን ያስተካክሉ",
+  "areYouSureYouWantToDeleteThisEntry": "ይህን ግቤት ከዝርዝርዎ ማስወገድ እርግጠኛ ነዎት? ሂደቱ፣ ውጤቱ እና ቀኖቹ ይጠፋሉ።",
+  "doubleCurrentSpeedOnHold": "ሲይዙ የአሁኑን ፍጥነት እጥፍ አድርግ",
+  "doubleCurrentSpeedOnHoldDescription": "መያዝ ከቋሚ 2x ይልቅ የአሁኑን የማጫወቻ ፍጥነት እጥፍ ያደርጋል",
+  "subtitleBackgroundTransparency": "የንዑስ ርዕስ ዳራ ግልጽነት"
 }

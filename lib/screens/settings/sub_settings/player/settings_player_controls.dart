@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/player_control_buttons.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/settings_json_shared.dart';
 import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -18,6 +19,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
@@ -470,21 +472,28 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
       onConfirm: () {},
       contentWidget: StatefulBuilder(
         builder: (dialogCtx, setDialogState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: styles.map((s) {
-              final isSelected = s['id'] == selectedId;
-              return AnymeXTile.radio(
-                selected: isSelected,
-                title: s['name']!,
-                onTap: () {
-                  setDialogState(() {
-                    selectedId = s['id']!;
-                    settings.progressSliderStyle = s['id']!;
-                  });
-                },
-              );
-            }).toList(),
+          return AnymeXTileBuilder<Map<String, String>>(
+            items: styles,
+            selectedItem: styles.firstWhere(
+              (s) => s['id'] == selectedId,
+              orElse: () => styles[1],
+            ),
+            isSelected: (s) => s['id'] == selectedId,
+            getTitle: (s) => s['name']!,
+            getSubtitleWidget: (s) => Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: IgnorePointer(
+                child: ProgressSliderPreview(
+                  style: parseSliderStyle(s['id']!),
+                ),
+              ),
+            ),
+            onItemPressed: (s) {
+              setDialogState(() {
+                selectedId = s['id']!;
+                settings.progressSliderStyle = s['id']!;
+              });
+            },
           );
         },
       ),
@@ -1177,6 +1186,21 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                   settings.mediaIndicatorTheme,
                 ).name,
               ),
+              AnymeXTile(
+                icon: Icons.linear_scale_rounded,
+                title: context.l10n.progressSliderStyle,
+                subtitle:
+                    _getSliderStyleLabel(context, settings.progressSliderStyle),
+                onTap: () => _showSliderStyleDialog(context),
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.layers_clear_rounded,
+                title: 'Override Theme Slider Style',
+                subtitle:
+                    'Use your selected progress slider style instead of the active theme slider',
+                value: settings.overrideSliderTheme,
+                onChanged: (val) => settings.overrideSliderTheme = val,
+              ),
               AnymeXTile.toggle(
                 icon: Icons.animation_rounded,
                 title: context.l10n.animateControlOverlay,
@@ -1211,6 +1235,13 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                     'Press and hold on player screen to temporarily speed up playback',
                 value: settings.enableHoldToSeek,
                 onChanged: (val) => settings.enableHoldToSeek = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.speed_rounded,
+                title: context.l10n.doubleCurrentSpeedOnHold,
+                subtitle: context.l10n.doubleCurrentSpeedOnHoldDescription,
+                value: settings.relativeHoldSpeed,
+                onChanged: (val) => settings.relativeHoldSpeed = val,
               ),
               AnymeXTile.toggle(
                 icon: Icons.swap_horiz_rounded,
@@ -1258,17 +1289,18 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
                   });
                 },
               ),
-              AnymeXTile(
-                icon: Icons.linear_scale_rounded,
-                title: context.l10n.progressSliderStyle,
-                subtitle: _getSliderStyleLabel(context, settings.progressSliderStyle),
-                onTap: () => _showSliderStyleDialog(context),
-              ),
             ],
           ),
           AnymeXSectionBuilder(
             title: context.l10n.autoSkipCompletion,
             children: [
+              AnymeXTile.toggle(
+                icon: Icons.skip_next_outlined,
+                title: 'Enable AniSkip',
+                subtitle: 'Show skip intro, outro, and recap buttons in the player',
+                value: settings.enableAniSkip,
+                onChanged: (val) => settings.enableAniSkip = val,
+              ),
               AnymeXTile.toggle(
                 icon: Icons.fast_forward,
                 title: context.l10n.autoSkipOp,

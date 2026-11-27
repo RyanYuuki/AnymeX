@@ -20,6 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../widgets/non_widgets/snackbar.dart';
 import '../main.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class Database {
   Isar _openIsar(Directory dir) {
@@ -197,7 +198,7 @@ class Database {
     // database stays reachable through the Files app.
     final dir = Platform.isMacOS
         ? await getApplicationSupportDirectory()
-        : await getApplicationDocumentsDirectory();
+        : await getAppDocumentsDirectory();
 
     if (Platform.isMacOS) {
       await _migrateLegacyMacosDatabase(dir);
@@ -219,7 +220,7 @@ class Database {
   /// migration is safe to retry on the next launch.
   Future<void> _migrateLegacyMacosDatabase(Directory newDir) async {
     try {
-      final legacyDir = await getApplicationDocumentsDirectory();
+      final legacyDir = await getAppDocumentsDirectory();
       if (legacyDir.path == newDir.path) return;
 
       for (final name in const [

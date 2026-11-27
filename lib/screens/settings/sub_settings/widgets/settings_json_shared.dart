@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'dart:convert';
 
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';

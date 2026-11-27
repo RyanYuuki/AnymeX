@@ -4449,5 +4449,10 @@
   "transBouncyScale": "കുതിക്കുന്ന സ്കെയിൽ",
   "transBouncyScaleDesc": "സ്കെയിൽ + സ്ലൈഡ്, കുതിപ്പ് പ്രഭാവത്തോടെ",
   "transProfessional": "പ്രൊഫഷണൽ",
-  "transProfessionalDesc": "ബിസിനസ് ആപ്പുകൾക്കുള്ള വേഗതയേറിയ, വൃത്തിയുള്ള ആനിമേഷൻ"
+  "transProfessionalDesc": "ബിസിനസ് ആപ്പുകൾക്കുള്ള വേഗതയേറിയ, വൃത്തിയുള്ള ആനിമേഷൻ",
+  "adjustSubtitleBackgroundVisibility": "സബ്‌ടൈറ്റിൽ പശ്ചാത്തലത്തിന്റെ ദൃശ്യത ക്രമീകരിക്കുക",
+  "areYouSureYouWantToDeleteThisEntry": "ഈ എൻട്രി നിങ്ങളുടെ ലിസ്റ്റിൽ നിന്ന് നീക്കണമെന്ന് ഉറപ്പാണോ? അതിന്റെ പുരോഗതി, സ്കോർ, തീയതികൾ നഷ്ടമാകും.",
+  "doubleCurrentSpeedOnHold": "അമർത്തിപ്പിടിക്കുമ്പോൾ നിലവിലെ വേഗം ഇരട്ടിയാക്കുക",
+  "doubleCurrentSpeedOnHoldDescription": "അമർത്തിപ്പിടിച്ചാൽ നിശ്ചിത 2x-ന് പകരം നിലവിലെ വേഗത്തിന്റെ ഇരട്ടിയാകും",
+  "subtitleBackgroundTransparency": "സബ്‌ടൈറ്റിൽ പശ്ചാത്തല സുതാര്യത"
 }

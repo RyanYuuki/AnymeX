@@ -4449,5 +4449,10 @@
   "transBouncyScale": "ఎగిరే స్కేల్",
   "transBouncyScaleDesc": "స్కేల్ + స్లైడ్, ఎగిరే ప్రభావంతో",
   "transProfessional": "ప్రొఫెషనల్",
-  "transProfessionalDesc": "వ్యాపార యాప్‌ల కోసం వేగవంతమైన, శుభ్రమైన యానిమేషన్"
+  "transProfessionalDesc": "వ్యాపార యాప్‌ల కోసం వేగవంతమైన, శుభ్రమైన యానిమేషన్",
+  "adjustSubtitleBackgroundVisibility": "సబ్‌టైటిల్ నేపథ్యం కనిపించే తీరును సర్దుబాటు చేయండి",
+  "areYouSureYouWantToDeleteThisEntry": "ఈ ఎంట్రీని మీ జాబితా నుండి తీసివేయాలనుకుంటున్నారా? దాని పురోగతి, స్కోర్, తేదీలు పోతాయి.",
+  "doubleCurrentSpeedOnHold": "పట్టుకున్నప్పుడు ప్రస్తుత వేగాన్ని రెట్టింపు చేయి",
+  "doubleCurrentSpeedOnHoldDescription": "పట్టుకుంటే స్థిర 2x బదులు ప్రస్తుత వేగానికి రెట్టింపు అవుతుంది",
+  "subtitleBackgroundTransparency": "సబ్‌టైటిల్ నేపథ్య పారదర్శకత"
 }

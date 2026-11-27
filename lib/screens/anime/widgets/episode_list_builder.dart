@@ -32,7 +32,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_popup_menu.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/animation/widget_animations.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -69,16 +68,35 @@ class EpisodeListBuilder extends StatefulWidget {
     required Media anilistData,
     bool bypassDialog = false,
   }) async {
-    await AnymeXSheet.custom(
-      ServerSheetContent(
+    final colors = context.colors;
+    await AnymeXSheet(
+      showDragHandle: true,
+      headerIcon: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Icon(
+            Icons.play_arrow_rounded,
+            size: 22,
+            color: colors.primary,
+          ),
+        ),
+      ),
+      heroTitle: 'Episode ${episode.number}',
+      heroSubtitle: (episode.title != null && episode.title!.isNotEmpty)
+          ? episode.title!
+          : 'Select streaming server quality to watch',
+      customWidget: ServerSheetContent(
         episode: episode,
         episodeList: episodeList,
         anilistData: anilistData,
         bypassDialog: bypassDialog,
       ),
-      context,
-      showDragHandle: true,
-    );
+    ).show(context);
   }
 
   @override
@@ -159,17 +177,27 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder>
     });
   }
 
+  bool _episodesChanged(List<Episode> oldList, List<Episode> newList) {
+    if (identical(oldList, newList)) return false;
+    if (oldList.length != newList.length) return true;
+    for (int i = 0; i < oldList.length; i++) {
+      final a = oldList[i];
+      final b = newList[i];
+      if (a.number != b.number ||
+          a.title != b.title ||
+          a.thumbnail != b.thumbnail ||
+          a.desc != b.desc ||
+          a.filler != b.filler) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @override
   void didUpdateWidget(covariant EpisodeListBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final oldLen = oldWidget.episodeList.length;
-    final newLen = widget.episodeList.length;
-    final oldFirst = oldLen > 0 ? oldWidget.episodeList.first.number : null;
-    final newFirst = newLen > 0 ? widget.episodeList.first.number : null;
-    final oldLast = oldLen > 0 ? oldWidget.episodeList.last.number : null;
-    final newLast = newLen > 0 ? widget.episodeList.last.number : null;
-
-    if (oldLen != newLen || oldFirst != newFirst || oldLast != newLast) {
+    if (_episodesChanged(oldWidget.episodeList, widget.episodeList)) {
       _initEpisodes();
       _recomputeAllEpisodeData();
     }
@@ -1942,72 +1970,29 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     }
   }
 
-  Widget _buildSheetHeader(ColorScheme theme) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child:
-                Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  'Episode ${widget.episode.number}',
-                  variant: TextVariant.bold,
-                  maxLines: 1,
-                  size: 16,
-                ),
-                AnymeXText(
-                  (widget.episode.title != null &&
-                          widget.episode.title!.isNotEmpty)
-                      ? widget.episode.title!
-                      : 'Select streaming server quality to watch',
-                  size: 12,
-                  maxLines: 1,
-                  color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
-                ),
-              ],
-            ),
-          ),
-          AnymexOnTap(
-            onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close_rounded,
-                color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildScrapingLoadingState() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ExpressiveLoadingIndicator(),
-          SizedBox(height: 16),
-          AnymeXText(
-            context.l10n.scanningForVideoStreams,
-            size: 16,
-            variant: TextVariant.semiBold,
-          ),
-          SizedBox(height: 8),
-          AnymeXText(
-            context.l10n.thisMayTakeAFewSeconds,
-            size: 12,
-          ),
-        ],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ExpressiveLoadingIndicator(),
+            const SizedBox(height: 16),
+            AnymeXText(
+              context.l10n.scanningForVideoStreams,
+              size: 16,
+              variant: TextVariant.semiBold,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            AnymeXText(
+              context.l10n.thisMayTakeAFewSeconds,
+              size: 12,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -2064,9 +2049,10 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
         maxHeight: MediaQuery.sizeOf(context).height * 0.5,
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: AnymeXTileBuilder<hive.Video>(
           lazy: true,
+          style: TileStyle.modern,
           items: streamList,
           isSelection: false,
           getTitle: (video) => video.quality?.toUpperCase() ?? "UNKNOWN",
@@ -2152,6 +2138,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
           headerChildren: [
             Obx(
               () => AnymeXTile.checkbox(
+                style: TileStyle.modern,
                 icon: Icons.bookmark_outline_rounded,
                 title: context.l10n.rememberServer,
                 subtitle: context.l10n.autoSelectThisServerQualityFor,
@@ -2195,28 +2182,19 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildSheetHeader(context.colors),
-        Flexible(
-          child: Obx(() {
-            if (isServerStreamLoading.value && streamList.isEmpty) {
-              return _buildScrapingLoadingState();
-            } else if (streamError.value != null) {
-              return _buildErrorState(streamError.value!);
-            } else if (streamList.isEmpty && !isServerStreamLoading.value) {
-              return _buildEmptyState();
-            } else {
-              return _buildServerList(
-                widget.anilistData,
-                showBottomLoader: isServerStreamLoading.value,
-              );
-            }
-          }),
-        ),
-        const SizedBox(height: 12),
-      ],
-    );
+    return Obx(() {
+      if (isServerStreamLoading.value && streamList.isEmpty) {
+        return _buildScrapingLoadingState();
+      } else if (streamError.value != null) {
+        return _buildErrorState(streamError.value!);
+      } else if (streamList.isEmpty && !isServerStreamLoading.value) {
+        return _buildEmptyState();
+      } else {
+        return _buildServerList(
+          widget.anilistData,
+          showBottomLoader: isServerStreamLoading.value,
+        );
+      }
+    });
   }
 }

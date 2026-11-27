@@ -14,7 +14,6 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/common/source_selector.dart';
 import 'package:anymex/widgets/header/header.dart';
@@ -25,7 +24,6 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ExtensionScreen extends StatefulWidget {
   const ExtensionScreen({

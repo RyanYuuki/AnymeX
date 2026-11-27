@@ -5707,5 +5707,10 @@
   "transBouncyScale": "הגדלה קופצנית",
   "transBouncyScaleDesc": "הגדלה + החלקה עם אפקט קפיצה",
   "transProfessional": "מקצועי",
-  "transProfessionalDesc": "אנימציה מהירה ונקייה לאפליקציות עסקיות"
+  "transProfessionalDesc": "אנימציה מהירה ונקייה לאפליקציות עסקיות",
+  "adjustSubtitleBackgroundVisibility": "התאמת נראות הרקע של הכתוביות",
+  "areYouSureYouWantToDeleteThisEntry": "להסיר את הפריט מהרשימה? ההתקדמות, הציון והתאריכים יאבדו.",
+  "doubleCurrentSpeedOnHold": "הכפלת המהירות הנוכחית בלחיצה ארוכה",
+  "doubleCurrentSpeedOnHoldDescription": "לחיצה ארוכה מאיצה לפי שניים מהמהירות הנוכחית במקום 2x קבוע",
+  "subtitleBackgroundTransparency": "שקיפות רקע הכתוביות"
 }

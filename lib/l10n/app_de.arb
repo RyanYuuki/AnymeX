@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Federnde Skalierung",
   "transBouncyScaleDesc": "Skalieren + Schieben mit Federeffekt",
   "transProfessional": "Professionell",
-  "transProfessionalDesc": "Schnelle, saubere Animation für Business-Apps"
+  "transProfessionalDesc": "Schnelle, saubere Animation für Business-Apps",
+  "adjustSubtitleBackgroundVisibility": "Sichtbarkeit des Untertitelhintergrunds anpassen",
+  "areYouSureYouWantToDeleteThisEntry": "Möchtest du diesen Eintrag wirklich aus deiner Liste entfernen? Fortschritt, Bewertung und Daten gehen verloren.",
+  "doubleCurrentSpeedOnHold": "Aktuelle Geschwindigkeit beim Halten verdoppeln",
+  "doubleCurrentSpeedOnHoldDescription": "Beim Halten wird auf das Doppelte deiner aktuellen Wiedergabegeschwindigkeit beschleunigt statt fest auf 2x",
+  "subtitleBackgroundTransparency": "Transparenz des Untertitelhintergrunds"
 }

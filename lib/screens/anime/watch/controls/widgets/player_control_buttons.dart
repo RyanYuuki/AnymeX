@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/chapters_bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
@@ -154,12 +153,8 @@ Map<String, Widget> buildPlayerControlButtonMap(
     'chapters': ControlButton(
       icon: Icons.bookmarks_rounded,
       onPressed: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (_) => const ChaptersBottomSheet(),
-        );
+        controller.isChaptersPaneOpened.value =
+            !controller.isChaptersPaneOpened.value;
       },
       tooltip: context.l10n.chaptersTimestamps,
       compact: true,

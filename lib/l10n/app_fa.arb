@@ -5707,5 +5707,10 @@
   "transBouncyScale": "بزرگ‌نمایی جهنده",
   "transBouncyScaleDesc": "بزرگ‌نمایی + لغزش با جلوه جهش",
   "transProfessional": "حرفه‌ای",
-  "transProfessionalDesc": "پویانمایی سریع و تمیز برای برنامه‌های تجاری"
+  "transProfessionalDesc": "پویانمایی سریع و تمیز برای برنامه‌های تجاری",
+  "adjustSubtitleBackgroundVisibility": "تنظیم میزان دیده شدن پس‌زمینه زیرنویس",
+  "areYouSureYouWantToDeleteThisEntry": "آیا مطمئنید این مورد را از فهرست خود حذف کنید؟ پیشرفت، امتیاز و تاریخ‌های آن از بین می‌رود.",
+  "doubleCurrentSpeedOnHold": "دو برابر کردن سرعت فعلی با نگه داشتن",
+  "doubleCurrentSpeedOnHoldDescription": "نگه داشتن سرعت را به دو برابر سرعت فعلی می‌رساند، نه 2x ثابت",
+  "subtitleBackgroundTransparency": "شفافیت پس‌زمینه زیرنویس"
 }

@@ -5707,5 +5707,10 @@
   "transBouncyScale": "লাফানো স্কেল",
   "transBouncyScaleDesc": "স্কেল + স্লাইড, লাফানো প্রভাবসহ",
   "transProfessional": "পেশাদার",
-  "transProfessionalDesc": "ব্যবসায়িক অ্যাপের জন্য দ্রুত ও পরিচ্ছন্ন অ্যানিমেশন"
+  "transProfessionalDesc": "ব্যবসায়িক অ্যাপের জন্য দ্রুত ও পরিচ্ছন্ন অ্যানিমেশন",
+  "adjustSubtitleBackgroundVisibility": "সাবটাইটেলের পটভূমির দৃশ্যমানতা ঠিক করুন",
+  "areYouSureYouWantToDeleteThisEntry": "আপনি কি নিশ্চিত যে এই এন্ট্রি তালিকা থেকে সরাতে চান? এর অগ্রগতি, স্কোর ও তারিখ হারিয়ে যাবে।",
+  "doubleCurrentSpeedOnHold": "চেপে ধরলে বর্তমান গতি দ্বিগুণ করুন",
+  "doubleCurrentSpeedOnHoldDescription": "চেপে ধরলে নির্দিষ্ট 2x নয়, বর্তমান গতির দ্বিগুণ হয়",
+  "subtitleBackgroundTransparency": "সাবটাইটেল পটভূমির স্বচ্ছতা"
 }

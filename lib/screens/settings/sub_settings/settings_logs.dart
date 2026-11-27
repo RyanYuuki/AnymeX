@@ -24,6 +24,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   final Set<int> _expandedEntries = <int>{};
+  final Set<int> _expandedMessages = <int>{};
 
   StreamSubscription<LogEntry>? _logSubscription;
   StreamSubscription<void>? _clearSubscription;
@@ -57,6 +58,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
       setState(() {
         _allLogs.clear();
         _expandedEntries.clear();
+        _expandedMessages.clear();
       });
     });
 
@@ -349,6 +351,9 @@ class _SettingsLogsState extends State<SettingsLogs> {
     final color = _levelColor(entry.level, theme);
     final hasDetails = entry.error != null || entry.stackTrace != null;
     final isExpanded = _expandedEntries.contains(index);
+    final isMessageExpanded = _expandedMessages.contains(index);
+    final isLongMessage =
+        '\n'.allMatches(entry.message).length >= 4 || entry.message.length > 220;
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final h = isDesktop ? 24.0 : 16.0;
 
@@ -364,6 +369,15 @@ class _SettingsLogsState extends State<SettingsLogs> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
+        onLongPress: () {
+          Clipboard.setData(ClipboardData(text: entry.toFormattedString()));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.logsCopiedToClipboard),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        },
         onTap: hasDetails
             ? () {
                 setState(() {
@@ -437,8 +451,12 @@ class _SettingsLogsState extends State<SettingsLogs> {
                 ],
               ),
               const SizedBox(height: 6),
-              SelectableText(
+              AnymeXText(
                 entry.message,
+                maxLines: isLongMessage && !isMessageExpanded ? 4 : null,
+                overflow: isLongMessage && !isMessageExpanded
+                    ? TextOverflow.ellipsis
+                    : TextOverflow.visible,
                 style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 12,
@@ -446,6 +464,28 @@ class _SettingsLogsState extends State<SettingsLogs> {
                   height: 1.35,
                 ),
               ),
+              if (isLongMessage) ...[
+                const SizedBox(height: 4),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (isMessageExpanded) {
+                        _expandedMessages.remove(index);
+                      } else {
+                        _expandedMessages.add(index);
+                      }
+                    });
+                  },
+                  child: AnymeXText(
+                    isMessageExpanded ? 'Show less' : 'Read more',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
               if (hasDetails && isExpanded) ...[
                 const SizedBox(height: 8),
                 Container(
@@ -515,7 +555,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
                       ),
                       const SizedBox(height: 6),
                       if (entry.error != null)
-                        SelectableText(
+                        AnymeXText(
                           '${entry.error}',
                           style: TextStyle(
                             fontFamily: 'monospace',
@@ -525,7 +565,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
                         ),
                       if (entry.stackTrace != null) ...[
                         const SizedBox(height: 6),
-                        SelectableText(
+                        AnymeXText(
                           '${entry.stackTrace}',
                           style: TextStyle(
                             fontFamily: 'monospace',

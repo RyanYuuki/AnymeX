@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 // ignore_for_file: prefer_const_constructors
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';

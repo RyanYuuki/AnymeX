@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Skala melantun",
   "transBouncyScaleDesc": "Skala + gelongsor dengan kesan lantunan",
   "transProfessional": "Profesional",
-  "transProfessionalDesc": "Animasi pantas dan kemas untuk aplikasi perniagaan"
+  "transProfessionalDesc": "Animasi pantas dan kemas untuk aplikasi perniagaan",
+  "adjustSubtitleBackgroundVisibility": "Laraskan keterlihatan latar sari kata",
+  "areYouSureYouWantToDeleteThisEntry": "Adakah anda pasti mahu membuang entri ini daripada senarai? Kemajuan, skor dan tarikhnya akan hilang.",
+  "doubleCurrentSpeedOnHold": "Gandakan kelajuan semasa apabila ditahan",
+  "doubleCurrentSpeedOnHoldDescription": "Menahan mempercepat kepada dua kali kelajuan semasa, bukan 2x tetap",
+  "subtitleBackgroundTransparency": "Ketelusan latar sari kata"
 }

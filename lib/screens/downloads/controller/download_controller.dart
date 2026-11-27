@@ -34,6 +34,7 @@ import 'package:anymex/utils/background_service_handler.dart';
 import 'package:anymex/controllers/services/torrent/torrent_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/utils/notification.dart';
+import 'package:anymex/utils/app_directories.dart';
 
 class DownloadController extends GetxController {
   final RxList<ActiveDownloadTask> activeTasks = <ActiveDownloadTask>[].obs;
@@ -1633,7 +1634,7 @@ class DownloadController extends GetxController {
         return Directory(p.join(ext.path, 'AnymeX', 'Downloads'));
       }
     }
-    final docs = await getApplicationDocumentsDirectory();
+    final docs = await getAppDocumentsDirectory();
     return Directory(p.join(docs.path, 'AnymeX', 'Downloads'));
   }
 

@@ -444,7 +444,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
                       child: AnymeXText(context.l10n.clear,
-                          style: TextStyle(fontSize: 12)),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                 ],
               ),

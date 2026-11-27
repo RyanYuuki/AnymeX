@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Skala memantul",
   "transBouncyScaleDesc": "Skala + geser dengan efek pantulan",
   "transProfessional": "Profesional",
-  "transProfessionalDesc": "Animasi cepat dan rapi untuk aplikasi bisnis"
+  "transProfessionalDesc": "Animasi cepat dan rapi untuk aplikasi bisnis",
+  "adjustSubtitleBackgroundVisibility": "Atur visibilitas latar subtitle",
+  "areYouSureYouWantToDeleteThisEntry": "Yakin ingin menghapus entri ini dari daftarmu? Progres, skor, dan tanggalnya akan hilang.",
+  "doubleCurrentSpeedOnHold": "Gandakan kecepatan saat ditahan",
+  "doubleCurrentSpeedOnHoldDescription": "Menahan mempercepat menjadi dua kali kecepatan saat ini, bukan 2x tetap",
+  "subtitleBackgroundTransparency": "Transparansi latar subtitle"
 }

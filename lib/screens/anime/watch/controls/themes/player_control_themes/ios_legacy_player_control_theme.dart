@@ -896,7 +896,7 @@ class _IosLegacyUnlockButtonState extends State<_IosLegacyUnlockButton>
                   ),
                   const SizedBox(width: 10),
                   AnymeXText(context.l10n.holdToUnlock,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

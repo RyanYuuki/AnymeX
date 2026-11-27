@@ -136,6 +136,7 @@ class MediaDetailsController extends GetxController {
   final RxBool isAnify = true.obs;
   final RxBool showAnify = true.obs;
   final RxBool disableAnifyForCurrentSource = false.obs;
+  final RxBool isRefreshingMetadata = false.obs;
   final RxString selectedEpisodeStyle = 'compact'.obs;
   final RxBool isInCustomList = false.obs;
 
@@ -833,6 +834,9 @@ class MediaDetailsController extends GetxController {
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
     for (final episode in episodes) {
+      if (episode.title?.toLowerCase().contains('[filler]') ?? false) {
+        episode.filler = true;
+      }
       final info = parseEpisodeInfo(episode.number, episode.title);
       if (info.number.isNotEmpty && info.number != episode.number) {
         episode.number = info.number;
@@ -865,18 +869,42 @@ class MediaDetailsController extends GetxController {
     }).toList();
   }
 
-  Future<void> _applyAnifyCovers({int? reqId}) async {
+  Future<void> refreshEpisodeMetadata() async {
+    if (!isAnime ||
+        rawEpisodes.isEmpty ||
+        disableAnifyForCurrentSource.value) {
+      return;
+    }
+    if (!isAnify.value) {
+      isAnify.value = true;
+    }
+    if (isRefreshingMetadata.value) return;
+    isRefreshingMetadata.value = true;
+    try {
+      await _applyAnifyCovers(
+        reqId: _sourceRequestVersion,
+        forceRefresh: true,
+      );
+    } finally {
+      isRefreshingMetadata.value = false;
+    }
+  }
+
+  Future<void> _applyAnifyCovers({int? reqId, bool forceRefresh = false}) async {
     if (rawEpisodes.isEmpty ||
         !isAnify.value ||
         disableAnifyForCurrentSource.value) {
       return;
     }
     try {
-      final baseList = rawEpisodes.map((e) => e.clone()).toList();
+      if (forceRefresh) {
+        anifyEpisodes.clear();
+      }
       final metaTargets = MetadataTargetIds.fromMedia(media.value);
       final metaService = EpisodeMetadataService.instance;
 
       if (!metaTargets.hasAnyId) {
+        final baseList = rawEpisodes.map((e) => e.clone()).toList();
         final newEps = await AnilistData.fetchEpisodesFromAnify(
           media.value.id,
           baseList,
@@ -892,11 +920,15 @@ class MediaDetailsController extends GetxController {
         return;
       }
 
-      await for (final metaMap in metaService.streamMetadata(metaTargets)) {
+      await for (final metaMap in metaService.streamMetadata(
+        metaTargets,
+        forceRefresh: forceRefresh,
+      )) {
         if (reqId != null && _isStaleSourceRequest(reqId)) return;
         if (!isAnify.value) break;
 
-        for (final ep in baseList) {
+        final updatedList = rawEpisodes.map((e) => e.clone()).toList();
+        for (final ep in updatedList) {
           final epNum = ep.number.toString();
           final meta = metaMap[epNum];
           if (meta != null) {
@@ -912,12 +944,15 @@ class MediaDetailsController extends GetxController {
             if (meta.isFiller != null) {
               ep.filler = meta.isFiller!;
             }
+            if (ep.title?.toLowerCase().contains('[filler]') ?? false) {
+              ep.filler = true;
+            }
           }
         }
 
-        anifyEpisodes.assignAll(baseList.map((e) => e.clone()).toList());
+        anifyEpisodes.assignAll(updatedList.map((e) => e.clone()).toList());
         if (isAnify.value) {
-          episodeList.assignAll(_renewEpisodeData(baseList));
+          episodeList.assignAll(_renewEpisodeData(updatedList));
         }
       }
 

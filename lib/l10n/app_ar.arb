@@ -4449,5 +4449,10 @@
   "transBouncyScale": "تكبير مرتد",
   "transBouncyScaleDesc": "تكبير + انزلاق مع تأثير ارتداد",
   "transProfessional": "احترافي",
-  "transProfessionalDesc": "حركة سريعة ونظيفة لتطبيقات الأعمال"
+  "transProfessionalDesc": "حركة سريعة ونظيفة لتطبيقات الأعمال",
+  "adjustSubtitleBackgroundVisibility": "اضبط وضوح خلفية الترجمة",
+  "areYouSureYouWantToDeleteThisEntry": "هل تريد بالتأكيد إزالة هذا العنصر من قائمتك؟ سيُفقد تقدمه وتقييمه وتواريخه.",
+  "doubleCurrentSpeedOnHold": "مضاعفة السرعة الحالية عند الضغط المطوّل",
+  "doubleCurrentSpeedOnHoldDescription": "يرفع الضغط المطوّل السرعة إلى ضعف سرعة التشغيل الحالية بدلاً من 2x ثابتة",
+  "subtitleBackgroundTransparency": "شفافية خلفية الترجمة"
 }

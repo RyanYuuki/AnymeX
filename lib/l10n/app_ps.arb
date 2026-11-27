@@ -5707,5 +5707,10 @@
   "transBouncyScale": "ټوپ وهونکی اندازه",
   "transBouncyScaleDesc": "اندازه + ښویېدل، د ټوپ اغېز سره",
   "transProfessional": "مسلکي",
-  "transProfessionalDesc": "د سوداګریزو اپونو لپاره چټک او پاک حرکت"
+  "transProfessionalDesc": "د سوداګریزو اپونو لپاره چټک او پاک حرکت",
+  "adjustSubtitleBackgroundVisibility": "د ژباړې شالید ښکاره کېدل تنظیم کړئ",
+  "areYouSureYouWantToDeleteThisEntry": "ایا ډاډه یاست چې دا ننوتنه له لیست څخه لرې کړئ؟ پرمختګ، نمره او نېټې به یې ورکې شي.",
+  "doubleCurrentSpeedOnHold": "د نیولو پر مهال اوسنی سرعت دوه چنده کړئ",
+  "doubleCurrentSpeedOnHoldDescription": "نیول د ثابت 2x پر ځای اوسنی سرعت دوه چنده کوي",
+  "subtitleBackgroundTransparency": "د ژباړې شالید روڼتیا"
 }

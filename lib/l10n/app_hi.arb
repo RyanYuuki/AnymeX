@@ -5707,5 +5707,10 @@
   "transBouncyScale": "उछलता स्केल",
   "transBouncyScaleDesc": "स्केल + स्लाइड, उछाल के साथ",
   "transProfessional": "प्रोफ़ेशनल",
-  "transProfessionalDesc": "बिज़नेस ऐप्स के लिए तेज़, साफ़ एनिमेशन"
+  "transProfessionalDesc": "बिज़नेस ऐप्स के लिए तेज़, साफ़ एनिमेशन",
+  "adjustSubtitleBackgroundVisibility": "सबटाइटल बैकग्राउंड की दृश्यता समायोजित करें",
+  "areYouSureYouWantToDeleteThisEntry": "क्या आप वाकई यह प्रविष्टि सूची से हटाना चाहते हैं? इसकी प्रगति, स्कोर और तारीखें मिट जाएँगी।",
+  "doubleCurrentSpeedOnHold": "दबाए रखने पर मौजूदा गति दोगुनी करें",
+  "doubleCurrentSpeedOnHoldDescription": "दबाए रखने पर तय 2x के बजाय मौजूदा प्लेबैक गति की दोगुनी होती है",
+  "subtitleBackgroundTransparency": "सबटाइटल बैकग्राउंड पारदर्शिता"
 }

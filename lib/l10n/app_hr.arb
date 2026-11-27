@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Opružno skaliranje",
   "transBouncyScaleDesc": "Skaliranje + klizanje s opružnim efektom",
   "transProfessional": "Profesionalno",
-  "transProfessionalDesc": "Brza, čista animacija za poslovne aplikacije"
+  "transProfessionalDesc": "Brza, čista animacija za poslovne aplikacije",
+  "adjustSubtitleBackgroundVisibility": "Prilagodite vidljivost pozadine titlova",
+  "areYouSureYouWantToDeleteThisEntry": "Jeste li sigurni da želite ukloniti ovaj unos s popisa? Napredak, ocjena i datumi bit će izgubljeni.",
+  "doubleCurrentSpeedOnHold": "Udvostruči trenutnu brzinu držanjem",
+  "doubleCurrentSpeedOnHoldDescription": "Držanje ubrzava na dvostruku trenutnu brzinu umjesto fiksnih 2x",
+  "subtitleBackgroundTransparency": "Prozirnost pozadine titlova"
 }

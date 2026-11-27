@@ -1,6 +1,5 @@
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui' as ui;
-import 'package:get/get.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -476,7 +475,7 @@ class DiscordMarkdown extends StatelessWidget {
 
     double? width;
     final widthMatch = RegExp(
-      r'width=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      r'width=["'']{1,2}([^"''s>]+)["'']{1,2}',
       caseSensitive: false,
     ).firstMatch(tagAttributes);
     if (widthMatch != null) {
@@ -488,7 +487,7 @@ class DiscordMarkdown extends StatelessWidget {
 
     double? height;
     final heightMatch = RegExp(
-      r'height=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      r'height=["'']{1,2}([^"''s>]+)["'']{1,2}',
       caseSensitive: false,
     ).firstMatch(tagAttributes);
     if (heightMatch != null) {

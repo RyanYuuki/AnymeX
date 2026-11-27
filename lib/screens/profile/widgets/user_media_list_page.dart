@@ -438,7 +438,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                           onPressed: () =>
                               setSheetState(() => tempSelected.clear()),
                           child: AnymeXText(context.l10n.clear,
-                              style: TextStyle(fontSize: 12)),
+                              style: const TextStyle(fontSize: 12)),
                         ),
                     ],
                   ),

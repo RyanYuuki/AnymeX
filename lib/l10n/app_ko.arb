@@ -4449,5 +4449,10 @@
   "transBouncyScale": "튕기는 확대",
   "transBouncyScaleDesc": "확대 + 슬라이드에 튕김 효과",
   "transProfessional": "프로페셔널",
-  "transProfessionalDesc": "비즈니스 앱을 위한 빠르고 깔끔한 애니메이션"
+  "transProfessionalDesc": "비즈니스 앱을 위한 빠르고 깔끔한 애니메이션",
+  "adjustSubtitleBackgroundVisibility": "자막 배경 표시 정도 조정",
+  "areYouSureYouWantToDeleteThisEntry": "이 항목을 목록에서 삭제할까요? 진행 상황, 점수, 날짜가 사라집니다.",
+  "doubleCurrentSpeedOnHold": "길게 누르면 현재 속도 2배",
+  "doubleCurrentSpeedOnHoldDescription": "길게 누르면 고정 2x 대신 현재 재생 속도의 2배로 빨라집니다",
+  "subtitleBackgroundTransparency": "자막 배경 투명도"
 }

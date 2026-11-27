@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Zoom rebondissant",
   "transBouncyScaleDesc": "Zoom + glissement avec effet de rebond",
   "transProfessional": "Professionnel",
-  "transProfessionalDesc": "Animation rapide et nette pour les apps pro"
+  "transProfessionalDesc": "Animation rapide et nette pour les apps pro",
+  "adjustSubtitleBackgroundVisibility": "Ajuster la visibilité du fond des sous-titres",
+  "areYouSureYouWantToDeleteThisEntry": "Veux-tu vraiment retirer cette entrée de ta liste ? Sa progression, sa note et ses dates seront perdues.",
+  "doubleCurrentSpeedOnHold": "Doubler la vitesse actuelle en maintenant",
+  "doubleCurrentSpeedOnHoldDescription": "Le maintien accélère au double de ta vitesse actuelle au lieu d'un 2x fixe",
+  "subtitleBackgroundTransparency": "Transparence du fond des sous-titres"
 }

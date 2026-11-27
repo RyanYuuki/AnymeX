@@ -29,7 +29,7 @@ query {
     episodes(first: 2000) {
       nodes {
         number
-        titles { canonical }
+        titles { localized }
         description
         thumbnail { original { url } }
         length
@@ -99,13 +99,25 @@ query {
             ? episodeNum.substring(0, episodeNum.length - 2)
             : episodeNum;
 
-        final title = _cleanString(node['titles']?['canonical']);
+        final localized = node['titles']?['localized'];
+        String? title;
+        if (localized is Map) {
+          title = _cleanString(localized['en']) ??
+              _cleanString(localized['en_jp']) ??
+              _cleanString(localized['en_us']) ??
+              localized.values
+                  .map(_cleanString)
+                  .firstWhere((e) => e != null, orElse: () => null);
+        }
         final descObj = node['description'];
         final description = descObj is Map
             ? _cleanString(descObj['en'])
             : _cleanString(descObj);
         final thumbnail = _cleanString(node['thumbnail']?['original']?['url']);
-        final runtime = (node['length'] as num?)?.toInt();
+        final rawLength = (node['length'] as num?)?.toInt();
+        final runtime = rawLength != null
+            ? (rawLength >= 180 ? rawLength ~/ 60 : rawLength)
+            : null;
 
         result[normalizedNumber] = EpisodeMetadataItem(
           number: normalizedNumber,

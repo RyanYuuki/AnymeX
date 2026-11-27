@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
 import 'package:anymex/core/metadata/providers/anilist_metadata_provider.dart';
 import 'package:anymex/core/metadata/providers/anify_metadata_provider.dart';
@@ -10,6 +11,7 @@ import 'package:anymex/core/metadata/providers/simkl_metadata_provider.dart';
 import 'package:anymex/core/metadata/providers/tenrai_metadata_provider.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class EpisodeMetadataService extends GetxController {
@@ -152,6 +154,7 @@ class EpisodeMetadataService extends GetxController {
   Stream<Map<String, EpisodeMetadataItem>> streamMetadata(
     MetadataTargetIds ids, {
     String? explicitSource,
+    bool forceRefresh = false,
   }) async* {
     if (!ids.hasAnyId) return;
 
@@ -162,12 +165,16 @@ class EpisodeMetadataService extends GetxController {
     }
 
     final cacheKey = '${ids.cacheKey}:$targetSource';
-    final cached = _memoryCache[cacheKey];
-    if (cached != null) {
-      final isFresh = DateTime.now().difference(cached.$1) < const Duration(minutes: 30);
-      if (isFresh) {
-        yield mergeResults(cached.$2);
-        return;
+    if (forceRefresh) {
+      _memoryCache.remove(cacheKey);
+    } else {
+      final cached = _memoryCache[cacheKey];
+      if (cached != null) {
+        final isFresh = DateTime.now().difference(cached.$1) < const Duration(minutes: 30);
+        if (isFresh) {
+          yield mergeResults(cached.$2);
+          return;
+        }
       }
     }
 
@@ -202,9 +209,14 @@ class EpisodeMetadataService extends GetxController {
   Future<Map<String, EpisodeMetadataItem>> fetchMergedMetadata(
     MetadataTargetIds ids, {
     String? explicitSource,
+    bool forceRefresh = false,
   }) async {
     Map<String, EpisodeMetadataItem> lastEmitted = const {};
-    await for (final update in streamMetadata(ids, explicitSource: explicitSource)) {
+    await for (final update in streamMetadata(
+      ids,
+      explicitSource: explicitSource,
+      forceRefresh: forceRefresh,
+    )) {
       lastEmitted = update;
     }
     return lastEmitted;
@@ -246,5 +258,243 @@ class EpisodeMetadataService extends GetxController {
     }
 
     return merged;
+  }
+
+  Future<String> testAllProvidersRaw(MetadataTargetIds ids) async {
+    final client = NetworkManager.instance.compatibleClient;
+    final results = <String, dynamic>{};
+
+    dynamic tryDecode(String body) {
+      if (body.isEmpty) return '';
+      try {
+        return jsonDecode(body);
+      } catch (_) {
+        return body;
+      }
+    }
+
+    Future<void> runTest(
+      String key,
+      Future<Map<String, dynamic>> Function() fn,
+    ) async {
+      try {
+        results[key] = await fn();
+      } catch (e) {
+        results[key] = {'error': e.toString()};
+      }
+    }
+
+    await Future.wait([
+      runTest('anizip', () async {
+        final queryParam = ids.anilistId != null
+            ? 'anilist_id=${ids.anilistId}'
+            : 'mal_id=${ids.malId}';
+        final url = 'https://api.ani.zip/mappings?$queryParam';
+        final resp =
+            await client.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
+        final decoded = tryDecode(resp.body);
+        if (decoded is Map && decoded['mappings'] is Map) {
+          final m = decoded['mappings'] as Map;
+          ids.kitsuId ??= m['kitsu_id']?.toString();
+          ids.simklId ??= m['simkl_id']?.toString();
+          ids.malId ??= m['mal_id']?.toString();
+          ids.anilistId ??= m['anilist_id']?.toString();
+        }
+        return {
+          'url': url,
+          'statusCode': resp.statusCode,
+          'response': decoded,
+        };
+      }),
+      runTest('anilist', () async {
+        final anilistId = int.tryParse(ids.anilistId ?? '');
+        if (anilistId == null) {
+          return {'skipped': 'missing anilistId'};
+        }
+        const query = '''
+query (\$id: Int) {
+  Media(id: \$id, type: ANIME) {
+    streamingEpisodes {
+      title
+      thumbnail
+    }
+    airingSchedule(perPage: 150) {
+      nodes {
+        episode
+        airingAt
+      }
+    }
+  }
+}
+''';
+        const url = 'https://graphql.anilist.co';
+        final resp = await client
+            .post(
+              Uri.parse(url),
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: jsonEncode({
+                'query': query,
+                'variables': {'id': anilistId},
+              }),
+            )
+            .timeout(const Duration(seconds: 15));
+        return {
+          'url': url,
+          'statusCode': resp.statusCode,
+          'response': tryDecode(resp.body),
+        };
+      }),
+      runTest('kitsu', () async {
+        if (ids.anilistId == null && ids.malId == null && ids.kitsuId == null) {
+          return {'skipped': 'missing kitsu/anilist/mal id'};
+        }
+        final query = ids.kitsuId != null
+            ? '''
+query {
+  findAnimeById(id: ${ids.kitsuId}) {
+    episodes(first: 2000) {
+      nodes {
+        number
+        titles { localized }
+        description
+        thumbnail { original { url } }
+        length
+      }
+    }
+  }
+}
+'''
+            : '''
+query {
+  lookupMapping(externalId: ${ids.anilistId ?? ids.malId}, externalSite: ${ids.anilistId != null ? 'ANILIST_ANIME' : 'MYANIMELIST_ANIME'}) {
+    __typename
+    ... on Anime {
+      id
+      episodes(first: 2000) {
+        nodes {
+          number
+          titles { canonical }
+          description
+          thumbnail { original { url } }
+          length
+        }
+      }
+    }
+  }
+}
+''';
+        const url = 'https://kitsu.io/api/graphql';
+        final resp = await client
+            .post(
+              Uri.parse(url),
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: jsonEncode({'query': query}),
+            )
+            .timeout(const Duration(seconds: 15));
+        return {
+          'url': url,
+          'statusCode': resp.statusCode,
+          'response': tryDecode(resp.body),
+        };
+      }),
+      runTest('tenrai', () async {
+        final malId = ids.malId;
+        if (malId == null) {
+          return {'skipped': 'missing malId'};
+        }
+        final url = 'https://api.tenrai.org/v1/anime/$malId/episodes?page=1';
+        final resp = await client
+            .get(Uri.parse(url), headers: {'Accept': 'application/json'})
+            .timeout(const Duration(seconds: 12));
+        return {
+          'url': url,
+          'statusCode': resp.statusCode,
+          'response': tryDecode(resp.body),
+        };
+      }),
+      runTest('anify', () async {
+        final anilistId = ids.anilistId;
+        if (anilistId == null) {
+          return {'skipped': 'missing anilistId'};
+        }
+        final url = 'https://api.anify.eltik.cc/info/$anilistId?fields=[episodes]';
+        final resp =
+            await client.get(Uri.parse(url)).timeout(const Duration(seconds: 12));
+        return {
+          'url': url,
+          'statusCode': resp.statusCode,
+          'response': tryDecode(resp.body),
+        };
+      }),
+      runTest('simkl', () async {
+        String? simklId = ids.simklId;
+        String? lookupUrl;
+        int? lookupStatus;
+        if (simklId == null && (ids.malId != null || ids.anilistId != null)) {
+          final param =
+              ids.malId != null ? 'mal=${ids.malId}' : 'anilist=${ids.anilistId}';
+          lookupUrl =
+              'https://api.simkl.com/search/id?$param&client_id=${SimklMetadataProvider.clientId}';
+          final lookupResp = await client
+              .get(Uri.parse(lookupUrl), headers: {'Accept': 'application/json'})
+              .timeout(const Duration(seconds: 10));
+          lookupStatus = lookupResp.statusCode;
+          final decoded = tryDecode(lookupResp.body);
+          if (decoded is List && decoded.isNotEmpty && decoded[0] is Map) {
+            final idsMap = decoded[0]['ids'];
+            if (idsMap is Map) {
+              simklId = idsMap['simkl']?.toString();
+            }
+          }
+        }
+        if (simklId == null || simklId.isEmpty) {
+          return {
+            'lookupUrl': lookupUrl,
+            'lookupStatusCode': lookupStatus,
+            'skipped': 'could not resolve simklId',
+          };
+        }
+        final url =
+            'https://api.simkl.com/anime/episodes/$simklId?extended=full&client_id=${SimklMetadataProvider.clientId}';
+        final resp = await client
+            .get(Uri.parse(url), headers: {'Accept': 'application/json'})
+            .timeout(const Duration(seconds: 15));
+        return {
+          if (lookupUrl != null) 'lookupUrl': lookupUrl,
+          if (lookupStatus != null) 'lookupStatusCode': lookupStatus,
+          'url': url,
+          'statusCode': resp.statusCode,
+          'response': tryDecode(resp.body),
+        };
+      }),
+    ]);
+
+    const encoder = JsonEncoder.withIndent('  ');
+    debugPrint('=== EPISODE METADATA API TEST START ===');
+    debugPrint(
+      'Targets: anilistId=${ids.anilistId}, malId=${ids.malId}, kitsuId=${ids.kitsuId}, simklId=${ids.simklId}, title=${ids.title}',
+    );
+    for (final entry in results.entries) {
+      debugPrint('--- [${entry.key}] ---');
+      debugPrint(encoder.convert(entry.value));
+    }
+    debugPrint('=== EPISODE METADATA API TEST END ===');
+
+    return encoder.convert({
+      'targets': {
+        'anilistId': ids.anilistId,
+        'malId': ids.malId,
+        'kitsuId': ids.kitsuId,
+        'simklId': ids.simklId,
+        'title': ids.title,
+      },
+      'providers': results,
+    });
   }
 }

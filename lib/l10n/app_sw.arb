@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Ukubwa unaoruka",
   "transBouncyScaleDesc": "Kukuza + kuteleza kwa athari ya kuruka",
   "transProfessional": "Kitaalamu",
-  "transProfessionalDesc": "Uhuishaji wa haraka na safi kwa programu za biashara"
+  "transProfessionalDesc": "Uhuishaji wa haraka na safi kwa programu za biashara",
+  "adjustSubtitleBackgroundVisibility": "Rekebisha uonekano wa mandharinyuma ya manukuu",
+  "areYouSureYouWantToDeleteThisEntry": "Una uhakika unataka kuondoa kipengee hiki kwenye orodha yako? Maendeleo, alama na tarehe zake zitapotea.",
+  "doubleCurrentSpeedOnHold": "Ongeza kasi ya sasa mara mbili ukishikilia",
+  "doubleCurrentSpeedOnHoldDescription": "Kushikilia huongeza hadi mara mbili ya kasi ya sasa badala ya 2x isiyobadilika",
+  "subtitleBackgroundTransparency": "Uwazi wa mandharinyuma ya manukuu"
 }

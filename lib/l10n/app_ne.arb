@@ -5707,5 +5707,10 @@
   "transBouncyScale": "उफ्रिने स्केल",
   "transBouncyScaleDesc": "स्केल + स्लाइड, उफ्राइ प्रभावसहित",
   "transProfessional": "व्यावसायिक",
-  "transProfessionalDesc": "व्यवसायिक एपका लागि छिटो, सफा एनिमेसन"
+  "transProfessionalDesc": "व्यवसायिक एपका लागि छिटो, सफा एनिमेसन",
+  "adjustSubtitleBackgroundVisibility": "उपशीर्षक पृष्ठभूमिको दृश्यता मिलाउनुहोस्",
+  "areYouSureYouWantToDeleteThisEntry": "के तपाईं यो प्रविष्टि सूचीबाट हटाउन निश्चित हुनुहुन्छ? यसको प्रगति, स्कोर र मितिहरू हराउनेछन्।",
+  "doubleCurrentSpeedOnHold": "थिचिराख्दा हालको गति दोब्बर गर्नुहोस्",
+  "doubleCurrentSpeedOnHoldDescription": "थिचिराख्दा निश्चित 2x को सट्टा हालको गतिको दोब्बर हुन्छ",
+  "subtitleBackgroundTransparency": "उपशीर्षक पृष्ठभूमिको पारदर्शिता"
 }

@@ -5707,5 +5707,10 @@
   "transBouncyScale": "弾むスケール",
   "transBouncyScaleDesc": "拡大＋スライドに弾む効果",
   "transProfessional": "プロフェッショナル",
-  "transProfessionalDesc": "ビジネスアプリ向けの素早くすっきりしたアニメーション"
+  "transProfessionalDesc": "ビジネスアプリ向けの素早くすっきりしたアニメーション",
+  "adjustSubtitleBackgroundVisibility": "字幕背景の表示を調整",
+  "areYouSureYouWantToDeleteThisEntry": "このエントリをリストから削除しますか？進捗、スコア、日付は失われます。",
+  "doubleCurrentSpeedOnHold": "長押しで現在の速度を2倍に",
+  "doubleCurrentSpeedOnHoldDescription": "長押し時は固定の2倍ではなく、現在の再生速度の2倍になります",
+  "subtitleBackgroundTransparency": "字幕背景の透明度"
 }

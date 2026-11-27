@@ -4449,5 +4449,10 @@
   "transBouncyScale": "துள்ளும் அளவு",
   "transBouncyScaleDesc": "அளவு + சறுக்கல், துள்ளல் விளைவுடன்",
   "transProfessional": "தொழில்முறை",
-  "transProfessionalDesc": "வணிக ஆப்களுக்கான வேகமான, சுத்தமான அனிமேஷன்"
+  "transProfessionalDesc": "வணிக ஆப்களுக்கான வேகமான, சுத்தமான அனிமேஷன்",
+  "adjustSubtitleBackgroundVisibility": "வசன வரிப் பின்னணியின் தெரிவுநிலையைச் சரிசெய்யவும்",
+  "areYouSureYouWantToDeleteThisEntry": "இந்த உள்ளீட்டைப் பட்டியலிலிருந்து நீக்க விரும்புகிறீர்களா? அதன் முன்னேற்றம், மதிப்பெண், தேதிகள் இழக்கப்படும்.",
+  "doubleCurrentSpeedOnHold": "அழுத்திப் பிடிக்கும்போது தற்போதைய வேகத்தை இருமடங்காக்கு",
+  "doubleCurrentSpeedOnHoldDescription": "அழுத்திப் பிடித்தால் நிலையான 2x க்குப் பதிலாக தற்போதைய வேகத்தின் இருமடங்கு ஆகும்",
+  "subtitleBackgroundTransparency": "வசன வரிப் பின்னணி வெளிப்படைத்தன்மை"
 }

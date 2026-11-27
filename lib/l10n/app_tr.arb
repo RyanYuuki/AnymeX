@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Yaylı ölçek",
   "transBouncyScaleDesc": "Ölçek + kaydırma, zıplama efektiyle",
   "transProfessional": "Profesyonel",
-  "transProfessionalDesc": "İş uygulamaları için hızlı, temiz animasyon"
+  "transProfessionalDesc": "İş uygulamaları için hızlı, temiz animasyon",
+  "adjustSubtitleBackgroundVisibility": "Altyazı arka planının görünürlüğünü ayarla",
+  "areYouSureYouWantToDeleteThisEntry": "Bu girişi listenden kaldırmak istediğine emin misin? İlerleme, puan ve tarihler kaybolacak.",
+  "doubleCurrentSpeedOnHold": "Basılı tutunca mevcut hızı ikiye katla",
+  "doubleCurrentSpeedOnHoldDescription": "Basılı tutmak sabit 2x yerine mevcut oynatma hızının iki katına çıkarır",
+  "subtitleBackgroundTransparency": "Altyazı arka plan saydamlığı"
 }

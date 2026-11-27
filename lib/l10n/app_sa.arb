@@ -5707,5 +5707,10 @@
   "transBouncyScale": "प्लवमानं परिमाणम्",
   "transBouncyScaleDesc": "परिमाणम् + सरणम्, प्लवनप्रभावेण सह",
   "transProfessional": "व्यावसायिकम्",
-  "transProfessionalDesc": "व्यापार-अनुप्रयोगेभ्यः शीघ्रं स्वच्छं सञ्चलनम्"
+  "transProfessionalDesc": "व्यापार-अनुप्रयोगेभ्यः शीघ्रं स्वच्छं सञ्चलनम्",
+  "adjustSubtitleBackgroundVisibility": "उपशीर्षक-पृष्ठभूमेः दृश्यतां समायोजयतु",
+  "areYouSureYouWantToDeleteThisEntry": "इमां प्रविष्टिं सूच्याः अपसारयितुं निश्चितम् वा? तस्याः प्रगतिः, अङ्कः, दिनाङ्काः च नश्यन्ति।",
+  "doubleCurrentSpeedOnHold": "धारणे वर्तमानवेगं द्विगुणीकरोतु",
+  "doubleCurrentSpeedOnHoldDescription": "धारणेन स्थिर-2x स्थाने वर्तमानवेगस्य द्विगुणः भवति",
+  "subtitleBackgroundTransparency": "उपशीर्षक-पृष्ठभूमेः पारदर्शिता"
 }

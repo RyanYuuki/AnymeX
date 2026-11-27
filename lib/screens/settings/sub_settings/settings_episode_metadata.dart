@@ -1,10 +1,12 @@
 import 'package:anymex/core/metadata/episode_metadata_service.dart';
+import 'package:anymex/core/metadata/models/episode_metadata.dart';
 import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -96,7 +98,6 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
                       itemBuilder: (context, index) {
                         final providerId = activeOrder[index];
                         final provider = providersMap[providerId];
-                        final isEnabled = service.isProviderEnabled(providerId);
 
                         return Container(
                           key: ValueKey(providerId),
@@ -130,11 +131,14 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
                               size: 12,
                               color: cs.onSurfaceVariant,
                             ),
-                            trailing: Switch(
-                              value: isEnabled,
-                              onChanged: (value) {
-                                service.setProviderEnabled(providerId, value);
-                              },
+                            trailing: Obx(
+                              () => Switch(
+                                value:
+                                    !service.disabledProviders.contains(providerId),
+                                onChanged: (value) {
+                                  service.setProviderEnabled(providerId, value);
+                                },
+                              ),
                             ),
                           ),
                         );
@@ -166,6 +170,26 @@ class _SettingsEpisodeMetadataState extends State<SettingsEpisodeMetadata> {
                             duration: 1500);
                       },
                     ),
+                    if (kDebugMode)
+                      AnymeXTile(
+                        icon: Icons.science_rounded,
+                        title: 'Test All Metadata APIs',
+                        subtitle:
+                            'Calls all metadata providers and logs raw JSON responses',
+                        onTap: () async {
+                          snackBar('Testing all metadata APIs...',
+                              duration: 1500);
+                          await service.testAllProvidersRaw(
+                            MetadataTargetIds(
+                              anilistId: '16498',
+                              malId: '16498',
+                              title: 'Attack on Titan',
+                            ),
+                          );
+                          snackBar('Metadata API responses logged',
+                              duration: 1500);
+                        },
+                      ),
                   ],
                 ),
               ],

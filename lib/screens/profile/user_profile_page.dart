@@ -290,7 +290,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: AnymeXText(context.l10n.activityRefreshed),
-        duration: Duration(milliseconds: 1200),
+        duration: const Duration(milliseconds: 1200),
       ),
     );
   }
@@ -338,7 +338,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     if (_userProfile == null) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: AnymeXText(
             context.l10n.failedToLoadProfileAccountMay,
             textAlign: TextAlign.center,
@@ -714,7 +714,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: AnymeXText(context.l10n.pleaseLoginFirst),
-                          duration: Duration(milliseconds: 1500),
+                          duration: const Duration(milliseconds: 1500),
                         ),
                       );
                       return;
@@ -862,11 +862,11 @@ class _UserProfilePageState extends State<UserProfilePage>
                     ),
                   if (!_hasMoreActivities && _activities.isNotEmpty)
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: AnymeXText(
                           context.l10n.noMoreActivities,
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
                     ),
@@ -901,7 +901,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: AnymeXText(context.l10n.activityDeleted),
-        duration: Duration(milliseconds: 1200),
+        duration: const Duration(milliseconds: 1200),
       ),
     );
   }
@@ -1064,7 +1064,7 @@ class _UserProfilePageState extends State<UserProfilePage>
         // Mobile stats ui
         const SizedBox(height: 12),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: SectionHeader(title: context.l10n.stats, icon: IconlyLight.chart),
         ),
         const SizedBox(height: 8),

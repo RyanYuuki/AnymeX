@@ -5707,5 +5707,10 @@
   "transBouncyScale": "Tumatalbog na scale",
   "transBouncyScaleDesc": "Scale + slide na may talbog",
   "transProfessional": "Propesyonal",
-  "transProfessionalDesc": "Mabilis at malinis na animation para sa business app"
+  "transProfessionalDesc": "Mabilis at malinis na animation para sa business app",
+  "adjustSubtitleBackgroundVisibility": "Ayusin ang visibility ng background ng subtitle",
+  "areYouSureYouWantToDeleteThisEntry": "Sigurado ka bang aalisin ang entry na ito sa listahan mo? Mawawala ang progreso, score at mga petsa nito.",
+  "doubleCurrentSpeedOnHold": "I-double ang kasalukuyang bilis kapag pinindot nang matagal",
+  "doubleCurrentSpeedOnHoldDescription": "Ang pagpindot nang matagal ay nagdodoble sa kasalukuyang bilis sa halip na fixed na 2x",
+  "subtitleBackgroundTransparency": "Transparency ng background ng subtitle"
 }

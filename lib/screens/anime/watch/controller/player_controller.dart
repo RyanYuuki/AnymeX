@@ -259,6 +259,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxList<model.Track> localSubtitles = <model.Track>[].obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
+  final Rx<bool> isChaptersPaneOpened = false.obs;
   final Rx<bool> isSpeedPaneOpened = false.obs;
   final Rx<bool> isWatchTogetherPaneOpened = false.obs;
   final RxBool isTorrentFilesPaneOpened = false.obs;
@@ -446,7 +447,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         PlayerKeys.audioChannelLayout.get<String>('auto');
     _activeUseLibass = PlayerKeys.useLibass.get<bool>(false);
     _initializePlayer();
-    _updateRpc();
     if (!isOffline.value) {
       _initializeAniSkip();
     }
@@ -463,6 +463,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
     ever(selectedVideo, (_) => _autoSelectAudioTrack());
     _autoSelectAudioTrack();
+    _applyDebugDummyChapters();
     if (PlayerKeys.useLibass.get(false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         snackBar(
@@ -591,6 +592,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _updateRpc() async {
+    if (!Get.isRegistered<DiscordRPCController>()) return;
     if (isOffline.value) {
       await DiscordRPCController.instance.updateBrowsingPresence(
         activity: 'Watching Offline Video',
@@ -943,8 +945,26 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  void _applyDebugDummyChapters() {
+    if (!kDebugMode || chapters.isNotEmpty) return;
+    chapters.assignAll(const [
+      PlaybackChapter(title: 'Prologue', startSeconds: 0),
+      PlaybackChapter(title: 'Opening', startSeconds: 45),
+      PlaybackChapter(title: 'Part A', startSeconds: 135),
+      PlaybackChapter(title: 'Part B', startSeconds: 660),
+      PlaybackChapter(title: 'Ending', startSeconds: 1290),
+      PlaybackChapter(title: 'Next Episode Preview', startSeconds: 1380),
+    ]);
+  }
+
   void _updateSkipUiState() {
-    if (skipTimes == null) return;
+    if (!playerSettings.enableAniSkip || skipTimes == null) {
+      if (currentSkipInterval.value != null) {
+        currentSkipInterval.value = null;
+      }
+      _cancelAutoSkipTimer();
+      return;
+    }
 
     final currentSec = currentPosition.value.inSeconds;
     aniskip.SkipIntervals? foundInterval;
@@ -1195,6 +1215,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     currentSkipInterval.value = null;
     _cancelAutoSkipTimer();
     _autoSkipCancelledForCurrentSegment = false;
+    if (!playerSettings.enableAniSkip) {
+      skipTimes = null;
+      skipSegments.clear();
+      return;
+    }
     String malId = anilistData.idMal;
     final serviceType = anilistData.serviceType;
 
@@ -1434,6 +1459,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         }
       }
       if (isOffline.value) return;
+      if (!Get.isRegistered<DiscordRPCController>()) return;
       if (!e) {
         DiscordRPCController.instance.updateAnimePresencePaused(
             anime: anilistData,
@@ -1487,7 +1513,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.chaptersStream.listen((chaps) {
       if (_isReloadingPlayer.value) return;
-      chapters.assignAll(chaps.cast<PlaybackChapter>());
+      final list = chaps.cast<PlaybackChapter>();
+      if (list.isEmpty) {
+        _applyDebugDummyChapters();
+      } else {
+        chapters.assignAll(list);
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1723,6 +1754,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             !isAudioPaneOpened.value &&
             !isSyncSubsPaneOpened.value &&
             !isEpisodePaneOpened.value &&
+            !isChaptersPaneOpened.value &&
             !isTorrentFilesPaneOpened.value &&
             !isWatchTogetherPaneOpened.value &&
             !isSpeedPaneOpened.value &&
@@ -1806,6 +1838,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
       resetListeners();
       isEpisodePaneOpened.value = false;
+      isChaptersPaneOpened.value = false;
       isSourcePaneOpened.value = false;
       isTracksPaneOpened.value = false;
       isAudioPaneOpened.value = false;
@@ -2210,7 +2243,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     _revertOrientations();
-    if (!isOffline.value) {
+    if (!isOffline.value && Get.isRegistered<DiscordRPCController>()) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
     }
 
@@ -2313,6 +2346,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _rpcSeekDebounceTimer?.cancel();
     _rpcSeekDebounceTimer = Timer(const Duration(seconds: 10), () {
       if (isClosed || isOffline.value) return;
+      if (!Get.isRegistered<DiscordRPCController>()) return;
       currentEpisode.value.timeStampInMilliseconds =
           currentPosition.value.inMilliseconds;
       if (isPlaying.value) {
@@ -2977,6 +3011,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.pause();
     unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
+    isChaptersPaneOpened.value = false;
     isSourcePaneOpened.value = false;
     isTracksPaneOpened.value = false;
     isAudioPaneOpened.value = false;
@@ -3000,6 +3035,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void closePanes() {
     isEpisodePaneOpened.value = false;
+    isChaptersPaneOpened.value = false;
     isSourcePaneOpened.value = false;
     isTracksPaneOpened.value = false;
     isAudioPaneOpened.value = false;

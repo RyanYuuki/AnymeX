@@ -254,14 +254,14 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                       subtitle:
                           context.l10n.bottomBarSeek(controlTheme, indicatorTheme),
                       onTap: () =>
-                          _openSubPage(SettingsPlayerControls()),
+                          _openSubPage(const SettingsPlayerControls()),
                     ),
                     AnymeXTile(
                       icon: Icons.subtitles_rounded,
                       title: context.l10n.subtitlesTranslation,
                       subtitle: context.l10n.stylingLibass(subLang.toString(), subFont.toString()),
                       onTap: () =>
-                          _openSubPage(SettingsPlayerSubtitles()),
+                          _openSubPage(const SettingsPlayerSubtitles()),
                     ),
                     AnymeXTile(
                       icon: Icons.auto_awesome_rounded,

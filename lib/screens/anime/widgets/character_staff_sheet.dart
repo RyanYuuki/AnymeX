@@ -699,7 +699,7 @@ class _CharacterStaffSheetContentState
                             if (widget.isCharacter &&
                                 voiceActors.isNotEmpty) ...[
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
                                 child: AnymeXText(context.l10n.voiceActors,
                                   variant: TextVariant.bold,
                                   size: 16,
@@ -796,7 +796,7 @@ class _CharacterStaffSheetContentState
                             ],
                             if (voicedCharacters.isNotEmpty) ...[
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
                                 child: AnymeXText(context.l10n.voicedCharacters,
                                   variant: TextVariant.bold,
                                   size: 16,

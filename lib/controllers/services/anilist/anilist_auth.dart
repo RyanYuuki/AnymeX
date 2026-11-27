@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
@@ -208,24 +207,12 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final isDesktop =
-        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
-
-    String? selectedMethod;
-    if (isDesktop) {
-      selectedMethod = 'browser_internal';
-    } else {
-      selectedMethod = await AnymeXSheet.custom<String>(
-        loginSheetHelper(
-          context: context,
-          title: context.l10n.loginToAnilist,
-          serviceName: 'AniList',
-          showTokenOption: true,
-        ),
-        context,
-        showDragHandle: true,
-      );
-    }
+    final selectedMethod = await showLoginMethodSheet(
+      context: context,
+      title: context.l10n.loginToAnilist,
+      serviceName: 'AniList',
+      showTokenOption: true,
+    );
 
     if (selectedMethod == null || !context.mounted) return;
 
@@ -2602,25 +2589,33 @@ class AnilistAuth extends GetxController {
       final effectiveMalId = malId ?? matched?.idMal;
 
       if (effectiveMalId != null && effectiveMalId.isNotEmpty && serviceHandler.malService.isLoggedIn.value) {
-        serviceHandler.malService.updateListEntry(UpdateListEntryParams(
-            listId: effectiveMalId,
-            score: score != null ? score / 10.0 : null,
-            status: status,
-            progress: progress,
-            isAnime: isAnime,
-            startedAt: startedAt,
-            completedAt: completedAt));
+        try {
+          await serviceHandler.malService.updateListEntry(UpdateListEntryParams(
+              listId: effectiveMalId,
+              score: score,
+              status: status,
+              progress: progress,
+              isAnime: isAnime,
+              startedAt: startedAt,
+              completedAt: completedAt));
+        } catch (e) {
+          Logger.i('MAL cross-sync failed: $e');
+        }
       }
 
       if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
-        serviceHandler.simklService.updateListEntryFromExternalId(
-          anilistId: listId,
-          malId: effectiveMalId,
-          score: score != null ? score / 10.0 : null,
-          status: status,
-          progress: progress,
-          isAnime: isAnime,
-        );
+        try {
+          await serviceHandler.simklService.updateListEntryFromExternalId(
+            anilistId: listId,
+            malId: effectiveMalId,
+            score: score,
+            status: status,
+            progress: progress,
+            isAnime: isAnime,
+          );
+        } catch (e) {
+          Logger.i('Simkl cross-sync failed: $e');
+        }
       }
 
       if (response.statusCode == 200) {

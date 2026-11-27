@@ -4449,5 +4449,10 @@
   "transBouncyScale": "弹性缩放",
   "transBouncyScaleDesc": "缩放 + 滑动并带回弹效果",
   "transProfessional": "专业",
-  "transProfessionalDesc": "适合商务应用的快速简洁动画"
+  "transProfessionalDesc": "适合商务应用的快速简洁动画",
+  "adjustSubtitleBackgroundVisibility": "调整字幕背景的可见度",
+  "areYouSureYouWantToDeleteThisEntry": "确定要从列表中移除此条目吗？其进度、评分和日期都将丢失。",
+  "doubleCurrentSpeedOnHold": "长按时将当前速度加倍",
+  "doubleCurrentSpeedOnHoldDescription": "长按时提速到当前播放速度的两倍，而不是固定 2 倍",
+  "subtitleBackgroundTransparency": "字幕背景透明度"
 }

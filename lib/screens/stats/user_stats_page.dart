@@ -460,7 +460,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             context.l10n.favoriteTitle,
             size: 16,
@@ -886,7 +886,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             context.l10n.frequentlyRevisited,
             size: 16,
@@ -1033,7 +1033,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0),
+          padding: const EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             context.l10n.detailedInsights,
             size: 16,

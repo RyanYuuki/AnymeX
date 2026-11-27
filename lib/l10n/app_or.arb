@@ -5707,5 +5707,10 @@
   "transBouncyScale": "ଡିଆଁଦିଆ ସ୍କେଲ",
   "transBouncyScaleDesc": "ସ୍କେଲ + ସ୍ଲାଇଡ, ଡିଆଁ ପ୍ରଭାବ ସହ",
   "transProfessional": "ବୃତ୍ତିଗତ",
-  "transProfessionalDesc": "ବ୍ୟବସାୟିକ ଆପ ପାଇଁ ଦ୍ରୁତ, ପରିଷ୍କାର ଆନିମେସନ"
+  "transProfessionalDesc": "ବ୍ୟବସାୟିକ ଆପ ପାଇଁ ଦ୍ରୁତ, ପରିଷ୍କାର ଆନିମେସନ",
+  "adjustSubtitleBackgroundVisibility": "ସବଟାଇଟଲ ପୃଷ୍ଠଭୂମିର ଦୃଶ୍ୟମାନତା ସଜାଡନ୍ତୁ",
+  "areYouSureYouWantToDeleteThisEntry": "ଏହି ଏଣ୍ଟ୍ରିକୁ ତାଲିକାରୁ ହଟାଇବାକୁ ନିଶ୍ଚିତ କି? ଏହାର ପ୍ରଗତି, ସ୍କୋର ଓ ତାରିଖ ହଜିଯିବ।",
+  "doubleCurrentSpeedOnHold": "ଦବାଇ ରଖିଲେ ବର୍ତ୍ତମାନ ଗତି ଦୁଇଗୁଣ କରନ୍ତୁ",
+  "doubleCurrentSpeedOnHoldDescription": "ଦବାଇ ରଖିଲେ ସ୍ଥିର 2x ବଦଳରେ ବର୍ତ୍ତମାନ ଗତିର ଦୁଇଗୁଣ ହୁଏ",
+  "subtitleBackgroundTransparency": "ସବଟାଇଟଲ ପୃଷ୍ଠଭୂମିର ସ୍ୱଚ୍ଛତା"
 }

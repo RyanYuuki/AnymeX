@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 
 import 'model/application_category.dart';
@@ -25,9 +24,9 @@ class DeviceApps {
   /// [onlyAppsWithLaunchIntent] will only list applications when an entrypoint.
   /// It is similar to what a launcher will display
   static Future<List<Application>> getInstalledApplications({
-    bool includeSystemApps: false,
-    bool includeAppIcons: false,
-    bool onlyAppsWithLaunchIntent: false,
+    bool includeSystemApps = false,
+    bool includeAppIcons = false,
+    bool onlyAppsWithLaunchIntent = false,
   }) async {
     try {
       final Object apps =

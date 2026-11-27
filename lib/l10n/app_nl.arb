@@ -4449,5 +4449,10 @@
   "transBouncyScale": "Verende schaal",
   "transBouncyScaleDesc": "Schalen + schuiven met veereffect",
   "transProfessional": "Professioneel",
-  "transProfessionalDesc": "Snelle, strakke animatie voor zakelijke apps"
+  "transProfessionalDesc": "Snelle, strakke animatie voor zakelijke apps",
+  "adjustSubtitleBackgroundVisibility": "Zichtbaarheid van ondertitelachtergrond aanpassen",
+  "areYouSureYouWantToDeleteThisEntry": "Weet je zeker dat je dit item uit je lijst wilt verwijderen? Voortgang, score en datums gaan verloren.",
+  "doubleCurrentSpeedOnHold": "Huidige snelheid verdubbelen bij vasthouden",
+  "doubleCurrentSpeedOnHoldDescription": "Vasthouden versnelt naar het dubbele van je huidige snelheid in plaats van een vaste 2x",
+  "subtitleBackgroundTransparency": "Transparantie van ondertitelachtergrond"
 }

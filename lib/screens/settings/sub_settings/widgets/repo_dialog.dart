@@ -1,5 +1,4 @@
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'package:get/get.dart';
 import 'dart:io';
 
 import 'package:anymex/utils/extensions.dart';

@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:anymex/l10n/l10n_extension.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
@@ -674,6 +673,10 @@ class SimklService extends GetxController
           body: jsonEncode(body),
         );
         Logger.i(response.body);
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          throw Exception(
+              'Simkl add-to-list failed (${response.statusCode})');
+        }
       }
 
       if (progress != null && progress > 0 && status != 'PLANNING') {
@@ -698,23 +701,29 @@ class SimklService extends GetxController
               };
 
         if (historyBody != null) {
-          await _client.post(historyUrl,
+          final historyResponse = await _client.post(historyUrl,
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer $token',
                 'simkl-api-key': apiKey,
               },
               body: jsonEncode(historyBody));
+          if (historyResponse.statusCode < 200 ||
+              historyResponse.statusCode >= 300) {
+            throw Exception(
+                'Simkl history update failed (${historyResponse.statusCode})');
+          }
         }
       }
 
       if (score != null && score > 0) {
         final ratingsUrl = Uri.parse('https://api.simkl.com/sync/ratings');
+        final rating = (score / 10.0).round().clamp(1, 10);
         final ratingsBody = isMovie
             ? {
                 'movies': [
                   {
-                    'rating': score.toInt(),
+                    'rating': rating,
                     'ids': {'simkl': id},
                   }
                 ]
@@ -722,12 +731,12 @@ class SimklService extends GetxController
             : {
                 'shows': [
                   {
-                    'rating': score.toInt(),
+                    'rating': rating,
                     'ids': {'simkl': id},
                   }
                 ]
               };
-        await _client.post(
+        final ratingsResponse = await _client.post(
           ratingsUrl,
           headers: {
             'Content-Type': 'application/json',
@@ -736,6 +745,11 @@ class SimklService extends GetxController
           },
           body: jsonEncode(ratingsBody),
         );
+        if (ratingsResponse.statusCode < 200 ||
+            ratingsResponse.statusCode >= 300) {
+          throw Exception(
+              'Simkl rating update failed (${ratingsResponse.statusCode})');
+        }
       }
 
       if (progress != null) {
@@ -744,6 +758,7 @@ class SimklService extends GetxController
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       Logger.i('Exception: $e\n$stack');
+      rethrow;
     }
   }
 
@@ -799,7 +814,7 @@ class SimklService extends GetxController
               }
             ]
           };
-          await _client.post(
+          final response = await _client.post(
             url,
             headers: {
               'Content-Type': 'application/json',
@@ -808,6 +823,10 @@ class SimklService extends GetxController
             },
             body: jsonEncode(body),
           );
+          if (response.statusCode < 200 || response.statusCode >= 300) {
+            throw Exception(
+                'Simkl add-to-list failed (${response.statusCode})');
+          }
         }
 
         if (progress != null && progress > 0 && status != 'PLANNING') {
@@ -828,7 +847,7 @@ class SimklService extends GetxController
               }
             ]
           };
-          await _client.post(
+          final historyResponse = await _client.post(
             historyUrl,
             headers: {
               'Content-Type': 'application/json',
@@ -837,19 +856,25 @@ class SimklService extends GetxController
             },
             body: jsonEncode(historyBody),
           );
+          if (historyResponse.statusCode < 200 ||
+              historyResponse.statusCode >= 300) {
+            throw Exception(
+                'Simkl history update failed (${historyResponse.statusCode})');
+          }
         }
 
         if (score != null && score > 0) {
           final ratingsUrl = Uri.parse('https://api.simkl.com/sync/ratings');
+          final rating = (score / 10.0).round().clamp(1, 10);
           final ratingsBody = {
             'shows': [
               {
-                'rating': score.toInt(),
+                'rating': rating,
                 'ids': ids,
               }
             ]
           };
-          await _client.post(
+          final ratingsResponse = await _client.post(
             ratingsUrl,
             headers: {
               'Content-Type': 'application/json',
@@ -858,11 +883,17 @@ class SimklService extends GetxController
             },
             body: jsonEncode(ratingsBody),
           );
+          if (ratingsResponse.statusCode < 200 ||
+              ratingsResponse.statusCode >= 300) {
+            throw Exception(
+                'Simkl rating update failed (${ratingsResponse.statusCode})');
+          }
         }
         fetchUserSeriesList();
       }
     } catch (e, stack) {
       Logger.i('Exception in updateListEntryFromExternalId: $e\n$stack');
+      rethrow;
     }
   }
 
@@ -928,25 +959,15 @@ class SimklService extends GetxController
 
   @override
   Future<void> login(BuildContext context) async {
-    final isDesktop =
-        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+    final selectedMethod = await showLoginMethodSheet(
+      context: context,
+      title: context.l10n.loginToSimkl,
+      serviceName: 'Simkl',
+      showTokenOption: false,
+    );
 
-    bool forceWebAuth = false;
-    if (!isDesktop) {
-      final selectedMethod = await AnymeXSheet.custom<String>(
-        loginSheetHelper(
-          context: context,
-          title: context.l10n.loginToSimkl,
-          serviceName: 'Simkl',
-          showTokenOption: false,
-        ),
-        context,
-        showDragHandle: true,
-      );
-
-      if (selectedMethod == null || !context.mounted) return;
-      forceWebAuth = selectedMethod == 'browser_external';
-    }
+    if (selectedMethod == null || !context.mounted) return;
+    final forceWebAuth = selectedMethod == 'browser_external';
 
     final clientId = dotenv.env['SIMKL_CLIENT_ID'];
 

@@ -4449,5 +4449,10 @@
   "transBouncyScale": "उडी मारणारा स्केल",
   "transBouncyScaleDesc": "स्केल + स्लाइड, उडीच्या परिणामासह",
   "transProfessional": "व्यावसायिक",
-  "transProfessionalDesc": "व्यवसाय ॲप्ससाठी जलद, स्वच्छ ॲनिमेशन"
+  "transProfessionalDesc": "व्यवसाय ॲप्ससाठी जलद, स्वच्छ ॲनिमेशन",
+  "adjustSubtitleBackgroundVisibility": "सबटायटल पार्श्वभूमीची दृश्यमानता समायोजित करा",
+  "areYouSureYouWantToDeleteThisEntry": "ही नोंद तुमच्या यादीतून काढायची खात्री आहे का? तिची प्रगती, गुण आणि तारखा गमावल्या जातील.",
+  "doubleCurrentSpeedOnHold": "दाबून ठेवल्यावर सध्याचा वेग दुप्पट करा",
+  "doubleCurrentSpeedOnHoldDescription": "दाबून ठेवल्यावर ठरावीक 2x ऐवजी सध्याच्या वेगाच्या दुप्पट वेग होतो",
+  "subtitleBackgroundTransparency": "सबटायटल पार्श्वभूमीची पारदर्शकता"
 }

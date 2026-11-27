@@ -953,9 +953,9 @@ class _WatchiumPartyPopupContentState
             value: 'kick',
             child: Row(
               children: [
-                Icon(Icons.person_remove_rounded,
+                const Icon(Icons.person_remove_rounded,
                     color: Colors.red, size: 18),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 AnymeXText(context.l10n.removeMember),
               ],
             ),
@@ -964,9 +964,9 @@ class _WatchiumPartyPopupContentState
             value: 'transfer',
             child: Row(
               children: [
-                Icon(Icons.workspace_premium,
+                const Icon(Icons.workspace_premium,
                     color: Colors.amber, size: 18),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 AnymeXText(context.l10n.transferHost),
               ],
             ),
