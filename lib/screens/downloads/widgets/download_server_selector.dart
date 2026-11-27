@@ -168,7 +168,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
     if (isTorrent) {
       try {
         final addon = await TorrentService.instance.ensureTorrServerReady(
-          contextMessage: 'Preparing torrent for download...',
+          contextMessage: Get.context!.l10n.preparingTorrentForDownload,
         );
         TorrentServerOverlay.dismiss();
 
@@ -211,7 +211,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
       isFromMetadataPage: widget.isFromMetadataPage,
     );
     snackBar(
-      'Downloading ${widget.episodes.length} episode${widget.episodes.length != 1 ? 's' : ''}...',
+      Get.context!.l10n.downloadingEpisodesCount(widget.episodes.length),
       title: Get.context!.l10n.downloadStarted,
     );
   }
@@ -258,7 +258,9 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     variant: TextVariant.bold,
                     size: 16),
                 AnymeXText(
-                  '${widget.source.name ?? 'Unknown'}${widget.source.lang != null && widget.source.lang!.isNotEmpty ? ' (${completeLanguageName(widget.source.lang!)})' : ''} · auto-matched for batch',
+                  context.l10n.autoMatchedForBatch(
+                    '${widget.source.name ?? 'Unknown'}${widget.source.lang != null && widget.source.lang!.isNotEmpty ? ' (${completeLanguageName(widget.source.lang!)})' : ''}',
+                  ),
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
                 ),
@@ -583,9 +585,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                           : theme.onSurface.opaque(0.4)),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: AnymeXText(canDownload
-                          ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
-                          : 'Loading servers...',
+                    child: AnymeXText(
+                      canDownload
+                          ? '${context.l10n.downloadEpsCount(widget.episodes.length)} · ${_selectedQuality.value}'
+                          : context.l10n.loadingServersEllipsis,
                       size: 14,
                       variant: TextVariant.semiBold,
                       isMarquee: true,
@@ -628,7 +631,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: AnymeXText(
-                      video.quality ?? 'Server Tracks',
+                      video.quality ?? context.l10n.serverTracks,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

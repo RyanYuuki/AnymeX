@@ -188,8 +188,9 @@ class _TrackSheetState extends State<_TrackSheet> {
                       children: [
                         AnymeXText(
                           _searchingTracker != null
-                              ? 'Search on ${_searchingTracker!.label}'
-                              : 'Track this media',
+                              ? context.l10n
+                                  .searchOnTracker(_searchingTracker!.label)
+                              : context.l10n.trackThisMedia,
                           style: TextStyle(
                             color: theme.onSurface,
                             fontSize: 16,
@@ -268,7 +269,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             const SizedBox(height: 12),
             AnymeXText(
               'A single media can be tracked on all logged-in services at once. '
-              'Progress is pushed to every bound service in parallel.',
+              '${context.l10n.progressPushedParallel}',
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.4),
                 fontSize: 11,
@@ -654,8 +655,8 @@ class _TrackSheetState extends State<_TrackSheet> {
                   const SizedBox(width: 8),
                   AnymeXText(
                     _showAdult
-                        ? 'Showing all titles (incl. 18+)'
-                        : 'Hiding 18+ content',
+                        ? context.l10n.showingAllTitles18Plus
+                        : context.l10n.hiding18PlusContent,
                     style: TextStyle(
                       color: theme.onSurface.withOpacity(0.4),
                       fontSize: 11,
@@ -709,7 +710,7 @@ class _TrackSheetState extends State<_TrackSheet> {
         total != '0' &&
         total != '1';
     parts.add(hasTotal
-        ? 'Ep ${b.progress} / $total'
+        ? Get.context!.l10n.epProgressOfTotal('${b.progress}', total)
         : 'Ep ${b.progress}');
     parts.add(b.status);
     if (b.score != null && b.score! > 0) {
@@ -821,8 +822,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           ),
           const SizedBox(height: 6),
           AnymeXText(
-            'Log in to AniList, MyAnimeList or Simkl from Settings → Accounts '
-            'to track this media.',
+            context.l10n.loginTrackersHint,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: theme.onSurface.withOpacity(0.5),

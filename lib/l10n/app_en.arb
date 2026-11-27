@@ -6739,5 +6739,193 @@
   "couldNotReachDictionary": "Could not reach dictionary.",
   "alignLeft": "Left",
   "alignCenter": "Center",
-  "alignJustify": "Justify"
+  "alignJustify": "Justify",
+  "zeroKbPerSec": "0 KB/s",
+  "anymexDownloads": "AnymeX Downloads",
+  "persistentBackgroundDownloadingService": "Persistent background downloading service.",
+  "startingBackgroundService": "Starting background service...",
+  "sourceNotFoundResumingScrape": "Source not found for resuming scrape",
+  "noServersFoundSelectManually": "No servers found. Please select manually.",
+  "noServerMatchedSelectManually": "No server matched \"{quality}\". Please select manually.",
+  "@noServerMatchedSelectManually": {
+    "placeholders": {
+      "quality": {
+        "type": "String"
+      }
+    }
+  },
+  "emptyVideoUrl": "Empty video URL",
+  "allDownloadsComplete": "All downloads complete.",
+  "mediaTitleEp": "{title} · Ep {number}",
+  "@mediaTitleEp": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterHasNoUrl": "Chapter has no URL",
+  "noPagesFoundForChapter": "No pages found for this chapter",
+  "noDownloadedAnime": "No downloaded anime",
+  "noDownloadedManga": "No downloaded manga",
+  "downloadedEpisodesAppearHere": "Downloaded episodes will appear here",
+  "downloadedChaptersAppearHere": "Downloaded chapters will appear here",
+  "downloadEpisodesCount": "{count, plural, =1{Download 1 Episode} other{Download {count} Episodes}}",
+  "@downloadEpisodesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chaptersAvailableCount": "{count, plural, =1{1 chapter available} other{{count} chapters available}}",
+  "@chaptersAvailableCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "next10": "Next 10",
+  "next20": "Next 20",
+  "next100": "Next 100",
+  "customRange": "Custom Range",
+  "disableAll": "Disable All",
+  "enableAll": "Enable All",
+  "startIndex": "Start Index",
+  "endIndex": "End Index",
+  "epDotTitle": "Ep {number} · {title}",
+  "@epDotTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "epWithValues": "Ep {number} ({values})",
+  "@epWithValues": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "values": {
+        "type": "String"
+      }
+    }
+  },
+  "queuedStatus": "Queued",
+  "fetchingServer": "Fetching Server",
+  "hideItems": "Hide items",
+  "showItemsCount": "Show items ({count})",
+  "@showItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "fetchingServerEllipsis": "Fetching server...",
+  "needsServerSelection": "Needs server selection",
+  "downloadingStatus": "Downloading",
+  "pausedPercent": "Paused · {percent}%",
+  "@pausedPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownQuality": "Unknown Quality",
+  "pagesLabel": "Pages",
+  "imagesLabel": "Images",
+  "preparingTorrentForDownload": "Preparing torrent for download...",
+  "downloadingEpisodesCount": "{count, plural, =1{Downloading 1 episode...} other{Downloading {count} episodes...}}",
+  "@downloadingEpisodesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "autoMatchedForBatch": "{source} · auto-matched for batch",
+  "@autoMatchedForBatch": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadEpsCount": "{count, plural, =1{Download (1 ep)} other{Download ({count} eps)}}",
+  "@downloadEpsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingServersEllipsis": "Loading servers...",
+  "serverTracks": "Server Tracks",
+  "yesterdayLabel": "Yesterday",
+  "deletingEpisodeEllipsis": "Deleting episode...",
+  "deletingChapterEllipsis": "Deleting chapter...",
+  "deleteAllChaptersQuestion": "Delete all chapters?",
+  "deleteAllEpisodesQuestion": "Delete all episodes?",
+  "chaptersCountRemoved": "{count, plural, =1{1 chapter will be permanently removed.} other{{count} chapters will be permanently removed.}}",
+  "@chaptersCountRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "episodesCountRemoved": "{count, plural, =1{1 episode will be permanently removed.} other{{count} episodes will be permanently removed.}}",
+  "@episodesCountRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deletingMangaEllipsis": "Deleting manga...",
+  "deletingAnimeEllipsis": "Deleting anime...",
+  "minutesLeftSuffix": " · {minutes}m left",
+  "@minutesLeftSuffix": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadedChapters": "Downloaded Chapters",
+  "downloadedEpisodes": "Downloaded Episodes",
+  "searchOnTracker": "Search on {tracker}",
+  "@searchOnTracker": {
+    "placeholders": {
+      "tracker": {
+        "type": "String"
+      }
+    }
+  },
+  "trackThisMedia": "Track this media",
+  "progressPushedParallel": "Progress is pushed to every bound service in parallel.",
+  "showingAllTitles18Plus": "Showing all titles (incl. 18+)",
+  "hiding18PlusContent": "Hiding 18+ content",
+  "epProgressOfTotal": "Ep {progress} / {total}",
+  "@epProgressOfTotal": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "loginTrackersHint": "Log in to AniList, MyAnimeList or Simkl from Settings → Accounts to track this media."
 }

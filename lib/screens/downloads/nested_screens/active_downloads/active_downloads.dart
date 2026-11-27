@@ -355,7 +355,7 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                                               ? 'Paused'
                                               : (group.tasks
                                                       .every((t) => t.isQueued)
-                                                  ? 'Queued'
+                                                  ? context.l10n.queuedStatus
                                                   : (group.tasks.every((t) =>
                                                           t.isCompleted)
                                                       ? 'Completed'
@@ -363,7 +363,8 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                                                               t.status ==
                                                               DownloadStatus
                                                                   .fetchingServer)
-                                                          ? 'Fetching Server'
+                                                          ? context.l10n
+                                                              .fetchingServer
                                                           : 'Active')))),
                                       size: 11,
                                       variant: TextVariant.bold,
@@ -478,8 +479,9 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                         ),
                         AnymeXText(
                           isExpanded
-                              ? 'Hide items'
-                              : 'Show items (${group.tasks.length})',
+                              ? context.l10n.hideItems
+                              : context.l10n
+                                  .showItemsCount('${group.tasks.length}'),
                           size: 11,
                           variant: TextVariant.semiBold,
                           color: theme.primary,
@@ -523,25 +525,26 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
     final theme = context.colors;
 
     Color statusColor = theme.primary;
-    String statusLabel = 'Queued';
+    String statusLabel = context.l10n.queuedStatus;
     IconData statusIcon = Icons.schedule_rounded;
 
     if (task.status == DownloadStatus.fetchingServer) {
       statusColor = theme.primary;
-      statusLabel = 'Fetching server...';
+      statusLabel = context.l10n.fetchingServerEllipsis;
       statusIcon = Icons.cloud_sync_rounded;
     } else if (task.status == DownloadStatus.awaitingServerSelection) {
       statusColor = theme.tertiary;
-      statusLabel = 'Needs server selection';
+      statusLabel = context.l10n.needsServerSelection;
       statusIcon = Icons.dns_rounded;
     } else if (task.isDownloading) {
       statusLabel = task.isManga
-          ? 'Downloading'
+          ? context.l10n.downloadingStatus
           : '${(task.progress * 100).toStringAsFixed(0)}%';
       statusIcon = Icons.downloading_rounded;
     } else if (task.isPaused) {
       statusColor = theme.tertiary;
-      statusLabel = 'Paused · ${(task.progress * 100).toStringAsFixed(0)}%';
+      statusLabel = context.l10n
+          .pausedPercent((task.progress * 100).toStringAsFixed(0));
       statusIcon = Icons.pause_circle_rounded;
     } else if (task.isCompleted) {
       statusColor = Colors.green.shade400;
@@ -993,7 +996,8 @@ class _ActiveDownloadsState extends State<ActiveDownloads> {
                   final server = servers[index];
                   return ListTile(
                     leading: Icon(Icons.dns_rounded, color: theme.primary),
-                    title: AnymeXText(server.quality ?? 'Unknown Quality',
+                    title: AnymeXText(
+                        server.quality ?? context.l10n.unknownQuality,
                         variant: TextVariant.semiBold),
                     subtitle: AnymeXText(
                       server.originalUrl ?? server.url ?? '',
@@ -1101,8 +1105,8 @@ class _UnifiedTask {
         errorMessage = task.errorMessage,
         isManga = true,
         qualityOrStatus = task.status == MangaDownloadStatus.fetchingPages
-            ? 'Pages'
-            : 'Images',
+            ? Get.context!.l10n.pagesLabel
+            : Get.context!.l10n.imagesLabel,
         status = null,
         media = task.media,
         isDownloading = task.status == MangaDownloadStatus.downloading ||
