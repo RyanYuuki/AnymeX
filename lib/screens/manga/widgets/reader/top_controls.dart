@@ -139,8 +139,9 @@ class ReaderTopControls extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: AnymeXText(controller.currentChapter.value?.title ??
-                                'Unknown Chapter',
+                          child: AnymeXText(
+                            controller.currentChapter.value?.title ??
+                                context.l10n.unknownChapter,
                             size: 12,
                             variant: TextVariant.semiBold,
                             maxLines: 1,
@@ -152,7 +153,10 @@ class ReaderTopControls extends StatelessWidget {
                       ],
                     ),
                     AnymeXText(
-                      'Chapter ${_formatNumber(controller.currentChapter.value?.number)} of ${controller.chapterList.length}',
+                      context.l10n.chapterOfTotal(
+                        _formatNumber(controller.currentChapter.value?.number),
+                        '${controller.chapterList.length}',
+                      ),
                       style: TextStyle(
                         color: context.colors.onSurface.withOpacity(0.7),
                         fontSize: 10,
@@ -213,15 +217,18 @@ class ReaderTopControls extends StatelessWidget {
           controller.loadingState.value == LoadingState.loading
               ? 'Loading...'
               : controller.loadingState.value == LoadingState.error
-                  ? 'Error loading pages'
+                  ? context.l10n.errorLoadingPages
                   : (controller.currentSpreadIndex.value >= 0 &&
                           controller.currentSpreadIndex.value <
                               controller.spreads.length &&
                           controller
                               .spreads[controller.currentSpreadIndex.value]
                               .isTransition)
-                      ? 'Chapter Transition'
-                      : 'Page ${controller.currentPageIndex.value} of ${controller.pageList.length}',
+                      ? context.l10n.chapterTransition
+                      : context.l10n.pageOfTotal(
+                          '${controller.currentPageIndex.value}',
+                          '${controller.pageList.length}',
+                        ),
           style: TextStyle(
             color: context.colors.onSurface.opaque(0.9),
             fontSize: 11,
@@ -353,7 +360,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     color: colors.primary,
                     size: 20,
                   ),
-                  tooltip: _isGrid ? 'List View' : 'Grid View',
+                  tooltip: _isGrid ? context.l10n.listViewLabel : 'Grid View',
                 ),
               ],
             ),

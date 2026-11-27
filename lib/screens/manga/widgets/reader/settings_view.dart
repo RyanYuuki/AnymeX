@@ -79,7 +79,8 @@ class ReaderSettings {
                     return AnymeXTile(
                       title: context.l10n.layout,
                       subtitle: switch (currentLayout) {
-                        MangaPageViewMode.continuous => 'Continuous',
+                        MangaPageViewMode.continuous =>
+                          context.l10n.readingLayoutContinuous,
                         MangaPageViewMode.paged => 'Paged',
                       },
                       icon: Iconsax.card,
@@ -106,7 +107,8 @@ class ReaderSettings {
                                     : Theme.of(context).iconTheme.color,
                               ),
                               tooltip: switch (layout) {
-                                MangaPageViewMode.continuous => 'Continuous',
+                                MangaPageViewMode.continuous =>
+                                  context.l10n.readingLayoutContinuous,
                                 MangaPageViewMode.paged => 'Paged',
                               },
                               icon: switch (layout) {
@@ -138,9 +140,11 @@ class ReaderSettings {
                     return AnymeXTile(
                       title: context.l10n.direction,
                       subtitle: switch (currentDirection) {
-                        MangaPageViewDirection.down => "Top-Down",
+                        MangaPageViewDirection.down =>
+                          context.l10n.directionTopDown,
                         MangaPageViewDirection.right => "LTR",
-                        MangaPageViewDirection.up => "Bottom-Up",
+                        MangaPageViewDirection.up =>
+                          context.l10n.directionBottomUp,
                         MangaPageViewDirection.left => "RTL",
                       },
                       icon: Iconsax.direct_right,
@@ -157,9 +161,11 @@ class ReaderSettings {
                               isSelected: direction == currentDirection,
                               enableFeedback: true,
                               tooltip: switch (direction) {
-                                MangaPageViewDirection.down => "Top-Down",
+                                MangaPageViewDirection.down =>
+                                  context.l10n.directionTopDown,
                                 MangaPageViewDirection.right => "LTR",
-                                MangaPageViewDirection.up => "Bottom-Up",
+                                MangaPageViewDirection.up =>
+                                  context.l10n.directionBottomUp,
                                 MangaPageViewDirection.left => "RTL",
                               },
                               style: IconButton.styleFrom(
@@ -198,9 +204,9 @@ class ReaderSettings {
                     return AnymeXTile(
                       title: context.l10n.dualPageMode,
                       subtitle: switch (currentMode) {
-                        DualPageMode.off => 'Standard (Single)',
-                        DualPageMode.auto => 'Auto (Laptop/Tab)',
-                        DualPageMode.force => 'Force (Dual)',
+                        DualPageMode.off => context.l10n.dualPageStandard,
+                        DualPageMode.auto => context.l10n.dualPageAuto,
+                        DualPageMode.force => context.l10n.dualPageForce,
                       },
                       icon: Iconsax.book_1,
                       trailing: Row(
@@ -338,8 +344,8 @@ class ReaderSettings {
                         subtitle:
                             controller.readingLayout.value ==
                                     MangaPageViewMode.continuous
-                                ? 'Seconds to scroll one screen height'
-                                : 'Seconds per page turn',
+                                ? context.l10n.secondsScrollOneScreenHeight
+                                : context.l10n.secondsPerPageTurn,
                         icon: Icons.speed,
                         min: 1.0,
                         max: 10.0,

@@ -10,23 +10,23 @@ class ColorFilterSettingsPage extends StatelessWidget {
 
   final ReaderController controller;
 
-  static const List<String> _blendModeLabels = [
+  static List<String> _blendModeLabels(BuildContext context) => [
     'Default',
-    'Multiply',
-    'Screen',
+    context.l10n.blendMultiply,
+    context.l10n.blendScreen,
     'Overlay',
-    'Darken',
-    'Lighten',
-    'Color Dodge',
-    'Color Burn',
-    'Hard Light',
-    'Soft Light',
-    'Difference',
-    'Exclusion',
+    context.l10n.blendDarken,
+    context.l10n.blendLighten,
+    context.l10n.blendColorDodge,
+    context.l10n.blendColorBurn,
+    context.l10n.blendHardLight,
+    context.l10n.blendSoftLight,
+    context.l10n.blendDifference,
+    context.l10n.blendExclusion,
     'Hue',
     'Saturation',
-    'Color',
-    'Luminosity',
+    context.l10n.blendColor,
+    context.l10n.blendLuminosity,
   ];
 
   @override
@@ -73,19 +73,19 @@ class ColorFilterSettingsPage extends StatelessWidget {
               children: [
                 AnymeXTile.toggle(
                   icon: Icons.auto_awesome_rounded,
-                  title: 'Enhance Colors',
-                  subtitle: 'Apply vivid color and contrast enhancement',
+                  title: context.l10n.enhanceColors,
+                  subtitle: context.l10n.applyVividColorContrast,
                   value: enhanceColors,
                   onChanged: (_) => controller.toggleEnhanceColors(),
                 ),
                 if (enhanceColors)
                   AnymeXTile.pills<String>(
                     icon: Icons.palette_rounded,
-                    title: 'Enhancement Profile',
+                    title: context.l10n.enhancementProfile,
                     value: enhanceProfile,
                     options: const ['manga', 'manhwa'],
                     optionLabelTransformer: (p) =>
-                        p == 'manga' ? 'Manga' : 'Manhwa / Colored',
+                        p == 'manga' ? 'Manga' : context.l10n.manhwaColored,
                     onChanged: (p) => controller.setEnhanceColorsProfile(p),
                   ),
               ],
@@ -149,8 +149,10 @@ class ColorFilterSettingsPage extends StatelessWidget {
                     icon: Icons.layers_rounded,
                     title: context.l10n.blendMode,
                     value: blendMode,
-                    options: List.generate(_blendModeLabels.length, (i) => i),
-                    optionLabelTransformer: (i) => _blendModeLabels[i],
+                    options: List.generate(
+                        _blendModeLabels(context).length, (i) => i),
+                    optionLabelTransformer: (i) =>
+                        _blendModeLabels(context)[i],
                     wrap: true,
                     expand: false,
                     onChanged: (i) {

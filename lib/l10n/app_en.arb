@@ -6586,5 +6586,158 @@
   "downvotesReceived": "Downvotes received",
   "commentsRemovedByMods": "Comments removed by mods",
   "banPenalties": "Ban penalties",
-  "modNotes": "Mod notes"
+  "modNotes": "Mod notes",
+  "forceAlways": "Force (Always)",
+  "noMoreChapters": "There are no more chapters.",
+  "thisIsFirstChapter": "This is the first chapter.",
+  "chRange": "Ch {start}–{end}",
+  "@chRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "chRangeWithCount": "Ch {start}–{end} ({count})",
+  "@chRangeWithCount": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterNumberTitle": "Chapter {number}: {title}",
+  "@chapterNumberTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadFailedMessageTapRetry": "Download failed: {error}. Tap to retry.",
+  "@downloadFailedMessageTapRetry": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteChapter": "Are you sure you want to delete Chapter {number}?",
+  "@confirmDeleteChapter": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "pauseAutoScroll": "Pause auto-scroll",
+  "startAutoScroll": "Start auto-scroll",
+  "blendMultiply": "Multiply",
+  "blendScreen": "Screen",
+  "blendDarken": "Darken",
+  "blendLighten": "Lighten",
+  "blendColorDodge": "Color Dodge",
+  "blendColorBurn": "Color Burn",
+  "blendHardLight": "Hard Light",
+  "blendSoftLight": "Soft Light",
+  "blendDifference": "Difference",
+  "blendExclusion": "Exclusion",
+  "blendColor": "Color",
+  "blendLuminosity": "Luminosity",
+  "enhanceColors": "Enhance Colors",
+  "applyVividColorContrast": "Apply vivid color and contrast enhancement",
+  "enhancementProfile": "Enhancement Profile",
+  "manhwaColored": "Manhwa / Colored",
+  "superResPreset": "Super Res • {title}",
+  "@superResPreset": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "currentChapter": "Current Chapter",
+  "noNextChapter": "No next chapter",
+  "noPreviousChapter": "No previous chapter",
+  "missingChaptersBetween": "{count, plural, =1{1 missing chapter between these} other{{count} missing chapters between these}}",
+  "@missingChaptersBetween": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "somethingWentWrongLoadingPages": "Something went wrong while loading the pages",
+  "secondsScrollOneScreenHeight": "Seconds to scroll one screen height",
+  "secondsPerPageTurn": "Seconds per page turn",
+  "unknownChapter": "Unknown Chapter",
+  "chTotalLabel": "Ch. {number} · {total} total",
+  "@chTotalLabel": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingEllipsisUnicode": "Loading…",
+  "chapterOfTotal": "Chapter {current} of {total}",
+  "@chapterOfTotal": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingPages": "Error loading pages",
+  "chapterTransition": "Chapter Transition",
+  "pageOfTotal": "Page {current} of {total}",
+  "@pageOfTotal": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "listViewLabel": "List View",
+  "pauseTts": "Pause TTS",
+  "playTts": "Play TTS",
+  "reachedTop": "Reached Top",
+  "thisIsTheFirstChapterTitle": "This is the First Chapter",
+  "reachedEnd": "Reached End",
+  "thisIsTheLastChapterTitle": "This is the Last Chapter",
+  "noDefinitionFound": "No definition found",
+  "failedToFetchDefinition": "Failed to fetch definition",
+  "noDefinitionFoundForWord": "No definition found for \"{word}\"",
+  "@noDefinitionFoundForWord": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotReachDictionary": "Could not reach dictionary.",
+  "alignLeft": "Left",
+  "alignCenter": "Center",
+  "alignJustify": "Justify"
 }
