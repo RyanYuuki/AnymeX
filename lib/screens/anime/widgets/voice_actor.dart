@@ -262,7 +262,8 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymeXText(itemData?.name ?? 'No Voice Actor',
+                          child: AnymeXText(
+                            itemData?.name ?? context.l10n.noVoiceActor,
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,

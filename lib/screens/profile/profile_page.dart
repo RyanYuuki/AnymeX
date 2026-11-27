@@ -664,7 +664,8 @@ class _ProfilePageState extends State<ProfilePage>
                         return true;
                       } catch (e) {
                         if (context.mounted) {
-                          String errorMessage = 'Failed to post status.';
+                          String errorMessage =
+                              Get.context!.l10n.failedToPostStatus;
                           final errStr = e.toString();
                           if (errStr.contains('validation')) {
                             errorMessage =

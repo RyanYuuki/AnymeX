@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -111,7 +113,9 @@ class ActiveDownloadTask {
 
   String get episodeDisplayId {
     final title = episode.title;
-    if (title != null && title.isNotEmpty) return 'Ep ${episode.number} · $title';
+    if (title != null && title.isNotEmpty) {
+      return Get.context!.l10n.epDotTitle('${episode.number}', title);
+    }
     return 'Episode ${episode.number}';
   }
 }
@@ -160,7 +164,9 @@ class DownloadedEpisodeMeta {
   Map<String, String> get sortMap => episode.sortMap;
   String get displayId {
     final validValues = sortMap.values.where((v) => v.trim().isNotEmpty).toList();
-    if (validValues.isNotEmpty) return 'Ep $number (${validValues.join(', ')})';
+    if (validValues.isNotEmpty) {
+      return Get.context!.l10n.epWithValues(number, validValues.join(', '));
+    }
     return title ?? 'Episode $number';
   }
 }

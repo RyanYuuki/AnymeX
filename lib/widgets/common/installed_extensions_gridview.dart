@@ -185,8 +185,8 @@ class _InstalledExtensionsGridViewState
             ),
             const SizedBox(height: 14),
             AnymeXText.semiBold(_searchQuery.isEmpty
-                  ? 'No $title extensions installed'
-                  : 'No extensions found for "$_searchQuery"',
+                  ? context.l10n.noTypeExtensionsInstalled(title)
+                  : context.l10n.noExtensionsFoundFor(_searchQuery),
               textAlign: TextAlign.center,
               size: 15,
               color:

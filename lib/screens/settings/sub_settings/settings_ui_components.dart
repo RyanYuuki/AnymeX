@@ -141,10 +141,10 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
       ),
     ];
 
-    const labels = ['Classic', 'M3 Expressive'];
-    const descriptions = [
+    final labels = [context.l10n.tileStyleClassic, context.l10n.tileStyleM3Expressive];
+    final descriptions = [
       'Original AnymeX borderless list tiles',
-      'Material 3 Expressive rounded tiles with circular icons, bold type, and connected corners',
+      context.l10n.tileStyleM3ExpressiveDesc,
     ];
 
     return StylePickerSection(

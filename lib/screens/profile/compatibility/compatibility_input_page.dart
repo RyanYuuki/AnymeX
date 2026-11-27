@@ -377,7 +377,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
             context: context,
             name: user1Name,
             avatar: user1Avatar,
-            placeholderName: 'User 1',
+            placeholderName: context.l10n.userOne,
             placeholderIcon: Iconsax.user,
             borderColor: colorScheme.primary.opaque(0.8),
             shadowColor: colorScheme.primary.opaque(0.25),
@@ -446,7 +446,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
             context: context,
             name: user2Name,
             avatar: user2Avatar,
-            placeholderName: 'Target User',
+            placeholderName: context.l10n.targetUser,
             placeholderIcon: hasUser2 ? Iconsax.user_tick : Iconsax.user_search,
             borderColor: hasUser2
                 ? colorScheme.secondary.opaque(0.8)
@@ -533,8 +533,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
       isUser1: true,
       onChanged: _onUser1Changed,
       textInputAction: TextInputAction.next,
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'Please enter a username' : null,
+      validator: (v) => (v == null || v.trim().isEmpty)
+          ? context.l10n.pleaseEnterUsername
+          : null,
     );
   }
 
@@ -542,8 +543,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
     return _buildUserInputSection(
       context,
       title: (_compareTwoPeople || !isLoggedIn || !widget.useLoggedInUser)
-          ? 'Second User'
-          : 'Compare With',
+          ? context.l10n.secondUser
+          : context.l10n.compareWith,
       controller: _username2Controller,
       hintText: context.l10n.enterAnilistUsername,
       prefixIcon: Iconsax.user_search,
@@ -552,7 +553,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
       textInputAction: TextInputAction.done,
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
-          return 'Please enter a username';
+          return context.l10n.pleaseEnterUsername;
         }
         if (!_compareTwoPeople && widget.useLoggedInUser) {
           final loggedIn = Get.find<AnilistAuth>()
@@ -564,13 +565,13 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
           if (loggedIn != null &&
               loggedIn.isNotEmpty &&
               v.trim().toLowerCase() == loggedIn) {
-            return 'Cannot compare with yourself';
+            return context.l10n.cannotCompareWithYourself;
           }
         }
         if (_compareTwoPeople &&
             _username1Controller.text.trim().toLowerCase() ==
                 v.trim().toLowerCase()) {
-          return 'Please enter two different usernames';
+          return context.l10n.pleaseEnterTwoDifferentUsernames;
         }
         return null;
       },
@@ -761,13 +762,13 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
           const SizedBox(height: 14),
           AnymeXText(
             'AniMatch calculates real-time overlap across:\n'
-            '• Anime & Manga Watch/Read Stats\n'
-            '• Mean Score & Standard Deviation Affinity\n'
-            '• Release Decades (2000s, 2010s, 2020s)\n'
-            '• Media Formats (TV, Movie, OVA, ONA)\n'
-            '• Shared Top Genres & Tags\n'
-            '• Favorite Voice Actors, Staff & Studios\n'
-            '• Mutual Social Connections & Following',
+            '${context.l10n.compatibilityFeatureWatchReadStats}\n'
+            '${context.l10n.compatibilityFeatureMeanScore}\n'
+            '${context.l10n.compatibilityFeatureReleaseDecades}\n'
+            '${context.l10n.compatibilityFeatureMediaFormats}\n'
+            '${context.l10n.compatibilityFeatureSharedGenres}\n'
+            '${context.l10n.compatibilityFeatureFavoriteStaff}\n'
+            '${context.l10n.compatibilityFeatureMutualSocial}',
             size: 12,
             color: colorScheme.onSurfaceVariant,
           ),
@@ -783,7 +784,10 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
         if (isLoggedIn && widget.useLoggedInUser) ...[
           AnymeXTabBar(
             height: 46,
-            selectTabs: const ['With My Profile', 'Compare Two Users'],
+            selectTabs: [
+              context.l10n.withMyProfile,
+              context.l10n.compareTwoUsers
+            ],
             icons: const [Iconsax.user, Iconsax.people],
             selectedIndex: _compareTwoPeople ? 1 : 0,
             onTabSelected: (idx) {

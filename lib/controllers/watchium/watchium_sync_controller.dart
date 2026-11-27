@@ -213,7 +213,7 @@ class WatchiumSyncController extends GetxController {
 
   void _showHostEpisodeSnackbar(WatchiumAnimeContent content) {
     final title =
-        content.animeTitle.isNotEmpty ? content.animeTitle : 'the anime';
+        content.animeTitle.isNotEmpty ? content.animeTitle : Get.context!.l10n.theAnimeFallback;
     snackBar(Get.context!.l10n.hostSwitchedToEpisodeOf(content.episodeNumber.toString(), title.toString()));
     isOutOfSync.value = true;
   }

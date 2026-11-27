@@ -196,7 +196,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final title = "AI Picks${recItems.isNotEmpty ? ' (${recItems.length})' : ''}";
+      final title = context.l10n.aiPicksTitle(recItems.isNotEmpty ? ' (${recItems.length})' : '');
       final subtitle = widget.isManga
           ? 'Smart manga suggestions'
           : 'Personalized recommendations';

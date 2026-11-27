@@ -552,8 +552,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 icon: Icons.tune_rounded,
                 title: context.l10n.conflictHandling,
                 subtitle: _conflictMode == 'Merge'
-                    ? "Merge with existing device data"
-                    : "Overwrite existing device data",
+                    ? context.l10n.mergeWithExistingDeviceData
+                    : context.l10n.overwriteExistingDeviceData,
                 trailing: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -586,8 +586,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ),
               AnymeXExpansionTile(
                 title: context.l10n.mediaLibrary,
-                subtitle:
-                    "$totalTitles titles • $animeCount anime · $mangaCount manga · $novelCount novel",
+                subtitle: context.l10n.backupLibrarySummary(
+                    totalTitles, animeCount, mangaCount, novelCount),
                 icon: Icons.video_library_rounded,
                 initialExpanded: true,
                 useCard: false,
@@ -627,8 +627,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 icon: Icons.insights_rounded,
                 title: context.l10n.progressHistory,
                 subtitle: (info['hasStats'] ?? false)
-                    ? "Episode progress, reading logs, and activity stats"
-                    : "No progress or activity data in backup",
+                    ? context.l10n.episodeProgressReadingLogsStats
+                    : context.l10n.noProgressOrActivityDataInBackup,
                 enabled: info['hasStats'] ?? false,
                 value: _restoreOptions.stats,
                 onChanged: (v) => setState(() => _restoreOptions.stats = v),
@@ -644,8 +644,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ),
               AnymeXExpansionTile(
                 title: context.l10n.extensionsSources,
-                subtitle:
-                    "$extDataCount configurations • $extFilesCount packages",
+                subtitle: context.l10n.backupExtensionsSummary(
+                    extDataCount, extFilesCount),
                 icon: Icons.extension_rounded,
                 initialExpanded: true,
                 useCard: false,
@@ -675,8 +675,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               if (hasAnySettings)
                 AnymeXExpansionTile(
                   title: context.l10n.appSettingsSessions,
-                  subtitle:
-                      "Themes, playback, reader${hasAuthTokens ? ' • Auth tokens' : ''}",
+                  subtitle: hasAuthTokens
+                      ? '${context.l10n.backupSettingsSummary} • ${context.l10n.authTokensLabel}'
+                      : context.l10n.backupSettingsSummary,
                   icon: Icons.settings_rounded,
                   initialExpanded: true,
                   useCard: false,

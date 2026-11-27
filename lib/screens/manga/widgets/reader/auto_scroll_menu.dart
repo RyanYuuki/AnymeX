@@ -86,8 +86,8 @@ class ReaderAutoScrollMenu extends StatelessWidget {
                                 ? Icons.pause_rounded
                                 : Icons.play_arrow_rounded,
                             tooltip: controller.autoScrollEnabled.value
-                                ? 'Pause auto-scroll'
-                                : 'Start auto-scroll',
+                                ? context.l10n.pauseAutoScroll
+                                : context.l10n.startAutoScroll,
                             isActive: controller.autoScrollEnabled.value,
                             onPressed: controller.toggleAutoScroll,
                           ),

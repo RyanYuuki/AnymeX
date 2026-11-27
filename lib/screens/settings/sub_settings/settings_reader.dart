@@ -115,8 +115,8 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   String _mangaDirectionLabel() {
     return switch (_mangaDirection) {
-      0 => 'Bottom-Up',
-      1 => 'Top-Down',
+      0 => context.l10n.directionBottomUp,
+      1 => context.l10n.directionTopDown,
       2 => 'RTL',
       _ => 'LTR',
     };
@@ -124,10 +124,10 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   String _mangaQualityLabel() {
     return switch (_mangaFilterQuality) {
-      0 => 'None (Nearest)',
+      0 => context.l10n.filterQualityNoneNearest,
       1 => 'Low (Bilinear)',
       3 => 'High (Bicubic)',
-      4 => 'Lanczos Pre-scale (Best)',
+      4 => context.l10n.filterQualityLanczos,
       _ => 'Medium (Default)',
     };
   }
@@ -137,7 +137,7 @@ class _SettingsReaderState extends State<SettingsReader> {
       title: context.l10n.readingLayout,
       items: const [0, 1],
       selectedItem: _mangaLayout.obs,
-      getTitle: (value) => value == 0 ? 'Continuous' : 'Paged',
+      getTitle: (value) => value == 0 ? context.l10n.readingLayoutContinuous : context.l10n.paged,
       onItemSelected: (value) {
         setState(() {
           _mangaLayout = value;
@@ -154,8 +154,8 @@ class _SettingsReaderState extends State<SettingsReader> {
       items: const [0, 1, 2, 3],
       selectedItem: _mangaDirection.obs,
       getTitle: (value) => switch (value) {
-        0 => 'Bottom-Up',
-        1 => 'Top-Down',
+        0 => context.l10n.directionBottomUp,
+        1 => context.l10n.directionTopDown,
         2 => 'RTL',
         _ => 'LTR',
       },
@@ -175,9 +175,9 @@ class _SettingsReaderState extends State<SettingsReader> {
       items: const [0, 1, 2],
       selectedItem: _mangaDualPageMode.obs,
       getTitle: (value) => switch (value) {
-        1 => 'Auto (Laptop/Tab)',
-        2 => 'Force (Dual)',
-        _ => 'Standard (Single)',
+        1 => context.l10n.dualPageAuto,
+        2 => context.l10n.dualPageForce,
+        _ => context.l10n.dualPageStandard,
       },
       onItemSelected: (value) {
         setState(() {
@@ -236,10 +236,10 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   String _novelThemeLabel() {
     return switch (_novelThemeMode) {
-      0 => 'Light',
-      1 => 'Dark',
-      2 => 'Sepia',
-      _ => 'System',
+      0 => context.l10n.themeLight,
+      1 => context.l10n.dark,
+      2 => context.l10n.novelThemeSepia,
+      _ => context.l10n.themeSystem,
     };
   }
 
@@ -249,10 +249,10 @@ class _SettingsReaderState extends State<SettingsReader> {
       items: const [0, 1, 2, 3],
       selectedItem: _novelThemeMode.obs,
       getTitle: (value) => switch (value) {
-        0 => 'Light',
-        1 => 'Dark',
-        2 => 'Sepia',
-        _ => 'System',
+        0 => context.l10n.themeLight,
+        1 => context.l10n.dark,
+        2 => context.l10n.novelThemeSepia,
+        _ => context.l10n.themeSystem,
       },
       onItemSelected: (value) {
         setState(() {
@@ -393,7 +393,7 @@ class _SettingsReaderState extends State<SettingsReader> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The wind swept quietly across the lantern-lit courtyard as the final bell echoed through the valley.',
+                  context.l10n.novelPreviewLine1,
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
                     fontSize: _novelFontSize,
@@ -405,7 +405,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                 ),
                 SizedBox(height: _novelParagraphSpacing.clamp(4.0, 24.0)),
                 Text(
-                  'He adjusted his coat and stepped forward into the mist.',
+                  context.l10n.novelPreviewLine2,
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
                     fontSize: _novelFontSize,
@@ -879,7 +879,7 @@ class _SettingsReaderState extends State<SettingsReader> {
         AnymeXExpansionTile(
           title: context.l10n.layoutDirection,
           subtitle:
-              '${_mangaLayout == 0 ? 'Continuous' : 'Paged'} • ${_mangaDirectionLabel()}',
+              '${_mangaLayout == 0 ? context.l10n.readingLayoutContinuous : context.l10n.paged} • ${_mangaDirectionLabel()}',
           icon: Iconsax.card,
           initialExpanded: true,
           useCard: true,
@@ -889,7 +889,7 @@ class _SettingsReaderState extends State<SettingsReader> {
               AnymeXTile(
                 icon: Iconsax.card,
                 title: context.l10n.layout,
-                subtitle: _mangaLayout == 0 ? 'Continuous' : 'Paged',
+                subtitle: _mangaLayout == 0 ? context.l10n.readingLayoutContinuous : context.l10n.paged,
                 onTap: _showMangaLayoutDialog,
               ),
               AnymeXTile(
@@ -902,9 +902,9 @@ class _SettingsReaderState extends State<SettingsReader> {
                 icon: Iconsax.book_1,
                 title: context.l10n.dualPageMode,
                 subtitle: switch (_mangaDualPageMode) {
-                  1 => 'Auto (Laptop/Tab)',
-                  2 => 'Force (Dual)',
-                  _ => 'Standard (Single)',
+                  1 => context.l10n.dualPageAuto,
+                  2 => context.l10n.dualPageForce,
+                  _ => context.l10n.dualPageStandard,
                 },
                 onTap: _showMangaDualPageDialog,
               ),
@@ -1370,8 +1370,8 @@ class _SettingsReaderState extends State<SettingsReader> {
         AnymeXExpansionTile(
           title: context.l10n.textToSpeechTts2,
           subtitle: _novelTtsEnabled
-              ? 'Enabled • ${_novelTtsSpeed.toStringAsFixed(1)}x speed'
-              : 'Disabled',
+              ? context.l10n.enabledTtsSpeed(_novelTtsSpeed.toStringAsFixed(1))
+              : context.l10n.labelDisabled,
           icon: Icons.record_voice_over_rounded,
           initialExpanded: false,
           useCard: true,

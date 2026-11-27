@@ -356,7 +356,7 @@ class LibrarySegmentedControl extends StatelessWidget {
 
   String _getTypeLabel(ItemType itemType) {
     if (serviceHandler.serviceType.value == ServicesType.simkl) {
-      return 'Movies & Series';
+      return Get.context!.l10n.moviesAndSeries;
     } else {
       switch (itemType) {
         case ItemType.anime:

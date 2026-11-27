@@ -193,7 +193,8 @@ class _ReadingModePage extends StatelessWidget {
                 AnymeXTile(
                   title: context.l10n.layout,
                   subtitle: switch (currentLayout) {
-                    MangaPageViewMode.continuous => 'Continuous',
+                    MangaPageViewMode.continuous =>
+                      context.l10n.readingLayoutContinuous,
                     MangaPageViewMode.paged => 'Paged',
                   },
                   icon: Iconsax.card,
@@ -243,9 +244,10 @@ class _ReadingModePage extends StatelessWidget {
                 AnymeXTile(
                   title: context.l10n.direction,
                   subtitle: switch (currentDirection) {
-                    MangaPageViewDirection.down => 'Top-Down',
+                    MangaPageViewDirection.down =>
+                      context.l10n.directionTopDown,
                     MangaPageViewDirection.right => 'LTR',
-                    MangaPageViewDirection.up => 'Bottom-Up',
+                    MangaPageViewDirection.up => context.l10n.directionBottomUp,
                     MangaPageViewDirection.left => 'RTL',
                   },
                   icon: Iconsax.direct_right,
@@ -299,9 +301,9 @@ class _ReadingModePage extends StatelessWidget {
                 AnymeXTile(
                   title: context.l10n.dualPageMode,
                   subtitle: switch (currentDual) {
-                    DualPageMode.off => 'Standard (Single)',
-                    DualPageMode.auto => 'Auto (Landscape)',
-                    DualPageMode.force => 'Force (Always)',
+                    DualPageMode.off => context.l10n.dualPageStandard,
+                    DualPageMode.auto => context.l10n.orientationAutoLandscape,
+                    DualPageMode.force => context.l10n.forceAlways,
                   },
                   icon: Iconsax.book_1,
                   trailing: Container(
@@ -444,10 +446,10 @@ class _GeneralPage extends StatelessWidget {
                 AnymeXTile(
                   title: context.l10n.imageFilterQuality,
                   subtitle: switch (controller.imageFilterQuality.value) {
-                    0 => 'None (Nearest)',
+                    0 => context.l10n.filterQualityNoneNearest,
                     1 => 'Low (Bilinear)',
                     3 => 'High (Bicubic)',
-                    4 => 'Lanczos Pre-scale (Best)',
+                    4 => context.l10n.filterQualityLanczos,
                     _ => 'Medium (Default)',
                   },
                   icon: Icons.image_search_rounded,

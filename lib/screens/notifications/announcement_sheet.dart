@@ -352,8 +352,8 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
                   const SizedBox(height: 6),
                   AnymeXText(
                     _loadFailed
-                        ? 'Could not load this announcement. Check your connection and try again.'
-                        : 'This announcement is no longer available.',
+                        ? context.l10n.couldNotLoadAnnouncement
+                        : context.l10n.announcementNoLongerAvailable,
                     size: 12,
                     color: colors.onSurface.withOpacity(0.6),
                     textAlign: TextAlign.center,

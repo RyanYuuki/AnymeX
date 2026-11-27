@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -135,10 +136,10 @@ class _HomeContinueWatchingBarState extends State<HomeContinueWatchingBar> {
 
     final displayTitle = hasSpecificTitle
         ? (animeName.isNotEmpty
-            ? '$animeName • EP $episodeNumber - $rawEpisodeTitle'
-            : 'EP $episodeNumber - $rawEpisodeTitle')
+            ? context.l10n.continueNameEpTitle(animeName, episodeNumber.toString(), rawEpisodeTitle)
+            : context.l10n.continueEpTitle(episodeNumber.toString(), rawEpisodeTitle))
         : (animeName.isNotEmpty
-            ? '$animeName • Episode $episodeNumber'
+            ? context.l10n.continueNameEpisode(animeName, episodeNumber.toString())
             : 'Episode $episodeNumber');
 
     final current = episode.timeStampInMilliseconds ?? 0;

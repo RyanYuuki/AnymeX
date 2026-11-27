@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
@@ -118,7 +119,7 @@ class AnimeCard extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               width: double.infinity,
               child: AnymeXText(
-                data.name.orPlaceholder('Unknown Media'),
+                data.name.orPlaceholder(context.l10n.unknownMedia),
                 size: 13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

@@ -140,7 +140,11 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
   }
 
   Widget _buildTabBar(ColorScheme cs, ThemeData theme) {
-    final tabs = ['Source', 'Embedded', 'Online'];
+    final tabs = [
+      context.l10n.source,
+      context.l10n.tabEmbedded,
+      context.l10n.online,
+    ];
     final icons = [
       Icons.cloud_rounded,
       Icons.closed_caption_rounded,
@@ -268,12 +272,16 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                     item != null && !tracks.any((t) => t.file == item.file);
 
                 return AnymeXTile.radio(
-                  title: item == null ? 'None' : (item.label ?? 'No Title'),
+                  title: item == null
+                      ? context.l10n.labelNone
+                      : (item.label ?? context.l10n.noTitle),
                   subtitle: item == null
-                      ? 'No subtitles'
+                      ? context.l10n.noSubtitles
                       : (isLocal
-                          ? 'Local Subtitle File'
-                          : (allMode ? 'All Streams' : 'Current Stream')),
+                          ? context.l10n.localSubtitleFile
+                          : (allMode
+                              ? context.l10n.allStreams
+                              : context.l10n.currentStream)),
                   icon: item == null ? Icons.subtitles_off : Icons.subtitles,
                   selected: checked,
                   onTap: () => widget.controller.setExternalSub(item),
@@ -297,7 +305,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
       if (tracks.isEmpty) {
         return _buildEmpty(
-            cs, theme, Icons.closed_caption_rounded, 'No embedded subtitles');
+            cs, theme, Icons.closed_caption_rounded, context.l10n.noEmbeddedSubtitles);
       }
 
       return Padding(
@@ -306,10 +314,11 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
           items: subtitleTrackItems,
           selectedItem: selectedItem,
           getTitle: (t) => t.id == 'no'
-              ? 'None'
+              ? context.l10n.labelNone
               : (completeSubtitleLanguageName(t.language ?? '')).toUpperCase(),
-          getSubtitle: (t) =>
-              t.id == 'no' ? 'No subtitles' : 'Embedded Subtitle',
+          getSubtitle: (t) => t.id == 'no'
+              ? context.l10n.noSubtitles
+              : context.l10n.embeddedSubtitle,
           getIcon: (t) =>
               t.id == 'no' ? Icons.subtitles_off : Icons.closed_caption_rounded,
           onItemPressed: (t) => widget.controller.setSubtitleTrack(t),
@@ -383,7 +392,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                 cs,
                 theme,
                 Icons.language_rounded,
-                'No subtitles found. Try searching with a different title.',
+                context.l10n.noSubtitlesFoundSearchHint,
               );
             }
             return ListView.builder(
@@ -398,7 +407,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                   child: AnymeXTile(
                     title: sub.name,
                     subtitle:
-                        '${sub.format.toUpperCase()} • ${sub.provider}${sub.downloads > 0 ? " • ${sub.downloads} dl" : ""}',
+                        '${sub.format.toUpperCase()} • ${sub.provider}${sub.downloads > 0 ? context.l10n.subtitleDownloadsSuffix('${sub.downloads}') : ""}',
                     icon: sub.hearingImpaired
                         ? Icons.hearing_disabled_rounded
                         : Icons.subtitles_rounded,

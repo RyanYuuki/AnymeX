@@ -534,7 +534,7 @@ class PlayerBottomSheets {
       context: context,
       title: context.l10n.audioTracks,
       showSearch: filteredTracks.length > 5,
-      searchHint: 'Search audio tracks...',
+      searchHint: context.l10n.searchAudioTracksHint,
       items: [
         BottomSheetItem(
             title: context.l10n.auto, subtitle: context.l10n.audioTrack, icon: Icons.audiotrack),

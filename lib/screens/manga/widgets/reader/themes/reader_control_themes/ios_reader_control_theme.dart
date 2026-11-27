@@ -99,7 +99,7 @@ Widget _buildLiquidTopBar(BuildContext context, ReaderController controller) {
             child: AnimatedOpacity(
               opacity: pageVisible ? 1 : 0,
               duration: const Duration(milliseconds: 220),
-              child: _buildPagePill(controller),
+              child: _buildPagePill(context, controller),
             ),
           ),
         ),
@@ -152,7 +152,7 @@ Widget _buildChapterPill(BuildContext context, ReaderController controller) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    chapter?.title ?? 'Unknown Chapter',
+                    chapter?.title ?? context.l10n.unknownChapter,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -163,7 +163,10 @@ Widget _buildChapterPill(BuildContext context, ReaderController controller) {
                     ),
                   ),
                   AnymeXText(
-                    'Ch. ${_formatChapterNumber(chapter?.number)} · ${controller.chapterList.length} total',
+                    context.l10n.chTotalLabel(
+                      _formatChapterNumber(chapter?.number),
+                      '${controller.chapterList.length}',
+                    ),
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 10.5,
@@ -186,10 +189,10 @@ Widget _buildChapterPill(BuildContext context, ReaderController controller) {
   );
 }
 
-Widget _buildPagePill(ReaderController controller) {
+Widget _buildPagePill(BuildContext context, ReaderController controller) {
   return Obx(() {
     final label = switch (controller.loadingState.value) {
-      LoadingState.loading => 'Loading…',
+      LoadingState.loading => context.l10n.loadingEllipsisUnicode,
       LoadingState.error => 'Error',
       LoadingState.loaded =>
         '${controller.currentPageIndex.value} / ${controller.pageList.length}',

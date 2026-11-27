@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -268,48 +269,48 @@ class UserStatsController extends GetxController {
 
   UserRankInfo getUserRankInfo(int totalMinutes) {
     final hours = totalMinutes / 60.0;
-    String title = "Filthy Casual";
+    String title = Get.context!.l10n.rankFilthyCasual;
     int currentMinHours = 0;
     int nextMaxHours = 1;
     String rankIcon = "🌱";
 
     if (hours < 1) {
-      title = "Filthy Casual";
+      title = Get.context!.l10n.rankFilthyCasual;
       currentMinHours = 0;
       nextMaxHours = 1;
       rankIcon = "🌱";
     } else if (hours < 10) {
-      title = "Academy Student";
+      title = Get.context!.l10n.rankAcademyStudent;
       currentMinHours = 1;
       nextMaxHours = 10;
       rankIcon = "🎒";
     } else if (hours < 20) {
-      title = "Genin";
+      title = Get.context!.l10n.rankGenin;
       currentMinHours = 10;
       nextMaxHours = 20;
       rankIcon = "🗡️";
     } else if (hours < 50) {
-      title = "Chunin";
+      title = Get.context!.l10n.rankChunin;
       currentMinHours = 20;
       nextMaxHours = 50;
       rankIcon = "🎖️";
     } else if (hours < 100) {
-      title = "Jonin";
+      title = Get.context!.l10n.rankJonin;
       currentMinHours = 50;
       nextMaxHours = 100;
       rankIcon = "🌀";
     } else if (hours < 500) {
-      title = "Special Jonin";
+      title = Get.context!.l10n.rankSpecialJonin;
       currentMinHours = 100;
       nextMaxHours = 500;
       rankIcon = "🔥";
     } else if (hours < 1000) {
-      title = "Hokage";
+      title = Get.context!.l10n.rankHokage;
       currentMinHours = 500;
       nextMaxHours = 1000;
       rankIcon = "👑";
     } else {
-      title = "Otaku Sage";
+      title = Get.context!.l10n.rankOtakuSage;
       currentMinHours = 1000;
       nextMaxHours = 1000;
       rankIcon = "✨";

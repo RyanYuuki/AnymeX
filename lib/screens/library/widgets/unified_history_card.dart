@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -374,7 +375,9 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                                 BorderRadius.circular(8.multiplyRadius()),
                             color: colorScheme.primary,
                           ),
-                          child: AnymeXText(media.formattedEpisodeTitle ?? 'Episode ??',
+                          child: AnymeXText(
+                            media.formattedEpisodeTitle ??
+                                context.l10n.episodeUnknown,
                             size: 12,
                             variant: TextVariant.bold,
                             color: colorScheme.onPrimary,

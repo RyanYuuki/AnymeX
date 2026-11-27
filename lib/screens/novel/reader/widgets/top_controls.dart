@@ -105,8 +105,9 @@ class NovelTopControls extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(controller.currentChapter.value.title ??
-                                'Unknown Chapter',
+                          AnymeXText(
+                            controller.currentChapter.value.title ??
+                                context.l10n.unknownChapter,
                             size: 12,
                             variant: TextVariant.semiBold,
                             color: context.colors.onSurface,
@@ -115,7 +116,10 @@ class NovelTopControls extends StatelessWidget {
                             isMarquee: true,
                           ),
                           AnymeXText(
-                            'Chapter ${controller.currentChapter.value.number?.round() ?? '-'} of ${controller.chapters.last.number?.round() ?? '-'}',
+                            context.l10n.chapterOfTotal(
+                              '${controller.currentChapter.value.number?.round() ?? '-'}',
+                              '${controller.chapters.last.number?.round() ?? '-'}',
+                            ),
                             style: TextStyle(
                               color: context.colors.onSurface.opaque(0.7),
                               fontSize: 10,

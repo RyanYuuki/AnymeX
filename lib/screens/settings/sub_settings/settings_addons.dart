@@ -232,7 +232,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  isInstalled ? 'Installed' : 'Not Installed',
+                  isInstalled ? context.l10n.extensionsInstalled : context.l10n.notInstalled,
                   variant: TextVariant.semiBold,
                   size: 12,
                   color: isInstalled ? theme.onSurface : theme.onSurfaceVariant,
@@ -247,8 +247,8 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                   const SizedBox(width: 6),
                   AnymeXText(
                     isRunning
-                        ? 'Running${port != null ? ' (:$port)' : ''}'
-                        : 'Stopped',
+                        ? '${context.l10n.addonRunning}${port != null ? ' (:$port)' : ''}'
+                        : context.l10n.addonStopped,
                     variant: TextVariant.semiBold,
                     size: 12,
                     color: isRunning ? Colors.green : theme.onSurfaceVariant,
@@ -301,7 +301,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                         AnymeXText(
                           progress > 0
                               ? '${(progress * 100).toStringAsFixed(0)}%'
-                              : 'Preparing...',
+                              : context.l10n.preparingEllipsis,
                           size: 12.5,
                           variant: TextVariant.bold,
                           color: theme.primary,
@@ -423,7 +423,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                 ),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  isInstalled ? 'Installed' : 'Not Installed',
+                  isInstalled ? context.l10n.extensionsInstalled : context.l10n.notInstalled,
                   variant: TextVariant.semiBold,
                   size: 12,
                   color: isInstalled ? theme.onSurface : theme.onSurfaceVariant,

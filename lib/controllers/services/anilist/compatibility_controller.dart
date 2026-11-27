@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
@@ -67,13 +68,13 @@ class CompatibilityController extends GetxController {
       }
 
       if (p1 == null) {
-        errorMessage.value = 'Could not load first user.';
+        errorMessage.value = Get.context!.l10n.couldNotLoadFirstUser;
         isLoading.value = false;
         return;
       }
 
       if (p2 == null) {
-        errorMessage.value = 'User not found or profile is private.';
+        errorMessage.value = Get.context!.l10n.userNotFoundOrPrivate;
         isLoading.value = false;
         return;
       }
@@ -86,7 +87,7 @@ class CompatibilityController extends GetxController {
       if ((id1.isNotEmpty && id2.isNotEmpty && id1 == id2) ||
           (n1.isNotEmpty && n2.isNotEmpty && n1 == n2)) {
         errorMessage.value =
-            'Cannot compare a user with themselves! Please select two different AniList profiles.';
+            Get.context!.l10n.cannotCompareUserWithThemselves;
         isLoading.value = false;
         return;
       }

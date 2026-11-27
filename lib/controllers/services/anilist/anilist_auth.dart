@@ -104,7 +104,7 @@ class AnilistAuth extends GetxController {
     final apiMessage = AnilistErrorHandler.extractErrorMessage(response.body);
     final message = apiMessage != null && apiMessage.isNotEmpty
         ? apiMessage
-        : "Forbidden (error 403)";
+        : Get.context!.l10n.forbiddenError403;
 
     throw Exception(message);
   }
@@ -671,7 +671,7 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        _throwIfGraphQlErrors(data, 'Failed to fetch settings');
+        _throwIfGraphQlErrors(data, Get.context!.l10n.failedToFetchSettings);
 
         final viewer = data['data']?['Viewer'] as Map<String, dynamic>?;
         if (viewer == null) return null;
@@ -725,7 +725,7 @@ class AnilistAuth extends GetxController {
 
           if (response.statusCode == 200) {
             final data = json.decode(response.body) as Map<String, dynamic>;
-            _throwIfGraphQlErrors(data, 'Failed to fetch settings metadata');
+            _throwIfGraphQlErrors(data, Get.context!.l10n.failedToFetchSettingsMetadata);
 
             final result = data['data'] as Map<String, dynamic>?;
             if (result != null && result.isNotEmpty) {
@@ -853,7 +853,7 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        _throwIfGraphQlErrors(data, 'Failed to update settings');
+        _throwIfGraphQlErrors(data, Get.context!.l10n.failedToUpdateSettings);
 
         final updated = data['data']?['UpdateUser'] as Map<String, dynamic>?;
         if (updated == null) return null;
@@ -877,7 +877,7 @@ class AnilistAuth extends GetxController {
   String _requireAuthToken() {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null || token.isEmpty) {
-      throw Exception('Please login to AniList first.');
+      throw Exception(Get.context!.l10n.pleaseLoginToAnilistFirst);
     }
     return token;
   }
@@ -1911,7 +1911,7 @@ class AnilistAuth extends GetxController {
 
   Future<String?> toggleActivityPin(int id, bool isPinned) async {
     final token = AuthKeys.authToken.get<String?>();
-    if (token == null) return "Not logged in";
+    if (token == null) return Get.context!.l10n.notLoggedIn;
 
     const mutation = r'''
   mutation ToggleActivityPin($id: Int, $pinned: Boolean) {
@@ -1948,9 +1948,9 @@ class AnilistAuth extends GetxController {
         return null; // Success
       } else {
         if (data['errors'] != null && data['errors'].isNotEmpty) {
-          return data['errors'][0]['message'] ?? 'Failed to pin activity';
+          return data['errors'][0]['message'] ?? Get.context!.l10n.failedToPinActivity;
         }
-        return 'Failed to pin activity (Status: ${response.statusCode})';
+        return Get.context!.l10n.failedToPinActivityStatus(response.statusCode);
       }
     } catch (e) {
       Logger.i('Error toggling activity pin: $e');
@@ -2472,7 +2472,7 @@ class AnilistAuth extends GetxController {
 
       if (response.statusCode == 200) {
         snackBar(
-            "${isAnime ? "Anime" : "Manga"} successfully deleted from your list!");
+            Get.context!.l10n.mediaDeletedFromList(isAnime ? 'anime' : 'manga'));
         currentMedia.value = TrackedMedia();
         AnilistCache.instance.invalidatePrefix('user_anime_list');
         AnilistCache.instance.invalidatePrefix('user_manga_list');

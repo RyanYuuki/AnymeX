@@ -325,14 +325,14 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
 
   String get _summaryText {
     if (!_areShadersDownloaded) {
-      return 'Not installed';
+      return Get.context!.l10n.notInstalledLower;
     }
     if (_shadersOn &&
         _selectedShader.isNotEmpty &&
         _selectedShader != 'Default') {
       return 'Mode $_selectedMode';
     }
-    return 'Shaders off';
+    return Get.context!.l10n.shadersOff;
   }
 
   Future<void> _checkShaders() async {
@@ -525,14 +525,14 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
     setState(() {
       _isDownloading = true;
       _downloadProgress = 0.0;
-      _statusText = 'Connecting…';
+      _statusText = Get.context!.l10n.connectingEllipsis;
     });
 
     try {
       await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
       setState(() {
-        _statusText = 'Downloading shaders…';
+        _statusText = Get.context!.l10n.downloadingShaders;
         _downloadProgress = 10.0;
       });
 
@@ -559,7 +559,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
 
       if (!mounted) return;
       setState(() {
-        _statusText = 'Extracting files…';
+        _statusText = Get.context!.l10n.extractingFiles;
         _downloadProgress = 75.0;
       });
 
@@ -580,7 +580,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
 
       if (!mounted) return;
       setState(() {
-        _statusText = 'Finishing up…';
+        _statusText = Get.context!.l10n.finishingUp;
         _downloadProgress = 100.0;
         _isDownloading = false;
         _areShadersDownloaded = true;
@@ -601,7 +601,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
     setState(() {
       _isDownloading = false;
       _downloadProgress = 0.0;
-      _statusText = 'Connecting…';
+      _statusText = Get.context!.l10n.connectingEllipsis;
     });
   }
 
@@ -738,7 +738,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                     ],
                   ),
                   child: AnymeXText.semiBold(
-                    'Original · shaders off',
+                    Get.context!.l10n.originalShadersOff,
                     style: TextStyle(
                       color: colors.onPrimary,
                       fontSize: 14,
@@ -820,11 +820,11 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
               children: [
                 Expanded(
                   child:
-                      _buildDesktopTabButton('shaders', 'Shaders', Iconsax.eye),
+                      _buildDesktopTabButton('shaders', Get.context!.l10n.shadersLabel, Iconsax.eye),
                 ),
                 Expanded(
                   child: _buildDesktopTabButton(
-                      'presets', 'Presets', Icons.dashboard_customize_rounded),
+                      'presets', Get.context!.l10n.presetsLabel, Icons.dashboard_customize_rounded),
                 ),
                 Expanded(
                   child: _buildDesktopTabButton(
@@ -832,7 +832,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                 ),
                 Expanded(
                   child: _buildDesktopTabButton(
-                      'visual', 'Visual', Icons.movie_filter_rounded),
+                      'visual', Get.context!.l10n.visualLabel, Icons.movie_filter_rounded),
                 ),
               ],
             ),
@@ -886,7 +886,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         ),
                         const SizedBox(width: 8),
                         AnymeXText.semiBold(
-                          _resetDone ? 'Reset done' : 'Reset $_tabResetName',
+                          _resetDone ? Get.context!.l10n.resetDone : Get.context!.l10n.resetTarget(_tabResetName),
                           style: TextStyle(
                             fontSize: 14,
                             color:
@@ -929,7 +929,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         ),
                         const SizedBox(width: 8),
                         AnymeXText.semiBold(
-                          'Hold to compare',
+                          Get.context!.l10n.holdToCompare,
                           style: TextStyle(
                             fontSize: 14,
                             color: _isComparing
@@ -1020,16 +1020,16 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                 padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
                 child: Column(
                   children: [
-                    _buildMobileTabButton('shaders', 'Shaders', Iconsax.eye),
+                    _buildMobileTabButton('shaders', Get.context!.l10n.shadersLabel, Iconsax.eye),
                     const SizedBox(height: 6),
-                    _buildMobileTabButton('presets', 'Presets',
+                    _buildMobileTabButton('presets', Get.context!.l10n.presetsLabel,
                         Icons.dashboard_customize_rounded),
                     const SizedBox(height: 6),
                     _buildMobileTabButton(
                         'custom', 'Custom', Icons.tune_rounded),
                     const SizedBox(height: 6),
                     _buildMobileTabButton(
-                        'visual', 'Visual', Icons.movie_filter_rounded),
+                        'visual', Get.context!.l10n.visualLabel, Icons.movie_filter_rounded),
                   ],
                 ),
               ),
@@ -1134,7 +1134,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                                     ),
                                     const SizedBox(width: 6),
                                     AnymeXText.semiBold(
-                                      'Compare',
+                                      Get.context!.l10n.compareLabel,
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: _isComparing
@@ -1294,7 +1294,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         ),
                         alignment: Alignment.center,
                         child: AnymeXText.semiBold(
-                          'Download now',
+                          Get.context!.l10n.downloadNow,
                           style: TextStyle(
                             fontSize: 15,
                             color: colors.onPrimary,
@@ -1469,7 +1469,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AnymeXText.semiBold(
-                            'Default · no shader',
+                            Get.context!.l10n.defaultNoShader,
                             style: TextStyle(
                               fontSize: 15,
                               color: isDefault
@@ -2343,7 +2343,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                   ],
                 ),
                 child: AnymeXText.semiBold(
-                  'Original · shaders off',
+                  Get.context!.l10n.originalShadersOff,
                   style: TextStyle(
                     color: colors.onPrimary,
                     fontSize: 14,
@@ -2507,7 +2507,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                       SizedBox(
                         width: 60,
                         child: AnymeXText.semiBold(
-                          'Shaders',
+                          Get.context!.l10n.shadersLabel,
                           style: TextStyle(
                             color: colors.onSurfaceVariant,
                             fontSize: 11,
@@ -2554,7 +2554,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                       SizedBox(
                         width: 60,
                         child: AnymeXText.semiBold(
-                          'Presets',
+                          Get.context!.l10n.presetsLabel,
                           style: TextStyle(
                             color: colors.onSurfaceVariant,
                             fontSize: 11,

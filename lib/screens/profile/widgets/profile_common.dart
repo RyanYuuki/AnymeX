@@ -6,10 +6,12 @@ import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 String getFollowLabel({bool? isFollowing, bool? isFollower}) {
-  if (isFollowing == true && isFollower == true) return 'Mutual';
-  if (isFollowing == true) return 'Following';
-  if (isFollower == true) return 'Follows you';
-  return 'Follow';
+  if (isFollowing == true && isFollower == true) {
+    return Get.context!.l10n.mutualStatus;
+  }
+  if (isFollowing == true) return Get.context!.l10n.followingStatus;
+  if (isFollower == true) return Get.context!.l10n.followsYouStatus;
+  return Get.context!.l10n.followAction;
 }
 
 Future<bool> confirmDiscardComposer(
@@ -184,11 +186,11 @@ void showActivityFilterSheet(
   required List<String> activityFilters,
   required VoidCallback onApply,
 }) {
-  const availableFilters = {
-    'ANIME_LIST': 'Anime progress',
-    'MANGA_LIST': 'Manga progress',
+  final availableFilters = {
+    'ANIME_LIST': context.l10n.animeProgressLabel,
+    'MANGA_LIST': context.l10n.mangaProgressLabel,
     'TEXT': 'Status',
-    'MESSAGE': 'Messages',
+    'MESSAGE': context.l10n.messagesLabel,
   };
 
   showModalBottomSheet(

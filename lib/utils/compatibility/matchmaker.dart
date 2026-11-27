@@ -471,7 +471,7 @@ class Matchmaker {
       );
 
   static String _watchStatsDesc(AnimeStats a, AnimeStats b) {
-    return '${_parseI(a.animeCount)} vs ${_parseI(b.animeCount)} anime';
+    return Get.context!.l10n.countVsCountAnime(_parseI(a.animeCount), _parseI(b.animeCount));
   }
 
   static String _releaseYearDesc(List<YearStat> aYears, List<YearStat> bYears) {
@@ -479,7 +479,7 @@ class Matchmaker {
     final bTop = _topDecade(bYears);
     return aTop != null && bTop != null
         ? '${_decadeLabel(aTop)} vs ${_decadeLabel(bTop)}'
-        : 'Decades comparison';
+        : Get.context!.l10n.decadesComparison;
   }
 
   static double _mangaReadStats(MangaStats a, MangaStats b) => _computeStatsSimilarity(
@@ -494,7 +494,7 @@ class Matchmaker {
       );
 
   static String _mangaReadStatsDesc(MangaStats a, MangaStats b) {
-    return '${_parseI(a.mangaCount)} vs ${_parseI(b.mangaCount)} entries';
+    return Get.context!.l10n.countVsCountEntries(_parseI(a.mangaCount), _parseI(b.mangaCount));
   }
  
 

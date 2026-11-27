@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
@@ -11,7 +13,7 @@ class AnifyMetadataProvider implements EpisodeMetadataProvider {
   String get name => 'Anify';
 
   @override
-  String get description => 'Legacy Anify episode titles, descriptions, and thumbnails';
+  String get description => Get.context!.l10n.anifyProviderDescription;
 
   @override
   bool supports(MetadataTargetIds ids) {

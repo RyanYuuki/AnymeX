@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -17,15 +19,15 @@ extension ReaderActionExtension on ReaderAction {
   String get displayName {
     switch (this) {
       case ReaderAction.nextPage:
-        return 'Next Page';
+        return Get.context!.l10n.tapNextPage;
       case ReaderAction.prevPage:
-        return 'Previous Page';
+        return Get.context!.l10n.tapPreviousPage;
       case ReaderAction.toggleMenu:
-        return 'Show/Hide UI';
+        return Get.context!.l10n.tapShowHideUi;
       case ReaderAction.scrollUp:
-        return 'Scroll Up';
+        return Get.context!.l10n.tapScrollUp;
       case ReaderAction.scrollDown:
-        return 'Scroll Down';
+        return Get.context!.l10n.tapScrollDown;
       case ReaderAction.nextChapter:
         return 'Next Chapter';
       case ReaderAction.prevChapter:

@@ -104,7 +104,9 @@ class DownloadController extends GetxController {
   }
 
   static String formatSpeed(double bytesPerSec) {
-    if (bytesPerSec <= 0) return '0 KB/s';
+    if (bytesPerSec <= 0) {
+      return Get.context?.l10n.zeroKbPerSec ?? '0 KB/s';
+    }
     if (bytesPerSec < 1024) {
       return '${bytesPerSec.toStringAsFixed(0)} B/s';
     } else if (bytesPerSec < 1024 * 1024) {
@@ -438,8 +440,9 @@ class DownloadController extends GetxController {
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'anymex_downloads',
-        channelName: 'AnymeX Downloads',
-        channelDescription: 'Persistent background downloading service.',
+        channelName: Get.context!.l10n.anymexDownloads,
+        channelDescription:
+            Get.context!.l10n.persistentBackgroundDownloadingService,
         channelImportance: NotificationChannelImportance.LOW,
         priority: NotificationPriority.LOW,
       ),
@@ -477,8 +480,8 @@ class DownloadController extends GetxController {
     if (!Platform.isAndroid) return;
     if (!await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.startService(
-        notificationTitle: 'AnymeX Downloads',
-        notificationText: 'Starting background service...',
+        notificationTitle: Get.context!.l10n.anymexDownloads,
+        notificationText: Get.context!.l10n.startingBackgroundService,
         callback: startBackgroundService,
       );
     }
@@ -949,7 +952,7 @@ class DownloadController extends GetxController {
       if (task.videoUrl.isEmpty) {
         if (source == null) {
           task.status = DownloadStatus.failed;
-          task.errorMessage = 'Source not found for resuming scrape';
+          task.errorMessage = Get.context!.l10n.sourceNotFoundResumingScrape;
           activeTasks.refresh();
           _activeTaskCount--;
           return;
@@ -982,7 +985,7 @@ class DownloadController extends GetxController {
 
         if (videos.isEmpty) {
           task.status = DownloadStatus.awaitingServerSelection;
-          task.errorMessage = 'No servers found. Please select manually.';
+          task.errorMessage = Get.context!.l10n.noServersFoundSelectManually;
           task.availableServers = [];
           activeTasks.refresh();
           _saveActiveTasks();
@@ -999,8 +1002,8 @@ class DownloadController extends GetxController {
 
         if (bestLabel.isEmpty) {
           task.status = DownloadStatus.awaitingServerSelection;
-          task.errorMessage =
-              'No server matched "${preferredQuality ?? '720p'}". Please select manually.';
+          task.errorMessage = Get.context!.l10n
+              .noServerMatchedSelectManually(preferredQuality ?? '720p');
           activeTasks.refresh();
           _saveActiveTasks();
           _activeTaskCount--;
@@ -1018,7 +1021,7 @@ class DownloadController extends GetxController {
 
       if (task.videoUrl.isEmpty) {
         task.status = DownloadStatus.failed;
-        task.errorMessage = 'Empty video URL';
+        task.errorMessage = Get.context!.l10n.emptyVideoUrl;
         activeTasks.refresh();
         _activeTaskCount--;
         return;
@@ -1153,15 +1156,16 @@ class DownloadController extends GetxController {
     if (downloading.isEmpty && queued == 0) {
       _sendToBackground({
         'type': 'UPDATE_NOTIFICATION',
-        'title': 'AnymeX Downloads',
-        'text': 'All downloads complete.'
+        'title': Get.context!.l10n.anymexDownloads,
+        'text': Get.context!.l10n.allDownloadsComplete
       });
       return;
     }
     final active = downloading.isNotEmpty ? downloading.first : null;
     final title = active != null
-        ? '${active.mediaTitle} · Ep ${active.episode.number}'
-        : 'AnymeX Downloads';
+        ? Get.context!.l10n
+            .mediaTitleEp(active.mediaTitle, '${active.episode.number}')
+        : Get.context!.l10n.anymexDownloads;
     final pct =
         active != null ? '${(active.progress * 100).toStringAsFixed(0)}%' : '';
     final text = [
@@ -1259,7 +1263,7 @@ class DownloadController extends GetxController {
       final chapterUrl = task.chapter.link;
       if (chapterUrl == null || chapterUrl.isEmpty) {
         task.status = MangaDownloadStatus.failed;
-        task.errorMessage = 'Chapter has no URL';
+        task.errorMessage = Get.context!.l10n.chapterHasNoUrl;
         snackBar(Get.context!.l10n.downloadFailedHasNoUrl(task.chapterDisplay.toString()));
         activeMangaTasks.refresh();
         return;
@@ -1271,7 +1275,7 @@ class DownloadController extends GetxController {
 
       if (pages.isEmpty) {
         task.status = MangaDownloadStatus.failed;
-        task.errorMessage = 'No pages found for this chapter';
+        task.errorMessage = Get.context!.l10n.noPagesFoundForChapter;
         snackBar(Get.context!.l10n.downloadFailedNoPagesFoundFor(task.chapterDisplay.toString()));
         activeMangaTasks.refresh();
         return;

@@ -361,14 +361,14 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 title: context.l10n.preferredSubtitleLanguage,
                 subtitle: SubtitleTranslator
                         .languages[settings.preferredSubtitleLanguage] ??
-                    'None (Disabled)',
+                    context.l10n.noneDisabled,
                 onTap: () => showSelectionDialog<String>(
                   title: context.l10n.preferredSubtitleLanguage,
                   items: ['none', ...SubtitleTranslator.languages.keys],
                   selectedItem: settings
                       .playerSettings.value.preferredSubtitleLanguage.obs,
                   getTitle: (code) => code == 'none'
-                      ? 'None (Disabled)'
+                      ? context.l10n.noneDisabled
                       : SubtitleTranslator.languages[code]!,
                   onItemSelected: (code) {
                     settings.preferredSubtitleLanguage = code;
@@ -481,7 +481,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 title: context.l10n.subtitleColor,
                 onTap: () {
                   _showColorSelectionDialog(
-                    'Select Subtitle Color',
+                    context.l10n.selectSubtitleColor,
                     fontColorOptions[settings.subtitleColor] ??
                         fontColorOptions['Default']!,
                     (color) {
@@ -497,7 +497,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 subtitle: context.l10n.changeSubtitleOutlineColor,
                 onTap: () {
                   _showColorSelectionDialog(
-                    'Select Subtitle Outline Color',
+                    context.l10n.selectSubtitleOutlineColor,
                     colorOptions[settings.subtitleOutlineColor] ??
                         colorOptions['None']!,
                     (color) {
@@ -513,7 +513,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
                 title: context.l10n.subtitleBackgroundColor,
                 onTap: () {
                   _showColorSelectionDialog(
-                    'Select Subtitle Background Color',
+                    context.l10n.selectSubtitleBackgroundColor,
                     colorOptions[settings.subtitleBackgroundColor] ??
                         colorOptions['None']!,
                     (color) {

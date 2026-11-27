@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
@@ -1208,7 +1209,7 @@ class _SubsamplingScaleImageViewState extends State<SubsamplingScaleImageView>
         }
       } else {
         tile.loading = false;
-        final msg = result.error ?? 'Unknown error';
+        final msg = result.error ?? context.l10n.unknownErrorShort;
         if (msg != 'Cancelled') {
           if (kDebugMode) {
             debugPrint('SubsamplingScaleImageView: Tile decoding failed: $msg');

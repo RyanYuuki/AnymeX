@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -67,7 +69,7 @@ class MangaAnimeUtil {
       if (seriesData == null || seriesData.isEmpty) {
         return AnimeAdaptation(
           hasAdaptation: false,
-          error: 'No series found for this media',
+          error: Get.context!.l10n.noSeriesFoundForMedia,
         );
       }
 
@@ -97,13 +99,13 @@ class MangaAnimeUtil {
 
   static Future<NextRelease> getNextChapterPrediction(Media media) async {
     if (media.status.toUpperCase() != 'RELEASING') {
-      return NextRelease(error: 'Series is not releasing');
+      return NextRelease(error: Get.context!.l10n.seriesNotReleasing);
     }
 
     try {
       final seriesData = await _getSeriesFromId(media);
       if (seriesData == null || seriesData.isEmpty) {
-        return NextRelease(error: 'MangaUpdates ID not found');
+        return NextRelease(error: Get.context!.l10n.mangaUpdatesIdNotFound);
       }
 
       final series = seriesData[0];
@@ -111,7 +113,7 @@ class MangaAnimeUtil {
           series['source']?['manga_updates']?['id']?.toString();
 
       if (muId == null) {
-        return NextRelease(error: 'MangaUpdates ID missing');
+        return NextRelease(error: Get.context!.l10n.mangaUpdatesIdMissing);
       }
 
       final seriesUrl = 'https://www.mangaupdates.com/series/$muId';
@@ -166,7 +168,7 @@ class MangaAnimeUtil {
       }
 
       if (releaseDates.length < 2) {
-        return NextRelease(error: 'Insufficient data');
+        return NextRelease(error: Get.context!.l10n.insufficientData);
       }
 
       int sampleSize = releaseDates.length > 10 ? 10 : releaseDates.length;
@@ -180,7 +182,7 @@ class MangaAnimeUtil {
       }
 
       if (intervals.isEmpty) {
-        return NextRelease(error: 'Irregular release schedule');
+        return NextRelease(error: Get.context!.l10n.irregularReleaseSchedule);
       }
 
       double avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;

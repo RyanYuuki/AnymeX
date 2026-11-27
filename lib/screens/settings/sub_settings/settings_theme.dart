@@ -273,7 +273,11 @@ class _SettingsThemeState extends State<SettingsTheme> {
               if (!settings.useGrainTexture) return const SizedBox.shrink();
               final val = settings.grainIntensity;
               final intensities = [0.03, 0.07, 0.15];
-              final labels = ['Low', 'Medium', 'High'];
+              final labels = [
+                context.l10n.intensityLow,
+                context.l10n.intensityMedium,
+                context.l10n.intensityHigh,
+              ];
               final current = val <= 0.04
                   ? 0.03
                   : val <= 0.10
@@ -702,7 +706,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
                 ),
                 const SizedBox(height: 10),
                 AnymeXText(
-                  theme['label'],
+                  switch (theme['label']) {
+                    'Light' => context.l10n.themeLight,
+                    'Dark' => context.l10n.dark,
+                    'System' => context.l10n.themeSystem,
+                    _ => theme['label'] as String,
+                  },
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -921,7 +930,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     decoration: InputDecoration(
                       labelText: context.l10n.hexColorCode,
                       hintText: context.l10n.n3f51b5Or3f51b5,
-                      errorText: isValid ? null : 'Invalid Hex color code',
+                      errorText: isValid ? null : context.l10n.invalidHexColorCode,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

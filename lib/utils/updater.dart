@@ -389,7 +389,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
     setState(() {
       _isDownloading = true;
       _downloadProgress = 0.0;
-      _downloadStatus = 'Preparing download...';
+      _downloadStatus = Get.context!.l10n.preparingDownload;
     });
 
     try {
@@ -406,7 +406,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
         }
       }
     } catch (e) {
-      _showErrorDialog('Download failed: $e');
+      _showErrorDialog(Get.context!.l10n.downloadFailedError(e.toString()));
     } finally {
       setState(() {
         _isDownloading = false;
@@ -418,7 +418,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
 
   Future<void> _downloadAndInstallAndroid(String downloadUrl) async {
     setState(() {
-      _downloadStatus = 'Downloading APK...';
+      _downloadStatus = Get.context!.l10n.downloadingApk;
     });
 
     final dio = Dio();
@@ -433,14 +433,14 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
           setState(() {
             _downloadProgress = received / total;
             _downloadStatus =
-                'Downloaded ${(received / 1024 / 1024).toStringAsFixed(1)} MB / ${(total / 1024 / 1024).toStringAsFixed(1)} MB';
+                Get.context!.l10n.downloadedMbOfMb((received / 1024 / 1024).toStringAsFixed(1), (total / 1024 / 1024).toStringAsFixed(1));
           });
         }
       },
     );
 
     setState(() {
-      _downloadStatus = 'Installing...';
+      _downloadStatus = Get.context!.l10n.installingEllipsis;
     });
 
     final status = await Permission.requestInstallPackages.request();
@@ -463,7 +463,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
 
   Future<void> _downloadWindows(String downloadUrl) async {
     setState(() {
-      _downloadStatus = 'Downloading installer...';
+      _downloadStatus = Get.context!.l10n.downloadingInstaller;
     });
 
     final dio = Dio();
@@ -479,7 +479,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
           setState(() {
             _downloadProgress = received / total;
             _downloadStatus =
-                'Downloaded ${(received / 1024 / 1024).toStringAsFixed(1)} MB / ${(total / 1024 / 1024).toStringAsFixed(1)} MB';
+                Get.context!.l10n.downloadedMbOfMb((received / 1024 / 1024).toStringAsFixed(1), (total / 1024 / 1024).toStringAsFixed(1));
           });
         }
       },
@@ -515,11 +515,11 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
           size: 32,
         ),
         title: AnymeXText(
-            Platform.isAndroid ? 'Installation Started' : 'Download Complete'),
+            Platform.isAndroid ? Get.context!.l10n.installationStarted : Get.context!.l10n.downloadComplete),
         content: AnymeXText(
           Platform.isAndroid
-              ? 'Please follow installation prompts.'
-              : 'Installer saved to:\n${filePath ?? 'Downloads'}',
+              ? Get.context!.l10n.followInstallationPrompts
+              : Get.context!.l10n.installerSavedTo(filePath ?? 'Downloads'),
         ),
         actions: [
           TextButton(
@@ -757,9 +757,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                     const SizedBox(width: 8),
                     AnymeXText(
                       _isDownloading
-                          ? "Downloading..."
+                          ? Get.context!.l10n.downloadingEllipsis
                           : (Platform.isAndroid
-                              ? "Download & Install"
+                              ? Get.context!.l10n.downloadAndInstall
                               : "Download"),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,

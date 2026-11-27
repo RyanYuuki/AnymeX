@@ -51,7 +51,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     final entry = _listPreferenceSelectedEntry(pref);
     if (entry != null && entry.isNotEmpty) return entry;
     if (pref.summary != null && pref.summary!.isNotEmpty) return pref.summary!;
-    return 'Select option';
+    return context.l10n.selectOptionLower;
   }
 
   String? _listPreferenceSelectedEntry(ListPreference pref) {
@@ -96,7 +96,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     final selectedEntries = _multiSelectPreferenceSelectedEntries(pref);
     if (selectedEntries.isNotEmpty) return selectedEntries.join(', ');
     if (pref.summary != null && pref.summary!.isNotEmpty) return pref.summary!;
-    return 'Select multiple';
+    return context.l10n.selectMultiple;
   }
 
   List<String> _multiSelectPreferenceSelectedEntries(
@@ -191,7 +191,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     AnymeXDialog(
       title: context.l10n.clearCacheCookies,
       message:
-          'Are you sure you want to delete cache and cookies for ${widget.source.name}?',
+          context.l10n.confirmDeleteCacheCookies(widget.source.name ?? ''),
       confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCookiesForSource();
@@ -205,7 +205,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     AnymeXDialog(
       title: context.l10n.clearCookies2,
       message:
-          'Are you sure you want to delete saved cookies and Cloudflare tokens for ${widget.source.name}?',
+          context.l10n.confirmDeleteCookiesCloudflare(widget.source.name ?? ''),
       confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCookiesForSource();
@@ -218,7 +218,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     AnymeXDialog(
       title: context.l10n.clearCache,
       message:
-          'Are you sure you want to delete temporary cache for ${widget.source.name}?',
+          context.l10n.confirmDeleteTempCache(widget.source.name ?? ''),
       confirmText: context.l10n.clear,
       onConfirm: () async {
         await _clearCacheForSource();
@@ -264,7 +264,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
         final p = pref.checkBoxPreference!;
         return AnymeXTile.toggle(
           title: p.title ?? '',
-          subtitle: p.summary ?? 'Toggle setting',
+          subtitle: p.summary ?? context.l10n.toggleSetting,
           value: p.value ?? false,
           onChanged: (v) {
             p.value = v;
@@ -275,7 +275,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
         final p = pref.switchPreferenceCompat!;
         return AnymeXTile.toggle(
           title: p.title ?? '',
-          subtitle: p.summary ?? 'Toggle setting',
+          subtitle: p.summary ?? context.l10n.toggleSetting,
           value: p.value ?? false,
           onChanged: (v) {
             p.value = v;
@@ -293,7 +293,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
               context: context,
               builder: (context) => StatefulBuilder(
                 builder: (context, setDialogState) => AnymeXDialog(
-                  title: p.title ?? 'Select Option',
+                  title: p.title ?? context.l10n.selectOptionTitle,
                   onConfirm: () {
                     p.valueIndex = tempIndex;
                     final newValue = _listPreferenceValueAt(p, tempIndex);
@@ -334,7 +334,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
               context: context,
               builder: (context) => StatefulBuilder(
                 builder: (context, setDialogState) => AnymeXDialog(
-                  title: p.title ?? 'Select Options',
+                  title: p.title ?? context.l10n.selectOptionsTitle,
                   onConfirm: () {
                     p.values = tempSelectedValues.toList();
                     _savePreference(pref, p.values);
@@ -375,13 +375,13 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
         final p = pref.editTextPreference!;
         return AnymeXTile(
           title: p.title ?? '',
-          subtitle: p.value ?? p.text ?? 'Edit text',
+          subtitle: p.value ?? p.text ?? context.l10n.editTextLower,
           onTap: () {
             String tempValue = p.value ?? p.text ?? '';
             showDialog(
               context: context,
               builder: (context) => AnymeXDialog(
-                title: p.dialogTitle ?? p.title ?? 'Edit Text',
+                title: p.dialogTitle ?? p.title ?? context.l10n.editTextTitle,
                 onConfirm: () {
                   p.value = tempValue;
                   p.text = tempValue;
@@ -429,7 +429,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
       default:
         return AnymeXTile(
-          title: pref.key ?? 'Unknown Preference',
+          title: pref.key ?? context.l10n.unknownPreference,
           subtitle: context.l10n.unsupportedType(pref.type.toString()),
           showChevron: false,
           onTap: () {},

@@ -39,7 +39,7 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                               icon: Iconsax.folder_open,
                               title: context.l10n.downloadPath,
                               subtitle: settings.downloadPath.value.isEmpty
-                                  ? 'Default (Internal Storage)'
+                                  ? context.l10n.defaultInternalStorage
                                   : settings.downloadPath.value,
                               onTap: () async {
                                 String? result = await FilePicker.platform

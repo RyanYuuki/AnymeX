@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
@@ -11,7 +13,7 @@ class AniZipMetadataProvider implements EpisodeMetadataProvider {
   String get name => 'ani.zip';
 
   @override
-  String get description => 'Rich episode titles, overviews, thumbnails, and mappings from ani.zip';
+  String get description => Get.context!.l10n.anizipProviderDescription;
 
   @override
   bool supports(MetadataTargetIds ids) {

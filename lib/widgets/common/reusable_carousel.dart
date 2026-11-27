@@ -106,8 +106,8 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
                   : Icons.movie_filter_rounded),
               const SizedBox(height: 10, width: double.infinity),
               AnymeXText(widget.type != ItemType.anime
-                    ? "For real, why aren't you reading yet? 📚"
-                    : "Lowkey time for a binge sesh 🎬",
+                    ? context.l10n.whyArentYouReadingYet
+                    : context.l10n.timeForBingeSesh,
                 variant: TextVariant.semiBold,
               ),
             ],

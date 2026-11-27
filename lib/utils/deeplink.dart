@@ -90,8 +90,8 @@ class Deeplink {
     }
     snackBar(
       isRepoAdded
-          ? "Added Repo Links Successfully!"
-          : "Missing or invalid parameters in the link.",
+          ? Get.context!.l10n.addedRepoLinksSuccessfully
+          : Get.context!.l10n.missingInvalidLinkParams,
     );
   }
 
@@ -193,7 +193,7 @@ class Deeplink {
 
     if (result.hasErrors) {
       final extra = result.errors.length > 1
-          ? ' (+${result.errors.length - 1} more issue(s))'
+          ? Get.context!.l10n.moreIssuesSuffix(result.errors.length - 1)
           : '';
       errorSnackBar(Get.context!.l10n.themeIsInvalid(result.errors.first.toString(), extra.toString()));
       return;
@@ -203,10 +203,10 @@ class Deeplink {
     final label = imported == 1 ? 'theme' : 'themes';
     if (result.hasWarnings) {
       final more = result.warnings.length > 1
-          ? ' (+${result.warnings.length - 1} more warning(s))'
+          ? Get.context!.l10n.moreWarningsSuffix(result.warnings.length - 1)
           : '';
       warningSnackBar(
-          'Theme imported with warning: ${result.warnings.first}$more');
+          Get.context!.l10n.themeImportedWithWarning(result.warnings.first.toString(), more));
     } else {
       successSnackBar(Get.context!.l10n.themeJsonIsValidImported(imported.toString(), label.toString()));
     }

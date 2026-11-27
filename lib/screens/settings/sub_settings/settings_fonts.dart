@@ -126,7 +126,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
                 ),
                 child: AnymeXText.semiBold(
                   themeProvider.appFontFamily.isEmpty
-                      ? 'Default (Linotte)'
+                      ? context.l10n.defaultLinotte
                       : themeProvider.appFontFamily,
                   color: colors.primary,
                   size: 11,
@@ -142,7 +142,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
           ),
           const SizedBox(height: 14),
           Text(
-            'The Quick Brown Fox',
+            context.l10n.theQuickBrownFox,
             style: TextStyle(
               fontFamily: currentFont,
               fontSize: 22,
@@ -152,7 +152,7 @@ class _SettingsFontsState extends State<SettingsFonts> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Jumped over the lazy dog. AnymeX gives you rich, adaptive typography with system-wide live text scaling and crisp rendering.',
+            context.l10n.fontPreviewParagraph,
             style: TextStyle(
               fontFamily: currentFont,
               fontSize: 13.5,

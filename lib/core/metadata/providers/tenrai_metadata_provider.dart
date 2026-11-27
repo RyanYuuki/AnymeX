@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/core/metadata/models/episode_metadata.dart';
@@ -13,7 +15,7 @@ class TenraiMetadataProvider implements EpisodeMetadataProvider {
   String get name => 'Tenrai';
 
   @override
-  String get description => 'MyAnimeList episode titles, air dates, scores, and filler/recap flags';
+  String get description => Get.context!.l10n.tenraiProviderDescription;
 
   @override
   bool supports(MetadataTargetIds ids) {

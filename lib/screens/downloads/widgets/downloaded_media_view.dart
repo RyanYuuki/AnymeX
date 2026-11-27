@@ -76,12 +76,18 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     if (epochMs == 0) return 'Unknown';
     final diff =
         DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(epochMs));
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
-    if (diff.inDays == 1) return 'Yesterday';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
-    return '${diff.inDays ~/ 7}w ago';
+    if (diff.inMinutes < 1) return Get.context!.l10n.justNow;
+    if (diff.inHours < 1) {
+      return Get.context!.l10n.minutesAgoShort('${diff.inMinutes}');
+    }
+    if (diff.inDays < 1) {
+      return Get.context!.l10n.hoursAgoShort('${diff.inHours}');
+    }
+    if (diff.inDays == 1) return Get.context!.l10n.yesterdayLabel;
+    if (diff.inDays < 7) {
+      return Get.context!.l10n.daysAgoShort('${diff.inDays}');
+    }
+    return Get.context!.l10n.weeksAgoShort('${diff.inDays ~/ 7}');
   }
 
   void _showLoadingDialog(BuildContext context, String message) {
@@ -122,7 +128,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       message:
           context.l10n.episodeNumber(ep.number),
       onConfirm: () async {
-        _showLoadingDialog(context, 'Deleting episode...');
+        _showLoadingDialog(context, context.l10n.deletingEpisodeEllipsis);
         try {
           await downloadController.deleteEpisode(
             _currentSummary.extensionName,
@@ -149,7 +155,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       title: context.l10n.deleteChapterQuestion,
       message: context.l10n.willBePermanentlyRemovedFromYour(display.toString()),
       onConfirm: () async {
-        _showLoadingDialog(context, 'Deleting chapter...');
+        _showLoadingDialog(context, context.l10n.deletingChapterEllipsis);
         try {
           await downloadController.deleteChapter(
             _currentSummary.extensionName,
@@ -173,12 +179,17 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         ? (_mangaMeta?.chapters.length ?? 0)
         : (_meta?.episodes.length ?? 0);
     AnymeXDialog(
-      title: _isManga ? 'Delete all chapters?' : 'Delete all episodes?',
+      title: _isManga
+          ? context.l10n.deleteAllChaptersQuestion
+          : context.l10n.deleteAllEpisodesQuestion,
       message:
-          '"${widget.summary.title}" — $count ${_isManga ? 'chapters' : 'episodes'} will be permanently removed.',
+          '"${widget.summary.title}" — ${_isManga ? context.l10n.chaptersCountRemoved(count) : context.l10n.episodesCountRemoved(count)}',
       onConfirm: () async {
         _showLoadingDialog(
-            context, 'Deleting ${_isManga ? "manga" : "anime"}...');
+            context,
+            _isManga
+                ? context.l10n.deletingMangaEllipsis
+                : context.l10n.deletingAnimeEllipsis);
         try {
           await downloadController.deleteMedia(
               _currentSummary.extensionName, _currentSummary.folderName,
@@ -333,7 +344,9 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     if (ts != null && dur != null && dur > 0 && ts > 0) {
       final leftMs = (dur - ts).clamp(0, dur);
       final minutes = leftMs ~/ 60000;
-      if (minutes > 0) subtitle += ' · ${minutes}m left';
+      if (minutes > 0) {
+        subtitle += context.l10n.minutesLeftSuffix('$minutes');
+      }
     }
 
     return continueFab(
@@ -680,7 +693,9 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           ),
           const SizedBox(width: 8),
           AnymeXText(
-            _isManga ? 'Downloaded Chapters' : 'Downloaded Episodes',
+            _isManga
+                ? context.l10n.downloadedChapters
+                : context.l10n.downloadedEpisodes,
             style: TextStyle(
               color: theme.onSurface.withOpacity(0.7),
               fontSize: 12,

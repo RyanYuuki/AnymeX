@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/extension_utils.dart';
@@ -17,7 +18,7 @@ class MinimalExoticCardStyle implements MediaCardStyle {
   @override
   String get displayName => 'Minimal Exotic';
   @override
-  String get description => 'Bordered card with bottom gradient title and action banner.';
+  String get description => Get.context!.l10n.cardMinimalExoticDesc;
 
   @override
   double getHeight(bool isDesktop) =>

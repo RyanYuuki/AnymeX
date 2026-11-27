@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -589,7 +590,7 @@ class Media {
     }
 
     String formatDate(String? rawDate) {
-      if (rawDate == null || rawDate.trim().isEmpty) return 'Unknown release';
+      if (rawDate == null || rawDate.trim().isEmpty) return Get.context!.l10n.unknownRelease;
       final cleanStr = rawDate.trim();
       final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(cleanStr);
       if (match != null) {
@@ -872,7 +873,7 @@ class Media {
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
       title: parsedSimklTitle,
       romajiTitle: simklTitle,
-      description: json['overview'] ?? 'No description available.',
+      description: json['overview'] ?? Get.context!.l10n.noDescriptionAvailable2,
       poster: json['poster'] != null
           ? 'https://wsrv.nl/?url=https://simkl.in/posters/${json['poster']}_m.jpg'
           : '',
@@ -1040,7 +1041,7 @@ class Media {
       title: parsedSimklSmallTitle,
       romajiTitle: simklSmallTitle,
       description:
-          json['overview'] ?? json['plot'] ?? 'No description available.',
+          json['overview'] ?? json['plot'] ?? Get.context!.l10n.noDescriptionAvailable2,
       poster: posterUrl,
       largePoster: posterUrl,
       cover: json['fanart'] != null
@@ -1074,7 +1075,7 @@ class Media {
       id: manga.url ?? '',
       title: titleStr,
       romajiTitle: titleStr,
-      description: manga.description ?? "No description available.",
+      description: manga.description ?? Get.context!.l10n.noDescriptionAvailable2,
       poster: manga.cover ?? "",
       cover: manga.cover,
       totalEpisodes: manga.episodes?.length.toString() ?? '??',
@@ -1104,7 +1105,7 @@ class Media {
       id: manga.url ?? '',
       title: titleStr,
       romajiTitle: titleStr,
-      description: manga.description ?? "No description available.",
+      description: manga.description ?? Get.context!.l10n.noDescriptionAvailable2,
       poster: manga.cover ?? "",
       cover: manga.cover,
       totalEpisodes: manga.episodes?.length.toString() ?? '??',
@@ -1567,7 +1568,7 @@ class Media {
       title: json['title'] ?? 'Unknown Title',
       romajiTitle: json['title'] ?? 'Unknown Title',
       description:
-          json['reason'] ?? json['description'] ?? 'No description available.',
+          json['reason'] ?? json['description'] ?? Get.context!.l10n.noDescriptionAvailable2,
       poster: json['cover'] ?? json['poster'] ?? '',
       cover: json['cover'] ?? json['banner'] ?? '',
       totalEpisodes: json['episodes']?.toString() ?? '?',

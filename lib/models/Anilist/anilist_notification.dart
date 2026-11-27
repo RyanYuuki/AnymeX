@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 
 enum AnilistNotificationKind {
@@ -51,25 +53,25 @@ class AnilistNotificationItem {
   String get displayTitle {
     switch (kind) {
       case AnilistNotificationKind.airing:
-        return mediaTitle ?? 'Anime Airing';
+        return mediaTitle ?? Get.context!.l10n.notifAnimeAiring;
       case AnilistNotificationKind.social:
-        return userName ?? 'Social Alert';
+        return userName ?? Get.context!.l10n.notifSocialAlert;
       case AnilistNotificationKind.activity:
         return userName ?? 'Activity';
       case AnilistNotificationKind.system:
-        return mediaTitle ?? 'System Notification';
+        return mediaTitle ?? Get.context!.l10n.notifSystemNotification;
     }
   }
 
   String get displayBody {
     if (type.contains('AIRING')) {
       if (episode != null && mediaTitle != null) {
-        return 'Episode $episode of $mediaTitle has aired.';
+        return Get.context!.l10n.notifEpisodeAired(episode.toString(), mediaTitle.toString());
       }
       if (contexts != null && contexts!.isNotEmpty) {
         return contexts!.join('');
       }
-      return 'New episode aired.';
+      return Get.context!.l10n.notifNewEpisodeAired;
     }
     if (contextText != null && contextText!.isNotEmpty) {
       if (userName != null && !contextText!.startsWith(userName!)) {
@@ -78,24 +80,24 @@ class AnilistNotificationItem {
       return contextText!;
     }
     if (type.contains('FOLLOWING')) {
-      return '${userName ?? 'Someone'} followed you.';
+      return Get.context!.l10n.notifFollowedYou(userName ?? Get.context!.l10n.someone);
     }
     if (type.contains('LIKE')) {
-      return '${userName ?? 'Someone'} liked your activity.';
+      return Get.context!.l10n.notifLikedActivity(userName ?? Get.context!.l10n.someone);
     }
     if (type.contains('REPLY')) {
-      return '${userName ?? 'Someone'} replied to your activity.';
+      return Get.context!.l10n.notifRepliedActivity(userName ?? Get.context!.l10n.someone);
     }
     if (type.contains('MENTION')) {
-      return '${userName ?? 'Someone'} mentioned you.';
+      return Get.context!.l10n.notifMentionedYou(userName ?? Get.context!.l10n.someone);
     }
     if (type.contains('MESSAGE')) {
-      return '${userName ?? 'Someone'} sent you a message.';
+      return Get.context!.l10n.notifSentMessage(userName ?? Get.context!.l10n.someone);
     }
     if (reason != null && reason!.isNotEmpty) {
       return reason!;
     }
-    return 'New update on AniList.';
+    return Get.context!.l10n.notifNewUpdate;
   }
 
   String? get thumbnail => mediaCover ?? userAvatar;

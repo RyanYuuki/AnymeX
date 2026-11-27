@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -371,11 +372,11 @@ String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {
   if (difference.inDays <= 14 && difference.inDays >= 0) {
     if (difference.inDays == 0) {
       if (difference.inHours < 1) {
-        return "${difference.inMinutes} minutes ago";
+        return Get.context!.l10n.minutesAgoLong(difference.inMinutes);
       }
-      return "${difference.inHours} hours ago";
+      return Get.context!.l10n.hoursAgoLong(difference.inHours);
     }
-    return "${difference.inDays} days ago";
+    return Get.context!.l10n.daysAgoLong(difference.inDays);
   }
 
   return DateFormat(format).format(dateTime);
@@ -570,13 +571,13 @@ String formatTimeAgo(int millisecondsSinceEpoch) {
   final difference = now.difference(date);
 
   if (difference.inSeconds < 60) {
-    return "${difference.inSeconds} seconds ago";
+    return Get.context!.l10n.secondsAgoLong(difference.inSeconds);
   } else if (difference.inMinutes < 60) {
-    return "${difference.inMinutes} minutes ago";
+    return Get.context!.l10n.minutesAgoLong(difference.inMinutes);
   } else if (difference.inHours < 24) {
-    return "${difference.inHours} hours ago";
+    return Get.context!.l10n.hoursAgoLong(difference.inHours);
   } else if (difference.inDays < 7) {
-    return "${difference.inDays} days ago";
+    return Get.context!.l10n.daysAgoLong(difference.inDays);
   } else {
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }

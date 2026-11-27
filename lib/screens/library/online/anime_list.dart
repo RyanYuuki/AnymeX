@@ -388,7 +388,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               ..._SortMode.values.map((mode) {
                 final selected = _sortMode == mode;
                 final label = {
-                  _SortMode.lastUpdated: 'Last Updated',
+                  _SortMode.lastUpdated: Get.context!.l10n.lastUpdated,
                   _SortMode.score: 'Score',
                   _SortMode.title: context.l10n.title,
                   _SortMode.releaseDate: 'Release Date',
@@ -525,8 +525,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                           borderRadius: BorderRadius.circular(14))),
                   child: AnymeXText(
                     tempSelected.isEmpty
-                        ? 'Show All'
-                        : 'Apply (${tempSelected.length})',
+                        ? context.l10n.showAll
+                        : context.l10n.applyCount(tempSelected.length),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -739,8 +739,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
               AnymeXText(_selectedGenres.isNotEmpty
-                  ? 'Filter genres (${_selectedGenres.length})'
-                  : 'Filter genres'),
+                  ? context.l10n.filterGenresCount(_selectedGenres.length)
+                  : context.l10n.filterGenres),
             ],
           ),
         ),
@@ -790,7 +790,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
       showHeader: true,
       headerTitle: widget.title ?? 'Anime List',
       headerSubtitle: _selectedGenres.isNotEmpty
-          ? '${_selectedGenres.length} genre(s) filtered'
+          ? context.l10n.genresFilteredCount(_selectedGenres.length)
           : '${activeMediaList.length} Anime',
       headerEnableSearch: true,
       headerSearchController: _searchController,
@@ -827,8 +827,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                         const SizedBox(height: 12),
                         AnymeXText(
                           _searchQuery.isNotEmpty || _selectedGenres.isNotEmpty
-                              ? 'No matches found'
-                              : 'No entries in $tab',
+                              ? context.l10n.noMatchesFound
+                              : context.l10n.noEntriesInTab(tab),
                           style: TextStyle(
                               color: colors.onSurfaceVariant.withOpacity(0.6)),
                         ),

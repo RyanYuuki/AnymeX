@@ -41,7 +41,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         if (mounted) {
           setState(() {
             isLoading = false;
-            error = "Could not find watch order for '${widget.title}'";
+            error = context.l10n.couldNotFindWatchOrderFor(widget.title);
           });
         }
         return;

@@ -422,11 +422,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     icon: _mediaTypeFilter == 0
                         ? HugeIcons.strokeRoundedFolderLibrary
                         : HugeIcons.strokeRoundedBookOpen01,
-                    message:
-                        'No downloaded ${_mediaTypeFilter == 0 ? 'anime' : 'manga'}',
+                    message: _mediaTypeFilter == 0
+                        ? context.l10n.noDownloadedAnime
+                        : context.l10n.noDownloadedManga,
                     subtitle: _mediaTypeFilter == 0
-                        ? 'Downloaded episodes will appear here'
-                        : 'Downloaded chapters will appear here',
+                        ? context.l10n.downloadedEpisodesAppearHere
+                        : context.l10n.downloadedChaptersAppearHere,
                   )
                 : Builder(builder: (ctx) {
                     final screenWidth = MediaQuery.of(ctx).size.width;
@@ -1202,7 +1203,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                               size: 20, color: theme.onPrimary),
                           const SizedBox(width: 8),
                           AnymeXText(
-                            'Download ${controller.selectedEpisodes.length} Episode${controller.selectedEpisodes.length > 1 ? 's' : ''}',
+                            context.l10n.downloadEpisodesCount(
+                                controller.selectedEpisodes.length),
                             size: 15,
                             variant: TextVariant.semiBold,
                             color: theme.onPrimary,
@@ -1270,7 +1272,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           size: 14, color: theme.primary),
                       const SizedBox(width: 6),
                       AnymeXText(
-                        '${controller.filteredChapters.length} chapters available',
+                        context.l10n.chaptersAvailableCount(
+                            controller.filteredChapters.length),
                         size: 12,
                         color: theme.primary,
                       ),
@@ -1317,17 +1320,17 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildQuickSelectBtn(
-                          'Next 10', () => controller.selectNextChapters(10)),
+                      _buildQuickSelectBtn(context.l10n.next10,
+                          () => controller.selectNextChapters(10)),
                       const SizedBox(width: 8),
-                      _buildQuickSelectBtn(
-                          'Next 20', () => controller.selectNextChapters(20)),
+                      _buildQuickSelectBtn(context.l10n.next20,
+                          () => controller.selectNextChapters(20)),
                       const SizedBox(width: 8),
-                      _buildQuickSelectBtn(
-                          'Next 100', () => controller.selectNextChapters(100)),
+                      _buildQuickSelectBtn(context.l10n.next100,
+                          () => controller.selectNextChapters(100)),
                       const SizedBox(width: 8),
-                      _buildQuickSelectBtn(
-                          'Custom Range', () => _showRangeDialog(controller)),
+                      _buildQuickSelectBtn(context.l10n.customRange,
+                          () => _showRangeDialog(controller)),
                     ],
                   ),
                 ),
@@ -1476,7 +1479,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                               size: 20, color: theme.onPrimary),
                           const SizedBox(width: 8),
                           AnymeXText(
-                            'Download ${controller.selectedChapters.length} Chapter${controller.selectedChapters.length > 1 ? 's' : ''}',
+                            context.l10n.downloadChaptersCount(
+                                controller.selectedChapters.length),
                             size: 15,
                             variant: TextVariant.semiBold,
                             color: theme.onPrimary,
@@ -1542,8 +1546,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 },
                 child: Obx(() => AnymeXText(
                       controller.disabledSourceIds.isEmpty
-                          ? 'Disable All'
-                          : 'Enable All',
+                          ? context.l10n.disableAll
+                          : context.l10n.enableAll,
                       color: theme.primary,
                       variant: TextVariant.semiBold,
                     )),
@@ -1710,7 +1714,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
               const SizedBox(height: 20),
               _buildRoundedInput(
                 label: controller.selectByIndex.value
-                    ? 'Start Index'
+                    ? context.l10n.startIndex
                     : 'Start Chapter',
                 onChanged: (val) {
                   start = double.tryParse(val) ?? start;
@@ -1719,7 +1723,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
               const SizedBox(height: 12),
               _buildRoundedInput(
                 label: controller.selectByIndex.value
-                    ? 'End Index'
+                    ? context.l10n.endIndex
                     : 'End Chapter',
                 onChanged: (val) {
                   end = double.tryParse(val) ?? end;

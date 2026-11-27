@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:async';
 
 import 'package:anymex/utils/theme_extensions.dart';
@@ -143,7 +144,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     if (widget.searchQuery.isEmpty) {
       if (mounted) {
         setState(() {
-          searchResult.errorMessage = 'Search query is empty';
+          searchResult.errorMessage = context.l10n.searchQueryIsEmpty;
           searchResult.state = TestState.completed;
         });
       }
@@ -175,8 +176,8 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       if (mounted) {
         setState(() {
           contentResult.errorMessage = widget.itemType == ItemType.anime
-              ? 'No episodes available'
-              : 'No chapters available';
+              ? context.l10n.noEpisodesAvailable
+              : context.l10n.noChaptersAvailable;
           contentResult.state = TestState.completed;
         });
       }
@@ -245,7 +246,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
           const SizedBox(height: 16),
           if (widget.testType == 'ping')
             _buildResultDisplay(
-              'Ping',
+              context.l10n.pingLabel,
               pingResult,
               (r) => '${r.time}ms',
               theme,
@@ -255,7 +256,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
             _buildResultDisplay(
               'Search',
               searchResult,
-              (r) => '${r.size} results in ${r.time}ms',
+              (r) => context.l10n.resultsInMs2(r.size, r.time),
               theme,
             ),
           if (widget.testType == 'full') ...[
@@ -263,7 +264,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
             _buildResultDisplay(
               _getEpisodeLabel(),
               detailResult,
-              (r) => '${r.size} ${_getEpisodeLabel()} in ${r.time}ms',
+              (r) => context.l10n.itemsInMs2(r.size, _getEpisodeLabel(), r.time),
               theme,
             ),
             if (widget.itemType != ItemType.novel) ...[
@@ -271,7 +272,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
               _buildResultDisplay(
                 _getServerLabel(),
                 contentResult,
-                (r) => '${r.size} ${_getServerLabel()} in ${r.time}ms',
+                (r) => context.l10n.itemsInMs2(r.size, _getServerLabel(), r.time),
                 theme,
               ),
             ],
@@ -293,9 +294,9 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
     bool isLoading = result.state == TestState.running;
 
     if (isLoading) {
-      text = 'Testing...';
+      text = context.l10n.testingEllipsis;
     } else if (result.state == TestState.notStarted) {
-      text = 'Not tested';
+      text = context.l10n.notTested;
     } else {
       if (result.errorMessage != null) {
         text = 'Error: ${result.errorMessage}';
@@ -407,9 +408,9 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
       case ItemType.anime:
         return 'Servers';
       case ItemType.manga:
-        return 'Pages';
+        return context.l10n.pagesLabel;
       case ItemType.novel:
-        return 'Content';
+        return context.l10n.contentLabel;
     }
   }
 }

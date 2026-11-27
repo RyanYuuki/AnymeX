@@ -205,7 +205,7 @@ class GistSyncController extends GetxController {
 
         if (token == null || token.isEmpty) {
           final ghError =
-              data['error_description'] ?? data['error'] ?? 'Unknown error';
+              data['error_description'] ?? data['error'] ?? Get.context!.l10n.unknownErrorShort;
           Logger.i('[GistSync] Token exchange error: $ghError');
           errorSnackBar(Get.context!.l10n.githubLoginFailed(ghError.toString()));
           return;
@@ -365,15 +365,15 @@ class GistSyncController extends GetxController {
           : ' · $entryCount ${entryCount == 1 ? 'entry' : 'entries'}';
       successSnackBar(
         isInitializeAction
-            ? 'Cloud gist initialized in ${_formatElapsed(stopwatch.elapsedMilliseconds)}$countLabel.'
-            : 'Progress synced in ${_formatElapsed(stopwatch.elapsedMilliseconds)}$countLabel.',
+            ? Get.context!.l10n.cloudGistInitializedIn(_formatElapsed(stopwatch.elapsedMilliseconds), countLabel)
+            : Get.context!.l10n.progressSyncedIn(_formatElapsed(stopwatch.elapsedMilliseconds), countLabel),
       );
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
         isInitializeAction
-            ? 'Initialization failed after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.'
-            : 'Sync failed after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+            ? Get.context!.l10n.initializationFailedAfter(_formatElapsed(stopwatch.elapsedMilliseconds))
+            : Get.context!.l10n.syncFailedAfter(_formatElapsed(stopwatch.elapsedMilliseconds)),
       );
     } finally {
       stopwatch.stop();
@@ -409,11 +409,11 @@ class GistSyncController extends GetxController {
       lastSyncError.value = null;
 
       successSnackBar(
-          'Deleted AnymeX sync gist in ${_formatElapsed(elapsed)}.');
+          Get.context!.l10n.deletedSyncGistIn(_formatElapsed(elapsed)));
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Failed to delete sync gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        Get.context!.l10n.failedToDeleteSyncGistAfter(_formatElapsed(stopwatch.elapsedMilliseconds)),
       );
     } finally {
       stopwatch.stop();
@@ -446,7 +446,7 @@ class GistSyncController extends GetxController {
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Failed to fetch cloud gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        Get.context!.l10n.failedToFetchCloudGistAfter(_formatElapsed(stopwatch.elapsedMilliseconds)),
       );
       return null;
     } finally {
@@ -525,7 +525,7 @@ class GistSyncController extends GetxController {
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Failed to import sync data after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        Get.context!.l10n.failedToImportSyncDataAfter(_formatElapsed(stopwatch.elapsedMilliseconds)),
       );
       return null;
     } finally {
@@ -572,12 +572,12 @@ class GistSyncController extends GetxController {
         if (removeResult == GistRemoveResult.removed) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncSuccess(
-            'Cloud entry removed in ${_formatElapsed(elapsedMs)}.',
+            Get.context!.l10n.cloudEntryRemovedIn(_formatElapsed(elapsedMs)),
           );
         } else if (removeResult == GistRemoveResult.notFound) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncInfo(
-            'No cloud entry found to remove (${_formatElapsed(elapsedMs)}).',
+            Get.context!.l10n.noCloudEntryToRemove(_formatElapsed(elapsedMs)),
           );
         } else {
           _markSyncFailure(
@@ -585,7 +585,7 @@ class GistSyncController extends GetxController {
             durationMs: elapsedMs,
           );
           _notifyExitSyncError(
-            'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
+            Get.context!.l10n.cloudEntryRemovalFailedAfter(_formatElapsed(elapsedMs)),
           );
         }
         return;
@@ -610,7 +610,7 @@ class GistSyncController extends GetxController {
       if (synced) {
         _markSyncSuccess(durationMs: elapsedMs);
         _notifyExitSyncSuccess(
-          'Cloud sync successful in ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudSyncSuccessfulIn(_formatElapsed(elapsedMs)),
         );
       } else {
         _markSyncFailure(
@@ -618,7 +618,7 @@ class GistSyncController extends GetxController {
           durationMs: elapsedMs,
         );
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudSyncFailedAfter(_formatElapsed(elapsedMs)),
         );
       }
     } catch (e) {
@@ -626,11 +626,11 @@ class GistSyncController extends GetxController {
       _markSyncFailure(e, durationMs: elapsedMs);
       if (isCompleted) {
         _notifyExitSyncError(
-          'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudEntryRemovalFailedAfter(_formatElapsed(elapsedMs)),
         );
       } else {
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudSyncFailedAfter(_formatElapsed(elapsedMs)),
         );
       }
       Logger.i('[GistSync] syncEpisodeProgressOnExit: $e');
@@ -667,12 +667,12 @@ class GistSyncController extends GetxController {
         if (removeResult == GistRemoveResult.removed) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncSuccess(
-            'Cloud entry removed in ${_formatElapsed(elapsedMs)}.',
+            Get.context!.l10n.cloudEntryRemovedIn(_formatElapsed(elapsedMs)),
           );
         } else if (removeResult == GistRemoveResult.notFound) {
           _markSyncSuccess(durationMs: elapsedMs);
           _notifyExitSyncInfo(
-            'No cloud entry found to remove (${_formatElapsed(elapsedMs)}).',
+            Get.context!.l10n.noCloudEntryToRemove(_formatElapsed(elapsedMs)),
           );
         } else {
           _markSyncFailure(
@@ -680,7 +680,7 @@ class GistSyncController extends GetxController {
             durationMs: elapsedMs,
           );
           _notifyExitSyncError(
-            'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
+            Get.context!.l10n.cloudEntryRemovalFailedAfter(_formatElapsed(elapsedMs)),
           );
         }
         return;
@@ -707,7 +707,7 @@ class GistSyncController extends GetxController {
       if (synced) {
         _markSyncSuccess(durationMs: elapsedMs);
         _notifyExitSyncSuccess(
-          'Cloud sync successful in ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudSyncSuccessfulIn(_formatElapsed(elapsedMs)),
         );
       } else {
         _markSyncFailure(
@@ -715,7 +715,7 @@ class GistSyncController extends GetxController {
           durationMs: elapsedMs,
         );
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudSyncFailedAfter(_formatElapsed(elapsedMs)),
         );
       }
     } catch (e) {
@@ -723,11 +723,11 @@ class GistSyncController extends GetxController {
       _markSyncFailure(e, durationMs: elapsedMs);
       if (isCompleted) {
         _notifyExitSyncError(
-          'Cloud entry removal failed after ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudEntryRemovalFailedAfter(_formatElapsed(elapsedMs)),
         );
       } else {
         _notifyExitSyncError(
-          'Cloud sync failed after ${_formatElapsed(elapsedMs)}.',
+          Get.context!.l10n.cloudSyncFailedAfter(_formatElapsed(elapsedMs)),
         );
       }
       Logger.i('[GistSync] syncChapterProgressOnExit: $e');

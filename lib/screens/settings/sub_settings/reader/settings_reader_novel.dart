@@ -72,10 +72,10 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
       items: const [0, 1, 2, 3],
       selectedItem: _novelThemeMode.obs,
       getTitle: (value) => switch (value) {
-        0 => 'Light',
-        1 => 'Dark',
-        2 => 'Sepia',
-        _ => 'System',
+        0 => context.l10n.themeLight,
+        1 => context.l10n.dark,
+        2 => context.l10n.novelThemeSepia,
+        _ => context.l10n.themeSystem,
       },
       onItemSelected: (value) {
         setState(() {
@@ -211,7 +211,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'The wind swept quietly across the lantern-lit courtyard as the final bell echoed through the valley.',
+                  context.l10n.novelPreviewLine1,
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
                     fontSize: _novelFontSize,
@@ -223,7 +223,7 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                 ),
                 SizedBox(height: _novelParagraphSpacing.clamp(4.0, 24.0)),
                 Text(
-                  'He adjusted his coat and stepped forward into the mist.',
+                  context.l10n.novelPreviewLine2,
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
                     fontSize: _novelFontSize,
@@ -264,10 +264,10 @@ class _SettingsReaderNovelState extends State<SettingsReaderNovel> {
                     icon: Icons.palette_rounded,
                     title: context.l10n.labelTheme,
                     subtitle: switch (_novelThemeMode) {
-                      0 => 'Light',
-                      1 => 'Dark',
-                      2 => 'Sepia',
-                      _ => 'System',
+                      0 => context.l10n.themeLight,
+                      1 => context.l10n.dark,
+                      2 => context.l10n.novelThemeSepia,
+                      _ => context.l10n.themeSystem,
                     },
                     onTap: _showNovelThemeDialog,
                   ),

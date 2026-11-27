@@ -316,7 +316,7 @@ class _DictionarySheetState extends State<_DictionarySheet> {
       } else {
         if (mounted) {
           setState(() {
-            _error = 'No definition found for "${widget.word}"';
+            _error = context.l10n.noDefinitionFoundForWord(widget.word);
             _loading = false;
           });
         }
@@ -324,7 +324,7 @@ class _DictionarySheetState extends State<_DictionarySheet> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Could not reach dictionary.';
+          _error = context.l10n.couldNotReachDictionary;
           _loading = false;
         });
       }

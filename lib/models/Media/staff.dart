@@ -1,3 +1,5 @@
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/media.dart';
 
@@ -127,10 +129,7 @@ class Staff {
     final List<String> parts = [];
   
     if (month != null) {
-      const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ];
+      final months = [Get.context!.l10n.janShort, Get.context!.l10n.febShort, Get.context!.l10n.marShort, Get.context!.l10n.aprShort, Get.context!.l10n.mayShort, Get.context!.l10n.junShort, Get.context!.l10n.julShort, Get.context!.l10n.augShort, Get.context!.l10n.sepShort, Get.context!.l10n.octShort, Get.context!.l10n.novShort, Get.context!.l10n.decShort];
       parts.add(months[month - 1]);
     }
     if (day != null) parts.add(day.toString());
@@ -143,8 +142,8 @@ class Staff {
   static String? _parseYearsActive(List<dynamic>? years) {
     if (years == null || years.isEmpty) return null;
     if (years.length == 1) {
-      return '${years[0]}-Present';
+      return '${years[0]}-${Get.context!.l10n.presentLabel}';
     }
-    return '${years[0]}-${years[1] ?? "Present"}';
+    return '${years[0]}-${years[1] ?? Get.context!.l10n.presentLabel}';
   }
 }

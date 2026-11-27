@@ -577,9 +577,9 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         return 'Finished';
       case 'NOT_YET_RELEASED':
       case 'NOT_YET_AIRED':
-        return 'Upcoming';
+        return context.l10n.upcomingLabel;
       case 'HIATUS':
-        return 'On Hiatus';
+        return context.l10n.onHiatus;
       case 'CANCELLED':
         return 'Cancelled';
       default:
@@ -775,8 +775,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                         size: 16, color: colors.onSecondaryContainer),
                     const SizedBox(width: 8),
                     AnymeXText(widget.reasons!.length == 1
-                          ? 'View recommendation'
-                          : 'View all ${widget.reasons!.length} recommendations',
+                          ? context.l10n.viewRecommendation
+                          : context.l10n.viewAllRecommendations(widget.reasons!.length),
                       variant: TextVariant.semiBold,
                       size: 13,
                       color: colors.onSecondaryContainer,

@@ -103,7 +103,10 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
 
   Widget _buildTabBar(ColorScheme cs, ThemeData theme,
       {required bool hasSource, required bool hasInbuilt}) {
-    final tabs = [if (hasSource) 'Source', if (hasInbuilt) 'Inbuilt'];
+    final tabs = [
+      if (hasSource) context.l10n.source,
+      if (hasInbuilt) context.l10n.tabInbuilt,
+    ];
     final icons = [
       if (hasSource) Icons.cloud_rounded,
       if (hasInbuilt) Icons.high_quality_rounded
@@ -112,8 +115,8 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
     if (tabs.isEmpty) return const SizedBox.shrink();
 
     final activeIndex = switch (_currentTab) {
-      _AudioTab.source => tabs.indexOf('Source'),
-      _AudioTab.inbuilt => tabs.indexOf('Inbuilt'),
+      _AudioTab.source => tabs.indexOf(context.l10n.source),
+      _AudioTab.inbuilt => tabs.indexOf(context.l10n.tabInbuilt),
     };
 
     return Padding(
@@ -125,7 +128,7 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
         onTabSelected: (index) {
           setState(() {
             final selectedTabName = tabs[index];
-            _currentTab = selectedTabName == 'Source'
+            _currentTab = selectedTabName == context.l10n.source
                 ? _AudioTab.source
                 : _AudioTab.inbuilt;
           });
@@ -137,8 +140,8 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
   Widget _buildSourceAudio(
       ColorScheme cs, ThemeData theme, List<dynamic> externalAudios) {
     if (externalAudios.isEmpty) {
-      return _buildEmpty(
-          cs, theme, Icons.cloud_off_rounded, 'No source audio tracks');
+      return _buildEmpty(cs, theme, Icons.cloud_off_rounded,
+          context.l10n.noSourceAudioTracks);
     }
 
     final selectedFile = widget.controller.selectedExternalAudio.value?.file;
@@ -153,8 +156,9 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
         selectedItem: selectedItem,
         getTitle: (track) =>
             track == null ? 'Default' : (track.label ?? 'Track'),
-        getSubtitle: (track) =>
-            track == null ? 'Default Source Audio' : 'External Audio Stream',
+        getSubtitle: (track) => track == null
+            ? context.l10n.defaultSourceAudio
+            : context.l10n.externalAudioStream,
         getIcon: (track) => Icons.audiotrack_rounded,
         onItemPressed: (track) => widget.controller.setExternalAudio(track),
         lazy: true,
@@ -172,17 +176,17 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
         audioTrackItems.where((t) => t.id != 'no' && t.id != 'auto').toList();
     if (realTracks.isEmpty) {
       return _buildEmpty(
-          cs, theme, Icons.music_off_rounded, 'No inbuilt audio tracks');
+          cs, theme, Icons.music_off_rounded, context.l10n.noInbuiltAudioTracks);
     }
 
     final selected = widget.controller.selectedAudioTrack.value;
     final selectedLayout = widget.controller.selectedAudioChannelLayout.value;
 
     final layouts = [
-      ('mono', 'Mono', '1 Channel'),
-      ('stereo', 'Stereo', '2 Channels'),
-      ('5.1', '5.1 Surround', '6 Channels'),
-      ('7.1', '7.1 Surround', '8 Channels'),
+      ('mono', context.l10n.audioMono, context.l10n.channelsCount(1)),
+      ('stereo', context.l10n.audioStereo, context.l10n.channelsCount(2)),
+      ('5.1', context.l10n.audio51Surround, context.l10n.channelsCount(6)),
+      ('7.1', context.l10n.audio71Surround, context.l10n.channelsCount(8)),
     ];
 
     AudioTrack? selectedAudioTrackItem = selected;
@@ -219,8 +223,8 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
                 return 'Audio Track';
               },
               getSubtitle: (t) {
-                if (t.id == 'no') return 'Mute Audio';
-                if (t.id == 'auto') return 'Default Audio';
+                if (t.id == 'no') return context.l10n.muteAudio;
+                if (t.id == 'auto') return context.l10n.defaultAudio;
                 return 'Audio Track';
               },
               getIcon: (t) => t.id == 'no'

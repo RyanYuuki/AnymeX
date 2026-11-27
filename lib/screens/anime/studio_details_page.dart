@@ -194,8 +194,8 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                 snackBar(Get.context!.l10n.failedToUpdateAnilist);
                               } else {
                                 snackBar(isFav.value
-                                    ? "Added to Favorites"
-                                    : "Removed from Favorites");
+                                    ? context.l10n.addedToFavorites
+                                    : context.l10n.removedFromFavorites);
                               }
                             },
                             child: Container(
@@ -344,8 +344,8 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               padding: const EdgeInsets.only(top: 40),
               child: Center(
                 child: AnymeXText(showOnlyOnList.value
-                      ? "No media found on your list"
-                      : "No media found",
+                      ? context.l10n.noMediaFoundOnYourList
+                      : context.l10n.noMediaFound,
                   variant: TextVariant.semiBold,
                   color: theme.onSurface.withOpacity(0.5),
                 ),

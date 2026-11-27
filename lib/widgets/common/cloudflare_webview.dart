@@ -271,7 +271,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                                   _synced ? colors.primary : colors.onSurface,
                             ),
                             label: AnymeXText(
-                              _synced ? 'Synced!' : 'Sync Cookies',
+                              _synced ? context.l10n.syncedExclaim : context.l10n.syncCookies,
                               style: TextStyle(
                                 fontSize: 13,
                                 color:

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
@@ -62,13 +63,13 @@ class _DictionaryPopupState extends State<DictionaryPopup>
         });
       } else {
         setState(() {
-          _error = 'No definition found';
+          _error = context.l10n.noDefinitionFound;
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to fetch definition';
+        _error = context.l10n.failedToFetchDefinition;
         _isLoading = false;
       });
     }

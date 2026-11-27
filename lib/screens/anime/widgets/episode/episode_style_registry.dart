@@ -56,7 +56,7 @@ class EpisodeStyleRegistry {
   static final List<EpisodeStyle> _styles = [
     EpisodeStyle(
       id: 'minimal',
-      name: 'Minimal',
+      name: Get.context!.l10n.styleMinimal,
       description:
           Get.context!.l10n.simpleLayoutDisplayingEpisodeNumberTitle,
       styleType: EpisodeStyleType.minimal,
@@ -71,7 +71,7 @@ class EpisodeStyleRegistry {
     ),
     EpisodeStyle(
       id: 'detailed',
-      name: 'Detailed',
+      name: Get.context!.l10n.styleDetailed,
       description:
           Get.context!.l10n.fullWidthDetailedCardWithLarge,
       styleType: EpisodeStyleType.detailed,

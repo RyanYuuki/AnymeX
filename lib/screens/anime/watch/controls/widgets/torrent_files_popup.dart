@@ -92,7 +92,8 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
 
     if (torrent != null) {
       if (torrent.totalPeers > 0 || torrent.connectedSeeders > 0) {
-        parts.add('${torrent.connectedSeeders}/${torrent.totalPeers} peers');
+        parts.add(context.l10n
+            .peersRatio('${torrent.connectedSeeders}', '${torrent.totalPeers}'));
       }
       if (torrent.downloadSpeed > 0) {
         parts.add(_formatSpeed(torrent.downloadSpeed));
@@ -141,7 +142,9 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
                   size: 48, color: colors.onSurfaceVariant),
               const SizedBox(height: 12),
               AnymeXText(
-                _searchQuery.isEmpty ? 'No video files found' : 'No matching files',
+                _searchQuery.isEmpty
+                    ? context.l10n.noVideoFilesFound
+                    : context.l10n.noMatchingFiles,
                 size: 15,
                 variant: TextVariant.semiBold,
               ),

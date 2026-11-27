@@ -75,8 +75,8 @@ enum DualPageMode {
   @override
   String toString() => switch (this) {
         DualPageMode.off => 'Off',
-        DualPageMode.auto => 'Auto (Landscape)',
-        DualPageMode.force => 'Force (Always)',
+        DualPageMode.auto => Get.context!.l10n.orientationAutoLandscape,
+        DualPageMode.force => Get.context!.l10n.forceAlways,
       };
 }
 
@@ -1168,7 +1168,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             _isNavigating = true;
             snackBar(
               title: Get.context!.l10n.lastChapter,
-              "There are no more chapters.",
+              Get.context!.l10n.noMoreChapters,
             );
             Future.delayed(
                 const Duration(seconds: 2), () => _isNavigating = false);
@@ -1188,7 +1188,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             _isNavigating = true;
             snackBar(
               title: Get.context!.l10n.firstChapter,
-              "This is the first chapter.",
+              Get.context!.l10n.thisIsFirstChapter,
             );
             Future.delayed(
                 const Duration(seconds: 2), () => _isNavigating = false);
@@ -2054,12 +2054,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       if (next) {
         snackBar(
           title: Get.context!.l10n.lastChapter,
-          "There are no more chapters.",
+          Get.context!.l10n.noMoreChapters,
         );
       } else {
         snackBar(
           title: Get.context!.l10n.firstChapter,
-          "This is the first chapter.",
+          Get.context!.l10n.thisIsFirstChapter,
         );
       }
     }

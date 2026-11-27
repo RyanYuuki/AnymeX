@@ -166,9 +166,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   ? 'Edit your comment...'
                   : (replyingTo != null
                       ? (replyingTo.deleted
-                          ? 'Reply to thread...'
-                          : 'Reply to @${replyingTo.username}...')
-                      : 'Add a comment...'),
+                          ? context.l10n.replyToThreadHint
+                          : context.l10n.replyToUserHint(replyingTo.username))
+                      : context.l10n.addCommentHint),
               submitIcon:
                   editingComment != null ? Icons.check_rounded : null,
               leadingWidget: Padding(
