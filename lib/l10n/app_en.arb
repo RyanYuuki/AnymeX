@@ -7401,5 +7401,253 @@
   "gridViewLabel": "Grid view",
   "notFollowingAnyone": "Not following anyone",
   "noFollowers": "No followers",
-  "closeSearch": "Close search"
+  "closeSearch": "Close search",
+  "searchTimedOut": "Search timed out. Please try again.",
+  "serviceNotAvailable": "Service not available. Please try later.",
+  "somethingWentWrongTryAgain": "Something went wrong. Please try again.",
+  "searchTargetEllipsis": "Search {target}...",
+  "@searchTargetEllipsis": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "srcLabel": "Src",
+  "anyLabel": "Any",
+  "durationMins": "Duration (mins)",
+  "unknownService": "Unknown Service",
+  "pleaseTryAgainLater": "Please try again later",
+  "tryAdjustingSearchFilters": "Try adjusting your search terms or filters",
+  "myMangaOnly": "My Manga Only",
+  "hideMyManga": "Hide My Manga",
+  "myAnimeOnly": "My Anime Only",
+  "hideMyAnime": "Hide My Anime",
+  "minEpValue": "Min Ep: {value}",
+  "@minEpValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "maxEpValue": "Max Ep: {value}",
+  "@maxEpValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "minChapValue": "Min Chap: {value}",
+  "@minChapValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "maxChapValue": "Max Chap: {value}",
+  "@maxChapValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "extensionResetFiltersNote": "Note: If the extension supports reset to load filters and it doesn't work, try searching something first or open WebView. If that doesn't work, then click the 'Reset' button to load filters.",
+  "includeLabel": "Include",
+  "excludeLabel": "Exclude",
+  "scoreDesc": "Score ↓",
+  "scoreAsc": "Score ↑",
+  "popularityDesc": "Popularity ↓",
+  "popularityAsc": "Popularity ↑",
+  "trendingDesc": "Trending ↓",
+  "trendingAsc": "Trending ↑",
+  "titleAZ": "Title A-Z",
+  "titleZA": "Title Z-A",
+  "notYetAired": "Not Yet Aired",
+  "tvShowLabel": "TV Show",
+  "seasonWinter": "❄️ Winter",
+  "seasonSpring": "🌸 Spring",
+  "seasonSummer": "☀️ Summer",
+  "seasonFall": "🍂 Fall",
+  "publishingStatus": "Publishing Status",
+  "airingStatus": "Airing Status",
+  "rangeEps": "{start} – {end} eps",
+  "@rangeEps": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "rangeMin": "{start} – {end} min",
+  "@rangeMin": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "rangeChapters": "{start} – {end} chapters",
+  "@rangeChapters": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "rangeVolumes": "{start} – {end} volumes",
+  "@rangeVolumes": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "editTagsCount": "Edit Tags ({count})",
+  "@editTagsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addTags": "Add Tags",
+  "editPlatformsCount": "Edit Platforms ({count})",
+  "@editPlatformsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "editServicesCount": "Edit Services ({count})",
+  "@editServicesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectReadingPlatform": "Select Reading Platform",
+  "selectStreamingService": "Select Streaming Service",
+  "myMangaOnlyEmoji": "📖 My Manga Only",
+  "myAnimeOnlyEmoji": "📺 My Anime Only",
+  "hideMyMangaEmoji": "🚫 Hide My Manga",
+  "hideMyAnimeEmoji": "🚫 Hide My Anime",
+  "selectSort": "Select Sort",
+  "oldLabel": "Old",
+  "applyFiltersCount": "APPLY FILTERS ({count})",
+  "@applyFiltersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noTagsAvailable": "No Tags Available",
+  "noMatchingTags": "No Matching Tags",
+  "couldNotLoadTagsApi": "Could not load tags from AniList API.\nThe service may be temporarily unavailable or rate-limited.",
+  "noTagsMatchSearchTerm": "No tags match your search term.",
+  "noOptionsAvailable": "No Options Available",
+  "couldNotLoadOptionsApi": "Could not load options from AniList API.\nThe service may be temporarily unavailable or rate-limited.",
+  "allLanguages": "All Languages",
+  "selectOptionLower": "Select option",
+  "selectMultiple": "Select multiple",
+  "confirmDeleteCacheCookiesFor": "Are you sure you want to delete cache and cookies for {name}?",
+  "@confirmDeleteCacheCookiesFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteCookiesCloudflareFor": "Are you sure you want to delete saved cookies and Cloudflare tokens for {name}?",
+  "@confirmDeleteCookiesCloudflareFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteTempCacheFor": "Are you sure you want to delete temporary cache for {name}?",
+  "@confirmDeleteTempCacheFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "toggleSetting": "Toggle setting",
+  "selectOptionTitle": "Select Option",
+  "selectOptionsTitle": "Select Options",
+  "editTextLower": "Edit text",
+  "editTextTitle": "Edit Text",
+  "unknownPreference": "Unknown Preference",
+  "searchQueryIsEmpty": "Search query is empty",
+  "noEpisodesAvailable": "No episodes available",
+  "noChaptersAvailable": "No chapters available",
+  "pingLabel": "Ping",
+  "resultsInMs": "{count} results in {time}ms",
+  "@resultsInMs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "time": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsInMs": "{count} {label} in {time}ms",
+  "@itemsInMs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      },
+      "time": {
+        "type": "int"
+      }
+    }
+  },
+  "notTested": "Not tested",
+  "contentLabel": "Content",
+  "basicLabel": "Basic",
+  "latestPluginRelease": "Latest Plugin Release",
+  "pluginRelease": "Plugin Release",
+  "localSyncedJar": "Local Synced Jar",
+  "pluginInstalledSuccess": "Plugin installed successfully.",
+  "pluginUpdatedSuccess": "Plugin updated successfully.",
+  "noChangelogProvided": "No changelog provided for this release.",
+  "pluginSetup": "Plugin Setup",
+  "pluginUpdateAvailable": "Plugin Update Available",
+  "installedVersion": "Installed version",
+  "latestVersion": "Latest version",
+  "fileSizeLabel": "File size",
+  "sizePlusJre": "{size} + ~60 MB JRE",
+  "@sizePlusJre": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadAndInstall": "Download & Install"
 }

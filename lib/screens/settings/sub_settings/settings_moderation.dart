@@ -1443,7 +1443,7 @@ class _UserListPageState extends State<UserListPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    context.l10n.usersOfTotalCount(users.length, totalUsers),
+                    context.l10n.usersOfTotalCount(users.length, totalUsers.value),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,

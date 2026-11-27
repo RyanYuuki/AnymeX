@@ -85,7 +85,7 @@ class JsonPlayerControlTheme extends PlayerControlTheme {
         validRawThemes.add(rawTheme);
         warnings.addAll(_collectUnsupportedThemeItemWarnings(rawTheme, def.id));
       } catch (error) {
-        errors.add(Get.context!.l10n.themeIndexInvalid('${i + 1}', '$error'));
+        errors.add(Get.context!.l10n.themeIndexInvalid(i + 1, '$error'));
       }
     }
 
@@ -2449,7 +2449,7 @@ List<Map<String, dynamic>> _normalizeRawThemeList(
   for (var i = 0; i < rawThemes.length; i++) {
     final rawTheme = rawThemes[i];
     if (rawTheme is! Map) {
-      errors.add(Get.context!.l10n.themeIndexNotObject('${i + 1}'));
+      errors.add(Get.context!.l10n.themeIndexNotObject(i + 1));
       continue;
     }
     out.add(_asMap(rawTheme));

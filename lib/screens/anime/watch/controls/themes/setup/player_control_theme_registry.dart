@@ -163,7 +163,7 @@ class PlayerControlThemeRegistry {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       return PlayerThemeImportResult.failure(
-        Get.context!.l10n.themeUrlRespondedHttp('${response.statusCode}'),
+        Get.context!.l10n.themeUrlRespondedHttp(response.statusCode),
       );
     }
 

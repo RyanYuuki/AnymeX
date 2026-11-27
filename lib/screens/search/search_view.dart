@@ -684,11 +684,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         error.toString().contains('connection')) {
       return 'Network error. Please check your connection.';
     } else if (error.toString().contains('timeout')) {
-      return 'Search timed out. Please try again.';
+      return context.l10n.searchTimedOut;
     } else if (error.toString().contains('404')) {
-      return 'Service not available. Please try later.';
+      return context.l10n.serviceNotAvailable;
     } else {
-      return 'Something went wrong. Please try again.';
+      return context.l10n.somethingWentWrongTryAgain;
     }
   }
 
@@ -758,8 +758,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   Widget _buildModernSearchBar() {
     final hintText = _selectedSource != null
-        ? 'Search ${_selectedSource!.name}...'
-        : 'Search ${effectiveType.name.capitalizeFirst}...';
+        ? context.l10n.searchTargetEllipsis(_selectedSource!.name ?? '')
+        : context.l10n
+            .searchTargetEllipsis(effectiveType.name.capitalizeFirst ?? '');
 
     final colors = Theme.of(context).colorScheme;
 
@@ -824,7 +825,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     for (final src in installedSources)
                       PillItem(
                         label:
-                            '${src.name ?? "Src"} (${src.lang?.toUpperCase() ?? "ALL"})',
+                            '${src.name ?? context.l10n.srcLabel} (${src.lang?.toUpperCase() ?? "ALL"})',
                         iconUrl: src.iconUrl,
                         isSelected: _selectedSource?.id == src.id,
                         onTap: () {
@@ -1164,7 +1165,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         skipKeys.add('${baseKey}Lesser');
 
         final greater = _activeFilters['${baseKey}Greater'] ?? 0;
-        final lesser = _activeFilters['${baseKey}Lesser'] ?? 'Any';
+        final lesser =
+            _activeFilters['${baseKey}Lesser'] ?? context.l10n.anyLabel;
 
         String display;
         if (baseKey == 'year') {
@@ -1190,7 +1192,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       addRangeChip('volume', 'Volumes');
     } else {
       addRangeChip('episode', 'Episodes');
-      addRangeChip('duration', 'Duration (mins)');
+      addRangeChip('duration', context.l10n.durationMins);
     }
 
     _activeFilters.forEach((key, value) {
@@ -1201,7 +1203,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         if (key == 'licensedBy') {
           final Map<String, List<int>> groupedPlatforms = {};
           for (var item in value) {
-            String name = currentServiceMap[item] ?? 'Unknown Service';
+            String name =
+                currentServiceMap[item] ?? context.l10n.unknownService;
             groupedPlatforms.putIfAbsent(name, () => []).add(item as int);
           }
           groupedPlatforms.forEach((name, ids) {
@@ -1376,13 +1379,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymeXText.bold(
-            'Oops! Something went wrong',
+          AnymeXText.bold(
+            context.l10n.oopsSomethingWentWrong,
             size: 18,
           ),
           const SizedBox(height: 8),
           AnymeXText.regular(
-            _errorMessage ?? 'Please try again later',
+            _errorMessage ?? context.l10n.pleaseTryAgainLater,
             textAlign: TextAlign.center,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -1430,7 +1433,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 8),
           AnymeXText.regular(
-            'Try adjusting your search terms or filters',
+            context.l10n.tryAdjustingSearchFilters,
             textAlign: TextAlign.center,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -1682,9 +1685,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     switch (key) {
       case 'onList':
         if (isManga) {
-          return value == true ? "My Manga Only" : "Hide My Manga";
+          return value == true
+              ? context.l10n.myMangaOnly
+              : context.l10n.hideMyManga;
         }
-        return value == true ? "My Anime Only" : "Hide My Anime";
+        return value == true
+            ? context.l10n.myAnimeOnly
+            : context.l10n.hideMyAnime;
 
       case 'status':
         return value.toString();
@@ -1705,13 +1712,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         return "Year: $value";
 
       case 'episodeGreater':
-        return "Min Ep: $value";
+        return context.l10n.minEpValue(value.toString());
       case 'episodeLesser':
-        return "Max Ep: $value";
+        return context.l10n.maxEpValue(value.toString());
       case 'chapterGreater':
-        return "Min Chap: $value";
+        return context.l10n.minChapValue(value.toString());
       case 'chapterLesser':
-        return "Max Chap: $value";
+        return context.l10n.maxChapValue(value.toString());
 
       default:
         return value.toString();

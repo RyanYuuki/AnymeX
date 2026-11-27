@@ -33,40 +33,42 @@ class SearchFilterConstants {
   }
 
   static String formatSort(String sortBy) {
+    final l10n = Get.context!.l10n;
     switch (sortBy) {
       case 'SCORE_DESC':
-        return 'Score ↓';
+        return l10n.scoreDesc;
       case 'SCORE':
-        return 'Score ↑';
+        return l10n.scoreAsc;
       case 'POPULARITY_DESC':
-        return 'Popularity ↓';
+        return l10n.popularityDesc;
       case 'POPULARITY':
-        return 'Popularity ↑';
+        return l10n.popularityAsc;
       case 'TRENDING_DESC':
-        return 'Trending ↓';
+        return l10n.trendingDesc;
       case 'TRENDING':
-        return 'Trending ↑';
+        return l10n.trendingAsc;
       case 'START_DATE_DESC':
-        return 'Newest';
+        return l10n.sortNewest;
       case 'START_DATE':
-        return 'Oldest';
+        return l10n.sortOldest;
       case 'TITLE_ROMAJI':
-        return 'Title A-Z';
+        return l10n.titleAZ;
       case 'TITLE_ROMAJI_DESC':
-        return 'Title Z-A';
+        return l10n.titleZA;
       default:
         return sortBy;
     }
   }
 
   static String formatStatus(String status, {bool isManga = false}) {
+    final l10n = Get.context!.l10n;
     switch (status) {
       case 'FINISHED':
         return 'Finished';
       case 'RELEASING':
         return isManga ? 'Releasing' : 'Airing';
       case 'NOT_YET_RELEASED':
-        return isManga ? 'Not Yet Released' : 'Not Yet Aired';
+        return isManga ? l10n.notYetReleased : l10n.notYetAired;
       case 'HIATUS':
         return 'Hiatus';
       case 'CANCELLED':
@@ -91,7 +93,7 @@ class SearchFilterConstants {
     } else {
       switch (format) {
         case 'TV':
-          return 'TV Show';
+          return Get.context!.l10n.tvShowLabel;
         case 'TV_SHORT':
           return 'TV Short';
         case 'MOVIE':
@@ -316,22 +318,22 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
     return pairs;
   }
 
-  final Map<String, String> animeStatusLabels = {
-    'FINISHED': 'Finished',
-    'RELEASING': 'Airing',
-    'NOT_YET_RELEASED': 'Not Yet Aired',
-    'CANCELLED': 'Cancelled',
-    'HIATUS': 'Hiatus',
-  };
-  final Map<String, String> mangaStatusLabels = {
-    'FINISHED': 'Finished',
-    'RELEASING': 'Releasing',
-    'NOT_YET_RELEASED': 'Not Yet Released',
-    'HIATUS': 'Hiatus',
-    'CANCELLED': 'Cancelled',
-  };
-  final Map<String, String> animeFormatLabels = {
-    'TV': 'TV Show',
+  Map<String, String> get animeStatusLabels => {
+        'FINISHED': 'Finished',
+        'RELEASING': 'Airing',
+        'NOT_YET_RELEASED': context.l10n.notYetAired,
+        'CANCELLED': 'Cancelled',
+        'HIATUS': 'Hiatus',
+      };
+  Map<String, String> get mangaStatusLabels => {
+        'FINISHED': 'Finished',
+        'RELEASING': 'Releasing',
+        'NOT_YET_RELEASED': context.l10n.notYetReleased,
+        'HIATUS': 'Hiatus',
+        'CANCELLED': 'Cancelled',
+      };
+  Map<String, String> get animeFormatLabels => {
+        'TV': context.l10n.tvShowLabel,
     'TV_SHORT': 'TV Short',
     'MOVIE': 'Movie',
     'SPECIAL': 'Special',
@@ -890,10 +892,10 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             value: selectedSeason,
             options: seasons,
             optionLabels: {
-              'WINTER': '❄️ Winter',
-              'SPRING': '🌸 Spring',
-              'SUMMER': '☀️ Summer',
-              'FALL': '🍂 Fall',
+              'WINTER': context.l10n.seasonWinter,
+              'SPRING': context.l10n.seasonSpring,
+              'SUMMER': context.l10n.seasonSummer,
+              'FALL': context.l10n.seasonFall,
             },
             onChanged: (value) => setState(() => selectedSeason = value),
             icon: Icons.calendar_today_rounded,
@@ -901,7 +903,9 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           const SizedBox(height: 12),
         ],
         _buildNeonSelector(
-          hint: isManga ? 'Publishing Status' : 'Airing Status',
+          hint: isManga
+              ? context.l10n.publishingStatus
+              : context.l10n.airingStatus,
           value: selectedStatus,
           options: statuses,
           optionLabels: statusLabels,
@@ -1008,8 +1012,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (useEpisodeRange) ...[
           const SizedBox(height: 8),
           _buildRangeSlider(
-            label:
-                '${episodeRange.start.toInt()} – ${episodeRange.end.toInt() >= _maxEpisodes.toInt() ? "${_maxEpisodes.toInt()}+" : episodeRange.end.toInt()} eps',
+            label: context.l10n.rangeEps(
+                episodeRange.start.toInt().toString(),
+                episodeRange.end.toInt() >= _maxEpisodes.toInt()
+                    ? '${_maxEpisodes.toInt()}+'
+                    : '${episodeRange.end.toInt()}'),
             values: episodeRange,
             min: 0,
             max: _maxEpisodes,
@@ -1026,8 +1033,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (useDurationRange) ...[
           const SizedBox(height: 8),
           _buildRangeSlider(
-            label:
-                '${durationRange.start.toInt()} – ${durationRange.end.toInt() >= _maxDuration.toInt() ? "${_maxDuration.toInt()}+" : durationRange.end.toInt()} min',
+            label: context.l10n.rangeMin(
+                durationRange.start.toInt().toString(),
+                durationRange.end.toInt() >= _maxDuration.toInt()
+                    ? '${_maxDuration.toInt()}+'
+                    : '${durationRange.end.toInt()}'),
             values: durationRange,
             min: 0,
             max: _maxDuration,
@@ -1052,8 +1062,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (useChaptersRange) ...[
           const SizedBox(height: 8),
           _buildRangeSlider(
-            label:
-                '${chaptersRange.start.toInt()} – ${chaptersRange.end.toInt() >= _maxChapters.toInt() ? "${_maxChapters.toInt()}+" : chaptersRange.end.toInt()} chapters',
+            label: context.l10n.rangeChapters(
+                chaptersRange.start.toInt().toString(),
+                chaptersRange.end.toInt() >= _maxChapters.toInt()
+                    ? '${_maxChapters.toInt()}+'
+                    : '${chaptersRange.end.toInt()}'),
             values: chaptersRange,
             min: 0,
             max: _maxChapters,
@@ -1070,8 +1083,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (useVolumesRange) ...[
           const SizedBox(height: 8),
           _buildRangeSlider(
-            label:
-                '${volumesRange.start.toInt()} – ${volumesRange.end.toInt() >= _maxVolumes.toInt() ? "${_maxVolumes.toInt()}+" : volumesRange.end.toInt()} volumes',
+            label: context.l10n.rangeVolumes(
+                volumesRange.start.toInt().toString(),
+                volumesRange.end.toInt() >= _maxVolumes.toInt()
+                    ? '${_maxVolumes.toInt()}+'
+                    : '${volumesRange.end.toInt()}'),
             values: volumesRange,
             min: 0,
             max: _maxVolumes,
@@ -1246,8 +1262,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 const SizedBox(width: 8),
                 AnymeXText(
                   hasSelected
-                      ? 'Edit Tags (${selectedTags.length})'
-                      : 'Add Tags',
+                      ? context.l10n.editTagsCount(selectedTags.length)
+                      : context.l10n.addTags,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: hasSelected
@@ -1328,11 +1344,13 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 AnymeXText(
                   hasSelected
                       ? (isManga
-                          ? 'Edit Platforms (${selectedStreamingOn.length})'
-                          : 'Edit Services (${selectedStreamingOn.length})')
+                          ? context.l10n
+                              .editPlatformsCount(selectedStreamingOn.length)
+                          : context.l10n
+                              .editServicesCount(selectedStreamingOn.length))
                       : (isManga
-                          ? 'Select Reading Platform'
-                          : 'Select Streaming Service'),
+                          ? context.l10n.selectReadingPlatform
+                          : context.l10n.selectStreamingService),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: hasSelected
@@ -1359,14 +1377,18 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           runSpacing: 12,
           children: [
             _buildToggleChip(
-                label: isManga ? '📖 My Manga Only' : '📺 My Anime Only',
+                label: isManga
+                    ? context.l10n.myMangaOnlyEmoji
+                    : context.l10n.myAnimeOnlyEmoji,
                 value: onlyShowMine,
                 onTap: () => setState(() {
                       onlyShowMine = !onlyShowMine;
                       if (onlyShowMine) hideMine = false;
                     })),
             _buildToggleChip(
-                label: isManga ? '🚫 Hide My Manga' : '🚫 Hide My Anime',
+                label: isManga
+                    ? context.l10n.hideMyMangaEmoji
+                    : context.l10n.hideMyAnimeEmoji,
                 value: hideMine,
                 onTap: () => setState(() {
                       hideMine = !hideMine;
@@ -1602,7 +1624,8 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final hasValue = selectedSortBy != null;
-    final displayText = hasValue ? selectedSortBy! : 'Select Sort';
+    final displayText =
+        hasValue ? selectedSortBy! : context.l10n.selectSort;
 
     return Container(
       decoration: BoxDecoration(
@@ -1754,9 +1777,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       case 'Score':
       case 'Popularity':
       case 'Trending':
-        return isDescending ? 'High' : 'Low';
+        return isDescending
+            ? context.l10n.intensityHigh
+            : context.l10n.intensityLow;
       case 'Start Date':
-        return isDescending ? 'New' : 'Old';
+        return isDescending ? context.l10n.newLabel : context.l10n.oldLabel;
       default:
         return isDescending ? 'DESC' : 'ASC';
     }
@@ -1778,7 +1803,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           flex: 2,
           child: _buildNeonButton(
             text: _getActiveFilterCount() > 0
-                ? 'APPLY FILTERS (${_getActiveFilterCount()})'
+                ? context.l10n.applyFiltersCount(_getActiveFilterCount())
                 : 'APPLY FILTERS',
             icon: Icons.check_rounded,
             isPrimary: true,
@@ -1943,11 +1968,11 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                   child: filtered.isEmpty
                       ? _buildEmptyOptionsState(context,
                           title: allTags.isEmpty
-                              ? 'No Tags Available'
-                              : 'No Matching Tags',
+                              ? context.l10n.noTagsAvailable
+                              : context.l10n.noMatchingTags,
                           message: allTags.isEmpty
-                              ? 'Could not load tags from AniList API.\nThe service may be temporarily unavailable or rate-limited.'
-                              : 'No tags match your search term.')
+                              ? context.l10n.couldNotLoadTagsApi
+                              : context.l10n.noTagsMatchSearchTerm)
                       : ListView.builder(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                           physics: const BouncingScrollPhysics(),
@@ -2137,9 +2162,9 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
   }
 
   Widget _buildEmptyOptionsState(BuildContext context,
-      {String title = 'No Options Available',
-      String message =
-          'Could not load options from AniList API.\nThe service may be temporarily unavailable or rate-limited.'}) {
+      {String? title, String? message}) {
+    final resolvedTitle = title ?? context.l10n.noOptionsAvailable;
+    final resolvedMessage = message ?? context.l10n.couldNotLoadOptionsApi;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -2156,7 +2181,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              title,
+              resolvedTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
@@ -2164,7 +2189,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             ),
             const SizedBox(height: 6),
             AnymeXText(
-              message,
+              resolvedMessage,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
