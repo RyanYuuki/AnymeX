@@ -25,8 +25,8 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/database.dart';
-import 'package:anymex/database/kv_helper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
@@ -212,6 +212,8 @@ void main(List<String> args) async {
 
     await safeCall(() => Database().init(),
         errorMessage: 'CRITICAL: Database initialization failed');
+    await safeCall(() => migrateNovelReaderKeys(),
+        errorMessage: 'Failed to migrate novel reader settings');
 
     HttpOverrides.global = MyHttpoverrides();
 
