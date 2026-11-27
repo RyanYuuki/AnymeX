@@ -2500,6 +2500,56 @@ class AnilistAuth extends GetxController {
     }
   }
 
+  /// Resolves the AniList media id for a MAL id, preferring the local list
+  /// before falling back to a public AniList lookup. Returns null if no
+  /// matching media exists.
+  Future<String?> resolveMediaIdFromMalId(String malId,
+      {required bool isAnime}) async {
+    final malIdInt = int.tryParse(malId);
+    if (malIdInt == null || malIdInt <= 0) return null;
+
+    final targetList = isAnime ? animeList.value : mangaList.value;
+    final localMatch =
+        targetList.firstWhereOrNull((media) => media.idMal == malId);
+    final localId = localMatch?.id;
+    if (localId != null && localId.isNotEmpty) {
+      return localId;
+    }
+
+    try {
+      final response = await _client.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'query': r'''
+            query ResolveMediaId($idMal: Int, $type: MediaType) {
+              Media(idMal: $idMal, type: $type) {
+                id
+              }
+            }
+          ''',
+          'variables': {
+            'idMal': malIdInt,
+            'type': isAnime ? 'ANIME' : 'MANGA',
+          },
+        }),
+      );
+      if (response.statusCode != 200) {
+        Logger.i(
+            'Could not resolve AniList id for MAL id $malId (${response.statusCode})');
+        return null;
+      }
+      final data = json.decode(response.body);
+      return data['data']?['Media']?['id']?.toString();
+    } catch (e) {
+      Logger.i('Could not resolve AniList id for MAL id $malId: $e');
+      return null;
+    }
+  }
+
   Future<void> updateListEntry({
     required String listId,
     String? malId,
@@ -2510,6 +2560,7 @@ class AnilistAuth extends GetxController {
     DateTime? startedAt,
     DateTime? completedAt,
     bool? isPrivate,
+    bool crossSync = true,
   }) async {
     final token = AuthKeys.authToken.get<String?>();
     if (token == null || !isLoggedIn.value) {
@@ -2588,7 +2639,10 @@ class AnilistAuth extends GetxController {
       final matched = targetList.firstWhereOrNull((m) => m.id == listId || m.mediaListId == listId);
       final effectiveMalId = malId ?? matched?.idMal;
 
-      if (effectiveMalId != null && effectiveMalId.isNotEmpty && serviceHandler.malService.isLoggedIn.value) {
+      if (crossSync &&
+          effectiveMalId != null &&
+          effectiveMalId.isNotEmpty &&
+          serviceHandler.malService.isLoggedIn.value) {
         try {
           await serviceHandler.malService.updateListEntry(UpdateListEntryParams(
               listId: effectiveMalId,
@@ -2603,7 +2657,9 @@ class AnilistAuth extends GetxController {
         }
       }
 
-      if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
+      if (crossSync &&
+          isAnime &&
+          serviceHandler.simklService.isLoggedIn.value) {
         try {
           await serviceHandler.simklService.updateListEntryFromExternalId(
             anilistId: listId,

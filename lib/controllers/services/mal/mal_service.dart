@@ -959,31 +959,39 @@ class MalService extends GetxController implements BaseService, OnlineService {
       fetchUserMangaList();
     }
 
+    String? resolvedAnilistId;
     if ((params.syncIds?.isNotEmpty ?? false) && params.syncIds?[0] != null) {
       if (serviceHandler.anilistService.isLoggedIn.value) {
-        try {
-          await serviceHandler.anilistService.updateListEntry(
-              UpdateListEntryParams(
-                  listId: params.syncIds![0],
-                  score: score,
-                  status: status,
-                  progress: progress,
-                  isAnime: isAnime,
-                  startedAt: startedAt,
-                  completedAt: completedAt));
-        } catch (e) {
-          Logger.i('AniList cross-sync failed: $e');
+        final malId = params.syncIds![0];
+        final anilistId = await serviceHandler.anilistService
+            .resolveMediaIdFromMalId(malId, isAnime: isAnime);
+        resolvedAnilistId = anilistId;
+        if (anilistId == null) {
+          Logger.i('Skipping AniList cross-sync: no match for MAL id $malId');
+        } else {
+          try {
+            await serviceHandler.anilistService.updateListEntry(
+                UpdateListEntryParams(
+                    listId: anilistId,
+                    score: score,
+                    status: status,
+                    progress: progress,
+                    isAnime: isAnime,
+                    startedAt: startedAt,
+                    completedAt: completedAt,
+                    crossSync: false));
+          } catch (e) {
+            Logger.i('AniList cross-sync failed: $e');
+          }
         }
       }
     }
 
     if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
-      final anilistId =
-          (params.syncIds?.isNotEmpty ?? false) ? params.syncIds![0] : null;
       try {
         await serviceHandler.simklService.updateListEntryFromExternalId(
           malId: listId,
-          anilistId: anilistId,
+          anilistId: resolvedAnilistId,
           score: score,
           status: status,
           progress: progress,

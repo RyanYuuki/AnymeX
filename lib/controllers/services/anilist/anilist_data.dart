@@ -1746,6 +1746,10 @@ averageScore
   @override
   Rx<Profile> get profileData => anilistAuth.profileData;
 
+  Future<String?> resolveMediaIdFromMalId(String malId,
+          {required bool isAnime}) =>
+      anilistAuth.resolveMediaIdFromMalId(malId, isAnime: isAnime);
+
   @override
   Future<void> updateListEntry(UpdateListEntryParams params) =>
       anilistAuth.updateListEntry(
@@ -1757,7 +1761,8 @@ averageScore
           isAnime: params.isAnime,
           startedAt: params.startedAt,
           completedAt: params.completedAt,
-          isPrivate: params.isPrivate);
+          isPrivate: params.isPrivate,
+          crossSync: params.crossSync);
 
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async =>
