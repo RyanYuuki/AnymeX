@@ -535,14 +535,14 @@ class HeaderSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final VoidCallback onClose;
-  final String hintText;
+  final String? hintText;
 
   const HeaderSearchBar({
     super.key,
     required this.controller,
     required this.onChanged,
     required this.onClose,
-    this.hintText = 'Search...',
+    this.hintText,
   });
 
   @override
@@ -573,7 +573,7 @@ class HeaderSearchBar extends StatelessWidget {
             autofocus: true,
             style: const TextStyle(fontSize: 14, fontFamily: 'Linotte'),
             decoration: InputDecoration(
-              hintText: hintText,
+              hintText: hintText ?? context.l10n.searchEllipsis,
               hintStyle: TextStyle(
                 color: context.colors.onSurface.withOpacity(0.4),
                 fontSize: 14,
@@ -738,7 +738,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
   late final TabController _tabController;
   int _selectedIndex = 0;
 
-  static const _tabs = ['Sort Options', 'Layout Settings'];
+  List<String> get _tabs => [Get.context!.l10n.sortOptions, Get.context!.l10n.layoutSettings];
 
   void _onTabChanged() {
     if (!mounted) return;

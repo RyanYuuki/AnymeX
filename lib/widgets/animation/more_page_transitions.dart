@@ -319,37 +319,37 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                   child: ListView(
                     children: [
                       _buildCard(
-                        'Slide Up Gentle',
-                        'Perfect for most pages - subtle and smooth',
+                        context.l10n.transSlideUpGentle,
+                        context.l10n.transSlideUpGentleDesc,
                         Colors.blue,
                         () =>
                             _triggerAnimation(PageEntranceStyle.slideUpGentle),
                       ),
                       const SizedBox(height: 16),
                       _buildCard(
-                        'Elastic Bounce',
-                        'Fun bouncy animation with elastic curve',
+                        context.l10n.transElasticBounce,
+                        context.l10n.transElasticBounceDesc,
                         Colors.purple,
                         () => _triggerAnimation(PageEntranceStyle.elastic),
                       ),
                       const SizedBox(height: 16),
                       _buildCard(
-                        'Smooth Fade',
-                        'Simple fade in - minimal and clean',
+                        context.l10n.transSmoothFade,
+                        context.l10n.transSmoothFadeDesc,
                         Colors.green,
                         () => _triggerAnimation(PageEntranceStyle.smooth),
                       ),
                       const SizedBox(height: 16),
                       _buildCard(
-                        'Bouncy Scale',
-                        'Scale + slide with bounce effect',
+                        context.l10n.transBouncyScale,
+                        context.l10n.transBouncyScaleDesc,
                         Colors.orange,
                         () => _triggerAnimation(PageEntranceStyle.bouncy),
                       ),
                       const SizedBox(height: 16),
                       _buildCard(
-                        'Professional',
-                        'Quick, clean animation for business apps',
+                        context.l10n.transProfessional,
+                        context.l10n.transProfessionalDesc,
                         Colors.teal,
                         () => _triggerAnimation(PageEntranceStyle.professional),
                       ),

@@ -74,26 +74,12 @@ class _UserStatsPageState extends State<UserStatsPage> {
   int _dayKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
 
   String _dayName(int weekday) {
-    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final names = [context.l10n.monShort, context.l10n.tueShort, context.l10n.wedShort, context.l10n.thuShort, context.l10n.friShort, context.l10n.satShort, context.l10n.sunShort];
     return names[(weekday - 1) % 7];
   }
 
   String _monthLabel(int month) {
-    const labels = [
-      '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
+    final labels = ['', context.l10n.janShort, context.l10n.febShort, context.l10n.marShort, context.l10n.aprShort, context.l10n.mayShort, context.l10n.junShort, context.l10n.julShort, context.l10n.augShort, context.l10n.sepShort, context.l10n.octShort, context.l10n.novShort, context.l10n.decShort];
     return labels[month];
   }
 

@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'dart:ui';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/utils/function.dart';
@@ -18,7 +19,7 @@ class AnymeXHeader extends StatefulWidget {
   final ValueChanged<String>? onSearchChanged;
   final ValueChanged<String>? onSearchSubmitted;
   final VoidCallback? onSearchClear;
-  final String searchHint;
+  final String? searchHint;
 
   const AnymeXHeader({
     super.key,
@@ -32,7 +33,7 @@ class AnymeXHeader extends StatefulWidget {
     this.onSearchChanged,
     this.onSearchSubmitted,
     this.onSearchClear,
-    this.searchHint = 'Search...',
+    this.searchHint,
   });
 
   @override
@@ -311,7 +312,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.transparent,
-                hintText: widget.searchHint,
+                hintText: widget.searchHint ?? context.l10n.searchEllipsis,
                 hintStyle: TextStyle(
                   color: theme.colorScheme.onSurface.opaque(0.45),
                   fontSize: 13.5,

@@ -239,16 +239,14 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'Extension Not Supported for Rooms',
+                        context.l10n.extensionNotSupportedForRooms,
                         variant: TextVariant.semiBold,
                         size: 13,
                         color: cs.error,
                       ),
                       const SizedBox(height: 4),
                       AnymeXText(
-                        'This extension routes video through an internal device proxy or IP-locked stream that cannot be shared with friends.\n\n'
-                        'Please switch to a different extension to host a Watch Together room. If you need help or recommendations for working extensions, feel free to ask in our Discord or Telegram support channels.\n\n'
-                        'We are working on a solution to support all extensions in an upcoming update.',
+                        '${context.l10n.watchiumProxyCannotShare}\n\n${context.l10n.watchiumSwitchExtensionHelp}\n\n${context.l10n.watchTogetherUpcomingSupportNote}',
                         size: 11,
                         color: cs.onSurface.opaque(0.75),
                       ),

@@ -374,8 +374,8 @@ void showDiscordJoinDialog(BuildContext context) {
                 children: [
                   AnymeXText(
                     isUnlocked
-                        ? 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nYou have already visited our social links, so the Okay button is unlocked.'
-                        : 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nOnce you click to join one of them, the Okay button below will unlock.',
+                        ? context.l10n.welcomeDiscordMovedUnlocked
+                        : context.l10n.welcomeDiscordMovedLocked,
                     size: 14,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     textAlign: TextAlign.center,

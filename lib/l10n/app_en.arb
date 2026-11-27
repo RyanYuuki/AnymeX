@@ -8729,5 +8729,86 @@
         "type": "int"
       }
     }
-  }
+  },
+  "welcomeDiscordMovedUnlocked": "Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nYou have already visited our social links, so the Okay button is unlocked.",
+  "welcomeDiscordMovedLocked": "Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nOnce you click to join one of them, the Okay button below will unlock.",
+  "watchiumProxyCannotShare": "This extension routes video through an internal device proxy or IP-locked stream that cannot be shared with friends.",
+  "watchiumSwitchExtensionHelp": "Please switch to a different extension to host a Watch Together room. If you need help or recommendations for working extensions, feel free to ask in our Discord or Telegram support channels.",
+  "sortOptions": "Sort Options",
+  "layoutSettings": "Layout Settings",
+  "searchEllipsis": "Search...",
+  "compatTplSSS": "Absolute soulmates in taste with {range} overlap.",
+  "@compatTplSSS": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplSS": "Practically made for each other with {range} overlap.",
+  "@compatTplSS": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplS": "You both have very similar taste—about {range} agreement.",
+  "@compatTplS": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplA": "Good chemistry and shared taste with around {range} overlap.",
+  "@compatTplA": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplB": "Above-average similarity at roughly {range} overlap.",
+  "@compatTplB": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplC": "Average overlap with around {range} shared taste.",
+  "@compatTplC": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplD": "There’s a small spark of agreement: about {range} overlap.",
+  "@compatTplD": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "compatTplF": "Not very compatible at all. Only {range} of your taste overlaps.",
+  "@compatTplF": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "transSlideUpGentle": "Slide Up Gentle",
+  "transSlideUpGentleDesc": "Perfect for most pages - subtle and smooth",
+  "transElasticBounce": "Elastic Bounce",
+  "transElasticBounceDesc": "Fun bouncy animation with elastic curve",
+  "transSmoothFade": "Smooth Fade",
+  "transSmoothFadeDesc": "Simple fade in - minimal and clean",
+  "transBouncyScale": "Bouncy Scale",
+  "transBouncyScaleDesc": "Scale + slide with bounce effect",
+  "transProfessional": "Professional",
+  "transProfessionalDesc": "Quick, clean animation for business apps"
 }

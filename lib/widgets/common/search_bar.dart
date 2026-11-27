@@ -1,3 +1,4 @@
+import 'package:anymex/l10n/l10n_extension.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -21,7 +22,7 @@ class CustomSearchBar extends StatefulWidget {
   final Widget? suffixIconWidget;
   final Widget? suffixWidget;
   final bool disableIcons;
-  final String hintText;
+  final String? hintText;
   final EdgeInsets? padding;
   final bool enableGlow;
   final BoxBorder? border;
@@ -36,7 +37,7 @@ class CustomSearchBar extends StatefulWidget {
     this.prefixIcon = IconlyLight.search,
     this.suffixIcon = IconlyLight.filter,
     this.disableIcons = false,
-    this.hintText = 'Search...',
+    this.hintText,
     this.suffixWidget,
     this.suffixIconWidget,
     this.padding,
@@ -110,7 +111,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           fontFamily: 'Linotte',
         ),
         decoration: InputDecoration(
-          hintText: widget.hintText,
+          hintText: widget.hintText ?? context.l10n.searchEllipsis,
           hintStyle: TextStyle(
             color: theme.colorScheme.onSurface.opaque(0.45, iReallyMeanIt: true),
             fontSize: 14,
@@ -166,12 +167,12 @@ class TappableSearchBar extends StatelessWidget {
   final VoidCallback onSubmitted;
   final IconData prefixIcon;
   final String chipLabel;
-  final String hintText;
+  final String? hintText;
 
   const TappableSearchBar({
     super.key,
     this.prefixIcon = IconlyLight.search,
-    this.hintText = 'Search...',
+    this.hintText,
     this.chipLabel = "SEARCH",
     required this.onSubmitted,
   });
@@ -208,7 +209,7 @@ class TappableSearchBar extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: AnymeXText(
-                    hintText,
+                    hintText ?? context.l10n.searchEllipsis,
                     style: TextStyle(
                       color: theme.colorScheme.onSurface
                           .opaque(0.45, iReallyMeanIt: true),
