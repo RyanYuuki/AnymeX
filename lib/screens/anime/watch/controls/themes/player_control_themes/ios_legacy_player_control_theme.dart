@@ -95,7 +95,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
                 AnymeXText(
                   controller.currentEpisode.value.title ??
                       controller.itemName ??
-                      'Unknown Title',
+                      context.l10n.unknownTitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleSmall?.copyWith(
@@ -110,7 +110,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
                   children: [
                     _IosLegacyGlassTag(
                       text: controller.currentEpisode.value.number == 'Offline'
-                          ? 'Offline'
+                          ? context.l10n.offlineLabel
                           : 'Episode ${controller.currentEpisode.value.number}',
                     ),
                     if (((controller.anilistData.title == '?'

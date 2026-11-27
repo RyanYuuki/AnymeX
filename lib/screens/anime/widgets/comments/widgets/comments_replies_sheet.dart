@@ -766,7 +766,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     final parentUsername =
         parentComment.deleted ? 'deleted' : parentComment.username;
     final parentSnippet = parentComment.deleted
-        ? '[deleted comment]'
+        ? context.l10n.deletedCommentBracket
         : parentComment.commentText.replaceAll('\n', ' ').trim();
     final avatarCenter = avatarSize / 2;
 

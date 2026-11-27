@@ -873,8 +873,8 @@ Widget _buildRankingItem(ColorScheme colors, Ranking ranking) {
   final String subtitle = ranking.context != null && ranking.context!.isNotEmpty
       ? ranking.context!
       : (ranking.year != null && ranking.year! > 0
-          ? '#$rank in ${ranking.year}'
-          : '#$rank All Time');
+          ? Get.context!.l10n.rankInYear('$rank', '${ranking.year}')
+          : Get.context!.l10n.rankAllTime('$rank'));
 
   return Container(
     width: double.infinity,

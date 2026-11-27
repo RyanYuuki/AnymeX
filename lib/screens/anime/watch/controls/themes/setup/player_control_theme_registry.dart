@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:anymex/l10n/l10n_extension.dart';
+import 'package:get/get.dart';
+
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/default_player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/ios26_player_control_theme.dart';
@@ -146,25 +149,27 @@ class PlayerControlThemeRegistry {
   static Future<PlayerThemeImportResult> importFromUrl(String rawUrl) async {
     final uri = Uri.tryParse(rawUrl.trim());
     if (uri == null || !uri.hasScheme || !{'http', 'https'}.contains(uri.scheme)) {
-      return PlayerThemeImportResult.failure('Invalid theme URL.');
+      return PlayerThemeImportResult.failure(Get.context!.l10n.invalidThemeUrl);
     }
 
     http.Response response;
     try {
       response = await http.get(uri).timeout(_importTimeout);
     } catch (error) {
-      return PlayerThemeImportResult.failure('Failed to fetch theme JSON: $error');
+      return PlayerThemeImportResult.failure(
+        Get.context!.l10n.failedToFetchThemeJson('$error'),
+      );
     }
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       return PlayerThemeImportResult.failure(
-        'Theme URL responded with HTTP ${response.statusCode}.',
+        Get.context!.l10n.themeUrlRespondedHttp('${response.statusCode}'),
       );
     }
 
     final body = response.body.trim();
     if (body.isEmpty) {
-      return PlayerThemeImportResult.failure('Theme URL returned an empty body.');
+      return PlayerThemeImportResult.failure(Get.context!.l10n.themeUrlEmptyBody);
     }
 
     return importFromRawJson(body);

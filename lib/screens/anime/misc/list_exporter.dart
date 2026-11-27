@@ -31,7 +31,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
   Future<String?> _exportMalList() async {
     final token = AuthKeys.malAuthToken.get<String?>();
     if (token == null || token.isEmpty) {
-      throw Exception('Not logged into MyAnimeList. Please login again.');
+      throw Exception(context.l10n.notLoggedIntoMalAgain);
     }
 
     if (widget.isManga) {
@@ -46,7 +46,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
     if (trackedList.isEmpty) {
       throw Exception(
-          'No ${widget.isManga ? 'manga' : 'anime'} found in your list');
+          context.l10n.noMediaFoundInYourList(widget.isManga ? context.l10n.manga.toLowerCase() : context.l10n.anime.toLowerCase()));
     }
 
     final xml = _convertTrackedListToMalXml(trackedList, widget.isManga);
@@ -57,7 +57,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
     final token = AuthKeys.authToken.get<String?>();
 
     if (token == null) {
-      throw Exception('Not logged into AniList');
+      throw Exception(context.l10n.notLoggedIntoAnilist);
     }
 
     final anilistAuth = Get.find<AnilistAuth>();
@@ -73,7 +73,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
     if (trackedList.isEmpty) {
       throw Exception(
-          'No ${widget.isManga ? 'manga' : 'anime'} found in your list');
+          context.l10n.noMediaFoundInYourList(widget.isManga ? context.l10n.manga.toLowerCase() : context.l10n.anime.toLowerCase()));
     }
 
     final xml = _convertTrackedListToMalXml(trackedList, widget.isManga);
@@ -372,7 +372,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
               onPressed: () => Get.back(),
               icon: const Icon(Icons.arrow_back_ios_new),
             ),
-            title: AnymeXText("${widget.isManga ? context.l10n.navManga : "Anime"} List Exporter",
+            title: AnymeXText(context.l10n.listExporterTitle(widget.isManga ? context.l10n.navManga : context.l10n.anime),
               variant: TextVariant.bold,
               size: 18,
               color: colorScheme.primary,
@@ -397,8 +397,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(isLoggedIn
-                            ? "Ready to export your $serviceName ${widget.isManga ? 'Manga' : 'Anime'} list?"
-                            : "Please login to export your list",
+                            ? context.l10n.readyToExportList(serviceName, widget.isManga ? context.l10n.manga : context.l10n.anime)
+                            : context.l10n.pleaseLoginToExportList,
                         variant: TextVariant.bold,
                         size: 18,
                         color: isLoggedIn ? colorScheme.primary : Colors.red,
@@ -483,8 +483,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
                         _buildSettingsTile(
                           title: context.l10n.roundUpScores,
                           subtitle: _roundUp
-                              ? "Scores will be rounded up (e.g. 7.5 → 8)"
-                              : "Scores will be rounded down (e.g. 7.5 → 7)",
+                              ? context.l10n.scoresRoundedUp
+                              : context.l10n.scoresRoundedDown,
                           value: _roundUp,
                           onChanged: (val) => setState(() => _roundUp = val),
                         ),

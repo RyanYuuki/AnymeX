@@ -132,7 +132,7 @@ class TopControls extends StatelessWidget {
                       child: AnymeXText(
                         controller.currentEpisode.value.title ??
                             controller.itemName ??
-                            'Unknown Title',
+                            Get.context!.l10n.unknownTitle,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: Get.isDarkMode
                               ? theme.colorScheme.onSurface
@@ -189,7 +189,7 @@ class TopControls extends StatelessWidget {
                         ),
                         child: AnymeXText(
                           controller.currentEpisode.value.number == "Offline"
-                              ? "Offline"
+                              ? Get.context!.l10n.offlineLabel
                               : "Episode ${controller.currentEpisode.value.number}",
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: isDark
@@ -272,7 +272,7 @@ class TopControls extends StatelessWidget {
                             child: AnymeXText(
                               controller.currentEpisode.value.title ??
                                   controller.itemName ??
-                                  'Unknown Title',
+                                  Get.context!.l10n.unknownTitle,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: Get.isDarkMode
                                     ? theme.colorScheme.onSurface
@@ -329,7 +329,7 @@ class TopControls extends StatelessWidget {
                               child: AnymeXText(
                                 controller.currentEpisode.value.number ==
                                         "Offline"
-                                    ? "Offline"
+                                    ? Get.context!.l10n.offlineLabel
                                     : "Episode ${controller.currentEpisode.value.number}",
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: isDark
@@ -411,7 +411,7 @@ class TopControls extends StatelessWidget {
     );
     final titleText = controller.currentEpisode.value.title ??
         controller.itemName ??
-        'Unknown Title';
+        Get.context!.l10n.unknownTitle;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -507,7 +507,7 @@ class TopControls extends StatelessWidget {
                   ),
                   child: AnymeXText(
                     controller.currentEpisode.value.number == "Offline"
-                        ? "Offline"
+                        ? Get.context!.l10n.offlineLabel
                         : "Episode ${controller.currentEpisode.value.number}",
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDark

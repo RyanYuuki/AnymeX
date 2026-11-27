@@ -94,13 +94,13 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
       (widget.controller.settings.speed - _currentSpeed).abs() < 0.001;
 
   String get _speedLabel {
-    if ((_currentSpeed - 1.0).abs() < 0.001) return 'Normal speed';
-    if (_currentSpeed < 0.75) return 'Slow motion';
-    if (_currentSpeed < 1.0) return 'Relaxed pace';
-    if (_currentSpeed <= 1.25) return 'Brisk pace';
-    if (_currentSpeed <= 1.75) return 'Fast pace';
-    if (_currentSpeed <= 2.0) return 'Double speed';
-    return 'Ultra fast';
+    if ((_currentSpeed - 1.0).abs() < 0.001) return context.l10n.normalSpeed;
+    if (_currentSpeed < 0.75) return context.l10n.slowMotion;
+    if (_currentSpeed < 1.0) return context.l10n.relaxedPace;
+    if (_currentSpeed <= 1.25) return context.l10n.briskPace;
+    if (_currentSpeed <= 1.75) return context.l10n.fastPace;
+    if (_currentSpeed <= 2.0) return context.l10n.doubleSpeed;
+    return context.l10n.ultraFast;
   }
 
   void _setSpeed(double v) {
@@ -350,7 +350,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
                     ),
                     const SizedBox(width: 4),
                     AnymeXText.semiBold(
-                      'Restore defaults',
+                      context.l10n.restoreDefaults,
                       style: TextStyle(
                         fontSize: 12,
                         color: cs.onSurfaceVariant,
@@ -482,8 +482,8 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
               : Icons.star_outline_rounded,
           title: context.l10n.rememberAsDefaultSpeed,
           subtitle: _isCurrentDefault
-              ? '${_fmt(_currentSpeed)} is currently your default speed'
-              : 'Set ${_fmt(_currentSpeed)} as default for all media',
+              ? context.l10n.speedIsDefault(_fmt(_currentSpeed))
+              : context.l10n.setSpeedAsDefault(_fmt(_currentSpeed)),
           value: _isCurrentDefault,
           onChanged: (val) {
             if (val) {
@@ -541,7 +541,9 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
                     ),
                     const SizedBox(width: 8),
                     AnymeXText.semiBold(
-                      _resetDone ? 'Reset done' : 'Reset to 1×',
+                      _resetDone
+                          ? context.l10n.resetDone
+                          : context.l10n.resetTo1,
                       style: TextStyle(
                         fontSize: 14,
                         color: _resetDone ? cs.primary : cs.onSurface,

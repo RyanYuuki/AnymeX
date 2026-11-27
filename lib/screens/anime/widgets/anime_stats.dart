@@ -779,7 +779,7 @@ class AnimeStats extends StatelessWidget {
         'icon': Icons.radio_button_checked_outlined
       },
       {
-        'label': 'Popularity',
+        'label': context.l10n.popularity,
         'value': data.popularity,
         'icon': Icons.trending_up_rounded
       },
@@ -800,13 +800,13 @@ class AnimeStats extends StatelessWidget {
         'icon': Icons.timer_outlined
       },
       {
-        'label': 'Premiered',
+        'label': context.l10n.premiered,
         'value': data.premiered,
         'icon': Icons.event_outlined
       },
       if (data.studios?.isNotEmpty ?? false)
         {
-          'label': 'Studio',
+          'label': context.l10n.studio,
           'value': data.studios?.first ?? '',
           'icon': Icons.business_outlined,
           'onTap': () async {

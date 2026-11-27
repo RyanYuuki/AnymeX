@@ -25,7 +25,7 @@ class PlayerControlItemMeta {
   });
 }
 
-const List<PlayerControlItemMeta> playerControlCatalog = [
+List<PlayerControlItemMeta> get playerControlCatalog => [
   PlayerControlItemMeta(
     id: 'lock',
     name: 'Lock Controls',
@@ -64,7 +64,7 @@ const List<PlayerControlItemMeta> playerControlCatalog = [
   ),
   PlayerControlItemMeta(
     id: 'shaders',
-    name: 'Shaders',
+    name: Get.context!.l10n.shadersLabel,
     icon: Icons.tune_rounded,
     defaultSlot: 'right',
   ),
@@ -100,7 +100,7 @@ const List<PlayerControlItemMeta> playerControlCatalog = [
   ),
   PlayerControlItemMeta(
     id: 'orientation',
-    name: 'Orientation',
+    name: Get.context!.l10n.orientationLabel,
     icon: Icons.screen_rotation_rounded,
     defaultSlot: 'right',
   ),

@@ -207,8 +207,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
                           const SizedBox(height: 16),
                           AnymeXText(
                             _searchQuery.isNotEmpty
-                                ? 'No collections found'
-                                : 'No collections yet',
+                                ? context.l10n.noCollectionsFound
+                                : context.l10n.noCollectionsYet,
                             style: textTheme.bodyLarge?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -221,13 +221,16 @@ class _CustomListDialogState extends State<CustomListDialog> {
                     child: AnymeXSectionBuilder(
                       margin: EdgeInsets.zero,
                       children: filteredLists.map((list) {
-                        final listName = list.listName ?? 'Unnamed List';
+                        final listName =
+                            list.listName ?? context.l10n.unnamedList;
                         final isChecked = _isItemInList(list);
                         final itemCount = list.mediaIds?.length ?? 0;
 
                         return AnymeXTile.checkbox(
                           title: listName,
-                          subtitle: itemCount > 0 ? '$itemCount items' : 'No items',
+                          subtitle: itemCount > 0
+                              ? '$itemCount items'
+                              : context.l10n.noItems,
                           value: isChecked,
                           onChanged: (val) {
                             _handleCheckboxChanged(val, list);

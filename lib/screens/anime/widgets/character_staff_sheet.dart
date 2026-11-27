@@ -207,7 +207,7 @@ class _CharacterStaffSheetContentState
               }
 
               String sanitizedDesc =
-                  (description ?? 'No information available.')
+                  (description ?? context.l10n.noInformationAvailable)
                       .replaceAll('<br>', '\n')
                       .replaceAll('<br/>', '\n')
                       .replaceAll('<i>', '*')
@@ -367,8 +367,8 @@ class _CharacterStaffSheetContentState
                                           snackBar(Get.context!.l10n.failedToUpdateAnilist);
                                         } else {
                                           snackBar(isFav.value
-                                              ? "Added to Favorites"
-                                              : "Removed from Favorites");
+                                              ? Get.context!.l10n.addedToFavorites
+                                              : Get.context!.l10n.removedFromFavorites);
                                         }
                                       },
                                       child: Container(
@@ -473,19 +473,19 @@ class _CharacterStaffSheetContentState
                           children: [
                             if (widget.isCharacter &&
                                 fullItem is Character) ...[
-                              _buildBioRow("Gender", fullItem.gender),
-                              _buildBioRow("Age", fullItem.age),
-                              _buildBioRow("Birthday", fullItem.dateOfBirth),
-                              _buildBioRow("Blood Type", fullItem.bloodType),
+                              _buildBioRow(context.l10n.gender, fullItem.gender),
+                              _buildBioRow(context.l10n.age, fullItem.age),
+                              _buildBioRow(context.l10n.birthday, fullItem.dateOfBirth),
+                              _buildBioRow(context.l10n.bloodType, fullItem.bloodType),
                             ],
                             if (!widget.isCharacter && fullItem is Staff) ...[
-                              _buildBioRow("Birth", fullItem.dateOfBirth),
-                              _buildBioRow("Age", fullItem.age?.toString()),
-                              _buildBioRow("Gender", fullItem.gender),
+                              _buildBioRow(context.l10n.birth, fullItem.dateOfBirth),
+                              _buildBioRow(context.l10n.age, fullItem.age?.toString()),
+                              _buildBioRow(context.l10n.gender, fullItem.gender),
                               _buildBioRow(
-                                  "Years active", fullItem.yearsActive),
-                              _buildBioRow("Hometown", fullItem.homeTown),
-                              _buildBioRow("Blood Type", fullItem.bloodType),
+                                  context.l10n.yearsActive, fullItem.yearsActive),
+                              _buildBioRow(context.l10n.hometown, fullItem.homeTown),
+                              _buildBioRow(context.l10n.bloodType, fullItem.bloodType),
                               Builder(builder: (context) {
                                 if (fullItem.bloodType != null) {
                                   return const SizedBox.shrink();
@@ -503,7 +503,7 @@ class _CharacterStaffSheetContentState
 
                                 if (bloodType != null) {
                                   return _buildBioRow(
-                                      "Blood Type", bloodType.toUpperCase());
+                                      context.l10n.bloodType, bloodType.toUpperCase());
                                 }
                                 return const SizedBox.shrink();
                               }),
@@ -523,7 +523,7 @@ class _CharacterStaffSheetContentState
 
                                 if (bloodType != null) {
                                   return _buildBioRow(
-                                      "Blood Type", bloodType.toUpperCase());
+                                      context.l10n.bloodType, bloodType.toUpperCase());
                                 }
                                 return const SizedBox.shrink();
                               }),
@@ -539,7 +539,7 @@ class _CharacterStaffSheetContentState
                               }
 
                               if (height != null) {
-                                return _buildBioRow("Height", height);
+                                return _buildBioRow(context.l10n.height, height);
                               }
                               return const SizedBox.shrink();
                             }),
@@ -582,7 +582,25 @@ class _CharacterStaffSheetContentState
                                       value.startsWith("**$k"));
 
                                   if (value.isNotEmpty && !isValueAnotherKey) {
-                                    extractedRows.add(_buildBioRow(key, value));
+                                    final label = switch (key) {
+                                      "Affiliation" => context.l10n.affiliation,
+                                      "Grade" => context.l10n.grade,
+                                      "Species" => context.l10n.species,
+                                      "Abilities" => context.l10n.abilities,
+                                      "Level" => context.l10n.level,
+                                      "Family" => context.l10n.family,
+                                      "Cursed Technique" =>
+                                        context.l10n.cursedTechnique,
+                                      "Weapon" => context.l10n.weapon,
+                                      "Bounty" => context.l10n.bounty,
+                                      "Devil Fruit" => context.l10n.devilFruit,
+                                      "Nen Type" => context.l10n.nenType,
+                                      "Quirk" => context.l10n.quirk,
+                                      "Stand" => context.l10n.stand,
+                                      "Guild" => context.l10n.guild,
+                                      _ => key,
+                                    };
+                                    extractedRows.add(_buildBioRow(label, value));
                                   }
                                 }
                               }
@@ -803,8 +821,8 @@ class _CharacterStaffSheetContentState
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     AnymeXText(widget.isCharacter
-                                          ? "Appears In"
-                                          : "Works & Roles",
+                                          ? context.l10n.appearsIn
+                                          : context.l10n.worksAndRoles,
                                       variant: TextVariant.bold,
                                       size: 16,
                                     ),
@@ -871,8 +889,8 @@ class _CharacterStaffSheetContentState
                                         vertical: 20),
                                     child: Center(
                                       child: AnymeXText(showOnlyOnList.value
-                                            ? "No media found on your list"
-                                            : "No media found",
+                                            ? context.l10n.noMediaFoundOnYourList
+                                            : context.l10n.noMediaFound,
                                         variant: TextVariant.semiBold,
                                         color: theme.onSurface.withOpacity(0.5),
                                       ),

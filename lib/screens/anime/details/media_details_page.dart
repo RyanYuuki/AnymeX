@@ -1215,7 +1215,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
         final hasSpecificTitle = rawEpTitle.isNotEmpty &&
             !rawEpTitle.toLowerCase().startsWith('episode');
         titleText = hasSpecificTitle
-            ? 'EP $episodeNumber - $rawEpTitle'
+            ? context.l10n.epShortWithTitle(episodeNumber.toString(), rawEpTitle)
             : 'Episode $episodeNumber';
         imageUrl = ep.thumbnail?.isNotEmpty == true
             ? ep.thumbnail!
@@ -1243,7 +1243,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
         final hasSpecificTitle = rawChTitle.isNotEmpty &&
             !rawChTitle.toLowerCase().startsWith('chapter');
         titleText = hasSpecificTitle
-            ? 'CH ${ch.number} - $rawChTitle'
+            ? context.l10n.chShortWithTitle(ch.number.toString(), rawChTitle)
             : 'Chapter ${ch.number}';
         imageUrl = controller.media.value.poster;
         progressVal = controller.getChapterProgress(ch);

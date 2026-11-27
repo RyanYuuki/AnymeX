@@ -60,11 +60,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
   late final TextEditingController _progressController;
   late final TextEditingController _seasonController;
 
-  static const _statuses = [
+  static List<(String, String)> get _statuses => [
     ('PLANNING', 'Planning'),
     ('CURRENT', 'Watching'),
     ('COMPLETED', 'Completed'),
-    ('REPEATING', 'Repeating'),
+    ('REPEATING', Get.context!.l10n.statusRepeating),
     ('PAUSED', 'Paused'),
     ('DROPPED', 'Dropped'),
   ];
@@ -473,7 +473,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
             AnymeXTile(
               icon: Icons.calendar_today_rounded,
               title: context.l10n.startDate,
-              subtitle: _startedAt != null ? _formatDate(_startedAt!) : 'Not set',
+              subtitle:
+                  _startedAt != null ? _formatDate(_startedAt!) : context.l10n.notSet,
               onTap: () => _pickDate(context, isStart: true),
               trailing: _startedAt != null
                   ? IconButton(
@@ -486,7 +487,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
             AnymeXTile(
               icon: Icons.event_available_rounded,
               title: context.l10n.finishDate,
-              subtitle: _completedAt != null ? _formatDate(_completedAt!) : 'Not set',
+              subtitle: _completedAt != null
+                  ? _formatDate(_completedAt!)
+                  : context.l10n.notSet,
               onTap: () => _pickDate(context, isStart: false),
               trailing: _completedAt != null
                   ? IconButton(
@@ -662,8 +665,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final pct = max != null ? (_localProgress / max).clamp(0.0, 1.0) : null;
     final overall = _overallTotal;
 
-    final extraTotal =
-        (overall != null && _simklSeasons.isNotEmpty) ? '  ($overall total)' : '';
+    final extraTotal = (overall != null && _simklSeasons.isNotEmpty)
+        ? context.l10n.totalCountSuffix('$overall')
+        : '';
     final subtitleText = '$_localProgress / $_displayTotal$extraTotal';
 
     return AnymeXTile(

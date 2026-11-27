@@ -479,13 +479,13 @@ class CommentSectionController extends GetxController
       final diff = now.difference(local);
 
       if (diff.isNegative || diff.inSeconds < 45) {
-        return 'just now';
+        return Get.context!.l10n.justNow;
       }
       if (diff.inMinutes < 60) {
-        return '${diff.inMinutes}m ago';
+        return Get.context!.l10n.minutesAgoShort('${diff.inMinutes}');
       }
       if (diff.inHours < 24) {
-        return '${diff.inHours}h ago';
+        return Get.context!.l10n.hoursAgoShort('${diff.inHours}');
       }
 
       // Check if it happened on the local calendar day before
@@ -497,18 +497,18 @@ class CommentSectionController extends GetxController
       }
 
       if (diff.inDays < 7) {
-        return '${diff.inDays}d ago';
+        return Get.context!.l10n.daysAgoShort('${diff.inDays}');
       }
       if (diff.inDays < 30) {
         final weeks = (diff.inDays / 7).floor();
-        return '${weeks}w ago';
+        return Get.context!.l10n.weeksAgoShort('$weeks');
       }
       if (diff.inDays < 365) {
         final months = (diff.inDays / 30).floor();
-        return '${months}mo ago';
+        return Get.context!.l10n.monthsAgoShort('$months');
       }
       final years = (diff.inDays / 365).floor();
-      return '${years}y ago';
+      return Get.context!.l10n.yearsAgoShort('$years');
     } catch (_) {
       return '';
     }

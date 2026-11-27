@@ -148,7 +148,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
       } else {
         if (mounted) {
           setState(() {
-            _error = 'Failed to load GIFs (${response.statusCode})';
+            _error = context.l10n.failedToLoadGifs('${response.statusCode}');
             _isLoading = false;
           });
         }
@@ -156,7 +156,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error connecting to GIF service';
+          _error = context.l10n.errorConnectingGifService;
           _isLoading = false;
         });
       }
@@ -234,7 +234,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
       } else {
         if (mounted) {
           setState(() {
-            _error = 'Search failed (${response.statusCode})';
+            _error = context.l10n.gifSearchFailed('${response.statusCode}');
             _isLoading = false;
           });
         }
@@ -242,7 +242,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error connecting to GIF service';
+          _error = context.l10n.errorConnectingGifService;
           _isLoading = false;
         });
       }
@@ -313,7 +313,9 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                       size: 16,
                     ),
                     label: AnymeXText(
-                      _showUrlTab ? 'Browse GIFs' : 'Paste Link',
+                      _showUrlTab
+                          ? context.l10n.browseGifs
+                          : context.l10n.pasteLink,
                       size: 12,
                     ),
                     style: TextButton.styleFrom(

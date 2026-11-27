@@ -79,7 +79,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
 
   Widget _buildTabBar(ColorScheme cs, ThemeData theme,
       {required bool hasInbuilt}) {
-    final tabs = ['Servers', if (hasInbuilt) 'Inbuilt'];
+    final tabs = [context.l10n.servers, if (hasInbuilt) context.l10n.tabInbuilt];
     final icons = [Icons.dns_rounded, if (hasInbuilt) Icons.high_quality_rounded];
     final activeIndex = switch (_currentTab) {
       _QualityTab.servers => 0,
@@ -140,7 +140,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
 
       if (qualities.isEmpty) {
         return _buildEmpty(
-            cs, theme, Icons.high_quality_rounded, 'No quality tracks');
+            cs, theme, Icons.high_quality_rounded, context.l10n.noQualityTracks);
       }
 
       return Padding(
@@ -149,7 +149,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
           items: qualities,
           selectedItem: selected,
           getTitle: (track) => '${track.height}p',
-          getSubtitle: (track) => 'Embedded Quality',
+          getSubtitle: (track) => context.l10n.embeddedQuality,
           getIcon: (track) => Icons.high_quality_rounded,
           onItemPressed: (track) {
             widget.controller.setVideoTrack(track);

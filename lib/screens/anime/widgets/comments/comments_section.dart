@@ -379,7 +379,7 @@ class _CommentSectionState extends State<CommentSection>
                     ),
                   ),
                   child: AnymeXText(
-                    'You need to be logged in to comment.',
+                    context.l10n.needLoginToComment,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
@@ -564,10 +564,10 @@ class _CommentSectionState extends State<CommentSection>
       BuildContext context, CommentSectionController controller) {
     final colorScheme = context.colors;
     final sortOptions = [
-      ('newest', 'Newest'),
-      ('oldest', 'Oldest'),
-      ('top', 'Top'),
-      ('controversial', 'Controversial'),
+      ('newest', context.l10n.sortNewest),
+      ('oldest', context.l10n.sortOldest),
+      ('top', context.l10n.sortTop),
+      ('controversial', context.l10n.sortControversial),
     ];
 
     return PopupMenuButton<String>(
@@ -950,11 +950,12 @@ class _CommentSectionState extends State<CommentSection>
     final total = totalComments + totalReplies;
 
     if (total == 1) {
-      return '1 comment';
+      return Get.context!.l10n.commentsCount(1);
     } else if (totalReplies > 0) {
-      return '$total ($totalReplies replies)';
+      return Get.context!.l10n
+          .commentsWithRepliesCount('$total', '$totalReplies');
     } else {
-      return '$total comments';
+      return Get.context!.l10n.commentsCount(total);
     }
   }
 
@@ -1217,7 +1218,7 @@ class _CommentSectionState extends State<CommentSection>
                     size: 14, color: colorScheme.primary),
                 const SizedBox(width: 6),
                 AnymeXText(
-                  '[+] $totalReplies replies collapsed',
+                  context.l10n.repliesCollapsedCount('$totalReplies'),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -1300,7 +1301,8 @@ class _CommentSectionState extends State<CommentSection>
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   AnymeXText(
-                                    'Show more replies ($remainingCount)',
+                                    context.l10n
+                                        .showMoreRepliesCount('$remainingCount'),
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: colorScheme.primary,
                                       fontWeight: FontWeight.w600,
@@ -1631,7 +1633,7 @@ class _CommentSectionState extends State<CommentSection>
                             size: 16, color: colorScheme.primary),
                         const SizedBox(width: 6),
                         AnymeXText(
-                          'Replying to ${comment.username}',
+                          context.l10n.replyingToUsername(comment.username),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.primary,
                             fontWeight: FontWeight.w600,
@@ -2189,15 +2191,15 @@ class _CommentSectionState extends State<CommentSection>
                       _buildTextMenuOption(
                         context: context,
                         label: comment.pinned == true
-                            ? 'Unpin Comment'
-                            : 'Pin Comment',
+                            ? context.l10n.unpinComment
+                            : context.l10n.pinComment,
                         onTap: () {
                           Navigator.pop(ctx);
                           _showReasonDialog(
                             context: context,
                             title: comment.pinned == true
-                                ? 'Unpin Comment'
-                                : 'Pin Comment',
+                                ? context.l10n.unpinComment
+                                : context.l10n.pinComment,
                             onConfirm: (reason) {
                               controller.moderateComment(
                                 comment: comment,
@@ -2213,15 +2215,15 @@ class _CommentSectionState extends State<CommentSection>
                       _buildTextMenuOption(
                         context: context,
                         label: comment.locked == true
-                            ? 'Unlock Thread'
-                            : 'Lock Thread',
+                            ? context.l10n.unlockThread
+                            : context.l10n.lockThread,
                         onTap: () {
                           Navigator.pop(ctx);
                           _showReasonDialog(
                             context: context,
                             title: comment.locked == true
-                                ? 'Unlock Thread'
-                                : 'Lock Thread',
+                                ? context.l10n.unlockThread
+                                : context.l10n.lockThread,
                             onConfirm: (reason) {
                               controller.moderateComment(
                                 comment: comment,
@@ -2585,7 +2587,7 @@ class _CommentSectionState extends State<CommentSection>
               ),
               SizedBox(height: 14),
               AnymeXText(
-                'Please select a reason for reporting this comment:',
+                context.l10n.selectReportCommentReason,
                 color: colorScheme.onSurfaceVariant,
                 size: 14,
                 maxLines: null,
@@ -2724,15 +2726,17 @@ class _CommentSectionState extends State<CommentSection>
                 icon: comment.pinned == true
                     ? Icons.push_pin_rounded
                     : Icons.push_pin_outlined,
-                label: comment.pinned == true ? 'Unpin Comment' : 'Pin Comment',
+                label: comment.pinned == true
+                    ? context.l10n.unpinComment
+                    : context.l10n.pinComment,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
                   _showReasonDialog(
                     context: context,
                     title: comment.pinned == true
-                        ? 'Unpin Comment'
-                        : 'Pin Comment',
+                        ? context.l10n.unpinComment
+                        : context.l10n.pinComment,
                     onConfirm: (reason) {
                       controller.moderateComment(
                         comment: comment,
@@ -2750,7 +2754,9 @@ class _CommentSectionState extends State<CommentSection>
                 icon: comment.locked == true
                     ? Icons.lock_rounded
                     : Icons.lock_open_rounded,
-                label: comment.locked == true ? 'Unlock Thread' : 'Lock Thread',
+                label: comment.locked == true
+                    ? context.l10n.unlockThread
+                    : context.l10n.lockThread,
                 color: comment.locked == true
                     ? colorScheme.primary
                     : colorScheme.error,
@@ -2759,8 +2765,8 @@ class _CommentSectionState extends State<CommentSection>
                   _showReasonDialog(
                     context: context,
                     title: comment.locked == true
-                        ? 'Unlock Thread'
-                        : 'Lock Thread',
+                        ? context.l10n.unlockThread
+                        : context.l10n.lockThread,
                     onConfirm: (reason) {
                       controller.moderateComment(
                         comment: comment,
@@ -3235,21 +3241,27 @@ class _CommentSectionState extends State<CommentSection>
                   const SizedBox(height: 16),
                   const Divider(height: 1),
                   const SizedBox(height: 8),
-                  _buildInfoRow('User ID', userId),
+                  _buildInfoRow(context.l10n.userIdLabel, userId),
                   if (clientType.isNotEmpty)
-                    _buildInfoRow('Client', clientType.toUpperCase()),
-                  _buildInfoRow('Banned', isBanned ? 'Yes' : 'No'),
-                  _buildInfoRow('Shadow Banned', isShadowBanned ? 'Yes' : 'No'),
-                  _buildInfoRow('Muted', isMuted ? 'Yes' : 'No'),
-                  _buildInfoRow('Warnings', warnings),
+                    _buildInfoRow(
+                        context.l10n.clientLabel, clientType.toUpperCase()),
+                  _buildInfoRow(
+                      context.l10n.statusBanned, isBanned ? 'Yes' : 'No'),
+                  _buildInfoRow(context.l10n.statusShadowBanned,
+                      isShadowBanned ? 'Yes' : 'No'),
+                  _buildInfoRow(
+                      context.l10n.statusMuted, isMuted ? 'Yes' : 'No'),
+                  _buildInfoRow(context.l10n.warningsLabel, warnings),
                   if (mutedUntil != null &&
                       mutedUntil.isNotEmpty &&
                       mutedUntil != 'null')
-                    _buildInfoRow('Muted Until', _formatTimestamp(mutedUntil)),
+                    _buildInfoRow(context.l10n.mutedUntilLabel,
+                        _formatTimestamp(mutedUntil)),
                   if (createdAt.isNotEmpty && createdAt != 'null')
-                    _buildInfoRow('Joined', _formatTimestamp(createdAt)),
+                    _buildInfoRow(
+                        context.l10n.joinedLabel, _formatTimestamp(createdAt)),
                   if (notes != null && notes.isNotEmpty && notes != 'null')
-                    _buildInfoRow('Notes', notes),
+                    _buildInfoRow(context.l10n.notesLabel, notes),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -3320,7 +3332,7 @@ class _CommentSectionState extends State<CommentSection>
                       const SizedBox(width: 10),
                       Expanded(
                         child: AnymeXText(
-                          '${comment.username}\'s Comments',
+                          context.l10n.usersComments(comment.username),
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall
@@ -3588,10 +3600,11 @@ class _CommentSectionState extends State<CommentSection>
                     final entry = history[index] as Map<String, dynamic>;
                     final action = entry['action']?.toString() ?? 'Unknown';
                     final content = entry['content']?.toString() ?? '';
-                    final reason = entry['reason']?.toString() ?? 'No reason';
+                    final reason =
+                        entry['reason']?.toString() ?? context.l10n.noReason;
                     final timestamp = entry['created_at']?.toString() ?? '';
-                    final moderator =
-                        entry['moderator_username']?.toString() ?? 'System';
+                    final moderator = entry['moderator_username']?.toString() ??
+                        context.l10n.themeSystem;
                     final mediaTitle = entry['media_title']?.toString() ?? '';
                     final deleted = entry['deleted'] == true;
 
@@ -3621,7 +3634,8 @@ class _CommentSectionState extends State<CommentSection>
 
                     final actionLabel = switch (action) {
                       'moderated' => 'MODERATED',
-                      'comment' => deleted ? 'DELETED COMMENT' : 'COMMENT',
+                      'comment' =>
+                          deleted ? context.l10n.deletedCommentCaps : 'COMMENT',
                       _ => action.toUpperCase(),
                     };
 
@@ -3737,11 +3751,11 @@ class _CommentSectionState extends State<CommentSection>
       final now = DateTime.now();
       final diff = now.difference(dt);
       if (diff.inMinutes < 60) {
-        return '${diff.inMinutes}m ago';
+        return Get.context!.l10n.minutesAgoShort('${diff.inMinutes}');
       } else if (diff.inHours < 24) {
-        return '${diff.inHours}h ago';
+        return Get.context!.l10n.hoursAgoShort('${diff.inHours}');
       } else if (diff.inDays < 30) {
-        return '${diff.inDays}d ago';
+        return Get.context!.l10n.daysAgoShort('${diff.inDays}');
       } else {
         return DateFormat.yMMMd().format(dt);
       }

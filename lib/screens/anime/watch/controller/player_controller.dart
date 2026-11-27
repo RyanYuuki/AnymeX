@@ -653,8 +653,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final epTitle = currentEpisode.value.title ?? '';
       final epNum = currentEpisode.value.number;
       final showName = itemName ?? anilistData.title;
-      final title =
-          epTitle.isNotEmpty ? 'Ep $epNum: $epTitle' : 'Episode $epNum';
+      final title = epTitle.isNotEmpty
+          ? Get.context!.l10n.epColonTitle('$epNum', epTitle)
+          : 'Episode $epNum';
       final artworkUrl = isOffline.value
           ? 'https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/assets/images/logo.png'
           : (anilistData.cover ?? anilistData.poster);
@@ -970,14 +971,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   String get skipButtonLabel {
-    if (isAutoSkipCountdownActive) return 'Cancel skip';
+    if (isAutoSkipCountdownActive) return Get.context!.l10n.cancelSkip;
     final interval = currentSkipInterval.value;
     if (interval == null || skipTimes == null) {
       return '+${playerSettings.skipDuration}';
     }
-    if (identical(skipTimes!.op, interval)) return 'Skip intro';
-    if (identical(skipTimes!.ed, interval)) return 'Skip outro';
-    if (identical(skipTimes!.recap, interval)) return 'Skip recap';
+    if (identical(skipTimes!.op, interval)) return Get.context!.l10n.skipIntro;
+    if (identical(skipTimes!.ed, interval)) return Get.context!.l10n.skipOutro;
+    if (identical(skipTimes!.recap, interval)) return Get.context!.l10n.skipRecap;
     return '+${playerSettings.skipDuration}';
   }
 
@@ -2686,7 +2687,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     isPreTranslating.value = true;
-    preTranslateProgress.value = 'Starting translation...';
+    preTranslateProgress.value = Get.context!.l10n.startingTranslationEllipsis;
     snackBar(Get.context!.l10n.preTranslatingSubtitles);
 
     try {

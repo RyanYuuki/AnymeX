@@ -5998,5 +5998,593 @@
   "historyStyleRegularDesc": "Classic card layout showing media title, progress, and date details.",
   "historyStyleFrostedGlass": "Frosted Glass",
   "historyStyleFrostedGlassDesc": "Frosted glass container overlay with soft background color elements.",
-  "historyStyleBootifulDesc": "An immersive, premium poster-first card layout."
+  "historyStyleBootifulDesc": "An immersive, premium poster-first card layout.",
+  "loadingItemEllipsis": "Loading: {title}...",
+  "@loadingItemEllipsis": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingDetailsEllipsis": "Loading details...",
+  "searchingItemEllipsis": "Searching: {title}...",
+  "@searchingItemEllipsis": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "noSourceSelectedInstall": "No source selected. Please install or select a source extension.",
+  "noEpisodesFoundInSource": "No episodes found in {source}",
+  "@noEpisodesFoundInSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "noChaptersFoundInSource": "No chapters found in {source}",
+  "@noChaptersFoundInSource": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "detailsError": "Details Error",
+  "searchError": "Search Error",
+  "noMatchFoundForInSource": "No match found for '{title}' in {source}",
+  "@noMatchFoundForInSource": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "noMatchFound": "No Match Found",
+  "epShortWithTitle": "EP {number} - {title}",
+  "@epShortWithTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "chShortWithTitle": "CH {number} - {title}",
+  "@chShortWithTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "rankInYear": "#{rank} in {year}",
+  "@rankInYear": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "rankAllTime": "#{rank} All Time",
+  "@rankAllTime": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadSimklCalendar": "Failed to load Simkl calendar data",
+  "failedToLoadAnilistCalendar": "Failed to load AniList calendar data",
+  "showAllAnime": "Show All Anime",
+  "dubbedOnly": "Dubbed Only",
+  "inMyList": "In My List",
+  "allAnime": "All Anime",
+  "listLayout": "List Layout",
+  "gridLayout": "Grid Layout",
+  "todayLabel": "Today",
+  "fetchingDubsEllipsis": "Fetching dubs...",
+  "simklSchedule": "Simkl Schedule",
+  "anilistSchedule": "AniList Schedule",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "failedToLoadCalendarData": "Failed to load calendar data",
+  "airedLabel": "Aired",
+  "airedAlready": "Aired Already",
+  "notLoggedIntoMalAgain": "Not logged into MyAnimeList. Please login again.",
+  "noMediaFoundInYourList": "No {mediaType} found in your list",
+  "@noMediaFoundInYourList": {
+    "placeholders": {
+      "mediaType": {
+        "type": "String"
+      }
+    }
+  },
+  "notLoggedIntoAnilist": "Not logged into AniList",
+  "listExporterTitle": "{mediaType} List Exporter",
+  "@listExporterTitle": {
+    "placeholders": {
+      "mediaType": {
+        "type": "String"
+      }
+    }
+  },
+  "readyToExportList": "Ready to export your {service} {mediaType} list?",
+  "@readyToExportList": {
+    "placeholders": {
+      "service": {
+        "type": "String"
+      },
+      "mediaType": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseLoginToExportList": "Please login to export your list",
+  "scoresRoundedUp": "Scores will be rounded up (e.g. 7.5 → 8)",
+  "scoresRoundedDown": "Scores will be rounded down (e.g. 7.5 → 7)",
+  "addedToFavorites": "Added to Favorites",
+  "removedFromFavorites": "Removed from Favorites",
+  "noMediaFoundOnYourList": "No media found on your list",
+  "noMediaFound": "No media found",
+  "unknownStudio": "Unknown Studio",
+  "unknownArtist": "Unknown Artist",
+  "epColonTitle": "Ep {number}: {title}",
+  "@epColonTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelSkip": "Cancel skip",
+  "skipIntro": "Skip intro",
+  "skipOutro": "Skip outro",
+  "skipRecap": "Skip recap",
+  "startingTranslationEllipsis": "Starting translation...",
+  "unknownTitle": "Unknown Title",
+  "offlineLabel": "Offline",
+  "themeIndexInvalid": "Theme #{index} is invalid: {error}",
+  "@themeIndexInvalid": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateThemeIdPayload": "Duplicate theme id \"{id}\" in the same import payload. Last value will be used.",
+  "@duplicateThemeIdPayload": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "noThemesFoundInPayload": "No themes found in payload.",
+  "youreWatching": "You're watching",
+  "playSlashPause": "Play / Pause",
+  "unlockControls": "Unlock Controls",
+  "seekBack": "Seek Back",
+  "seekForward": "Seek Forward",
+  "toggleOrientation": "Toggle Orientation",
+  "megaSeek": "Mega Seek",
+  "rootJsonMustBeThemeObject": "Root JSON must be a theme object.",
+  "expectedSingleThemeObject": "Expected a single theme object (or wrapper like \"theme\").",
+  "themeIndexNotObject": "Theme #{index} is not an object.",
+  "@themeIndexNotObject": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "themeUnsupportedItemId": "Theme \"{themeId}\" uses unsupported item id \"{itemId}\".",
+  "@themeUnsupportedItemId": {
+    "placeholders": {
+      "themeId": {
+        "type": "String"
+      },
+      "itemId": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidThemeUrl": "Invalid theme URL.",
+  "failedToFetchThemeJson": "Failed to fetch theme JSON: {error}",
+  "@failedToFetchThemeJson": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "themeUrlRespondedHttp": "Theme URL responded with HTTP {code}.",
+  "@themeUrlRespondedHttp": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "themeUrlEmptyBody": "Theme URL returned an empty body.",
+  "tabInbuilt": "Inbuilt",
+  "noSourceAudioTracks": "No source audio tracks",
+  "defaultSourceAudio": "Default Source Audio",
+  "externalAudioStream": "External Audio Stream",
+  "noInbuiltAudioTracks": "No inbuilt audio tracks",
+  "audioMono": "Mono",
+  "audioStereo": "Stereo",
+  "audio51Surround": "5.1 Surround",
+  "audio71Surround": "7.1 Surround",
+  "channelsCount": "{count, plural, =1{1 Channel} other{{count} Channels}}",
+  "@channelsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "muteAudio": "Mute Audio",
+  "defaultAudio": "Default Audio",
+  "searchAudioTracksHint": "Search audio tracks...",
+  "shadersLabel": "Shaders",
+  "orientationLabel": "Orientation",
+  "shadersDisabled": "Shaders Disabled",
+  "noQualityTracks": "No quality tracks",
+  "embeddedQuality": "Embedded Quality",
+  "normalSpeed": "Normal speed",
+  "slowMotion": "Slow motion",
+  "relaxedPace": "Relaxed pace",
+  "briskPace": "Brisk pace",
+  "fastPace": "Fast pace",
+  "doubleSpeed": "Double speed",
+  "ultraFast": "Ultra fast",
+  "restoreDefaults": "Restore defaults",
+  "speedIsDefault": "{speed} is currently your default speed",
+  "@speedIsDefault": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "setSpeedAsDefault": "Set {speed} as default for all media",
+  "@setSpeedAsDefault": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "resetDone": "Reset done",
+  "subtitlesInSync": "In sync",
+  "delayed": "Delayed",
+  "earlier": "Earlier",
+  "peersRatio": "{connected}/{total} peers",
+  "@peersRatio": {
+    "placeholders": {
+      "connected": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "noVideoFilesFound": "No video files found",
+  "noMatchingFiles": "No matching files",
+  "tabEmbedded": "Embedded",
+  "noTitle": "No Title",
+  "noSubtitles": "No subtitles",
+  "localSubtitleFile": "Local Subtitle File",
+  "allStreams": "All Streams",
+  "currentStream": "Current Stream",
+  "noEmbeddedSubtitles": "No embedded subtitles",
+  "embeddedSubtitle": "Embedded Subtitle",
+  "noSubtitlesFoundSearchHint": "No subtitles found. Try searching with a different title.",
+  "subtitleDownloadsSuffix": " • {count} dl",
+  "@subtitleDownloadsSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "watchTogetherUnsupportedExtensionBody": "Please switch to a different extension to host a Watch Together room. If you need help or recommendations for working extensions, feel free to ask in our Discord or Telegram support channels.\n\n",
+  "watchTogetherUpcomingSupportNote": "We are working on a solution to support all extensions in an upcoming update.",
+  "creatingEllipsis": "Creating...",
+  "extensionUnsupported": "Extension Unsupported",
+  "createRoom": "Create Room",
+  "extensionNotSupportedForRoomsYet": "This extension is not supported for rooms yet. Please switch to a different extension.",
+  "popularity": "Popularity",
+  "premiered": "Premiered",
+  "studio": "Studio",
+  "noInformationAvailable": "No information available.",
+  "gender": "Gender",
+  "age": "Age",
+  "birthday": "Birthday",
+  "bloodType": "Blood Type",
+  "birth": "Birth",
+  "yearsActive": "Years active",
+  "hometown": "Hometown",
+  "height": "Height",
+  "affiliation": "Affiliation",
+  "grade": "Grade",
+  "species": "Species",
+  "abilities": "Abilities",
+  "level": "Level",
+  "family": "Family",
+  "cursedTechnique": "Cursed Technique",
+  "weapon": "Weapon",
+  "bounty": "Bounty",
+  "devilFruit": "Devil Fruit",
+  "nenType": "Nen Type",
+  "quirk": "Quirk",
+  "stand": "Stand",
+  "guild": "Guild",
+  "appearsIn": "Appears In",
+  "worksAndRoles": "Works & Roles",
+  "noCollectionsFound": "No collections found",
+  "noCollectionsYet": "No collections yet",
+  "unnamedList": "Unnamed List",
+  "noItems": "No items",
+  "styleMinimal": "Minimal",
+  "styleDetailed": "Detailed",
+  "epRange": "Ep {start}–{end}",
+  "@epRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "allWithCount": "All ({count})",
+  "@allWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "epRangeWithCount": "Ep {start}–{end} ({count})",
+  "@epRangeWithCount": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteEpisode": "Are you sure you want to delete Episode {number}?",
+  "@confirmDeleteEpisode": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeNumberTitle": "Episode {number}: {title}",
+  "@episodeNumberTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "statusRepeating": "Repeating",
+  "notSet": "Not set",
+  "totalCountSuffix": "  ({count} total)",
+  "@totalCountSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "noVoiceActor": "No Voice Actor",
+  "couldNotFindWatchOrderFor": "Could not find watch order for '{title}'",
+  "@couldNotFindWatchOrderFor": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "switchToListView": "Switch to List View",
+  "switchToCardView": "Switch to Card View",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortTop": "Top",
+  "sortControversial": "Controversial",
+  "needLoginToComment": "You need to be logged in to comment.",
+  "commentsCount": "{count, plural, =1{1 comment} other{{count} comments}}",
+  "@commentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commentsWithRepliesCount": "{total} ({replies} replies)",
+  "@commentsWithRepliesCount": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "replies": {
+        "type": "String"
+      }
+    }
+  },
+  "repliesCollapsedCount": "[+] {count} replies collapsed",
+  "@repliesCollapsedCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "showMoreRepliesCount": "Show more replies ({count})",
+  "@showMoreRepliesCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "replyingToUsername": "Replying to {username}",
+  "@replyingToUsername": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "unpinComment": "Unpin Comment",
+  "pinComment": "Pin Comment",
+  "unlockThread": "Unlock Thread",
+  "lockThread": "Lock Thread",
+  "selectReportCommentReason": "Please select a reason for reporting this comment:",
+  "clientLabel": "Client",
+  "warningsLabel": "Warnings",
+  "notesLabel": "Notes",
+  "usersComments": "{username}'s Comments",
+  "@usersComments": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "noReason": "No reason",
+  "deletedCommentCaps": "DELETED COMMENT",
+  "justNow": "just now",
+  "minutesAgoShort": "{count}m ago",
+  "@minutesAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "hoursAgoShort": "{count}h ago",
+  "@hoursAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "daysAgoShort": "{count}d ago",
+  "@daysAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "weeksAgoShort": "{count}w ago",
+  "@weeksAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "monthsAgoShort": "{count}mo ago",
+  "@monthsAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "yearsAgoShort": "{count}y ago",
+  "@yearsAgoShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "replyToThreadHint": "Reply to thread...",
+  "replyToUserHint": "Reply to @{username}...",
+  "@replyToUserHint": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "addCommentHint": "Add a comment...",
+  "deletedCommentBracket": "[deleted comment]",
+  "failedToLoadGifs": "Failed to load GIFs ({code})",
+  "@failedToLoadGifs": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "errorConnectingGifService": "Error connecting to GIF service",
+  "gifSearchFailed": "Search failed ({code})",
+  "@gifSearchFailed": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "browseGifs": "Browse GIFs",
+  "pasteLink": "Paste Link",
+  "yourModerationRecord": "Your Moderation Record",
+  "moderationRecord": "Moderation Record",
+  "daysStreakShort": "{count}d streak",
+  "@daysStreakShort": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "repliesLabel": "Replies",
+  "upvotesLabel": "Upvotes",
+  "votesCastLabel": "Votes cast",
+  "bestStreakLabel": "Best streak",
+  "streakBonus": "Streak bonus",
+  "roleBonus": "Role bonus",
+  "downvotesReceived": "Downvotes received",
+  "commentsRemovedByMods": "Comments removed by mods",
+  "banPenalties": "Ban penalties",
+  "modNotes": "Mod notes"
 }
