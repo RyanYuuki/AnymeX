@@ -349,7 +349,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               ..._SortMode.values.map((mode) {
                 final selected = _sortMode == mode;
                 final label = {
-                  _SortMode.lastUpdated: 'Last Updated',
+                  _SortMode.lastUpdated: Get.context!.l10n.lastUpdated,
                   _SortMode.score: 'Score',
                   _SortMode.title: context.l10n.title,
                   _SortMode.releaseDate: 'Release Date',
@@ -505,8 +505,8 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                               borderRadius: BorderRadius.circular(14))),
                       child: AnymeXText(
                         tempSelected.isEmpty
-                            ? 'Show All'
-                            : 'Apply (${tempSelected.length})',
+                            ? context.l10n.showAll
+                            : context.l10n.applyCount(tempSelected.length),
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -590,7 +590,8 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                 _searchOpen ? Icons.close_rounded : Iconsax.search_normal,
                 size: 20,
               ),
-              tooltip: _searchOpen ? 'Close search' : 'Search',
+              tooltip:
+                  _searchOpen ? context.l10n.closeSearch : context.l10n.search,
             ),
                         IconButton(
               onPressed: _openRandom,
@@ -756,8 +757,8 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                     const SizedBox(height: 12),
                     AnymeXText(
                       _searchQuery.isNotEmpty || _selectedGenres.isNotEmpty
-                          ? 'No matches found'
-                          : 'No entries in $name',
+                          ? context.l10n.noMatchesFound
+                          : context.l10n.noEntriesInTab(name),
                       style: TextStyle(
                           color: colors.onSurfaceVariant.withOpacity(0.6)),
                     ),

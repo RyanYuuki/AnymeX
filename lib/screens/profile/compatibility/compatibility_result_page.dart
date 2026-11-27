@@ -256,8 +256,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     CompatibilityResult result,
     RankInfo rank,
   ) {
-    final name1 = user1.name ?? 'User 1';
-    final name2 = user2.name ?? 'User 2';
+    final name1 = user1.name ?? context.l10n.userOne;
+    final name2 = user2.name ?? context.l10n.userTwo;
     final avatar1 = user1.avatar ?? '';
     final avatar2 = user2.avatar ?? '';
     final c = context.colors;
@@ -267,7 +267,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       if (u.createdAt != null && u.createdAt! > 0) {
         final year =
             DateTime.fromMillisecondsSinceEpoch(u.createdAt! * 1000).year;
-        return '@${name.toLowerCase()} · Joined $year';
+        return context.l10n.joinedAtYear(name.toLowerCase(), year.toString());
       }
       return '@${name.toLowerCase()}';
     }
@@ -897,8 +897,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             icon: isManga ? Iconsax.book_1 : Iconsax.video_play,
             title: isManga ? 'Read Stats' : 'Watch Stats',
             subtitle: isManga
-                ? 'Calculated based on how much manga you\'ve read.'
-                : 'Calculated based on how much anime you\'ve watched.',
+                ? context.l10n.calculatedBasedOnMangaRead
+                : context.l10n.calculatedBasedOnAnimeWatched,
             percentage: detail.percentage,
             weight: detail.weight,
           ),
@@ -1100,7 +1100,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               child: AnymeXText(
                 isExpanded
                     ? 'Collapse $itemTypeLabel'
-                    : 'View all $itemTypeLabel (${cards.length})',
+                    : context.l10n
+                        .viewAllTypeCount(itemTypeLabel, cards.length),
                 size: 12,
                 variant: TextVariant.semiBold,
                 color: context.colors.primary,
@@ -1368,7 +1369,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Common $typeLabel in both user profiles',
+                        context.l10n.commonTypeInBothProfiles(typeLabel),
                         size: 11,
                         color: c.onSurfaceVariant,
                       ),
@@ -1398,7 +1399,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     ),
                     const SizedBox(height: 12),
                     AnymeXText(
-                      'No Mutual $typeLabel in $title',
+                      context.l10n.noMutualTypeInTitle(typeLabel, title),
                       size: 14,
                       variant: TextVariant.bold,
                       color: c.onSurface,
@@ -1407,7 +1408,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: AnymeXText(
-                        'Both users enjoy this ${isTag ? "tag" : "genre"}, but haven\'t completed any of the same titles yet.',
+                        isTag
+                            ? context.l10n.bothUsersEnjoyTagNoCompleted
+                            : context.l10n.bothUsersEnjoyGenreNoCompleted,
                         size: 11.5,
                         textAlign: TextAlign.center,
                         color: c.onSurfaceVariant.opaque(0.7),
@@ -1435,7 +1438,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   itemBuilder: (context, index) {
                     final item = mediaList[index];
                     final id = item.id ?? '';
-                    final mTitle = item.title ?? 'Media';
+                    final mTitle = item.title ?? context.l10n.mediaLabel;
                     final cover = item.cover ?? '';
                     final tag =
                         'compat_modal_${isManga ? 'manga' : 'anime'}_${id}_$mTitle';
@@ -1543,7 +1546,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   Icon(Iconsax.discover, size: 18, color: c.primary),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    'Explore all $title on AniList',
+                    context.l10n.exploreAllTitleOnAniList(title),
                     size: 13,
                     variant: TextVariant.bold,
                     color: c.onSurface,
@@ -1592,8 +1595,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       icon: Iconsax.star5,
       title: isManga ? 'Common Perfect Manga' : 'Common Perfect Anime',
       subtitle: isManga
-          ? 'Based on manga scored 10/10.'
-          : 'Based on anime scored 10/10.',
+          ? context.l10n.basedOnMangaScoredTen
+          : context.l10n.basedOnAnimeScoredTen,
       detail: detail,
       padding: const EdgeInsets.all(18),
       child: _buildHorizontalMediaPosterList(context, detail.mediaItems,
@@ -1609,7 +1612,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
   }) {
     if (items.isEmpty) {
       return Center(
-          child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+          child: _buildEmptyPlaceholder(context, context.l10n.nothingInCommon));
     }
     return Align(
       alignment: Alignment.centerLeft,
@@ -1637,7 +1640,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
   }) {
     final c = context.colors;
     final id = item.id ?? '';
-    final title = item.title ?? 'Media';
+    final title = item.title ?? context.l10n.mediaLabel;
     final cover = item.cover ?? '';
     final tag = 'compat_${isManga ? 'manga' : 'anime'}_${id}_$title';
 
@@ -1757,7 +1760,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     Widget body;
     if (cards.isEmpty) {
       body =
-          Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+          Center(child: _buildEmptyPlaceholder(context, context.l10n.nothingInCommon));
     } else {
       body = Align(
         alignment: Alignment.centerLeft,
@@ -1909,7 +1912,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     Widget body;
     if (cards.isEmpty) {
       body =
-          Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+          Center(child: _buildEmptyPlaceholder(context, context.l10n.nothingInCommon));
     } else {
       body = Align(
         alignment: Alignment.centerLeft,
@@ -2056,7 +2059,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
   }) {
     if (items.isEmpty) {
       return Center(
-          child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+          child: _buildEmptyPlaceholder(context, context.l10n.nothingInCommon));
     }
     return Align(
       alignment: Alignment.centerLeft,
@@ -2316,14 +2319,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     MutualSocialData social,
   ) {
     final c = context.colors;
-    final name1 = user1.name ?? 'User 1';
-    final name2 = user2.name ?? 'User 2';
+    final name1 = user1.name ?? context.l10n.userOne;
+    final name2 = user2.name ?? context.l10n.userTwo;
 
     String relationshipText;
     IconData relIcon;
 
     if (social.isMutualFriends) {
-      relationshipText = 'Mutual Friends (Both follow each other on AniList)';
+      relationshipText = context.l10n.mutualFriendsDesc;
       relIcon = Iconsax.heart5;
     } else if (social.user1FollowsUser2 && !social.user2FollowsUser1) {
       relationshipText = '$name1 follows $name2';
@@ -2332,7 +2335,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       relationshipText = '$name2 follows $name1';
       relIcon = Iconsax.user_tag;
     } else {
-      relationshipText = 'Shared Community Network';
+      relationshipText = context.l10n.sharedCommunityNetwork;
       relIcon = Iconsax.people;
     }
 
@@ -2408,7 +2411,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           if (social.mutualFollowing.isNotEmpty) ...[
             const SizedBox(height: 14),
             AnymeXText(
-              'Shared Following (${social.mutualFollowing.length})',
+              context.l10n.sharedFollowingCount(social.mutualFollowing.length),
               size: 12,
               variant: TextVariant.semiBold,
               color: c.onSurfaceVariant,
@@ -2425,7 +2428,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           if (social.mutualFollowers.isNotEmpty) ...[
             const SizedBox(height: 14),
             AnymeXText(
-              'Mutual Followers (${social.mutualFollowers.length})',
+              context.l10n.mutualFollowersCount(social.mutualFollowers.length),
               size: 12,
               variant: TextVariant.semiBold,
               color: c.onSurfaceVariant,
@@ -2443,7 +2446,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               social.mutualFollowers.isEmpty) ...[
             const SizedBox(height: 10),
             _buildEmptyPlaceholder(
-                context, 'No mutual connections found on AniList'),
+                context, context.l10n.noMutualConnectionsAniList),
           ],
         ],
       ),
@@ -2544,8 +2547,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         const SizedBox(height: 2),
                         AnymeXText(
                           _isHowItWorksExpanded
-                              ? 'Tap to collapse scoring details and rank guide'
-                              : 'Learn how compatibility is calculated.',
+                              ? context.l10n.tapToCollapseScoringDetails
+                              : context.l10n.learnHowCompatibilityCalculated,
                           size: 11,
                           color: c.onSurfaceVariant.opaque(0.75),
                         ),
@@ -2578,7 +2581,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 children: [
                   AnymeXText(
                     'Compatibility is calculated by comparing signals from both users\' AniList profiles across 16 heuristics in Anime and Manga.\n'
-                    'Set overlaps use cube-root exponential scaling (1/3), decade proportions are adjusted for personal baseline mean score deviation, and weights are dynamically distributed.',
+                    '${context.l10n.compatibilityScoringExplanation}',
                     size: 12,
                     color: c.onSurfaceVariant.opaque(0.85),
                   ),
@@ -2791,8 +2794,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(pngBytes);
 
-      final text =
-          '$name1 \u2764 $name2 | Compatibility: ${result.percentage.toStringAsFixed(0)}% (Rank ${result.rank})\nCheck Compatibility: $shareUrl\nCalculated with AnymeX';
+      final text = context.l10n.compatibilityShareMessage(
+          name1, name2, result.percentage.toStringAsFixed(0), result.rank, shareUrl);
 
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'image/png', name: fileName)],
@@ -2819,18 +2822,20 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     }
 
     final anime = result.animeSection.hasData
-        ? 'Anime: ${result.animeSection.percentage.toStringAsFixed(1)}%'
-        : 'Anime: N/A';
+        ? context.l10n
+            .animeScorePercentage(result.animeSection.percentage.toStringAsFixed(1))
+        : context.l10n.animeScoreNA;
     final manga = result.mangaSection.hasData
-        ? 'Manga: ${result.mangaSection.percentage.toStringAsFixed(1)}%'
-        : 'Manga: N/A';
+        ? context.l10n
+            .mangaScorePercentage(result.mangaSection.percentage.toStringAsFixed(1))
+        : context.l10n.mangaScoreNA;
 
     final text = '$name1 \u2764 $name2\n\n'
-        'AniMatch Compatibility: ${result.percentage.toStringAsFixed(0)}% (Rank ${result.rank})\n'
+        '${context.l10n.aniMatchCompatibilityLine(result.percentage.toStringAsFixed(0), result.rank)}\n'
         '$anime\n'
         '$manga\n\n'
         '${result.rankDescription}\n\n'
-        'Check on AnymeX: $shareUrl';
+        '${context.l10n.checkOnAnymeXUrl(shareUrl)}';
     Share.share(text);
   }
 }

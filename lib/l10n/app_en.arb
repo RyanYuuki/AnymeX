@@ -7124,5 +7124,282 @@
       }
     }
   },
-  "episodeUnknown": "Episode ??"
+  "episodeUnknown": "Episode ??",
+  "editReplyHint": "Edit reply...",
+  "userOne": "User 1",
+  "userTwo": "User 2",
+  "targetUser": "Target User",
+  "pleaseEnterUsername": "Please enter a username",
+  "secondUser": "Second User",
+  "compareWith": "Compare With",
+  "cannotCompareWithYourself": "Cannot compare with yourself",
+  "pleaseEnterTwoDifferentUsernames": "Please enter two different usernames",
+  "compatibilityFeatureWatchReadStats": "• Anime & Manga Watch/Read Stats",
+  "compatibilityFeatureMeanScore": "• Mean Score & Standard Deviation Affinity",
+  "compatibilityFeatureReleaseDecades": "• Release Decades (2000s, 2010s, 2020s)",
+  "compatibilityFeatureMediaFormats": "• Media Formats (TV, Movie, OVA, ONA)",
+  "compatibilityFeatureSharedGenres": "• Shared Top Genres & Tags",
+  "compatibilityFeatureFavoriteStaff": "• Favorite Voice Actors, Staff & Studios",
+  "compatibilityFeatureMutualSocial": "• Mutual Social Connections & Following",
+  "withMyProfile": "With My Profile",
+  "compareTwoUsers": "Compare Two Users",
+  "joinedAtYear": "@{username} · Joined {year}",
+  "@joinedAtYear": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatedBasedOnMangaRead": "Calculated based on how much manga you've read.",
+  "calculatedBasedOnAnimeWatched": "Calculated based on how much anime you've watched.",
+  "viewAllTypeCount": "View all {itemType} ({count})",
+  "@viewAllTypeCount": {
+    "placeholders": {
+      "itemType": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonTypeInBothProfiles": "Common {typeLabel} in both user profiles",
+  "@commonTypeInBothProfiles": {
+    "placeholders": {
+      "typeLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "noMutualTypeInTitle": "No Mutual {typeLabel} in {title}",
+  "@noMutualTypeInTitle": {
+    "placeholders": {
+      "typeLabel": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "bothUsersEnjoyGenreNoCompleted": "Both users enjoy this genre, but haven't completed any of the same titles yet.",
+  "bothUsersEnjoyTagNoCompleted": "Both users enjoy this tag, but haven't completed any of the same titles yet.",
+  "mediaLabel": "Media",
+  "exploreAllTitleOnAniList": "Explore all {title} on AniList",
+  "@exploreAllTitleOnAniList": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "nothingInCommon": "Nothing in Common!",
+  "mutualFriendsDesc": "Mutual Friends (Both follow each other on AniList)",
+  "sharedCommunityNetwork": "Shared Community Network",
+  "sharedFollowingCount": "Shared Following ({count})",
+  "@sharedFollowingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mutualFollowersCount": "Mutual Followers ({count})",
+  "@mutualFollowersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMutualConnectionsAniList": "No mutual connections found on AniList",
+  "tapToCollapseScoringDetails": "Tap to collapse scoring details and rank guide",
+  "learnHowCompatibilityCalculated": "Learn how compatibility is calculated.",
+  "compatibilityScoringExplanation": "Set overlaps use cube-root exponential scaling (1/3), decade proportions are adjusted for personal baseline mean score deviation, and weights are dynamically distributed.",
+  "compatibilityShareMessage": "{name1} ❤️ {name2} | Compatibility: {percentage}% (Rank {rank})\nCheck Compatibility: {shareUrl}\nCalculated with AnymeX",
+  "@compatibilityShareMessage": {
+    "placeholders": {
+      "name1": {
+        "type": "String"
+      },
+      "name2": {
+        "type": "String"
+      },
+      "percentage": {
+        "type": "String"
+      },
+      "rank": {
+        "type": "String"
+      },
+      "shareUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "animeScorePercentage": "Anime: {percentage}%",
+  "@animeScorePercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "animeScoreNA": "Anime: N/A",
+  "mangaScorePercentage": "Manga: {percentage}%",
+  "@mangaScorePercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "mangaScoreNA": "Manga: N/A",
+  "aniMatchCompatibilityLine": "AniMatch Compatibility: {percentage}% (Rank {rank})",
+  "@aniMatchCompatibilityLine": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      },
+      "rank": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOnAnymeXUrl": "Check on AnymeX: {shareUrl}",
+  "@checkOnAnymeXUrl": {
+    "placeholders": {
+      "shareUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToPostStatus": "Failed to post status.",
+  "privateMessageSentSuccess": "Private message sent successfully!",
+  "messagePostedSuccess": "Message posted successfully!",
+  "activitiesCount": "{count, plural, =1{1 activity} other{{count} activities}}",
+  "@activitiesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsRequireUnlocking": "{count, plural, =1{The following item requires unlocking before equipping:} other{The following items require unlocking before equipping:}}",
+  "@itemsRequireUnlocking": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "needMorePointsToUnlock": "You need {points} more points to unlock these items.",
+  "@needMorePointsToUnlock": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToUnlockItem": "Failed to unlock {title}",
+  "@failedToUnlockItem": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "customizationsSavedAndApplied": "Your customizations have been saved and applied!",
+  "failedToUpdateCustomizations": "Failed to update customizations. Please try again.",
+  "monShort": "Mon",
+  "tueShort": "Tue",
+  "wedShort": "Wed",
+  "thuShort": "Thu",
+  "friShort": "Fri",
+  "satShort": "Sat",
+  "sunShort": "Sun",
+  "janShort": "Jan",
+  "febShort": "Feb",
+  "marShort": "Mar",
+  "aprShort": "Apr",
+  "mayShort": "May",
+  "junShort": "Jun",
+  "julShort": "Jul",
+  "augShort": "Aug",
+  "sepShort": "Sep",
+  "octShort": "Oct",
+  "novShort": "Nov",
+  "decShort": "Dec",
+  "mutualStatus": "Mutual",
+  "followingStatus": "Following",
+  "followsYouStatus": "Follows you",
+  "followAction": "Follow",
+  "unfollowAction": "Unfollow",
+  "animeProgressLabel": "Anime progress",
+  "mangaProgressLabel": "Manga progress",
+  "messagesLabel": "Messages",
+  "aniListMember": "AniList Member",
+  "reconnectInDHM": "Reconnect in {days}d {hours}h {minutes}m",
+  "@reconnectInDHM": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reconnectInHM": "Reconnect in {hours}h {minutes}m",
+  "@reconnectInHM": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reconnectInM": "Reconnect in {minutes}m",
+  "@reconnectInM": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tokenExpired": "Token expired",
+  "reconnectInDuration": "Reconnect in {duration}",
+  "@reconnectInDuration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "timeLabel": "Time",
+  "episodeCountLabel": "Episode Count",
+  "chapterCountLabel": "Chapter Count",
+  "watchYearLabel": "Watch Year",
+  "readYearLabel": "Read Year",
+  "noGenreData": "No genre data",
+  "noTagData": "No tag data",
+  "noStaffData": "No staff data",
+  "noVoiceActorData": "No voice actor data",
+  "noStudioData": "No studio data",
+  "totalLabel": "Total",
+  "daysPlannedLabel": "Days Planned",
+  "chaptersPlannedLabel": "Chapters Planned",
+  "standardDeviationLabel": "Standard Deviation",
+  "gridViewLabel": "Grid view",
+  "notFollowingAnyone": "Not following anyone",
+  "noFollowers": "No followers",
+  "closeSearch": "Close search"
 }

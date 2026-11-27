@@ -231,7 +231,9 @@ class SocialTabState extends State<SocialTab> {
                   color: context.theme.colorScheme.onSurfaceVariant,
                   size: 22,
                 ),
-                tooltip: _socialListMode ? 'Grid view' : 'List view',
+                tooltip: _socialListMode
+                    ? context.l10n.gridViewLabel
+                    : context.l10n.listViewLabel,
                 style: IconButton.styleFrom(
                   backgroundColor: context.theme.colorScheme.surfaceContainer,
                   shape: RoundedRectangleBorder(
@@ -248,7 +250,9 @@ class SocialTabState extends State<SocialTab> {
             padding: const EdgeInsets.symmetric(vertical: 40),
             child: Center(
               child: AnymeXText(
-                _socialSubTab == 0 ? 'Not following anyone' : 'No followers',
+                _socialSubTab == 0
+                    ? context.l10n.notFollowingAnyone
+                    : context.l10n.noFollowers,
                 style: TextStyle(
                   color: context.theme.colorScheme.onSurfaceVariant
                       .withOpacity(0.6),

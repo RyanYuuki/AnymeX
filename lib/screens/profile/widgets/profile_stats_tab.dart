@@ -128,7 +128,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             children: [
               _metricPill('Count', _StatMetric.count),
               const SizedBox(width: 6),
-              _metricPill('Time', _StatMetric.time),
+              _metricPill(context.l10n.timeLabel, _StatMetric.time),
               const SizedBox(width: 6),
               _metricPill('Score', _StatMetric.meanScore),
             ],
@@ -202,7 +202,9 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.query_builder_rounded,
-          title: isAnime ? 'Episode Count' : 'Chapter Count',
+          title: isAnime
+              ? context.l10n.episodeCountLabel
+              : context.l10n.chapterCountLabel,
           child: _verticalStatsBar(lengths),
         ),
       ],
@@ -242,7 +244,9 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.calendar_month,
-          title: isAnime ? 'Watch Year' : 'Read Year',
+          title: isAnime
+              ? context.l10n.watchYearLabel
+              : context.l10n.readYearLabel,
           child: _verticalStatsBar(startYears),
         ),
       ],
@@ -254,7 +258,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     final items = (anime?.genres ?? manga?.genres ?? [])
         .map((g) => _RankedItem(g.genre, g.count, g.meanScore, g.amount))
         .toList();
-    if (items.isEmpty) return [_emptyState('No genre data')];
+    if (items.isEmpty) return [_emptyState(context.l10n.noGenreData)];
     return [
       _sectionContainer(
         icon: Icons.category_rounded,
@@ -271,7 +275,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     final items = (anime?.tags ?? manga?.tags ?? [])
         .map((t) => _RankedItem(t.tag, t.count, t.meanScore, t.amount))
         .toList();
-    if (items.isEmpty) return [_emptyState('No tag data')];
+    if (items.isEmpty) return [_emptyState(context.l10n.noTagData)];
     return [
       _sectionContainer(
         icon: Icons.tag,
@@ -288,7 +292,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         .map((s) => _RankedItem(s.name, s.count, s.meanScore, s.amount,
             image: s.image, id: s.id))
         .toList();
-    if (items.isEmpty) return [_emptyState('No staff data')];
+    if (items.isEmpty) return [_emptyState(context.l10n.noStaffData)];
     return [
       _sectionContainer(
         icon: IconlyLight.user2,
@@ -307,7 +311,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         .map((v) => _RankedItem(v.name, v.count, v.meanScore, v.amount,
             image: v.image, id: v.id))
         .toList();
-    if (items.isEmpty) return [_emptyState('No voice actor data')];
+    if (items.isEmpty) return [_emptyState(context.l10n.noVoiceActorData)];
     return [
       _sectionContainer(
         icon: Icons.record_voice_over,
@@ -326,7 +330,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         .map((s) =>
             _RankedItem(s.name, s.count, s.meanScore, s.amount, id: s.id))
         .toList();
-    if (items.isEmpty) return [_emptyState('No studio data')];
+    if (items.isEmpty) return [_emptyState(context.l10n.noStudioData)];
     return [
       _sectionContainer(
         icon: Icons.business_outlined,
@@ -488,7 +492,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                   isAnime
                       ? (anime.animeCount ?? '0')
                       : (manga?.mangaCount ?? '0'),
-                  'Total'),
+                  context.l10n.totalLabel),
               _textSubtitleVertical(
                   isAnime
                       ? (anime.episodesWatched ?? '0')
@@ -510,7 +514,9 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                       ? _minToDays(_plannedAmount(anime.statuses)?.toString())
                       : (_plannedCount(manga?.statuses ?? [])?.toString() ??
                           '0'),
-                  isAnime ? 'Days Planned' : 'Chapters Planned'),
+                  isAnime
+                      ? context.l10n.daysPlannedLabel
+                      : context.l10n.chaptersPlannedLabel),
               _textSubtitleVertical(
                   isAnime
                       ? '${anime.meanScore ?? '0'}%'
@@ -520,7 +526,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                   isAnime
                       ? (anime.standardDeviation?.toStringAsFixed(1) ?? '0.0')
                       : (manga?.standardDeviation?.toStringAsFixed(1) ?? '0.0'),
-                  'Standard Deviation'),
+                  context.l10n.standardDeviationLabel),
             ],
           ),
         ],

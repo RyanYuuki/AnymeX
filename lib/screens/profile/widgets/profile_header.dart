@@ -300,10 +300,13 @@ class DesktopProfileHeader extends StatelessWidget {
                                           final minutes =
                                               remaining.inMinutes.remainder(60);
                                           final countdownText = days > 0
-                                              ? 'Reconnect in ${days}d ${hours}h ${minutes}m'
+                                              ? context.l10n.reconnectInDHM(
+                                                  days, hours, minutes)
                                               : hours > 0
-                                                  ? 'Reconnect in ${hours}h ${minutes}m'
-                                                  : 'Reconnect in ${minutes}m';
+                                                  ? context.l10n.reconnectInHM(
+                                                      hours, minutes)
+                                                  : context.l10n.reconnectInM(
+                                                      minutes);
                                           return Container(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
@@ -602,14 +605,14 @@ class MobileProfileHeaderSliver extends StatelessWidget {
     final badgeText =
         (donatorTier > 0 && donatorBadge != null && donatorBadge.isNotEmpty)
             ? donatorBadge
-            : 'AniList Member';
+            : context.l10n.aniListMember;
 
     String? expiryText;
     final expiry = handler.profileData.value.tokenExpiry;
     if (expiry != null) {
       final diff = expiry.difference(DateTime.now());
       if (diff.isNegative) {
-        expiryText = 'Token expired';
+        expiryText = context.l10n.tokenExpired;
       } else {
         int minutes = diff.inMinutes;
         int hours = minutes ~/ 60;
@@ -621,7 +624,8 @@ class MobileProfileHeaderSliver extends StatelessWidget {
         final hoursStr = hours < 1 ? '' : '${hours}h ';
         final minutesStr = minutes < 1 ? '' : '${minutes}m';
 
-        expiryText = 'Reconnect in $daysStr$hoursStr$minutesStr'.trim();
+        expiryText = context.l10n
+            .reconnectInDuration('$daysStr$hoursStr$minutesStr'.trim());
       }
     }
 
