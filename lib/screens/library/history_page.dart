@@ -81,7 +81,7 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
     AnymeXDialog(
       title: context.l10n.removeFromHistory,
       contentWidget: AnymeXText(
-        'Are you sure you want to remove "${item.name}" from your history?',
+        context.l10n.confirmRemoveFromHistory(item.name ?? ''),
         size: 14,
       ),
       onConfirm: () async {
@@ -137,7 +137,7 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
                           AnymeXText(
                             query.isNotEmpty
                                 ? 'No search results'
-                                : 'No history found',
+                                : context.l10n.noHistoryFound,
                             size: 16,
                             variant: TextVariant.semiBold,
                             color: theme.colorScheme.onSurface.withOpacity(0.4),

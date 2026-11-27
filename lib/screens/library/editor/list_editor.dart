@@ -61,7 +61,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       resizeToAvoidBottomInset: false,
       showHeader: true,
       headerTitle: context.l10n.customLists,
-      headerSubtitle: '${_lists.length} lists total',
+      headerSubtitle: context.l10n.listsTotalCount(_lists.length),
       headerAction: IconButton(
         onPressed: () {
           setState(() {
@@ -117,7 +117,9 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
   void _confirmClearHistory(List<OfflineMedia> items) {
     final isAnime = widget.type == ItemType.anime;
-    final label = isAnime ? 'watch history' : 'read history';
+    final label = isAnime
+        ? context.l10n.watchHistoryLower
+        : context.l10n.readHistoryLower;
 
     AnymeXDialog(
       title: context.l10n.clearHistory,
@@ -134,7 +136,9 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           ids,
           mediaType: widget.type,
         );
-        snackBar(count > 0 ? 'History cleared' : 'No history to clear');
+        snackBar(count > 0
+        ? Get.context!.l10n.historyCleared
+        : Get.context!.l10n.noHistoryToClear);
       },
     ).show(context);
   }
@@ -164,7 +168,9 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
   Widget _buildHistoryCard(ThemeData theme) {
     final isAnime = widget.type == ItemType.anime;
-    final historyTitle = isAnime ? 'Watch History' : 'Read History';
+    final historyTitle = isAnime
+        ? context.l10n.watchHistoryTitle
+        : context.l10n.readHistoryTitle;
 
     return StreamBuilder<List<OfflineMedia>>(
       stream: _historyStream(),
@@ -233,7 +239,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                             ),
                             const SizedBox(height: 2),
                             AnymeXText(
-                              '${items.length} ${items.length == 1 ? 'item' : 'items'} in history',
+                              context.l10n.itemsInHistoryCount(items.length),
                               size: 12,
                               color: theme.colorScheme.onSurface
                                   .opaque(0.45, iReallyMeanIt: true),
@@ -771,7 +777,8 @@ class __ListMediaEditorBottomSheetState
   }
 
   void _removeSingleMediaItem(int itemIndex) {
-    final itemName = widget.listData.listData[itemIndex].name ?? 'Item';
+    final itemName =
+        widget.listData.listData[itemIndex].name ?? context.l10n.itemLabel;
     setState(() {
       widget.listData.listData.removeAt(itemIndex);
     });
@@ -784,7 +791,8 @@ class __ListMediaEditorBottomSheetState
     AnymeXDialog(
       title: context.l10n.removeItems,
       message:
-          'Are you sure you want to remove the ${_selectedItemIndices.length} selected items from "${widget.listData.listName}"?',
+          context.l10n.confirmRemoveSelectedFromList(
+            _selectedItemIndices.length.toString(), widget.listData.listName),
       confirmText: context.l10n.remove,
       onConfirm: () {
         final sortedIndices = _selectedItemIndices.toList()
@@ -1059,7 +1067,7 @@ class __ListMediaEditorBottomSheetState
                                           AnymeXText(
                                             media.name ??
                                                 media.jname ??
-                                                'Unknown Title',
+                                                context.l10n.unknownTitle,
                                             style: TextStyle(
                                               color: colors.onSurface,
                                               fontWeight: FontWeight.w600,
@@ -1223,7 +1231,9 @@ class __ListMediaEditorBottomSheetState
           ),
           const SizedBox(height: 16),
           AnymeXText(
-            _searchQuery.isNotEmpty ? 'No matches found' : 'This list is empty',
+            _searchQuery.isNotEmpty
+                ? context.l10n.noMatchesFound
+                : context.l10n.thisListIsEmpty,
             style: TextStyle(
               color: theme.colorScheme.onSurface,
               fontSize: 18,
@@ -1233,8 +1243,8 @@ class __ListMediaEditorBottomSheetState
           const SizedBox(height: 6),
           AnymeXText(
             _searchQuery.isNotEmpty
-                ? 'Try checking spelling or using different keywords'
-                : 'Browse media in the library and add them to this list',
+                ? context.l10n.tryCheckingSpellingKeywords
+                : context.l10n.browseMediaAddToList,
             style: TextStyle(
               color: theme.colorScheme.onSurface.withOpacity(0.5),
               fontSize: 13,

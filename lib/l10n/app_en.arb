@@ -6927,5 +6927,202 @@
       }
     }
   },
-  "loginTrackersHint": "Log in to AniList, MyAnimeList or Simkl from Settings → Accounts to track this media."
+  "loginTrackersHint": "Log in to AniList, MyAnimeList or Simkl from Settings → Accounts to track this media.",
+  "watchHistoryLower": "watch history",
+  "readHistoryLower": "read history",
+  "watchHistoryTitle": "Watch History",
+  "readHistoryTitle": "Read History",
+  "allHistoryCleared": "All history cleared",
+  "noHistoryToClear": "No history to clear",
+  "itemLabel": "Item",
+  "confirmClearAllWatchHistory": "Are you sure you want to clear all watch history? This action cannot be undone.",
+  "confirmClearAllReadHistory": "Are you sure you want to clear all read history? This action cannot be undone.",
+  "confirmDeleteWatchHistoryItems": "{count, plural, =1{Are you sure you want to delete 1 item from your watch history?} other{Are you sure you want to delete {count} items from your watch history?}}",
+  "@confirmDeleteWatchHistoryItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmDeleteReadHistoryItems": "{count, plural, =1{Are you sure you want to delete 1 item from your read history?} other{Are you sure you want to delete {count} items from your read history?}}",
+  "@confirmDeleteReadHistoryItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "currentOfTotalPages": "{current} / {total} pages",
+  "@currentOfTotalPages": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "noWatchHistory": "No watch history",
+  "noReadHistory": "No read history",
+  "watchHistoryAppearHere": "Your watch history will appear here once you start watching.",
+  "readHistoryAppearHere": "Your read history will appear here once you start reading.",
+  "selectedOfTotal": "{selected} of {total} selected",
+  "@selectedOfTotal": {
+    "placeholders": {
+      "selected": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "listsTotalCount": "{count, plural, =1{1 list total} other{{count} lists total}}",
+  "@listsTotalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyCleared": "History cleared",
+  "itemsInHistoryCount": "{count, plural, =1{1 item in history} other{{count} items in history}}",
+  "@itemsInHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmRemoveSelectedFromList": "Are you sure you want to remove the {count} selected items from \"{listName}\"?",
+  "@confirmRemoveSelectedFromList": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "noMatchesFound": "No matches found",
+  "thisListIsEmpty": "This list is empty",
+  "tryCheckingSpellingKeywords": "Try checking spelling or using different keywords",
+  "browseMediaAddToList": "Browse media in the library and add them to this list",
+  "confirmRemoveFromHistory": "Are you sure you want to remove \"{name}\" from your history?",
+  "@confirmRemoveFromHistory": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "showAll": "Show All",
+  "applyCount": "Apply ({count})",
+  "@applyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterGenresCount": "Filter genres ({count})",
+  "@filterGenresCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "genresFilteredCount": "{count, plural, =1{1 genre filtered} other{{count} genres filtered}}",
+  "@genresFilteredCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noEntriesInTab": "No entries in {tab}",
+  "@noEntriesInTab": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
+  "animeCountLabel": "Anime Count: {count}",
+  "@animeCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mangaCountLabel": "Manga Count: {count}",
+  "@mangaCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "novelCountLabel": "Novel Count: {count}",
+  "@novelCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unnamedMedia": "Unnamed Media",
+  "unknownMedia": "Unknown Media",
+  "pageCurrentOfTotalUpper": "PAGE {current} / {total}",
+  "@pageCurrentOfTotalUpper": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "hmsLeft": "{hours}:{minutes}:{seconds} left",
+  "@hmsLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "msLeft": "{minutes}:{seconds} left",
+  "@msLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "moviesAndSeries": "Movies & Series",
+  "chapterUnknown": "Chapter ??",
+  "installSourceFirstThenClick": "Install {sourceName} First, Then Click",
+  "@installSourceFirstThenClick": {
+    "placeholders": {
+      "sourceName": {
+        "type": "String"
+      }
+    }
+  },
+  "episodeUnknown": "Episode ??"
 }

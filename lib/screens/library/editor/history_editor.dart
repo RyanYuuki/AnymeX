@@ -33,8 +33,10 @@ class _HistoryEditorState extends State<HistoryEditor> {
   final offlineStorage = Get.find<OfflineStorageController>();
 
   bool get _isAnime => widget.type == ItemType.anime;
-  String get _historyLabel => _isAnime ? 'watch history' : 'read history';
-  String get _historyTitle => _isAnime ? 'Watch History' : 'Read History';
+  String get _historyLabel =>
+      _isAnime ? context.l10n.watchHistoryLower : context.l10n.readHistoryLower;
+  String get _historyTitle =>
+      _isAnime ? context.l10n.watchHistoryTitle : context.l10n.readHistoryTitle;
 
   int _getAnimeLastWatched(OfflineMedia e) {
     if (e.currentEpisode?.lastWatchedTime != null &&
@@ -103,7 +105,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
     });
 
     HapticFeedback.mediumImpact();
-    snackBar(deletedCount > 0 ? 'All history cleared' : 'No history to clear');
+    snackBar(deletedCount > 0
+        ? Get.context!.l10n.allHistoryCleared
+        : Get.context!.l10n.noHistoryToClear);
   }
 
   Future<void> _deleteSelectedHistory() async {
@@ -201,12 +205,12 @@ class _HistoryEditorState extends State<HistoryEditor> {
     final itemName = _isAnime
         ? (episode?.title ??
             (episode?.number != null
-                ? 'Episode ${episode!.number}'
-                : item.name ?? 'Item'))
+                ? '${context.l10n.playerEpisode} ${episode!.number}'
+                : item.name ?? context.l10n.itemLabel))
         : (chapter?.title ??
             (chapter?.number != null
-                ? 'Chapter ${_formatChapterNumber(chapter!.number)}'
-                : item.name ?? 'Item'));
+                ? '${context.l10n.playerChapter} ${_formatChapterNumber(chapter!.number)}'
+                : item.name ?? context.l10n.itemLabel));
 
     AnymeXDialog(
       title: context.l10n.deleteHistoryItem,
@@ -220,7 +224,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
     AnymeXDialog(
       title: context.l10n.clearAllHistory,
       message:
-          'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
+          _isAnime
+            ? context.l10n.confirmClearAllWatchHistory
+            : context.l10n.confirmClearAllReadHistory,
       confirmText: context.l10n.clearAll,
       onConfirm: () => _deleteAllHistory(items),
     ).show(context);
@@ -230,7 +236,11 @@ class _HistoryEditorState extends State<HistoryEditor> {
     AnymeXDialog(
       title: context.l10n.deleteSelected,
       message:
-          'Are you sure you want to delete ${_selectedMediaIds.length} ${_selectedMediaIds.length == 1 ? "item" : "items"} from your $_historyLabel?',
+          _isAnime
+            ? context.l10n
+                .confirmDeleteWatchHistoryItems(_selectedMediaIds.length)
+            : context.l10n
+                .confirmDeleteReadHistoryItems(_selectedMediaIds.length),
       confirmText: context.l10n.delete,
       onConfirm: _deleteSelectedHistory,
     ).show(context);
@@ -431,7 +441,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
               ),
               child: AnymeXText(
                 hasPages
-                    ? '$currentPage / $totalPages pages'
+                    ? context.l10n.currentOfTotalPages(
+                        currentPage.toString(), totalPages.toString())
                     : '${(progress * 100).toInt()}%',
                 size: 11,
                 variant: TextVariant.semiBold,
@@ -670,7 +681,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
             ),
             const SizedBox(height: 20),
             AnymeXText(
-              _isAnime ? 'No watch history' : 'No read history',
+              _isAnime
+              ? context.l10n.noWatchHistory
+              : context.l10n.noReadHistory,
               size: 20,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface,
@@ -678,8 +691,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
             const SizedBox(height: 8),
             AnymeXText(
               _isAnime
-                  ? 'Your watch history will appear here once you start watching.'
-                  : 'Your read history will appear here once you start reading.',
+                  ? context.l10n.watchHistoryAppearHere
+                  : context.l10n.readHistoryAppearHere,
               textAlign: TextAlign.center,
               size: 14,
               color: context.colors.onSurfaceVariant,
@@ -891,7 +904,9 @@ class _HistoryEditorState extends State<HistoryEditor> {
       builder: (context, snapshot) {
         final historyItems = snapshot.data ?? [];
         final subtitle = _isSelecting
-            ? '${_selectedMediaIds.length} of ${historyItems.length} selected'
+            ? context.l10n.selectedOfTotal(
+                _selectedMediaIds.length.toString(),
+                historyItems.length.toString())
             : '${historyItems.length} ${historyItems.length == 1 ? "item" : "items"}';
 
         return AnymeXScaffold(

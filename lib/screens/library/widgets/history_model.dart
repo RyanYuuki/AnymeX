@@ -770,7 +770,9 @@ String formattedDate(int milliseconds) {
 
 String formatProgressText(OfflineMedia data, bool isManga) {
   if (isManga) {
-    return 'PAGE ${data.currentChapter?.pageNumber ?? '0'} / ${data.currentChapter?.totalPages ?? '??'}';
+    return Get.context!.l10n.pageCurrentOfTotalUpper(
+        (data.currentChapter?.pageNumber ?? '0').toString(),
+        (data.currentChapter?.totalPages ?? '??').toString());
   } else {
     if (data.currentEpisode?.durationInMilliseconds == null ||
         data.currentEpisode?.timeStampInMilliseconds == null) {
@@ -787,8 +789,10 @@ String formatProgressText(OfflineMedia data, bool isManga) {
     final seconds = twoDigits(timeLeft.inSeconds.remainder(60));
     final hours = (timeLeft.inHours);
 
-    if (hours > 0) return '${twoDigits(hours)}:$minutes:$seconds left';
-
-    return '$minutes:$seconds left';
+    if (hours > 0) {
+      return Get.context!.l10n
+          .hmsLeft(twoDigits(hours), minutes, seconds);
+    }
+    return Get.context!.l10n.msLeft(minutes, seconds);
   }
 }
